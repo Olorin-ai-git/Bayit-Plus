@@ -37,9 +37,8 @@ def _greeting_dict(greeting) -> dict:
 async def _resolve_avatar(user: User, profile_id: str) -> ChildAvatar:
     """Find the avatar for a user+profile, raising 404 if not found."""
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == profile_id,
-    )
+        {"user_id": str(user.id), "profile_id": profile_id}
+)
     if not avatar:
         raise HTTPException(
             status_code=404, detail="Avatar not found for profile",

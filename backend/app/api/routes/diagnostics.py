@@ -38,9 +38,8 @@ async def submit_heartbeat(
     """
     # Create or update heartbeat document
     existing = await ClientHeartbeat.find_one(
-        ClientHeartbeat.client_id == heartbeat.client_id,
-        ClientHeartbeat.client_type == heartbeat.client_type
-    )
+        {"client_id": heartbeat.client_id, "client_type": heartbeat.client_type}
+)
 
     now = datetime.now(timezone.utc)
 

@@ -33,8 +33,8 @@ class OutfitService:
         If avatar_id provided, marks which outfits are owned.
         """
         outfits = await AvatarOutfit.find(
-            AvatarOutfit.is_active == True,
-        ).sort("+sort_order").to_list()
+            {"is_active": True}
+).sort("+sort_order").to_list()
 
         owned_ids = set()
         if avatar_id:
@@ -82,8 +82,8 @@ class OutfitService:
             raise ValueError("Avatar not found or unauthorized")
 
         outfit = await AvatarOutfit.find_one(
-            AvatarOutfit.outfit_id == outfit_id
-        )
+            {"outfit_id": outfit_id}
+)
         if not outfit:
             raise ValueError(f"Outfit not found: {outfit_id}")
 

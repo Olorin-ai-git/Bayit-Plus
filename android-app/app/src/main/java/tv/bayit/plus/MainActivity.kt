@@ -33,6 +33,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Switch to main theme after splash
+        setTheme(tv.bayit.plus.R.style.Theme_BayitPlus)
+
         enableEdgeToEdge()
 
         setContent {

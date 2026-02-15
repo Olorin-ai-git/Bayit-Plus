@@ -34,11 +34,11 @@ async def get_audit_logs(
     query = AuditLog.find()
 
     if action:
-        query = query.find(AuditLog.action == AuditAction(action))
+        query = query.find({"action": AuditAction(action)})
     if resource_type:
-        query = query.find(AuditLog.resource_type == resource_type)
+        query = query.find({"resource_type": resource_type})
     if user_id:
-        query = query.find(AuditLog.user_id == user_id)
+        query = query.find({"user_id": user_id})
     if start_date:
         query = query.find(AuditLog.created_at >= start_date)
     if end_date:

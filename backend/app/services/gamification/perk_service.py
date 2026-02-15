@@ -31,9 +31,8 @@ class PerkUnlockService:
             return []
 
         profile = await GamificationProfile.find_one(
-            GamificationProfile.user_id == user_id,
-            GamificationProfile.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if not profile:
             return []
 
@@ -77,9 +76,8 @@ class PerkUnlockService:
         from app.models.child_avatar import ChildAvatar
 
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if not avatar:
             logger.warning(
                 "No avatar found for perk grant",
@@ -106,9 +104,8 @@ class PerkUnlockService:
     ) -> bool:
         """Claim a previously unlocked perk."""
         profile = await GamificationProfile.find_one(
-            GamificationProfile.user_id == user_id,
-            GamificationProfile.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if not profile:
             return False
 

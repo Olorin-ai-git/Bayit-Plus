@@ -119,9 +119,8 @@ class HighlightReelService:
         """List highlight reels for a child profile."""
         return (
             await HighlightReel.find(
-                HighlightReel.user_id == user_id,
-                HighlightReel.profile_id == profile_id,
-            )
+                {"user_id": user_id, "profile_id": profile_id}
+)
             .sort(-HighlightReel.created_at)
             .limit(limit)
             .to_list()
@@ -134,8 +133,8 @@ class HighlightReelService:
     async def get_reel_by_token(self, token: str) -> Optional[HighlightReel]:
         """Fetch a reel by its public share token."""
         return await HighlightReel.find_one(
-            HighlightReel.share_token == token,
-        )
+            {"share_token": token}
+)
 
     def _rank_and_select(
         self,

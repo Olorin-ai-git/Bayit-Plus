@@ -210,6 +210,7 @@ struct CollectionListItem: Decodable, Sendable, Identifiable {
 struct CollectionDetail: Decodable, Sendable, Identifiable {
     let id: String
     let title: String?
+    let titleEn: String?
     let description: String?
     let thumbnail: String?
     let backdrop: String?
@@ -226,6 +227,16 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
     let promoTextJa: String?
     let promoTextZh: String?
     let movies: [CollectionMovie]
+
+    /// Returns localized title for the given language code from Bayit+ localization.
+    func localizedTitle(for lang: String) -> String? {
+        switch lang {
+        case "en":
+            return titleEn ?? title
+        default:
+            return title ?? titleEn
+        }
+    }
 
     /// Returns localized promo text based on device locale, falling back to English then Hebrew.
     var localizedPromoText: String? {

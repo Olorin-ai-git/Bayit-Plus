@@ -44,9 +44,8 @@ async def generate_highlight_reel(
     from app.models.child_avatar import ChildAvatar
 
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == profile_id,
-    )
+        {"user_id": str(user.id), "profile_id": profile_id}
+)
     if not avatar:
         raise HTTPException(
             status_code=404, detail="Avatar not found for profile",

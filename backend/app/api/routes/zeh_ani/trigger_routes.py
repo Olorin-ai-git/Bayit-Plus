@@ -55,8 +55,8 @@ async def get_triggers(
 ):
     """Get all scene triggers for a content item."""
     doc = await ContentSceneTriggers.find_one(
-        ContentSceneTriggers.content_id == content_id,
-    )
+        {"content_id": content_id}
+)
     if not doc:
         return {"content_id": content_id, "triggers": []}
 
@@ -75,8 +75,8 @@ async def create_trigger(
 ):
     """Admin: add a scene trigger to a content item."""
     doc = await ContentSceneTriggers.find_one(
-        ContentSceneTriggers.content_id == content_id,
-    )
+        {"content_id": content_id}
+)
 
     if not doc:
         doc = ContentSceneTriggers(
@@ -133,8 +133,8 @@ async def delete_trigger(
 ):
     """Admin: remove a scene trigger from a content item."""
     doc = await ContentSceneTriggers.find_one(
-        ContentSceneTriggers.content_id == content_id,
-    )
+        {"content_id": content_id}
+)
     if not doc:
         raise HTTPException(status_code=404, detail="Content triggers not found")
 

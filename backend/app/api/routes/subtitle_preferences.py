@@ -29,9 +29,8 @@ async def get_subtitle_preference(
     try:
         # Look up user's preference for this content
         preference = await SubtitlePreference.find_one(
-            SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id,
-        )
+            {"user_id": str(current_user.id), "content_id": content_id}
+)
 
         if preference:
             return {
@@ -85,9 +84,8 @@ async def set_subtitle_preference(
 
         # Check if preference already exists
         existing = await SubtitlePreference.find_one(
-            SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id,
-        )
+            {"user_id": str(current_user.id), "content_id": content_id}
+)
 
         if existing:
             # Update existing preference
@@ -158,9 +156,8 @@ async def update_hebrew_mode(
             )
 
         preference = await SubtitlePreference.find_one(
-            SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id,
-        )
+            {"user_id": str(current_user.id), "content_id": content_id}
+)
 
         if not preference:
             raise HTTPException(
@@ -201,9 +198,8 @@ async def delete_subtitle_preference(
     """
     try:
         preference = await SubtitlePreference.find_one(
-            SubtitlePreference.user_id == str(current_user.id),
-            SubtitlePreference.content_id == content_id,
-        )
+            {"user_id": str(current_user.id), "content_id": content_id}
+)
 
         if not preference:
             raise HTTPException(status_code=404, detail="Preference not found")
@@ -237,8 +233,8 @@ async def get_all_preferences(current_user: User = Depends(get_current_active_us
     """
     try:
         preferences = await SubtitlePreference.find(
-            SubtitlePreference.user_id == str(current_user.id)
-        ).to_list()
+            {"user_id": str(current_user.id)}
+).to_list()
 
         return {
             "preferences": [

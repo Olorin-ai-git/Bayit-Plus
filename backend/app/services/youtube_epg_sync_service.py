@@ -190,9 +190,9 @@ class YouTubeEPGSyncService:
 
         # Clear old EPG entries for this channel in the window
         await EPGEntry.find(
-            EPGEntry.channel_id == channel_id,
-            EPGEntry.start_time >= window_start,
-            EPGEntry.end_time <= window_end,
+            {"channel_id": channel_id}, 
+            EPGEntry.start_time >= window_start, 
+            EPGEntry.end_time <= window_end, 
         ).delete()
 
         # Generate new EPG entries

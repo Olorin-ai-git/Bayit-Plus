@@ -88,9 +88,8 @@ class FeedbackLoopService:
         """Get paginated feedback history for a child profile."""
         return (
             await GrandparentVoiceNote.find(
-                GrandparentVoiceNote.user_id == user_id,
-                GrandparentVoiceNote.profile_id == profile_id,
-            )
+                {"user_id": user_id, "profile_id": profile_id}
+)
             .sort(-GrandparentVoiceNote.created_at)
             .skip(offset)
             .limit(limit)

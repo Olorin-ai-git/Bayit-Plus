@@ -143,9 +143,8 @@ class LevelProgressionService:
     ) -> GamificationProfile:
         """Get or create a gamification profile."""
         profile = await GamificationProfile.find_one(
-            GamificationProfile.user_id == user_id,
-            GamificationProfile.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
 
         if not profile:
             profile = GamificationProfile(

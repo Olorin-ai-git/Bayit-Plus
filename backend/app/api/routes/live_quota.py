@@ -134,8 +134,8 @@ async def get_session_history(
 
         # Query sessions for user
         query = LiveFeatureUsageSession.find(
-            LiveFeatureUsageSession.user_id == str(current_user.id)
-        ).sort([("started_at", -1)])
+            {"user_id": str(current_user.id)}
+).sort([("started_at", -1)])
 
         total = await query.count()
         sessions = await query.skip(offset).limit(limit).to_list()

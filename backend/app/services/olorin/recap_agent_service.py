@@ -145,7 +145,7 @@ class RecapAgentService:
         Returns:
             Updated session or None if not found
         """
-        session = await RecapSession.find_one(RecapSession.session_id == session_id)
+        session = await RecapSession.find_one({"session_id": session_id})
         if not session:
             return None
 
@@ -188,7 +188,7 @@ class RecapAgentService:
         Returns:
             Recap dict with summary and key points
         """
-        session = await RecapSession.find_one(RecapSession.session_id == session_id)
+        session = await RecapSession.find_one({"session_id": session_id})
         if not session:
             return None
 
@@ -287,11 +287,11 @@ class RecapAgentService:
 
     async def get_session(self, session_id: str) -> Optional[RecapSession]:
         """Get a recap session by ID."""
-        return await RecapSession.find_one(RecapSession.session_id == session_id)
+        return await RecapSession.find_one({"session_id": session_id})
 
     async def end_session(self, session_id: str) -> Optional[RecapSession]:
         """End a recap session."""
-        session = await RecapSession.find_one(RecapSession.session_id == session_id)
+        session = await RecapSession.find_one({"session_id": session_id})
         if not session:
             return None
 

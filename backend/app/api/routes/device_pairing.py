@@ -7,12 +7,13 @@ to authenticate the TV session without typing credentials on the TV.
 from datetime import datetime
 from typing import Optional
 
-from fastapi import (APIRouter, HTTPException, WebSocket, WebSocketDisconnect,
-                     status)
+from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
+                     WebSocketDisconnect, status)
 from pydantic import BaseModel
 
 from app.core.config import settings
-from app.core.security import (create_access_token, verify_password)
+from app.core.security import (create_access_token, get_current_user,
+                                verify_password)
 from app.models.user import TokenResponse, User
 from app.services.pairing_manager import pairing_manager
 
@@ -164,7 +165,7 @@ async def complete_auth(request: CompleteAuthRequest):
     await pairing_manager.start_authentication(request.session_id)
 
     # Authenticate user
-    user = await User.find_one(User.email == request.email)
+    user = await User.find_one({"email": request.email})
 
     if not user or not verify_password(request.password, user.hashed_password):
         await pairing_manager.fail_pairing(request.session_id, "Invalid credentials")
@@ -213,6 +214,59 @@ async def complete_oauth(request: CompleteOAuthRequest):
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="OAuth pairing not yet implemented",
+    )
+
+
+class CompleteAuthTokenRequest(BaseModel):
+    session_id: str
+
+
+@router.post("/complete-token", response_model=TokenResponse)
+async def complete_auth_token(
+    request: CompleteAuthTokenRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Complete authentication via already-authenticated companion device.
+    Called by companion with user already logged in via Bearer token.
+    """
+    # Verify session exists
+    session = await pairing_manager.get_session(request.session_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found or expired",
+        )
+
+    # Mark as authenticating
+    await pairing_manager.start_authentication(request.session_id)
+
+    if not current_user.is_active:
+        await pairing_manager.fail_pairing(request.session_id, "Account inactive")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user",
+        )
+
+    # Update last login
+    current_user.last_login = datetime.utcnow()
+    await current_user.save()
+
+    # Create token
+    access_token = create_access_token(data={"sub": str(current_user.id)})
+    user_response = current_user.to_response()
+
+    # Complete pairing - notify TV
+    await pairing_manager.complete_pairing(
+        request.session_id,
+        str(current_user.id),
+        access_token,
+        user_response.model_dump(mode="json"),
+    )
+
+    return TokenResponse(
+        access_token=access_token,
+        user=user_response,
     )
 
 

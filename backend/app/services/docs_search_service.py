@@ -210,10 +210,10 @@ class DocsSearchService:
         query_words = set(query_lower.split())
 
         # Build query
-        faq_query = FAQEntry.find(FAQEntry.is_active == True)  # noqa: E712
+        faq_query = FAQEntry.find({"is_active": True})  # noqa: E712
 
         if category:
-            faq_query = faq_query.find(FAQEntry.category == category)
+            faq_query = faq_query.find({"category": category})
 
         entries = await faq_query.to_list()
 

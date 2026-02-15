@@ -130,9 +130,8 @@ async def validate_beta_500(
 
         # Check credit balance
         credit = await BetaCredit.find_one(
-            BetaCredit.user_id == str(current_user.id),
-            BetaCredit.is_expired == False
-        )
+            {"user_id": str(current_user.id), "is_expired": False}
+)
 
         if not credit:
             return ValidationResult(

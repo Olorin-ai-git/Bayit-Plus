@@ -36,21 +36,14 @@ class FriendshipService:
             raise FriendshipError("Already friends with this user")
 
         existing = await FriendRequest.find_one(
-            And(
-                FriendRequest.sender_id == sender_id,
-                FriendRequest.receiver_id == receiver_id,
-                FriendRequest.status == FriendRequestStatus.PENDING,
-            )
+            {"sender_id": sender_id, "receiver_id": receiver_id, "status": FriendRequestStatus.PENDING}
         )
         if existing:
             raise FriendshipError("Friend request already pending")
 
         max_pending = settings.olorin.social_ws.max_pending_friend_requests
         outbound_count = await FriendRequest.find(
-            And(
-                FriendRequest.sender_id == sender_id,
-                FriendRequest.status == FriendRequestStatus.PENDING,
-            )
+            {"sender_id": sender_id, "status": FriendRequestStatus.PENDING}
         ).count()
         if outbound_count >= max_pending:
             raise FriendshipError("Maximum pending friend requests reached")
@@ -132,10 +125,10 @@ class FriendshipService:
     async def remove_friend(user_id: str, friend_id: str) -> bool:
         """Remove a friendship."""
         friendship = await UserFriendship.find_one(
-            Or(
-                And(UserFriendship.user1_id == user_id, UserFriendship.user2_id == friend_id),
-                And(UserFriendship.user1_id == friend_id, UserFriendship.user2_id == user_id),
-            )
+            {"$or": [
+                {"user1_id": user_id, "user2_id": friend_id},
+                {"user1_id": friend_id, "user2_id": user_id},
+            ]}
         )
         if not friendship:
             raise FriendshipError("Friendship not found")

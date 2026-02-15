@@ -207,7 +207,7 @@ class EmailVerificationService:
 
         try:
             # Find user by email
-            user = await BetaUser.find_one(BetaUser.email == email)
+            user = await BetaUser.find_one({"email": email})
             
             if not user:
                 logger.warning(

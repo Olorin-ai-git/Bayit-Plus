@@ -15,10 +15,8 @@ from app.services.news_scraper.models import HeadlineItem
 
 logger = logging.getLogger(__name__)
 
-# Exa API key from environment - fail fast if not configured
-EXA_API_KEY = getattr(settings, "EXA_API_KEY", None)
-if not EXA_API_KEY:
-    raise ValueError("EXA_API_KEY must be configured in environment variables or settings")
+# Exa API key from environment - checked at call time
+EXA_API_KEY = getattr(settings, "EXA_API_KEY", None) or None
 
 
 class ExaNewsScraperError(Exception):

@@ -18,11 +18,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
+import tv.bayit.plus.ui.components.BreadcrumbBar
 import tv.bayit.plus.ui.components.GlassBottomNavBar
 import tv.bayit.plus.ui.components.PiPWidgetContainer
 import tv.bayit.plus.ui.components.TopAppBar
 import tv.bayit.plus.ui.components.VoiceAssistantFAB
 import tv.bayit.plus.ui.components.WidgetDock
+import tv.bayit.plus.ui.components.rememberBreadcrumbTrail
 import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
 
 @Composable
@@ -42,12 +44,23 @@ fun BayitMainScaffold(
         tab.route::class.qualifiedName == currentRoute
     }
 
+    val breadcrumbs = rememberBreadcrumbTrail(navController)
+
     Scaffold(
         topBar = {
             if (isRootTab) {
                 TopAppBar(
                     onProfileClick = { navController.navigate(Route.Profile) },
                     onLanguageClick = { navController.navigate(Route.LanguageSettings) },
+                )
+            } else if (breadcrumbs.size >= 2) {
+                BreadcrumbBar(
+                    entries = breadcrumbs,
+                    onEntryClick = { entry ->
+                        repeat(entry.popCount) {
+                            navController.popBackStack()
+                        }
+                    },
                 )
             }
         },

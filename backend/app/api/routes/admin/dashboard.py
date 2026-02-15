@@ -26,26 +26,26 @@ async def get_dashboard_stats(current_user: User = Depends(require_admin())):
 
     # User stats
     total_users = await User.count()
-    active_users = await User.find(User.is_active == True).count()
+    active_users = await User.find({"is_active": True}).count()
     new_users_today = await User.find(User.created_at >= today_start).count()
     new_users_this_week = await User.find(User.created_at >= week_start).count()
     daily_active = await User.find(User.last_login >= today_start).count()
 
     # Subscription stats
-    active_subs = await User.find(User.subscription_status == "active").count()
+    active_subs = await User.find({"subscription_status": "active"}).count()
 
     # Revenue stats from transactions
     today_txns = await Transaction.find(
-        Transaction.created_at >= today_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= today_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     month_txns = await Transaction.find(
-        Transaction.created_at >= month_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= month_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     all_txns = await Transaction.find(
-        Transaction.status == TransactionStatus.COMPLETED
-    ).to_list()
+        {"status": TransactionStatus.COMPLETED}
+).to_list()
 
     revenue_today = sum(t.amount for t in today_txns)
     revenue_month = sum(t.amount for t in month_txns)
@@ -54,8 +54,8 @@ async def get_dashboard_stats(current_user: User = Depends(require_admin())):
 
     # Churn rate (users who canceled in last 30 days / active users)
     canceled_30d = await User.find(
-        User.subscription_status == "canceled",
-        User.updated_at >= now - timedelta(days=30),
+        {"subscription_status": "canceled"}, 
+        User.updated_at >= now - timedelta(days=30), 
     ).count()
     churn = (canceled_30d / active_subs * 100) if active_subs > 0 else 0
 

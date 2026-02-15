@@ -49,7 +49,7 @@ struct CollectionDetailView: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if let backdrop = collection.backdrop {
-                backdropHero(backdrop, title: collection.title ?? "Collection")
+                backdropHero(backdrop, title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"))
             }
 
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
@@ -94,7 +94,7 @@ struct CollectionDetailView: View {
 
     private func collectionHeader(_ collection: CollectionDetail) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text(collection.title ?? "Collection")
+            Text(collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"))
                 .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 

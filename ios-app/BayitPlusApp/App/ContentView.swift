@@ -40,6 +40,11 @@ struct ContentView: View {
                     .transition(.move(edge: .bottom))
             }
 
+            if let tvLoginRoute = coordinator.pendingTVLogin {
+                tvLoginView(for: tvLoginRoute)
+                    .transition(.move(edge: .bottom))
+            }
+
             // Shabbat banner overlay (top)
             if ShabbatModeService.shared.isShabbatActive
                 || ShabbatModeService.shared.isErevShabbat {
@@ -57,6 +62,7 @@ struct ContentView: View {
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.fullscreenRoute != nil)
+        .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.pendingTVLogin != nil)
         .animation(.spring(duration: 0.4), value: ShabbatModeService.shared.isShabbatActive)
         .task {
             ShabbatModeService.shared.startPolling(
@@ -84,6 +90,27 @@ struct ContentView: View {
             SearchView()
         default:
             EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func tvLoginView(for route: Route) -> some View {
+        NavigationStack {
+            if case .tvLogin(let sessionId, let token, let expires) = route {
+                TVLoginView(sessionId: sessionId, token: token, expires: expires)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            GlassButton(
+                                "Close",
+                                variant: .secondary,
+                                size: .medium,
+                                icon: Image(systemName: "xmark")
+                            ) {
+                                coordinator.dismissTVLogin()
+                            }
+                        }
+                    }
+            }
         }
     }
 }

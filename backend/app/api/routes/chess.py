@@ -113,7 +113,7 @@ async def get_game(
     game_code: str, current_user: User = Depends(get_current_active_user)
 ):
     """Get chess game state by code."""
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if not game:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
@@ -126,14 +126,14 @@ async def get_chat_history(
     game_code: str, current_user: User = Depends(get_current_active_user)
 ):
     """Get chat history for a chess game."""
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if not game:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
         )
 
     messages = (
-        await ChessChatMessage.find(ChessChatMessage.game_id == str(game.id))
+        await ChessChatMessage.find({"game_id": str(game.id)})
         .sort("-timestamp")
         .to_list()
     )
@@ -146,7 +146,7 @@ async def resign_game(
     game_code: str, current_user: User = Depends(get_current_active_user)
 ):
     """Resign from a chess game."""
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if not game:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
@@ -166,7 +166,7 @@ async def offer_draw(
     game_code: str, current_user: User = Depends(get_current_active_user)
 ):
     """Offer a draw (currently auto-accepts)."""
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if not game:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"

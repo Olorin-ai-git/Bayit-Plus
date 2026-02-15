@@ -47,16 +47,16 @@ async def build_media_context() -> dict:
 
     try:
         channels = (
-            await LiveChannel.find(LiveChannel.is_active == True).limit(5).to_list()
+            await LiveChannel.find({"is_active": True}).limit(5).to_list()
         )
 
-        podcasts = await Podcast.find(Podcast.is_active == True).limit(5).to_list()
+        podcasts = await Podcast.find({"is_active": True}).limit(5).to_list()
 
-        total_channels = await LiveChannel.find(LiveChannel.is_active == True).count()
+        total_channels = await LiveChannel.find({"is_active": True}).count()
 
-        total_podcasts = await Podcast.find(Podcast.is_active == True).count()
+        total_podcasts = await Podcast.find({"is_active": True}).count()
 
-        total_content = await Content.find(Content.is_published == True).count()
+        total_content = await Content.find({"is_published": True}).count()
 
         categories = await Content.distinct("category_name", {"is_published": True})
 

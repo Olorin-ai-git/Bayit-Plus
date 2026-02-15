@@ -41,7 +41,7 @@ class HouseholdMembershipService:
             PermissionError: If inviter is not parent
             ValueError: If household not found or invitation already exists
         """
-        household = await Household.find_one(Household.household_id == household_id)
+        household = await Household.find_one({"household_id": household_id})
         if not household:
             raise ValueError("Household not found")
 
@@ -163,7 +163,7 @@ class HouseholdMembershipService:
             PermissionError: If requester is not parent
             ValueError: If household not found or member is owner
         """
-        household = await Household.find_one(Household.household_id == household_id)
+        household = await Household.find_one({"household_id": household_id})
         if not household:
             raise ValueError("Household not found")
 

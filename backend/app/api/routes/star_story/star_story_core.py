@@ -79,9 +79,8 @@ async def get_avatars(
 ):
     """Get all avatars for a child profile."""
     avatars = await ChildAvatar.find(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == profile_id,
-    ).to_list()
+        {"user_id": str(user.id), "profile_id": profile_id}
+).to_list()
 
     return {
         "avatars": [
@@ -159,10 +158,16 @@ async def list_episodes(
 ):
     """List episodes for a child profile."""
     episodes = await StoryEpisode.find(
-        StoryEpisode.user_id == str(user.id),
-        StoryEpisode.profile_id == profile_id,
-        StoryEpisode.status == EpisodeStatus.READY,
-    ).sort(-StoryEpisode.created_at).limit(limit).to_list()
+        {
+
+            "user_id": str(user.id),
+
+            "profile_id": profile_id,
+
+            "status": EpisodeStatus.READY
+
+        }
+).sort(-StoryEpisode.created_at).limit(limit).to_list()
 
     return {
         "episodes": [

@@ -369,8 +369,8 @@ class YoungstersContentSeeder:
 
         # Get or create youngsters section
         youngsters_section = await ContentSection.find_one(
-            ContentSection.slug == "youngsters"
-        )
+            {"slug": "youngsters"}
+)
 
         if not youngsters_section:
             logger.info("Creating youngsters section in taxonomy")
@@ -463,7 +463,7 @@ class YoungstersContentSeeder:
                 youtube_id = item.get("youtube_id", "")
                 stream_url = self._youtube_to_stream_url(youtube_id)
 
-                existing = await Content.find_one(Content.stream_url == stream_url)
+                existing = await Content.find_one({"stream_url": stream_url})
 
                 if existing:
                     # Update existing content
@@ -543,8 +543,8 @@ class YoungstersContentSeeder:
         logger.warning("Clearing all youngsters content")
 
         deleted_count = await Content.find(
-            Content.is_youngsters_content == True
-        ).delete()
+            {"is_youngsters_content": True}
+).delete()
 
         stats = {"deleted_count": deleted_count}
         logger.info(f"Cleared {deleted_count} youngsters content items")
@@ -558,7 +558,7 @@ class YoungstersContentSeeder:
         Returns:
             Dictionary with content counts by category and age rating
         """
-        total_count = await Content.find(Content.is_youngsters_content == True).count()
+        total_count = await Content.find({"is_youngsters_content": True}).count()
 
         # Count by age rating
         age_rating_counts = {}

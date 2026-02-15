@@ -125,7 +125,7 @@ class CultureContentService:
 
     async def get_culture(self, culture_id: str) -> Optional[CultureResponse]:
         """Get a specific culture by ID."""
-        culture = await Culture.find_one(Culture.culture_id == culture_id)
+        culture = await Culture.find_one({"culture_id": culture_id})
         if not culture:
             return None
 
@@ -150,7 +150,7 @@ class CultureContentService:
 
     async def get_default_culture(self) -> Optional[CultureResponse]:
         """Get the default culture (Israeli for backward compatibility)."""
-        culture = await Culture.find_one(Culture.is_default == True)
+        culture = await Culture.find_one({"is_default": True})
         if culture:
             return CultureResponse(
                 id=str(culture.id),
@@ -216,9 +216,8 @@ class CultureContentService:
     ) -> Optional[CultureCityResponse]:
         """Get a specific city."""
         city = await CultureCity.find_one(
-            CultureCity.culture_id == culture_id,
-            CultureCity.city_id == city_id,
-        )
+            {"culture_id": culture_id, "city_id": city_id}
+)
         if not city:
             return None
 
@@ -324,9 +323,8 @@ class CultureContentService:
 
         # Get sources count
         sources_count = await CultureNewsSource.find(
-            CultureNewsSource.culture_id == culture_id,
-            CultureNewsSource.is_active == True,
-        ).count()
+            {"culture_id": culture_id, "is_active": True}
+).count()
 
         last_updated = self._cache.get_last_updated(cache_key) or datetime.now(
             timezone.utc
@@ -405,7 +403,7 @@ class CultureContentService:
 
     async def get_culture_time(self, culture_id: str) -> Optional[CultureTimeResponse]:
         """Get current time information for a culture's timezone."""
-        culture = await Culture.find_one(Culture.culture_id == culture_id)
+        culture = await Culture.find_one({"culture_id": culture_id})
         if not culture:
             return None
 

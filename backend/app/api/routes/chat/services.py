@@ -106,7 +106,7 @@ async def get_recommendations_from_response(
                 recommendations.append({"title": item["name"], "type": "channel"})
 
     if not recommendations:
-        content = await Content.find(Content.is_published == True).limit(4).to_list()
+        content = await Content.find({"is_published": True}).limit(4).to_list()
 
         if content:
             recommendations = [
@@ -213,8 +213,8 @@ Return ONLY valid JSON, nothing else."""
                     try:
                         logger.info("Validating play action", extra={"query": query})
                         content_found = await Content.find(
-                            Content.is_published == True
-                        ).to_list()
+                            {"is_published": True}
+).to_list()
 
                         logger.debug("Content library search", extra={"count": len(content_found)})
 
@@ -286,7 +286,7 @@ async def resolve_single_content(
 
     # Search in live channels
     if content_type in ["any", "channel"]:
-        channels = await LiveChannel.find(LiveChannel.is_active == True).to_list()
+        channels = await LiveChannel.find({"is_active": True}).to_list()
         for ch in channels:
             names_to_check = [ch.name]
             if ch.name_en:
@@ -311,7 +311,7 @@ async def resolve_single_content(
     # Search in VOD content (movies/series)
     if content_type in ["any", "movie", "series", "vod"]:
         content_items = (
-            await Content.find(Content.is_published == True).limit(500).to_list()
+            await Content.find({"is_published": True}).limit(500).to_list()
         )
         for item in content_items:
             names_to_check = [item.title]
@@ -338,7 +338,7 @@ async def resolve_single_content(
 
     # Search in podcasts
     if content_type in ["any", "podcast"]:
-        podcasts = await Podcast.find(Podcast.is_active == True).to_list()
+        podcasts = await Podcast.find({"is_active": True}).to_list()
         for pod in podcasts:
             names_to_check = [pod.title]
             if pod.title_en:
@@ -351,8 +351,8 @@ async def resolve_single_content(
                 if score > best_score and score >= min_score:
                     best_score = score
                     latest_ep = await PodcastEpisode.find_one(
-                        PodcastEpisode.podcast_id == str(pod.id),
-                        sort=[("published_at", -1)],
+                        {"podcast_id": str(pod.id)}, 
+                        sort=[("published_at", -1)], 
                     )
                     stream_url = latest_ep.audio_url if latest_ep else None
                     best_match = ResolvedContentItem(
@@ -367,7 +367,7 @@ async def resolve_single_content(
 
     # Search in radio stations
     if content_type in ["any", "radio"]:
-        stations = await RadioStation.find(RadioStation.is_active == True).to_list()
+        stations = await RadioStation.find({"is_active": True}).to_list()
         for station in stations:
             names_to_check = [station.name]
             if station.name_en:

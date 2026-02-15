@@ -57,9 +57,8 @@ class WebAuthnService:
         """
         # Check if user has reached max credentials
         existing_credentials = await PasskeyCredential.find(
-            PasskeyCredential.user_id == user_id,
-            PasskeyCredential.is_active == True,
-        ).to_list()
+            {"user_id": user_id, "is_active": True}
+).to_list()
 
         if len(existing_credentials) >= self.max_credentials:
             raise ValueError(
@@ -139,10 +138,8 @@ class WebAuthnService:
         """
         # Find the challenge
         challenge_doc = await PasskeyChallenge.find_one(
-            PasskeyChallenge.user_id == user_id,
-            PasskeyChallenge.challenge_type == "registration",
-            PasskeyChallenge.is_used == False,
-        )
+            {"user_id": user_id, "challenge_type": "registration", "is_used": False}
+)
 
         if not challenge_doc or not challenge_doc.is_valid():
             raise ValueError(
@@ -223,9 +220,8 @@ class WebAuthnService:
         if user_id:
             # Get user's existing credentials
             credentials = await PasskeyCredential.find(
-                PasskeyCredential.user_id == user_id,
-                PasskeyCredential.is_active == True,
-            ).to_list()
+                {"user_id": user_id, "is_active": True}
+).to_list()
 
             if not credentials:
                 raise ValueError("No passkeys registered for this user.")
@@ -306,9 +302,8 @@ class WebAuthnService:
         # Find the challenge
         if qr_session_id:
             challenge_doc = await PasskeyChallenge.find_one(
-                PasskeyChallenge.qr_session_id == qr_session_id,
-                PasskeyChallenge.is_used == False,
-            )
+                {"qr_session_id": qr_session_id, "is_used": False}
+)
         elif challenge_id:
             challenge_doc = await PasskeyChallenge.get(challenge_id)
         else:
@@ -320,9 +315,8 @@ class WebAuthnService:
         # Find the credential
         credential_id = credential.get("id") or credential.get("rawId")
         passkey = await PasskeyCredential.find_one(
-            PasskeyCredential.credential_id == credential_id,
-            PasskeyCredential.is_active == True,
-        )
+            {"credential_id": credential_id, "is_active": True}
+)
 
         if not passkey:
             raise ValueError("Passkey not found or has been deactivated.")
@@ -389,8 +383,8 @@ class WebAuthnService:
             Dict with session_token and user_id if authenticated, None otherwise
         """
         challenge_doc = await PasskeyChallenge.find_one(
-            PasskeyChallenge.qr_session_id == qr_session_id,
-        )
+            {"qr_session_id": qr_session_id}
+)
 
         if not challenge_doc:
             return None
@@ -421,9 +415,8 @@ class WebAuthnService:
         Returns the session if valid, None otherwise.
         """
         session = await PasskeySession.find_one(
-            PasskeySession.session_token == session_token,
-            PasskeySession.is_revoked == False,
-        )
+            {"session_token": session_token, "is_revoked": False}
+)
 
         if not session or not session.is_valid():
             return None
@@ -440,9 +433,8 @@ class WebAuthnService:
         Returns a list of credential info (without sensitive data).
         """
         credentials = await PasskeyCredential.find(
-            PasskeyCredential.user_id == user_id,
-            PasskeyCredential.is_active == True,
-        ).to_list()
+            {"user_id": user_id, "is_active": True}
+).to_list()
 
         return [
             {
@@ -488,8 +480,8 @@ class WebAuthnService:
         Returns True if successful, False if not found.
         """
         session = await PasskeySession.find_one(
-            PasskeySession.session_token == session_token,
-        )
+            {"session_token": session_token}
+)
 
         if not session:
             return False
@@ -513,9 +505,8 @@ class WebAuthnService:
         Returns the number of sessions revoked.
         """
         sessions = await PasskeySession.find(
-            PasskeySession.user_id == user_id,
-            PasskeySession.is_revoked == False,
-        ).to_list()
+            {"user_id": user_id, "is_revoked": False}
+).to_list()
 
         count = 0
         for session in sessions:

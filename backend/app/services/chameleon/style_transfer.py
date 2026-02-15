@@ -38,10 +38,16 @@ class StyleTransferService:
             )
 
         existing = await AvatarStyleCache.find_one(
-            AvatarStyleCache.avatar_id == str(avatar.id),
-            AvatarStyleCache.show_content_id == show_content_id,
-            AvatarStyleCache.status == StyleCacheStatus.READY,
-        )
+            {
+
+                "avatar_id": str(avatar.id),
+
+                "show_content_id": show_content_id,
+
+                "status": StyleCacheStatus.READY
+
+            }
+)
         if existing:
             existing.last_used_at = datetime.now(timezone.utc)
             await existing.save()
@@ -188,8 +194,8 @@ class StyleTransferService:
         )
 
         mesh = await AvatarMesh.find_one(
-            AvatarMesh.avatar_id == str(avatar.id)
-        )
+            {"avatar_id": str(avatar.id)}
+)
         if not mesh or not mesh.is_ready:
             logger.warning(
                 "3D mesh not ready, falling back to 2D transfer",
@@ -214,10 +220,16 @@ class StyleTransferService:
     ) -> AvatarStyleCache:
         """Original 2D style transfer path (Stability AI)."""
         existing = await AvatarStyleCache.find_one(
-            AvatarStyleCache.avatar_id == str(avatar.id),
-            AvatarStyleCache.show_content_id == show_content_id,
-            AvatarStyleCache.status == StyleCacheStatus.READY,
-        )
+            {
+
+                "avatar_id": str(avatar.id),
+
+                "show_content_id": show_content_id,
+
+                "status": StyleCacheStatus.READY
+
+            }
+)
         if existing:
             existing.last_used_at = datetime.now(timezone.utc)
             await existing.save()

@@ -39,8 +39,8 @@ class FamilyControlsMigrationService:
 
         # Check if already migrated
         existing = await FamilyControls.find_one(
-            FamilyControls.user_id == str(user.id)
-        )
+            {"user_id": str(user.id)}
+)
         if existing:
             logger.info(f"User {user.id} already has unified family controls")
             return existing

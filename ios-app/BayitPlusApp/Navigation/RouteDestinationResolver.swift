@@ -136,6 +136,8 @@ struct RouteDestinationResolver {
             FeedbackInboxView(profileId: profileId)
         case .zehAniAvatarSettings(let profileId, let avatarId):
             AvatarSettingsView(profileId: profileId, avatarId: avatarId)
+        case .tvLogin(let sessionId, let token, let expires):
+            TVLoginView(sessionId: sessionId, token: token, expires: expires)
         default:
             ErrorStateView(
                 message: "Screen not available",

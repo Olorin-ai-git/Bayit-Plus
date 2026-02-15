@@ -42,8 +42,8 @@ class SessionManager:
             LiveTriviaSession instance
         """
         session = await LiveTriviaSession.find_one(
-            LiveTriviaSession.user_id == user_id,
-            LiveTriviaSession.channel_id == channel_id,
+            {"user_id": user_id}, 
+            {"channel_id": channel_id}, 
             LiveTriviaSession.session_end.exists(False)  # Active session
         )
 

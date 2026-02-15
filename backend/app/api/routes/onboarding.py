@@ -162,7 +162,7 @@ async def complete_onboarding(request: CompleteOnboardingRequest):
     email = data["email"]
 
     # Check if user already exists
-    existing_user = await User.find_one(User.email == email)
+    existing_user = await User.find_one({"email": email})
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

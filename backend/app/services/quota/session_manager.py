@@ -97,8 +97,8 @@ class SessionManager:
     ):
         """Update session with usage increments"""
         session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
-        )
+            {"session_id": session_id}
+)
 
         if not session:
             logger.error(f"Session {session_id} not found")
@@ -162,8 +162,8 @@ class SessionManager:
     async def end_session(session_id: str, status: UsageSessionStatus):
         """Finalize session and update totals"""
         session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
-        )
+            {"session_id": session_id}
+)
 
         if not session:
             logger.error(f"Session {session_id} not found")

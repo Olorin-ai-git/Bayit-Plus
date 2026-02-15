@@ -71,8 +71,8 @@ async def find_duplicate_episodes(
         for result in results:
             group_key = result["_id"]
             series = await Content.find_one(
-                Content.id == PydanticObjectId(group_key["series_id"])
-            )
+                {"id": PydanticObjectId(group_key["series_id"])}
+)
 
             duplicates.append(
                 DuplicateGroup(

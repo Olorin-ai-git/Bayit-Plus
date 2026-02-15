@@ -155,9 +155,8 @@ async def get_series_details(
 
     episodes = (
         await Content.find(
-            Content.series_id == series_id,
-            Content.is_published == True,
-        )
+            {"series_id": series_id, "is_published": True}
+)
         .sort([("season", 1), ("episode", 1)])
         .to_list()
     )
@@ -251,9 +250,8 @@ async def get_series_seasons(
 
     episodes = (
         await Content.find(
-            Content.series_id == series_id,
-            Content.is_published == True,
-        )
+            {"series_id": series_id, "is_published": True}
+)
         .sort([("season", 1), ("episode", 1)])
         .to_list()
     )
@@ -299,10 +297,8 @@ async def get_season_episodes(
 
     episodes = (
         await Content.find(
-            Content.series_id == series_id,
-            Content.season == season_num,
-            Content.is_published == True,
-        )
+            {"series_id": series_id, "season": season_num, "is_published": True}
+)
         .sort("episode")
         .to_list()
     )

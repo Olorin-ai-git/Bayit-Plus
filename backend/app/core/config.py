@@ -846,7 +846,10 @@ class Settings(BaseSettings):
             # Return minimal defaults only for local development
             import os
 
-            if os.getenv("DEBUG", "").lower() == "true":
+            is_prod = os.getenv("ENVIRONMENT", "").lower() in (
+                "production", "prod",
+            )
+            if not is_prod:
                 return [
                     "http://localhost:3200",
                     "http://localhost:3211",
@@ -983,36 +986,36 @@ class Settings(BaseSettings):
 
     # Librarian Agent Configuration
     # Daily Audit Schedule
-    LIBRARIAN_DAILY_AUDIT_CRON: str
-    LIBRARIAN_DAILY_AUDIT_TIME: str
-    LIBRARIAN_DAILY_AUDIT_MODE: str
-    LIBRARIAN_DAILY_AUDIT_COST: str
-    LIBRARIAN_DAILY_AUDIT_STATUS: str
-    LIBRARIAN_DAILY_AUDIT_DESCRIPTION: str
+    LIBRARIAN_DAILY_AUDIT_CRON: str = ""
+    LIBRARIAN_DAILY_AUDIT_TIME: str = ""
+    LIBRARIAN_DAILY_AUDIT_MODE: str = ""
+    LIBRARIAN_DAILY_AUDIT_COST: str = ""
+    LIBRARIAN_DAILY_AUDIT_STATUS: str = ""
+    LIBRARIAN_DAILY_AUDIT_DESCRIPTION: str = ""
 
     # Weekly AI Audit Schedule
-    LIBRARIAN_WEEKLY_AUDIT_CRON: str
-    LIBRARIAN_WEEKLY_AUDIT_TIME: str
-    LIBRARIAN_WEEKLY_AUDIT_MODE: str
-    LIBRARIAN_WEEKLY_AUDIT_COST: str
-    LIBRARIAN_WEEKLY_AUDIT_STATUS: str
-    LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION: str
+    LIBRARIAN_WEEKLY_AUDIT_CRON: str = ""
+    LIBRARIAN_WEEKLY_AUDIT_TIME: str = ""
+    LIBRARIAN_WEEKLY_AUDIT_MODE: str = ""
+    LIBRARIAN_WEEKLY_AUDIT_COST: str = ""
+    LIBRARIAN_WEEKLY_AUDIT_STATUS: str = ""
+    LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION: str = ""
 
     # Librarian Audit Limits
-    LIBRARIAN_MAX_ITERATIONS: int
-    LIBRARIAN_DEFAULT_BUDGET_USD: float
-    LIBRARIAN_MIN_BUDGET_USD: float
-    LIBRARIAN_MAX_BUDGET_USD: float
-    LIBRARIAN_BUDGET_STEP_USD: float
+    LIBRARIAN_MAX_ITERATIONS: int = 100
+    LIBRARIAN_DEFAULT_BUDGET_USD: float = 5.0
+    LIBRARIAN_MIN_BUDGET_USD: float = 1.0
+    LIBRARIAN_MAX_BUDGET_USD: float = 50.0
+    LIBRARIAN_BUDGET_STEP_USD: float = 1.0
 
     # Librarian Pagination
-    LIBRARIAN_REPORTS_LIMIT: int
-    LIBRARIAN_ACTIONS_LIMIT: int
-    LIBRARIAN_ACTIVITY_PAGE_SIZE: int
+    LIBRARIAN_REPORTS_LIMIT: int = 50
+    LIBRARIAN_ACTIONS_LIMIT: int = 100
+    LIBRARIAN_ACTIVITY_PAGE_SIZE: int = 20
 
     # Librarian UI
-    LIBRARIAN_ID_TRUNCATE_LENGTH: int
-    LIBRARIAN_MODAL_MAX_HEIGHT: int
+    LIBRARIAN_ID_TRUNCATE_LENGTH: int = 8
+    LIBRARIAN_MODAL_MAX_HEIGHT: int = 600
 
     # Librarian Audit Recovery
     AUDIT_STUCK_TIMEOUT_MINUTES: int = 30  # Audit considered stuck after 30 minutes
@@ -1816,12 +1819,12 @@ class Settings(BaseSettings):
     # WebAuthn (Passkey) Configuration
     # Relying Party ID - must match the domain where passkeys are created
     # For production, this should be the main domain (e.g., "bayit.tv")
-    WEBAUTHN_RP_ID: str
+    WEBAUTHN_RP_ID: str = ""
     # Relying Party Name - displayed to users during passkey creation
-    WEBAUTHN_RP_NAME: str
+    WEBAUTHN_RP_NAME: str = ""
     # Expected origin(s) - comma-separated list of allowed origins
     # Example: "https://bayit.tv,https://www.bayit.tv"
-    WEBAUTHN_ORIGIN: str
+    WEBAUTHN_ORIGIN: str = ""
     # Session duration for passkey-authenticated sessions (default 7 days)
     PASSKEY_SESSION_DURATION_DAYS: int = 7
     # Challenge expiration time in seconds (default 5 minutes)

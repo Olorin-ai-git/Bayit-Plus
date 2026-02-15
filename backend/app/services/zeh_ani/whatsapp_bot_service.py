@@ -103,8 +103,8 @@ class WhatsAppBotService:
     ) -> dict:
         """Process an incoming WhatsApp reply from a grandparent."""
         contact = await WhatsAppContact.find_one(
-            WhatsAppContact.phone_hash == from_number_hash,
-        )
+            {"phone_hash": from_number_hash}
+)
         if not contact:
             logger.warning(
                 "Reply from unknown contact",
@@ -138,10 +138,8 @@ class WhatsAppBotService:
         phone_hash = self.hash_phone_number(phone_number)
 
         existing = await WhatsAppContact.find_one(
-            WhatsAppContact.user_id == user_id,
-            WhatsAppContact.profile_id == profile_id,
-            WhatsAppContact.phone_hash == phone_hash,
-        )
+            {"user_id": user_id, "profile_id": profile_id, "phone_hash": phone_hash}
+)
         if existing:
             return existing
 
@@ -170,9 +168,8 @@ class WhatsAppBotService:
     async def list_contacts(self, user_id: str, profile_id: str) -> List[WhatsAppContact]:
         """List all approved contacts for a child profile."""
         return await WhatsAppContact.find(
-            WhatsAppContact.user_id == user_id,
-            WhatsAppContact.profile_id == profile_id,
-        ).to_list()
+            {"user_id": user_id, "profile_id": profile_id}
+).to_list()
 
     async def remove_contact(self, contact_id: str, user_id: str) -> bool:
         """Remove a contact (soft-delete by deletion)."""

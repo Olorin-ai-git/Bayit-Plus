@@ -52,7 +52,7 @@ class AppleIDTokenRequest(BaseModel):
 async def _sync_beta_user_status(user: User) -> None:
     """Sync is_beta_user flag from BetaUser collection."""
     try:
-        beta_user = await BetaUser.find_one(BetaUser.email == user.email)
+        beta_user = await BetaUser.find_one({"email": user.email})
         if beta_user and beta_user.is_active() and not beta_user.is_expired():
             if not user.is_beta_user:
                 user.is_beta_user = True
@@ -70,10 +70,10 @@ async def _find_or_create_google_user(
     google_id: str, email: str, name: str, picture: str | None
 ) -> User:
     """Find existing user by Google ID or email, or create new."""
-    user = await User.find_one(User.google_id == google_id)
+    user = await User.find_one({"google_id": google_id})
 
     if not user:
-        user = await User.find_one(User.email == email)
+        user = await User.find_one({"email": email})
         if user:
             user.google_id = google_id
             if "google" not in user.linked_providers:
@@ -110,10 +110,10 @@ async def _find_or_create_apple_user(
 ) -> User:
     """Find existing user by Apple sub or email, or create new."""
     # Search by Apple ID first
-    user = await User.find_one(User.apple_id == apple_sub)
+    user = await User.find_one({"apple_id": apple_sub})
 
     if not user:
-        user = await User.find_one(User.email == email)
+        user = await User.find_one({"email": email})
         if user:
             user.apple_id = apple_sub
             if "apple" not in user.linked_providers:

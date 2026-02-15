@@ -87,8 +87,8 @@ class VoiceContext:
         if load_family_controls and user:
             try:
                 family_controls = await FamilyControls.find_one(
-                    FamilyControls.user_id == user_id
-                )
+                    {"user_id": user_id}
+)
                 if family_controls:
                     logger.debug(
                         "Family controls loaded",

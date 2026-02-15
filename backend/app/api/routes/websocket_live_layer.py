@@ -69,8 +69,8 @@ async def live_layer_ws(websocket: WebSocket, content_id: str):
         return
 
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-    )
+        {"user_id": str(user.id)}
+)
     if not avatar:
         logger.warning(
             "Live layer rejected: no avatar profile",

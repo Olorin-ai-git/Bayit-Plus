@@ -129,8 +129,8 @@ class StageManager:
 
         for stage_name in remaining_stages:
             metric = await TranslationStageMetrics.find_one(
-                TranslationStageMetrics.stage_name == stage_name
-            )
+                {"stage_name": stage_name}
+)
             if metric and metric.avg_duration_seconds > 0:
                 total_eta_seconds += metric.avg_duration_seconds
                 stages_with_data += 1

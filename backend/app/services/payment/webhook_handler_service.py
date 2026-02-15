@@ -243,7 +243,7 @@ class WebhookHandlerService:
         """
         try:
             # Fetch user to get email
-            user = await User.find_one(User.id == ObjectId(user_id))
+            user = await User.find_one({"id": ObjectId(user_id)})
             if not user or not user.email:
                 logger.warning(
                     "Cannot send welcome email - user not found or no email",
@@ -252,7 +252,7 @@ class WebhookHandlerService:
                 return
 
             # Fetch subscription plan details
-            plan = await SubscriptionPlan.find_one(SubscriptionPlan.slug == plan_id)
+            plan = await SubscriptionPlan.find_one({"slug": plan_id})
             if not plan:
                 logger.warning(
                     "Cannot send welcome email - plan not found",

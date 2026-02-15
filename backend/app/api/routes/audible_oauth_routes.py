@@ -102,8 +102,8 @@ async def handle_audible_oauth_callback(
         token = await audible_service.exchange_code_for_token(callback.code, code_verifier)
 
         existing = await UserAudibleAccount.find_one(
-            UserAudibleAccount.user_id == user_id
-        )
+            {"user_id": user_id}
+)
 
         if existing:
             existing.audible_user_id = token.user_id
@@ -165,8 +165,8 @@ async def check_audible_connection(
     """Check if user has connected their Audible account."""
     user_id = current_user.id
     account = await UserAudibleAccount.find_one(
-        UserAudibleAccount.user_id == user_id
-    )
+        {"user_id": user_id}
+)
 
     if not account:
         return AudibleConnectionResponse(connected=False)
@@ -186,8 +186,8 @@ async def disconnect_audible_account(
     """Disconnect user's Audible account from Bayit+."""
     user_id = current_user.id
     account = await UserAudibleAccount.find_one(
-        UserAudibleAccount.user_id == user_id
-    )
+        {"user_id": user_id}
+)
 
     if not account:
         raise HTTPException(

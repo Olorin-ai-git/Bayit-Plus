@@ -58,9 +58,8 @@ class LiveRecordingService:
             raise Exception(f"User {user_id} not found")
 
         existing_session = await RecordingSession.find_one(
-            RecordingSession.user_id == user_id,
-            RecordingSession.status == "recording",
-        )
+            {"user_id": user_id, "status": "recording"}
+)
         if existing_session:
             raise Exception(
                 f"Recording already in progress on {existing_session.channel_name}"
@@ -173,11 +172,10 @@ class LiveRecordingService:
     ) -> Optional[RecordingSession]:
         """Get active recording session for user."""
         query = RecordingSession.find(
-            RecordingSession.user_id == user_id,
-            RecordingSession.status == "recording",
-        )
+            {"user_id": user_id, "status": "recording"}
+)
         if channel_id:
-            query = query.find(RecordingSession.channel_id == channel_id)
+            query = query.find({"channel_id": channel_id})
         return await query.first_or_none()
 
     async def handle_recording_error(self, session_id: str, error: Exception):

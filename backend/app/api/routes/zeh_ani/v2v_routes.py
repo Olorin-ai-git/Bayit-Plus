@@ -36,9 +36,8 @@ async def transform_voice(
 ):
     """One-shot V2V transform via REST (fallback for non-WebSocket)."""
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == request.profile_id,
-    )
+        {"user_id": str(user.id), "profile_id": request.profile_id}
+)
     if not avatar:
         raise HTTPException(status_code=404, detail="Avatar not found")
 
@@ -86,9 +85,8 @@ async def get_v2v_sessions(
     """Get V2V session history with improvement metrics."""
     sessions = (
         await V2VSession.find(
-            V2VSession.user_id == str(user.id),
-            V2VSession.profile_id == profile_id,
-        )
+            {"user_id": str(user.id), "profile_id": profile_id}
+)
         .sort(-V2VSession.created_at)
         .skip(offset)
         .limit(limit)
@@ -96,9 +94,8 @@ async def get_v2v_sessions(
     )
 
     total = await V2VSession.find(
-        V2VSession.user_id == str(user.id),
-        V2VSession.profile_id == profile_id,
-    ).count()
+        {"user_id": str(user.id), "profile_id": profile_id}
+).count()
 
     return {
         "sessions": [

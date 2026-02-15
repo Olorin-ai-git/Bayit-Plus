@@ -40,9 +40,9 @@ async def get_radio_stations(
             }
         )
     if genre:
-        query = query.find(RadioStation.genre == genre)
+        query = query.find({"genre": genre})
     if is_active is not None:
-        query = query.find(RadioStation.is_active == is_active)
+        query = query.find({"is_active": is_active})
 
     total = await query.count()
     skip = (page - 1) * page_size

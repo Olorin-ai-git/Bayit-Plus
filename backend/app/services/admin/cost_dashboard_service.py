@@ -18,8 +18,8 @@ logger = get_logger(__name__)
 async def get_overview() -> CostOverviewResponse:
     """Get latest monthly CostBreakdown as P&L summary."""
     doc = await CostBreakdown.find(
-        CostBreakdown.period_type == "monthly",
-    ).sort("-period_start").first_or_none()
+        {"period_type": "monthly"}
+).sort("-period_start").first_or_none()
 
     if not doc:
         return CostOverviewResponse(
@@ -48,9 +48,9 @@ async def get_overview() -> CostOverviewResponse:
 async def get_timeline(params: CostQueryParams) -> list[TimelineDataPoint]:
     """Get daily CostBreakdown docs in range as time-series."""
     docs = await CostBreakdown.find(
-        CostBreakdown.period_type == "daily",
-        CostBreakdown.period_start >= params.start_date,
-        CostBreakdown.period_end <= params.end_date,
+        {"period_type": "daily"}, 
+        CostBreakdown.period_start >= params.start_date, 
+        CostBreakdown.period_end <= params.end_date, 
     ).sort("period_start").to_list()
 
     return [
@@ -69,9 +69,9 @@ async def get_timeline(params: CostQueryParams) -> list[TimelineDataPoint]:
 async def _fetch_daily_docs(params: CostQueryParams) -> list:
     """Shared helper to fetch daily CostBreakdown docs in range."""
     return await CostBreakdown.find(
-        CostBreakdown.period_type == "daily",
-        CostBreakdown.period_start >= params.start_date,
-        CostBreakdown.period_end <= params.end_date,
+        {"period_type": "daily"}, 
+        CostBreakdown.period_start >= params.start_date, 
+        CostBreakdown.period_end <= params.end_date, 
     ).to_list()
 
 

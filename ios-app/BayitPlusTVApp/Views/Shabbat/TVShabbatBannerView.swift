@@ -17,6 +17,10 @@ struct TVShabbatBannerView: View {
         if let vm = viewModel, shouldShowBanner(vm) {
             NavigationLink {
                 TVZmanimView()
+                    .tvBreadcrumb(
+                        localization.t("judaism.shabbat.title"),
+                        icon: "flame.fill"
+                    )
             } label: {
                 bannerContent(vm)
             }

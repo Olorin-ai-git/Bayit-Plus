@@ -112,7 +112,7 @@ async def _cleanup_upload_sessions_task() -> None:
                 if job_id:
                     from app.models.upload import UploadJob, UploadStatus
 
-                    job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                    job = await UploadJob.find_one({"job_id": job_id})
                     if job and job.status in [
                         UploadStatus.PROCESSING,
                         UploadStatus.UPLOADING,
@@ -176,8 +176,8 @@ async def _cleanup_failed_upload_jobs_task() -> None:
         try:
             # Delete all failed upload jobs
             result = await UploadJob.find(
-                UploadJob.status == UploadStatus.FAILED
-            ).delete()
+                {"status": UploadStatus.FAILED}
+).delete()
 
             deleted_count = result.deleted_count if result else 0
 
@@ -237,9 +237,8 @@ async def _sync_youtube_epg_task() -> None:
         try:
             # Find all YouTube playlist channels
             channels = await LiveChannel.find(
-                LiveChannel.stream_type == "youtube-playlist",
-                LiveChannel.is_active == True,
-            ).to_list()
+                {"stream_type": "youtube-playlist", "is_active": True}
+).to_list()
 
             if channels:
                 logger.info(f"Syncing EPG for {len(channels)} YouTube playlist channel(s)")

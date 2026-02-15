@@ -25,7 +25,7 @@ async def get_feature_flags() -> Dict[str, bool]:
     global _feature_flags_cache
 
     # Try database first
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
 
     if settings and settings.feature_flags:
         _feature_flags_cache = settings.feature_flags

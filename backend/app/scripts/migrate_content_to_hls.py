@@ -263,7 +263,7 @@ async def main():
     if args.content_id:
         from bson import ObjectId
 
-        content = await Content.find_one(Content.id == ObjectId(args.content_id))
+        content = await Content.find_one({"id": ObjectId(args.content_id)})
         if not content:
             logger.error(f"Content not found: {args.content_id}")
             return

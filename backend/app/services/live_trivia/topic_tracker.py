@@ -47,9 +47,8 @@ class TopicTracker:
         try:
             # Check if topic already exists
             existing_topic = await LiveTriviaTopic.find_one(
-                LiveTriviaTopic.topic_hash == topic_hash,
-                LiveTriviaTopic.channel_id == channel_id
-            )
+                {"topic_hash": topic_hash, "channel_id": channel_id}
+)
 
             if existing_topic:
                 # Update existing with atomic operations to prevent race conditions

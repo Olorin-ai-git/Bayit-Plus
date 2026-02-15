@@ -59,10 +59,10 @@ async def get_continue_watching(
         cutoff_date = datetime.utcnow() - timedelta(days=30)
 
         progress_items = await PlaybackProgress.find(
-            PlaybackProgress.user_id == current_user.id,
-            PlaybackProgress.updated_at >= cutoff_date,
-            PlaybackProgress.progress < 0.95,  # Not completed
-            PlaybackProgress.position > 30,  # Watched at least 30 seconds
+            {"user_id": current_user.id}, 
+            PlaybackProgress.updated_at >= cutoff_date, 
+            PlaybackProgress.progress < 0.95,   # Not completed
+            PlaybackProgress.position > 30,   # Watched at least 30 seconds
         ).sort("-updated_at").limit(limit).to_list()
 
         if not progress_items:
@@ -192,9 +192,8 @@ async def mark_completed(
     """
     try:
         progress = await PlaybackProgress.find_one(
-            PlaybackProgress.user_id == current_user.id,
-            PlaybackProgress.content_id == content_id,
-        )
+            {"user_id": current_user.id, "content_id": content_id}
+)
 
         if not progress:
             raise HTTPException(
@@ -254,9 +253,8 @@ async def remove_from_continue_watching(
     """
     try:
         progress = await PlaybackProgress.find_one(
-            PlaybackProgress.user_id == current_user.id,
-            PlaybackProgress.content_id == content_id,
-        )
+            {"user_id": current_user.id, "content_id": content_id}
+)
 
         if not progress:
             raise HTTPException(

@@ -132,9 +132,8 @@ class UserDubbingService:
         """
         try:
             session = await UserDubbingSession.find_one(
-                UserDubbingSession.session_id == session_id,
-                UserDubbingSession.user_id == str(self.user.id),
-            )
+                {"session_id": session_id, "user_id": str(self.user.id)}
+)
 
             if not session:
                 logger.warning(
@@ -282,9 +281,9 @@ class UserDubbingService:
             cutoff_time = datetime.now(timezone.utc) - timedelta(hours=expiry_hours)
 
             expired_sessions = await UserDubbingSession.find(
-                UserDubbingSession.user_id == str(self.user.id),
-                UserDubbingSession.status == "active",
-                UserDubbingSession.last_activity < cutoff_time,
+                {"user_id": str(self.user.id)}, 
+                {"status": "active"}, 
+                UserDubbingSession.last_activity < cutoff_time, 
             ).to_list()
 
             count = 0

@@ -79,9 +79,8 @@ async def stop_scheduled_recording(schedule_id: str) -> None:
         from app.models.recording import RecordingSession
 
         session = await RecordingSession.find_one(
-            RecordingSession.recording_id == schedule.recording_id,
-            RecordingSession.status == "recording",
-        )
+            {"recording_id": schedule.recording_id, "status": "recording"}
+)
 
         if not session:
             schedule.status = "completed"

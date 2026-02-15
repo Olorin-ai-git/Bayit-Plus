@@ -54,7 +54,7 @@ async def get_live_channels(
     """Get all live channels with pagination."""
     query = LiveChannel.find()
     if is_active is not None:
-        query = query.find(LiveChannel.is_active == is_active)
+        query = query.find({"is_active": is_active})
     total = await query.count()
     items = (
         await query.sort(LiveChannel.order)

@@ -145,10 +145,10 @@ class RecordingSchedulerService:
     ) -> list[RecordingSchedule]:
         """Check for scheduling conflicts with existing schedules."""
         query = RecordingSchedule.find(
-            RecordingSchedule.user_id == user_id,
-            RecordingSchedule.status.is_in(["pending", "recording"]),
-            RecordingSchedule.start_time < end_time,
-            RecordingSchedule.end_time > start_time,
+            {"user_id": user_id}, 
+            RecordingSchedule.status.is_in(["pending", "recording"]), 
+            RecordingSchedule.start_time < end_time, 
+            RecordingSchedule.end_time > start_time, 
         )
         conflicts = await query.to_list(length=settings.RECORDING_QUERY_LIMIT)
 

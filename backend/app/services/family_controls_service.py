@@ -38,7 +38,7 @@ class FamilyControlsService:
             Created FamilyControls instance
         """
         # Check if controls already exist
-        existing = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        existing = await FamilyControls.find_one({"user_id": user_id})
         if existing:
             logger.warning(f"Family controls already exist for user {user_id}")
             return existing
@@ -74,7 +74,7 @@ class FamilyControlsService:
         Returns:
             FamilyControls instance or None if not set up
         """
-        return await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        return await FamilyControls.find_one({"user_id": user_id})
 
     @staticmethod
     async def get_by_id(controls_id: str) -> Optional[FamilyControls]:
@@ -104,7 +104,7 @@ class FamilyControlsService:
         Raises:
             ValueError: If PIN is locked due to too many failed attempts
         """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        controls = await FamilyControls.find_one({"user_id": user_id})
         if not controls:
             logger.warning(f"No family controls found for user {user_id}")
             return False
@@ -153,7 +153,7 @@ class FamilyControlsService:
         Raises:
             ValueError: If PIN is locked due to too many failed attempts
         """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        controls = await FamilyControls.find_one({"user_id": user_id})
         if not controls:
             logger.warning(f"No family controls found for user {user_id}")
             return False
@@ -211,7 +211,7 @@ class FamilyControlsService:
         Returns:
             Updated FamilyControls instance or None if not found
         """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        controls = await FamilyControls.find_one({"user_id": user_id})
         if not controls:
             logger.warning(f"No family controls found for user {user_id}")
             return None

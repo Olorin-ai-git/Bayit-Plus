@@ -144,9 +144,8 @@ class BetaCreditService:
 
             # Check user's beta credit balance
             credit = await BetaCredit.find_one(
-                BetaCredit.user_id == user_id,
-                BetaCredit.is_expired == False
-            )
+                {"user_id": user_id, "is_expired": False}
+)
 
             if not credit:
                 logger.warning(
@@ -218,9 +217,9 @@ class BetaCreditService:
                 async with session.start_transaction():
                     # 1. Lock and check balance (atomic)
                     credit = await BetaCredit.find_one(
-                        BetaCredit.user_id == user_id,
-                        BetaCredit.is_expired == False,
-                        BetaCredit.remaining_credits >= credit_cost,
+                        {"user_id": user_id}, 
+                        {"is_expired": False}, 
+                        BetaCredit.remaining_credits >= credit_cost, 
                         session=session
                     )
 
@@ -318,9 +317,8 @@ class BetaCreditService:
         """
         try:
             credit = await BetaCredit.find_one(
-                BetaCredit.user_id == user_id,
-                BetaCredit.is_expired == False
-            )
+                {"user_id": user_id, "is_expired": False}
+)
             
             if not credit:
                 return None
@@ -353,7 +351,7 @@ class BetaCreditService:
             ValueError: If user already has credits allocated
         """
         # Check if credits already exist
-        existing = await BetaCredit.find_one(BetaCredit.user_id == user_id)
+        existing = await BetaCredit.find_one({"user_id": user_id})
         if existing:
             raise ValueError(f"Credits already allocated for user {user_id}")
 

@@ -45,8 +45,8 @@ async def sync_audible_library(
     """Sync user's Audible library into Bayit+."""
     user_id = current_user.id
     account = await UserAudibleAccount.find_one(
-        UserAudibleAccount.user_id == user_id
-    )
+        {"user_id": user_id}
+)
 
     if not account:
         raise HTTPException(
@@ -117,8 +117,8 @@ async def get_audible_library(
     """Get user's Audible library (synced books)."""
     user_id = current_user.id
     account = await UserAudibleAccount.find_one(
-        UserAudibleAccount.user_id == user_id
-    )
+        {"user_id": user_id}
+)
 
     if not account:
         raise HTTPException(

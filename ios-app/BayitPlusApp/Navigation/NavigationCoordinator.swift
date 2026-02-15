@@ -23,6 +23,9 @@ public final class NavigationCoordinator {
     /// Whether the auth flow is being shown
     var showingAuth: Bool = false
 
+    /// Pending TV login route (shown even when not authenticated)
+    var pendingTVLogin: Route?
+
     /// Breadcrumb trail per tab (parallel to NavigationPath which is opaque)
     var breadcrumbTrails: [AppTab: [String]] = [:]
 
@@ -96,6 +99,10 @@ public final class NavigationCoordinator {
         case .movieDetail, .seriesDetail, .collectionDetail, .podcastDetail, .epg:
             pushToCurrentTab(route)
 
+        case .tvLogin:
+            // Special handling: TV login should show even when not authenticated
+            pendingTVLogin = route
+
         case .profile, .favorites, .playlist, .downloads,
              .recordings, .settings, .languageSettings,
              .notificationSettings, .billing, .subscription,
@@ -154,6 +161,11 @@ public final class NavigationCoordinator {
     /// Dismiss fullscreen modal
     func dismissFullscreen() {
         fullscreenRoute = nil
+    }
+
+    /// Dismiss pending TV login
+    func dismissTVLogin() {
+        pendingTVLogin = nil
     }
 
     /// Handle a deep link URL

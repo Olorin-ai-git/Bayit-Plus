@@ -142,11 +142,11 @@ async def toggle_widget(
 
     # Search for existing personal widget matching this content
     existing = await Widget.find_one(
-        Widget.type == WidgetType.PERSONAL,
-        Widget.user_id == user_id,
-        Widget.is_active == True,
-        Widget.is_deleted != True,
-        content_query,
+        {"type": WidgetType.PERSONAL}, 
+        {"user_id": user_id}, 
+        {"is_active": True}, 
+        Widget.is_deleted != True, 
+        content_query, 
     )
 
     if existing:
@@ -219,10 +219,10 @@ async def check_batch(
 
     # Fetch all active personal widgets for this user (exclude soft-deleted)
     personal_widgets = await Widget.find(
-        Widget.type == WidgetType.PERSONAL,
-        Widget.user_id == user_id,
-        Widget.is_active == True,
-        Widget.is_deleted != True,
+        {"type": WidgetType.PERSONAL}, 
+        {"user_id": user_id}, 
+        {"is_active": True}, 
+        Widget.is_deleted != True, 
     ).to_list()
 
     # Build a set of existing widget content keys for fast lookup

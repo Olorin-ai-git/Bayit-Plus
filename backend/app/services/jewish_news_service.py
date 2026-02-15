@@ -149,8 +149,8 @@ class JewishNewsService:
         try:
             for source_data in DEFAULT_JEWISH_NEWS_SOURCES:
                 existing = await JewishNewsSource.find_one(
-                    JewishNewsSource.name == source_data["name"]
-                )
+                    {"name": source_data["name"]}
+)
                 if not existing:
                     source = JewishNewsSource(**source_data, is_active=True)
                     await source.insert()

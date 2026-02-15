@@ -77,9 +77,9 @@ struct TVHomeView: View {
             if let collection = featuredCollection {
                 TVCollectionPromoBannerView(
                     collectionId: collection.id,
-                    title: collection.title ?? localization.t("home.collection"),
+                    title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
                     posterUrl: collection.thumbnail,
-                    promoText: collection.promoText ?? localization.t("home.discoverCollection"),
+                    promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
                     movieCount: collection.availableMovies ?? 0
                 )
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)

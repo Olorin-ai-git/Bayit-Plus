@@ -71,11 +71,11 @@ async def get_widgets(
 
     # Filter by type (system/personal)
     if widget_type:
-        query = query.find(Widget.type == widget_type)
+        query = query.find({"type": widget_type})
 
     # Filter by active status
     if is_active is not None:
-        query = query.find(Widget.is_active == is_active)
+        query = query.find({"is_active": is_active})
 
     total = await query.count()
     items = (
@@ -120,7 +120,7 @@ async def check_widget_name(
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Check if a widget name already exists."""
-    query = Widget.find(Widget.title == widget_title)
+    query = Widget.find({"title": widget_title})
 
     # Exclude a specific widget ID (useful when editing)
     if exclude_id:

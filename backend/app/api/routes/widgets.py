@@ -93,10 +93,10 @@ async def get_my_widgets(
     # Get personal widgets for this user (exclude soft-deleted)
     personal_widgets = (
         await Widget.find(
-            Widget.type == WidgetType.PERSONAL,
-            Widget.user_id == user_id,
-            Widget.is_active == True,
-            Widget.is_deleted != True,
+            {"type": WidgetType.PERSONAL}, 
+            {"user_id": user_id}, 
+            {"is_active": True}, 
+            Widget.is_deleted != True, 
         )
         .sort(Widget.order)
         .to_list()
@@ -105,8 +105,8 @@ async def get_my_widgets(
     # Get user's subscribed system widgets
     user_subscriptions = (
         await UserSystemWidget.find(
-            UserSystemWidget.user_id == user_id,
-            UserSystemWidget.is_visible == True,  # Only visible (not closed)
+            {"user_id": user_id}, 
+            {"is_visible": True},   # Only visible (not closed)
         )
         .sort(UserSystemWidget.order)
         .to_list()
@@ -118,8 +118,7 @@ async def get_my_widgets(
         # Get the actual widget documents
         widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
         system_widgets = await Widget.find(
-            {"_id": {"$in": widget_ids}}, Widget.is_active == True
-        ).to_list()
+            {"_id": {"$in": widget_ids}},  {"is_active": True}).to_list()
 
         # Create lookup for widget documents and subscriptions
         widget_lookup = {str(w.id): w for w in system_widgets}
@@ -325,10 +324,10 @@ async def bulk_delete_personal_widgets(
         return {"deleted_count": 0}
 
     widgets = await Widget.find(
-        {"_id": {"$in": widget_object_ids}},
-        Widget.type == WidgetType.PERSONAL,
-        Widget.user_id == user_id,
-        Widget.is_deleted != True,
+        {"_id": {"$in": widget_object_ids}}, 
+        {"type": WidgetType.PERSONAL}, 
+        {"user_id": user_id}, 
+        Widget.is_deleted != True, 
     ).to_list()
 
     for widget in widgets:
@@ -381,8 +380,8 @@ async def update_widget_position(
     else:
         # For system widgets, update user's subscription preference
         subscription = await UserSystemWidget.find_one(
-            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-        )
+            {"user_id": user_id, "widget_id": widget_id}
+)
 
         if not subscription:
             # Auto-create subscription if it doesn't exist
@@ -454,8 +453,8 @@ async def close_widget(
     else:
         # For system widgets, update user's subscription
         subscription = await UserSystemWidget.find_one(
-            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-        )
+            {"user_id": user_id, "widget_id": widget_id}
+)
 
         if not subscription:
             # Auto-create subscription if it doesn't exist (though closing immediately)
@@ -510,8 +509,8 @@ async def toggle_widget_minimize(
     else:
         # For system widgets, update user's subscription
         subscription = await UserSystemWidget.find_one(
-            UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-        )
+            {"user_id": user_id, "widget_id": widget_id}
+)
 
         if not subscription:
             # Auto-create subscription if it doesn't exist

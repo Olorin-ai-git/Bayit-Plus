@@ -290,8 +290,8 @@ async def delete_session_gdpr(
 ):
     """P1-7: Delete session data for GDPR Right to Erasure."""
     session = await DubbingSession.find_one(
-        DubbingSession.session_id == session_id
-    )
+        {"session_id": session_id}
+)
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -311,8 +311,8 @@ async def delete_session_gdpr(
 
     # Delete associated usage records
     await UsageRecord.find(
-        UsageRecord.session_id == session_id
-    ).delete()
+        {"session_id": session_id}
+).delete()
 
     logger.info(
         f"GDPR deletion completed for session {session_id} "

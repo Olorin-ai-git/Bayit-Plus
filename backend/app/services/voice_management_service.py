@@ -48,8 +48,8 @@ class VoiceManagementService:
 
         # Fetch active DB overrides
         overrides = await VoiceConfiguration.find(
-            VoiceConfiguration.is_active == True  # noqa: E712
-        ).to_list()
+            {"is_active": True}  # noqa: E712
+).to_list()
 
         for override in overrides:
             base_config[override.config_key] = override.config_value

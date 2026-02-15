@@ -168,9 +168,9 @@ async def get_audience_segments(
 
     # Get counts for different segments
     total_users = await User.find().count()
-    active_subscribers = await User.find(User.subscription_status == "active").count()
+    active_subscribers = await User.find({"subscription_status": "active"}).count()
     new_users = await User.find(User.created_at >= seven_days_ago).count()
-    expired_subscribers = await User.find(User.subscription_status == "expired").count()
+    expired_subscribers = await User.find({"subscription_status": "expired"}).count()
     inactive_users = await User.find(User.last_login < thirty_days_ago).count()
 
     return [
@@ -194,7 +194,7 @@ async def get_email_campaigns(
     query = EmailCampaign.find()
 
     if status and status != "all":
-        query = query.find(EmailCampaign.status == MarketingStatus(status))
+        query = query.find({"status": MarketingStatus(status)})
 
     if search:
         query = query.find(
@@ -317,7 +317,7 @@ async def get_push_notifications(
     query = PushNotification.find()
 
     if status and status != "all":
-        query = query.find(PushNotification.status == MarketingStatus(status))
+        query = query.find({"status": MarketingStatus(status)})
 
     if search:
         query = query.find(

@@ -58,7 +58,7 @@ class HouseholdService:
         Returns:
             Household if found, None otherwise
         """
-        household = await Household.find_one(Household.owner_id == user_id)
+        household = await Household.find_one({"owner_id": user_id})
         if household:
             return household
 
@@ -130,7 +130,7 @@ class HouseholdService:
             PermissionError: If requester is not parent
             ValueError: If household or controls not found
         """
-        household = await Household.find_one(Household.household_id == household_id)
+        household = await Household.find_one({"household_id": household_id})
         if not household:
             raise ValueError("Household not found")
 
@@ -166,7 +166,7 @@ class HouseholdService:
             PermissionError: If requester is not owner
             ValueError: If household not found
         """
-        household = await Household.find_one(Household.household_id == household_id)
+        household = await Household.find_one({"household_id": household_id})
         if not household:
             raise ValueError("Household not found")
 

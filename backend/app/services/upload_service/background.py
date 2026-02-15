@@ -46,7 +46,7 @@ class BackgroundEnricher:
             logger.info(f"[Background] Starting IMDB/TMDB lookup for job {job_id}")
 
             imdb_start_time = datetime.utcnow()
-            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            job = await UploadJob.find_one({"job_id": job_id})
             if job:
                 job.stages["imdb_lookup"] = "in_progress"
                 job.stage_timings["imdb_lookup"] = {
@@ -145,7 +145,7 @@ class BackgroundEnricher:
                 f"[Background] IMDB lookup failed for job {job_id}: {e}", exc_info=True
             )
             try:
-                job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                job = await UploadJob.find_one({"job_id": job_id})
                 if job:
                     job.stages["imdb_lookup"] = "skipped"
                     await job.save()
@@ -206,7 +206,7 @@ class BackgroundEnricher:
             logger.info(f"[Background] Starting subtitle extraction for job {job_id}")
 
             subtitle_start_time = datetime.utcnow()
-            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            job = await UploadJob.find_one({"job_id": job_id})
             if job:
                 job.stages["subtitle_extraction"] = "in_progress"
                 job.stage_timings["subtitle_extraction"] = {
@@ -288,7 +288,7 @@ class BackgroundEnricher:
                 f"[Background] Saved {saved_count} subtitle tracks for job {job_id}"
             )
 
-            job = await UploadJob.find_one(UploadJob.job_id == job_id)
+            job = await UploadJob.find_one({"job_id": job_id})
             if job:
                 subtitle_duration = (
                     datetime.utcnow() - subtitle_start_time
@@ -309,7 +309,7 @@ class BackgroundEnricher:
                 exc_info=True,
             )
             try:
-                job = await UploadJob.find_one(UploadJob.job_id == job_id)
+                job = await UploadJob.find_one({"job_id": job_id})
                 if job:
                     job.stages["subtitle_extraction"] = "skipped"
                     await job.save()

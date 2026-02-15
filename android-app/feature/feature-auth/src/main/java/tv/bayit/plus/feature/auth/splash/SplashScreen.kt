@@ -3,6 +3,7 @@ package tv.bayit.plus.feature.auth.splash
 import android.media.MediaPlayer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,10 +16,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -119,25 +123,29 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
             ) {
-                Box(
+                // Logo Image
+                Image(
+                    painter = painterResource(id = tv.bayit.plus.feature.auth.R.drawable.splash_logo),
+                    contentDescription = "Bayit+ Logo",
                     modifier = Modifier
                         .width(120.dp)
                         .height(60.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.White)) {
-                                append("בית")
-                            }
-                            withStyle(style = SpanStyle(color = DesignTokens.Colors.Primary.base)) {
-                                append("+")
-                            }
-                        },
-                        fontSize = DesignTokens.FontSize.display,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    contentScale = ContentScale.Fit
+                )
+
+                // Bayit+ Text
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.White)) {
+                            append("בית")
+                        }
+                        withStyle(style = SpanStyle(color = DesignTokens.Colors.Primary.base)) {
+                            append("+")
+                        }
+                    },
+                    fontSize = DesignTokens.FontSize.display,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Box(
@@ -155,7 +163,8 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
                             )
                         )
                     ),
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
                 )
             }
 

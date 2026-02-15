@@ -66,30 +66,55 @@ struct TriviaFactsOverlayView: View {
     // MARK: - Banner Layout
 
     private func factBanner(_ fact: TriviaFact) -> some View {
-        GlassCard(radius: DesignTokens.Radius.md, padding: DesignTokens.Spacing.sm) {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                // Header row: sparkle icon + "AI Trivia" + detected topic + dismiss
-                headerRow(fact)
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            // Header row: sparkle icon + "AI Trivia" + detected topic + dismiss
+            headerRow(fact)
 
-                // Category badge (compact pill)
-                if let category = fact.category {
-                    categoryBadge(category: category)
-                }
+            // Category badge (compact pill)
+            if let category = fact.category {
+                categoryBadge(category: category)
+            }
 
-                // Fact text
-                Text(factText(fact))
-                    .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
+            // Fact text
+            Text(factText(fact))
+                .font(.system(size: DesignTokens.FontSize.xs))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .lineLimit(3)
 
-                // Related person + follow-up row
-                bottomRow(fact)
+            // Related person + follow-up row
+            bottomRow(fact)
 
-                // Auto-dismiss progress bar
-                progressBar
+            // Auto-dismiss progress bar
+            progressBar
+        }
+        .padding(DesignTokens.Spacing.sm)
+        .background {
+            ZStack {
+                Color.black.opacity(0.45)
+                VisualEffectBlur()
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            DesignTokens.Primary.p400.opacity(0.6),
+                            DesignTokens.Glass.border,
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+        )
+        .shadow(
+            color: DesignTokens.Glass.purpleGlow.opacity(0.3),
+            radius: 8,
+            x: 0,
+            y: 2
+        )
         .accessibilityElement(children: .combine)
         .accessibilityLabel(bannerAccessibilityLabel(fact))
     }
@@ -272,13 +297,13 @@ struct TriviaFactsOverlayView: View {
     }
 
     private var bannerTopOffset: CGFloat {
-        UIScreen.main.bounds.height * 0.2
+        UIScreen.main.bounds.height * 0.08
     }
 
     private var bannerMaxWidth: CGFloat {
         let screenWidth = UIScreen.main.bounds.width
         let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-        return isIPad ? screenWidth * 0.45 : screenWidth * 0.72
+        return isIPad ? screenWidth * 0.4 : screenWidth * 0.6
     }
 
     private func startProgressAnimation() {

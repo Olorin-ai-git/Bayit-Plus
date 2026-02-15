@@ -36,8 +36,8 @@ class MeshGenerationService:
         Returns the AvatarMesh document with status tracking.
         """
         mesh = await AvatarMesh.find_one(
-            AvatarMesh.avatar_id == str(avatar.id)
-        )
+            {"avatar_id": str(avatar.id)}
+)
         if mesh and mesh.is_ready:
             logger.info(
                 "Mesh already exists",

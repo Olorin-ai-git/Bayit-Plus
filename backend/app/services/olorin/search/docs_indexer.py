@@ -70,9 +70,8 @@ async def index_documentation(
         # Check if already indexed
         if not force_reindex:
             existing = await ContentEmbedding.find_one(
-                ContentEmbedding.content_id == article_id,
-                ContentEmbedding.embedding_type == "documentation",
-            )
+                {"content_id": article_id, "embedding_type": "documentation"}
+)
             if existing:
                 skipped_count += 1
                 continue

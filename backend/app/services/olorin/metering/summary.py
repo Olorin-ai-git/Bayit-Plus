@@ -122,9 +122,9 @@ async def check_usage_limit(
     minute_ago = now - timedelta(minutes=1)
 
     recent_records = await UsageRecord.find(
-        UsageRecord.partner_id == partner.partner_id,
-        UsageRecord.capability == capability,
-        UsageRecord.period_start >= minute_ago,
+        {"partner_id": partner.partner_id}, 
+        {"capability": capability}, 
+        UsageRecord.period_start >= minute_ago, 
     ).to_list()
 
     recent_requests = sum(r.request_count for r in recent_records)

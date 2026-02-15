@@ -106,10 +106,9 @@ class FraudDetectionService:
             one_hour_ago = datetime.utcnow() - timedelta(hours=1)
             
             recent_usage = await BetaCreditTransaction.find(
-                BetaCreditTransaction.user_id == user_id,
-                BetaCreditTransaction.created_at >= one_hour_ago,
-                BetaCreditTransaction.transaction_type == "debit"
-            ).to_list()
+                {"user_id": user_id}, 
+                BetaCreditTransaction.created_at >= one_hour_ago, 
+                {"transaction_type": "debit"}).to_list()
 
             if not recent_usage:
                 return False

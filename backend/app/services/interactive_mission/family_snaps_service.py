@@ -61,10 +61,8 @@ class FamilySnapsService:
 
     async def get_gallery(self, user_id: str, avatar_id: str, limit: int = 50) -> List[FamilySnap]:
         return await FamilySnap.find(
-            FamilySnap.user_id == user_id,
-            FamilySnap.avatar_id == avatar_id,
-            FamilySnap.status == SnapStatus.READY,
-        ).sort(-FamilySnap.created_at).limit(limit).to_list()
+            {"user_id": user_id, "avatar_id": avatar_id, "status": SnapStatus.READY}
+).sort(-FamilySnap.created_at).limit(limit).to_list()
 
     async def generate_share_url(
         self, snap_id: str, user_id: str, pin_verified: bool = False,

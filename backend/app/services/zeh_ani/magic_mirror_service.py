@@ -56,9 +56,8 @@ class MagicMirrorService:
             raise ValueError("Avatar not found or does not belong to user")
 
         proficiency = await ChildProficiency.find_one(
-            ChildProficiency.user_id == user_id,
-            ChildProficiency.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
 
         vocab_word = select_vocabulary_of_the_day(proficiency)
         greeting_he, greeting_en = build_greeting_text(
@@ -124,9 +123,8 @@ class MagicMirrorService:
     ) -> MagicMirrorGreeting:
         """Return cached greeting if not expired, else generate a new one."""
         existing = await MagicMirrorGreeting.find_one(
-            MagicMirrorGreeting.user_id == user_id,
-            MagicMirrorGreeting.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
 
         if existing and not existing.is_expired:
             logger.info(

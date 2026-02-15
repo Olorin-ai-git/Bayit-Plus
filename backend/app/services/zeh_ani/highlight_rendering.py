@@ -36,9 +36,9 @@ async def collect_highlight_moments(
     moments: List[HighlightMoment] = []
 
     mirror_attempts = await PhoneticMirrorAttempt.find(
-        PhoneticMirrorAttempt.user_id == user_id,
-        PhoneticMirrorAttempt.profile_id == profile_id,
-        PhoneticMirrorAttempt.created_at >= cutoff,
+        {"user_id": user_id}, 
+        {"profile_id": profile_id}, 
+        PhoneticMirrorAttempt.created_at >= cutoff, 
     ).to_list()
 
     for attempt in mirror_attempts:
@@ -52,9 +52,9 @@ async def collect_highlight_moments(
         )
 
     v2v_sessions = await V2VSession.find(
-        V2VSession.user_id == user_id,
-        V2VSession.profile_id == profile_id,
-        V2VSession.created_at >= cutoff,
+        {"user_id": user_id}, 
+        {"profile_id": profile_id}, 
+        V2VSession.created_at >= cutoff, 
     ).to_list()
 
     for session in v2v_sessions:

@@ -51,8 +51,8 @@ async def handle_trigger_response(websocket: WebSocket, user, content_id, messag
     from app.models.scene_trigger import ContentSceneTriggers
 
     doc = await ContentSceneTriggers.find_one(
-        ContentSceneTriggers.content_id == content_id,
-    )
+        {"content_id": content_id}
+)
     if not doc:
         await websocket.send_json({
             "type": "error",
@@ -71,8 +71,8 @@ async def handle_trigger_response(websocket: WebSocket, user, content_id, messag
         return
 
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-    )
+        {"user_id": str(user.id)}
+)
     if not avatar:
         await websocket.send_json({
             "type": "error",
@@ -118,8 +118,8 @@ async def handle_start_lipsync(websocket: WebSocket, user, message):
         return
 
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-    )
+        {"user_id": str(user.id)}
+)
     if not avatar or not avatar.mesh_glb_gcs_path:
         await websocket.send_json({
             "type": "error",

@@ -105,7 +105,7 @@ async def get_trending_recommendations(
     recommendations = []
 
     # Search VOD content
-    vod_content = await Content.find(Content.is_published == True).limit(100).to_list()
+    vod_content = await Content.find({"is_published": True}).limit(100).to_list()
 
     for content in vod_content:
         score = 0
@@ -142,7 +142,7 @@ async def get_trending_recommendations(
             )
 
     # Search live channels
-    channels = await LiveChannel.find(LiveChannel.is_active == True).to_list()
+    channels = await LiveChannel.find({"is_active": True}).to_list()
 
     for channel in channels:
         score = 0

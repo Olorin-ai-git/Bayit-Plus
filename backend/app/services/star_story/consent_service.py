@@ -33,8 +33,8 @@ class ConsentService:
         Returns existing or new ChildAvatar with consent recorded.
         """
         family_controls = await FamilyControls.find_one(
-            FamilyControls.user_id == user_id
-        )
+            {"user_id": user_id}
+)
         if not family_controls:
             raise ValueError("Family controls not configured for this account")
 
@@ -53,9 +53,8 @@ class ConsentService:
             raise ValueError("Invalid family PIN")
 
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
 
         consent = ConsentRecord(
             granted_at=datetime.now(timezone.utc),
@@ -95,17 +94,15 @@ class ConsentService:
     async def has_consent(self, user_id: str, profile_id: str) -> bool:
         """Check if valid consent exists for a child profile."""
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         return avatar is not None and avatar.has_consent
 
     async def revoke_consent(self, user_id: str, profile_id: str) -> bool:
         """Revoke consent and mark avatar for deletion."""
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if not avatar:
             return False
 

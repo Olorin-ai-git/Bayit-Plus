@@ -32,8 +32,8 @@ async def get_watchlist(
     _add_deprecation(response)
     user_id = str(current_user.id)
     items = await PlaylistItem.find(
-        PlaylistItem.user_id == user_id
-    ).sort("-added_at").to_list()
+        {"user_id": user_id}
+).sort("-added_at").to_list()
 
     result = []
     for item in items:
@@ -68,9 +68,8 @@ async def add_to_watchlist(
     content_type_str = data.get("content_type", "vod")
 
     existing = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": user_id, "content_id": content_id}
+)
     if existing:
         return {"message": "Already in watchlist", "id": str(existing.id)}
 
@@ -106,9 +105,8 @@ async def remove_from_watchlist(
     _add_deprecation(response)
     user_id = str(current_user.id)
     item = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": user_id, "content_id": content_id}
+)
     if not item:
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Not in watchlist")
@@ -127,9 +125,8 @@ async def check_watchlist(
     """Check watchlist status (deprecated - use GET /playlist/check/{id})."""
     _add_deprecation(response)
     item = await PlaylistItem.find_one(
-        PlaylistItem.user_id == str(current_user.id),
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
     return {"in_watchlist": item is not None}
 
 
@@ -145,9 +142,8 @@ async def toggle_watchlist(
     user_id = str(current_user.id)
 
     existing = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": user_id, "content_id": content_id}
+)
 
     if existing:
         await existing.delete()

@@ -35,7 +35,7 @@ async def get_judaism_content(
     from app.models.content_taxonomy import ContentSection, SectionSubcategory
 
     # Get Judaism section ID from taxonomy
-    judaism_section = await ContentSection.find_one(ContentSection.slug == "judaism")
+    judaism_section = await ContentSection.find_one({"slug": "judaism"})
     judaism_section_id = str(judaism_section.id) if judaism_section else None
 
     # Build base query using taxonomy
@@ -75,9 +75,8 @@ async def get_judaism_content(
     # Filter by specific subcategory
     if category and category != "all" and judaism_section_id:
         subcategory = await SectionSubcategory.find_one(
-            SectionSubcategory.section_id == judaism_section_id,
-            SectionSubcategory.slug == category,
-        )
+            {"section_id": judaism_section_id, "slug": category}
+)
         if subcategory:
             query["subcategory_ids"] = str(subcategory.id)
 

@@ -377,8 +377,8 @@ class YoungstersContentService:
 
                 # Get youngsters section ID
                 youngsters_section = await ContentSection.find_one(
-                    ContentSection.slug == "youngsters"
-                )
+                    {"slug": "youngsters"}
+)
                 youngsters_section_id = (
                     str(youngsters_section.id) if youngsters_section else None
                 )
@@ -615,8 +615,8 @@ class YoungstersContentService:
 
             # Get youngsters section
             youngsters_section = await ContentSection.find_one(
-                ContentSection.slug == "youngsters"
-            )
+                {"slug": "youngsters"}
+)
             if not youngsters_section:
                 logger.warning("Youngsters section not found in taxonomy")
                 return YoungstersSubcategoriesResponse(
@@ -627,8 +627,8 @@ class YoungstersContentService:
 
             # Get all subcategories for youngsters section
             subcategories = await SectionSubcategory.find(
-                SectionSubcategory.section_id == str(youngsters_section.id)
-            ).to_list()
+                {"section_id": str(youngsters_section.id)}
+).to_list()
 
             # Convert to response models
             response_subcats = []

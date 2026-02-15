@@ -81,10 +81,10 @@ class V2VTransformService:
         from app.models.biometric_consent import BiometricConsent, BiometricConsentType
 
         consent = await BiometricConsent.find_one(
-            BiometricConsent.user_id == avatar.user_id,
-            BiometricConsent.profile_id == avatar.profile_id,
-            BiometricConsent.consent_type == BiometricConsentType.VOICE_V2V,
-            BiometricConsent.revoked_at == None,  # noqa: E711
+            {"user_id": avatar.user_id}, 
+            {"profile_id": avatar.profile_id}, 
+            {"consent_type": BiometricConsentType.VOICE_V2V}, 
+            {"revoked_at": None},   # noqa: E711
         )
         upload_raw = not (consent and consent.on_device_only)
 
@@ -168,11 +168,18 @@ class V2VTransformService:
     ) -> V2VSession:
         """Get active session or create new one."""
         session = await V2VSession.find_one(
-            V2VSession.user_id == user_id,
-            V2VSession.profile_id == profile_id,
-            V2VSession.avatar_id == avatar_id,
-            V2VSession.status == V2VSessionStatus.ACTIVE,
-        )
+            {
+
+                "user_id": user_id,
+
+                "profile_id": profile_id,
+
+                "avatar_id": avatar_id,
+
+                "status": V2VSessionStatus.ACTIVE
+
+            }
+)
         if session:
             return session
 

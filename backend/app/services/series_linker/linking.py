@@ -46,8 +46,8 @@ async def link_episode_to_series(
         LinkingResult with success status and details
     """
     try:
-        episode = await Content.find_one(Content.id == PydanticObjectId(episode_id))
-        series = await Content.find_one(Content.id == PydanticObjectId(series_id))
+        episode = await Content.find_one({"id": PydanticObjectId(episode_id)})
+        series = await Content.find_one({"id": PydanticObjectId(series_id)})
 
         if not episode:
             return LinkingResult(

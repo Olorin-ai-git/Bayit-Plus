@@ -51,13 +51,13 @@ async def get_users(
             }
         )
     if role:
-        query = query.find(User.role == role)
+        query = query.find({"role": role})
     if status == "active":
-        query = query.find(User.is_active == True)
+        query = query.find({"is_active": True})
     elif status == "inactive":
-        query = query.find(User.is_active == False)
+        query = query.find({"is_active": False})
     if subscription:
-        query = query.find(User.subscription_tier == subscription)
+        query = query.find({"subscription_tier": subscription})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -121,7 +121,7 @@ async def update_user(
         changes["name"] = {"old": user.name, "new": updates.name}
         user.name = updates.name
     if updates.email is not None:
-        existing = await User.find_one(User.email == updates.email)
+        existing = await User.find_one({"email": updates.email})
         if existing and str(existing.id) != user_id:
             raise HTTPException(status_code=400, detail="Email already in use")
         changes["email"] = {"old": user.email, "new": updates.email}
@@ -246,7 +246,7 @@ async def get_user_activity(
 ):
     """Get user's audit log activity."""
     logs = (
-        await AuditLog.find(AuditLog.user_id == user_id)
+        await AuditLog.find({"user_id": user_id})
         .sort(-AuditLog.created_at)
         .limit(limit)
         .to_list()
@@ -274,7 +274,7 @@ async def get_user_billing(
     from app.models.admin import Transaction
 
     transactions = (
-        await Transaction.find(Transaction.user_id == user_id)
+        await Transaction.find({"user_id": user_id})
         .sort(-Transaction.created_at)
         .limit(limit)
         .to_list()

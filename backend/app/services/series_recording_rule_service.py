@@ -34,8 +34,8 @@ class SeriesRecordingRuleService:
         """Create a new series recording rule."""
         max_rules = settings.RECORDING_MAX_SERIES_RULES_PER_USER
         existing_count = await SeriesRecordingRule.find(
-            SeriesRecordingRule.user_id == user_id,
-            SeriesRecordingRule.is_active == True,  # noqa: E712
+            {"user_id": user_id}, 
+            {"is_active": True},   # noqa: E712
         ).count()
 
         if existing_count >= max_rules:
@@ -125,9 +125,8 @@ class SeriesRecordingRuleService:
             raise PermissionError("Not authorized to delete this rule")
 
         pending_schedules = await RecordingSchedule.find(
-            RecordingSchedule.series_rule_id == rule_id,
-            RecordingSchedule.status == "pending",
-        ).to_list(length=settings.RECORDING_QUERY_LIMIT)
+            {"series_rule_id": rule_id, "status": "pending"}
+).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         from app.services.recording_scheduler_service import (
             recording_scheduler_service,
@@ -150,8 +149,8 @@ class SeriesRecordingRuleService:
     async def list_rules(self, user_id: str) -> list[SeriesRecordingRule]:
         """List all series recording rules for a user."""
         return await SeriesRecordingRule.find(
-            SeriesRecordingRule.user_id == user_id,
-        ).sort(-SeriesRecordingRule.created_at).to_list(
+            {"user_id": user_id}
+).sort(-SeriesRecordingRule.created_at).to_list(
             length=settings.RECORDING_QUERY_LIMIT
         )
 

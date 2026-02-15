@@ -33,6 +33,11 @@ class GoogleSignInHelper @Inject constructor(
      */
     suspend fun signIn(context: Context, googleClientId: String): BayitResult<String> {
         return try {
+            logger.info(
+                "Google Sign-In initiated",
+                mapOf("clientId" to googleClientId)
+            )
+
             if (googleClientId.isBlank()) {
                 logger.error(
                     "Google Client ID not configured",
@@ -43,6 +48,7 @@ class GoogleSignInHelper @Inject constructor(
                 )
             }
 
+            logger.info("Creating credential manager")
             val credentialManager = CredentialManager.create(context)
 
             val rawNonce = UUID.randomUUID().toString()
@@ -58,10 +64,12 @@ class GoogleSignInHelper @Inject constructor(
                 .addCredentialOption(googleIdOption)
                 .build()
 
+            logger.info("Requesting Google credential")
             val result = credentialManager.getCredential(
                 request = request,
                 context = context,
             )
+            logger.info("Credential received, processing")
 
             when (val credential = result.credential) {
                 is GoogleIdTokenCredential -> {

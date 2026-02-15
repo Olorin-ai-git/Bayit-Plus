@@ -111,10 +111,10 @@ async def list_collections(
     Returns:
         List of collections with metadata
     """
-    query = Content.find(Content.is_collection_parent == True)  # noqa: E712
+    query = Content.find({"is_collection_parent": True})  # noqa: E712
 
     if published_only:
-        query = query.find(Content.is_published == True)  # noqa: E712
+        query = query.find({"is_published": True})  # noqa: E712
 
     collections = await query.skip(skip).limit(limit).to_list()
 
@@ -122,8 +122,8 @@ async def list_collections(
     for collection in collections:
         # Count available movies
         available_movies = await Content.find(
-            Content.collection_parent_id == str(collection.id)
-        ).count()
+            {"collection_parent_id": str(collection.id)}
+).count()
 
         results.append(
             CollectionResponse(
@@ -162,8 +162,8 @@ async def get_collection_detail(collection_id: str):
 
     # Fetch movies in collection
     movies = await Content.find(
-        Content.collection_parent_id == collection_id
-    ).sort("+collection_order").to_list()
+        {"collection_parent_id": collection_id}
+).sort("+collection_order").to_list()
 
     movie_list = [
         MovieInCollection(
@@ -228,7 +228,7 @@ async def generate_collection_promo(
         raise HTTPException(status_code=404, detail="Collection not found")
 
     # Fetch movies to get titles and genres
-    movies = await Content.find(Content.collection_parent_id == collection_id).to_list()
+    movies = await Content.find({"collection_parent_id": collection_id}).to_list()
 
     movie_titles = [m.title for m in movies if m.title]
     genres = []

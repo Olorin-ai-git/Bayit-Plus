@@ -127,7 +127,7 @@ async def link_provider(
                 )
 
             # Check if this Google account is already linked to another user
-            existing = await User.find_one(User.google_id == google_id)
+            existing = await User.find_one({"google_id": google_id})
             if existing and str(existing.id) != str(current_user.id):
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
@@ -152,7 +152,7 @@ async def link_provider(
 
             # Atomic operation to prevent race conditions
             result = await User.find_one(
-                User.id == current_user.id,
+                {"id": current_user.id}, 
                 User.linked_providers != link_request.provider
             ).update(
                 {
@@ -244,7 +244,7 @@ async def link_provider(
                 )
 
             # Check if this Apple account is already linked to another user
-            existing = await User.find_one(User.apple_id == apple_id)
+            existing = await User.find_one({"apple_id": apple_id})
             if existing and str(existing.id) != str(current_user.id):
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
@@ -269,7 +269,7 @@ async def link_provider(
 
             # Atomic operation to prevent race conditions
             result = await User.find_one(
-                User.id == current_user.id,
+                {"id": current_user.id}, 
                 User.linked_providers != link_request.provider
             ).update(
                 {

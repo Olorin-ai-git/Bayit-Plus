@@ -50,6 +50,13 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+/// A single entry in the tvOS breadcrumb trail.
+struct TVBreadcrumbEntry: Identifiable {
+    let id = UUID()
+    let label: String
+    let icon: String?
+}
+
 /// Manages navigation state for the tvOS app.
 @Observable
 final class TVNavigationCoordinator {
@@ -61,16 +68,44 @@ final class TVNavigationCoordinator {
     /// Route for the fullscreen player modal. Set to non-nil to present.
     var fullscreenRoute: TVRoute?
 
+    /// Breadcrumb trail per tab (tracks labels for the navigation stack).
+    var breadcrumbTrails: [TVTab: [TVBreadcrumbEntry]] = [:]
+
+    /// Current breadcrumb trail for the active tab.
+    var currentBreadcrumbs: [TVBreadcrumbEntry] {
+        breadcrumbTrails[selectedTab] ?? []
+    }
+
+    /// Whether the current tab has navigation depth (breadcrumbs to show).
+    var hasBreadcrumbs: Bool {
+        !(breadcrumbTrails[selectedTab] ?? []).isEmpty
+    }
+
     private let logger = BayitLogger(category: "TVNavigation")
 
     init() {
         for tab in TVTab.allCases {
             paths[tab] = NavigationPath()
+            breadcrumbTrails[tab] = []
         }
     }
 
     func popToRoot() {
         paths[selectedTab] = NavigationPath()
+        breadcrumbTrails[selectedTab] = []
+    }
+
+    /// Push a breadcrumb entry for the current tab.
+    func pushBreadcrumb(label: String, icon: String? = nil) {
+        breadcrumbTrails[selectedTab, default: []].append(
+            TVBreadcrumbEntry(label: label, icon: icon)
+        )
+    }
+
+    /// Pop the last breadcrumb from the current tab.
+    func popBreadcrumb() {
+        guard !(breadcrumbTrails[selectedTab] ?? []).isEmpty else { return }
+        breadcrumbTrails[selectedTab]?.removeLast()
     }
 
     /// Present the fullscreen player for the given content.

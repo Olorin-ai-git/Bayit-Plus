@@ -387,9 +387,9 @@ async def execute_bayit_tool(
         stat_type = tool_input["stat_type"]
 
         if stat_type == "counts":
-            series_count = await Content.find(Content.content_type == "series").count()
-            movies_count = await Content.find(Content.content_type == "movie").count()
-            podcasts_count = await Content.find(Content.content_type == "podcast").count()
+            series_count = await Content.find({"content_type": "series"}).count()
+            movies_count = await Content.find({"content_type": "movie"}).count()
+            podcasts_count = await Content.find({"content_type": "podcast"}).count()
 
             return f"Content Library Stats:\n" \
                    f"- Series: {series_count}\n" \

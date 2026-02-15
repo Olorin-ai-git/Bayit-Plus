@@ -53,8 +53,8 @@ class SessionMonitor:
         stale_cutoff = now - timedelta(minutes=self._stale_threshold_minutes)
 
         stale_sessions = await LiveFeatureUsageSession.find(
-            LiveFeatureUsageSession.status == UsageSessionStatus.ACTIVE,
-            LiveFeatureUsageSession.last_activity_at < stale_cutoff,
+            {"status": UsageSessionStatus.ACTIVE}, 
+            LiveFeatureUsageSession.last_activity_at < stale_cutoff, 
         ).to_list()
 
         for session in stale_sessions:
@@ -78,8 +78,8 @@ class SessionMonitor:
         timeout_cutoff = now - timedelta(minutes=self._session_timeout_minutes)
 
         long_sessions = await LiveFeatureUsageSession.find(
-            LiveFeatureUsageSession.status == UsageSessionStatus.ACTIVE,
-            LiveFeatureUsageSession.started_at < timeout_cutoff,
+            {"status": UsageSessionStatus.ACTIVE}, 
+            LiveFeatureUsageSession.started_at < timeout_cutoff, 
         ).to_list()
 
         for session in long_sessions:
@@ -105,8 +105,8 @@ class SessionMonitor:
         Returns: (is_valid, error_message)
         """
         session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
-        )
+            {"session_id": session_id}
+)
 
         if not session:
             return False, "Session not found"
@@ -131,8 +131,8 @@ class SessionMonitor:
     async def update_session_activity(self, session_id: str):
         """Update last activity timestamp for a session"""
         session = await LiveFeatureUsageSession.find_one(
-            LiveFeatureUsageSession.session_id == session_id
-        )
+            {"session_id": session_id}
+)
         if session:
             session.last_activity_at = datetime.utcnow()
             await session.save()

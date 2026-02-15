@@ -222,7 +222,7 @@ async def get_available_system_widgets(
 
     # Get all active system widgets
     system_widgets = (
-        await Widget.find(Widget.type == WidgetType.SYSTEM, Widget.is_active == True)
+        await Widget.find({"type": WidgetType.SYSTEM, "is_active": True})
         .sort(Widget.order)
         .to_list()
     )
@@ -230,8 +230,8 @@ async def get_available_system_widgets(
     # Get user's subscribed widget IDs (empty for unauthenticated users)
     if user_id:
         user_subscriptions = await UserSystemWidget.find(
-            UserSystemWidget.user_id == user_id
-        ).to_list()
+            {"user_id": user_id}
+).to_list()
         subscribed_ids = {sub.widget_id for sub in user_subscriptions}
     else:
         subscribed_ids = set()
@@ -293,8 +293,8 @@ async def get_my_system_widgets(
     # Get user's subscriptions
     user_subscriptions = (
         await UserSystemWidget.find(
-            UserSystemWidget.user_id == user_id,
-            UserSystemWidget.is_visible == True,  # Only visible (not closed)
+            {"user_id": user_id}, 
+            {"is_visible": True},   # Only visible (not closed)
         )
         .sort(UserSystemWidget.order)
         .to_list()
@@ -306,8 +306,7 @@ async def get_my_system_widgets(
     # Get the actual widget documents
     widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
     widgets = await Widget.find(
-        {"_id": {"$in": widget_ids}}, Widget.is_active == True
-    ).to_list()
+        {"_id": {"$in": widget_ids}},  {"is_active": True}).to_list()
 
     # Create a lookup for quick access
     widget_lookup = {str(w.id): w for w in widgets}
@@ -369,15 +368,15 @@ async def add_system_widget(
 
     # Check if already subscribed
     existing = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
     if existing:
         # Already added, just return success
         return {"message": "Widget already added", "id": str(existing.id)}
 
     # Get next order number
     last_sub = (
-        await UserSystemWidget.find(UserSystemWidget.user_id == user_id)
+        await UserSystemWidget.find({"user_id": user_id})
         .sort(-UserSystemWidget.order)
         .first_or_none()
     )
@@ -409,8 +408,8 @@ async def remove_system_widget(
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
 
     if not subscription:
         raise HTTPException(status_code=404, detail="Widget not in your collection")
@@ -431,8 +430,8 @@ async def update_system_widget_position(
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
 
     if not subscription:
         raise HTTPException(status_code=404, detail="Widget not in your collection")
@@ -464,8 +463,8 @@ async def update_system_widget_preferences(
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
 
     if not subscription:
         raise HTTPException(status_code=404, detail="Widget not in your collection")
@@ -492,8 +491,8 @@ async def close_system_widget(
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
 
     if not subscription:
         raise HTTPException(status_code=404, detail="Widget not in your collection")
@@ -521,8 +520,8 @@ async def show_system_widget(
 
     # Find the subscription
     subscription = await UserSystemWidget.find_one(
-        UserSystemWidget.user_id == user_id, UserSystemWidget.widget_id == widget_id
-    )
+        {"user_id": user_id, "widget_id": widget_id}
+)
 
     if not subscription:
         raise HTTPException(status_code=404, detail="Widget not in your collection")

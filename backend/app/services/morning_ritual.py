@@ -108,8 +108,8 @@ async def get_morning_playlist(user: User) -> List[Dict[str, Any]]:
     if "news" in ritual_content:
         news_channels = (
             await LiveChannel.find(
-                LiveChannel.is_active == True, LiveChannel.category == "news"
-            )
+                {"is_active": True, "category": "news"}
+)
             .limit(3)
             .to_list()
         )
@@ -135,7 +135,7 @@ async def get_morning_playlist(user: User) -> List[Dict[str, Any]]:
     # 2. Add radio if requested (background audio option)
     if "radio" in ritual_content:
         radio_stations = (
-            await RadioStation.find(RadioStation.is_active == True).limit(5).to_list()
+            await RadioStation.find({"is_active": True}).limit(5).to_list()
         )
 
         if radio_stations:
@@ -164,8 +164,8 @@ async def get_morning_playlist(user: User) -> List[Dict[str, Any]]:
     if "clips" in ritual_content:
         morning_content = (
             await Content.find(
-                Content.is_published == True,
-                Content.duration <= 600,  # Under 10 minutes
+                {"is_published": True}, 
+                Content.duration <= 600,   # Under 10 minutes
             )
             .limit(3)
             .to_list()

@@ -95,6 +95,7 @@ public enum Route: Hashable {
 
     // Device Pairing
     case devicePairing
+    case tvLogin(sessionId: String, token: String, expires: String)
 
     // Help Center
     case helpCenter
@@ -192,6 +193,7 @@ extension Route {
         case .subscriptionGate: return "Subscribe"
         case .household: return "Household"
         case .devicePairing: return "Devices"
+        case .tvLogin: return "TV Sign In"
         case .helpCenter: return "Help"
         case .rewards: return "Rewards"
         case .widgets: return "Widgets"

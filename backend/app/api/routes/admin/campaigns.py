@@ -46,9 +46,9 @@ async def get_campaigns(
     query = Campaign.find()
 
     if status:
-        query = query.find(Campaign.status == CampaignStatus(status))
+        query = query.find({"status": CampaignStatus(status)})
     if type:
-        query = query.find(Campaign.type == CampaignType(type))
+        query = query.find({"type": CampaignType(type)})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -94,7 +94,7 @@ async def create_campaign(
 ):
     """Create a new campaign."""
     if data.promo_code:
-        existing = await Campaign.find_one(Campaign.promo_code == data.promo_code)
+        existing = await Campaign.find_one({"promo_code": data.promo_code})
         if existing:
             raise HTTPException(status_code=400, detail="Promo code already exists")
 
@@ -181,7 +181,7 @@ async def update_campaign(
     campaign.updated_at = datetime.utcnow()
 
     if data.promo_code and data.promo_code != campaign.promo_code:
-        existing = await Campaign.find_one(Campaign.promo_code == data.promo_code)
+        existing = await Campaign.find_one({"promo_code": data.promo_code})
         if existing:
             raise HTTPException(status_code=400, detail="Promo code already exists")
         campaign.promo_code = data.promo_code
@@ -274,7 +274,7 @@ async def validate_promo_code(
     current_user: User = Depends(has_permission(Permission.CAMPAIGNS_READ)),
 ):
     """Validate a promo code."""
-    campaign = await Campaign.find_one(Campaign.promo_code == promo_code)
+    campaign = await Campaign.find_one({"promo_code": promo_code})
     if not campaign:
         return {"valid": False, "message": "Invalid promo code"}
 

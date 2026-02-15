@@ -153,8 +153,8 @@ async def upload_chunk(
 
         # Update database session for resumability
         session = await BrowserUploadSession.find_one(
-            BrowserUploadSession.upload_id == upload_id
-        )
+            {"upload_id": upload_id}
+)
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -254,8 +254,8 @@ async def complete_browser_upload(
 
         # Update database session
         session = await BrowserUploadSession.find_one(
-            BrowserUploadSession.upload_id == upload_id
-        )
+            {"upload_id": upload_id}
+)
         if session:
             session.status = "completed"
             session.completed_at = datetime.utcnow()
@@ -330,8 +330,8 @@ async def get_resume_info(
     """
     try:
         session = await BrowserUploadSession.find_one(
-            BrowserUploadSession.upload_id == upload_id
-        )
+            {"upload_id": upload_id}
+)
 
         if not session:
             raise HTTPException(
@@ -403,9 +403,9 @@ async def get_active_browser_sessions(
 
         sessions = (
             await BrowserUploadSession.find(
-                BrowserUploadSession.user_id == str(current_user.id),
-                In(BrowserUploadSession.status, ["initialized", "uploading"]),
-                BrowserUploadSession.started_at >= cutoff_time,
+                {"user_id": str(current_user.id)}, 
+                In(BrowserUploadSession.status, ["initialized", "uploading"]), 
+                BrowserUploadSession.started_at >= cutoff_time, 
             )
             .sort("-started_at")
             .to_list()

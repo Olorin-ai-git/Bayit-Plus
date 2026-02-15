@@ -31,15 +31,13 @@ async def list_schedules(
 ):
     """List user's scheduled recordings with optional status filter."""
     try:
-        query_filters = [
-            RecordingSchedule.user_id == str(current_user.id),
-        ]
+        query_filters = {"user_id": str(current_user.id)}
         if schedule_status:
-            query_filters.append(RecordingSchedule.status == schedule_status)
+            query_filters["status"] = schedule_status
 
         schedules = (
-            await RecordingSchedule.find(*query_filters)
-            .sort(-RecordingSchedule.start_time)
+            await RecordingSchedule.find(query_filters)
+            .sort("-start_time")
             .to_list(length=settings.RECORDING_QUERY_LIMIT)
         )
 

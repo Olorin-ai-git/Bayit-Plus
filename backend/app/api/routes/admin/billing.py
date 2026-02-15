@@ -36,26 +36,26 @@ async def get_billing_overview(
     year_start = today_start.replace(month=1, day=1)
 
     today_txns = await Transaction.find(
-        Transaction.created_at >= today_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= today_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     week_txns = await Transaction.find(
-        Transaction.created_at >= week_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= week_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     month_txns = await Transaction.find(
-        Transaction.created_at >= month_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= month_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     year_txns = await Transaction.find(
-        Transaction.created_at >= year_start,
-        Transaction.status == TransactionStatus.COMPLETED,
+        Transaction.created_at >= year_start, 
+        {"status": TransactionStatus.COMPLETED}, 
     ).to_list()
     all_txns = await Transaction.find(
-        Transaction.status == TransactionStatus.COMPLETED
-    ).to_list()
+        {"status": TransactionStatus.COMPLETED}
+).to_list()
 
-    pending_refunds = await Refund.find(Refund.status == RefundStatus.PENDING).count()
+    pending_refunds = await Refund.find({"status": RefundStatus.PENDING}).count()
     total_refunds = await Refund.find().count()
     total_transactions = len(all_txns)
     total_revenue = sum(t.amount for t in all_txns)
@@ -93,7 +93,7 @@ async def get_transactions(
     query = Transaction.find()
 
     if status:
-        query = query.find(Transaction.status == TransactionStatus(status))
+        query = query.find({"status": TransactionStatus(status)})
     if start_date:
         query = query.find(Transaction.created_at >= start_date)
     if end_date:
@@ -141,7 +141,7 @@ async def get_refunds(
     query = Refund.find()
 
     if status:
-        query = query.find(Refund.status == RefundStatus(status))
+        query = query.find({"status": RefundStatus(status)})
 
     total = await query.count()
     skip = (page - 1) * page_size

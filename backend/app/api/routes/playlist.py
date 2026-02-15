@@ -67,9 +67,8 @@ async def add_to_playlist(
     user_id = str(current_user.id)
 
     existing = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == data.content_id,
-    )
+        {"user_id": user_id, "content_id": data.content_id}
+)
     if existing:
         items = await _get_user_items(user_id)
         return {
@@ -79,8 +78,8 @@ async def add_to_playlist(
         }
 
     current_count = await PlaylistItem.find(
-        PlaylistItem.user_id == user_id
-    ).count()
+        {"user_id": user_id}
+).count()
     if current_count >= settings.PLAYLIST_MAX_ITEMS:
         raise HTTPException(
             status_code=400,
@@ -124,9 +123,8 @@ async def remove_from_playlist(
     """Remove content from playlist."""
     user_id = str(current_user.id)
     item = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": user_id, "content_id": content_id}
+)
     if not item:
         raise HTTPException(status_code=404, detail="Not in playlist")
 
@@ -152,7 +150,7 @@ async def clear_playlist(
 ):
     """Clear all items from playlist."""
     user_id = str(current_user.id)
-    await PlaylistItem.find(PlaylistItem.user_id == user_id).delete()
+    await PlaylistItem.find({"user_id": user_id}).delete()
 
     logger.info("Playlist cleared via API", extra={"user_id": user_id})
     return {"message": "Playlist cleared", "item_count": 0, "items": []}
@@ -183,7 +181,7 @@ async def bulk_add_to_playlist(
     user_id = str(current_user.id)
 
     # Clear existing playlist
-    await PlaylistItem.find(PlaylistItem.user_id == user_id).delete()
+    await PlaylistItem.find({"user_id": user_id}).delete()
     logger.info(f"Cleared playlist for bulk add (user: {user_id})")
 
     # Add all items in order
@@ -273,9 +271,8 @@ async def check_playlist(
 ):
     """Check if content is in playlist."""
     item = await PlaylistItem.find_one(
-        PlaylistItem.user_id == str(current_user.id),
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
     return {"in_playlist": item is not None}
 
 
@@ -296,9 +293,8 @@ async def toggle_playlist(
         )
 
     existing = await PlaylistItem.find_one(
-        PlaylistItem.user_id == user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": user_id, "content_id": content_id}
+)
 
     if existing:
         await existing.delete()
@@ -331,7 +327,7 @@ async def toggle_playlist(
 async def _get_user_items(user_id: str) -> list[PlaylistItem]:
     """Get sorted playlist items for a user."""
     return (
-        await PlaylistItem.find(PlaylistItem.user_id == user_id)
+        await PlaylistItem.find({"user_id": user_id})
         .sort("position")
         .to_list()
     )

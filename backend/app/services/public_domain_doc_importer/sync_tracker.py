@@ -29,7 +29,7 @@ class DocSyncState(Document):
 
 async def get_sync_state(source: str) -> DocSyncState:
     """Get or create sync state for a source."""
-    state = await DocSyncState.find_one(DocSyncState.source == source)
+    state = await DocSyncState.find_one({"source": source})
     if state is None:
         state = DocSyncState(source=source)
         await state.insert()

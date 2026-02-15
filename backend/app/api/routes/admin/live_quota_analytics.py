@@ -37,9 +37,9 @@ async def get_usage_report(
             LiveFeatureUsageSession.started_at <= end_date,
         )
         if feature_type:
-            query = query.find(LiveFeatureUsageSession.feature_type == feature_type)
+            query = query.find({"feature_type": feature_type})
         if platform:
-            query = query.find(LiveFeatureUsageSession.platform == platform)
+            query = query.find({"platform": platform})
         total = await query.count()
         sessions = (
             await query.sort([("started_at", -1)]).skip(offset).limit(limit).to_list()
@@ -99,8 +99,8 @@ async def get_system_stats(
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         total_users = await LiveFeatureQuota.count()
         active_sessions = await LiveFeatureUsageSession.find(
-            LiveFeatureUsageSession.status == UsageSessionStatus.ACTIVE
-        ).count()
+            {"status": UsageSessionStatus.ACTIVE}
+).count()
         today_pipeline = [
             {"$match": {"started_at": {"$gte": today_start}}},
             {

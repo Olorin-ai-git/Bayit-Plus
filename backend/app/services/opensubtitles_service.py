@@ -619,9 +619,8 @@ class OpenSubtitlesService:
 
         # Check if cache entry exists
         existing = await SubtitleSearchCacheDoc.find_one(
-            SubtitleSearchCacheDoc.content_id == content_id,
-            SubtitleSearchCacheDoc.language == language,
-        )
+            {"content_id": content_id, "language": language}
+)
 
         if existing:
             # Update existing

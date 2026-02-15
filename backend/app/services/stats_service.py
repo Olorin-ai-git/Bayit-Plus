@@ -79,7 +79,7 @@ class StatsService:
     @staticmethod
     async def update_player_stats(user_id: str, won: bool, drawn: bool):
         """Update player statistics after a game"""
-        stats = await PlayerStats.find_one(PlayerStats.user_id == user_id)
+        stats = await PlayerStats.find_one({"user_id": user_id})
 
         if not stats:
             stats = PlayerStats(user_id=user_id)
@@ -121,7 +121,7 @@ class StatsService:
     @staticmethod
     async def get_player_stats(user_id: str) -> Optional[PlayerStats]:
         """Get player statistics"""
-        stats = await PlayerStats.find_one(PlayerStats.user_id == user_id)
+        stats = await PlayerStats.find_one({"user_id": user_id})
 
         if not stats:
             # Create initial stats
@@ -135,18 +135,19 @@ class StatsService:
         user_id: str, opponent_id: Optional[str] = None, limit: int = 50
     ) -> List[GameResult]:
         """Get match history for a user, optionally filtered by opponent"""
-        query = Or(
-            GameResult.white_player_id == user_id, GameResult.black_player_id == user_id
-        )
+        query = {"$or": [
+            {"white_player_id": user_id},
+            {"black_player_id": user_id},
+        ]}
 
         if opponent_id:
-            query = And(
+            query = {"$and": [
                 query,
-                Or(
-                    GameResult.white_player_id == opponent_id,
-                    GameResult.black_player_id == opponent_id,
-                ),
-            )
+                {"$or": [
+                    {"white_player_id": opponent_id},
+                    {"black_player_id": opponent_id},
+                ]},
+            ]}
 
         results = await GameResult.find(query).sort("-played_at").limit(limit).to_list()
         return results

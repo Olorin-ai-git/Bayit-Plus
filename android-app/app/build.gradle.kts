@@ -5,8 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    // Temporarily disabled until google-services.json is added
-    // alias(libs.plugins.google.services)
+    alias(libs.plugins.google.services)
     // alias(libs.plugins.firebase.crashlytics)
 }
 
@@ -35,7 +34,6 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
         release {

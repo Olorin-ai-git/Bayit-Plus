@@ -314,8 +314,8 @@ async def handle_checkout_completed(session: dict):
 async def handle_subscription_updated(stripe_sub: dict):
     """Handle subscription updates."""
     subscription = await Subscription.find_one(
-        Subscription.stripe_subscription_id == stripe_sub["id"]
-    )
+        {"stripe_subscription_id": stripe_sub["id"]}
+)
     if not subscription:
         return
 
@@ -340,8 +340,8 @@ async def handle_subscription_updated(stripe_sub: dict):
 async def handle_subscription_deleted(stripe_sub: dict):
     """Handle subscription cancellation."""
     subscription = await Subscription.find_one(
-        Subscription.stripe_subscription_id == stripe_sub["id"]
-    )
+        {"stripe_subscription_id": stripe_sub["id"]}
+)
     if not subscription:
         return
 

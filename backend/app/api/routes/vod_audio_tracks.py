@@ -173,9 +173,8 @@ async def generate_audio_tracks(
 
         # Check if audio track already exists
         existing = await AudioTrackDoc.find_one(
-            AudioTrackDoc.content_id == content_id,
-            AudioTrackDoc.variant_type == variant_type,
-        )
+            {"content_id": content_id, "variant_type": variant_type}
+)
 
         if existing:
             # If already completed, skip
@@ -243,10 +242,16 @@ async def list_audio_tracks(content_id: str):
     Returns only completed audio tracks with audio URLs.
     """
     tracks = await AudioTrackDoc.find(
-        AudioTrackDoc.content_id == content_id,
-        AudioTrackDoc.generation_status == "completed",
-        AudioTrackDoc.is_enabled == True,
-    ).to_list()
+        {
+
+            "content_id": content_id,
+
+            "generation_status": "completed",
+
+            "is_enabled": True
+
+        }
+).to_list()
 
     return AudioTrackListResponse(
         audio_tracks=[track.to_dict_api() for track in tracks],
@@ -264,8 +269,8 @@ async def get_audio_generation_status(content_id: str):
     Returns counts by status and detailed track information.
     """
     tracks = await AudioTrackDoc.find(
-        AudioTrackDoc.content_id == content_id,
-    ).to_list()
+        {"content_id": content_id}
+).to_list()
 
     if not tracks:
         raise HTTPException(
@@ -335,10 +340,16 @@ async def get_hls_manifest_with_audio(content_id: str):
 
     # Get completed audio tracks
     audio_tracks = await AudioTrackDoc.find(
-        AudioTrackDoc.content_id == content_id,
-        AudioTrackDoc.generation_status == "completed",
-        AudioTrackDoc.is_enabled == True,
-    ).to_list()
+        {
+
+            "content_id": content_id,
+
+            "generation_status": "completed",
+
+            "is_enabled": True
+
+        }
+).to_list()
 
     # Build HLS manifest
     manifest_lines = [

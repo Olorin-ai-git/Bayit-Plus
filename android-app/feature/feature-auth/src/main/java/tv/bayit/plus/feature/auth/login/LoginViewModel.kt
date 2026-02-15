@@ -78,6 +78,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun loginWithGoogle(idToken: String) {
+        // Handle empty token (sign-in was cancelled or failed)
+        if (idToken.isBlank()) {
+            _uiState.value = LoginUiState.Error(
+                message = "Google Sign-In was cancelled or failed. Please try again.",
+                previousEmail = "",
+                previousPassword = "",
+            )
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 

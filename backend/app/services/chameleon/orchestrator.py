@@ -91,10 +91,16 @@ class ChameleonOrchestrator:
         Updates last_used_at timestamp on cache hit.
         """
         cache = await AvatarStyleCache.find_one(
-            AvatarStyleCache.avatar_id == avatar_id,
-            AvatarStyleCache.show_content_id == show_content_id,
-            AvatarStyleCache.status == StyleCacheStatus.READY,
-        )
+            {
+
+                "avatar_id": avatar_id,
+
+                "show_content_id": show_content_id,
+
+                "status": StyleCacheStatus.READY
+
+            }
+)
 
         if cache:
             now = datetime.now(timezone.utc)

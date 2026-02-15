@@ -25,8 +25,8 @@ import kotlinx.coroutines.delay
 import tv.bayit.plus.core.model.IsraeliBusinessesResponse
 import tv.bayit.plus.core.model.IsraelisInCityResponse
 import tv.bayit.plus.core.model.SectionContentItem
-import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassContentCard
+import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -50,41 +50,39 @@ internal fun CultureClock(
         }
     }
 
-    GlassCard(
-        modifier = modifier.padding(DesignTokens.Spacing.xs),
+    Column(
+        modifier = modifier
+            .glassMorphism()
+            .padding(DesignTokens.Spacing.sm),
+        horizontalAlignment = Alignment.Start,
     ) {
-        Column(
-            modifier = Modifier.padding(DesignTokens.Spacing.md),
-            horizontalAlignment = Alignment.Start,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-            ) {
-                Text(
-                    text = flagText,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = currentTime.time,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = if (isIsraeli) DesignTokens.Colors.Primary.p400
-                    else DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
             Text(
-                text = locationLabel,
-                style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.secondary,
+                text = flagText,
+                style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                text = currentTime.date,
-                style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.muted,
+                text = currentTime.time,
+                style = MaterialTheme.typography.headlineSmall,
+                color = if (isIsraeli) DesignTokens.Colors.Primary.p400
+                else DesignTokens.Colors.Text.primary,
+                fontWeight = FontWeight.Bold,
             )
         }
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
+        Text(
+            text = locationLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = DesignTokens.Colors.Text.secondary,
+        )
+        Text(
+            text = currentTime.date,
+            style = MaterialTheme.typography.bodySmall,
+            color = DesignTokens.Colors.Text.muted,
+        )
     }
 }
 

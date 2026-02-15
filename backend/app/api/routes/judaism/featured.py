@@ -22,7 +22,7 @@ async def get_judaism_featured() -> dict:
     from app.models.content_taxonomy import ContentSection
 
     # Get Judaism section ID from taxonomy
-    judaism_section = await ContentSection.find_one(ContentSection.slug == "judaism")
+    judaism_section = await ContentSection.find_one({"slug": "judaism"})
     judaism_section_id = str(judaism_section.id) if judaism_section else None
 
     if judaism_section_id:

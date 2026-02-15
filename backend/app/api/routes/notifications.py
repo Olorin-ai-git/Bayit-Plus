@@ -97,7 +97,7 @@ async def get_notification_history(
     Returns paginated list of notifications the user has seen.
     """
     events = (
-        await NotificationEvent.find(NotificationEvent.user_id == str(user.id))
+        await NotificationEvent.find({"user_id": str(user.id)})
         .sort(-NotificationEvent.created_at)
         .skip(skip)
         .limit(limit)
@@ -105,8 +105,8 @@ async def get_notification_history(
     )
 
     total = await NotificationEvent.find(
-        NotificationEvent.user_id == str(user.id)
-    ).count()
+        {"user_id": str(user.id)}
+).count()
 
     return {
         "events": [

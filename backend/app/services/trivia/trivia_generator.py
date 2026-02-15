@@ -187,8 +187,8 @@ class TriviaGenerationService:
         The language parameter is deprecated and ignored.
         """
         existing = await ContentTrivia.find_one(
-            ContentTrivia.content_id == str(content.id)
-        )
+            {"content_id": str(content.id)}
+)
 
         if existing:
             if enrich and not existing.is_enriched:

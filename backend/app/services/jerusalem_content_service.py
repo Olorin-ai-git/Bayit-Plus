@@ -315,8 +315,8 @@ class JerusalemContentService:
         try:
             for source_data in DEFAULT_JERUSALEM_SOURCES:
                 existing = await JerusalemContentSource.find_one(
-                    JerusalemContentSource.name == source_data["name"]
-                )
+                    {"name": source_data["name"]}
+)
                 if not existing:
                     # Combine all keyword filters
                     all_keywords = []

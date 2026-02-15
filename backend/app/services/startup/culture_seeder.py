@@ -964,7 +964,7 @@ async def init_default_cultures() -> None:
             culture_id = culture_info["culture_id"]
 
             # Check if culture exists
-            existing = await Culture.find_one(Culture.culture_id == culture_id)
+            existing = await Culture.find_one({"culture_id": culture_id})
 
             if not existing:
                 logger.info(f"Creating {culture_info['name']} culture...")

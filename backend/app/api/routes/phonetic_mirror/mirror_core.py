@@ -35,9 +35,9 @@ async def submit_attempt(
         hour=0, minute=0, second=0, microsecond=0
     )
     today_count = await PhoneticMirrorAttempt.find(
-        PhoneticMirrorAttempt.user_id == user_id,
-        PhoneticMirrorAttempt.profile_id == profile_id,
-        PhoneticMirrorAttempt.created_at >= today_start,
+        {"user_id": user_id}, 
+        {"profile_id": profile_id}, 
+        PhoneticMirrorAttempt.created_at >= today_start, 
     ).count()
 
     if today_count >= settings.PERFECTED_VOICE_MAX_PER_DAY:

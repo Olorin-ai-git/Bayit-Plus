@@ -20,20 +20,20 @@ async def get_channels(
 ):
     """Get live TV channels, optionally filtered by culture and category."""
     # Build query conditions
-    query_conditions = [LiveChannel.is_active == True]
+    query_conditions = {"is_active": True}
     beta_filter = build_beta_content_filter(current_user)
     if beta_filter:
-        query_conditions.append(beta_filter)
+        query_conditions.update(beta_filter)
 
     if culture_id:
-        query_conditions.append(LiveChannel.culture_id == culture_id)
+        query_conditions["culture_id"] = culture_id
 
     if category:
-        query_conditions.append(LiveChannel.category == category)
+        query_conditions["category"] = category
 
     # Limit to 50 channels per request for memory safety
     channels = (
-        await LiveChannel.find(*query_conditions).sort("order").limit(50).to_list()
+        await LiveChannel.find(query_conditions).sort("order").limit(50).to_list()
     )
 
     return {
@@ -80,9 +80,9 @@ async def get_channel(
 
     schedule = (
         await EPGEntry.find(
-            EPGEntry.channel_id == channel_id,
-            EPGEntry.start_time >= today_start,
-            EPGEntry.start_time < today_end,
+            {"channel_id": channel_id}, 
+            EPGEntry.start_time >= today_start, 
+            EPGEntry.start_time < today_end, 
         )
         .sort("start_time")
         .to_list()
@@ -134,9 +134,9 @@ async def get_epg(
 
     entries = (
         await EPGEntry.find(
-            EPGEntry.channel_id == channel_id,
-            EPGEntry.start_time >= day_start,
-            EPGEntry.start_time < day_end,
+            {"channel_id": channel_id}, 
+            EPGEntry.start_time >= day_start, 
+            EPGEntry.start_time < day_end, 
         )
         .sort("start_time")
         .to_list()

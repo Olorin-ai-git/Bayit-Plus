@@ -249,8 +249,8 @@ class SupportContextBuilder:
 
         try:
             faq_entries = await FAQEntry.find(
-                FAQEntry.is_active == True  # noqa: E712
-            ).to_list()
+                {"is_active": True}  # noqa: E712
+).to_list()
 
             query_lower = query.lower()
 

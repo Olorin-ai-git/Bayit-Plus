@@ -154,8 +154,8 @@ class VoiceTrainingService:
     async def list_voices(self, partner_id: str) -> List[CustomVoiceMetadata]:
         """List all custom voices for a partner."""
         return await CustomVoiceMetadata.find(
-            CustomVoiceMetadata.partner_id == partner_id,
-            CustomVoiceMetadata.status != "archived",
+            {"partner_id": partner_id}, 
+            CustomVoiceMetadata.status != "archived", 
         ).to_list()
 
     async def get_voice(
@@ -163,9 +163,8 @@ class VoiceTrainingService:
     ) -> Optional[CustomVoiceMetadata]:
         """Get a specific custom voice by ElevenLabs voice ID."""
         return await CustomVoiceMetadata.find_one(
-            CustomVoiceMetadata.partner_id == partner_id,
-            CustomVoiceMetadata.voice_id == voice_id,
-        )
+            {"partner_id": partner_id, "voice_id": voice_id}
+)
 
     async def archive_voice(self, partner_id: str, voice_id: str) -> bool:
         """Archive a custom voice (soft delete)."""

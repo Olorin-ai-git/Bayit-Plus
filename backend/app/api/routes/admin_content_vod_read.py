@@ -71,15 +71,15 @@ async def get_content_hierarchical(
             }
         )
     if category_id:
-        query = query.find(Content.category_id == category_id)
+        query = query.find({"category_id": category_id})
     if is_featured is not None:
-        query = query.find(Content.is_featured == is_featured)
+        query = query.find({"is_featured": is_featured})
     if is_published is not None:
-        query = query.find(Content.is_published == is_published)
+        query = query.find({"is_published": is_published})
     if is_kids_content is not None:
-        query = query.find(Content.is_kids_content == is_kids_content)
+        query = query.find({"is_kids_content": is_kids_content})
     if is_beta_content is not None:
-        query = query.find(Content.is_beta_content == is_beta_content)
+        query = query.find({"is_beta_content": is_beta_content})
     if content_type == "series":
         # Filter by category_name for series (NOT is_series field)
         query = query.find({"category_name": {"$regex": "series|סדרות", "$options": "i"}})
@@ -300,7 +300,7 @@ async def get_series_episodes(
 
     # Get all episodes for this series
     episodes = (
-        await Content.find(Content.series_id == series_id)
+        await Content.find({"series_id": series_id})
         .sort("+season", "+episode")
         .to_list()
     )
@@ -359,9 +359,8 @@ async def get_featured_by_sections(
     # Get all active homepage sections
     sections = await (
         ContentSection.find(
-            ContentSection.is_active == True,
-            ContentSection.show_on_homepage == True,
-        )
+            {"is_active": True, "show_on_homepage": True}
+)
         .sort("+order")
         .to_list()
     )
@@ -383,9 +382,9 @@ async def get_featured_by_sections(
 
         # Handle podcasts specially - they're in Podcast collection, not Content
         if slug == "podcasts":
-            podcasts = await Podcast.find(Podcast.is_active == True).find(
-                Podcast.is_featured == True
-            ).sort("-order").limit(100).to_list()
+            podcasts = await Podcast.find({"is_active": True}).find(
+                {"is_featured": True}
+).sort("-order").limit(100).to_list()
             section_items = [
                 {
                     "id": str(podcast.id),
@@ -509,9 +508,9 @@ async def get_featured_by_sections(
 
     # Add podcasts section if not already in ContentSection
     if "podcasts" not in existing_slugs:
-        podcasts = await Podcast.find(Podcast.is_active == True).find(
-            Podcast.is_featured == True
-        ).sort("-order").limit(100).to_list()
+        podcasts = await Podcast.find({"is_active": True}).find(
+            {"is_featured": True}
+).sort("-order").limit(100).to_list()
         if podcasts:
             podcast_items = [
                 {

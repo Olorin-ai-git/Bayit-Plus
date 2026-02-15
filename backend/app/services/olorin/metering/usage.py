@@ -49,11 +49,18 @@ async def record_dubbing_usage(
     period_start, period_end = _get_hourly_period()
 
     record = await UsageRecord.find_one(
-        UsageRecord.partner_id == partner_id,
-        UsageRecord.capability == "realtime_dubbing",
-        UsageRecord.period_start == period_start,
-        UsageRecord.granularity == "hourly",
-    )
+        {
+
+            "partner_id": partner_id,
+
+            "capability": "realtime_dubbing",
+
+            "period_start": period_start,
+
+            "granularity": "hourly"
+
+        }
+)
 
     if record:
         record.request_count += 1
@@ -90,11 +97,18 @@ async def record_search_usage(
     period_start, period_end = _get_hourly_period()
 
     record = await UsageRecord.find_one(
-        UsageRecord.partner_id == partner_id,
-        UsageRecord.capability == "semantic_search",
-        UsageRecord.period_start == period_start,
-        UsageRecord.granularity == "hourly",
-    )
+        {
+
+            "partner_id": partner_id,
+
+            "capability": "semantic_search",
+
+            "period_start": period_start,
+
+            "granularity": "hourly"
+
+        }
+)
 
     if record:
         record.request_count += 1
@@ -126,11 +140,18 @@ async def record_context_usage(
     period_start, period_end = _get_hourly_period()
 
     record = await UsageRecord.find_one(
-        UsageRecord.partner_id == partner_id,
-        UsageRecord.capability == "cultural_context",
-        UsageRecord.period_start == period_start,
-        UsageRecord.granularity == "hourly",
-    )
+        {
+
+            "partner_id": partner_id,
+
+            "capability": "cultural_context",
+
+            "period_start": period_start,
+
+            "granularity": "hourly"
+
+        }
+)
 
     if record:
         record.request_count += 1
@@ -162,11 +183,18 @@ async def record_recap_usage(
     period_start, period_end = _get_hourly_period()
 
     record = await UsageRecord.find_one(
-        UsageRecord.partner_id == partner_id,
-        UsageRecord.capability == "recap_agent",
-        UsageRecord.period_start == period_start,
-        UsageRecord.granularity == "hourly",
-    )
+        {
+
+            "partner_id": partner_id,
+
+            "capability": "recap_agent",
+
+            "period_start": period_start,
+
+            "granularity": "hourly"
+
+        }
+)
 
     if record:
         record.request_count += 1

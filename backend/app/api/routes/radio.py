@@ -61,18 +61,18 @@ async def get_stations(
 ):
     """Get radio stations, optionally filtered by culture and genre."""
     # Build query conditions
-    query_conditions = [RadioStation.is_active == True]
+    query_conditions = {"is_active": True}
     beta_filter = build_beta_content_filter(current_user)
     if beta_filter:
-        query_conditions.append(beta_filter)
+        query_conditions.update(beta_filter)
 
     if culture_id:
-        query_conditions.append(RadioStation.culture_id == culture_id)
+        query_conditions["culture_id"] = culture_id
 
     if genre:
-        query_conditions.append(RadioStation.genre == genre)
+        query_conditions["genre"] = genre
 
-    stations = await RadioStation.find(*query_conditions).sort("order").to_list()
+    stations = await RadioStation.find(query_conditions).sort("order").to_list()
 
     return {
         "stations": [

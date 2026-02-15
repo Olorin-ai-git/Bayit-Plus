@@ -212,9 +212,9 @@ class SessionManager:
 
             # Query active sessions (not ended and recent heartbeat)
             sessions = await PlaybackSession.find(
-                PlaybackSession.user_id == user_id,
-                PlaybackSession.ended_at == None,
-                PlaybackSession.last_heartbeat >= cutoff_time,
+                {"user_id": user_id}, 
+                {"ended_at": None}, 
+                PlaybackSession.last_heartbeat >= cutoff_time, 
             ).to_list()
 
             logger.debug(f"Found {len(sessions)} active sessions for user {user_id}")
@@ -244,9 +244,9 @@ class SessionManager:
             cutoff_time = datetime.now(timezone.utc) - timedelta(seconds=timeout_seconds)
 
             count = await PlaybackSession.find(
-                PlaybackSession.user_id == user_id,
-                PlaybackSession.ended_at == None,
-                PlaybackSession.last_heartbeat >= cutoff_time,
+                {"user_id": user_id}, 
+                {"ended_at": None}, 
+                PlaybackSession.last_heartbeat >= cutoff_time, 
             ).count()
 
             return count
@@ -274,9 +274,9 @@ class SessionManager:
         try:
             # Find active sessions on this device
             sessions = await PlaybackSession.find(
-                PlaybackSession.user_id == user_id,
-                PlaybackSession.device_id == device_id,
-                PlaybackSession.ended_at == None,
+                {"user_id": user_id}, 
+                {"device_id": device_id}, 
+                {"ended_at": None}, 
             ).to_list()
 
             # End each session
@@ -319,7 +319,7 @@ class SessionManager:
 
             # Find stale sessions (not ended but heartbeat is old)
             stale_sessions = await PlaybackSession.find(
-                PlaybackSession.ended_at == None,
+                {"ended_at": None},
                 PlaybackSession.last_heartbeat < cutoff_time,
             ).to_list()
 

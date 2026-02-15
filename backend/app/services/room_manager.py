@@ -33,8 +33,8 @@ class RoomManager:
         # Generate unique room code
         room_code = generate_room_code()
         while await WatchParty.find_one(
-            WatchParty.room_code == room_code, WatchParty.ended_at == None
-        ):
+            {"room_code": room_code, "ended_at": None}
+):
             room_code = generate_room_code()
 
         party = WatchParty(
@@ -62,14 +62,14 @@ class RoomManager:
     async def get_party_by_code(self, room_code: str) -> Optional[WatchParty]:
         """Get an active watch party by room code"""
         return await WatchParty.find_one(
-            WatchParty.room_code == room_code.upper(), WatchParty.ended_at == None
-        )
+            {"room_code": room_code.upper(), "ended_at": None}
+)
 
     async def get_user_parties(self, user_id: str) -> List[WatchParty]:
         """Get all active parties where user is host or participant"""
         parties = await WatchParty.find(
-            WatchParty.ended_at == None,
-            {"$or": [{"host_id": user_id}, {"participants.user_id": user_id}]},
+            {"ended_at": None}, 
+            {"$or": [{"host_id": user_id}, {"participants.user_id": user_id}]}, 
         ).to_list()
         return parties
 
@@ -309,7 +309,7 @@ class RoomManager:
         self, party_id: str, limit: int = 50, before: Optional[datetime] = None
     ) -> List[ChatMessage]:
         """Get chat message history for a party"""
-        query = ChatMessage.find(ChatMessage.party_id == party_id)
+        query = ChatMessage.find({"party_id": party_id})
 
         if before:
             query = query.find(ChatMessage.timestamp < before)

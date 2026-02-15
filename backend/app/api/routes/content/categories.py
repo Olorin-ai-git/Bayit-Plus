@@ -36,7 +36,7 @@ async def get_categories(content_type: Optional[str] = Query(None, description="
     - None: Returns all active sections
     """
     sections = (
-        await ContentSection.find(ContentSection.is_active == True)
+        await ContentSection.find({"is_active": True})
         .sort("order")
         .to_list()
     )
@@ -95,9 +95,8 @@ async def get_categories(content_type: Optional[str] = Query(None, description="
         if section.supports_subcategories:
             subcats = (
                 await SectionSubcategory.find(
-                    SectionSubcategory.section_id == str(section.id),
-                    SectionSubcategory.is_active == True,
-                )
+                    {"section_id": str(section.id), "is_active": True}
+)
                 .sort("order")
                 .to_list()
             )
@@ -129,7 +128,7 @@ async def get_sections():
     Get all content sections with subcategories.
     """
     sections = (
-        await ContentSection.find(ContentSection.is_active == True)
+        await ContentSection.find({"is_active": True})
         .sort("order")
         .to_list()
     )
@@ -142,9 +141,8 @@ async def get_sections():
         if section.supports_subcategories:
             subcats = (
                 await SectionSubcategory.find(
-                    SectionSubcategory.section_id == section_id,
-                    SectionSubcategory.is_active == True,
-                )
+                    {"section_id": section_id, "is_active": True}
+)
                 .sort("order")
                 .to_list()
             )
@@ -218,7 +216,7 @@ async def get_by_category(
         pass
 
     if not section:
-        section = await ContentSection.find_one(ContentSection.slug == category_id)
+        section = await ContentSection.find_one({"slug": category_id})
 
     if not section:
         raise HTTPException(status_code=404, detail="Section not found")
@@ -269,9 +267,8 @@ async def get_by_category(
                 item_data["total_episodes"] = item.total_episodes
             else:
                 episode_count = await Content.find(
-                    Content.series_id == str(item.id),
-                    Content.is_published == True,
-                ).count()
+                    {"series_id": str(item.id), "is_published": True}
+).count()
                 item_data["total_episodes"] = episode_count
 
         result_items.append(item_data)
@@ -339,14 +336,13 @@ async def get_subcategory_content(
     """
     skip = (page - 1) * limit
 
-    section = await ContentSection.find_one(ContentSection.slug == section_slug)
+    section = await ContentSection.find_one({"slug": section_slug})
     if not section:
         raise HTTPException(status_code=404, detail="Section not found")
 
     subcategory = await SectionSubcategory.find_one(
-        SectionSubcategory.section_id == str(section.id),
-        SectionSubcategory.slug == subcategory_slug,
-    )
+        {"section_id": str(section.id), "slug": subcategory_slug}
+)
     if not subcategory:
         raise HTTPException(status_code=404, detail="Subcategory not found")
 

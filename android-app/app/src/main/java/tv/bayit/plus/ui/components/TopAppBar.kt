@@ -1,18 +1,21 @@
 package tv.bayit.plus.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,36 +29,42 @@ fun TopAppBar(
     onLanguageClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(64.dp)
             .glassMorphism(
                 cornerRadius = DesignTokens.Radius.sm,
                 backgroundColor = DesignTokens.Colors.Glass.bgStrong,
             )
-            .padding(horizontal = DesignTokens.Spacing.base),
+            .windowInsetsPadding(WindowInsets.statusBars),
+    ) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .padding(horizontal = DesignTokens.Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = "Profile",
-            tint = DesignTokens.Colors.Text.primary,
-            modifier = Modifier
-                .size(32.dp)
-                .clickable { onProfileClick() },
-        )
+        IconButton(onClick = onProfileClick) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Profile",
+                tint = DesignTokens.Colors.Text.primary,
+                modifier = Modifier.size(28.dp),
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Icon(
-            imageVector = Icons.Default.Language,
-            contentDescription = "Language",
-            tint = DesignTokens.Colors.Text.primary,
-            modifier = Modifier
-                .size(32.dp)
-                .clickable { onLanguageClick() },
-        )
+        IconButton(onClick = onLanguageClick) {
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = "Language",
+                tint = DesignTokens.Colors.Text.primary,
+                modifier = Modifier.size(28.dp),
+            )
+        }
+    }
     }
 }

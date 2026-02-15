@@ -57,7 +57,7 @@ async def request_password_reset(request: Request, reset_request: PasswordResetR
     """
     # Always return success to prevent email enumeration
     # But only send email if user exists
-    user = await User.find_one(User.email == reset_request.email)
+    user = await User.find_one({"email": reset_request.email})
 
     if user:
         # Generate cryptographically secure token
@@ -147,7 +147,7 @@ async def confirm_password_reset(request: Request, reset_confirm: PasswordResetC
     - Account lockout reset on successful password change
     """
     # Find user by reset token
-    user = await User.find_one(User.password_reset_token == reset_confirm.token)
+    user = await User.find_one({"password_reset_token": reset_confirm.token})
 
     if not user:
         logger.warning(

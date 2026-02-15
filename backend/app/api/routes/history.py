@@ -29,7 +29,7 @@ async def get_history(
     skip = (page - 1) * limit
 
     items = (
-        await WatchHistory.find(WatchHistory.user_id == str(current_user.id))
+        await WatchHistory.find({"user_id": str(current_user.id)})
         .sort("-last_watched_at")
         .skip(skip)
         .limit(limit * 2)  # Fetch more to deduplicate
@@ -95,8 +95,8 @@ async def get_history(
             break
 
     total = await WatchHistory.find(
-        WatchHistory.user_id == str(current_user.id)
-    ).count()
+        {"user_id": str(current_user.id)}
+).count()
 
     return {
         "items": result,
@@ -120,9 +120,9 @@ async def get_continue_watching(
 
     items = (
         await WatchHistory.find(
-            WatchHistory.user_id == str(current_user.id),
-            WatchHistory.completed == False,
-            WatchHistory.progress_percent > 5,  # At least 5% watched
+            {"user_id": str(current_user.id)}, 
+            {"completed": False}, 
+            WatchHistory.progress_percent > 5,   # At least 5% watched
         )
         .sort("-last_watched_at")
         .limit(20)  # Fetch more to deduplicate
@@ -194,9 +194,8 @@ async def update_progress(
     """Update watch progress for content."""
     # Find or create history entry
     history = await WatchHistory.find_one(
-        WatchHistory.user_id == str(current_user.id),
-        WatchHistory.content_id == data.content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": data.content_id}
+)
 
     progress_percent = (data.position / data.duration * 100) if data.duration > 0 else 0
     completed = progress_percent >= 90  # Consider completed at 90%
@@ -234,9 +233,8 @@ async def restart_video(
 ):
     """Restart video from beginning - resets progress to 00:00."""
     history = await WatchHistory.find_one(
-        WatchHistory.user_id == str(current_user.id),
-        WatchHistory.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
     if not history:
         raise HTTPException(status_code=404, detail="Not in history")
 
@@ -260,9 +258,8 @@ async def remove_from_history(
 ):
     """Remove content from watch history."""
     history = await WatchHistory.find_one(
-        WatchHistory.user_id == str(current_user.id),
-        WatchHistory.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
     if not history:
         raise HTTPException(status_code=404, detail="Not in history")
 
@@ -275,5 +272,5 @@ async def clear_history(
     current_user: User = Depends(get_current_active_user),
 ):
     """Clear all watch history."""
-    await WatchHistory.find(WatchHistory.user_id == str(current_user.id)).delete()
+    await WatchHistory.find({"user_id": str(current_user.id)}).delete()
     return {"message": "History cleared"}

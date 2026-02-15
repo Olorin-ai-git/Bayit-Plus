@@ -57,7 +57,7 @@ async def build_and_insert_content(
 
     # Resolve section slug to ObjectId for taxonomy queries
     section_slug = content_fields.get("primary_section_id", "")
-    section = await ContentSection.find_one(ContentSection.slug == section_slug)
+    section = await ContentSection.find_one({"slug": section_slug})
     if section:
         resolved_id = str(section.id)
         content_fields["section_ids"] = [resolved_id]

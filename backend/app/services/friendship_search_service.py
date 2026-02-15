@@ -20,10 +20,7 @@ async def get_friends(user_id: str, limit: int = 100) -> List[dict]:
     """Get user's friend list with basic info."""
     friendships = (
         await UserFriendship.find(
-            Or(
-                UserFriendship.user1_id == user_id,
-                UserFriendship.user2_id == user_id,
-            )
+            {"$or": [{"user1_id": user_id}, {"user2_id": user_id}]}
         )
         .limit(limit)
         .to_list()
@@ -57,20 +54,14 @@ async def get_pending_requests(
     """Get incoming and outgoing pending requests."""
     incoming = (
         await FriendRequest.find(
-            And(
-                FriendRequest.receiver_id == user_id,
-                FriendRequest.status == FriendRequestStatus.PENDING,
-            )
+            {"receiver_id": user_id, "status": FriendRequestStatus.PENDING}
         )
         .sort("-sent_at")
         .to_list()
     )
     outgoing = (
         await FriendRequest.find(
-            And(
-                FriendRequest.sender_id == user_id,
-                FriendRequest.status == FriendRequestStatus.PENDING,
-            )
+            {"sender_id": user_id, "status": FriendRequestStatus.PENDING}
         )
         .sort("-sent_at")
         .to_list()
@@ -81,16 +72,10 @@ async def get_pending_requests(
 async def are_friends(user1_id: str, user2_id: str) -> bool:
     """Check if two users are friends."""
     friendship = await UserFriendship.find_one(
-        Or(
-            And(
-                UserFriendship.user1_id == user1_id,
-                UserFriendship.user2_id == user2_id,
-            ),
-            And(
-                UserFriendship.user1_id == user2_id,
-                UserFriendship.user2_id == user1_id,
-            ),
-        )
+        {"$or": [
+            {"user1_id": user1_id, "user2_id": user2_id},
+            {"user1_id": user2_id, "user2_id": user1_id},
+        ]}
     )
     return friendship is not None
 

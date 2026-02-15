@@ -32,8 +32,8 @@ class LiveLayerService:
         lookahead].
         """
         doc = await ContentSceneTriggers.find_one(
-            ContentSceneTriggers.content_id == content_id,
-        )
+            {"content_id": content_id}
+)
         if not doc:
             return []
 

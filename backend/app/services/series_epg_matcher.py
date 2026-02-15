@@ -41,7 +41,7 @@ async def _bulk_load_channel_names(channel_ids: set[str]) -> dict[str, str]:
 async def match_epg_entry(epg_entry: EPGEntry) -> list[SeriesRecordingRule]:
     """Find all active rules that match a given EPG entry."""
     active_rules = await SeriesRecordingRule.find(
-        SeriesRecordingRule.is_active == True,  # noqa: E712
+        {"is_active": True},   # noqa: E712
     ).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
     matching_rules = []
@@ -100,9 +100,9 @@ async def scan_upcoming_epg(rule: SeriesRecordingRule) -> int:
             continue
 
         existing = await RecordingSchedule.find_one(
-            RecordingSchedule.user_id == rule.user_id,
-            RecordingSchedule.epg_entry_id == str(entry.id),
-            RecordingSchedule.status.is_in(["pending", "recording", "completed"]),
+            {"user_id": rule.user_id}, 
+            {"epg_entry_id": str(entry.id)}, 
+            RecordingSchedule.status.is_in(["pending", "recording", "completed"]), 
         )
         if existing:
             continue
@@ -156,9 +156,9 @@ async def process_new_epg_entries(entries: list[EPGEntry]) -> int:
 
         for rule in matching_rules:
             existing = await RecordingSchedule.find_one(
-                RecordingSchedule.user_id == rule.user_id,
-                RecordingSchedule.epg_entry_id == str(entry.id),
-                RecordingSchedule.status.is_in(["pending", "recording", "completed"]),
+                {"user_id": rule.user_id}, 
+                {"epg_entry_id": str(entry.id)}, 
+                RecordingSchedule.status.is_in(["pending", "recording", "completed"]), 
             )
             if existing:
                 continue

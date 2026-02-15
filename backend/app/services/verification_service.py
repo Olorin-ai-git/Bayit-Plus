@@ -118,8 +118,8 @@ class VerificationService:
             User if verification successful, None otherwise
         """
         verification_token = await VerificationToken.find_one(
-            VerificationToken.token == token, VerificationToken.type == "email"
-        )
+            {"token": token, "type": "email"}
+)
 
         if not verification_token or not verification_token.is_valid():
             return None
@@ -192,10 +192,8 @@ class VerificationService:
             True if verification successful
         """
         verification_token = await VerificationToken.find_one(
-            VerificationToken.user_id == str(user.id),
-            VerificationToken.type == "phone",
-            VerificationToken.token == code,
-        )
+            {"user_id": str(user.id), "type": "phone", "token": code}
+)
 
         if not verification_token or not verification_token.is_valid():
             return False

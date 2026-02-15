@@ -392,7 +392,7 @@ async def list_sessions(
         from app.models.content_embedding import RecapSession
 
         sessions = (
-            await RecapSession.find(RecapSession.partner_id == partner.partner_id)
+            await RecapSession.find({"partner_id": partner.partner_id})
             .sort(-RecapSession.started_at)
             .limit(100)
             .to_list()

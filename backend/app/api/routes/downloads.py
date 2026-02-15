@@ -63,7 +63,7 @@ async def get_downloads(
 ):
     """Get user's downloaded items."""
     downloads = (
-        await Download.find(Download.user_id == str(current_user.id))
+        await Download.find({"user_id": str(current_user.id)})
         .sort("-downloaded_at")
         .to_list()
     )
@@ -104,9 +104,8 @@ async def start_download(
     """Start a new download."""
     # Check if already downloaded
     existing = await Download.find_one(
-        Download.user_id == str(current_user.id),
-        Download.content_id == data.content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": data.content_id}
+)
     if existing:
         return {
             "message": "Already downloaded",
@@ -157,10 +156,16 @@ async def check_download(
 ):
     """Check if content is downloaded."""
     download = await Download.find_one(
-        Download.user_id == str(current_user.id),
-        Download.content_id == content_id,
-        Download.status == "completed",
-    )
+        {
+
+            "user_id": str(current_user.id),
+
+            "content_id": content_id,
+
+            "status": "completed"
+
+        }
+)
     return {
         "is_downloaded": download is not None,
         "download_id": str(download.id) if download else None,

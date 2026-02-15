@@ -194,9 +194,8 @@ async def get_passkey_session(request: Request) -> Optional[PasskeySession]:
         return None
 
     session = await PasskeySession.find_one(
-        PasskeySession.session_token == session_token,
-        PasskeySession.is_revoked == False,
-    )
+        {"session_token": session_token, "is_revoked": False}
+)
 
     if not session or not session.is_valid():
         return None

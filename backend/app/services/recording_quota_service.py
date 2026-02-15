@@ -45,9 +45,8 @@ class RecordingQuotaService:
 
             # Check concurrent recordings
             active_sessions = await RecordingSession.find(
-                RecordingSession.user_id == user_id,
-                RecordingSession.status == "recording",
-            ).count()
+                {"user_id": user_id, "status": "recording"}
+).count()
 
             if active_sessions >= user.recording_quota.max_concurrent_recordings:
                 return {
@@ -131,13 +130,12 @@ class RecordingQuotaService:
 
             # Count recordings
             total_recordings = await Recording.find(
-                Recording.user_id == user_id
-            ).count()
+                {"user_id": user_id}
+).count()
 
             active_sessions = await RecordingSession.find(
-                RecordingSession.user_id == user_id,
-                RecordingSession.status == "recording",
-            ).count()
+                {"user_id": user_id, "status": "recording"}
+).count()
 
             quota = user.recording_quota
 

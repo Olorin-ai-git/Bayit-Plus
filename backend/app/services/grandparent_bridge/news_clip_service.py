@@ -119,9 +119,9 @@ class NewsClipService:
     ) -> list:
         """List news clips for a profile, newest first."""
         clips = await NewsClip.find(
-            NewsClip.user_id == user_id,
-            NewsClip.profile_id == profile_id,
-            NewsClip.status != NewsClipStatus.DELETED,
+            {"user_id": user_id}, 
+            {"profile_id": profile_id}, 
+            NewsClip.status != NewsClipStatus.DELETED, 
         ).sort(
             -NewsClip.created_at
         ).skip(offset).limit(limit).to_list()

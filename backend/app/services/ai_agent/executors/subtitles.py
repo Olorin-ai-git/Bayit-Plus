@@ -216,7 +216,7 @@ async def _extract_with_audit(
         if not content:
             return
 
-        audit_report = await AuditReport.find_one(AuditReport.audit_id == audit_id)
+        audit_report = await AuditReport.find_one({"audit_id": audit_id})
 
         extracted_subs = await ffmpeg_service.extract_all_subtitles(
             stream_url,
@@ -466,7 +466,7 @@ async def execute_batch_download_subtitles(
         if audit_id:
             from app.models.librarian import AuditReport
 
-            audit_report = await AuditReport.find_one(AuditReport.audit_id == audit_id)
+            audit_report = await AuditReport.find_one({"audit_id": audit_id})
 
         if audit_report:
             for detail in results["details"]:

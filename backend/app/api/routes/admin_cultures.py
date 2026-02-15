@@ -166,7 +166,7 @@ async def create_culture(
 ):
     """Create a new culture."""
     # Check if culture_id already exists
-    existing = await Culture.find_one(Culture.culture_id == data.culture_id)
+    existing = await Culture.find_one({"culture_id": data.culture_id})
     if existing:
         raise HTTPException(
             status_code=400,
@@ -175,7 +175,7 @@ async def create_culture(
 
     # If this is set as default, unset other defaults
     if data.is_default:
-        await Culture.find(Culture.is_default == True).update(
+        await Culture.find({"is_default": True}).update(
             {"$set": {"is_default": False}}
         )
 
@@ -209,7 +209,7 @@ async def update_culture(
     current_admin: User = Depends(require_admin),
 ):
     """Update a culture."""
-    culture = await Culture.find_one(Culture.culture_id == culture_id)
+    culture = await Culture.find_one({"culture_id": culture_id})
     if not culture:
         raise HTTPException(
             status_code=404,
@@ -218,7 +218,7 @@ async def update_culture(
 
     # If this is set as default, unset other defaults
     if data.is_default:
-        await Culture.find(Culture.is_default == True).update(
+        await Culture.find({"is_default": True}).update(
             {"$set": {"is_default": False}}
         )
 
@@ -255,7 +255,7 @@ async def delete_culture(
     current_admin: User = Depends(require_admin),
 ):
     """Delete a culture and all associated cities and sources."""
-    culture = await Culture.find_one(Culture.culture_id == culture_id)
+    culture = await Culture.find_one({"culture_id": culture_id})
     if not culture:
         raise HTTPException(
             status_code=404,
@@ -263,10 +263,10 @@ async def delete_culture(
         )
 
     # Delete associated cities
-    await CultureCity.find(CultureCity.culture_id == culture_id).delete()
+    await CultureCity.find({"culture_id": culture_id}).delete()
 
     # Delete associated sources
-    await CultureNewsSource.find(CultureNewsSource.culture_id == culture_id).delete()
+    await CultureNewsSource.find({"culture_id": culture_id}).delete()
 
     # Delete culture
     await culture.delete()
@@ -323,7 +323,7 @@ async def create_city(
 ):
     """Create a new city."""
     # Verify culture exists
-    culture = await Culture.find_one(Culture.culture_id == culture_id)
+    culture = await Culture.find_one({"culture_id": culture_id})
     if not culture:
         raise HTTPException(
             status_code=404,
@@ -336,9 +336,8 @@ async def create_city(
 
     # Check if city_id already exists for this culture
     existing = await CultureCity.find_one(
-        CultureCity.culture_id == culture_id,
-        CultureCity.city_id == data.city_id,
-    )
+        {"culture_id": culture_id, "city_id": data.city_id}
+)
     if existing:
         raise HTTPException(
             status_code=400,
@@ -376,9 +375,8 @@ async def update_city(
 ):
     """Update a city."""
     city = await CultureCity.find_one(
-        CultureCity.culture_id == culture_id,
-        CultureCity.city_id == city_id,
-    )
+        {"culture_id": culture_id, "city_id": city_id}
+)
     if not city:
         raise HTTPException(
             status_code=404,
@@ -419,9 +417,8 @@ async def delete_city(
 ):
     """Delete a city and associated sources."""
     city = await CultureCity.find_one(
-        CultureCity.culture_id == culture_id,
-        CultureCity.city_id == city_id,
-    )
+        {"culture_id": culture_id, "city_id": city_id}
+)
     if not city:
         raise HTTPException(
             status_code=404,
@@ -430,9 +427,8 @@ async def delete_city(
 
     # Delete associated sources
     await CultureNewsSource.find(
-        CultureNewsSource.culture_id == culture_id,
-        CultureNewsSource.city_id == city_id,
-    ).delete()
+        {"culture_id": culture_id, "city_id": city_id}
+).delete()
 
     # Delete city
     await city.delete()
@@ -469,7 +465,7 @@ async def create_source(
 ):
     """Create a new news source."""
     # Verify culture exists
-    culture = await Culture.find_one(Culture.culture_id == culture_id)
+    culture = await Culture.find_one({"culture_id": culture_id})
     if not culture:
         raise HTTPException(
             status_code=404,
@@ -482,8 +478,8 @@ async def create_source(
 
     # Check if source_id already exists
     existing = await CultureNewsSource.find_one(
-        CultureNewsSource.source_id == data.source_id,
-    )
+        {"source_id": data.source_id}
+)
     if existing:
         raise HTTPException(
             status_code=400,
@@ -522,9 +518,8 @@ async def update_source(
 ):
     """Update a news source."""
     source = await CultureNewsSource.find_one(
-        CultureNewsSource.culture_id == culture_id,
-        CultureNewsSource.source_id == source_id,
-    )
+        {"culture_id": culture_id, "source_id": source_id}
+)
     if not source:
         raise HTTPException(
             status_code=404,
@@ -564,9 +559,8 @@ async def delete_source(
 ):
     """Delete a news source."""
     source = await CultureNewsSource.find_one(
-        CultureNewsSource.culture_id == culture_id,
-        CultureNewsSource.source_id == source_id,
-    )
+        {"culture_id": culture_id, "source_id": source_id}
+)
     if not source:
         raise HTTPException(
             status_code=404,

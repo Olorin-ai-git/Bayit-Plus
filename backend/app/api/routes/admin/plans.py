@@ -29,7 +29,7 @@ async def get_plans(
     result = []
     for p in plans:
         # Count subscribers for this plan
-        subscribers = await User.find(User.subscription_tier == p.slug).count()
+        subscribers = await User.find({"subscription_tier": p.slug}).count()
         result.append(
             {
                 "id": str(p.id),
@@ -70,7 +70,7 @@ async def create_plan(
     """Create a new subscription plan."""
     slug = data.slug or data.name.lower().replace(" ", "_")
 
-    existing = await SubscriptionPlan.find_one(SubscriptionPlan.slug == slug)
+    existing = await SubscriptionPlan.find_one({"slug": slug})
     if existing:
         raise HTTPException(status_code=400, detail="Plan slug already exists")
 
@@ -118,7 +118,7 @@ async def delete_plan(
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
-    users_with_plan = await User.find(User.subscription_tier == plan.slug).count()
+    users_with_plan = await User.find({"subscription_tier": plan.slug}).count()
     if users_with_plan > 0:
         raise HTTPException(
             status_code=400,

@@ -209,6 +209,8 @@ fun BayitNavHost(
                                 onTokenReceived(result.data)
                             }
                             is BayitResult.Failure -> {
+                                // Pass empty token to trigger error state in ViewModel
+                                onTokenReceived("")
                             }
                         }
                     }

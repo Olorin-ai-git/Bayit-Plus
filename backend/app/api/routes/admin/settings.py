@@ -25,7 +25,7 @@ async def get_settings(
     current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG)),
 ):
     """Get system settings."""
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
     if not settings:
         # Create default settings
         settings = SystemSettings(key="system_settings")
@@ -60,7 +60,7 @@ async def update_settings(
     current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG)),
 ):
     """Update system settings."""
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
     if not settings:
         # Create default settings if they don't exist
         settings = SystemSettings(key="system_settings")
@@ -130,7 +130,7 @@ async def get_public_feature_flags():
     Returns a dictionary of feature flag names and their enabled status.
     This is used by frontend to conditionally enable/disable features.
     """
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
     if not settings:
         # Return default flags if no settings found
         return {
@@ -152,7 +152,7 @@ async def get_feature_flags(
     current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG)),
 ):
     """Get feature flags (admin endpoint, requires authentication)."""
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
     if not settings:
         settings = SystemSettings(key="system_settings")
         await settings.insert()
@@ -168,7 +168,7 @@ async def update_feature_flag(
     current_user: User = Depends(has_permission(Permission.SYSTEM_CONFIG)),
 ):
     """Update a feature flag."""
-    settings = await SystemSettings.find_one(SystemSettings.key == "system_settings")
+    settings = await SystemSettings.find_one({"key": "system_settings"})
     if not settings:
         settings = SystemSettings(key="system_settings")
         await settings.insert()

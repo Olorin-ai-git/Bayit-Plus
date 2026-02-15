@@ -42,15 +42,15 @@ async def execute_validate_taxonomy_compliance(
         sections = {
             str(s.id): s
             for s in await ContentSection.find(
-                ContentSection.is_active == True
-            ).to_list()
+                {"is_active": True}
+).to_list()
         }
         genres = {
-            str(g.id): g for g in await Genre.find(Genre.is_active == True).to_list()
+            str(g.id): g for g in await Genre.find({"is_active": True}).to_list()
         }
         audiences = {
             str(a.id): a
-            for a in await Audience.find(Audience.is_active == True).to_list()
+            for a in await Audience.find({"is_active": True}).to_list()
         }
 
         # Check section_ids
@@ -228,13 +228,13 @@ async def execute_suggest_taxonomy_classification(
             return {"success": False, "error": f"Content {content_id} not found"}
 
         # Load reference data
-        sections = await ContentSection.find(ContentSection.is_active == True).to_list()
+        sections = await ContentSection.find({"is_active": True}).to_list()
         section_map = {s.slug: str(s.id) for s in sections}
 
-        genres = await Genre.find(Genre.is_active == True).to_list()
+        genres = await Genre.find({"is_active": True}).to_list()
         genre_map = {g.slug: str(g.id) for g in genres}
 
-        audiences = await Audience.find(Audience.is_active == True).to_list()
+        audiences = await Audience.find({"is_active": True}).to_list()
         audience_map = {a.slug: str(a.id) for a in audiences}
 
         suggestions = {}
@@ -431,13 +431,13 @@ async def execute_batch_migrate_taxonomy(
             batch_size = 200
 
         # Load reference data
-        sections = await ContentSection.find(ContentSection.is_active == True).to_list()
+        sections = await ContentSection.find({"is_active": True}).to_list()
         section_map = {s.slug: str(s.id) for s in sections}
 
-        genres = await Genre.find(Genre.is_active == True).to_list()
+        genres = await Genre.find({"is_active": True}).to_list()
         genre_map = {g.slug: str(g.id) for g in genres}
 
-        audiences = await Audience.find(Audience.is_active == True).to_list()
+        audiences = await Audience.find({"is_active": True}).to_list()
         audience_map = {a.slug: str(a.id) for a in audiences}
 
         # Find unmigrated content
@@ -554,7 +554,7 @@ async def execute_get_taxonomy_summary(
     """
     try:
         # Section counts
-        sections = await ContentSection.find(ContentSection.is_active == True).to_list()
+        sections = await ContentSection.find({"is_active": True}).to_list()
         section_data = []
         for section in sections:
             section_id = str(section.id)
@@ -569,7 +569,7 @@ async def execute_get_taxonomy_summary(
             )
 
         # Genre counts
-        genres = await Genre.find(Genre.is_active == True).to_list()
+        genres = await Genre.find({"is_active": True}).to_list()
         genre_data = []
         for genre in genres:
             genre_id = str(genre.id)
@@ -584,7 +584,7 @@ async def execute_get_taxonomy_summary(
             )
 
         # Audience counts
-        audiences = await Audience.find(Audience.is_active == True).to_list()
+        audiences = await Audience.find({"is_active": True}).to_list()
         audience_data = []
         for aud in audiences:
             aud_id = str(aud.id)
@@ -641,14 +641,14 @@ async def execute_list_taxonomy_violations(
         valid_section_ids = {
             str(s.id)
             for s in await ContentSection.find(
-                ContentSection.is_active == True
-            ).to_list()
+                {"is_active": True}
+).to_list()
         }
         valid_genre_ids = {
-            str(g.id) for g in await Genre.find(Genre.is_active == True).to_list()
+            str(g.id) for g in await Genre.find({"is_active": True}).to_list()
         }
         valid_audience_ids = {
-            str(a.id) for a in await Audience.find(Audience.is_active == True).to_list()
+            str(a.id) for a in await Audience.find({"is_active": True}).to_list()
         }
 
         # Missing section

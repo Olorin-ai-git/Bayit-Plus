@@ -30,13 +30,13 @@ async def get_profile_stats(
     user_id = str(current_user.id)
 
     # Count playlist items
-    playlist_count = await PlaylistItem.find(PlaylistItem.user_id == user_id).count()
+    playlist_count = await PlaylistItem.find({"user_id": user_id}).count()
 
     # Count favorites
-    favorites_count = await Favorite.find(Favorite.user_id == user_id).count()
+    favorites_count = await Favorite.find({"user_id": user_id}).count()
 
     # Calculate total watch time from watch history
-    watch_history = await WatchHistory.find(WatchHistory.user_id == user_id).to_list()
+    watch_history = await WatchHistory.find({"user_id": user_id}).to_list()
 
     total_watch_seconds = sum(item.position for item in watch_history)
     watch_time_minutes = int(total_watch_seconds / 60)

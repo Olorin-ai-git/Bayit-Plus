@@ -30,7 +30,7 @@ struct TVContentView: View {
                     }
                 )
                 .transition(.opacity)
-            } else if coordinator.showingAuth {
+            } else if coordinator.showingAuth || !authManager.isAuthenticated {
                 TVSignInView(
                     onAuthSuccess: {
                         withAnimation {
@@ -61,6 +61,13 @@ struct TVContentView: View {
         }
         .onAppear { registerRemoteVoiceTrigger() }
         .onDisappear { unregisterRemoteVoiceTrigger() }
+        .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
+            if !isAuthenticated && !coordinator.showingSplash {
+                withAnimation {
+                    coordinator.showingAuth = true
+                }
+            }
+        }
     }
 
     // MARK: - Fullscreen Routing

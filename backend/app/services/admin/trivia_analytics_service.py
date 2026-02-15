@@ -20,12 +20,12 @@ async def get_stats() -> dict:
     total_facts = await LiveTriviaTopic.find().sum("facts_generated") or 0
 
     active_sessions = await LiveTriviaSession.find(
-        LiveTriviaSession.session_end == None,  # noqa: E711
+        {"session_end": None},   # noqa: E711
     ).count()
 
     total_content = await ContentTrivia.count()
     enriched_content = await ContentTrivia.find(
-        ContentTrivia.is_enriched == True,  # noqa: E712
+        {"is_enriched": True},   # noqa: E712
     ).count()
 
     coverage_pct = (
@@ -82,14 +82,14 @@ async def get_sessions(
     status: Optional[str] = None, limit: int = 20
 ) -> list[dict]:
     """Get active or recent LiveTriviaSession list."""
-    query_filters = []
+    query_filters = {}
     if status == "active":
-        query_filters.append(LiveTriviaSession.session_end == None)  # noqa: E711
+        query_filters["session_end"] = None
     elif status == "ended":
-        query_filters.append(LiveTriviaSession.session_end != None)  # noqa: E711
+        query_filters["session_end"] = {"$ne": None}
 
     sessions = (
-        await LiveTriviaSession.find(*query_filters)
+        await LiveTriviaSession.find(query_filters)
         .sort("-session_start")
         .limit(limit)
         .to_list()
@@ -113,7 +113,7 @@ async def get_content_coverage() -> dict:
     """ContentTrivia enrichment statistics breakdown."""
     total = await ContentTrivia.count()
     enriched = await ContentTrivia.find(
-        ContentTrivia.is_enriched == True,  # noqa: E712
+        {"is_enriched": True},   # noqa: E712
     ).count()
     not_enriched = total - enriched
 

@@ -89,7 +89,7 @@ async def voice_search(
 
         if content_type in ["any", "movie", "series"]:
             vod_results = (
-                await Content.find(Content.is_published == True)  # noqa: E712
+                await Content.find({"is_published": True})  # noqa: E712
                 .limit(6)
                 .to_list()
             )
@@ -110,7 +110,7 @@ async def voice_search(
 
         if content_type in ["any", "channel"]:
             channels = (
-                await LiveChannel.find(LiveChannel.is_active == True)  # noqa: E712
+                await LiveChannel.find({"is_active": True})  # noqa: E712
                 .limit(4)
                 .to_list()
             )
@@ -130,7 +130,7 @@ async def voice_search(
 
         if content_type in ["any", "podcast"]:
             podcasts = (
-                await Podcast.find(Podcast.is_published == True)  # noqa: E712
+                await Podcast.find({"is_published": True})  # noqa: E712
                 .limit(4)
                 .to_list()
             )

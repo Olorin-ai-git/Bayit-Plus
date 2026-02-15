@@ -51,8 +51,8 @@ class ZineScheduler:
 
         week_key = _current_week_key()
         profiles = await Profile.find(
-            Profile.is_kids_profile == True  # noqa: E712
-        ).to_list()
+            {"is_kids_profile": True}  # noqa: E712
+).to_list()
 
         generated = 0
         skipped = 0

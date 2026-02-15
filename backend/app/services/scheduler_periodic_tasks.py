@@ -17,8 +17,8 @@ async def load_pending_schedules(scheduler_service) -> None:
     try:
         now = datetime.utcnow()
         pending_schedules = await RecordingSchedule.find(
-            RecordingSchedule.status == "pending",
-            RecordingSchedule.end_time > now,
+            {"status": "pending"}, 
+            RecordingSchedule.end_time > now, 
         ).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         loaded_count = 0
@@ -33,8 +33,8 @@ async def load_pending_schedules(scheduler_service) -> None:
                 )
 
         expired = await RecordingSchedule.find(
-            RecordingSchedule.status == "pending",
-            RecordingSchedule.end_time <= now,
+            {"status": "pending"}, 
+            RecordingSchedule.end_time <= now, 
         ).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         for schedule in expired:
@@ -69,8 +69,8 @@ async def detect_dead_sessions() -> None:
         from app.models.recording import RecordingSession
 
         active_sessions = await RecordingSession.find(
-            RecordingSession.status == "recording",
-        ).to_list(length=settings.RECORDING_QUERY_LIMIT)
+            {"status": "recording"}
+).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         if not active_sessions:
             return
@@ -133,7 +133,7 @@ async def periodic_series_rule_scan() -> None:
         from app.services.series_epg_matcher import scan_upcoming_epg
 
         active_rules = await SeriesRecordingRule.find(
-            SeriesRecordingRule.is_active == True,  # noqa: E712
+            {"is_active": True},   # noqa: E712
         ).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         if not active_rules:

@@ -55,9 +55,8 @@ async def index_content(
         # Check if already indexed
         if not force_reindex:
             existing = await ContentEmbedding.find_one(
-                ContentEmbedding.content_id == content_id,
-                ContentEmbedding.embedding_type == "title",
-            )
+                {"content_id": content_id, "embedding_type": "title"}
+)
             if existing:
                 return {"status": "completed", "message": "Already indexed"}
 

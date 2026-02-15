@@ -250,8 +250,8 @@ class ContentImporter:
             for item in items_to_import:
                 # Check if channel already exists by stream_url
                 existing = await LiveChannel.find_one(
-                    LiveChannel.stream_url == item["stream_url"]
-                )
+                    {"stream_url": item["stream_url"]}
+)
                 if existing:
                     continue  # Skip duplicate
 
@@ -290,12 +290,12 @@ class ContentImporter:
             for item in items_to_import:
                 # Check if content already exists by stream_url or title+year
                 existing = await Content.find_one(
-                    Content.stream_url == item["stream_url"]
-                )
+                    {"stream_url": item["stream_url"]}
+)
                 if not existing and item.get("year"):
                     existing = await Content.find_one(
-                        Content.title == item["title"], Content.year == item.get("year")
-                    )
+                        {"title": item["title"], "year": item.get("year")}
+)
                 if existing:
                     continue  # Skip duplicate
 
@@ -345,8 +345,8 @@ class ContentImporter:
         for station in stations:
             # Check if station already exists by stream_url
             existing = await RadioStation.find_one(
-                RadioStation.stream_url == station["stream_url"]
-            )
+                {"stream_url": station["stream_url"]}
+)
             if existing:
                 continue  # Skip duplicate
 
@@ -435,12 +435,12 @@ class ContentImporter:
             existing = None
             if podcast_info.get("rss_feed"):
                 existing = await Podcast.find_one(
-                    Podcast.rss_feed == podcast_info["rss_feed"]
-                )
+                    {"rss_feed": podcast_info["rss_feed"]}
+)
             if not existing:
                 existing = await Podcast.find_one(
-                    Podcast.title == podcast_info["title"]
-                )
+                    {"title": podcast_info["title"]}
+)
             if existing:
                 continue  # Skip duplicate
 
@@ -550,7 +550,7 @@ async def import_movies(
     # Get default category for movies
     from app.models.content_taxonomy import ContentSection
 
-    movies_section = await ContentSection.find_one(ContentSection.slug == "movies")
+    movies_section = await ContentSection.find_one({"slug": "movies"})
     category_id = str(movies_section.id) if movies_section else "movies"
 
     imported = []
@@ -590,7 +590,7 @@ async def import_movies(
             metadata = _parse_movie_filename(video_file.name)
 
             # Check for existing content by file path
-            existing = await Content.find_one(Content.stream_url == str(video_file))
+            existing = await Content.find_one({"stream_url": str(video_file)})
             if existing:
                 skipped.append(video_file.name)
                 continue
@@ -598,9 +598,8 @@ async def import_movies(
             # Check by title and year
             if metadata["year"]:
                 existing = await Content.find_one(
-                    Content.title == metadata["title"],
-                    Content.year == metadata["year"],
-                )
+                    {"title": metadata["title"], "year": metadata["year"]}
+)
                 if existing:
                     skipped.append(video_file.name)
                     continue
@@ -667,7 +666,7 @@ async def import_series(
     # Get default category for series
     from app.models.content_taxonomy import ContentSection
 
-    series_section = await ContentSection.find_one(ContentSection.slug == "series")
+    series_section = await ContentSection.find_one({"slug": "series"})
     category_id = str(series_section.id) if series_section else "series"
 
     imported = []
@@ -700,7 +699,7 @@ async def import_series(
                 continue
 
             # Check for existing content
-            existing = await Content.find_one(Content.stream_url == str(video_file))
+            existing = await Content.find_one({"stream_url": str(video_file)})
             if existing:
                 skipped.append(video_file.name)
                 continue

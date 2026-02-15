@@ -58,8 +58,8 @@ class RecordingRecoveryService:
         cutoff = datetime.utcnow() - timedelta(minutes=timeout_minutes)
 
         stuck_sessions = await RecordingSession.find(
-            RecordingSession.status == "processing",
-            RecordingSession.updated_at < cutoff,
+            {"status": "processing"}, 
+            RecordingSession.updated_at < cutoff, 
         ).to_list(length=settings.RECORDING_QUERY_LIMIT)
 
         recovered = 0

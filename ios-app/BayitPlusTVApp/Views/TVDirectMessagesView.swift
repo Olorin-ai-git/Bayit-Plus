@@ -29,6 +29,10 @@ struct TVDirectMessagesView: View {
             .background(DesignTokens.Background.primary)
             .navigationDestination(for: String.self) { friendId in
                 TVConversationView(friendId: friendId)
+                    .tvBreadcrumb(
+                        localization.t("profile.messages"),
+                        icon: "bubble.left.and.bubble.right"
+                    )
             }
         }
         .task {

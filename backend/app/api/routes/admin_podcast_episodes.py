@@ -34,9 +34,9 @@ async def get_podcast_episodes(
         raise HTTPException(status_code=404, detail="Podcast not found")
 
     # Build query with optional translation status filter
-    query = PodcastEpisode.find(PodcastEpisode.podcast_id == podcast_id)
+    query = PodcastEpisode.find({"podcast_id": podcast_id})
     if translation_status:
-        query = query.find(PodcastEpisode.translation_status == translation_status)
+        query = query.find({"translation_status": translation_status})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -310,13 +310,13 @@ async def trigger_bulk_translation(
 
     # Find all episodes with status = pending or failed (with retry_count < max_retries)
     episodes = await PodcastEpisode.find(
-        PodcastEpisode.podcast_id == podcast_id,
+        {"podcast_id": podcast_id}, 
         {
             "$or": [
                 {"translation_status": "pending"},
                 {"translation_status": "failed", "retry_count": {"$lt": 3}},
             ]
-        },
+        }, 
     ).to_list()
 
     queued_count = 0
@@ -382,7 +382,7 @@ async def get_failed_translations(
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get list of failed translation episodes for the dashboard."""
-    query = PodcastEpisode.find(PodcastEpisode.translation_status == "failed")
+    query = PodcastEpisode.find({"translation_status": "failed"})
     total = await query.count()
     skip = (page - 1) * page_size
 

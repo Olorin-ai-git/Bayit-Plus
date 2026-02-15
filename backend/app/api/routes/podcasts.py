@@ -120,14 +120,20 @@ async def add_podcast_from_url(
     rss_url = body.rss_url.strip()
 
     # Check if podcast already exists
-    existing = await Podcast.find_one(Podcast.rss_feed == rss_url)
+    existing = await Podcast.find_one({"rss_feed": rss_url})
     if existing:
         # Check if user already subscribed
         existing_sub = await UserPodcastSubscription.find_one(
-            UserPodcastSubscription.user_id == str(current_user.id),
-            UserPodcastSubscription.podcast_id == str(existing.id),
-            UserPodcastSubscription.is_deleted == False,
-        )
+            {
+
+                "user_id": str(current_user.id),
+
+                "podcast_id": str(existing.id),
+
+                "is_deleted": False
+
+            }
+)
 
         if existing_sub:
             raise HTTPException(
@@ -265,10 +271,16 @@ async def unsubscribe_from_podcast(
     Only the subscription owner can unsubscribe.
     """
     subscription = await UserPodcastSubscription.find_one(
-        UserPodcastSubscription.user_id == str(current_user.id),
-        UserPodcastSubscription.podcast_id == podcast_id,
-        UserPodcastSubscription.is_deleted == False,
-    )
+        {
+
+            "user_id": str(current_user.id),
+
+            "podcast_id": podcast_id,
+
+            "is_deleted": False
+
+        }
+)
 
     if not subscription:
         raise HTTPException(
@@ -322,14 +334,14 @@ async def get_podcast_categories(
         }
 
         # Build query conditions
-        query_conditions = [Podcast.is_active == True]
+        query_conditions = {"is_active": True}
         beta_filter = build_beta_content_filter(current_user)
         if beta_filter:
-            query_conditions.append(beta_filter)
+            query_conditions.update(beta_filter)
         if culture_id:
-            query_conditions.append(Podcast.culture_id == culture_id)
+            query_conditions["culture_id"] = culture_id
 
-        all_podcasts = await Podcast.find(*query_conditions).to_list()
+        all_podcasts = await Podcast.find(query_conditions).to_list()
 
         # Get unique categories with localization
         categories_map = {}
@@ -535,8 +547,8 @@ async def get_podcasts(
         for show in shows:
             show_id = str(show.id)
             episodes = await PodcastEpisode.find(
-                PodcastEpisode.podcast_id == show_id
-            ).to_list()
+                {"podcast_id": show_id}
+).to_list()
             # Collect all unique languages across episodes
             languages = set()
             for ep in episodes:

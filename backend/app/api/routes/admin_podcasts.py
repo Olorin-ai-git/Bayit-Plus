@@ -156,9 +156,9 @@ async def get_podcasts(
             }
         )
     if category:
-        query = query.find(Podcast.category == category)
+        query = query.find({"category": category})
     if is_active is not None:
-        query = query.find(Podcast.is_active == is_active)
+        query = query.find({"is_active": is_active})
     total = await query.count()
     items = (
         await query.sort(Podcast.order)
@@ -346,7 +346,7 @@ async def delete_podcast(
         raise HTTPException(status_code=404, detail="Podcast not found")
     if not podcast:
         raise HTTPException(status_code=404, detail="Podcast not found")
-    await PodcastEpisode.find(PodcastEpisode.podcast_id == podcast_id).delete()
+    await PodcastEpisode.find({"podcast_id": podcast_id}).delete()
     await log_audit(
         str(current_user.id),
         AuditAction.PODCAST_DELETED,

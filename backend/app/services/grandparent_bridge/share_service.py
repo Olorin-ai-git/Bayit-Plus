@@ -57,9 +57,8 @@ class BridgeShareService:
         Returns clip information for the share token.
         """
         clip = await NewsClip.find_one(
-            NewsClip.share_token == share_token,
-            NewsClip.status == NewsClipStatus.READY,
-        )
+            {"share_token": share_token, "status": NewsClipStatus.READY}
+)
 
         if not clip:
             raise ValueError("Share link not found or clip not available")
@@ -91,8 +90,8 @@ class BridgeShareService:
         Validates against the family controls PIN for the clip owner.
         """
         clip = await NewsClip.find_one(
-            NewsClip.share_token == share_token
-        )
+            {"share_token": share_token}
+)
         if not clip:
             raise ValueError("Share link not found")
 
@@ -102,8 +101,8 @@ class BridgeShareService:
         )
 
         controls = await FamilyControls.find_one(
-            FamilyControls.user_id == clip.user_id
-        )
+            {"user_id": clip.user_id}
+)
         if not controls:
             return False
 

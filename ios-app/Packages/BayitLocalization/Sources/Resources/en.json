@@ -8138,7 +8138,7 @@
     "notLoggedIn": "You are not logged in on this device.",
     "enterCredentials": "Please enter your credentials to authorize your TV.",
     "authFailed": "Authorization failed.",
-    "verifying": "Verifying...",
+    "verifying": "Verifying QR code...",
     "verifyingDescription": "Connecting to your TV...",
     "loginTitle": "Login to Your TV",
     "loginDescription": "Enter your credentials to authorize your TV",
@@ -8161,7 +8161,19 @@
     "scanWithPhone": "Scan with your phone to sign in",
     "signedIn": "Sign-in successful",
     "signingIn": "Signing you in...",
-    "waitingForActivation": "Waiting for activation..."
+    "waitingForActivation": "Waiting for activation...",
+    "title": "TV Sign In",
+    "header": "Sign in to your TV",
+    "subtitle": "Authorize this device to access your Bayit+ account",
+    "connected": "Connected to TV",
+    "signInToTV": "Sign In to TV",
+    "pleaseSignIn": "Please sign in to continue",
+    "signInButton": "Sign In",
+    "authenticating": "Authenticating...",
+    "almostThere": "Almost there...",
+    "tvSignedIn": "Your TV has been signed in successfully",
+    "expired": "Session Expired",
+    "expiredMessage": "This QR code has expired. Please generate a new one on your TV."
   },
   "uploads": {
     "status": {

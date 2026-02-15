@@ -28,7 +28,7 @@ class ProfileSelect(BaseModel):
 @router.get("", response_model=List[ProfileResponse])
 async def get_profiles(current_user: User = Depends(get_current_active_user)):
     """Get all profiles for the current user."""
-    profiles = await Profile.find(Profile.user_id == str(current_user.id)).to_list()
+    profiles = await Profile.find({"user_id": str(current_user.id)}).to_list()
     if not profiles:
         default_profile = await Profile.get_or_create_active_profile(current_user, logger)
         profiles = [default_profile]
@@ -42,15 +42,15 @@ async def create_profile(
     """Create a new profile."""
     tier = current_user.subscription_tier or "basic"
     limit = PROFILE_LIMITS.get(tier, 1)
-    existing_count = await Profile.find(Profile.user_id == str(current_user.id)).count()
+    existing_count = await Profile.find({"user_id": str(current_user.id)}).count()
     if existing_count >= limit:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Profile limit reached ({limit}). Upgrade subscription for more profiles.",
         )
     existing_name = await Profile.find_one(
-        Profile.user_id == str(current_user.id), Profile.name == profile_data.name,
-    )
+        {"user_id": str(current_user.id), "name": profile_data.name}
+)
     if existing_name:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A profile with this name already exists")
     hashed_pin = get_password_hash(profile_data.pin) if profile_data.pin else None
@@ -82,8 +82,8 @@ async def update_profile(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
     if updates.name and updates.name != profile.name:
         existing_name = await Profile.find_one(
-            Profile.user_id == str(current_user.id), Profile.name == updates.name,
-        )
+            {"user_id": str(current_user.id), "name": updates.name}
+)
         if existing_name:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A profile with this name already exists")
         profile.name = updates.name
@@ -109,12 +109,12 @@ async def delete_profile(profile_id: str, current_user: User = Depends(get_curre
     profile = await Profile.get(profile_id)
     if not profile or profile.user_id != str(current_user.id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
-    profile_count = await Profile.find(Profile.user_id == str(current_user.id)).count()
+    profile_count = await Profile.find({"user_id": str(current_user.id)}).count()
     if profile_count <= 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete the last profile")
     if current_user.active_profile_id == profile_id:
         other_profile = await Profile.find_one(
-            Profile.user_id == str(current_user.id), Profile.id != profile.id,
+            {"user_id": str(current_user.id)},  Profile.id != profile.id, 
         )
         if other_profile:
             current_user.active_profile_id = str(other_profile.id)

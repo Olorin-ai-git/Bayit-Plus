@@ -31,8 +31,8 @@ class RecordingCleanupService:
 
             # Delete subtitle cues if any
             subtitle_cues = await RecordingSubtitleCue.find(
-                RecordingSubtitleCue.recording_id == recording_id
-            ).to_list()
+                {"recording_id": recording_id}
+).to_list()
 
             for cue in subtitle_cues:
                 await cue.delete()

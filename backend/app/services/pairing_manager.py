@@ -70,9 +70,13 @@ class PairingManager:
         return secrets.token_urlsafe(32)
 
     def _build_pairing_url(self, data: dict, base_url: str) -> str:
-        """Build the pairing URL that gets encoded into the QR code."""
+        """Build the pairing URL that gets encoded into the QR code.
+
+        Uses the bayitplus:// deep link scheme for mobile app compatibility.
+        The base_url parameter is ignored in favor of the universal deep link scheme.
+        """
         return (
-            f"{base_url}/tv-login"
+            f"bayitplus://tv-login"
             f"?session={data['session_id']}"
             f"&token={data['token']}"
             f"&expires={data['expires_at']}"

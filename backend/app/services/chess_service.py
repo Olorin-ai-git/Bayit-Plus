@@ -34,7 +34,7 @@ class ChessService:
         game_code = generate_game_code()
 
         # Ensure unique game code
-        while await ChessGame.find_one(ChessGame.game_code == game_code):
+        while await ChessGame.find_one({"game_code": game_code}):
             game_code = generate_game_code()
 
         player = ChessPlayer(
@@ -84,7 +84,7 @@ class ChessService:
     @staticmethod
     async def join_game(game_code: str, user_id: str, user_name: str) -> ChessGame:
         """Join existing game."""
-        game = await ChessGame.find_one(ChessGame.game_code == game_code)
+        game = await ChessGame.find_one({"game_code": game_code})
         if not game:
             raise ValueError(f"Game {game_code} not found")
 

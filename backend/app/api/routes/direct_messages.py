@@ -131,23 +131,15 @@ async def get_conversation(
         )
 
     # Build query for messages between these two users
-    query = DirectMessage.find(
-        Or(
-            And(
-                DirectMessage.sender_id == user_id,
-                DirectMessage.receiver_id == friend_id,
-            ),
-            And(
-                DirectMessage.sender_id == friend_id,
-                DirectMessage.receiver_id == user_id,
-            ),
-        )
-    )
+    query_filter = {"$or": [
+        {"sender_id": user_id, "receiver_id": friend_id},
+        {"sender_id": friend_id, "receiver_id": user_id},
+    ]}
 
     if before:
-        query = query.find(DirectMessage.timestamp < before)
+        query_filter["timestamp"] = {"$lt": before}
 
-    messages = await query.sort(-DirectMessage.timestamp).limit(limit).to_list()
+    messages = await DirectMessage.find(query_filter).sort("-timestamp").limit(limit).to_list()
 
     # Return in chronological order
     messages.reverse()
@@ -170,19 +162,11 @@ async def list_conversations(user: User = Depends(get_current_user)):
 
         # Get most recent message
         last_message = (
-            await DirectMessage.find(
-                Or(
-                    And(
-                        DirectMessage.sender_id == user_id,
-                        DirectMessage.receiver_id == friend_id,
-                    ),
-                    And(
-                        DirectMessage.sender_id == friend_id,
-                        DirectMessage.receiver_id == user_id,
-                    ),
-                )
-            )
-            .sort(-DirectMessage.timestamp)
+            await DirectMessage.find({"$or": [
+                {"sender_id": user_id, "receiver_id": friend_id},
+                {"sender_id": friend_id, "receiver_id": user_id},
+            ]})
+            .sort("-timestamp")
             .first_or_none()
         )
 
@@ -191,11 +175,7 @@ async def list_conversations(user: User = Depends(get_current_user)):
 
         # Count unread messages
         unread_count = await DirectMessage.find(
-            And(
-                DirectMessage.sender_id == friend_id,
-                DirectMessage.receiver_id == user_id,
-                DirectMessage.read == False,
-            )
+            {"sender_id": friend_id, "receiver_id": user_id, "read": False}
         ).count()
 
         conversations.append(
@@ -251,11 +231,7 @@ async def mark_all_as_read(friend_id: str, user: User = Depends(get_current_user
 
     # Update all unread messages from this friend
     result = await DirectMessage.find(
-        And(
-            DirectMessage.sender_id == friend_id,
-            DirectMessage.receiver_id == user_id,
-            DirectMessage.read == False,
-        )
+        {"sender_id": friend_id, "receiver_id": user_id, "read": False}
     ).update_many({"$set": {"read": True, "read_at": datetime.utcnow()}})
 
     return {"success": True, "updated_count": result.modified_count if result else 0}

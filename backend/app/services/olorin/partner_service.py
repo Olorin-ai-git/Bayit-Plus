@@ -60,8 +60,8 @@ class PartnerService:
         """
         # Check for existing partner
         existing = await IntegrationPartner.find_one(
-            IntegrationPartner.partner_id == partner_id
-        )
+            {"partner_id": partner_id}
+)
         if existing:
             raise ValueError(f"Partner with ID '{partner_id}' already exists")
 
@@ -115,8 +115,8 @@ class PartnerService:
         # Find by prefix first (efficient lookup)
         prefix = api_key[:8]
         partner = await IntegrationPartner.find_one(
-            IntegrationPartner.api_key_prefix == prefix,
-            IntegrationPartner.is_active == True,  # noqa: E712
+            {"api_key_prefix": prefix}, 
+            {"is_active": True},   # noqa: E712
         )
 
         if not partner:
@@ -141,8 +141,8 @@ class PartnerService:
     async def get_partner(self, partner_id: str) -> Optional[IntegrationPartner]:
         """Get partner by ID."""
         return await IntegrationPartner.find_one(
-            IntegrationPartner.partner_id == partner_id
-        )
+            {"partner_id": partner_id}
+)
 
     async def update_partner(
         self,

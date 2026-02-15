@@ -43,7 +43,7 @@ class UserQuotaService:
         """
         try:
             # Get or create user quota
-            quota = await UserQuota.find_one(UserQuota.user_id == user_id)
+            quota = await UserQuota.find_one({"user_id": user_id})
             if not quota:
                 quota = UserQuota(user_id=user_id, daily_minutes_used=0.0)
                 await quota.insert()
@@ -129,7 +129,7 @@ class UserQuotaService:
             reserved_duration_minutes: Previously reserved duration
         """
         try:
-            quota = await UserQuota.find_one(UserQuota.user_id == user_id)
+            quota = await UserQuota.find_one({"user_id": user_id})
             if not quota:
                 logger.error(f"Quota not found for user {user_id}")
                 return
@@ -176,7 +176,7 @@ class UserQuotaService:
             is_premium = subscription_tier in ["premium", "family", "admin"]
 
             # Get or create quota record
-            quota = await UserQuota.find_one(UserQuota.user_id == user_id)
+            quota = await UserQuota.find_one({"user_id": user_id})
             if not quota:
                 return {
                     "daily_minutes_used": 0.0,

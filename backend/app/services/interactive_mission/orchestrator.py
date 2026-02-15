@@ -116,8 +116,8 @@ class InteractiveMissionOrchestrator:
             hour=0, minute=0, second=0, microsecond=0,
         )
         today_count = await InteractiveMission.find(
-            InteractiveMission.user_id == user_id,
-            InteractiveMission.created_at >= today_start,
+            {"user_id": user_id}, 
+            InteractiveMission.created_at >= today_start, 
         ).count()
         if today_count >= settings.MISSION_MAX_PER_DAY:
             raise ValueError(

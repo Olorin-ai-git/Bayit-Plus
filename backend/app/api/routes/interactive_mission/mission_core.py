@@ -55,9 +55,9 @@ async def list_available_missions(
     user: User = Depends(get_current_user),
 ):
     missions = await InteractiveMission.find(
-        InteractiveMission.user_id == str(user.id),
-        InteractiveMission.profile_id == profile_id,
-        InteractiveMission.status.is_in([MissionStatus.READY, MissionStatus.ACTIVE]),
+        {"user_id": str(user.id)}, 
+        {"profile_id": profile_id}, 
+        InteractiveMission.status.is_in([MissionStatus.READY, MissionStatus.ACTIVE]), 
     ).sort(-InteractiveMission.created_at).limit(limit).to_list()
     return [
         {

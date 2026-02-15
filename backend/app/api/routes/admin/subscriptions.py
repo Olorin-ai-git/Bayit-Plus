@@ -25,9 +25,9 @@ async def get_subscriptions(
     query = User.find(User.subscription_tier != None)
 
     if plan:
-        query = query.find(User.subscription_tier == plan)
+        query = query.find({"subscription_tier": plan})
     if status:
-        query = query.find(User.subscription_status == status)
+        query = query.find({"subscription_status": status})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -185,7 +185,7 @@ async def create_subscription(
         raise HTTPException(status_code=404, detail="User not found")
 
     # Verify plan exists
-    plan = await SubscriptionPlan.find_one(SubscriptionPlan.slug == plan_id)
+    plan = await SubscriptionPlan.find_one({"slug": plan_id})
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
@@ -235,7 +235,7 @@ async def update_subscription_plan(
         raise HTTPException(status_code=400, detail="User has no subscription")
 
     # Verify plan exists
-    plan = await SubscriptionPlan.find_one(SubscriptionPlan.slug == plan_id)
+    plan = await SubscriptionPlan.find_one({"slug": plan_id})
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
 
@@ -299,17 +299,17 @@ async def get_subscriptions_churn_analytics(
     now = datetime.utcnow()
 
     # Active subscriptions
-    active_subs = await User.find(User.subscription_status == "active").count()
+    active_subs = await User.find({"subscription_status": "active"}).count()
 
     # Monthly churn rate
     active_start = await User.find(
-        User.subscription_status == "active",
-        User.created_at <= now - timedelta(days=30),
+        {"subscription_status": "active"}, 
+        User.created_at <= now - timedelta(days=30), 
     ).count()
 
     canceled_30d = await User.find(
-        User.subscription_status == "canceled",
-        User.updated_at >= now - timedelta(days=30),
+        {"subscription_status": "canceled"}, 
+        User.updated_at >= now - timedelta(days=30), 
     ).count()
 
     churn_rate = (canceled_30d / active_start * 100) if active_start > 0 else 0
@@ -317,9 +317,9 @@ async def get_subscriptions_churn_analytics(
 
     # At-risk subscriptions (ending in next 7 days)
     at_risk = await User.find(
-        User.subscription_status == "active",
-        User.subscription_end_date <= now + timedelta(days=7),
-        User.subscription_end_date >= now,
+        {"subscription_status": "active"}, 
+        User.subscription_end_date <= now + timedelta(days=7), 
+        User.subscription_end_date >= now, 
     ).count()
 
     return {

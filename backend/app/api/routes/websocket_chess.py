@@ -85,7 +85,7 @@ async def chess_websocket(websocket: WebSocket, game_code: str):
     if error or user is None:
         return
 
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if not game:
         await websocket.close(code=4004, reason="Game not found")
         return
@@ -130,7 +130,7 @@ async def chess_websocket(websocket: WebSocket, game_code: str):
             try:
                 message = json.loads(data)
                 await _handle_chess_message(message, game, game_code, user_id, user, websocket)
-                game = await ChessGame.find_one(ChessGame.game_code == game_code) or game
+                game = await ChessGame.find_one({"game_code": game_code}) or game
             except json.JSONDecodeError:
                 await websocket.send_json({"type": "error", "message": "Invalid JSON"})
             except Exception as exc:
@@ -177,7 +177,7 @@ def _remove_connection(game_code: str, websocket: WebSocket):
 
 
 async def _update_player_disconnect(game_code: str, user_id: str):
-    game = await ChessGame.find_one(ChessGame.game_code == game_code)
+    game = await ChessGame.find_one({"game_code": game_code})
     if game:
         if game.white_player and game.white_player.user_id == user_id:
             game.white_player.is_connected = False

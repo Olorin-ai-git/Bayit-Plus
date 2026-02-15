@@ -339,7 +339,7 @@ async def _handle_subscription_updated(subscription: dict) -> None:
     if not customer_id:
         return
 
-    user = await User.find_one(User.stripe_customer_id == customer_id)
+    user = await User.find_one({"stripe_customer_id": customer_id})
     if not user:
         return
 
@@ -365,7 +365,7 @@ async def _handle_subscription_deleted(subscription: dict) -> None:
     if not customer_id:
         return
 
-    user = await User.find_one(User.stripe_customer_id == customer_id)
+    user = await User.find_one({"stripe_customer_id": customer_id})
     if not user:
         return
 

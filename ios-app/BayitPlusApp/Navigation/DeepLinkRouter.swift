@@ -179,6 +179,14 @@ public enum DeepLink {
             }
             return .directMessages
 
+        case "tv-login":
+            guard let sessionId = url.queryValue(for: "session"),
+                  let token = url.queryValue(for: "token"),
+                  let expires = url.queryValue(for: "expires") else {
+                return nil
+            }
+            return .tvLogin(sessionId: sessionId, token: token, expires: expires)
+
         default:
             return .home
         }

@@ -172,7 +172,7 @@ async def get_section(section_id: str):
         pass
 
     if not section:
-        section = await ContentSection.find_one(ContentSection.slug == section_id)
+        section = await ContentSection.find_one({"slug": section_id})
 
     if not section or not section.is_active:
         raise HTTPException(status_code=404, detail="Section not found")
@@ -209,7 +209,7 @@ async def get_section_subcategories(section_id: str):
         pass
 
     if not section:
-        section = await ContentSection.find_one(ContentSection.slug == section_id)
+        section = await ContentSection.find_one({"slug": section_id})
 
     if not section or not section.is_active:
         raise HTTPException(status_code=404, detail="Section not found")
@@ -218,9 +218,8 @@ async def get_section_subcategories(section_id: str):
 
     subcategories = (
         await SectionSubcategory.find(
-            SectionSubcategory.section_id == section_obj_id,
-            SectionSubcategory.is_active == True,
-        )
+            {"section_id": section_obj_id, "is_active": True}
+)
         .sort("order")
         .to_list()
     )
@@ -302,7 +301,7 @@ async def get_audiences():
     """
     Get all audience classifications.
     """
-    audiences = await Audience.find(Audience.is_active == True).sort("order").to_list()
+    audiences = await Audience.find({"is_active": True}).sort("order").to_list()
 
     return {
         "audiences": [
@@ -405,7 +404,7 @@ async def browse_content(
     section_id = None
     section_obj = None
     if section:
-        section_obj = await ContentSection.find_one(ContentSection.slug == section)
+        section_obj = await ContentSection.find_one({"slug": section})
         if section_obj:
             section_id = str(section_obj.id)
             # Build section filter with legacy fallback
@@ -428,9 +427,8 @@ async def browse_content(
     # Resolve subcategory
     if subcategory and section_id:
         sub_obj = await SectionSubcategory.find_one(
-            SectionSubcategory.section_id == section_id,
-            SectionSubcategory.slug == subcategory,
-        )
+            {"section_id": section_id, "slug": subcategory}
+)
         if sub_obj:
             content_filter["subcategory_ids"] = str(sub_obj.id)
 
@@ -446,7 +444,7 @@ async def browse_content(
 
     # Resolve audience
     if audience:
-        aud_obj = await Audience.find_one(Audience.slug == audience)
+        aud_obj = await Audience.find_one({"slug": audience})
         if aud_obj:
             content_filter["audience_id"] = str(aud_obj.id)
         # Fallback to legacy kids content field for "kids" audience
@@ -569,7 +567,7 @@ async def get_section_content(
     using either the new section_ids field or falling back to legacy category mapping.
     """
     # Resolve section
-    section = await ContentSection.find_one(ContentSection.slug == section_slug)
+    section = await ContentSection.find_one({"slug": section_slug})
 
     if not section or not section.is_active:
         raise HTTPException(status_code=404, detail="Section not found")
@@ -613,9 +611,8 @@ async def get_section_content(
     # Add subcategory filter if provided
     if subcategory:
         sub_obj = await SectionSubcategory.find_one(
-            SectionSubcategory.section_id == section_id,
-            SectionSubcategory.slug == subcategory,
-        )
+            {"section_id": section_id, "slug": subcategory}
+)
         if sub_obj:
             content_filter["subcategory_ids"] = str(sub_obj.id)
 

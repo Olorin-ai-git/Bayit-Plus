@@ -247,9 +247,8 @@ async def get_featured(
     async def get_categories():
         return (
             await ContentSection.find(
-                ContentSection.is_active == True,
-                ContentSection.show_on_homepage == True,
-            )
+                {"is_active": True, "show_on_homepage": True}
+)
             .sort("order")
             .limit(15)
             .to_list()
@@ -260,14 +259,14 @@ async def get_featured(
         # Try featured podcasts first - use beta_only_filter (no content type restriction)
         podcast_beta = beta_only_filter if beta_only_filter else {}
         podcasts = await Podcast.find(
-            Podcast.is_active == True, Podcast.is_featured == True, podcast_beta
+            {"is_active": True},  {"is_featured": True},  podcast_beta
         ).sort("-order").limit(10).to_list()
 
         # Fallback to recently created active podcasts if no featured ones
         if not podcasts:
             logger.info("No explicitly featured podcasts, using recently created fallback")
             podcasts = await Podcast.find(
-                Podcast.is_active == True, podcast_beta
+                {"is_active": True},  podcast_beta
             ).sort("-created_at").limit(10).to_list()
 
         return podcasts

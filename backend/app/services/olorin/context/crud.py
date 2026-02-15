@@ -37,8 +37,8 @@ async def add_reference(
         Created reference document
     """
     existing = await CulturalReference.find_one(
-        CulturalReference.reference_id == reference_id
-    )
+        {"reference_id": reference_id}
+)
     if existing:
         raise ValueError(f"Reference '{reference_id}' already exists")
 
@@ -76,8 +76,8 @@ async def update_reference(
         Updated reference or None if not found
     """
     ref = await CulturalReference.find_one(
-        CulturalReference.reference_id == reference_id
-    )
+        {"reference_id": reference_id}
+)
     if not ref:
         return None
 
@@ -100,7 +100,7 @@ async def get_references_by_category(
 ) -> List[CulturalReference]:
     """Get references by category."""
     return (
-        await CulturalReference.find(CulturalReference.category == category)
+        await CulturalReference.find({"category": category})
         .sort(-CulturalReference.lookup_count)
         .limit(limit)
         .to_list()

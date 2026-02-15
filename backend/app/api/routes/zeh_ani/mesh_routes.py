@@ -67,9 +67,8 @@ async def generate_mesh(
 ):
     """Generate a 3D mesh from the child's video selfie."""
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == request.profile_id,
-    )
+        {"user_id": str(user.id), "profile_id": request.profile_id}
+)
     if not avatar:
         raise HTTPException(status_code=404, detail="Avatar not found")
     if not avatar.video_selfie_gcs_path:
@@ -93,8 +92,8 @@ async def generate_mesh(
         )
 
     existing = await AvatarMesh.find_one(
-        AvatarMesh.avatar_id == str(avatar.id)
-    )
+        {"avatar_id": str(avatar.id)}
+)
     if existing and existing.status == MeshStatus.GENERATING:
         return _mesh_response(existing)
     if existing and existing.is_ready:
@@ -116,8 +115,8 @@ async def generate_mesh(
             await mesh.insert()
         except DuplicateKeyError:
             mesh = await AvatarMesh.find_one(
-                AvatarMesh.avatar_id == str(avatar.id),
-            )
+                {"avatar_id": str(avatar.id)}
+)
 
     return _mesh_response(mesh)
 
@@ -129,9 +128,8 @@ async def get_mesh_status(
 ):
     """Get mesh generation status for an avatar."""
     mesh = await AvatarMesh.find_one(
-        AvatarMesh.avatar_id == avatar_id,
-        AvatarMesh.user_id == str(user.id),
-    )
+        {"avatar_id": avatar_id, "user_id": str(user.id)}
+)
     if not mesh:
         raise HTTPException(status_code=404, detail="Mesh not found")
     return _mesh_response(mesh)
@@ -144,9 +142,8 @@ async def get_glb_url(
 ):
     """Get a signed URL for downloading the .glb mesh file."""
     mesh = await AvatarMesh.find_one(
-        AvatarMesh.avatar_id == avatar_id,
-        AvatarMesh.user_id == str(user.id),
-    )
+        {"avatar_id": avatar_id, "user_id": str(user.id)}
+)
     if not mesh:
         raise HTTPException(status_code=404, detail="Mesh not found")
     if not mesh.is_ready or not mesh.glb_gcs_path:
@@ -201,9 +198,8 @@ async def upload_glb_mesh(
         )
 
     avatar = await ChildAvatar.find_one(
-        ChildAvatar.user_id == str(user.id),
-        ChildAvatar.profile_id == profile_id,
-    )
+        {"user_id": str(user.id), "profile_id": profile_id}
+)
     if not avatar:
         raise HTTPException(status_code=404, detail="Avatar not found")
 
@@ -244,8 +240,8 @@ async def upload_glb_mesh(
         )
 
     existing = await AvatarMesh.find_one(
-        AvatarMesh.avatar_id == str(avatar.id),
-    )
+        {"avatar_id": str(avatar.id)}
+)
     now = datetime.now(timezone.utc)
 
     if existing:
@@ -281,8 +277,8 @@ async def upload_glb_mesh(
             await mesh.insert()
         except DuplicateKeyError:
             mesh = await AvatarMesh.find_one(
-                AvatarMesh.avatar_id == str(avatar.id),
-            )
+                {"avatar_id": str(avatar.id)}
+)
 
     avatar.mesh_id = str(mesh.id)
     avatar.mesh_status = "ready"

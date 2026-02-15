@@ -98,11 +98,11 @@ class UploadService:
             )
 
         existing_job = await UploadJob.find_one(
-            UploadJob.filename == path.name,
+            {"filename": path.name}, 
             In(
                 UploadJob.status,
                 [UploadStatus.QUEUED, UploadStatus.PROCESSING, UploadStatus.UPLOADING],
-            ),
+            ), 
         )
         if existing_job:
             logger.warning(
@@ -171,7 +171,7 @@ class UploadService:
                     break
 
                 jobs = (
-                    await UploadJob.find(UploadJob.status == UploadStatus.QUEUED)
+                    await UploadJob.find({"status": UploadStatus.QUEUED})
                     .sort("+created_at")
                     .limit(1)
                     .to_list()
@@ -306,7 +306,7 @@ class UploadService:
                 from app.models.content import Content
 
                 logger.info(f"Compensating: Deleting Content record {content_id}")
-                content = await Content.find_one(Content.id == ObjectId(content_id))
+                content = await Content.find_one({"id": ObjectId(content_id)})
                 if content:
                     await content.delete()
                     logger.info(f"Deleted Content record {content_id}")
@@ -770,7 +770,7 @@ class UploadService:
     async def get_queue(self) -> List[UploadJob]:
         """Get all queued jobs."""
         return (
-            await UploadJob.find(UploadJob.status == UploadStatus.QUEUED)
+            await UploadJob.find({"status": UploadStatus.QUEUED})
             .sort("+created_at")
             .to_list()
         )
@@ -801,7 +801,7 @@ class UploadService:
 
     async def get_job(self, job_id: str) -> Optional[UploadJob]:
         """Get a specific job by ID."""
-        return await UploadJob.find_one(UploadJob.job_id == job_id)
+        return await UploadJob.find_one({"job_id": job_id})
 
     async def cancel_job(self, job_id: str) -> bool:
         """Cancel a job."""
@@ -887,14 +887,14 @@ class UploadService:
         stats = QueueStats(
             total_jobs=await UploadJob.count(),
             queued=await UploadJob.find(
-                UploadJob.status == UploadStatus.QUEUED
-            ).count(),
+                {"status": UploadStatus.QUEUED}
+).count(),
             processing=await UploadJob.find(
                 In(UploadJob.status, [UploadStatus.PROCESSING, UploadStatus.UPLOADING])
             ).count(),
             completed=await UploadJob.find(
-                UploadJob.status == UploadStatus.COMPLETED
-            ).count(),
+                {"status": UploadStatus.COMPLETED}
+).count(),
             failed=actual_failed_count,
             cancelled=0,
             skipped=skipped_count,

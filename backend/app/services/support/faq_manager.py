@@ -16,10 +16,10 @@ async def get_faq_by_category(
     language: str = "en",
 ) -> List[dict]:
     """Get FAQ entries, optionally filtered by category."""
-    query = FAQEntry.find(FAQEntry.is_active == True)  # noqa: E712
+    query = FAQEntry.find({"is_active": True})  # noqa: E712
 
     if category:
-        query = query.find(FAQEntry.category == category)
+        query = query.find({"category": category})
 
     entries = await query.sort(FAQEntry.order).to_list()
 

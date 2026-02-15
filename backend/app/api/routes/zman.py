@@ -135,7 +135,7 @@ async def get_shabbat_content(
 
     # Get radio stations (music for Shabbat atmosphere)
     radio_stations = (
-        await RadioStation.find(RadioStation.is_active == True).limit(10).to_list()
+        await RadioStation.find({"is_active": True}).limit(10).to_list()
     )
 
     # Format response

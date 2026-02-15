@@ -147,9 +147,8 @@ async def get_all_content(
                 item_data["total_episodes"] = item.total_episodes
             else:
                 episode_count = await Content.find(
-                    Content.series_id == str(item.id),
-                    Content.is_published == True,
-                ).count()
+                    {"series_id": str(item.id), "is_published": True}
+).count()
                 item_data["total_episodes"] = episode_count
 
         content_items.append(item_data)

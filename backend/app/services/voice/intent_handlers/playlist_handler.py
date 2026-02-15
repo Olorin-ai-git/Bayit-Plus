@@ -84,9 +84,8 @@ async def _handle_add(transcript: str, context: VoiceContext) -> Dict[str, Any]:
     duration = top.get("duration")
 
     existing = await PlaylistItem.find_one(
-        PlaylistItem.user_id == context.user_id,
-        PlaylistItem.content_id == content_id,
-    )
+        {"user_id": context.user_id, "content_id": content_id}
+)
     if existing:
         items = await _fetch_user_items(context.user_id)
         spoken = PLAYLIST_ALREADY_EXISTS_RESPONSES.get(
@@ -95,8 +94,8 @@ async def _handle_add(transcript: str, context: VoiceContext) -> Dict[str, Any]:
         return _build_playlist_response(spoken, "add", items)
 
     current_count = await PlaylistItem.find(
-        PlaylistItem.user_id == context.user_id,
-    ).count()
+        {"user_id": context.user_id}
+).count()
     if current_count >= settings.PLAYLIST_MAX_ITEMS:
         items = await _fetch_user_items(context.user_id)
         spoken = PLAYLIST_FULL_RESPONSES.get(
@@ -168,8 +167,8 @@ async def _handle_remove(transcript: str, context: VoiceContext) -> Dict[str, An
 async def _fetch_user_items(user_id: str) -> List[PlaylistItem]:
     """Fetch all playlist items for a user sorted by position."""
     return await PlaylistItem.find(
-        PlaylistItem.user_id == user_id,
-    ).sort("position").to_list()
+        {"user_id": user_id}
+).sort("position").to_list()
 
 
 def _build_playlist_response(

@@ -215,7 +215,7 @@ async def list_deliveries(
 ):
     """List recent webhook deliveries."""
     deliveries = (
-        await WebhookDelivery.find(WebhookDelivery.partner_id == partner.partner_id)
+        await WebhookDelivery.find({"partner_id": partner.partner_id})
         .sort(-WebhookDelivery.created_at)
         .limit(limit)
         .to_list()

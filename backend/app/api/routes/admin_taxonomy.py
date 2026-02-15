@@ -90,7 +90,7 @@ async def admin_get_section(
         pass
 
     if not section:
-        section = await ContentSection.find_one(ContentSection.slug == section_id)
+        section = await ContentSection.find_one({"slug": section_id})
 
     if not section:
         raise HTTPException(status_code=404, detail="Section not found")
@@ -125,7 +125,7 @@ async def admin_create_section(
 ):
     """Create a new section."""
     # Check for duplicate slug
-    existing = await ContentSection.find_one(ContentSection.slug == data.slug)
+    existing = await ContentSection.find_one({"slug": data.slug})
     if existing:
         raise HTTPException(
             status_code=400, detail="Section with this slug already exists"
@@ -275,9 +275,8 @@ async def admin_create_subcategory(
 
     # Check for duplicate slug within section
     existing = await SectionSubcategory.find_one(
-        SectionSubcategory.section_id == data.section_id,
-        SectionSubcategory.slug == data.slug,
-    )
+        {"section_id": data.section_id, "slug": data.slug}
+)
     if existing:
         raise HTTPException(
             status_code=400,
@@ -390,7 +389,7 @@ async def admin_create_genre(
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a new genre."""
-    existing = await Genre.find_one(Genre.slug == data.slug)
+    existing = await Genre.find_one({"slug": data.slug})
     if existing:
         raise HTTPException(
             status_code=400, detail="Genre with this slug already exists"
@@ -505,7 +504,7 @@ async def admin_create_audience(
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a new audience classification."""
-    existing = await Audience.find_one(Audience.slug == data.slug)
+    existing = await Audience.find_one({"slug": data.slug})
     if existing:
         raise HTTPException(
             status_code=400, detail="Audience with this slug already exists"

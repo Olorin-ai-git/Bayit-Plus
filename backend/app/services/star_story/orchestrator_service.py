@@ -52,9 +52,8 @@ class StarStoryOrchestrator:
         )
 
         existing_count = await StoryEpisode.find(
-            StoryEpisode.user_id == user_id,
-            StoryEpisode.profile_id == profile_id,
-        ).count()
+            {"user_id": user_id, "profile_id": profile_id}
+).count()
 
         episode = StoryEpisode(
             user_id=user_id,
@@ -162,8 +161,8 @@ class StarStoryOrchestrator:
             hour=0, minute=0, second=0, microsecond=0
         )
         today_count = await StoryEpisode.find(
-            StoryEpisode.user_id == user_id,
-            StoryEpisode.created_at >= today_start,
+            {"user_id": user_id}, 
+            StoryEpisode.created_at >= today_start, 
         ).count()
 
         if today_count >= settings.STAR_STORY_MAX_EPISODES_PER_DAY:

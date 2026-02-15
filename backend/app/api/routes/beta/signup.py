@@ -69,7 +69,7 @@ async def signup(
             )
 
         # Check if email already registered
-        existing = await BetaUser.find_one(BetaUser.email == request.email)
+        existing = await BetaUser.find_one({"email": request.email})
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -182,7 +182,7 @@ async def verify_email(
 
         # Get verified user
         valid, email, _ = email_service.verify_token(token)
-        user = await BetaUser.find_one(BetaUser.email == email)
+        user = await BetaUser.find_one({"email": email})
 
         # Allocate credits
         try:
@@ -199,7 +199,7 @@ async def verify_email(
             )
 
         # Set is_beta_user flag on the matching User document
-        app_user = await User.find_one(User.email == email)
+        app_user = await User.find_one({"email": email})
         if app_user and not app_user.is_beta_user:
             app_user.is_beta_user = True
             await app_user.save()

@@ -107,7 +107,7 @@ async def update_household(
     current_user: User = Depends(get_current_active_user),
 ):
     """Update household settings (owner only)."""
-    household = await Household.find_one(Household.household_id == household_id)
+    household = await Household.find_one({"household_id": household_id})
     if not household:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Household not found"
@@ -146,7 +146,7 @@ async def get_shared_controls(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get shared family controls for household."""
-    household = await Household.find_one(Household.household_id == household_id)
+    household = await Household.find_one({"household_id": household_id})
     if not household:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Household not found"
@@ -249,7 +249,7 @@ async def list_members(
     current_user: User = Depends(get_current_active_user),
 ):
     """List all members of household."""
-    household = await Household.find_one(Household.household_id == household_id)
+    household = await Household.find_one({"household_id": household_id})
     if not household:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Household not found"

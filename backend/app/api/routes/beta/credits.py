@@ -75,9 +75,8 @@ async def get_current_user_credit_balance(
     try:
         # Get credit record
         credit = await BetaCredit.find_one(
-            BetaCredit.user_id == user_id,
-            BetaCredit.is_expired == False
-        )
+            {"user_id": user_id, "is_expired": False}
+)
 
         if not credit:
             raise HTTPException(
@@ -130,9 +129,8 @@ async def get_credit_balance(
         
         # Get credit record
         credit = await BetaCredit.find_one(
-            BetaCredit.user_id == user_id,
-            BetaCredit.is_expired == False
-        )
+            {"user_id": user_id, "is_expired": False}
+)
 
         if not credit:
             raise HTTPException(

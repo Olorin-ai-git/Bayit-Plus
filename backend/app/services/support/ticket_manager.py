@@ -82,9 +82,9 @@ async def list_user_tickets(
     status: Optional[str] = None,
 ) -> Tuple[List[SupportTicket], int]:
     """List tickets for a user."""
-    query = SupportTicket.find(SupportTicket.user_id == user.id)
+    query = SupportTicket.find({"user_id": user.id})
     if status:
-        query = query.find(SupportTicket.status == status)
+        query = query.find({"status": status})
     total = await query.count()
     tickets = (
         await query.sort(-SupportTicket.created_at)
@@ -136,13 +136,13 @@ async def list_admin_tickets(
     """List tickets for admin with filters and stats."""
     query = SupportTicket.find()
     if status:
-        query = query.find(SupportTicket.status == status)
+        query = query.find({"status": status})
     if priority:
-        query = query.find(SupportTicket.priority == priority)
+        query = query.find({"priority": priority})
     if category:
-        query = query.find(SupportTicket.category == category)
+        query = query.find({"category": category})
     if assigned_to:
-        query = query.find(SupportTicket.assigned_to == assigned_to)
+        query = query.find({"assigned_to": assigned_to})
 
     total = await query.count()
     tickets = (

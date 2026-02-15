@@ -40,10 +40,16 @@ class ControlNetStyleService:
     ) -> AvatarStyleCache:
         """Apply ControlNet style transfer to mesh-rendered poses."""
         existing = await AvatarStyleCache.find_one(
-            AvatarStyleCache.avatar_id == str(avatar.id),
-            AvatarStyleCache.show_content_id == show_content_id,
-            AvatarStyleCache.status == StyleCacheStatus.READY,
-        )
+            {
+
+                "avatar_id": str(avatar.id),
+
+                "show_content_id": show_content_id,
+
+                "status": StyleCacheStatus.READY
+
+            }
+)
         if existing:
             existing.last_used_at = datetime.now(timezone.utc)
             await existing.save()

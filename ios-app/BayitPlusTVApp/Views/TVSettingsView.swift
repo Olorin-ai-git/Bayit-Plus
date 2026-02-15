@@ -254,7 +254,10 @@ struct TVSettingsView: View {
         detail: String?,
         @ViewBuilder destination: () -> Destination
     ) -> some View {
-        NavigationLink(destination: destination) {
+        NavigationLink {
+            destination()
+                .tvBreadcrumb(title, icon: icon)
+        } label: {
             HStack {
                 Image(systemName: icon)
                     .foregroundStyle(DesignTokens.Primary.p400)

@@ -224,8 +224,8 @@ class TranslationCacheService:
         # Check MongoDB cache (Tier 2)
         try:
             doc = await ChatTranslationCacheDoc.find_one(
-                ChatTranslationCacheDoc.message_hash == cache_key
-            )
+                {"message_hash": cache_key}
+)
 
             if doc and doc.expires_at > datetime.utcnow():
                 # Update hit count
@@ -287,8 +287,8 @@ class TranslationCacheService:
                 )
 
             existing = await ChatTranslationCacheDoc.find_one(
-                ChatTranslationCacheDoc.message_hash == cache_key
-            )
+                {"message_hash": cache_key}
+)
 
             if existing:
                 existing.translated_text = translated_text

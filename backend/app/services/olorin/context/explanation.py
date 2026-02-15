@@ -29,8 +29,8 @@ async def get_explanation(
         Reference explanation or None if not found
     """
     ref = await CulturalReference.find_one(
-        CulturalReference.reference_id == reference_id
-    )
+        {"reference_id": reference_id}
+)
     if not ref:
         return None
 

@@ -32,10 +32,10 @@ class BiometricConsentService:
         await self.verify_pin(user_id, pin)
 
         existing = await BiometricConsent.find_one(
-            BiometricConsent.user_id == user_id,
-            BiometricConsent.profile_id == profile_id,
-            BiometricConsent.consent_type == consent_type,
-            BiometricConsent.revoked_at == None,  # noqa: E711
+            {"user_id": user_id}, 
+            {"profile_id": profile_id}, 
+            {"consent_type": consent_type}, 
+            {"revoked_at": None},   # noqa: E711
         )
         if existing and existing.is_active:
             logger.info(
@@ -78,11 +78,7 @@ class BiometricConsentService:
     ) -> bool:
         """Check if active biometric consent exists."""
         consent = await BiometricConsent.find_one(
-            BiometricConsent.user_id == user_id,
-            BiometricConsent.profile_id == profile_id,
-            BiometricConsent.consent_type == consent_type,
-            BiometricConsent.revoked_at == None,  # noqa: E711
-            BiometricConsent.family_pin_verified == True,  # noqa: E712
+            {"user_id": user_id, "profile_id": profile_id, "consent_type": consent_type, "revoked_at": None, "family_pin_verified": True}
         )
         return consent is not None
 
@@ -94,10 +90,10 @@ class BiometricConsentService:
     ) -> bool:
         """Revoke biometric consent and cascade-delete biometric data."""
         consent = await BiometricConsent.find_one(
-            BiometricConsent.user_id == user_id,
-            BiometricConsent.profile_id == profile_id,
-            BiometricConsent.consent_type == consent_type,
-            BiometricConsent.revoked_at == None,  # noqa: E711
+            {"user_id": user_id}, 
+            {"profile_id": profile_id}, 
+            {"consent_type": consent_type}, 
+            {"revoked_at": None},   # noqa: E711
         )
         if not consent:
             return False
@@ -129,9 +125,8 @@ class BiometricConsentService:
         from app.services.olorin.storage_service import storage_service
 
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if not avatar:
             return
 
@@ -169,8 +164,8 @@ class BiometricConsentService:
     async def verify_pin(self, user_id: str, pin: str) -> None:
         """Verify family PIN before consent operations."""
         family_controls = await FamilyControls.find_one(
-            FamilyControls.user_id == user_id
-        )
+            {"user_id": user_id}
+)
         if not family_controls:
             raise ValueError(
                 "Family controls not configured for this account"

@@ -51,9 +51,8 @@ class ExternalSubtitleService:
 
         # Check if subtitle already exists
         existing = await SubtitleTrackDoc.find_one(
-            SubtitleTrackDoc.content_id == content_id,
-            SubtitleTrackDoc.language == language,
-        )
+            {"content_id": content_id, "language": language}
+)
         if existing:
             logger.info(f"✅ Subtitle already exists for {content_id} ({language})")
             return existing

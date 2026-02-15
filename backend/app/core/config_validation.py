@@ -97,83 +97,83 @@ OPTIONAL_FIELDS: list[FieldRequirement] = [
 LIBRARIAN_FIELDS: list[FieldRequirement] = [
     # Daily Audit
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_CRON", "Daily audit cron schedule", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_CRON", "Daily audit cron schedule", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_TIME", "Daily audit time description", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_TIME", "Daily audit time description", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_MODE", "Daily audit mode", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_MODE", "Daily audit mode", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_COST", "Daily audit cost estimate", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_COST", "Daily audit cost estimate", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_DAILY_AUDIT_STATUS", "Daily audit status", True, "librarian"
+        "LIBRARIAN_DAILY_AUDIT_STATUS", "Daily audit status", False, "librarian"
     ),
     FieldRequirement(
         "LIBRARIAN_DAILY_AUDIT_DESCRIPTION",
         "Daily audit description",
-        True,
+        False,
         "librarian",
     ),
     # Weekly Audit
     FieldRequirement(
-        "LIBRARIAN_WEEKLY_AUDIT_CRON", "Weekly audit cron schedule", True, "librarian"
+        "LIBRARIAN_WEEKLY_AUDIT_CRON", "Weekly audit cron schedule", False, "librarian"
     ),
     FieldRequirement(
         "LIBRARIAN_WEEKLY_AUDIT_TIME",
         "Weekly audit time description",
-        True,
+        False,
         "librarian",
     ),
     FieldRequirement(
-        "LIBRARIAN_WEEKLY_AUDIT_MODE", "Weekly audit mode", True, "librarian"
+        "LIBRARIAN_WEEKLY_AUDIT_MODE", "Weekly audit mode", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_WEEKLY_AUDIT_COST", "Weekly audit cost estimate", True, "librarian"
+        "LIBRARIAN_WEEKLY_AUDIT_COST", "Weekly audit cost estimate", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_WEEKLY_AUDIT_STATUS", "Weekly audit status", True, "librarian"
+        "LIBRARIAN_WEEKLY_AUDIT_STATUS", "Weekly audit status", False, "librarian"
     ),
     FieldRequirement(
         "LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION",
         "Weekly audit description",
-        True,
+        False,
         "librarian",
     ),
     # Limits
     FieldRequirement(
-        "LIBRARIAN_MAX_ITERATIONS", "Max audit iterations", True, "librarian"
+        "LIBRARIAN_MAX_ITERATIONS", "Max audit iterations", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_DEFAULT_BUDGET_USD", "Default budget in USD", True, "librarian"
+        "LIBRARIAN_DEFAULT_BUDGET_USD", "Default budget in USD", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_MIN_BUDGET_USD", "Minimum budget in USD", True, "librarian"
+        "LIBRARIAN_MIN_BUDGET_USD", "Minimum budget in USD", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_MAX_BUDGET_USD", "Maximum budget in USD", True, "librarian"
+        "LIBRARIAN_MAX_BUDGET_USD", "Maximum budget in USD", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_BUDGET_STEP_USD", "Budget step in USD", True, "librarian"
+        "LIBRARIAN_BUDGET_STEP_USD", "Budget step in USD", False, "librarian"
     ),
     # Pagination
     FieldRequirement(
-        "LIBRARIAN_REPORTS_LIMIT", "Reports pagination limit", True, "librarian"
+        "LIBRARIAN_REPORTS_LIMIT", "Reports pagination limit", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_ACTIONS_LIMIT", "Actions pagination limit", True, "librarian"
+        "LIBRARIAN_ACTIONS_LIMIT", "Actions pagination limit", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_ACTIVITY_PAGE_SIZE", "Activity page size", True, "librarian"
+        "LIBRARIAN_ACTIVITY_PAGE_SIZE", "Activity page size", False, "librarian"
     ),
     # UI
     FieldRequirement(
-        "LIBRARIAN_ID_TRUNCATE_LENGTH", "ID truncation length", True, "librarian"
+        "LIBRARIAN_ID_TRUNCATE_LENGTH", "ID truncation length", False, "librarian"
     ),
     FieldRequirement(
-        "LIBRARIAN_MODAL_MAX_HEIGHT", "Modal max height in px", True, "librarian"
+        "LIBRARIAN_MODAL_MAX_HEIGHT", "Modal max height in px", False, "librarian"
     ),
 ]
 

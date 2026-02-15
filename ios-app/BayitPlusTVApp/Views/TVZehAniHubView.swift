@@ -152,6 +152,7 @@ struct TVZehAniHubView: View {
     ) -> some View {
         NavigationLink {
             destination()
+                .tvBreadcrumb(title, icon: icon)
         } label: {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 Image(systemName: icon)

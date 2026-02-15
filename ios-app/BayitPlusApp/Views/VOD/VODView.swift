@@ -30,7 +30,7 @@ struct VODView: View {
                 if let collection = featuredCollection, vm.selectedType == .all {
                     CollectionPromoBannerView(
                         collectionId: collection.id,
-                        title: collection.title ?? localization.t("home.collection"),
+                        title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
                         posterUrl: collection.thumbnail,
                         promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
                         movieCount: collection.availableMovies ?? 0

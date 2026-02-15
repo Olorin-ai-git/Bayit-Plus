@@ -181,7 +181,7 @@ async def end_session(
         from app.models.beta_session import BetaSession
         
         # Get session before ending
-        session = await BetaSession.find_one(BetaSession.session_id == session_id)
+        session = await BetaSession.find_one({"session_id": session_id})
         
         if not session:
             raise HTTPException(
@@ -196,7 +196,7 @@ async def end_session(
         )
 
         # Refresh session to get final values
-        session = await BetaSession.find_one(BetaSession.session_id == session_id)
+        session = await BetaSession.find_one({"session_id": session_id})
 
         return EndSessionResponse(
             success=True,

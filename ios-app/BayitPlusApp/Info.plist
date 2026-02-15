@@ -42,7 +42,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>77</string>
+	<string>78</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
 	<key>FirebaseCrashlyticsCollectionEnabled</key>

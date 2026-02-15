@@ -31,8 +31,8 @@ async def get_review_queue(
 ):
     """Get episodes pending human safety review."""
     episodes = await StoryEpisode.find(
-        StoryEpisode.status == EpisodeStatus.REJECTED,
-    ).sort(-StoryEpisode.created_at).limit(limit).to_list()
+        {"status": EpisodeStatus.REJECTED}
+).sort(-StoryEpisode.created_at).limit(limit).to_list()
 
     return [
         {
@@ -100,14 +100,14 @@ async def get_generation_stats(
     """Get overall Star in Story generation statistics."""
     total = await StoryEpisode.find().count()
     ready = await StoryEpisode.find(
-        StoryEpisode.status == EpisodeStatus.READY,
-    ).count()
+        {"status": EpisodeStatus.READY}
+).count()
     failed = await StoryEpisode.find(
-        StoryEpisode.status == EpisodeStatus.FAILED,
-    ).count()
+        {"status": EpisodeStatus.FAILED}
+).count()
     rejected = await StoryEpisode.find(
-        StoryEpisode.status == EpisodeStatus.REJECTED,
-    ).count()
+        {"status": EpisodeStatus.REJECTED}
+).count()
     in_progress = await StoryEpisode.find(
         {"status": {"$nin": [
             EpisodeStatus.READY.value,

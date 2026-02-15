@@ -152,8 +152,8 @@ class FolderMonitorService:
         try:
             # Get all enabled monitored folders
             folders = await MonitoredFolder.find(
-                MonitoredFolder.enabled == True
-            ).to_list()
+                {"enabled": True}
+).to_list()
 
             logger.info(f"Scanning {len(folders)} monitored folders")
 
@@ -325,7 +325,7 @@ class FolderMonitorService:
 
                             # Check if already queued with this hash
                             existing_job = await UploadJob.find_one(
-                                UploadJob.file_hash == file_hash,
+                                {"file_hash": file_hash}, 
                                 In(
                                     UploadJob.status,
                                     [
@@ -333,7 +333,7 @@ class FolderMonitorService:
                                         UploadStatus.PROCESSING,
                                         UploadStatus.UPLOADING,
                                     ],
-                                ),
+                                ), 
                             )
 
                             if existing_job:
@@ -347,7 +347,7 @@ class FolderMonitorService:
                         # TIER 4: Check if file is already in upload queue by filename
                         # (handles service restarts where in-memory cache is cleared)
                         existing_job_by_filename = await UploadJob.find_one(
-                            UploadJob.filename == filename,
+                            {"filename": filename}, 
                             In(
                                 UploadJob.status,
                                 [
@@ -355,7 +355,7 @@ class FolderMonitorService:
                                     UploadStatus.PROCESSING,
                                     UploadStatus.UPLOADING,
                                 ],
-                            ),
+                            ), 
                         )
 
                         if existing_job_by_filename:
@@ -554,7 +554,7 @@ class FolderMonitorService:
 
         for path in folder_paths:
             # Check if already exists
-            existing = await MonitoredFolder.find_one(MonitoredFolder.path == path)
+            existing = await MonitoredFolder.find_one({"path": path})
 
             if existing:
                 logger.info(f"Monitored folder already exists: {path}")
@@ -627,7 +627,7 @@ class FolderMonitorService:
 
         # Check if path already exists (normalize paths for comparison)
         normalized_path = str(folder_path.resolve())
-        existing = await MonitoredFolder.find_one(MonitoredFolder.path == path)
+        existing = await MonitoredFolder.find_one({"path": path})
 
         # Also check normalized path in case of symlinks or relative paths
         if not existing:

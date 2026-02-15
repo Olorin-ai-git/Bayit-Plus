@@ -34,10 +34,10 @@ async def list_recordings(
     """List user's recordings with pagination."""
     try:
         skip = (page - 1) * page_size
-        total = await Recording.find(Recording.user_id == str(current_user.id)).count()
+        total = await Recording.find({"user_id": str(current_user.id)}).count()
 
         recordings = (
-            await Recording.find(Recording.user_id == str(current_user.id))
+            await Recording.find({"user_id": str(current_user.id)})
             .sort(-Recording.recorded_at)
             .skip(skip)
             .limit(page_size)
@@ -65,9 +65,8 @@ async def get_active_recordings(current_user: User = Depends(get_current_active_
     """Get user's active recording sessions."""
     try:
         sessions = await RecordingSession.find(
-            RecordingSession.user_id == str(current_user.id),
-            RecordingSession.status == "recording",
-        ).to_list()
+            {"user_id": str(current_user.id), "status": "recording"}
+).to_list()
 
         return [session_to_response(s) for s in sessions]
 

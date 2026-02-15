@@ -22,8 +22,8 @@ logger = get_logger(__name__)
 async def handle_playlist_clear(context: VoiceContext) -> Dict[str, Any]:
     """Clear all items from the user's playlist."""
     await PlaylistItem.find(
-        PlaylistItem.user_id == context.user_id,
-    ).delete()
+        {"user_id": context.user_id}
+).delete()
 
     logger.info(
         "Playlist cleared",
@@ -123,5 +123,5 @@ async def handle_playlist_review(context: VoiceContext) -> Dict[str, Any]:
 async def _fetch_user_items(user_id: str) -> List[PlaylistItem]:
     """Fetch all playlist items for a user sorted by position."""
     return await PlaylistItem.find(
-        PlaylistItem.user_id == user_id,
-    ).sort("position").to_list()
+        {"user_id": user_id}
+).sort("position").to_list()

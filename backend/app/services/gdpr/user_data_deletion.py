@@ -44,8 +44,8 @@ async def delete_user_dubbing_data(user_id: str) -> Dict[str, Any]:
     try:
         # Delete MongoDB sessions
         deleted_sessions = await LiveDubbingSession.find(
-            LiveDubbingSession.user_id == user_id
-        ).delete()
+            {"user_id": user_id}
+).delete()
         deleted_summary["mongodb_sessions_deleted"] = deleted_sessions
         logger.info(f"Deleted {deleted_sessions} MongoDB sessions for user {user_id}")
 

@@ -53,8 +53,8 @@ class JewishCalendarService:
     async def _get_cached(self, cache_key: str) -> Optional[Dict[str, Any]]:
         """Get cached data if not expired."""
         cached = await JewishCalendarCache.find_one(
-            JewishCalendarCache.cache_key == cache_key
-        )
+            {"cache_key": cache_key}
+)
 
         if cached and cached.expires_at > datetime.utcnow():
             return cached.data
@@ -74,8 +74,8 @@ class JewishCalendarService:
 
         # Upsert cache entry
         existing = await JewishCalendarCache.find_one(
-            JewishCalendarCache.cache_key == cache_key
-        )
+            {"cache_key": cache_key}
+)
 
         if existing:
             existing.data = data

@@ -192,7 +192,7 @@ class UploadIntegrityService:
                     public_url = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/{gcs_path}"
 
                     # Check if a Content record exists with this URL
-                    content = await Content.find_one(Content.stream_url == public_url)
+                    content = await Content.find_one({"stream_url": public_url})
 
                     if not content:
                         orphans.append(
@@ -425,8 +425,8 @@ class UploadIntegrityService:
                 else:
                     try:
                         content = await Content.find_one(
-                            Content.id == ObjectId(orphan.content_id)
-                        )
+                            {"id": ObjectId(orphan.content_id)}
+)
                         if content:
                             await content.delete()
                             result.items_cleaned += 1
@@ -494,7 +494,7 @@ class UploadIntegrityService:
                     result.jobs_recovered += 1
                 else:
                     try:
-                        job = await UploadJob.find_one(UploadJob.job_id == stuck.job_id)
+                        job = await UploadJob.find_one({"job_id": stuck.job_id})
                         if job:
                             # Clean up any partial uploads
                             if job.gcs_path:

@@ -273,8 +273,8 @@ async def get_dubbing_stats(
         # Count total and active sessions
         total_sessions = await LiveDubbingSession.count()
         active_sessions = await LiveDubbingSession.find(
-            LiveDubbingSession.status == "active"
-        ).count()
+            {"status": "active"}
+).count()
 
         # Calculate aggregate metrics
         pipeline = [

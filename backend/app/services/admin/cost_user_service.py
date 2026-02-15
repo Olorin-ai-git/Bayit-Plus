@@ -25,8 +25,8 @@ async def get_top_spenders(
 ) -> TopSpendersResponse:
     """Top N users by total_cost from UserCostBreakdown (PII redacted)."""
     user_docs = await UserCostBreakdown.find(
-        UserCostBreakdown.period_type == period,
-    ).sort("-total_cost").limit(limit).to_list()
+        {"period_type": period}
+).sort("-total_cost").limit(limit).to_list()
 
     plat_total = sum((d.total_cost for d in user_docs), Decimal("0"))
 
@@ -59,10 +59,10 @@ async def get_user_breakdown(
 ) -> dict:
     """UserCostBreakdown for a specific user."""
     docs = await UserCostBreakdown.find(
-        UserCostBreakdown.user_id == user_id,
-        UserCostBreakdown.period_type == "daily",
-        UserCostBreakdown.period_start >= params.start_date,
-        UserCostBreakdown.period_end <= params.end_date,
+        {"user_id": user_id}, 
+        {"period_type": "daily"}, 
+        UserCostBreakdown.period_start >= params.start_date, 
+        UserCostBreakdown.period_end <= params.end_date, 
     ).sort("-period_start").to_list()
 
     total_cost = sum((d.total_cost for d in docs), Decimal("0"))

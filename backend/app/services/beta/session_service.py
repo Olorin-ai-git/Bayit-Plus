@@ -124,9 +124,8 @@ class SessionBasedCreditService:
         try:
             # Fetch active session
             session = await BetaSession.find_one(
-                BetaSession.session_id == session_id,
-                BetaSession.status == "active"
-            )
+                {"session_id": session_id, "status": "active"}
+)
 
             if not session:
                 logger.warning(
@@ -228,8 +227,8 @@ class SessionBasedCreditService:
         try:
             # Fetch session
             session = await BetaSession.find_one(
-                BetaSession.session_id == session_id
-            )
+                {"session_id": session_id}
+)
 
             if not session:
                 logger.warning(
@@ -305,9 +304,8 @@ class SessionBasedCreditService:
         """
         try:
             sessions = await BetaSession.find(
-                BetaSession.user_id == user_id,
-                BetaSession.status == "active"
-            ).to_list()
+                {"user_id": user_id, "status": "active"}
+).to_list()
             
             return sessions
 
@@ -332,8 +330,8 @@ class SessionBasedCreditService:
             timeout_threshold = datetime.utcnow()
             
             sessions = await BetaSession.find(
-                BetaSession.status == "active"
-            ).to_list()
+                {"status": "active"}
+).to_list()
 
             cleaned = 0
             for session in sessions:

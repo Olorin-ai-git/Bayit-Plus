@@ -61,7 +61,7 @@ async def get_favorites(
 ):
     """Get user's favorite items."""
     favorites = (
-        await Favorite.find(Favorite.user_id == str(current_user.id))
+        await Favorite.find({"user_id": str(current_user.id)})
         .sort("-added_at")
         .to_list()
     )
@@ -119,9 +119,8 @@ async def add_favorite(
     """Add content to favorites."""
     # Check if already favorited
     existing = await Favorite.find_one(
-        Favorite.user_id == str(current_user.id),
-        Favorite.content_id == data.content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": data.content_id}
+)
     if existing:
         return {"message": "Already in favorites", "id": str(existing.id)}
 
@@ -143,9 +142,8 @@ async def remove_favorite(
 ):
     """Remove content from favorites."""
     favorite = await Favorite.find_one(
-        Favorite.user_id == str(current_user.id),
-        Favorite.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
 
     if not favorite:
         raise HTTPException(
@@ -164,9 +162,8 @@ async def check_favorite(
 ):
     """Check if content is in favorites."""
     favorite = await Favorite.find_one(
-        Favorite.user_id == str(current_user.id),
-        Favorite.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
     return {"is_favorite": favorite is not None}
 
 
@@ -178,9 +175,8 @@ async def toggle_favorite(
 ):
     """Toggle favorite status for content."""
     existing = await Favorite.find_one(
-        Favorite.user_id == str(current_user.id),
-        Favorite.content_id == content_id,
-    )
+        {"user_id": str(current_user.id), "content_id": content_id}
+)
 
     if existing:
         await existing.delete()

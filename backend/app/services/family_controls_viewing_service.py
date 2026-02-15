@@ -26,7 +26,7 @@ class FamilyControlsViewingService:
         Returns:
             Tuple of (is_allowed, reason_if_blocked)
         """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        controls = await FamilyControls.find_one({"user_id": user_id})
         if not controls:
             # No controls set up - allow by default
             return True, None
@@ -54,7 +54,7 @@ class FamilyControlsViewingService:
         Returns:
             Tuple of (is_allowed, reason_if_blocked)
         """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
+        controls = await FamilyControls.find_one({"user_id": user_id})
         if not controls:
             # No controls set up - allow by default
             return True, None

@@ -303,8 +303,8 @@ class KidsContentService:
 
                 # Get kids section ID
                 kids_section = await ContentSection.find_one(
-                    ContentSection.slug == "kids"
-                )
+                    {"slug": "kids"}
+)
                 kids_section_id = str(kids_section.id) if kids_section else None
 
                 # Build query with proper $and to avoid overwriting $or
@@ -550,7 +550,7 @@ class KidsContentService:
         """Get all kids subcategories with content counts."""
         try:
             # Get kids section ID
-            kids_section = await ContentSection.find_one(ContentSection.slug == "kids")
+            kids_section = await ContentSection.find_one({"slug": "kids"})
             if not kids_section:
                 return KidsSubcategoriesResponse(
                     subcategories=[], total=0, grouped_by_parent={}
@@ -559,9 +559,8 @@ class KidsContentService:
             # Get subcategories from database
             subcategories = (
                 await SectionSubcategory.find(
-                    SectionSubcategory.section_id == str(kids_section.id),
-                    SectionSubcategory.is_active == True,
-                )
+                    {"section_id": str(kids_section.id), "is_active": True}
+)
                 .sort("order")
                 .to_list()
             )

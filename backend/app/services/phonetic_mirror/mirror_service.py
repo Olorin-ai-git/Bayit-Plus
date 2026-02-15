@@ -67,9 +67,8 @@ class PhoneticMirrorService:
         )
 
         avatar = await ChildAvatar.find_one(
-            ChildAvatar.user_id == user_id,
-            ChildAvatar.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
         if avatar and avatar.has_voice_clone:
             await self._run_v2v_alongside(
                 avatar, audio_data, target_phrase_he,
@@ -134,9 +133,8 @@ class PhoneticMirrorService:
         from app.models.child_proficiency import ChildProficiency
 
         prof = await ChildProficiency.find_one(
-            ChildProficiency.user_id == user_id,
-            ChildProficiency.profile_id == profile_id,
-        )
+            {"user_id": user_id, "profile_id": profile_id}
+)
 
         phrases: List[PracticePhrase] = []
 
@@ -169,9 +167,8 @@ class PhoneticMirrorService:
         """Get attempt history with average score."""
         attempts = (
             await PhoneticMirrorAttempt.find(
-                PhoneticMirrorAttempt.user_id == user_id,
-                PhoneticMirrorAttempt.profile_id == profile_id,
-            )
+                {"user_id": user_id, "profile_id": profile_id}
+)
             .sort(-PhoneticMirrorAttempt.created_at)
             .skip(offset)
             .limit(limit)
@@ -179,9 +176,8 @@ class PhoneticMirrorService:
         )
 
         total = await PhoneticMirrorAttempt.find(
-            PhoneticMirrorAttempt.user_id == user_id,
-            PhoneticMirrorAttempt.profile_id == profile_id,
-        ).count()
+            {"user_id": user_id, "profile_id": profile_id}
+).count()
 
         scores = [a.pronunciation_score for a in attempts if a.pronunciation_score > 0]
         avg_score = sum(scores) / len(scores) if scores else 0.0

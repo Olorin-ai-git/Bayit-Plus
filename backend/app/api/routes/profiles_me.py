@@ -55,9 +55,8 @@ async def _fetch_beta_credits(current_user: User) -> Optional[int]:
             return None
         from app.models.beta_credit import BetaCredit
         credit = await BetaCredit.find_one(
-            BetaCredit.user_id == str(current_user.id),
-            BetaCredit.is_expired == False
-        )
+            {"user_id": str(current_user.id), "is_expired": False}
+)
         return credit.remaining_credits if credit else None
     except Exception as e:
         logger.error(f"Failed to fetch beta credits: {e}", extra={"user_id": str(current_user.id)})

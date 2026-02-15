@@ -52,7 +52,7 @@ async def _sync_beta_user_status(user: User) -> None:
     handling cases where beta expired between sessions.
     """
     try:
-        beta_user = await BetaUser.find_one(BetaUser.email == user.email)
+        beta_user = await BetaUser.find_one({"email": user.email})
         if beta_user and beta_user.is_active() and not beta_user.is_expired():
             if not user.is_beta_user:
                 user.is_beta_user = True
@@ -110,7 +110,7 @@ async def register(request: Request, user_data: UserCreate):
     start_time = asyncio.get_event_loop().time()
 
     # Check if user exists
-    existing_user = await User.find_one(User.email == user_data.email)
+    existing_user = await User.find_one({"email": user_data.email})
     if existing_user:
         # ✅ Don't reveal that email exists - log attempt for security monitoring
         logger.warning(
@@ -228,7 +228,7 @@ async def login(request: Request, credentials: UserLogin):
     logger = logging.getLogger(__name__)
 
     # Always fetch user first
-    user = await User.find_one(User.email == credentials.email)
+    user = await User.find_one({"email": credentials.email})
 
     # ✅ Check if account is locked (brute force protection)
     if user and user.account_locked_until:
@@ -363,7 +363,7 @@ async def update_profile(
         current_user.name = updates.name
     if updates.email:
         # Check if email is taken
-        existing = await User.find_one(User.email == updates.email)
+        existing = await User.find_one({"email": updates.email})
         if existing and str(existing.id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -380,7 +380,7 @@ async def update_profile(
 @router.post("/reset-password")
 async def reset_password(email: str):
     """Request password reset."""
-    user = await User.find_one(User.email == email)
+    user = await User.find_one({"email": email})
     # Always return success to prevent email enumeration
     return {"message": "If an account exists, a password reset email has been sent"}
 
@@ -496,11 +496,11 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
             )
 
         # Check if user exists by google_id or email
-        user = await User.find_one(User.google_id == google_id)
+        user = await User.find_one({"google_id": google_id})
 
         if not user:
             # Check if email exists (user registered with email/password)
-            user = await User.find_one(User.email == email)
+            user = await User.find_one({"email": email})
 
             if user:
                 # Link Google account to existing user
@@ -624,12 +624,12 @@ async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
             )
 
         # Check if user exists by apple_id or email
-        user = await User.find_one(User.apple_id == apple_id)
+        user = await User.find_one({"apple_id": apple_id})
 
         if not user:
             # Check if email exists (user registered with email/password or Google)
             if email:
-                user = await User.find_one(User.email == email)
+                user = await User.find_one({"email": email})
 
             if user:
                 # Link Apple account to existing user
@@ -828,11 +828,11 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
     picture = google_user.get("picture")  # Google profile picture URL
 
     # Check if user exists by google_id or email
-    user = await User.find_one(User.google_id == google_id)
+    user = await User.find_one({"google_id": google_id})
 
     if not user:
         # Check if email exists (user registered with email/password)
-        user = await User.find_one(User.email == email)
+        user = await User.find_one({"email": email})
 
         if user:
             # Link Google account to existing user

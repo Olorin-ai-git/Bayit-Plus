@@ -92,8 +92,8 @@ async def import_subtitles(
         )
 
     existing = await SubtitleTrackDoc.find_one(
-        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
-    )
+        {"content_id": content_id, "language": language}
+)
 
     if existing:
         existing.cues = [
@@ -155,8 +155,8 @@ async def delete_subtitle_track(
 ) -> dict:
     """Delete a subtitle track"""
     track = await SubtitleTrackDoc.find_one(
-        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
-    )
+        {"content_id": content_id, "language": language}
+)
 
     if not track:
         raise HTTPException(status_code=404, detail="Subtitle track not found")
@@ -177,15 +177,15 @@ async def set_default_subtitle(
     """Set a subtitle track as the default for this content."""
     # Find the track to set as default
     track = await SubtitleTrackDoc.find_one(
-        SubtitleTrackDoc.content_id == content_id, SubtitleTrackDoc.language == language
-    )
+        {"content_id": content_id, "language": language}
+)
 
     if not track:
         raise HTTPException(status_code=404, detail="Subtitle track not found")
 
     # Unset is_default on all other tracks for this content
     await SubtitleTrackDoc.find(
-        SubtitleTrackDoc.content_id == content_id,
+        {"content_id": content_id}, 
         SubtitleTrackDoc.language != language
     ).update({"$set": {"is_default": False}})
 

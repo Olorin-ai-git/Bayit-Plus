@@ -64,8 +64,8 @@ class UploadLockManager:
         except DuplicateKeyError:
             # Lock already exists - check if it's our own lock (re-entrant)
             existing_lock = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash
-            )
+                {"file_hash": file_hash}
+)
 
             if existing_lock and existing_lock.job_id == job_id:
                 # Re-entrant lock - we already hold it
@@ -95,8 +95,8 @@ class UploadLockManager:
         """
         try:
             result = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash, UploadHashLock.job_id == job_id
-            )
+                {"file_hash": file_hash, "job_id": job_id}
+)
 
             if result:
                 await result.delete()
@@ -131,8 +131,8 @@ class UploadLockManager:
         """
         try:
             lock = await UploadHashLock.find_one(
-                UploadHashLock.file_hash == file_hash, UploadHashLock.job_id == job_id
-            )
+                {"file_hash": file_hash, "job_id": job_id}
+)
 
             if lock:
                 lock.expires_at = datetime.utcnow() + timedelta(
@@ -160,7 +160,7 @@ class UploadLockManager:
             True if the hash is locked, False otherwise
         """
         try:
-            lock = await UploadHashLock.find_one(UploadHashLock.file_hash == file_hash)
+            lock = await UploadHashLock.find_one({"file_hash": file_hash})
             return lock is not None
 
         except Exception as e:
@@ -178,7 +178,7 @@ class UploadLockManager:
             Dict with lock info or None if not locked
         """
         try:
-            lock = await UploadHashLock.find_one(UploadHashLock.file_hash == file_hash)
+            lock = await UploadHashLock.find_one({"file_hash": file_hash})
 
             if lock:
                 return {

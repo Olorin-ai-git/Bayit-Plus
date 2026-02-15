@@ -90,7 +90,7 @@ async def get_categories(
     query = ContentSection.find()
 
     if is_active is not None:
-        query = query.find(ContentSection.is_active == is_active)
+        query = query.find({"is_active": is_active})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -149,8 +149,8 @@ async def get_category(
     if section.supports_subcategories:
         subcats = (
             await SectionSubcategory.find(
-                SectionSubcategory.section_id == str(section.id)
-            )
+                {"section_id": str(section.id)}
+)
             .sort("order")
             .to_list()
         )
@@ -202,7 +202,7 @@ async def create_category(
     current_user: User = Depends(has_permission(Permission.CONTENT_CREATE)),
 ):
     """Create new section."""
-    if await ContentSection.find_one(ContentSection.slug == data.slug):
+    if await ContentSection.find_one({"slug": data.slug}):
         raise HTTPException(status_code=400, detail="Slug already exists")
 
     section = ContentSection(
@@ -252,7 +252,7 @@ async def update_category(
     changes = {}
 
     if data.slug is not None:
-        existing = await ContentSection.find_one(ContentSection.slug == data.slug)
+        existing = await ContentSection.find_one({"slug": data.slug})
         if existing and str(existing.id) != category_id:
             raise HTTPException(status_code=400, detail="Slug already exists")
         changes["slug"] = {"old": section.slug, "new": data.slug}
@@ -340,8 +340,8 @@ async def delete_category(
         )
 
     subcategory_count = await SectionSubcategory.find(
-        SectionSubcategory.section_id == str(section.id)
-    ).count()
+        {"section_id": str(section.id)}
+).count()
     if subcategory_count > 0:
         raise HTTPException(
             status_code=400,
@@ -405,7 +405,7 @@ async def get_subcategories(
         raise HTTPException(status_code=404, detail="Section not found")
 
     subcats = (
-        await SectionSubcategory.find(SectionSubcategory.section_id == category_id)
+        await SectionSubcategory.find({"section_id": category_id})
         .sort("order")
         .to_list()
     )
@@ -452,9 +452,8 @@ async def create_subcategory(
         )
 
     existing = await SectionSubcategory.find_one(
-        SectionSubcategory.section_id == category_id,
-        SectionSubcategory.slug == data.slug,
-    )
+        {"section_id": category_id, "slug": data.slug}
+)
     if existing:
         raise HTTPException(status_code=400, detail="Subcategory slug already exists")
 
@@ -500,9 +499,8 @@ async def update_subcategory(
 
     if data.slug is not None:
         existing = await SectionSubcategory.find_one(
-            SectionSubcategory.section_id == subcategory.section_id,
-            SectionSubcategory.slug == data.slug,
-        )
+            {"section_id": subcategory.section_id, "slug": data.slug}
+)
         if existing and str(existing.id) != subcategory_id:
             raise HTTPException(status_code=400, detail="Slug already exists")
         subcategory.slug = data.slug

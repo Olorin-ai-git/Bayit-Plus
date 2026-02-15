@@ -128,7 +128,7 @@ async def transcode_stream(
                 },
             )
 
-        content = await Content.find_one(Content.id == ObjectId(content_id))
+        content = await Content.find_one({"id": ObjectId(content_id)})
         if not content:
             raise HTTPException(status_code=404, detail="Content not found")
 
@@ -189,7 +189,7 @@ async def transcode_info(request: Request, content_id: str):
         user_agent = request.headers.get("User-Agent", "")
         is_native = _is_native_app(user_agent)
 
-        content = await Content.find_one(Content.id == ObjectId(content_id))
+        content = await Content.find_one({"id": ObjectId(content_id)})
         if not content:
             raise HTTPException(status_code=404, detail="Content not found")
 
