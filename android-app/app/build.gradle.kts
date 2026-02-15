@@ -124,6 +124,9 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
 
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
     // Lifecycle
     implementation(libs.bundles.lifecycle)
 
