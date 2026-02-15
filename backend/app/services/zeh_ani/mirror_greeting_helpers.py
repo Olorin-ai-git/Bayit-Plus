@@ -20,7 +20,15 @@ def select_vocabulary_of_the_day(
 ) -> str:
     """Pick a vocabulary word based on the child's learning progress."""
     if not proficiency or not proficiency.vocabulary_learning:
-        return ""
+        common_words = [
+            "שלום (shalom)",
+            "תודה (toda)",
+            "בבקשה (bevakasha)",
+            "משפחה (mishpacha)",
+            "אהבה (ahava)",
+        ]
+        from random import choice
+        return choice(common_words)
 
     learning_words = proficiency.vocabulary_learning
     candidates = [
@@ -44,17 +52,30 @@ def build_greeting_text(
     vocab_word: str,
 ) -> tuple:
     """Build bilingual greeting text incorporating vocabulary."""
-    vocab_segment_he = ""
-    vocab_segment_en = ""
+    from datetime import datetime
+
+    current_hour = datetime.now().hour
+
+    if current_hour < 12:
+        greeting_prefix_he = "בוקר טוב"
+        greeting_prefix_en = "Good morning"
+    elif current_hour < 18:
+        greeting_prefix_he = "צהריים טובים"
+        greeting_prefix_en = "Good afternoon"
+    else:
+        greeting_prefix_he = "ערב טוב"
+        greeting_prefix_en = "Good evening"
+
+    greeting_he = f"{greeting_prefix_he}, {child_name}!"
+    greeting_en = f"{greeting_prefix_en}, {child_name}!"
+
     if vocab_word:
         clean_word = vocab_word.split(" (")[0]
-        vocab_segment_he = f" {clean_word}"
+        vocab_segment_he = f" המילה של היום: {vocab_word}"
         vocab_segment_en = f" Your word of the day is: {vocab_word}."
+        greeting_he += vocab_segment_he
+        greeting_en += vocab_segment_en
 
-    greeting_he = f"{child_name},{vocab_segment_he}"
-    greeting_en = (
-        f"Good morning, {child_name}!{vocab_segment_en}"
-    )
     return greeting_he, greeting_en
 
 
