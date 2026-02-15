@@ -9,6 +9,8 @@ import kotlin.time.Duration
  * (BuildConfig, remote config, etc.) -- no defaults are embedded here.
  *
  * Mirrors the iOS [NetworkConfiguration] protocol from BayitNetworking.
+ *
+ * Implements [NetworkConfig] for backward compatibility.
  */
 data class NetworkConfiguration(
     /** Base URL for all API requests (e.g. "https://api.bayit.tv/api/v1"). */
@@ -43,7 +45,7 @@ data class NetworkConfiguration(
 
     /** Base delay for WebSocket reconnection backoff. */
     val webSocketReconnectBaseDelay: Duration,
-) {
+) : NetworkConfig {
 
     /** Timeout in milliseconds for OkHttp configuration. */
     val timeoutMillis: Long get() = timeout.inWholeMilliseconds
@@ -53,4 +55,10 @@ data class NetworkConfiguration(
 
     /** WebSocket ping interval in seconds for OkHttp configuration. */
     val webSocketPingIntervalSeconds: Long get() = webSocketPingInterval.inWholeSeconds
+
+    // NetworkConfig interface implementations (backward compatibility)
+    override val timeout: Long get() = timeoutMillis
+    override val retryBaseDelay: Long get() = retryBaseDelayMillis
+    override val webSocketPingInterval: Long get() = webSocketPingIntervalSeconds
+    override val webSocketMaxConnections: Int get() = webSocketMaxConcurrentConnections
 }
