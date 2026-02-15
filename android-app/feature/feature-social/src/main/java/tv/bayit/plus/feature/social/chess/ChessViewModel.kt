@@ -17,7 +17,7 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ChessRepository
 import tv.bayit.plus.core.model.ChessGame
-import tv.bayit.plus.core.network.NetworkConfiguration
+import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
 import tv.bayit.plus.core.network.websocket.WebSocketConnection
 import tv.bayit.plus.core.network.websocket.WebSocketManager
@@ -28,7 +28,7 @@ class ChessViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val chessRepository: ChessRepository,
     private val webSocketManager: WebSocketManager,
-    private val networkConfig: NetworkConfiguration,
+    private val networkConfig: NetworkConfig,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
