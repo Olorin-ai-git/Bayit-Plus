@@ -127,13 +127,13 @@ private interface AudiobookService {
 private data class AudiobookWithChaptersServiceResponse(
     val id: String,
     val title: String? = null,
-    val chapters: List<ChapterItem> = emptyList(),
+    val chapters: List<AudiobookChapterItem> = emptyList(),
     @SerialName("total_chapters") val totalChapters: Int? = null,
 )
 
 /** A chapter item returned by the chapters endpoint. */
 @Serializable
-private data class ChapterItem(
+private data class AudiobookAudiobookChapterItem(
     val id: String,
     val title: String? = null,
     @SerialName("chapter_number") val chapterNumber: Int? = null,

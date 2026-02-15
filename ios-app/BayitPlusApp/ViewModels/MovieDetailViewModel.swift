@@ -26,7 +26,9 @@ final class MovieDetailViewModel {
         do {
             detail = try await repository.fetchContentDetail(id: movieId)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

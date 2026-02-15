@@ -26,7 +26,9 @@ final class CollectionDetailViewModel {
         do {
             collection = try await repository.fetchCollectionDetail(id: collectionId)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

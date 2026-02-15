@@ -16,6 +16,13 @@ struct TogglePlayPauseIntent: AppIntent {
     @Parameter(title: "Is Playing")
     var isPlaying: Bool?
 
+    init() {}
+
+    init(contentID: String?, isPlaying: Bool?) {
+        self.contentID = contentID
+        self.isPlaying = isPlaying
+    }
+
     @MainActor
     func perform() async throws -> some IntentResult {
         // Verify authentication before allowing playback control

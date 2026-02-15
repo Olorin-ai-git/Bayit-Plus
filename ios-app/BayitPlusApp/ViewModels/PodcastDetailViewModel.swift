@@ -45,7 +45,9 @@ final class PodcastDetailViewModel {
                 "episodeCount": String(episodesResponse.total)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load podcast detail", error: error)
         }
 
@@ -110,7 +112,9 @@ final class PodcastDetailViewModel {
                 "episodeCount": String(response.total)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to refresh latest episodes", error: error)
         }
 

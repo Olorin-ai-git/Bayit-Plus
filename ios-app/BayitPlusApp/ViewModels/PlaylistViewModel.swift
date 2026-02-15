@@ -26,7 +26,9 @@ final class PlaylistViewModel {
             let response = try await repository.fetchPlaylist()
             items = response.items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -38,7 +40,9 @@ final class PlaylistViewModel {
             _ = try await repository.removePlaylistItem(contentId: contentId)
             items.removeAll { $0.contentId == contentId }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -48,7 +52,9 @@ final class PlaylistViewModel {
             _ = try await repository.clearPlaylist()
             items.removeAll()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -69,7 +75,9 @@ final class PlaylistViewModel {
             )
             _ = try await repository.reorderPlaylist(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -85,7 +93,9 @@ final class PlaylistViewModel {
             )
             return response.inPlaylist
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             return nil
         }
     }

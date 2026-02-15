@@ -25,7 +25,9 @@ final class DownloadsViewModel {
             let response = try await repository.fetchDownloads()
             items = response.items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -37,7 +39,9 @@ final class DownloadsViewModel {
             _ = try await repository.deleteDownload(downloadId: downloadId)
             items.removeAll { $0.id == downloadId }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -52,7 +56,9 @@ final class DownloadsViewModel {
             await load()
             return response
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             return nil
         }
     }

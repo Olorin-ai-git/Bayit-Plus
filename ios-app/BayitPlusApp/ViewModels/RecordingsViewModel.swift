@@ -25,7 +25,9 @@ final class RecordingsViewModel {
             let response = try await repository.fetchRecordings()
             items = response.items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -37,7 +39,9 @@ final class RecordingsViewModel {
             _ = try await repository.deleteRecording(recordingId: recordingId)
             items.removeAll { $0.id == recordingId }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -47,7 +51,9 @@ final class RecordingsViewModel {
             _ = try await repository.stopRecording(recordingId: recordingId)
             await load()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -62,7 +68,9 @@ final class RecordingsViewModel {
             _ = try await repository.startRecording(request: request)
             await load()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 }

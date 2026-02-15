@@ -146,7 +146,9 @@ final class SearchViewModel {
             return
         } catch {
             if !Task.isCancelled {
-                self.error = error.localizedDescription
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
                 logger.error("Search failed", error: error, context: ["query": trimmedQuery])
             }
         }

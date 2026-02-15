@@ -39,7 +39,9 @@ final class BilingualDubbingViewModel {
                 "totalWords": String(proficiency?.totalWordsLearned ?? 0)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to fetch proficiency", error: error)
         }
 
@@ -67,7 +69,9 @@ final class BilingualDubbingViewModel {
                 "sessionId": activeSession?.sessionId ?? ""
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to start session", error: error)
         }
 
@@ -91,7 +95,9 @@ final class BilingualDubbingViewModel {
             activeSession = nil
             isActive = false
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to end session", error: error)
         }
 

@@ -43,7 +43,9 @@ final class HouseholdViewModel {
                 self.error = apiError.localizedDescription
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -64,7 +66,9 @@ final class HouseholdViewModel {
             noHousehold = false
             newHouseholdName = ""
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isCreating = false
@@ -89,7 +93,9 @@ final class HouseholdViewModel {
             inviteRole = "child"
             inviteSent = true
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isInviting = false
@@ -107,7 +113,9 @@ final class HouseholdViewModel {
             )
             await load()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 

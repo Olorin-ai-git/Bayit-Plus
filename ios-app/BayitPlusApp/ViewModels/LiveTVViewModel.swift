@@ -40,7 +40,9 @@ final class LiveTVViewModel {
             let response = try await repository.fetchChannels(cultureId: nil, category: nil)
             channels = filterHiddenChannels(response.channels)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -55,7 +57,9 @@ final class LiveTVViewModel {
             let response = try await repository.fetchChannels(cultureId: nil, category: nil)
             channels = filterHiddenChannels(response.channels)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

@@ -204,6 +204,7 @@
 		31004ADF9BD71426532E119D /* ZehAniHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2763BBFF314F3C1D43AB7B8F /* ZehAniHubView.swift */; };
 		31F83782182909A51852C014 /* AvatarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6D297DFBC3DC8F4704829F /* AvatarViewModel.swift */; };
 		323FE321FDC3C49054F20E67 /* ProactiveSuggestionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9D2769ABD129158E01819C /* ProactiveSuggestionEngine.swift */; };
+		F5A6B7C8D9E0081930FFAACC /* ProgressTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F5A6B7C8D9071829EEFFAA /* ProgressTracker.swift */; };
 		32A2420D06FAD9887F533F95 /* Bayit_Intro_English.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E787ED7BBE96DD993D5035D7 /* Bayit_Intro_English.mp4 */; };
 		32FD407B1881A06589587B72 /* YoungstersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D707DEDF5D4F0FB757C5A8 /* YoungstersViewModel.swift */; };
 		330139AD45EA3A3F6C55E609 /* TVRepositoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC525DF6B819768EA21DDEF /* TVRepositoryProvider.swift */; };
@@ -241,6 +242,7 @@
 		3B610D3F507F6EC7C3330F1F /* LiveSubtitlesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EAC98F992AE2C1ED236821 /* LiveSubtitlesViewModel.swift */; };
 		3C705F5C3B1CF79571568D25 /* TVLocationContentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08972DB65069A806D0B258D /* TVLocationContentRow.swift */; };
 		3CB9C186846D755D14603934 /* MediaPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B12ED7C60671D9D2A76E6D /* MediaPlayerViewModel.swift */; };
+		B2C3D4E5F6A7081930BBCCDD /* MediaPlayerWidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829AABBCC /* MediaPlayerWidgetBridge.swift */; };
 		3CC03C4064874FFD73CBACEF /* TVChessPieceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1EBC84A06FC9CF952689AA /* TVChessPieceView.swift */; };
 		3CC232557955DE702AF0D361 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A081A5A1486FF32B3436784 /* BiometricConsentView.swift */; };
 		3CD37AE88F53C5A208C8DC02 /* EpisodeProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437FAE8CB9ACB02E64719A96 /* EpisodeProgressView.swift */; };
@@ -363,6 +365,7 @@
 		62C9075E8D1A9AC203A812EC /* DownloadsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A411AEB3311D450581FEE0FF /* DownloadsViewModel.swift */; };
 		638BB42CCEC67E7ED00C2AE6 /* VoiceOnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA02170F1808336E30A51F21 /* VoiceOnboardingViewModel.swift */; };
 		6397B964CCD68CCD0192C088 /* PasskeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A256E12400955626BAE3A46B /* PasskeyViewModel.swift */; };
+		E2F3A4B5C6D7081930EEFFBB /* PendingIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829DDEEFF /* PendingIntentHandler.swift */; };
 		63C6799448351CF585298329 /* WatchPartyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0009F30C3B855BD4DD1B528 /* WatchPartyRepository.swift */; };
 		64067B59AC56C51308646339 /* VoiceOnboardingSteps.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5C8CF1FA7F99F65509E1DF /* VoiceOnboardingSteps.swift */; };
 		64959EB020BA3E43C36D42B7 /* SupportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA22313315CD06D1302B39 /* SupportViewModel.swift */; };
@@ -595,6 +598,7 @@
 		A07C00481BC28B6117D30528 /* DirectMessagesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A99B44D5CB631C45CCD86ED /* DirectMessagesViewModel.swift */; };
 		A0C7744467D8897BBCCC6410 /* TVNewsClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50DF49E287F39333F00BA02 /* TVNewsClipView.swift */; };
 		A244349E0FC1291FD7FB7651 /* PlayPlaylistIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A919CD79DC5C86E0ADF0B5 /* PlayPlaylistIntent.swift */; };
+		F2E1D0C9B8A7F6E5D4C3B2A1 /* IntentError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* IntentError.swift */; };
 		A29BFA1018DD61A7068412C0 /* TVConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421BCA32DEEF68A5598E34ED /* TVConversationView.swift */; };
 		A2A9B5F54FCE143CDFB34F85 /* GlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7121F89DFA7940A64430E16 /* GlassTabBar.swift */; };
 		A37BC9A9A1723A250E45F1FA /* TVTalkBackOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2737DD00F316A1A431970D4C /* TVTalkBackOverlayView.swift */; };
@@ -719,6 +723,7 @@
 		C242BEA31DE8F5709351708D /* AvatarOutfitRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C98F9F4669BAA0D639B752 /* AvatarOutfitRepository.swift */; };
 		C25229FBBE5BC5E3B4676280 /* BayitCore in Frameworks */ = {isa = PBXBuildFile; productRef = B9832F284D7C2B03E2757C05 /* BayitCore */; };
 		C2FD423D86449EF1CFA7E681 /* StarStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C7A20F88D441E3CC8817BB /* StarStoryViewModel.swift */; };
+		A7B8C9D0E1F2081930CCBBEE /* StreamResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1071829FFBBDD /* StreamResolver.swift */; };
 		C322CFB88D4BDB807C76AB6B /* TVRecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604E70926145177664E9CC40 /* TVRecordingsView.swift */; };
 		C330134A8873F9A5CFCFA915 /* TVDeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF35815EDDEB4C77FDCBB6AF /* TVDeepLinkRouter.swift */; };
 		C35409FD9B2405932ECCEEB6 /* CollectionPromoBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A07859FA81BFEBCA0F5EE70 /* CollectionPromoBannerView.swift */; };
@@ -1025,6 +1030,7 @@
 		1463D35BA08C09442FFDFD19 /* FamilySnapRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySnapRepository.swift; sourceTree = "<group>"; };
 		14A24A7412E79FB73B23D43E /* ShabbatModeSmallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShabbatModeSmallView.swift; sourceTree = "<group>"; };
 		14EC0522C46CB1F5F26F7CB4 /* PendingIntentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentManager.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C6071829DDEEFF /* PendingIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingIntentHandler.swift; sourceTree = "<group>"; };
 		1525F35743AEE573F635720C /* ShabbatModeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShabbatModeService.swift; sourceTree = "<group>"; };
 		158E70F832734A8D4D4151B5 /* TVSplitLanguagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSplitLanguagePickerView.swift; sourceTree = "<group>"; };
 		15B0EFB7045CF42F452B0533 /* ComprehensionQuizOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComprehensionQuizOverlayView.swift; sourceTree = "<group>"; };
@@ -1041,10 +1047,12 @@
 		18DD225EFF4D9D44BFCC7B18 /* BayitPlusTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlusTVApp.swift; sourceTree = "<group>"; };
 		18F2A58B2877D21495D18A5B /* EPGView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPGView.swift; sourceTree = "<group>"; };
 		19B12ED7C60671D9D2A76E6D /* MediaPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerViewModel.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6071829AABBCC /* MediaPlayerWidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerWidgetBridge.swift; sourceTree = "<group>"; };
 		19CE4FFD736B23904DFCD963 /* MorningRitualViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningRitualViewModel.swift; sourceTree = "<group>"; };
 		1A081A5A1486FF32B3436784 /* BiometricConsentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricConsentView.swift; sourceTree = "<group>"; };
 		1A104B2AF2FCF7CDD25B7A69 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		1A47D5673805A1B5ECE76F00 /* StreamLimitExceededView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamLimitExceededView.swift; sourceTree = "<group>"; };
+		F6A7B8C9D0E1071829FFBBDD /* StreamResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamResolver.swift; sourceTree = "<group>"; };
 		1A5F0D92F36F0B703AE2D79A /* TVVideoPlayerRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVideoPlayerRepresentable.swift; sourceTree = "<group>"; };
 		1A99B44D5CB631C45CCD86ED /* DirectMessagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessagesViewModel.swift; sourceTree = "<group>"; };
 		1AD3E1F0B577CB6636E6F091 /* Friend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friend.swift; sourceTree = "<group>"; };
@@ -1400,6 +1408,7 @@
 		99B12DD8B934CDED08ADE457 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
 		9A7F5214CE188F893045CB3A /* DevicePairingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePairingModels.swift; sourceTree = "<group>"; };
 		9A9D2769ABD129158E01819C /* ProactiveSuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveSuggestionEngine.swift; sourceTree = "<group>"; };
+		E4F5A6B7C8D9071829EEFFAA /* ProgressTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTracker.swift; sourceTree = "<group>"; };
 		9B0EE4ED4B81905592B223DD /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		9B847685E8B4619EB91931CA /* SceneTriggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTriggerView.swift; sourceTree = "<group>"; };
 		9C15358DAC606CD639D033B7 /* ShabbatRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShabbatRepository.swift; sourceTree = "<group>"; };
@@ -1665,6 +1674,7 @@
 		F2C12F53F87C93E1E6F3E688 /* ContentPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentPickerViewModel.swift; sourceTree = "<group>"; };
 		F390133FA9E0AE7E964B88FC /* MissionsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionsRepository.swift; sourceTree = "<group>"; };
 		F3A919CD79DC5C86E0ADF0B5 /* PlayPlaylistIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPlaylistIntent.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* IntentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentError.swift; sourceTree = "<group>"; };
 		F3C79B2BCED0005DE405A59F /* StreamQualityModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamQualityModels.swift; sourceTree = "<group>"; };
 		F3E6AADE5531BF7FFEE6BCFB /* ChapterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterRepository.swift; sourceTree = "<group>"; };
 		F48529CF76413CC39200A8E4 /* TVAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAuthView.swift; sourceTree = "<group>"; };
@@ -2013,6 +2023,7 @@
 		2C848A970194BE3FA7306698 /* Intents */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* IntentError.swift */,
 				F3A919CD79DC5C86E0ADF0B5 /* PlayPlaylistIntent.swift */,
 				BB97E64F7E6BAE2377E8954A /* ResumeContentIntent.swift */,
 				5410680A4EF9DDE1E10DAD61 /* ShufflePlaylistIntent.swift */,
@@ -3085,9 +3096,11 @@
 				9FD865F2E0F0CE4BE65E5782 /* LiveDubbingWebSocketService.swift */,
 				640BCF006E3F707BC702CB92 /* LiveSubtitlesWebSocketService.swift */,
 				39FE14C2E9D3A1C3D3B94EC2 /* LiveTriviaWebSocketService.swift */,
+				A1B2C3D4E5F6071829AABBCC /* MediaPlayerWidgetBridge.swift */,
 				0E75ED1BECA95315C0468380 /* NetworkMonitor.swift */,
 				45FA21AB8481260ED9E0CCB1 /* OfflineCacheService.swift */,
 				95F840B6BA044DEE6DCCA5A6 /* PasskeyAuthService.swift */,
+				D1E2F3A4B5C6071829DDEEFF /* PendingIntentHandler.swift */,
 				A070263D1B172F92FFF2A542 /* PlaybackSessionService.swift */,
 				33DDCB36F3528B6BB055905F /* PresenceDetectionService.swift */,
 				9A9D2769ABD129158E01819C /* ProactiveSuggestionEngine.swift */,
@@ -3320,6 +3333,7 @@
 				E7177389F6DC66B311117A98 /* PodcastDetailViewModel.swift */,
 				F609F0CC1575052DE03C19BB /* PodcastsViewModel.swift */,
 				693B168FA7FA4412B8262216 /* ProactiveVoiceViewModel.swift */,
+				E4F5A6B7C8D9071829EEFFAA /* ProgressTracker.swift */,
 				7365FCF26EA15C02DAFA93D2 /* ProfileViewModel.swift */,
 				5F6587BFBAA78CCFAD9BA90C /* RadioViewModel.swift */,
 				2EDB9B3710EDC413E11255F9 /* RecordingsViewModel.swift */,
@@ -3328,6 +3342,7 @@
 				B2788B7FC834E1779222C655 /* SearchViewModel.swift */,
 				B216DEE549F99ECF42DD9E63 /* SecurityViewModel.swift */,
 				7F1421B9428B298514B56E0C /* SeriesDetailViewModel.swift */,
+				F6A7B8C9D0E1071829FFBBDD /* StreamResolver.swift */,
 				38703E9A44327F00EB52AFE1 /* SettingsViewModel.swift */,
 				8B2922398E2ABC3729A16C3E /* ShabbatViewModel.swift */,
 				F5C7A20F88D441E3CC8817BB /* StarStoryViewModel.swift */,
@@ -3650,6 +3665,7 @@
 				672D08A98178D4F77D7FC347 /* LocationModels.swift in Sources */,
 				6D7F1BE1363156329FBA1A8D /* MediaModels.swift in Sources */,
 				3CB9C186846D755D14603934 /* MediaPlayerViewModel.swift in Sources */,
+				B2C3D4E5F6A7081930BBCCDD /* MediaPlayerWidgetBridge.swift in Sources */,
 				08CA70D5B7675A1D012AC8BD /* MediaRepository.swift in Sources */,
 				F5A46FE9DD204259468C186D /* MissionsModels.swift in Sources */,
 				D3AAF38E609E97DD0883A45E /* MissionsRepository.swift in Sources */,
@@ -3944,6 +3960,7 @@
 				707DFF23C377D3D9EB6705AF /* NowPlayingSmallView.swift in Sources */,
 				717CEA03910AE58C14B9823F /* NowPlayingTimelineProvider.swift in Sources */,
 				869F1CA8508CAA7133010ECA /* NowPlayingWidgetView.swift in Sources */,
+				F2E1D0C9B8A7F6E5D4C3B2A1 /* IntentError.swift in Sources */,
 				A244349E0FC1291FD7FB7651 /* PlayPlaylistIntent.swift in Sources */,
 				D0D50C612C2DF21EBCEBB9FC /* PlaylistMediumView.swift in Sources */,
 				ABC19372C0DB9CA02B366408 /* PlaylistSmallView.swift in Sources */,
@@ -4260,6 +4277,7 @@
 				71B3A77800C180B89CEFED56 /* PasskeyManagementView.swift in Sources */,
 				E55CFEDA7BB810E6BF498C9B /* PasskeyRepository.swift in Sources */,
 				6397B964CCD68CCD0192C088 /* PasskeyViewModel.swift in Sources */,
+				E2F3A4B5C6D7081930EEFFBB /* PendingIntentHandler.swift in Sources */,
 				FAFBA31974BB9E9FC2A88FA0 /* PendingIntentManager.swift in Sources */,
 				22AA0EF61E42D876379EE505 /* PerkUnlockSheet.swift in Sources */,
 				4638C627A250B4AB5650EB3C /* PhoneVerificationView.swift in Sources */,
@@ -4288,6 +4306,7 @@
 				CDC3AEE45699011B9D2FB851 /* PresenceDetectionService.swift in Sources */,
 				C665F5251E275E5E4C54C181 /* ProactiveSuggestionBannerView.swift in Sources */,
 				323FE321FDC3C49054F20E67 /* ProactiveSuggestionEngine.swift in Sources */,
+				F5A6B7C8D9E0081930FFAACC /* ProgressTracker.swift in Sources */,
 				AB23496E02482319BABC7DCF /* ProactiveVoiceModels.swift in Sources */,
 				CC18D2EA1CC2E060EFD87CCB /* ProactiveVoiceViewModel.swift in Sources */,
 				1870732AE598933624C3E3F8 /* ProfileAccountSections.swift in Sources */,
@@ -4361,6 +4380,7 @@
 				A3EDF10606343656EB05F553 /* StarStoryModels.swift in Sources */,
 				250231419A6FBF1AFC914FDB /* StarStoryRepository.swift in Sources */,
 				C2FD423D86449EF1CFA7E681 /* StarStoryViewModel.swift in Sources */,
+				A7B8C9D0E1F2081930CCBBEE /* StreamResolver.swift in Sources */,
 				F438AACFAB80C8E9F031BDB8 /* StatsRepository.swift in Sources */,
 				942C1E51E72CFF179B0FB75B /* StreamLimitExceededView.swift in Sources */,
 				831368F4D867549659D3F320 /* StreamQualityModels.swift in Sources */,

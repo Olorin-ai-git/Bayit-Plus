@@ -34,7 +34,9 @@ class LiveLayerViewModel {
             isConnected = true
             startReceiving(connection: conn)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -61,7 +63,9 @@ class LiveLayerViewModel {
                 try await wsConnection?.send(message: jsonString)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -78,7 +82,9 @@ class LiveLayerViewModel {
                 try await wsConnection?.send(message: jsonString)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 

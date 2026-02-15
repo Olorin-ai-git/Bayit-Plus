@@ -54,7 +54,9 @@ final class CultureContentViewModel {
             telAvivItems = telAvivResponse.items
             categories = categoriesResponse
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

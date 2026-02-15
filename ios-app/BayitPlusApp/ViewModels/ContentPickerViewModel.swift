@@ -80,7 +80,9 @@ final class ContentPickerViewModel {
             channelItems = response.channels.map { ContentPickerItem(channel: $0) }
         } catch {
             logger.error("Failed to load channels", error: error)
-            if self.error == nil { self.error = error.localizedDescription }
+            if self.error == nil, let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -90,7 +92,9 @@ final class ContentPickerViewModel {
             podcastItems = response.shows.map { ContentPickerItem(podcast: $0) }
         } catch {
             logger.error("Failed to load podcasts", error: error)
-            if self.error == nil { self.error = error.localizedDescription }
+            if self.error == nil, let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -100,7 +104,9 @@ final class ContentPickerViewModel {
             radioItems = response.stations.map { ContentPickerItem(station: $0) }
         } catch {
             logger.error("Failed to load radio stations", error: error)
-            if self.error == nil { self.error = error.localizedDescription }
+            if self.error == nil, let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -110,7 +116,9 @@ final class ContentPickerViewModel {
             audiobookItems = (response.items ?? []).map { ContentPickerItem(audiobook: $0) }
         } catch {
             logger.error("Failed to load audiobooks", error: error)
-            if self.error == nil { self.error = error.localizedDescription }
+            if self.error == nil, let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 }

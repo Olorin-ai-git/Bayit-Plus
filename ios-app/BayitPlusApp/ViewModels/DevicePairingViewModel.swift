@@ -32,7 +32,9 @@ final class DevicePairingViewModel {
         do {
             devices = try await repository.listDevices()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -48,7 +50,9 @@ final class DevicePairingViewModel {
         do {
             pairingCode = try await repository.generateCode()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isGenerating = false
@@ -67,7 +71,9 @@ final class DevicePairingViewModel {
             devices.append(device)
             manualCodeInput = ""
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isVerifying = false
@@ -83,7 +89,9 @@ final class DevicePairingViewModel {
             try await repository.removeDevice(id: device.id)
             devices.removeAll { $0.id == device.id }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 }

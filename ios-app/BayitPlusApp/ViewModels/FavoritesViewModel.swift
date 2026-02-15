@@ -33,7 +33,9 @@ final class FavoritesViewModel {
             items = response.items
             total = response.total ?? response.items.count
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -54,7 +56,9 @@ final class FavoritesViewModel {
             currentPage = nextPage
             total = response.total ?? total
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -67,7 +71,9 @@ final class FavoritesViewModel {
             items.removeAll { $0.contentId == contentId || $0.id == contentId }
             total = max(0, total - 1)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -81,7 +87,9 @@ final class FavoritesViewModel {
             let response = try await repository.toggleFavorite(request: request)
             return response.isFavorite
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             return nil
         }
     }

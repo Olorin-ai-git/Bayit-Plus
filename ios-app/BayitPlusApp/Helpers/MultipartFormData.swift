@@ -16,3 +16,39 @@ extension Data {
         append(lineBreak)
     }
 }
+
+/// Extension to provide user-friendly error handling for ViewModels
+extension Error {
+
+    /// Check if this error is a cancellation error (expected behavior, not a real error)
+    var isCancellation: Bool {
+        // Check for CancellationError (Swift concurrency)
+        if self is CancellationError {
+            return true
+        }
+
+        // Check for URLError.cancelled
+        if let urlError = self as? URLError, urlError.code == .cancelled {
+            return true
+        }
+
+        // Check for NSError with cancelled domain
+        let nsError = self as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            return true
+        }
+
+        return false
+    }
+
+    /// Get a user-friendly error message, or nil if this is a cancellation error that shouldn't be shown
+    var userFriendlyMessage: String? {
+        // Don't show cancellation errors - they're expected when users navigate away
+        guard !isCancellation else {
+            return nil
+        }
+
+        // Return the localized description for real errors
+        return localizedDescription
+    }
+}

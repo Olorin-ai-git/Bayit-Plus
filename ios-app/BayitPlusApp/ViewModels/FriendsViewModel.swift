@@ -35,7 +35,9 @@ final class FriendsViewModel {
             friends = try await repository.fetchFriends()
             logger.info("Friends loaded", context: ["count": String(friends.count)])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load friends", error: error)
         }
 
@@ -78,7 +80,9 @@ final class FriendsViewModel {
             logger.info("Friend request sent", context: ["receiverId": receiverId])
             await loadRequests()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to send friend request", error: error)
         }
     }
@@ -90,7 +94,9 @@ final class FriendsViewModel {
             logger.info("Request accepted", context: ["requestId": requestId])
             await loadAll()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to accept request", error: error)
         }
     }
@@ -102,7 +108,9 @@ final class FriendsViewModel {
             logger.info("Request rejected", context: ["requestId": requestId])
             incomingRequests.removeAll { $0.id == requestId }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to reject request", error: error)
         }
     }
@@ -134,7 +142,9 @@ final class FriendsViewModel {
         do {
             friends = try await repository.fetchFriends()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load friends", error: error)
         }
     }

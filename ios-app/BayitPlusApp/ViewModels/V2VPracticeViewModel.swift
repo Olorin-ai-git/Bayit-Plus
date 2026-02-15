@@ -62,7 +62,9 @@ class V2VPracticeViewModel {
             isConnected = true
             startReceiving(connection: conn)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -126,7 +128,9 @@ class V2VPracticeViewModel {
             }
         } catch {
             await MainActor.run {
-                self.error = error.localizedDescription
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
                 practiceState = .idle
             }
         }

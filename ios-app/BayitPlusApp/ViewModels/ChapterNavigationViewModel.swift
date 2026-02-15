@@ -25,7 +25,9 @@ final class ChapterNavigationViewModel {
         do {
             chapters = try await repository.fetchChapters(contentId: contentId)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -40,7 +42,9 @@ final class ChapterNavigationViewModel {
         do {
             chapters = try await repository.fetchLiveChapters(channelId: channelId)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

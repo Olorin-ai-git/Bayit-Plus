@@ -100,7 +100,9 @@ class PhoneticMirrorViewModel {
             }
         } catch {
             await MainActor.run {
-                self.error = error.localizedDescription
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
                 mirrorState = .idle
             }
         }

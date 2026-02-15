@@ -25,7 +25,9 @@ final class FlowsViewModel {
             let response = try await repository.fetchFlows()
             flows = response.flows
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

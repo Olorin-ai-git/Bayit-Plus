@@ -39,7 +39,9 @@ final class WatchPartyViewModel {
             myParties = try await repository.fetchMyParties()
             logger.info("Parties loaded", context: ["count": String(myParties.count)])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load parties", error: error)
         }
         isLoading = false
@@ -56,7 +58,9 @@ final class WatchPartyViewModel {
                 "partyId": party.id, "roomCode": party.roomCode
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to create party", error: error)
         }
     }
@@ -70,7 +74,9 @@ final class WatchPartyViewModel {
             showJoinSheet = false
             logger.info("Joined party", context: ["partyId": party.id])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to join party", error: error)
         }
     }
@@ -86,7 +92,9 @@ final class WatchPartyViewModel {
             participants = []
             logger.info("Left party", context: ["partyId": partyId])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to leave party", error: error)
         }
     }

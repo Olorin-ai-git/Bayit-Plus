@@ -59,7 +59,12 @@ final class HomeViewModel {
             spotlight = response.spotlight
             categories = response.categories
         } catch {
-            self.error = error.localizedDescription
+            // Don't show cancellation errors to users - they're expected when views are dismissed
+            if !isCancellationError(error) {
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
+            }
         }
 
         isLoading = false
@@ -79,7 +84,12 @@ final class HomeViewModel {
             spotlight = response.spotlight
             categories = response.categories
         } catch {
-            self.error = error.localizedDescription
+            // Don't show cancellation errors to users - they're expected when views are dismissed
+            if !isCancellationError(error) {
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
+            }
         }
 
         isLoading = false
@@ -225,5 +235,29 @@ final class HomeViewModel {
         } catch {
             youngstersTrending = []
         }
+    }
+
+    // MARK: - Helper Methods
+
+    /// Check if an error is a cancellation error (user navigated away, task was cancelled, etc.)
+    /// These errors are expected and shouldn't be shown to users.
+    private func isCancellationError(_ error: Error) -> Bool {
+        // Check for CancellationError
+        if error is CancellationError {
+            return true
+        }
+
+        // Check for URLError.cancelled
+        if let urlError = error as? URLError, urlError.code == .cancelled {
+            return true
+        }
+
+        // Check for NSError with cancelled domain
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            return true
+        }
+
+        return false
     }
 }

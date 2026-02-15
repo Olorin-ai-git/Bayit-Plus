@@ -32,7 +32,9 @@ final class SecurityViewModel {
             let response = try await repository.fetchDevices()
             devices = response.devices
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -64,7 +66,9 @@ final class SecurityViewModel {
             newPassword = ""
             confirmPassword = ""
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isProcessing = false
@@ -79,7 +83,9 @@ final class SecurityViewModel {
             _ = try await repository.removeDevice(deviceId: device.id)
             devices.removeAll { $0.id == device.id }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isProcessing = false

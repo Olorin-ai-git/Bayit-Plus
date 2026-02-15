@@ -66,7 +66,9 @@ final class TriviaFactsViewModel {
                 lastRandomFactTime = -.infinity
                 logger.info("Using cached trivia facts", context: ["contentId": contentId])
             } else {
-                self.error = error.localizedDescription
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
                 logger.error("Failed to load trivia facts", error: error, context: [
                     "contentId": contentId,
                 ])

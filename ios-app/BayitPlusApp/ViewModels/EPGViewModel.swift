@@ -31,7 +31,9 @@ final class EPGViewModel {
             let response = try await repository.fetchEPG(date: date)
             channels = response.channels
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -46,7 +48,9 @@ final class EPGViewModel {
             )
             return response.programs
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             return []
         }
     }
@@ -58,7 +62,9 @@ final class EPGViewModel {
             currentProgram = response.current
             nextProgram = response.next
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -77,7 +83,9 @@ final class EPGViewModel {
             )
             searchResults = response.results
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSearching = false
@@ -89,7 +97,9 @@ final class EPGViewModel {
             let response = try await repository.fetchCatchUp(programId: programId)
             return response.streamUrl
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             return nil
         }
     }

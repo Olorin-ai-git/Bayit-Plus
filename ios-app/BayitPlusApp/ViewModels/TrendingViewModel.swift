@@ -40,7 +40,9 @@ final class TrendingViewModel {
                 "recCount": String(r.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load trending data", error: error)
         }
 

@@ -87,7 +87,9 @@ final class ChatbotViewModel {
                 "conversationId": conversationId ?? "new"
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Chat message failed", error: error)
         }
 
@@ -113,7 +115,9 @@ final class ChatbotViewModel {
             conversationId = id
             logger.info("Conversation loaded", context: ["id": id])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load conversation", error: error)
         }
 
@@ -132,7 +136,9 @@ final class ChatbotViewModel {
             suggestions = []
             logger.info("Conversation deleted", context: ["id": conversationId])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to delete conversation", error: error)
         }
 
@@ -202,7 +208,9 @@ final class ChatbotViewModel {
             generator.impactOccurred()
             logger.info("Voice input started")
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to start voice input", error: error)
         }
     }

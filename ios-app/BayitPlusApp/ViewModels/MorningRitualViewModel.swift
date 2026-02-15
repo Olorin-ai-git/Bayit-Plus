@@ -40,7 +40,9 @@ final class MorningRitualViewModel {
             greeting = contentResponse.greeting
             preferences = prefsResponse
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -51,7 +53,9 @@ final class MorningRitualViewModel {
         do {
             aiBrief = try await repository.fetchRitualAIBrief()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -78,7 +82,9 @@ final class MorningRitualViewModel {
             )
             preferences = try await repository.updateRitualPreferences(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false

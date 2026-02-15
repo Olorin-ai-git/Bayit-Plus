@@ -61,7 +61,9 @@ final class AvatarViewModel {
             try startSpeechRecognition()
             logger.info("Avatar voice input started")
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             stateMachine.reset()
             logger.error("Failed to start voice input", error: error)
         }
@@ -161,7 +163,9 @@ final class AvatarViewModel {
             speakResponse(response.response ?? "")
 
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             stateMachine.reset()
             logger.error("Avatar chat processing failed", error: error)
         }

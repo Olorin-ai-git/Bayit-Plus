@@ -35,7 +35,9 @@ final class BetaCreditsViewModel {
         do {
             balance = try await repository.fetchBalance()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -52,7 +54,9 @@ final class BetaCreditsViewModel {
             let request = CreditDeductRequest(amount: amount, reason: reason)
             balance = try await repository.deductCredits(request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isDeducting = false

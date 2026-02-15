@@ -32,7 +32,9 @@ final class YnetMivzakimViewModel {
             error = nil
         } catch {
             if items.isEmpty {
-                self.error = error.localizedDescription
+                if let message = error.userFriendlyMessage {
+                    self.error = message
+                }
             }
             logger.error("Failed to fetch mivzakim", error: error)
         }

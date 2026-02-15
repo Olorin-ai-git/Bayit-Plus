@@ -32,7 +32,9 @@ final class SubscriptionViewModel {
             plans = try await plansResult.plans
             currentSubscription = try await subResult.subscription
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -55,7 +57,9 @@ final class SubscriptionViewModel {
                 return URL(string: urlString)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         return nil
@@ -70,7 +74,9 @@ final class SubscriptionViewModel {
             _ = try await repository.cancelSubscription()
             await load()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isProcessing = false

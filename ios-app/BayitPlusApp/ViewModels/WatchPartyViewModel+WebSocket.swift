@@ -23,7 +23,9 @@ extension WatchPartyViewModel {
             logger.info("WebSocket connected for party", context: ["partyId": partyId])
             startReceiving(connection: conn)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("WebSocket connection failed", error: error)
         }
     }

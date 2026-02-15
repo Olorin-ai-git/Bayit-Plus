@@ -45,7 +45,9 @@ final class PodcastsViewModel {
             categories = categoriesResponse.categories
             hasMore = showsResponse.page < showsResponse.pages
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -68,7 +70,9 @@ final class PodcastsViewModel {
             currentPage = nextPage
             hasMore = response.page < response.pages
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoadingMore = false
@@ -90,7 +94,9 @@ final class PodcastsViewModel {
             shows = response.shows
             hasMore = response.page < response.pages
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

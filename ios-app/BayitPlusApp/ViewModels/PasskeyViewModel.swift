@@ -41,7 +41,9 @@ final class PasskeyViewModel {
         do {
             credentials = try await repository.listCredentials()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -65,7 +67,9 @@ final class PasskeyViewModel {
             successMessage = "Passkey registered"
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         }
 
@@ -86,7 +90,9 @@ final class PasskeyViewModel {
             successMessage = "Passkey removed"
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isDeleting = false

@@ -69,7 +69,9 @@ final class TVChatbotViewModel {
                 "conversationId": conversationId ?? "new"
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Chat message failed", error: error)
         }
 
@@ -177,7 +179,9 @@ final class TVChatbotViewModel {
             suggestions = []
             logger.info("Conversation deleted", context: ["id": conversationId])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to delete conversation", error: error)
         }
 

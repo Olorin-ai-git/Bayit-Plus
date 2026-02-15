@@ -41,7 +41,9 @@ final class SettingsViewModel {
             preferences = response.preferences
             syncLocalState(from: response.preferences)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -81,7 +83,9 @@ final class SettingsViewModel {
                 )
             )
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -101,7 +105,9 @@ final class SettingsViewModel {
                 )
             )
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -115,7 +121,9 @@ final class SettingsViewModel {
             isDeletingAccount = false
         } catch {
             isDeletingAccount = false
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             throw error
         }
     }
@@ -131,7 +139,9 @@ final class SettingsViewModel {
             )
             preferences = response.preferences
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
         isSaving = false
     }

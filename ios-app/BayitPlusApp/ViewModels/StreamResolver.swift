@@ -60,7 +60,7 @@ struct StreamResolver {
 
         return ResolvedStream(
             url: url,
-            title: channel.name,
+            title: channel.name ?? "",
             subtitle: channel.currentShow,
             artworkURL: artworkURL(from: channel.thumbnail ?? channel.logo),
             quality: stream.quality,
@@ -81,7 +81,7 @@ struct StreamResolver {
 
         return ResolvedStream(
             url: url,
-            title: station.name,
+            title: station.name ?? "",
             subtitle: station.currentShow,
             artworkURL: artworkURL(from: station.logo),
             quality: nil,
@@ -103,7 +103,7 @@ struct StreamResolver {
 
         return ResolvedStream(
             url: url,
-            title: podcast.episodes?.first?.title ?? podcast.title,
+            title: podcast.episodes?.first?.title ?? podcast.title ?? "",
             subtitle: podcast.title,
             artworkURL: artworkURL(from: podcast.cover),
             quality: nil,
@@ -127,7 +127,7 @@ struct StreamResolver {
 
         return ResolvedStream(
             url: url,
-            title: detail.title,
+            title: detail.title ?? "",
             subtitle: detail.category,
             artworkURL: artworkURL(from: detail.backdrop),
             quality: stream.quality,
@@ -148,7 +148,7 @@ struct StreamResolver {
 
         return ResolvedStream(
             url: url,
-            title: detail.title,
+            title: detail.title ?? "",
             subtitle: detail.category,
             artworkURL: artworkURL(from: detail.backdrop),
             quality: nil,

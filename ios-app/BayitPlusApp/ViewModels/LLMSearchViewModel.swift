@@ -51,7 +51,9 @@ final class LLMSearchViewModel {
                 "confidence": String(interpretation?.confidence ?? 0)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("LLM search failed", error: error, context: [
                 "query": trimmed
             ])

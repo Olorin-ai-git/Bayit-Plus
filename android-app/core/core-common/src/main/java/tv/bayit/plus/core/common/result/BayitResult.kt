@@ -24,7 +24,7 @@ sealed class BayitResult<out T> {
         is Failure -> throw error.toException()
     }
 
-    fun getOrElse(defaultValue: T): T = when (this) {
+    fun getOrElse(defaultValue: @UnsafeVariance T): T = when (this) {
         is Success -> data
         is Failure -> defaultValue
     }

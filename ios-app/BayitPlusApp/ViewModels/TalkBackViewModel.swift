@@ -42,7 +42,9 @@ final class TalkBackViewModel {
                 "count": String(response.points.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load talk back points", error: error, context: [
                 "contentId": contentId
             ])
@@ -142,7 +144,9 @@ final class TalkBackViewModel {
                 "score": String(lastEvaluation?.score ?? 0)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             state = .idle
             logger.error("Failed to submit talk back response", error: error, context: [
                 "pointId": point.id

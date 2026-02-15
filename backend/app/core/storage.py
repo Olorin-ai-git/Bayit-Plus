@@ -354,30 +354,28 @@ class S3StorageProvider(StorageProvider):
             return False
 
 
-def _gcs_compute_engine_sign_kwargs(client) -> dict:
-    """Return signing kwargs when running on Compute Engine (Cloud Run).
+def _gcs_iam_sign_kwargs(client) -> dict:
+    """Build kwargs to sign via IAM signBlob for token-only credentials.
 
-    Compute Engine credentials lack a private key, so
-    ``blob.generate_signed_url`` cannot sign locally.  We detect this
-    and pass ``service_account_email`` + ``access_token`` so the GCS
-    library delegates signing to the IAM ``signBlob`` API.
+    On Cloud Run the default credentials lack a private key.  We detect
+    this by checking for ``service_account_email`` without a ``signer``
+    and return the kwargs that make ``generate_signed_url`` delegate to
+    the IAM ``signBlob`` API.
     """
     try:
-        from google.auth import compute_engine as ce_auth
+        from google.auth.transport import requests as google_auth_requests
 
         credentials = client._credentials
-        if isinstance(credentials, ce_auth.Credentials):
-            from google.auth.transport import (
-                requests as google_auth_requests,
-            )
-
+        sa_email = getattr(credentials, "service_account_email", None)
+        has_signer = getattr(credentials, "signer", None) is not None
+        if sa_email and not has_signer:
             auth_request = google_auth_requests.Request()
             credentials.refresh(auth_request)
             return {
-                "service_account_email": credentials.service_account_email,
+                "service_account_email": sa_email,
                 "access_token": credentials.token,
             }
-    except ImportError:
+    except Exception:
         pass
     return {}
 
@@ -539,14 +537,24 @@ class GCSStorageProvider(StorageProvider):
         blob = self.bucket.blob(blob_name)
 
         try:
-            sign_kwargs = _gcs_compute_engine_sign_kwargs(self.client)
-            url = blob.generate_signed_url(
-                version="v4",
-                expiration=self.datetime.timedelta(hours=1),
-                method="PUT",
-                content_type=content_type,
-                **sign_kwargs,
-            )
+            try:
+                url = blob.generate_signed_url(
+                    version="v4",
+                    expiration=self.datetime.timedelta(hours=1),
+                    method="PUT",
+                    content_type=content_type,
+                )
+            except AttributeError:
+                sign_kwargs = _gcs_iam_sign_kwargs(self.client)
+                if not sign_kwargs:
+                    raise
+                url = blob.generate_signed_url(
+                    version="v4",
+                    expiration=self.datetime.timedelta(hours=1),
+                    method="PUT",
+                    content_type=content_type,
+                    **sign_kwargs,
+                )
 
             return {
                 "url": url,

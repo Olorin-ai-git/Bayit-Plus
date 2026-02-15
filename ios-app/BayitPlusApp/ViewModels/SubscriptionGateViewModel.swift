@@ -46,7 +46,9 @@ final class SubscriptionGateViewModel {
                     ?? plans.last
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -69,7 +71,9 @@ final class SubscriptionGateViewModel {
                 return URL(string: urlString)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         return nil

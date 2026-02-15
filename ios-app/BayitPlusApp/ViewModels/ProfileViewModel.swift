@@ -29,7 +29,9 @@ final class ProfileViewModel {
             profile = try await profileResult
             stats = try await statsResult
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -50,7 +52,9 @@ final class ProfileViewModel {
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false
@@ -71,7 +75,9 @@ final class ProfileViewModel {
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false
@@ -91,7 +97,9 @@ final class ProfileViewModel {
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
         isSaving = false
     }
@@ -110,7 +118,9 @@ final class ProfileViewModel {
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
         isSaving = false
     }

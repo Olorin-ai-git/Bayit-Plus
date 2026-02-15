@@ -85,7 +85,9 @@ final class ShabbatViewModel {
             let response = try await repository.fetchZmanTime(timezone: timezone)
             zmanimData = response
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -100,7 +102,9 @@ final class ShabbatViewModel {
             let items = try await repository.fetchShabbatContent()
             shabbatContent = items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoadingContent = false

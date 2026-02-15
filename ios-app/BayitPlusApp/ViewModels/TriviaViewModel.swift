@@ -54,7 +54,9 @@ final class TriviaViewModel {
                 "questionCount": String(quiz?.questions.count ?? 0)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load quiz", error: error, context: [
                 "contentId": contentId
             ])
@@ -116,7 +118,9 @@ final class TriviaViewModel {
                 "total": String(result?.total ?? 0)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to submit quiz", error: error, context: [
                 "quizId": quizId
             ])

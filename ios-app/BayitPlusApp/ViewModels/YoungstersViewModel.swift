@@ -87,7 +87,9 @@ final class YoungstersViewModel {
             items = response.items
             total = response.total ?? response.items.count
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -108,7 +110,9 @@ final class YoungstersViewModel {
             items.append(contentsOf: response.items)
             currentPage = nextPage
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

@@ -119,7 +119,9 @@ final class TVAvatarViewModel {
                 await MainActor.run { stateMachine.onSpeechComplete() }
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             stateMachine.reset()
             logger.error("Avatar chat processing failed", error: error)
         }

@@ -37,7 +37,9 @@ final class SupportViewModel {
             faqItems = try await faqResult.items
             tickets = try await ticketsResult.tickets
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -68,7 +70,9 @@ final class SupportViewModel {
             ticketMessage = ""
             ticketCreated = true
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSubmitting = false

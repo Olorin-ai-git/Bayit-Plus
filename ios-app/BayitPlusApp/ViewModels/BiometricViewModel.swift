@@ -63,7 +63,9 @@ final class BiometricViewModel {
             let settings = try await securityRepository.fetchSettings()
             isBiometricEnabled = settings.biometricEnabled ?? false
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
     }
 
@@ -78,7 +80,9 @@ final class BiometricViewModel {
             isAuthenticated = success
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         }
 
@@ -105,7 +109,9 @@ final class BiometricViewModel {
             }
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isProcessing = false

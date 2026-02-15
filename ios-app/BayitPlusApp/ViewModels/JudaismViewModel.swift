@@ -41,7 +41,9 @@ final class JudaismViewModel {
             calendarEvents = calResponse.events
             news = newsResponse.items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -63,7 +65,9 @@ final class JudaismViewModel {
             items = response.items
             total = response.total ?? response.items.count
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -84,7 +88,9 @@ final class JudaismViewModel {
             items.append(contentsOf: response.items)
             currentPage = nextPage
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

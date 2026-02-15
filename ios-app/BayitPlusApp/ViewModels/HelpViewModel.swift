@@ -27,7 +27,9 @@ final class HelpViewModel {
             let response = try await repository.fetchFAQ(language: language)
             faqs = response.items
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

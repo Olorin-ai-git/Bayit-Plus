@@ -82,7 +82,9 @@ final class VODViewModel {
                 hasMore = response.page < (response.total / pageSize + 1)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -142,7 +144,9 @@ final class VODViewModel {
                 hasMore = response.page < (response.total / pageSize + 1)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoadingMore = false
@@ -182,7 +186,9 @@ final class VODViewModel {
                 hasMore = response.page < (response.total / pageSize + 1)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

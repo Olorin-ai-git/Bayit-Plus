@@ -61,7 +61,9 @@ final class ChessViewModel {
             applyGameState(fetched)
             logger.info("Game loaded", context: ["gameId": gameId])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load game", error: error)
         }
         isLoading = false
@@ -79,7 +81,9 @@ final class ChessViewModel {
             await connectWebSocket(gameCode: created.gameCode)
             logger.info("Game created", context: ["gameCode": created.gameCode])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to create game", error: error)
         }
         isLoading = false

@@ -40,7 +40,9 @@ final class AudiobooksViewModel {
             let pages = response.totalPages ?? 1
             hasMore = currentPage < pages
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -65,7 +67,9 @@ final class AudiobooksViewModel {
             let pages = response.totalPages ?? 1
             hasMore = currentPage < pages
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoadingMore = false

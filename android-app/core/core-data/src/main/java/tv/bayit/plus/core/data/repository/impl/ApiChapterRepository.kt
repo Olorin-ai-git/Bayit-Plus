@@ -100,12 +100,12 @@ private data class ChaptersResponse(
     val source: String? = null,
     @SerialName("generated_at") val generatedAt: String? = null,
     @SerialName("is_approved") val isApproved: Boolean? = null,
-    val chapters: List<ChapterItem> = emptyList(),
+    val chapters: List<ContentChapterItem> = emptyList(),
 )
 
 /** A single chapter within content. */
 @Serializable
-private data class ChapterItem(
+private data class ContentContentChapterItem(
     @SerialName("start_time") val startTime: Double,
     @SerialName("end_time") val endTime: Double,
     val title: String? = null,

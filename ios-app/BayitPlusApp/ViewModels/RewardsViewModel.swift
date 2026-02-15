@@ -29,7 +29,9 @@ final class RewardsViewModel {
             balance = try await balanceResult
             badges = try await badgesResult
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

@@ -30,7 +30,9 @@ final class LeaderboardViewModel {
                 "entryCount": String(entries.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load leaderboard", error: error)
         }
 

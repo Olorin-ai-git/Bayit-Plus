@@ -15,31 +15,28 @@ from app.core.storage import (
 logger = get_logger(__name__)
 
 
-def _compute_engine_sign_kwargs(client) -> dict:
-    """Return signing kwargs for Compute Engine credentials on Cloud Run.
+def _iam_sign_kwargs(client) -> dict:
+    """Build kwargs to sign via IAM signBlob for token-only credentials.
 
-    Cloud Run uses metadata-server credentials that lack a private key,
-    so ``blob.generate_signed_url`` cannot sign locally.  When we detect
-    Compute Engine credentials we refresh the token and pass
-    ``service_account_email`` + ``access_token`` so the GCS library
-    delegates signing to the IAM ``signBlob`` API instead.
+    On Cloud Run the default credentials lack a private key.  We detect
+    this by checking for ``service_account_email`` without a ``signer``
+    and return the kwargs that make ``generate_signed_url`` delegate to
+    the IAM ``signBlob`` API.
     """
     try:
-        from google.auth import compute_engine as ce_auth
+        from google.auth.transport import requests as google_auth_requests
 
         credentials = client._credentials
-        if isinstance(credentials, ce_auth.Credentials):
-            from google.auth.transport import (
-                requests as google_auth_requests,
-            )
-
+        sa_email = getattr(credentials, "service_account_email", None)
+        has_signer = getattr(credentials, "signer", None) is not None
+        if sa_email and not has_signer:
             auth_request = google_auth_requests.Request()
             credentials.refresh(auth_request)
             return {
-                "service_account_email": credentials.service_account_email,
+                "service_account_email": sa_email,
                 "access_token": credentials.token,
             }
-    except ImportError:
+    except Exception:
         pass
     return {}
 
@@ -114,13 +111,22 @@ class OlorinStorageService:
         gcs = self._require_gcs()
         blob = gcs.bucket.blob(remote_path)
 
-        sign_kwargs = _compute_engine_sign_kwargs(gcs.client)
-        return blob.generate_signed_url(
-            version="v4",
-            expiration=timedelta(seconds=expiry_seconds),
-            method="GET",
-            **sign_kwargs,
-        )
+        try:
+            return blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(seconds=expiry_seconds),
+                method="GET",
+            )
+        except AttributeError:
+            sign_kwargs = _iam_sign_kwargs(gcs.client)
+            if not sign_kwargs:
+                raise
+            return blob.generate_signed_url(
+                version="v4",
+                expiration=timedelta(seconds=expiry_seconds),
+                method="GET",
+                **sign_kwargs,
+            )
 
     async def delete_file(self, remote_path: str) -> bool:
         """Delete a single blob by path."""

@@ -52,7 +52,9 @@ final class DirectMessagesViewModel {
                 "count": String(conversations.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load conversations", error: error)
         }
         isLoading = false
@@ -75,7 +77,9 @@ final class DirectMessagesViewModel {
                 "count": String(messages.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to load messages", error: error)
         }
         isLoading = false

@@ -33,7 +33,9 @@ final class AudiobookDetailViewModel {
             audiobook = try await repository.fetchDetail(id: audiobookId)
             currentChapter = audiobook?.chapters?.first
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.BayitPlus" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#7E22CE</item>
-        <item name="colorPrimaryVariant">#581C87</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="android:colorBackground">#0D0D1A</item>
-        <item name="colorOnBackground">#FFFFFF</item>
+    <style name="Theme.BayitPlus" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
-        <item name="android:enforceStatusBarContrast">false</item>
     </style>
 </resources>

@@ -64,7 +64,9 @@ final class FamilyControlsViewModel {
                 self.error = apiError.localizedDescription
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -95,7 +97,9 @@ final class FamilyControlsViewModel {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false
@@ -127,7 +131,9 @@ final class FamilyControlsViewModel {
                 #endif
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false
@@ -161,7 +167,9 @@ final class FamilyControlsViewModel {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isSaving = false

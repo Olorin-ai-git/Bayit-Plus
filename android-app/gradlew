@@ -1,6 +1,6 @@
 #!/bin/sh
 # Gradle start script for POSIX shells
 APP_BASE_NAME=$(basename "$0")
-DEFAULT_JVM_OPTS='"-Xmx4g" "-XX:+HeapDumpOnOutOfMemoryError" "-Dfile.encoding=UTF-8"'
+DEFAULT_JVM_OPTS='-Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8'
 GRADLE_USER_HOME="${GRADLE_USER_HOME:-$HOME/.gradle}"
 exec "${JAVA_HOME:+$JAVA_HOME/bin/}java" $DEFAULT_JVM_OPTS -classpath "$GRADLE_USER_HOME/wrapper/dists/gradle-8.5-all/*/lib/gradle-launcher-8.5.jar" org.gradle.launcher.GradleMain "$@"

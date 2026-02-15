@@ -34,7 +34,9 @@ final class SeriesDetailViewModel {
                 await loadEpisodes(season: firstSeason.seasonNumber)
             }
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false
@@ -52,7 +54,9 @@ final class SeriesDetailViewModel {
             )
             episodes = response.episodes
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoadingEpisodes = false

@@ -65,7 +65,9 @@ final class LiveDubbingViewModel {
                 "voiceCount": String(voices.count)
             ])
         } catch {
-            self.error = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
             logger.error("Failed to check dubbing availability", error: error, context: [
                 "channelId": channelId
             ])
