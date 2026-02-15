@@ -64,6 +64,7 @@ export default function useChessGame() {
   const [game, setGame] = useState<ChessGame | null>(null);
   const [chatMessages, setChatMessages] = useState<ChessChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const ws = useRef<WebSocket | null>(null);
@@ -81,7 +82,7 @@ export default function useChessGame() {
     // Remove protocol if present in VITE_WS_URL
     const cleanHost = wsHost.replace(/^wss?:\/\//, '');
 
-    return `${wsProtocol}//${cleanHost}/api/v1/ws/chess/${gameCode}?token=${token}`;
+    return `${wsProtocol}//${cleanHost}/api/v1/ws/chess/${gameCode}`;
   }, [token]);
 
   const connectWebSocket = useCallback((gameCode: string) => {
@@ -96,10 +97,13 @@ export default function useChessGame() {
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
-        logger.debug('WebSocket connected successfully', 'useChessGame');
+        logger.debug('WebSocket connected, sending auth', 'useChessGame');
         setIsConnected(true);
+        setIsAuthenticated(false);
         setError(null);
         reconnectAttempts.current = 0;
+
+        ws.current?.send(JSON.stringify({ type: 'auth', token }));
       };
 
       ws.current.onclose = (event) => {
@@ -130,6 +134,7 @@ export default function useChessGame() {
 
           switch (message.type) {
             case 'game_state':
+              setIsAuthenticated(true);
               setGame(message.data);
               break;
 
@@ -242,48 +247,33 @@ export default function useChessGame() {
     }
   };
 
-  const makeMove = (from: string, to: string, promotion?: string) => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({
-        type: 'move',
-        from,
-        to,
-        promotion
-      }));
-    } else {
+  const sendIfReady = (payload: object) => {
+    if (ws.current?.readyState !== WebSocket.OPEN) {
       setError(i18n.t('errors.chess.notConnected'));
+      return false;
     }
+    if (!isAuthenticated) {
+      setError(i18n.t('errors.chess.notAuthenticated'));
+      return false;
+    }
+    ws.current.send(JSON.stringify(payload));
+    return true;
+  };
+
+  const makeMove = (from: string, to: string, promotion?: string) => {
+    sendIfReady({ type: 'move', from, to, promotion });
   };
 
   const sendChatMessage = (message: string) => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({
-        type: 'chat',
-        message
-      }));
-    } else {
-      setError(i18n.t('errors.chess.notConnected'));
-    }
+    sendIfReady({ type: 'chat', message });
   };
 
   const resign = () => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({
-        type: 'resign'
-      }));
-    } else {
-      setError(i18n.t('errors.chess.notConnected'));
-    }
+    sendIfReady({ type: 'resign' });
   };
 
   const offerDraw = () => {
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({
-        type: 'offer_draw'
-      }));
-    } else {
-      setError(i18n.t('errors.chess.notConnected'));
-    }
+    sendIfReady({ type: 'offer_draw' });
   };
 
   const leaveGame = () => {
@@ -300,6 +290,7 @@ export default function useChessGame() {
     setGame(null);
     setChatMessages([]);
     setIsConnected(false);
+    setIsAuthenticated(false);
     setError(null);
     reconnectAttempts.current = 0;
   };
@@ -320,6 +311,7 @@ export default function useChessGame() {
     game,
     chatMessages,
     isConnected,
+    isAuthenticated,
     error,
     createGame,
     joinGame,

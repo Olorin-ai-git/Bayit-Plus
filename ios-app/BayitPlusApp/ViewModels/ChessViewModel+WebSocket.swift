@@ -28,21 +28,27 @@ extension ChessViewModel {
 
     @MainActor
     func handleWSMessage(_ text: String) {
-        guard let data = text.data(using: .utf8),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+        guard let rawData = text.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: rawData) as? [String: Any],
               let type = json["type"] as? String else { return }
+
+        let payload = json["data"] as? [String: Any] ?? [:]
 
         switch type {
         case "game_state":
-            decodeGameState(data)
+            decodeGameState(payload)
         case "move":
-            handleMoveMessage(json)
+            handleMoveMessage(payload)
         case "draw_offer":
             drawOffered = true
         case "draw_response":
             drawOffered = false
+        case "game_end":
+            if let status = payload["status"] as? String {
+                gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
+            }
         case "resign", "game_over":
-            if let status = json["status"] as? String {
+            if let status = payload["status"] as? String {
                 gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
             }
         default:
@@ -51,27 +57,33 @@ extension ChessViewModel {
     }
 
     @MainActor
-    private func decodeGameState(_ data: Data) {
+    private func decodeGameState(_ payload: [String: Any]) {
+        guard let payloadData = try? JSONSerialization.data(withJSONObject: payload) else { return }
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .iso8601
-        if let gameData = try? decoder.decode(ChessGame.self, from: data) {
+        if let gameData = try? decoder.decode(ChessGame.self, from: payloadData) {
             applyGameState(gameData)
         }
     }
 
     @MainActor
-    private func handleMoveMessage(_ json: [String: Any]) {
-        if let fen = json["board_fen"] as? String { parseFEN(fen) }
-        if let turn = json["current_turn"] as? String {
+    private func handleMoveMessage(_ payload: [String: Any]) {
+        if let fen = payload["board_fen"] as? String { parseFEN(fen) }
+        if let turn = payload["current_turn"] as? String {
             currentTurn = PlayerColor(rawValue: turn) ?? currentTurn
         }
-        appendMoveFromJSON(json)
+        if let status = payload["status"] as? String {
+            gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
+        }
+        if let moveDict = payload["move"] as? [String: Any] {
+            appendMoveFromJSON(moveDict)
+        }
     }
 
     @MainActor
     func appendMoveFromJSON(_ json: [String: Any]) {
-        guard let notation = json["notation"] as? String else { return }
+        guard let notation = json["san"] as? String else { return }
         let moveNum = (moveHistory.count / 2) + 1
         if let last = moveHistory.last, last.blackMove == nil {
             moveHistory[moveHistory.count - 1] = ChessMove(

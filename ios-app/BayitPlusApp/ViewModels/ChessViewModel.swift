@@ -70,12 +70,12 @@ final class ChessViewModel {
     }
 
     @MainActor
-    func createGame(mode: String, botDifficulty: String?) async {
+    func createGame(color: String, gameMode: String, botDifficulty: String?) async {
         isLoading = true
         error = nil
         do {
             let created = try await repository.createGame(
-                mode: mode, botDifficulty: botDifficulty
+                color: color, gameMode: gameMode, botDifficulty: botDifficulty
             )
             applyGameState(created)
             await connectWebSocket(gameCode: created.gameCode)
@@ -103,7 +103,7 @@ final class ChessViewModel {
     }
 
     @MainActor func offerDraw() async {
-        await sendWSPayload("{\"type\":\"draw_offer\"}")
+        await sendWSPayload("{\"type\":\"offer_draw\"}")
         drawOffered = true
     }
 

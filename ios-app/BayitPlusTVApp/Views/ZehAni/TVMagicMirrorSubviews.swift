@@ -1,6 +1,7 @@
 #if os(tvOS)
 import BayitDesignSystem
 import BayitLocalization
+import BayitMedia
 import SceneKit
 import SwiftUI
 
@@ -126,6 +127,66 @@ struct TVMagicMirrorRefreshButton: View {
         }
         .buttonStyle(.card)
         .focused($isFocused)
+    }
+}
+
+struct MagicMirrorAvatarSceneView: UIViewRepresentable {
+    let glbData: Data
+
+    func makeUIView(context: Context) -> SCNView {
+        let scnView = SCNView()
+        scnView.backgroundColor = .clear
+        scnView.allowsCameraControl = false
+        scnView.autoenablesDefaultLighting = false
+        scnView.antialiasingMode = .multisampling4X
+
+        let scene = SCNScene()
+        configureCamera(scene: scene)
+        configureLighting(scene: scene)
+        loadModel(into: scene)
+        scnView.scene = scene
+
+        return scnView
+    }
+
+    func updateUIView(_ uiView: SCNView, context: Context) {}
+
+    private func configureCamera(scene: SCNScene) {
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.camera?.zNear = 0.1
+        cameraNode.camera?.zFar = 100
+        cameraNode.camera?.fieldOfView = 45
+        cameraNode.position = SCNVector3(x: 0, y: 1.2, z: 3.0)
+        cameraNode.look(at: SCNVector3(x: 0, y: 0.8, z: 0))
+        scene.rootNode.addChildNode(cameraNode)
+    }
+
+    private func configureLighting(scene: SCNScene) {
+        let ambient = SCNNode()
+        ambient.light = SCNLight()
+        ambient.light?.type = .ambient
+        ambient.light?.intensity = 400
+        ambient.light?.color = UIColor(white: 0.85, alpha: 1.0)
+        scene.rootNode.addChildNode(ambient)
+
+        let directional = SCNNode()
+        directional.light = SCNLight()
+        directional.light?.type = .directional
+        directional.light?.intensity = 800
+        directional.light?.castsShadow = true
+        directional.position = SCNVector3(x: 2, y: 4, z: 3)
+        directional.look(at: SCNVector3(0, 0, 0))
+        scene.rootNode.addChildNode(directional)
+    }
+
+    private func loadModel(into scene: SCNScene) {
+        guard let loadedScene = try? GLBSceneLoader.loadScene(from: glbData) else {
+            return
+        }
+        for child in loadedScene.rootNode.childNodes {
+            scene.rootNode.addChildNode(child)
+        }
     }
 }
 #endif

@@ -69,6 +69,15 @@ struct TVZehAniHubView: View {
             }
 
             featureCard(
+                icon: "sparkle.magnifyingglass",
+                title: "Magic Mirror",
+                subtitle: "Your personalized greeting",
+                color: DesignTokens.Primary.p500
+            ) {
+                TVMagicMirrorView(profileId: "default_profile")
+            }
+
+            featureCard(
                 icon: "tv.and.hifispeaker.fill",
                 title: "Watch Party",
                 subtitle: "Watch together",

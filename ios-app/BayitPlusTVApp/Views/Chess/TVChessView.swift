@@ -70,7 +70,7 @@ struct TVChessView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 GlassButton("New Game vs Player", variant: .primary, size: .medium) {
-                    Task { await vm.createGame(mode: "pvp", botDifficulty: nil) }
+                    Task { await vm.createGame(color: "white", gameMode: "pvp", botDifficulty: nil) }
                 }
                 .tvFocusStyle()
                 .accessibilityLabel("Start a new player versus player game")
@@ -91,19 +91,19 @@ struct TVChessView: View {
     private func botDifficultyButtons(_ vm: ChessViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
             GlassButton("Easy", variant: .ghost, size: .medium) {
-                Task { await vm.createGame(mode: "bot", botDifficulty: "easy") }
+                Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "easy") }
             }
             .tvFocusStyle()
             .accessibilityLabel("Easy difficulty")
 
             GlassButton("Medium", variant: .ghost, size: .medium) {
-                Task { await vm.createGame(mode: "bot", botDifficulty: "medium") }
+                Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "medium") }
             }
             .tvFocusStyle()
             .accessibilityLabel("Medium difficulty")
 
             GlassButton("Hard", variant: .ghost, size: .medium) {
-                Task { await vm.createGame(mode: "bot", botDifficulty: "hard") }
+                Task { await vm.createGame(color: "white", gameMode: "bot", botDifficulty: "hard") }
             }
             .tvFocusStyle()
             .accessibilityLabel("Hard difficulty")

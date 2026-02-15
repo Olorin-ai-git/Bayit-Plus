@@ -9,4 +9,5 @@ interface WidgetRepository {
     suspend fun getAvailableWidgets(): BayitResult<List<Any>>
     suspend fun enableWidget(widgetType: String): BayitResult<Any>
     suspend fun disableWidget(widgetId: String): BayitResult<Unit>
+    suspend fun toggleMinimize(widgetId: String, isMinimized: Boolean): BayitResult<Unit>
 }

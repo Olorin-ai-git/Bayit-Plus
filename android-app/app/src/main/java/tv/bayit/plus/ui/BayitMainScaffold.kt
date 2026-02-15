@@ -6,28 +6,37 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
 import tv.bayit.plus.ui.components.GlassBottomNavBar
+import tv.bayit.plus.ui.components.PiPWidgetContainer
 import tv.bayit.plus.ui.components.TopAppBar
 import tv.bayit.plus.ui.components.VoiceAssistantFAB
+import tv.bayit.plus.ui.components.WidgetDock
+import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
 
 @Composable
 fun BayitMainScaffold(
     navController: NavHostController,
+    widgetDockViewModel: WidgetDockViewModel = hiltViewModel(),
     content: @Composable (PaddingValues) -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(AppTab.HOME) }
     var showVoiceModal by remember { mutableStateOf(false) }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+
+    val widgetDockState by widgetDockViewModel.uiState.collectAsState()
 
     val isRootTab = AppTab.entries.any { tab ->
         tab.route::class.qualifiedName == currentRoute
@@ -71,6 +80,24 @@ fun BayitMainScaffold(
                 .padding(paddingValues),
         ) {
             content(paddingValues)
+
+            widgetDockViewModel.getRestoredWidgets().forEachIndexed { index, widget ->
+                PiPWidgetContainer(
+                    widget = widget,
+                    initialPosition = Offset(100f, 100f + (index * 220f)),
+                    onMinimize = { widgetDockViewModel.minimizeWidget(widget.id) },
+                    onClose = { widgetDockViewModel.minimizeWidget(widget.id) }
+                )
+            }
+
+            WidgetDock(
+                minimizedWidgets = widgetDockViewModel.getMinimizedWidgets(),
+                isDockVisible = widgetDockState.isDockVisible,
+                onWidgetClick = { widgetId ->
+                    widgetDockViewModel.toggleMinimize(widgetId)
+                },
+                onCloseDock = { widgetDockViewModel.hideDock() }
+            )
         }
     }
 

@@ -4,12 +4,13 @@ import Foundation
 /// Repository protocol for chess game API operations and WebSocket connectivity.
 protocol ChessRepository: Sendable {
 
-    /// Create a new chess game with the specified mode.
+    /// Create a new chess game with the specified mode and color.
     /// - Parameters:
-    ///   - mode: Game mode (pvp or bot).
+    ///   - color: Preferred piece color (white or black).
+    ///   - gameMode: Game mode (pvp or bot).
     ///   - botDifficulty: Difficulty level when playing against a bot.
     /// - Returns: The created chess game.
-    func createGame(mode: String, botDifficulty: String?) async throws -> ChessGame
+    func createGame(color: String, gameMode: String, botDifficulty: String?) async throws -> ChessGame
 
     /// Fetch the current state of a chess game.
     /// - Parameter gameId: The game identifier.
@@ -40,19 +41,21 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
 
     // MARK: - ChessRepository
 
-    func createGame(mode: String, botDifficulty: String?) async throws -> ChessGame {
+    func createGame(color: String, gameMode: String, botDifficulty: String?) async throws -> ChessGame {
         struct CreateRequest: Encodable, Sendable {
-            let mode: String
+            let color: String
+            let gameMode: String
             let botDifficulty: String?
             enum CodingKeys: String, CodingKey {
-                case mode
+                case color
+                case gameMode = "game_mode"
                 case botDifficulty = "bot_difficulty"
             }
         }
 
         return try await client.post(
             "/api/v1/chess/create",
-            body: CreateRequest(mode: mode, botDifficulty: botDifficulty),
+            body: CreateRequest(color: color, gameMode: gameMode, botDifficulty: botDifficulty),
             as: ChessGame.self
         )
     }

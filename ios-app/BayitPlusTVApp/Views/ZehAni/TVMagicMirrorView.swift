@@ -1,6 +1,7 @@
 #if os(tvOS)
 import BayitDesignSystem
 import BayitLocalization
+import BayitMedia
 import SceneKit
 import SwiftUI
 
@@ -13,9 +14,10 @@ struct TVMagicMirrorView: View {
     @State private var greeting: MagicMirrorGreeting?
     @State private var isLoading = true
     @State private var error: String?
-    @State private var sceneView: SCNView?
-    @State private var avatarNode: SCNNode?
-    @State private var isAnimating = false
+    @State private var avatarId: String?
+    @State private var glbData: Data?
+    @State private var meshLoadFailed = false
+    @State private var isMeshLoading = false
     @FocusState private var refreshButtonFocused: Bool
 
     var body: some View {
@@ -66,50 +68,114 @@ struct TVMagicMirrorView: View {
 
     @ViewBuilder
     private var avatarSceneView: some View {
-        SceneKitViewWrapper(
-            scene: createAvatarScene(),
-            onUpdate: { view in
-                self.sceneView = view
-                if !isAnimating {
-                    startGreetingAnimation()
+        if let glbData = glbData {
+            // Success: Render 3D avatar
+            MagicMirrorAvatarSceneView(glbData: glbData)
+                .frame(width: 360, height: 360)
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
+                )
+                .shadow(color: DesignTokens.Glass.purpleGlow, radius: 12, x: 0, y: 4)
+        } else if isMeshLoading {
+            // Loading: Show spinner
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                .fill(DesignTokens.Colors.Glass.backgroundLight.opacity(0.3))
+                .frame(width: 360, height: 360)
+                .overlay {
+                    VStack(spacing: TVDesignTokens.Spacing.sm) {
+                        ProgressView()
+                            .tint(.white)
+                        Text(localization.t("zehAni.avatar3d.loading"))
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Colors.Text.muted)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
+                )
+        } else if meshLoadFailed {
+            // Failure: Show fallback icon
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                .fill(DesignTokens.Colors.Glass.backgroundLight.opacity(0.3))
+                .frame(width: 360, height: 360)
+                .overlay {
+                    VStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "person.crop.circle")
+                            .font(.system(size: 48))
+                            .foregroundStyle(DesignTokens.Colors.Text.muted)
+                        Text(localization.t("zehAni.magicMirror.meshUnavailable"))
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Colors.Text.muted)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
+                )
+        }
+    }
+
+    private func loadAvatarId() async {
+        do {
+            let avatarsResponse = try await repos.starStory.fetchAvatars(profileId: profileId)
+            let fetchedAvatarId = avatarsResponse.avatars.first?.avatarId
+
+            await MainActor.run {
+                avatarId = fetchedAvatarId
+            }
+
+            if let avatarId = fetchedAvatarId {
+                await loadAvatarMesh(avatarId: avatarId)
+            } else {
+                await MainActor.run {
+                    meshLoadFailed = true
                 }
             }
-        )
-        .frame(width: 360, height: 360)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
-        .overlay(
-            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
-        )
-        .shadow(color: DesignTokens.Glass.purpleGlow, radius: 12, x: 0, y: 4)
+        } catch {
+            await MainActor.run {
+                meshLoadFailed = true
+            }
+        }
     }
 
-    private func createAvatarScene() -> SCNScene {
-        let scene = SCNScene()
+    private func loadAvatarMesh(avatarId: String) async {
+        await MainActor.run {
+            isMeshLoading = true
+        }
 
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 80)
-        scene.rootNode.addChildNode(cameraNode)
+        do {
+            let meshGlb = try await repos.avatarMeshRepository.fetchGlbUrl(avatarId: avatarId)
 
-        let ambientLight = SCNNode()
-        ambientLight.light = SCNLight()
-        ambientLight.light?.type = .ambient
-        ambientLight.light?.intensity = 400
-        scene.rootNode.addChildNode(ambientLight)
+            guard let url = URL(string: meshGlb.signedUrl) else {
+                await MainActor.run {
+                    meshLoadFailed = true
+                    isMeshLoading = false
+                }
+                return
+            }
 
-        let directionalLight = SCNNode()
-        directionalLight.light = SCNLight()
-        directionalLight.light?.type = .directional
-        directionalLight.light?.intensity = 600
-        directionalLight.position = SCNVector3(x: 0, y: 30, z: 80)
-        scene.rootNode.addChildNode(directionalLight)
+            let (data, response) = try await URLSession.shared.data(from: url)
+            let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let isValidGlb = (httpStatus == 200 || httpStatus == 0) && data.count > 50_000
 
-        return scene
-    }
-
-    private func startGreetingAnimation() {
-        isAnimating = true
+            await MainActor.run {
+                if isValidGlb {
+                    glbData = data
+                    meshLoadFailed = false
+                } else {
+                    meshLoadFailed = true
+                }
+                isMeshLoading = false
+            }
+        } catch {
+            await MainActor.run {
+                meshLoadFailed = true
+                isMeshLoading = false
+            }
+        }
     }
 
     private func loadGreeting() async {
@@ -124,6 +190,7 @@ struct TVMagicMirrorView: View {
                 greeting = fetchedGreeting
                 isLoading = false
             }
+            await loadAvatarId()
         } catch {
             await MainActor.run {
                 self.error = error.localizedDescription

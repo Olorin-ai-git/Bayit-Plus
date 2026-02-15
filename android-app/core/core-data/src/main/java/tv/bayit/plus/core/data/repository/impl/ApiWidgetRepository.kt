@@ -72,6 +72,12 @@ class ApiWidgetRepository @Inject constructor(
             client.safeApiCall { service.disableWidget(widgetId) }
             Unit
         }
+
+    override suspend fun toggleMinimize(widgetId: String, isMinimized: Boolean): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.toggleMinimize(widgetId, isMinimized) }
+            Unit
+        }
 }
 
 private interface WidgetService {
@@ -96,6 +102,12 @@ private interface WidgetService {
 
     @DELETE("api/v1/widget/{widgetId}")
     suspend fun disableWidget(@Path("widgetId") widgetId: String): MessageResponse
+
+    @POST("api/v1/widgets/{widgetId}/minimize")
+    suspend fun toggleMinimize(
+        @Path("widgetId") widgetId: String,
+        @retrofit2.http.Query("is_minimized") isMinimized: Boolean,
+    ): MessageResponse
 }
 
 /** Response wrapper for widget list endpoints. */
