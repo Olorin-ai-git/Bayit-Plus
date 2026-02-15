@@ -64,6 +64,51 @@ class ApiSecurityRepository(
             client.safeApiCall { service.verifyTwoFactor(request) }
             Unit
         }
+
+    override suspend fun initializeMFA(): BayitResult<Any> =
+        runCatchingResult {
+            client.safeApiCall { service.initializeMFA() }
+        }
+
+    override suspend fun enableMFA(verificationCode: String): BayitResult<Unit> =
+        runCatchingResult {
+            val request = MFAEnableRequest(code = verificationCode)
+            client.safeApiCall { service.enableMFA(request) }
+            Unit
+        }
+
+    override suspend fun getPasskeys(): BayitResult<List<Any>> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getPasskeys() }
+            response.passkeys
+        }
+
+    override suspend fun registerPasskey(name: String): BayitResult<Unit> =
+        runCatchingResult {
+            val request = PasskeyRegisterRequest(name = name)
+            client.safeApiCall { service.registerPasskey(request) }
+            Unit
+        }
+
+    override suspend fun deletePasskey(passkeyId: String): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.deletePasskey(passkeyId) }
+            Unit
+        }
+
+    override suspend fun sendPhoneVerificationCode(phoneNumber: String): BayitResult<Unit> =
+        runCatchingResult {
+            val request = PhoneVerificationSendRequest(phoneNumber = phoneNumber)
+            client.safeApiCall { service.sendPhoneVerificationCode(request) }
+            Unit
+        }
+
+    override suspend fun verifyPhoneCode(phoneNumber: String, code: String): BayitResult<Unit> =
+        runCatchingResult {
+            val request = PhoneVerificationVerifyRequest(phoneNumber = phoneNumber, code = code)
+            client.safeApiCall { service.verifyPhoneCode(request) }
+            Unit
+        }
 }
 
 private interface SecurityService {
@@ -92,6 +137,37 @@ private interface SecurityService {
 
     @GET("api/v1/security/settings")
     suspend fun getSettings(): SecuritySettingsResponse
+
+    @POST("api/v1/security/mfa/initialize")
+    suspend fun initializeMFA(): MFAInitializeResponse
+
+    @POST("api/v1/security/mfa/enable")
+    suspend fun enableMFA(
+        @Body request: MFAEnableRequest,
+    ): MessageResponse
+
+    @GET("api/v1/security/passkeys")
+    suspend fun getPasskeys(): PasskeysResponse
+
+    @POST("api/v1/security/passkey/register")
+    suspend fun registerPasskey(
+        @Body request: PasskeyRegisterRequest,
+    ): MessageResponse
+
+    @DELETE("api/v1/security/passkey/{id}")
+    suspend fun deletePasskey(
+        @Path("id") passkeyId: String,
+    ): MessageResponse
+
+    @POST("api/v1/security/phone/send-code")
+    suspend fun sendPhoneVerificationCode(
+        @Body request: PhoneVerificationSendRequest,
+    ): MessageResponse
+
+    @POST("api/v1/security/phone/verify")
+    suspend fun verifyPhoneCode(
+        @Body request: PhoneVerificationVerifyRequest,
+    ): MessageResponse
 }
 
 /** List wrapper for active sessions. */
@@ -152,4 +228,50 @@ private data class SecuritySettingsResponse(
     @SerialName("login_notifications") val loginNotifications: Boolean = true,
     @SerialName("session_timeout_minutes") val sessionTimeoutMinutes: Int? = null,
     @SerialName("allowed_devices") val allowedDevices: Int? = null,
+)
+
+/** Response from initializing MFA. */
+@Serializable
+private data class MFAInitializeResponse(
+    val secret: String? = null,
+    @SerialName("qr_code_url") val qrCodeUrl: String? = null,
+)
+
+/** Request body for enabling MFA. */
+@Serializable
+private data class MFAEnableRequest(
+    val code: String,
+)
+
+/** List wrapper for passkeys. */
+@Serializable
+private data class PasskeysResponse(
+    val passkeys: List<Passkey> = emptyList(),
+)
+
+/** A single passkey. */
+@Serializable
+private data class Passkey(
+    val id: String,
+    val name: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+)
+
+/** Request body for registering a passkey. */
+@Serializable
+private data class PasskeyRegisterRequest(
+    val name: String,
+)
+
+/** Request body for sending phone verification code. */
+@Serializable
+private data class PhoneVerificationSendRequest(
+    @SerialName("phone_number") val phoneNumber: String,
+)
+
+/** Request body for verifying phone code. */
+@Serializable
+private data class PhoneVerificationVerifyRequest(
+    @SerialName("phone_number") val phoneNumber: String,
+    val code: String,
 )

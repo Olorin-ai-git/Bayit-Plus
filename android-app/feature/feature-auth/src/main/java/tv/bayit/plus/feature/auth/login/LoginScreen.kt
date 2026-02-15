@@ -35,7 +35,7 @@ fun LoginRoute(
     onNavigateToHome: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onRequestGoogleSignIn: (() -> Unit) -> Unit,
+    onRequestGoogleSignIn: ((String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {

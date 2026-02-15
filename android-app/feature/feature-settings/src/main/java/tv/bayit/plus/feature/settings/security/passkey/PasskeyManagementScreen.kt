@@ -31,7 +31,7 @@ internal fun PasskeyManagementScreen(uiState: PasskeyManagementUiState, onAddPas
                 }
             }
             is PasskeyManagementUiState.Success -> LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Add Passkey", onAddPasskey, modifier = Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
+                item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Add Passkey", onAddPasskey, Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
                 if (uiState.passkeys.isEmpty()) {
                     item { Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) { Text("No passkeys configured.\nAdd your first passkey!", color = DesignTokens.Colors.Text.muted) } }
                 }
@@ -42,7 +42,7 @@ internal fun PasskeyManagementScreen(uiState: PasskeyManagementUiState, onAddPas
                                 Text(passkey.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
                                 Text("Last used: N/A", fontSize = DesignTokens.FontSize.sm, color = DesignTokens.Colors.Text.muted)
                             }
-                            GlassButton("Delete", { onDeletePasskey(passkey.hashCode().toString()) }, false)
+                            GlassButton("Delete", { onDeletePasskey(passkey.hashCode().toString()) }, Modifier, enabled = false)
                         }
                     }
                 }

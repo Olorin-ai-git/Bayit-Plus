@@ -47,11 +47,11 @@ internal fun MFASetupScreen(uiState: MFASetupUiState, verificationCode: String, 
                 GlassCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Verification Code", fontWeight = FontWeight.SemiBold)
-                        GlassTextField(verificationCode, onCodeChange, "6-digit code")
+                        GlassTextField(verificationCode, onCodeChange, Modifier, placeholder = "6-digit code")
                         uiState.error?.let { Text(it, color = DesignTokens.Colors.Semantic.error, fontSize = DesignTokens.FontSize.sm) }
                     }
                 }
-                if (uiState.isVerifying) GlassSpinner(SpinnerSize.MEDIUM) else GlassButton("Enable 2FA", onVerify, verificationCode.length == 6, Modifier.fillMaxWidth())
+                if (uiState.isVerifying) GlassSpinner(Modifier, SpinnerSize.MEDIUM) else GlassButton("Enable 2FA", onVerify, Modifier.fillMaxWidth(), enabled = verificationCode.length == 6)
             }
             MFASetupUiState.Success -> GlassCard(Modifier.fillMaxWidth().padding(DesignTokens.Spacing.base)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -40,7 +40,7 @@ internal fun DevicePairingScreen(uiState: DevicePairingUiState, onGenerateCode: 
                 }
             }
             is DevicePairingUiState.Success -> LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Pair New Device", onGenerateCode, modifier = Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
+                item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Pair New Device", onGenerateCode, Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
                 if (uiState.devices.isEmpty()) {
                     item { Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) { Text("No devices paired.\nPair your first device!", color = DesignTokens.Colors.Text.muted) } }
                 }
@@ -51,7 +51,7 @@ internal fun DevicePairingScreen(uiState: DevicePairingUiState, onGenerateCode: 
                                 Text(device.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
                                 Text("Last active: N/A", fontSize = DesignTokens.FontSize.sm, color = DesignTokens.Colors.Text.muted)
                             }
-                            GlassButton("Remove", { onRemoveDevice(device.hashCode().toString()) }, false)
+                            GlassButton("Remove", { onRemoveDevice(device.hashCode().toString()) }, Modifier, enabled = false)
                         }
                     }
                 }

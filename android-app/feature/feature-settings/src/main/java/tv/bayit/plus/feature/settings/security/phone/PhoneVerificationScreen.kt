@@ -28,19 +28,19 @@ internal fun PhoneVerificationScreen(uiState: PhoneVerificationUiState, phone: S
                 PhoneVerificationUiState.EnterPhone -> GlassCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Phone Number", fontWeight = FontWeight.Bold)
-                        GlassTextField(phone, onPhoneChange, "+1234567890")
-                        GlassButton("Send Code", onSendCode, phone.length >= 10, Modifier.fillMaxWidth())
+                        GlassTextField(phone, onPhoneChange, Modifier, placeholder = "+1234567890")
+                        GlassButton("Send Code", onSendCode, Modifier.fillMaxWidth(), enabled = phone.length >= 10)
                     }
                 }
-                PhoneVerificationUiState.SendingCode -> GlassSpinner(SpinnerSize.MEDIUM)
+                PhoneVerificationUiState.SendingCode -> GlassSpinner(Modifier, SpinnerSize.MEDIUM)
                 PhoneVerificationUiState.EnterCode -> GlassCard(Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Verification Code", fontWeight = FontWeight.Bold)
-                        GlassTextField(code, onCodeChange, "6-digit code")
-                        GlassButton("Verify", onVerify, code.length == 6, Modifier.fillMaxWidth())
+                        GlassTextField(code, onCodeChange, Modifier, placeholder = "6-digit code")
+                        GlassButton("Verify", onVerify, Modifier.fillMaxWidth(), enabled = code.length == 6)
                     }
                 }
-                PhoneVerificationUiState.Verifying -> GlassSpinner(SpinnerSize.MEDIUM)
+                PhoneVerificationUiState.Verifying -> GlassSpinner(Modifier, SpinnerSize.MEDIUM)
                 PhoneVerificationUiState.Success -> GlassCard(Modifier.fillMaxWidth()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("✓", fontSize = DesignTokens.FontSize.xxxl, color = DesignTokens.Colors.Semantic.success, fontWeight = FontWeight.Bold)
