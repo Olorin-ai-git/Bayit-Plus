@@ -37,7 +37,7 @@ class RateLimitInterceptor @Inject constructor(
 
         val retryAfterHeader = response.header(RETRY_AFTER_HEADER)
         val retryAfterSeconds = retryAfterHeader?.toLongOrNull()
-            ?: configuration.retryBaseDelay.inWholeSeconds
+            ?: configuration.retryBaseDelayDuration.inWholeSeconds
 
         logger.warning(
             "Rate limited (429), waiting before retry",
