@@ -15,13 +15,19 @@ from app.core.storage import (
 logger = get_logger(__name__)
 
 
+_cached_sa_email: str | None = None
+
+
 def _iam_sign_kwargs() -> dict:
     """Build kwargs to sign via IAM signBlob for token-only credentials.
 
     On Cloud Run the default credentials lack a private key.  We obtain
-    fresh credentials with ``cloud-platform`` scope so the token is
-    authorised to call the IAM ``signBlob`` API.
+    a ``cloud-platform``-scoped token and resolve the real service
+    account email from the metadata server (the default alias
+    ``"default"`` is rejected by the IAM API).
     """
+    global _cached_sa_email
+
     try:
         import google.auth
         from google.auth.transport import requests as google_auth_requests
@@ -29,13 +35,29 @@ def _iam_sign_kwargs() -> dict:
         credentials, _ = google.auth.default(
             scopes=["https://www.googleapis.com/auth/cloud-platform"],
         )
-        sa_email = getattr(credentials, "service_account_email", None)
-        if not sa_email:
-            return {}
         auth_request = google_auth_requests.Request()
         credentials.refresh(auth_request)
+
+        if _cached_sa_email is None:
+            sa_email = getattr(credentials, "service_account_email", None)
+            if not sa_email or sa_email == "default":
+                import requests as sync_requests
+
+                resp = sync_requests.get(
+                    "http://metadata.google.internal/computeMetadata/v1/"
+                    "instance/service-accounts/default/email",
+                    headers={"Metadata-Flavor": "Google"},
+                    timeout=5,
+                )
+                resp.raise_for_status()
+                sa_email = resp.text.strip()
+            _cached_sa_email = sa_email or ""
+
+        if not _cached_sa_email:
+            return {}
+
         return {
-            "service_account_email": sa_email,
+            "service_account_email": _cached_sa_email,
             "access_token": credentials.token,
         }
     except Exception:
