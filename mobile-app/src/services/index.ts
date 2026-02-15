@@ -48,3 +48,6 @@ export { deepLinkingService } from './deepLinking';
 export type { DeepLinkRoute } from './deepLinking';
 export { pushNotificationService } from './pushNotifications';
 export type { NotificationPayload, RemoteMessage } from './pushNotifications';
+
+// Widget Service (WidgetKit)
+export { widgetService } from './widgetService';

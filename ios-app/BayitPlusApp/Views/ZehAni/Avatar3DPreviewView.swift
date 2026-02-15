@@ -124,11 +124,16 @@ struct SceneKitView: UIViewRepresentable {
         scnView.scene = scene
 
         if let loadedScene = loadGLB(from: glbData) {
+            let childCount = loadedScene.rootNode.childNodes.count
             for child in loadedScene.rootNode.childNodes {
                 scene.rootNode.addChildNode(child)
             }
+            let (minV, maxV) = scene.rootNode.boundingBox
+            NSLog("BAYIT_3D children=\(childCount) min=(\(minV.x),\(minV.y),\(minV.z)) max=(\(maxV.x),\(maxV.y),\(maxV.z))")
             frameCameraToFit(scene: scene, in: scnView)
             setupLighting(in: scene)
+        } else {
+            NSLog("BAYIT_3D loadGLB returned nil")
         }
 
         return scnView

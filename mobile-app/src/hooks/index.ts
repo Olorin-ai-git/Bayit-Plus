@@ -57,3 +57,6 @@ export type { AIOnboardingStep } from './useAIOnboarding';
 // Platform Features (Phase 4)
 export { useDeepLinking } from './useDeepLinking';
 export { usePushNotifications } from './usePushNotifications';
+
+// Widget Integration
+export { useWidgetSync, usePlaybackSync } from './useWidgetSync';

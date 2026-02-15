@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StatusBar, StyleSheet, Text } from 'react-native';
+import { View, StatusBar, StyleSheet, Text, AppState, AppStateStatus } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import MainTabNavigator from '../navigation/MainTabNavigator';
@@ -12,6 +12,7 @@ import { initializeI18n } from '../services/i18n';
 import { setupTrackPlayer, playbackService, networkMonitor, rtlService, pushNotificationService } from '../services';
 import { useDeepLinking } from '../hooks/useDeepLinking';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { initializeWidgetOnLaunch, handleAppForeground } from '../utils/authWidgetIntegration';
 import { SplashScreen } from './SplashScreen';
 import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
@@ -38,6 +39,9 @@ export const AppContent: React.FC = () => {
 
         networkMonitor.initialize();
 
+        // Initialize widget with auth token (iOS only)
+        await initializeWidgetOnLaunch();
+
         moduleLogger.info('App infrastructure initialized successfully');
         setI18nReady(true);
       } catch (error) {
@@ -48,9 +52,20 @@ export const AppContent: React.FC = () => {
 
     initializeApp();
 
+    // Handle app state changes (foreground/background)
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active') {
+        // App came to foreground - refresh widget data
+        handleAppForeground();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
     return () => {
       networkMonitor.cleanup();
       pushNotificationService.cleanup();
+      subscription.remove();
     };
   }, []);
 

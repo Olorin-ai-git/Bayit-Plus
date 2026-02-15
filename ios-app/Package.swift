@@ -22,6 +22,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0"),
         .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "8.0.0"),
+        .package(url: "https://github.com/warrenm/GLTFKit2.git", from: "0.5.0"),
     ],
     targets: [
         // MARK: - BayitCore

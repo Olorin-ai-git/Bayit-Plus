@@ -33,6 +33,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Import all routers
     from app.api.endpoints import (analytics_router, tts_router, voice_router,
                                    wake_word_router)
+    from app.api.endpoints.continue_watching import router as continue_watching_router
     # Import search sub-routers
     from app.api.routes import (account_linking, admin, admin_audiobooks, admin_categories,
                                 admin_content_importer, admin_content_vod_read,
@@ -260,6 +261,9 @@ def register_all_routers(app: FastAPI) -> None:
         downloads.router, prefix=f"{prefix}/downloads", tags=["downloads"]
     )
     app.include_router(history.router, prefix=f"{prefix}/history", tags=["history"])
+    app.include_router(
+        continue_watching_router, prefix=f"{prefix}/user", tags=["user", "continue-watching"]
+    )
     app.include_router(
         recordings.router, prefix=f"{prefix}/recordings", tags=["recordings"]
     )

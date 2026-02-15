@@ -6,6 +6,7 @@ import { useRoute, useNavigation } from '@react-navigation/native'
 import TrackPlayer, { State, usePlaybackState, useProgress } from 'react-native-track-player'
 import Slider from '@react-native-community/slider'
 import { log } from '@bayit/shared-services/logger.native'
+import { usePlaybackSync } from '../hooks/useWidgetSync'
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 const SLEEP_TIMER_OPTIONS = [5, 10, 15, 30, 45, 60] // minutes
@@ -24,6 +25,17 @@ export default function AudiobookPlayerScreen() {
   const [showChapters, setShowChapters] = useState(false)
   const [showSleepTimer, setShowSleepTimer] = useState(false)
   const [sleepTimerMinutes, setSleepTimerMinutes] = useState<number | null>(null)
+
+  // Sync playback progress with iOS widget
+  usePlaybackSync(
+    audiobookId,
+    audiobook.title,
+    'audiobook',
+    audiobook.cover,
+    () => position,
+    duration,
+    playbackState === State.Playing
+  )
 
   useEffect(() => {
     setupPlayer()

@@ -250,7 +250,6 @@ struct MagicMirrorView: View {
             let (data, response) = try await URLSession.shared.data(from: url)
             let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
             let isValidGlb = (httpStatus == 200 || httpStatus == 0) && data.count > 50_000
-            NSLog("BAYIT_DBG mesh download: status=\(httpStatus) bytes=\(data.count) valid=\(isValidGlb)")
             await MainActor.run {
                 if isValidGlb {
                     glbData = data
@@ -259,7 +258,6 @@ struct MagicMirrorView: View {
                 }
             }
         } catch {
-            NSLog("BAYIT_DBG mesh download error: \(error)")
             await MainActor.run { meshLoadFailed = true }
         }
     }

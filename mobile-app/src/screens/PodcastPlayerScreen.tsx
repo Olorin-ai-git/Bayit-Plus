@@ -6,6 +6,7 @@ import { useRoute, useNavigation } from '@react-navigation/native'
 import TrackPlayer, { State, usePlaybackState, useProgress } from 'react-native-track-player'
 import Slider from '@react-native-community/slider'
 import { log } from '@bayit/shared-services/logger.native'
+import { usePlaybackSync } from '../hooks/useWidgetSync'
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
@@ -19,6 +20,17 @@ export default function PodcastPlayerScreen() {
 
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0)
   const [seeking, setSeeking] = useState(false)
+
+  // Sync playback progress with iOS widget
+  usePlaybackSync(
+    episodeId,
+    episode.title,
+    'podcast',
+    episode.cover,
+    () => position,
+    duration,
+    playbackState === State.Playing
+  )
 
   useEffect(() => {
     setupPlayer()
