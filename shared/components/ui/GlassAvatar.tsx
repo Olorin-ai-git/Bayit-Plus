@@ -41,22 +41,22 @@ const styles = StyleSheet.create({
   },
   avatarWithImage: {
     backgroundColor: 'transparent',
-    borderColor: colors.white + '4D', // 30% opacity
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   avatarWithInitial: {
-    backgroundColor: colors.purple + '33', // 20% opacity
-    borderColor: colors.purple + '99', // 60% opacity
+    backgroundColor: 'rgba(88, 28, 135, 0.2)',
+    borderColor: 'rgba(88, 28, 135, 0.6)',
   },
   image: {
     resizeMode: 'cover',
   },
   initialText: {
     fontWeight: 'bold',
-    color: colors.purple,
+    color: colors.purple.DEFAULT,
   },
   placeholderText: {
     fontWeight: 'bold',
-    color: colors.purple,
+    color: colors.purple.DEFAULT,
   },
   onlineIndicator: {
     position: 'absolute',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     position: 'absolute',
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purple.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,

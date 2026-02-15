@@ -316,8 +316,35 @@ The following Bayit+ backend files contain the security implementation:
 
 ---
 
+## Auth System Comprehensive Analysis (NEW)
+
+### AUTH_SYSTEM_COMPREHENSIVE_ANALYSIS.md
+**Purpose:** Full cross-platform auth and credential audit
+**Date:** 2026-02-15
+**Length:** ~25 KB | **Read Time:** 30-40 minutes
+**Audience:** All engineering, security, and DevOps stakeholders
+
+**Contains:**
+- Backend auth architecture with all endpoints, security dependencies, and features
+- GCloud credential proliferation analysis with client ID mapping
+- Cross-platform auth flow comparison (Web, iOS, tvOS, Android)
+- 23 findings across all platforms (5 CRITICAL, 8 HIGH, 6 MEDIUM, 4 LOW)
+- Credential cleanup recommendations (keep vs delete vs fix)
+- Priority action items with specific fixes
+- Complete file reference appendix
+
+**Key Findings:**
+- Apple Bundle ID mismatch breaks ALL Apple Sign-In from iOS/tvOS apps
+- iOS GoogleService-Info.plist has placeholder values (Firebase SDK broken)
+- GOOGLE_IOS_CLIENT_ID not set in backend (iOS Google Sign-In fails)
+- Android apiService injected but never called (all users show as FREE)
+- 4 orphaned GCloud credentials need deletion
+
+---
+
 ## Version History
 
+- **2026-02-15**: Comprehensive cross-platform auth and credential audit
 - **2026-01-27**: Initial security review - APPROVED FOR PRODUCTION
   - PKCE RFC 7636 verified
   - CSRF protection implemented

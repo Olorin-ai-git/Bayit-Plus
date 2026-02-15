@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock, Check, X } from 'lucide-react';
+import { ArrowRight, Mail, Key, Ban, UserCheck, Edit2, Trash2, Clock, Check, X, Eye, EyeOff } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { usersService, type User } from '@/services/adminApi';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -64,16 +64,23 @@ export default function UserDetailPage() {
   const [promptModalOpen, setPromptModalOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
   const [promptCallback, setPromptCallback] = useState<((value: string) => void) | null>(null);
+  const isNewUser = userId === 'new';
+  const [showPassword, setShowPassword] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
     email: '',
+    password: '',
     role: 'viewer',
     is_active: true,
   });
+  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; password?: string }>({});
 
   const loadUserData = async () => {
-    if (!userId) return;
+    if (!userId || isNewUser) {
+      setLoading(false);
+      return;
+    }
     try {
       setError(null);
       const [userData, activityData, billingData] = await Promise.all([
@@ -95,6 +102,13 @@ export default function UserDetailPage() {
   useEffect(() => {
     loadUserData();
   }, [userId]);
+
+  useEffect(() => {
+    if (isNewUser) {
+      setEditForm({ name: '', email: '', password: '', role: 'viewer', is_active: true });
+      setEditModalOpen(true);
+    }
+  }, [isNewUser]);
 
   const handleResetPassword = () => {
     if (!user) return;
@@ -159,25 +173,81 @@ export default function UserDetailPage() {
     setEditForm({
       name: user.name,
       email: user.email,
+      password: '',
       role: user.role,
       is_active: user.is_active,
     });
     setEditModalOpen(true);
   };
 
+  const validateCreateForm = () => {
+    const errors: { name?: string; email?: string; password?: string } = {};
+    if (!editForm.name.trim()) {
+      errors.name = t('admin.users.validation.nameRequired', { defaultValue: 'Name is required' });
+    }
+    if (!editForm.email.trim()) {
+      errors.email = t('admin.users.validation.emailRequired', { defaultValue: 'Email is required' });
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.email.trim())) {
+      errors.email = t('admin.users.validation.emailInvalid', { defaultValue: 'Enter a valid email address' });
+    }
+    if (!editForm.password) {
+      errors.password = t('admin.users.validation.passwordRequired', { defaultValue: 'Password is required' });
+    } else if (editForm.password.length < 8) {
+      errors.password = t('admin.users.validation.passwordLength', { defaultValue: 'Password must be at least 8 characters' });
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSaveEdit = async () => {
+    if (isNewUser) {
+      if (!validateCreateForm()) {
+        return;
+      }
+      try {
+        logger.info('Creating new user', 'UserDetailPage', { email: editForm.email });
+        const created = await usersService.createUser({
+          name: editForm.name,
+          email: editForm.email,
+          password: editForm.password,
+          role: editForm.role,
+          is_active: editForm.is_active,
+        } as any);
+        setEditModalOpen(false);
+        notifications.show({
+          level: 'success',
+          message: t('admin.users.userCreated', { defaultValue: 'User created successfully' }),
+          dismissable: true,
+        });
+        navigate(`/admin/users/${created.id}`);
+      } catch (error: any) {
+        logger.error('Failed to create user', 'UserDetailPage', error);
+        const errorMessage = error?.detail || error?.message || t('admin.users.createFailed', { defaultValue: 'Failed to create user' });
+        notifications.show({ level: 'error', message: errorMessage, dismissable: true });
+      }
+      return;
+    }
     if (!user) return;
     try {
       logger.info('Updating user with data:', 'UserDetailPage', editForm);
-      await usersService.updateUser(user.id, editForm as any);
+      const updateData: any = {
+        name: editForm.name,
+        email: editForm.email,
+        role: editForm.role,
+        is_active: editForm.is_active,
+      };
+      if (editForm.password) {
+        updateData.password = editForm.password;
+      }
+      await usersService.updateUser(user.id, updateData);
       setSuccessMessage(t('admin.users.userUpdated', { defaultValue: 'User updated successfully' }));
       setSuccessModalOpen(true);
       setEditModalOpen(false);
       loadUserData();
     } catch (error: any) {
       logger.error('Failed to update user', 'UserDetailPage', error);
-      const errorMessage = error?.response?.data?.detail || error?.message || 'Failed to update user';
-      alert(errorMessage);
+      const errorMessage = error?.detail || error?.message || t('admin.users.updateFailed', { defaultValue: 'Failed to update user' });
+      notifications.show({ level: 'error', message: errorMessage, dismissable: true });
     }
   };
 
@@ -198,7 +268,7 @@ export default function UserDetailPage() {
             setTimeout(() => navigate('/admin/users'), 1500);
           } catch (error: any) {
             logger.error('Failed to delete user', 'UserDetailPage', error);
-            alert(error?.message || 'Failed to delete user');
+            notifications.show({ level: 'error', message: error?.message || t('admin.users.deleteFailed', { defaultValue: 'Failed to delete user' }), dismissable: true });
           }
         },
       },
@@ -211,6 +281,107 @@ export default function UserDetailPage() {
         <GlassLoadingSpinner />
         <Text className="text-sm text-gray-400">{t('common.loading')}</Text>
       </GlassView>
+    );
+  }
+
+  if (isNewUser) {
+    const pageConfig = ADMIN_PAGE_CONFIG['user-detail'];
+    const IconComponent = pageConfig.icon;
+    return (
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: spacing.lg }}>
+        <GlassPageHeader
+          title={t('admin.users.createUser', { defaultValue: 'Create User' })}
+          subtitle={t('admin.userDetail.subtitle')}
+          icon={<IconComponent size={24} color={pageConfig.iconColor} strokeWidth={2} />}
+          iconColor={pageConfig.iconColor}
+          iconBackgroundColor={pageConfig.iconBackgroundColor}
+          isRTL={isRTL}
+        />
+        <GlassView className="flex flex-row justify-between items-start mb-6">
+          <GlassButton
+            title={t('admin.users.backToList', { defaultValue: 'Back to list' })}
+            icon={<ArrowRight size={20} color={colors.text} />}
+            onPress={() => navigate('/admin/users')}
+            variant="secondary"
+            style={styles.backButton}
+            textStyle={styles.backText}
+          />
+        </GlassView>
+        <GlassCard style={styles.createFormCard}>
+          <GlassView style={styles.editModalContent}>
+            <GlassInput
+              label={`${t('admin.users.name', { defaultValue: 'Name' })} *`}
+              value={editForm.name}
+              onChangeText={(text: string) => {
+                setEditForm({ ...editForm, name: text });
+                if (formErrors.name) setFormErrors((prev) => ({ ...prev, name: undefined }));
+              }}
+              placeholder={t('admin.users.name', { defaultValue: 'Name' })}
+              error={formErrors.name}
+            />
+            <GlassInput
+              label={`${t('admin.users.email', { defaultValue: 'Email' })} *`}
+              value={editForm.email}
+              onChangeText={(text: string) => {
+                setEditForm({ ...editForm, email: text });
+                if (formErrors.email) setFormErrors((prev) => ({ ...prev, email: undefined }));
+              }}
+              placeholder={t('admin.users.email', { defaultValue: 'Email' })}
+              error={formErrors.email}
+            />
+            <GlassInput
+              label={`${t('admin.users.password', { defaultValue: 'Password' })} *`}
+              value={editForm.password}
+              onChangeText={(text: string) => {
+                setEditForm({ ...editForm, password: text });
+                if (formErrors.password) setFormErrors((prev) => ({ ...prev, password: undefined }));
+              }}
+              placeholder={t('admin.users.passwordPlaceholder', { defaultValue: 'Enter password' })}
+              secureTextEntry={!showPassword}
+              rightIcon={showPassword
+                ? <EyeOff size={18} color={colors.textMuted} />
+                : <Eye size={18} color={colors.textMuted} />}
+              onRightIconPress={() => setShowPassword(!showPassword)}
+              error={formErrors.password}
+            />
+            <GlassView style={styles.formRow}>
+              <Text style={styles.formLabel}>{t('admin.users.columns.role', { defaultValue: 'Role' })}</Text>
+              <GlassView style={styles.roleButtons}>
+                {['viewer', 'subscriber', 'editor', 'admin', 'super_admin'].map((role) => (
+                  <GlassButton
+                    key={role}
+                    title={role.replace('_', ' ')}
+                    onPress={() => setEditForm({ ...editForm, role })}
+                    variant={editForm.role === role ? 'primary' : 'secondary'}
+                    style={styles.roleButton}
+                    textStyle={styles.roleButtonText}
+                  />
+                ))}
+              </GlassView>
+            </GlassView>
+            <GlassToggle
+              value={editForm.is_active}
+              onValueChange={(value: boolean) => setEditForm({ ...editForm, is_active: value })}
+              label={t('admin.users.active', { defaultValue: 'Active' })}
+              isRTL={isRTL}
+            />
+          </GlassView>
+          <GlassView style={styles.modalButtonRow}>
+            <GlassButton
+              title={t('common.cancel')}
+              onPress={() => navigate('/admin/users')}
+              variant="secondary"
+              style={styles.modalButtonFlex}
+            />
+            <GlassButton
+              title={t('admin.users.createUser', { defaultValue: 'Create User' })}
+              onPress={handleSaveEdit}
+              variant="primary"
+              style={styles.modalButtonFlex}
+            />
+          </GlassView>
+        </GlassCard>
+      </ScrollView>
     );
   }
 
@@ -458,11 +629,16 @@ export default function UserDetailPage() {
         </GlassView>
       </GlassModal>
 
-      {/* Edit User Modal */}
+      {/* Edit/Create User Modal */}
       <GlassModal
         visible={editModalOpen}
-        title={t('admin.users.editUser', { defaultValue: 'Edit User' })}
-        onClose={() => setEditModalOpen(false)}
+        title={isNewUser
+          ? t('admin.users.createUser', { defaultValue: 'Create User' })
+          : t('admin.users.editUser', { defaultValue: 'Edit User' })}
+        onClose={() => {
+          setEditModalOpen(false);
+          if (isNewUser) navigate('/admin/users');
+        }}
         dismissable={true}
       >
         <GlassView style={styles.editModalContent}>
@@ -477,6 +653,21 @@ export default function UserDetailPage() {
             value={editForm.email}
             onChangeText={(text: string) => setEditForm({ ...editForm, email: text })}
             placeholder={t('admin.users.email', { defaultValue: 'Email' })}
+          />
+          <GlassInput
+            label={isNewUser
+              ? t('admin.users.password', { defaultValue: 'Password' })
+              : t('admin.users.newPassword', { defaultValue: 'New Password' })}
+            value={editForm.password}
+            onChangeText={(text: string) => setEditForm({ ...editForm, password: text })}
+            placeholder={isNewUser
+              ? t('admin.users.passwordPlaceholder', { defaultValue: 'Enter password' })
+              : t('admin.users.newPasswordPlaceholder', { defaultValue: 'Leave blank to keep current' })}
+            secureTextEntry={!showPassword}
+            rightIcon={showPassword
+              ? <EyeOff size={18} color={colors.textMuted} />
+              : <Eye size={18} color={colors.textMuted} />}
+            onRightIconPress={() => setShowPassword(!showPassword)}
           />
           <GlassView style={styles.formRow}>
             <Text style={styles.formLabel}>{t('admin.users.columns.role', { defaultValue: 'Role' })}</Text>
@@ -501,16 +692,23 @@ export default function UserDetailPage() {
             isRTL={isRTL}
           />
         </GlassView>
-        <GlassView className="flex flex-row gap-4 mt-6">
+        <GlassView style={styles.modalButtonRow}>
           <GlassButton
             title={t('common.cancel')}
-            onPress={() => setEditModalOpen(false)}
+            onPress={() => {
+              setEditModalOpen(false);
+              if (isNewUser) navigate('/admin/users');
+            }}
             variant="secondary"
+            style={styles.modalButtonFlex}
           />
           <GlassButton
-            title={t('common.save', { defaultValue: 'Save' })}
+            title={isNewUser
+              ? t('admin.users.createUser', { defaultValue: 'Create User' })
+              : t('common.save', { defaultValue: 'Save' })}
             onPress={handleSaveEdit}
             variant="primary"
+            style={styles.modalButtonFlex}
           />
         </GlassView>
       </GlassModal>
@@ -542,6 +740,9 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   profileCard: {
+    padding: spacing.lg,
+  },
+  createFormCard: {
     padding: spacing.lg,
   },
   profileHeader: {
@@ -687,7 +888,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   editModalContent: {
-    gap: spacing.md,
+    gap: spacing.lg,
+    padding: spacing.md,
   },
   formRow: {
     gap: spacing.sm,
@@ -709,6 +911,14 @@ const styles = StyleSheet.create({
   },
   roleButtonText: {
     fontSize: 12,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  modalButtonFlex: {
+    flex: 1,
   },
 });
 

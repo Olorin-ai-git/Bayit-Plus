@@ -223,6 +223,7 @@ export default function UsersListPage() {
     {
       key: 'name',
       label: t('admin.users.columns.name'),
+      width: 250,
       render: (_: any, user: User) => renderUserCell(user),
       align: isRTL ? 'right' : 'left',
     },

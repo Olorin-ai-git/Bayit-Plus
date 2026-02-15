@@ -20,10 +20,7 @@
   ],
   "author": "Olorin Media Group",
   "license": "PROPRIETARY",
-  "dependencies": {
-    "@bayit/shared-types": "workspace:*",
-    "@bayit/shared-utils": "workspace:*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",

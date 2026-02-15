@@ -23,9 +23,7 @@
   "author": "Bayit+ Team",
   "license": "PRIVATE",
   "dependencies": {
-    "@bayit/shared-types": "workspace:*",
-    "@bayit/shared-utils": "workspace:*",
-    "@olorin/shared-i18n": "workspace:*"
+    "@olorin/shared-i18n": "*"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

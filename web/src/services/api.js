@@ -7,7 +7,7 @@ import logger, {
   generateCorrelationId,
   setCorrelationId,
 } from '@bayit/shared-utils/logger'
-import { storageHelpers, STORAGE_KEYS } from '../utils/storage'
+import { STORAGE_KEYS } from '../utils/storage'
 
 // Correlation ID header name (matches backend)
 const CORRELATION_ID_HEADER = 'X-Correlation-ID'
