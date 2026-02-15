@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -79,8 +82,8 @@ private fun LazyVerticalGridContent(
     onAudiobookClick: (Audiobook) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
-        columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(3),
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),

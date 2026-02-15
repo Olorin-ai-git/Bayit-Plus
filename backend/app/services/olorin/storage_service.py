@@ -120,7 +120,7 @@ class OlorinStorageService:
                 method="GET",
             )
         except AttributeError:
-            sign_kwargs = _iam_sign_kwargs(gcs.client)
+            sign_kwargs = _iam_sign_kwargs()
             if not sign_kwargs:
                 raise
             return blob.generate_signed_url(
