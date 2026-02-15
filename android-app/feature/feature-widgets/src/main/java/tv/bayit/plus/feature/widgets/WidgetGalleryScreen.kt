@@ -23,18 +23,32 @@ internal fun WidgetGalleryScreen(uiState: WidgetGalleryUiState, onConfigureWidge
         GlassTopBar("Widget Gallery")
         when (uiState) {
             WidgetGalleryUiState.Loading -> GlassLoadingIndicator()
-            is WidgetGalleryUiState.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            is WidgetGalleryUiState.Error -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
+                ) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
                     GlassButton("Retry", onRetry)
                 }
             }
-            is WidgetGalleryUiState.Success -> LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            is WidgetGalleryUiState.Success -> LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
+            ) {
                 items(uiState.widgets, key = { it.hashCode() }) { widget ->
                     GlassCard(Modifier.aspectRatio(1f)) {
-                        Column(Arrangement.spacedBy(DesignTokens.Spacing.sm), Alignment.CenterHorizontally) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Text(widget.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
-                            GlassButton("Configure", { onConfigureWidget(widget.hashCode().toString()) })
+                            GlassButton("Configure") { onConfigureWidget(widget.hashCode().toString()) }
                         }
                     }
                 }
