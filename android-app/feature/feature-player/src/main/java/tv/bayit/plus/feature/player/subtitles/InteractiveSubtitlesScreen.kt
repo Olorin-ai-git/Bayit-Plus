@@ -34,20 +34,29 @@ internal fun InteractiveSubtitlesScreen(
         GlassTopBar(title = "Interactive Subtitles")
         when (uiState) {
             is InteractiveSubtitlesUiState.Loading -> GlassLoadingIndicator()
-            is InteractiveSubtitlesUiState.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            is InteractiveSubtitlesUiState.Error -> Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
+                ) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
-                    GlassButton("Retry", onRetry)
+                    GlassButton("Retry", onClick = onRetry)
                 }
             }
             is InteractiveSubtitlesUiState.Success -> LazyColumn(
-                Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
+                modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
             ) {
                 item {
                     GlassCard(Modifier.fillMaxWidth()) {
                         Text("Language", fontWeight = FontWeight.SemiBold, color = DesignTokens.Colors.Text.primary)
-                        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+                        Row(
+                            modifier = Modifier,
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
+                        ) {
                             uiState.availableLanguages.forEach { lang ->
                                 GlassChip(lang, lang == selectedLanguage) { onSelectLanguage(lang) }
                             }
