@@ -3,9 +3,9 @@ package tv.bayit.plus.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
@@ -101,8 +101,11 @@ import tv.bayit.plus.feature.zehani.settings.AvatarSettingsRoute
 import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 
 @Composable
-fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
-    val navController = rememberNavController()
+fun BayitNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    startRoute: Route? = null
+) {
     NavHost(navController = navController, startDestination = startRoute ?: Route.Splash, modifier = modifier) {
         composable<Route.Splash> {
             SplashRoute(
