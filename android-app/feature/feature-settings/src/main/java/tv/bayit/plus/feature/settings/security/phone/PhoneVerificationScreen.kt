@@ -23,10 +23,10 @@ fun PhoneVerificationRoute(onComplete: () -> Unit, onNavigateBack: () -> Unit, m
 internal fun PhoneVerificationScreen(uiState: PhoneVerificationUiState, phone: String, code: String, onPhoneChange: (String) -> Unit, onCodeChange: (String) -> Unit, onSendCode: () -> Unit, onVerify: () -> Unit, onNavigateBack: () -> Unit, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize()) {
         GlassTopBar("Phone Verification")
-        Column(Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), Arrangement.spacedBy(DesignTokens.Spacing.lg)) {
+        Column(modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.lg)) {
             when (uiState) {
                 PhoneVerificationUiState.EnterPhone -> GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Phone Number", fontWeight = FontWeight.Bold)
                         GlassTextField(phone, onPhoneChange, "+1234567890")
                         GlassButton("Send Code", onSendCode, phone.length >= 10, Modifier.fillMaxWidth())
@@ -34,7 +34,7 @@ internal fun PhoneVerificationScreen(uiState: PhoneVerificationUiState, phone: S
                 }
                 PhoneVerificationUiState.SendingCode -> GlassSpinner(SpinnerSize.MEDIUM)
                 PhoneVerificationUiState.EnterCode -> GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Verification Code", fontWeight = FontWeight.Bold)
                         GlassTextField(code, onCodeChange, "6-digit code")
                         GlassButton("Verify", onVerify, code.length == 6, Modifier.fillMaxWidth())
@@ -42,12 +42,12 @@ internal fun PhoneVerificationScreen(uiState: PhoneVerificationUiState, phone: S
                 }
                 PhoneVerificationUiState.Verifying -> GlassSpinner(SpinnerSize.MEDIUM)
                 PhoneVerificationUiState.Success -> GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("✓", fontSize = DesignTokens.FontSize.xxxl, color = DesignTokens.Colors.Semantic.success, fontWeight = FontWeight.Bold)
                         Text("Phone Verified!", fontWeight = FontWeight.Bold)
                     }
                 }
-                is PhoneVerificationUiState.Error -> Column(Alignment.CenterHorizontally) {
+                is PhoneVerificationUiState.Error -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
                     GlassButton("Retry", onRetry)
                 }

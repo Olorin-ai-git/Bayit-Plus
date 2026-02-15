@@ -24,20 +24,20 @@ internal fun PasskeyManagementScreen(uiState: PasskeyManagementUiState, onAddPas
         GlassTopBar("Passkey Management")
         when (uiState) {
             PasskeyManagementUiState.Loading -> GlassLoadingIndicator()
-            is PasskeyManagementUiState.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            is PasskeyManagementUiState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
                     GlassButton("Retry", onRetry)
                 }
             }
-            is PasskeyManagementUiState.Success -> LazyColumn(Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            is PasskeyManagementUiState.Success -> LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Add Passkey", onAddPasskey, modifier = Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
                 if (uiState.passkeys.isEmpty()) {
-                    item { Box(Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), Alignment.Center) { Text("No passkeys configured.\nAdd your first passkey!", color = DesignTokens.Colors.Text.muted) } }
+                    item { Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) { Text("No passkeys configured.\nAdd your first passkey!", color = DesignTokens.Colors.Text.muted) } }
                 }
                 items(uiState.passkeys, key = { it.hashCode() }) { passkey ->
                     GlassCard(Modifier.fillMaxWidth()) {
-                        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(passkey.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
                                 Text("Last used: N/A", fontSize = DesignTokens.FontSize.sm, color = DesignTokens.Colors.Text.muted)

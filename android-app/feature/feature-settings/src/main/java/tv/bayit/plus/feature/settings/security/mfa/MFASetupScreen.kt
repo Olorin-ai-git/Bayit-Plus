@@ -27,15 +27,15 @@ internal fun MFASetupScreen(uiState: MFASetupUiState, verificationCode: String, 
         GlassTopBar("2FA Setup")
         when (uiState) {
             MFASetupUiState.Loading -> GlassLoadingIndicator()
-            is MFASetupUiState.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            is MFASetupUiState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
                     GlassButton("Retry", onRetry)
                 }
             }
-            is MFASetupUiState.QRCodeReady -> Column(Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), Arrangement.spacedBy(DesignTokens.Spacing.lg)) {
+            is MFASetupUiState.QRCodeReady -> Column(modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.lg)) {
                 GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Scan QR Code", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = DesignTokens.Colors.Text.primary)
                         Text("Scan this QR code with your authenticator app", style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary, textAlign = TextAlign.Center)
                         Box(Modifier.size(DesignTokens.Spacing.xxxl * 4).padding(DesignTokens.Spacing.md)) {
@@ -45,7 +45,7 @@ internal fun MFASetupScreen(uiState: MFASetupUiState, verificationCode: String, 
                     }
                 }
                 GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Enter Verification Code", fontWeight = FontWeight.SemiBold)
                         GlassTextField(verificationCode, onCodeChange, "6-digit code")
                         uiState.error?.let { Text(it, color = DesignTokens.Colors.Semantic.error, fontSize = DesignTokens.FontSize.sm) }
@@ -54,7 +54,7 @@ internal fun MFASetupScreen(uiState: MFASetupUiState, verificationCode: String, 
                 if (uiState.isVerifying) GlassSpinner(SpinnerSize.MEDIUM) else GlassButton("Enable 2FA", onVerify, verificationCode.length == 6, Modifier.fillMaxWidth())
             }
             MFASetupUiState.Success -> GlassCard(Modifier.fillMaxWidth().padding(DesignTokens.Spacing.base)) {
-                Column(Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("✓", fontSize = DesignTokens.FontSize.xxxl, color = DesignTokens.Colors.Semantic.success, fontWeight = FontWeight.Bold)
                     Text("2FA Enabled!", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }

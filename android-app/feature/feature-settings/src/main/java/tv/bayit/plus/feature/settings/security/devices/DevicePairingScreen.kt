@@ -24,29 +24,29 @@ internal fun DevicePairingScreen(uiState: DevicePairingUiState, onGenerateCode: 
         GlassTopBar("Device Pairing")
         when (uiState) {
             DevicePairingUiState.Loading -> GlassLoadingIndicator()
-            is DevicePairingUiState.Error -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            is DevicePairingUiState.Error -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
                     GlassButton("Retry", onRetry)
                 }
             }
-            is DevicePairingUiState.PairingCodeReady -> Column(Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), Arrangement.Center, Alignment.CenterHorizontally) {
+            is DevicePairingUiState.PairingCodeReady -> Column(modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 GlassCard(Modifier.fillMaxWidth()) {
-                    Column(Alignment.CenterHorizontally, Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         Text("Pairing Code", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                         Text(uiState.code, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = DesignTokens.Colors.Primary.light)
                         Text("Enter this code on your TV device", color = DesignTokens.Colors.Text.muted)
                     }
                 }
             }
-            is DevicePairingUiState.Success -> LazyColumn(Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            is DevicePairingUiState.Success -> LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 item { Spacer(Modifier.height(DesignTokens.Spacing.sm)); GlassButton("Pair New Device", onGenerateCode, modifier = Modifier.fillMaxWidth()); Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
                 if (uiState.devices.isEmpty()) {
-                    item { Box(Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), Alignment.Center) { Text("No devices paired.\nPair your first device!", color = DesignTokens.Colors.Text.muted) } }
+                    item { Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) { Text("No devices paired.\nPair your first device!", color = DesignTokens.Colors.Text.muted) } }
                 }
                 items(uiState.devices, key = { it.hashCode() }) { device ->
                     GlassCard(Modifier.fillMaxWidth()) {
-                        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(device.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
                                 Text("Last active: N/A", fontSize = DesignTokens.FontSize.sm, color = DesignTokens.Colors.Text.muted)
