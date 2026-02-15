@@ -1,4 +1,5 @@
 #if os(tvOS)
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -8,6 +9,7 @@ import SwiftUI
 struct TVZehAniHubView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(AuthManager.self) private var authManager
 
     private let features: [(icon: String, title: String, color: Color, view: AnyView)] = []
 
@@ -74,7 +76,17 @@ struct TVZehAniHubView: View {
                 subtitle: "Your personalized greeting",
                 color: DesignTokens.Primary.p500
             ) {
-                TVMagicMirrorView(profileId: "default_profile")
+                if let profileId = authManager.activeProfile?.id {
+                    TVMagicMirrorView(profileId: profileId)
+                } else {
+                    VStack(spacing: TVDesignTokens.Spacing.lg) {
+                        Text("Please select a profile first")
+                            .font(.system(size: TVDesignTokens.FontSize.lg))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(DesignTokens.Background.primary)
+                }
             }
 
             featureCard(

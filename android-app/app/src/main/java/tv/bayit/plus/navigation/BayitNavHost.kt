@@ -187,7 +187,10 @@ fun BayitNavHost(
                 },
                 onNavigateToRegister = { navController.navigate(Route.Register) },
                 onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
-                onRequestGoogleSignIn = { /* Google sign-in handled by Activity */ },
+                onRequestGoogleSignIn = { onTokenReceived ->
+                    // TODO: Implement Google Sign-In with ActivityResultLauncher
+                    // For now, users can use email/password authentication
+                },
             )
         }
         composable<Route.Register> {
