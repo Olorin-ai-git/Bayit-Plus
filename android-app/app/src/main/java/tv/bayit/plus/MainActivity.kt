@@ -61,7 +61,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BayitMainScaffold(navController = navController) {
+                    BayitMainScaffold(
+                        navController = navController,
+                        authState = authState
+                    ) {
                         BayitNavHost(
                             navController = navController,
                             googleSignInHelper = googleSignInHelper,

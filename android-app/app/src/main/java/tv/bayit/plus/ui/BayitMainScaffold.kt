@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
 import tv.bayit.plus.ui.components.BreadcrumbBar
@@ -30,9 +31,25 @@ import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
 @Composable
 fun BayitMainScaffold(
     navController: NavHostController,
+    authState: AuthState,
     widgetDockViewModel: WidgetDockViewModel = hiltViewModel(),
     content: @Composable (PaddingValues) -> Unit,
 ) {
+    val isAuthenticated = authState is AuthState.Authenticated
+
+    /**
+     * Navigate to route with auth guard.
+     * If user is not authenticated, navigate to Login instead.
+     */
+    fun navigateWithAuthGuard(route: Route) {
+        if (isAuthenticated) {
+            navController.navigate(route)
+        } else {
+            navController.navigate(Route.Login) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
     var selectedTab by remember { mutableStateOf(AppTab.HOME) }
     var showVoiceModal by remember { mutableStateOf(false) }
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -50,8 +67,8 @@ fun BayitMainScaffold(
         topBar = {
             if (isRootTab) {
                 TopAppBar(
-                    onProfileClick = { navController.navigate(Route.Profile) },
-                    onLanguageClick = { navController.navigate(Route.LanguageSettings) },
+                    onProfileClick = { navigateWithAuthGuard(Route.Profile) },
+                    onLanguageClick = { navigateWithAuthGuard(Route.LanguageSettings) },
                 )
             } else if (breadcrumbs.size >= 2) {
                 BreadcrumbBar(

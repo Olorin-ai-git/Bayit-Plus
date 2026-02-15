@@ -217,8 +217,8 @@ struct TVPodcastsView: View {
 
     // MARK: - Radio
 
-    /// Radio station card width for consistent horizontal layout
-    private let radioCardWidth: CGFloat = 220
+    /// Radio station card width matches podcast poster width for visual consistency
+    private let radioCardWidth: CGFloat = TVDesignTokens.MinSize.posterWidth
 
     private var radioSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
