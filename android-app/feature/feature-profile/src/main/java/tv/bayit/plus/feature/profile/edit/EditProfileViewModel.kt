@@ -41,7 +41,7 @@ class EditProfileViewModel @Inject constructor(
                     logger.info("Profile loaded", mapOf("profileId" to profileId))
                     _uiState.value = EditProfileUiState.Input(
                         name = profile.name,
-                        avatarUrl = profile.avatarUrl.orEmpty(),
+                        avatarUrl = profile.avatar.orEmpty(),
                     )
                 }
 

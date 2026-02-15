@@ -3492,7 +3492,11 @@
     "upgradeMessage": "வரம்பற்ற AI கிரெடிட்களுக்கு பிரீமியத்திற்கு மேம்படுத்தவும்.",
     "upgradeTitle": "பிரீமியத்திற்கு மேம்படுத்து",
     "usage": "பயன்பாடு",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "போதுமான கிரெடிட்கள் இல்லை",
+      "message": "இந்த அம்சத்திற்கு உங்களிடம் போதுமான கிரெடிட்கள் இல்லை"
+    }
   },
   "billing": {
     "currentPlan": "தற்போதைய திட்டம்",
@@ -4271,6 +4275,14 @@
     "indian": {
       "name": "இந்திய",
       "description": "இந்திய சமூக உள்ளடக்கம்"
+    },
+    "jerusalem": {
+      "name": "ஜெருசலேம்",
+      "description": "புனித நகரத்தைக் கண்டறியுங்கள்"
+    },
+    "telAviv": {
+      "name": "தெல் அவீவ்",
+      "description": "தூங்காத நகரம்"
     },
     "loading": "Loading Culture..."
   },
@@ -7567,6 +7579,15 @@
     "unlink": "இணைப்பை நீக்கு",
     "unlinkAccountConfirmTitle": "கணக்கை இணைப்பு நீக்கவா?",
     "unlinkConfirm": "இணைப்பை நீக்கு",
+    "connected": "இணைக்கப்பட்டது",
+    "notConnected": "இணைக்கப்படவில்லை",
+    "help": {
+      "title": "உதவி மையம்",
+      "subtitle": "பொதுவான கேள்விகளுக்கு பதில்களைக் கண்டறியுங்கள்",
+      "loading": "உதவி ஏற்றப்படுகிறது...",
+      "noFaqs": "அடிக்கடி கேட்கப்படும் கேள்விகள் எதுவும் இல்லை",
+      "contactSupport": "ஆதரவைத் தொடர்புகொள்ளுங்கள்"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7715,7 +7736,13 @@
     "tvSubscribeMessage": "bayit.tv இல் அல்லது உங்கள் மொபைல் சாதனத்திலிருந்து சந்தா செலுத்தவும்",
     "externalPaymentTitle": "இணையதளத்தில் தொடரவும்",
     "externalPaymentMessage": "உங்கள் சந்தாவை முடிக்க நீங்கள் எங்கள் இணையதளத்திற்கு திருப்பி விடப்படுவீர்கள். உங்கள் சந்தா உங்கள் Bayit+ கணக்கு மூலம் நிர்வகிக்கப்படும்.",
-    "continueToWebsite": "இணையதளத்தில் தொடரவும்"
+    "continueToWebsite": "இணையதளத்தில் தொடரவும்",
+    "loading": "திட்டங்கள் ஏற்றப்படுகின்றன...",
+    "noPlans": "சந்தா திட்டங்கள் எதுவும் இல்லை",
+    "premiumContent": "பிரீமியம் உள்ளடக்கம்",
+    "recommended": "பரிந்துரைக்கப்பட்டது",
+    "restorePurchase": "கொள்முதலை மீட்டெடுக்கவும்",
+    "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்"
   },
   "subtitles": {
     "nikud": "நிகுத்",
@@ -8175,7 +8202,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "ட்ரிவியா வினாடி வினா"
+    },
+    "question": {
+      "counter": "கேள்வி {{current}} / {{total}}"
+    },
+    "results": {
+      "title": "வினாடி வினா முடிந்தது!",
+      "playAgain": "மீண்டும் விளையாடு",
+      "shekelsEarned": "{{amount}} ஷெக்கல்கள் சம்பாதித்தீர்கள்"
+    }
   },
   "tvLogin": {
     "invalidQR": "தவறான QR குறியீடு. உங்கள் TV-யில் இருந்து மீண்டும் ஸ்கேன் செய்யவும்.",
@@ -9593,7 +9631,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "கூப்பன் கடை",
+      "loading": "கூப்பன்கள் ஏற்றப்படுகின்றன...",
+      "redeem": "பெறுக",
+      "redeemed": "வெற்றிகரமாக பெறப்பட்டது",
+      "redemptionCode": "பெறும் குறியீடு",
+      "insufficientFunds": "போதுமான ஷெக்கல்கள் இல்லை"
+    },
+    "wallet": {
+      "title": "ஷெக்கல் வாலட்",
+      "loading": "வாலட் ஏற்றப்படுகிறது...",
+      "totalEarned": "மொத்த சம்பாதிப்பு",
+      "totalSpent": "மொத்த செலவு",
+      "recentTransactions": "சமீபத்திய பரிவர்த்தனைகள்",
+      "noTransactions": "இதுவரை பரிவர்த்தனைகள் இல்லை"
+    }
   },
   "shekels": {
     "title": "ஷெக்கல்கள்",
@@ -9843,6 +9897,7 @@
     "newTitle": "புதிய பட்டம்: {{title}}",
     "perkUnlocked": "சலுகை திறக்கப்பட்டது: {{perk}}",
     "claimPerk": "பெறுக",
+    "awesome": "அருமை!",
     "claimed": "பெறப்பட்டது",
     "leaderboard": {
       "title": "தரவரிசை",

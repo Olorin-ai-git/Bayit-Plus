@@ -3410,7 +3410,11 @@
     "upgradeMessage": "升级到高级版获得无限AI积分。",
     "upgradeTitle": "升级到高级版",
     "usage": "使用量",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "积分不足",
+      "message": "您没有足够的积分使用此功能"
+    }
   },
   "billing": {
     "currentPlan": "当前计划",
@@ -4199,6 +4203,14 @@
     "indian": {
       "name": "印度",
       "description": "印度社区内容"
+    },
+    "jerusalem": {
+      "name": "耶路撒冷",
+      "description": "探索圣城"
+    },
+    "telAviv": {
+      "name": "特拉维夫",
+      "description": "不夜城"
     },
     "loading": "Loading Culture..."
   },
@@ -7487,6 +7499,15 @@
     "unlink": "取消关联",
     "unlinkAccountConfirmTitle": "取消关联账户？",
     "unlinkConfirm": "取消关联",
+    "connected": "已连接",
+    "notConnected": "未连接",
+    "help": {
+      "title": "帮助中心",
+      "subtitle": "查找常见问题的答案",
+      "loading": "正在加载帮助...",
+      "noFaqs": "没有可用的常见问题",
+      "contactSupport": "联系支持"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7635,7 +7656,13 @@
     "tvSubscribeMessage": "在 bayit.tv 或从您的移动设备订阅",
     "externalPaymentTitle": "继续访问网站",
     "externalPaymentMessage": "您将被重定向到我们的网站以完成订阅。您的订阅将通过您的 Bayit+ 账户管理。",
-    "continueToWebsite": "继续访问网站"
+    "continueToWebsite": "继续访问网站",
+    "loading": "正在加载方案...",
+    "noPlans": "没有可用的订阅方案",
+    "premiumContent": "高级内容",
+    "recommended": "推荐",
+    "restorePurchase": "恢复购买",
+    "upgradeRequired": "升级您的订阅以访问此内容"
   },
   "subtitles": {
     "nikud": "希伯来语标点",
@@ -8095,7 +8122,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "知识问答"
+    },
+    "question": {
+      "counter": "问题 {{current}} / {{total}}"
+    },
+    "results": {
+      "title": "问答完成!",
+      "playAgain": "再玩一次",
+      "shekelsEarned": "获得 {{amount}} 谢克尔"
+    }
   },
   "tvLogin": {
     "invalidQR": "无效的二维码。请从电视重新扫描。",
@@ -9510,7 +9548,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "优惠券商店",
+      "loading": "正在加载优惠券...",
+      "redeem": "兑换",
+      "redeemed": "兑换成功",
+      "redemptionCode": "兑换码",
+      "insufficientFunds": "谢克尔不足"
+    },
+    "wallet": {
+      "title": "谢克尔钱包",
+      "loading": "正在加载钱包...",
+      "totalEarned": "总获得",
+      "totalSpent": "总花费",
+      "recentTransactions": "最近交易",
+      "noTransactions": "暂无交易记录"
+    }
   },
   "shekels": {
     "title": "谢克尔",
@@ -9760,6 +9814,7 @@
     "newTitle": "新头衔: {{title}}",
     "perkUnlocked": "已解锁特权: {{perk}}",
     "claimPerk": "领取",
+    "awesome": "太棒了!",
     "claimed": "已领取",
     "leaderboard": {
       "title": "排行榜",

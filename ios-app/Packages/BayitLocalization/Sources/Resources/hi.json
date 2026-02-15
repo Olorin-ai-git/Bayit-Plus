@@ -3404,7 +3404,11 @@
     "upgradeMessage": "असीमित AI क्रेडिट के लिए प्रीमियम में अपग्रेड करें।",
     "upgradeTitle": "प्रीमियम में अपग्रेड",
     "usage": "उपयोग",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "अपर्याप्त क्रेडिट",
+      "message": "इस सुविधा के लिए आपके पास पर्याप्त क्रेडिट नहीं हैं"
+    }
   },
   "billing": {
     "currentPlan": "वर्तमान योजना",
@@ -4194,6 +4198,14 @@
     "indian": {
       "name": "भारतीय",
       "description": "भारतीय समुदाय सामग्री"
+    },
+    "jerusalem": {
+      "name": "जेरूसलम",
+      "description": "पवित्र शहर की खोज करें"
+    },
+    "telAviv": {
+      "name": "तेल अवीव",
+      "description": "वह शहर जो कभी नहीं सोता"
     },
     "loading": "Loading Culture..."
   },
@@ -7497,6 +7509,15 @@
     "unlink": "अनलिंक करें",
     "unlinkAccountConfirmTitle": "खाता अनलिंक करें?",
     "unlinkConfirm": "अनलिंक करें",
+    "connected": "कनेक्टेड",
+    "notConnected": "कनेक्ट नहीं है",
+    "help": {
+      "title": "सहायता केंद्र",
+      "subtitle": "सामान्य प्रश्नों के उत्तर खोजें",
+      "loading": "सहायता लोड हो रही है...",
+      "noFaqs": "कोई अक्सर पूछे जाने वाले प्रश्न उपलब्ध नहीं हैं",
+      "contactSupport": "सहायता से संपर्क करें"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7645,7 +7666,13 @@
     "tvSubscribeMessage": "bayit.tv पर या अपने मोबाइल डिवाइस से सदस्यता लें",
     "externalPaymentTitle": "वेबसाइट पर जारी रखें",
     "externalPaymentMessage": "आपकी सदस्यता पूरी करने के लिए आपको हमारी वेबसाइट पर पुनर्निर्देशित किया जाएगा। आपकी सदस्यता आपके Bayit+ खाते के माध्यम से प्रबंधित की जाएगी।",
-    "continueToWebsite": "वेबसाइट पर जारी रखें"
+    "continueToWebsite": "वेबसाइट पर जारी रखें",
+    "loading": "योजनाएं लोड हो रही हैं...",
+    "noPlans": "कोई सदस्यता योजना उपलब्ध नहीं है",
+    "premiumContent": "प्रीमियम सामग्री",
+    "recommended": "अनुशंसित",
+    "restorePurchase": "खरीदारी पुनर्स्थापित करें",
+    "upgradeRequired": "इस सामग्री तक पहुंचने के लिए अपनी सदस्यता अपग्रेड करें"
   },
   "subtitles": {
     "off": "बंद",
@@ -8107,7 +8134,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "ट्रिविया क्विज़"
+    },
+    "question": {
+      "counter": "प्रश्न {{current}} / {{total}}"
+    },
+    "results": {
+      "title": "क्विज़ पूरा!",
+      "playAgain": "फिर से खेलें",
+      "shekelsEarned": "{{amount}} शेकेल कमाए"
+    }
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -9519,7 +9557,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "कूपन दुकान",
+      "loading": "कूपन लोड हो रहे हैं...",
+      "redeem": "भुनाएं",
+      "redeemed": "सफलतापूर्वक भुनाया गया",
+      "redemptionCode": "भुनाने का कोड",
+      "insufficientFunds": "पर्याप्त शेकेल नहीं हैं"
+    },
+    "wallet": {
+      "title": "शेकेल वॉलेट",
+      "loading": "वॉलेट लोड हो रहा है...",
+      "totalEarned": "कुल कमाया",
+      "totalSpent": "कुल खर्च",
+      "recentTransactions": "हालिया लेनदेन",
+      "noTransactions": "अभी तक कोई लेनदेन नहीं"
+    }
   },
   "shekels": {
     "title": "शेकेल",
@@ -9769,6 +9823,7 @@
     "newTitle": "नया शीर्षक: {{title}}",
     "perkUnlocked": "लाभ अनलॉक: {{perk}}",
     "claimPerk": "दावा करें",
+    "awesome": "शानदार!",
     "claimed": "दावा किया",
     "leaderboard": {
       "title": "लीडरबोर्ड",

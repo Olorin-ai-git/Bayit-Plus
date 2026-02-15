@@ -147,7 +147,7 @@ private fun FavoriteListItem(
                 }
                 Spacer(Modifier.height(DesignTokens.Spacing.xs))
                 item.type?.let { type ->
-                    GlassChip(label = type)
+                    GlassChip(label = type, isSelected = false, onClick = {})
                 }
                 Spacer(Modifier.height(DesignTokens.Spacing.xs))
                 item.duration?.let { duration ->

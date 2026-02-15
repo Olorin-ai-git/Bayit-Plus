@@ -121,7 +121,7 @@ private fun MeshAvatarContent(
                         Text(
                             text = "3D mesh viewer requires WebView or GLSurfaceView integration",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.Colors.Text.tertiary,
+                            color = DesignTokens.Colors.Text.muted,
                         )
                     }
                 }

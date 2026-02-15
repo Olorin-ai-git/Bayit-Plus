@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -118,7 +118,7 @@ private fun SuccessContent(clips: List<NewsClipItem>, isRefreshing: Boolean, onC
 private fun NewsClipCard(clip: NewsClipItem, onClick: () -> Unit, onShareClick: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            AsyncImage(model = clip.thumbnailUrl, contentDescription = clip.title, modifier = Modifier.size(THUMBNAIL_SIZE))
+            CachedAsyncImage(url = clip.thumbnailUrl, contentDescription = clip.title, modifier = Modifier.size(THUMBNAIL_SIZE))
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                 Text(text = clip.title, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {

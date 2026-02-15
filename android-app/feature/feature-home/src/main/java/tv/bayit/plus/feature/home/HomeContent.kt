@@ -41,7 +41,7 @@ internal fun HomeSuccessContent(
         ) {
             item(key = "header_clocks") {
                 Column {
-                    PageHeader(icon = android.R.drawable.ic_menu_home, title = "Home")
+                    PageHeader(icon = android.R.drawable.ic_menu_view, title = "Home")
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

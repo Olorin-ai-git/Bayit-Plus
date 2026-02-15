@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -156,7 +156,7 @@ private fun ProcessingContent() {
 private fun CompleteContent(resultUrl: String, onRetake: () -> Unit, onConfirm: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            AsyncImage(model = resultUrl, contentDescription = "Avatar Preview", modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT))
+            CachedAsyncImage(url = resultUrl, contentDescription = "Avatar Preview", modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                 GlassButton(text = "Retake", onClick = onRetake, modifier = Modifier.weight(1f))
                 GlassButton(text = "Confirm", onClick = onConfirm, modifier = Modifier.weight(1f))

@@ -3440,7 +3440,11 @@
     "upgradeMessage": "Actualiza a Premium para créditos ilimitados.",
     "upgradeTitle": "Actualizar a Premium",
     "usage": "Uso",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "Creditos Insuficientes",
+      "message": "No tienes suficientes creditos para esta funcion"
+    }
   },
   "billing": {
     "currentPlan": "Plan actual",
@@ -8218,7 +8222,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "Cuestionario de Trivia"
+    },
+    "question": {
+      "counter": "Pregunta {{current}} de {{total}}"
+    },
+    "results": {
+      "title": "Cuestionario Completado!",
+      "playAgain": "Jugar de Nuevo",
+      "shekelsEarned": "{{amount}} Shekels Ganados"
+    }
   },
   "tvLogin": {
     "invalidQR": "Código QR inválido. Escanea de nuevo desde tu TV.",
@@ -9635,7 +9650,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "Tienda de Cupones",
+      "loading": "Cargando Cupones...",
+      "redeem": "Canjear",
+      "redeemed": "Canjeado Exitosamente",
+      "redemptionCode": "Codigo de Canje",
+      "insufficientFunds": "No hay suficientes Shekels"
+    },
+    "wallet": {
+      "title": "Billetera de Shekels",
+      "loading": "Cargando Billetera...",
+      "totalEarned": "Total Ganado",
+      "totalSpent": "Total Gastado",
+      "recentTransactions": "Transacciones Recientes",
+      "noTransactions": "Sin transacciones aun"
+    }
   },
   "shekels": {
     "title": "Shekels",

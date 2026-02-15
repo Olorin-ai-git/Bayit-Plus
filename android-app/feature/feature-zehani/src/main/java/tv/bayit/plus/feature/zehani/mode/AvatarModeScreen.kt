@@ -149,7 +149,7 @@ private fun AvatarModeContent(
                             Text(
                                 text = "No avatar configured",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = DesignTokens.Colors.Text.tertiary,
+                                color = DesignTokens.Colors.Text.muted,
                             )
                         }
                     }

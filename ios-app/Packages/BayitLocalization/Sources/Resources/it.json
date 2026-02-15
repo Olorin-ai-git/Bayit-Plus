@@ -3647,7 +3647,11 @@
     "upgradeMessage": "Passa a Premium per crediti illimitati.",
     "upgradeTitle": "Passa a Premium",
     "usage": "Utilizzo",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "Crediti Insufficienti",
+      "message": "Non hai abbastanza crediti per questa funzionalita"
+    }
   },
   "billing": {
     "currentPlan": "Piano attuale",
@@ -4446,6 +4450,14 @@
     "indian": {
       "name": "Indiana",
       "description": "Contenuti per la comunità indiana"
+    },
+    "jerusalem": {
+      "name": "Gerusalemme",
+      "description": "Scopri la citta santa"
+    },
+    "telAviv": {
+      "name": "Tel Aviv",
+      "description": "La citta che non dorme mai"
     },
     "loading": "Loading Culture..."
   },
@@ -7740,6 +7752,15 @@
     "unlink": "Scollega",
     "unlinkAccountConfirmTitle": "Scollegare Account?",
     "unlinkConfirm": "Scollega",
+    "connected": "Connesso",
+    "notConnected": "Non Connesso",
+    "help": {
+      "title": "Centro Assistenza",
+      "subtitle": "Trova risposte alle domande frequenti",
+      "loading": "Caricamento Assistenza...",
+      "noFaqs": "Nessuna domanda frequente disponibile",
+      "contactSupport": "Contatta il Supporto"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7888,7 +7909,13 @@
     "tvSubscribeMessage": "Abbonati su bayit.tv o dal tuo dispositivo mobile",
     "externalPaymentTitle": "Continua al sito web",
     "externalPaymentMessage": "Sarai reindirizzato al nostro sito web per completare il tuo abbonamento. Il tuo abbonamento sarà gestito tramite il tuo account Bayit+.",
-    "continueToWebsite": "Continua al sito web"
+    "continueToWebsite": "Continua al sito web",
+    "loading": "Caricamento Piani...",
+    "noPlans": "Nessun piano di abbonamento disponibile",
+    "premiumContent": "Contenuto Premium",
+    "recommended": "Consigliato",
+    "restorePurchase": "Ripristina Acquisto",
+    "upgradeRequired": "Aggiorna il tuo abbonamento per accedere a questo contenuto"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -8348,7 +8375,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "Quiz di Trivia"
+    },
+    "question": {
+      "counter": "Domanda {{current}} di {{total}}"
+    },
+    "results": {
+      "title": "Quiz Completato!",
+      "playAgain": "Gioca Ancora",
+      "shekelsEarned": "{{amount}} Shekels Guadagnati"
+    }
   },
   "tvLogin": {
     "invalidQR": "Codice QR non valido. Scansiona nuovamente dalla TV.",
@@ -9760,7 +9798,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "Negozio Coupon",
+      "loading": "Caricamento Coupon...",
+      "redeem": "Riscatta",
+      "redeemed": "Riscattato con Successo",
+      "redemptionCode": "Codice di Riscatto",
+      "insufficientFunds": "Shekels insufficienti"
+    },
+    "wallet": {
+      "title": "Portafoglio Shekels",
+      "loading": "Caricamento Portafoglio...",
+      "totalEarned": "Totale Guadagnato",
+      "totalSpent": "Totale Speso",
+      "recentTransactions": "Transazioni Recenti",
+      "noTransactions": "Nessuna transazione ancora"
+    }
   },
   "shekels": {
     "title": "Shekel",
@@ -10010,6 +10064,7 @@
     "newTitle": "Nuovo titolo: {{title}}",
     "perkUnlocked": "Vantaggio sbloccato: {{perk}}",
     "claimPerk": "Riscatta",
+    "awesome": "Fantastico!",
     "claimed": "Riscattato",
     "leaderboard": {
       "title": "Classifica",

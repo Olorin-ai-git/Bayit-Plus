@@ -99,7 +99,6 @@ internal fun SupportScreen(
                             onValueChange = onMessageChange,
                             label = "Message",
                             singleLine = false,
-                            minLines = 6,
                         )
 
                         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))

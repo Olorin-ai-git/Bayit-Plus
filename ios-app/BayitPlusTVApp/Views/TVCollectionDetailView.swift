@@ -100,10 +100,21 @@ struct TVCollectionDetailView: View {
                 Button {
                     Task { await playAll(collection.movies) }
                 } label: {
-                    Label(localization.t("vod.collection.playAll"), systemImage: "play.fill")
-                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: TVDesignTokens.FontSize.lg))
+                        Text(localization.t("vod.collection.playAll"))
+                            .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                    .background(DesignTokens.Primary.default)
+                    .clipShape(Capsule())
                 }
-                .buttonStyle(.card)
+                .buttonStyle(.plain)
+                .tvFocusStyle()
+                .padding(.top, TVDesignTokens.Spacing.sm)
             }
         }
     }

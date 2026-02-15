@@ -3404,7 +3404,11 @@
     "upgradeMessage": "সীমাহীন AI ক্রেডিটের জন্য প্রিমিয়ামে আপগ্রেড করুন।",
     "upgradeTitle": "প্রিমিয়ামে আপগ্রেড",
     "usage": "ব্যবহার",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "অপর্যাপ্ত ক্রেডিট",
+      "message": "এই বৈশিষ্ট্যের জন্য আপনার পর্যাপ্ত ক্রেডিট নেই"
+    }
   },
   "billing": {
     "currentPlan": "বর্তমান প্ল্যান",
@@ -4184,6 +4188,14 @@
     "indian": {
       "name": "ভারতীয়",
       "description": "ভারতীয় সম্প্রদায়ের কন্টেন্ট"
+    },
+    "jerusalem": {
+      "name": "জেরুজালেম",
+      "description": "পবিত্র শহর আবিষ্কার করুন"
+    },
+    "telAviv": {
+      "name": "তেল আভিভ",
+      "description": "যে শহর কখনো ঘুমায় না"
     },
     "loading": "Loading Culture..."
   },
@@ -7475,6 +7487,15 @@
     "unlink": "আনলিঙ্ক করুন",
     "unlinkAccountConfirmTitle": "অ্যাকাউন্ট আনলিঙ্ক করবেন?",
     "unlinkConfirm": "আনলিঙ্ক করুন",
+    "connected": "সংযুক্ত",
+    "notConnected": "সংযুক্ত নয়",
+    "help": {
+      "title": "সাহায্য কেন্দ্র",
+      "subtitle": "সাধারণ প্রশ্নের উত্তর খুঁজুন",
+      "loading": "সাহায্য লোড হচ্ছে...",
+      "noFaqs": "কোনো সাধারণ প্রশ্ন উপলব্ধ নেই",
+      "contactSupport": "সহায়তায় যোগাযোগ করুন"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7623,7 +7644,13 @@
     "tvSubscribeMessage": "bayit.tv তে বা আপনার মোবাইল ডিভাইস থেকে সাবস্ক্রাইব করুন",
     "externalPaymentTitle": "ওয়েবসাইটে চালিয়ে যান",
     "externalPaymentMessage": "আপনার সাবস্ক্রিপশন সম্পূর্ণ করতে আপনাকে আমাদের ওয়েবসাইটে পুনর্নির্দেশিত করা হবে। আপনার সাবস্ক্রিপশন আপনার Bayit+ অ্যাকাউন্টের মাধ্যমে পরিচালিত হবে।",
-    "continueToWebsite": "ওয়েবসাইটে চালিয়ে যান"
+    "continueToWebsite": "ওয়েবসাইটে চালিয়ে যান",
+    "loading": "প্ল্যান লোড হচ্ছে...",
+    "noPlans": "কোনো সাবস্ক্রিপশন প্ল্যান উপলব্ধ নেই",
+    "premiumContent": "প্রিমিয়াম কন্টেন্ট",
+    "recommended": "প্রস্তাবিত",
+    "restorePurchase": "ক্রয় পুনরুদ্ধার করুন",
+    "upgradeRequired": "এই কন্টেন্ট অ্যাক্সেস করতে আপনার সাবস্ক্রিপশন আপগ্রেড করুন"
   },
   "subtitles": {
     "nikud": "নিকুদ",
@@ -8083,7 +8110,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "ট্রিভিয়া কুইজ"
+    },
+    "question": {
+      "counter": "প্রশ্ন {{current}} / {{total}}"
+    },
+    "results": {
+      "title": "কুইজ সম্পন্ন!",
+      "playAgain": "আবার খেলুন",
+      "shekelsEarned": "{{amount}} শেকেল অর্জিত"
+    }
   },
   "tvLogin": {
     "invalidQR": "অবৈধ QR কোড। আপনার TV থেকে আবার স্ক্যান করুন।",
@@ -9495,7 +9533,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "কুপন দোকান",
+      "loading": "কুপন লোড হচ্ছে...",
+      "redeem": "ভাঙান",
+      "redeemed": "সফলভাবে ভাঙানো হয়েছে",
+      "redemptionCode": "ভাঙানোর কোড",
+      "insufficientFunds": "পর্যাপ্ত শেকেল নেই"
+    },
+    "wallet": {
+      "title": "শেকেল ওয়ালেট",
+      "loading": "ওয়ালেট লোড হচ্ছে...",
+      "totalEarned": "মোট অর্জিত",
+      "totalSpent": "মোট ব্যয়",
+      "recentTransactions": "সাম্প্রতিক লেনদেন",
+      "noTransactions": "এখনো কোনো লেনদেন নেই"
+    }
   },
   "shekels": {
     "title": "শেকেল",
@@ -9745,6 +9799,7 @@
     "newTitle": "নতুন উপাধি: {{title}}",
     "perkUnlocked": "সুবিধা আনলক: {{perk}}",
     "claimPerk": "দাবি করুন",
+    "awesome": "চমৎকার!",
     "claimed": "দাবি করা হয়েছে",
     "leaderboard": {
       "title": "লিডারবোর্ড",

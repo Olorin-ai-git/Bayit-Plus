@@ -89,9 +89,9 @@ internal fun EditProfileScreen(
                     Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = DesignTokens.Spacing.xl),
                 ) {
                     Spacer(Modifier.height(DesignTokens.Spacing.xl))
-                    GlassTextField(uiState.name, onNameChange, "Profile Name", singleLine = true)
+                    GlassTextField(value = uiState.name, onValueChange = onNameChange, label = "Profile Name", singleLine = true)
                     Spacer(Modifier.height(DesignTokens.Spacing.lg))
-                    Text("Choose Avatar", style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.primary)
+                    Text(text = "Choose Avatar", style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.primary)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),

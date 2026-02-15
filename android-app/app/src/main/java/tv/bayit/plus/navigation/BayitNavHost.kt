@@ -107,6 +107,11 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
             HomeRoute(
                 onNavigateToContent = { id, _ -> navController.navigate(Route.MovieDetail(movieId = id)) },
                 onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+                onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
+                onNavigateToRadio = { radioId -> navController.navigate(Route.Player(contentId = radioId, contentType = "radio")) },
+                onNavigateToYoungsters = { navController.navigate(Route.Youngsters) },
+                onNavigateToJerusalem = { navController.navigate(Route.JerusalemContent) },
+                onNavigateToTelAviv = { navController.navigate(Route.TelAvivContent) },
             )
         }
         composable<Route.LiveTV> {
@@ -227,7 +232,6 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         }
         composable<Route.Downloads> {
             DownloadsRoute(
-                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }

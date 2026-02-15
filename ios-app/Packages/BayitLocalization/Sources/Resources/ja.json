@@ -3167,7 +3167,11 @@
     "upgradeMessage": "プレミアムにアップグレードして無制限のAIクレジットを。",
     "upgradeTitle": "プレミアムにアップグレード",
     "usage": "使用量",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "クレジット不足",
+      "message": "この機能に必要なクレジットが不足しています"
+    }
   },
   "billing": {
     "currentPlan": "現在のプラン",
@@ -4465,6 +4469,14 @@
     "indian": {
       "name": "インド",
       "description": "インドコミュニティのコンテンツ"
+    },
+    "jerusalem": {
+      "name": "エルサレム",
+      "description": "聖なる都市を発見する"
+    },
+    "telAviv": {
+      "name": "テルアビブ",
+      "description": "眠らない街"
     },
     "loading": "Loading Culture..."
   },
@@ -8272,6 +8284,15 @@
     "unlink": "リンク解除",
     "unlinkAccountConfirmTitle": "アカウントのリンクを解除しますか？",
     "unlinkConfirm": "リンク解除",
+    "connected": "接続済み",
+    "notConnected": "未接続",
+    "help": {
+      "title": "ヘルプセンター",
+      "subtitle": "よくある質問の回答を探す",
+      "loading": "ヘルプを読み込み中...",
+      "noFaqs": "よくある質問はありません",
+      "contactSupport": "サポートに連絡"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -8452,7 +8473,13 @@
     "tvSubscribeMessage": "bayit.tvまたはモバイルデバイスから購読",
     "externalPaymentTitle": "ウェブサイトに進む",
     "externalPaymentMessage": "サブスクリプションを完了するために当社のウェブサイトにリダイレクトされます。サブスクリプションは Bayit+ アカウントを通じて管理されます。",
-    "continueToWebsite": "ウェブサイトに進む"
+    "continueToWebsite": "ウェブサイトに進む",
+    "loading": "プランを読み込み中...",
+    "noPlans": "利用可能なサブスクリプションプランはありません",
+    "premiumContent": "プレミアムコンテンツ",
+    "recommended": "おすすめ",
+    "restorePurchase": "購入を復元",
+    "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください"
   },
   "subtitles": {
     "nikud": "ニクド",
@@ -8946,7 +8973,18 @@
     "loading": "Loading Trivia...",
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "トリビアクイズ"
+    },
+    "question": {
+      "counter": "問題 {{current}} / {{total}}"
+    },
+    "results": {
+      "title": "クイズ完了!",
+      "playAgain": "もう一度プレイ",
+      "shekelsEarned": "{{amount}} シェケル獲得"
+    }
   },
   "tvLogin": {
     "invalidQR": "無効なQRコードです。TVから再度スキャンしてください。",
@@ -10438,7 +10476,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "クーポンショップ",
+      "loading": "クーポンを読み込み中...",
+      "redeem": "引き換え",
+      "redeemed": "引き換え成功",
+      "redemptionCode": "引き換えコード",
+      "insufficientFunds": "シェケルが不足しています"
+    },
+    "wallet": {
+      "title": "シェケルウォレット",
+      "loading": "ウォレットを読み込み中...",
+      "totalEarned": "合計獲得",
+      "totalSpent": "合計使用",
+      "recentTransactions": "最近の取引",
+      "noTransactions": "まだ取引はありません"
+    }
   },
   "shekels": {
     "title": "シェケル",
@@ -10688,6 +10742,7 @@
     "newTitle": "新しい称号: {{title}}",
     "perkUnlocked": "特典アンロック: {{perk}}",
     "claimPerk": "受け取る",
+    "awesome": "素晴らしい!",
     "claimed": "受取済み",
     "leaderboard": {
       "title": "リーダーボード",

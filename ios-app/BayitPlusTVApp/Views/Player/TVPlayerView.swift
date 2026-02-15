@@ -732,7 +732,9 @@ struct TVPlayerView: View {
                 ?? localization.t("player.streamLoadFailed")
             isResolvingStream = false
         } catch {
-            streamError = error.localizedDescription
+            if let message = error.userFriendlyMessage {
+                streamError = message
+            }
             isResolvingStream = false
         }
     }
