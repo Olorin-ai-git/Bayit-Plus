@@ -15,27 +15,29 @@ from app.core.storage import (
 logger = get_logger(__name__)
 
 
-def _iam_sign_kwargs(client) -> dict:
+def _iam_sign_kwargs() -> dict:
     """Build kwargs to sign via IAM signBlob for token-only credentials.
 
-    On Cloud Run the default credentials lack a private key.  We detect
-    this by checking for ``service_account_email`` without a ``signer``
-    and return the kwargs that make ``generate_signed_url`` delegate to
-    the IAM ``signBlob`` API.
+    On Cloud Run the default credentials lack a private key.  We obtain
+    fresh credentials with ``cloud-platform`` scope so the token is
+    authorised to call the IAM ``signBlob`` API.
     """
     try:
+        import google.auth
         from google.auth.transport import requests as google_auth_requests
 
-        credentials = client._credentials
+        credentials, _ = google.auth.default(
+            scopes=["https://www.googleapis.com/auth/cloud-platform"],
+        )
         sa_email = getattr(credentials, "service_account_email", None)
-        has_signer = getattr(credentials, "signer", None) is not None
-        if sa_email and not has_signer:
-            auth_request = google_auth_requests.Request()
-            credentials.refresh(auth_request)
-            return {
-                "service_account_email": sa_email,
-                "access_token": credentials.token,
-            }
+        if not sa_email:
+            return {}
+        auth_request = google_auth_requests.Request()
+        credentials.refresh(auth_request)
+        return {
+            "service_account_email": sa_email,
+            "access_token": credentials.token,
+        }
     except Exception:
         pass
     return {}

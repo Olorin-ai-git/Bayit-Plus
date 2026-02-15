@@ -64,6 +64,10 @@ dependencies {
     // Logging
     implementation(libs.timber)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.hilt.testing)
