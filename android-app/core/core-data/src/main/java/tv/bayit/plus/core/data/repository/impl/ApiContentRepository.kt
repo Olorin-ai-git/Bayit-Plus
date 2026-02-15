@@ -42,12 +42,8 @@ class ApiContentRepository(
             client.safeApiCall { service.getCollectionDetail(collectionId) }
         }
 
-    override suspend fun getFeatured(): BayitResult<List<Any>> = runCatchingResult {
-        val response = client.safeApiCall { service.getFeatured() }
-        buildList {
-            response.hero?.let { add(it) }
-            addAll(response.spotlight)
-        }
+    override suspend fun getFeatured(): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.getFeatured() }
     }
 
     override suspend fun getByCategory(categoryId: String): BayitResult<List<Any>> =
