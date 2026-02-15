@@ -16,6 +16,7 @@ import tv.bayit.plus.feature.auth.payment.PaymentPendingRoute
 import tv.bayit.plus.feature.auth.payment.PaymentSuccessRoute
 import tv.bayit.plus.feature.auth.forgot.ForgotPasswordRoute
 import tv.bayit.plus.feature.auth.register.RegisterRoute
+import tv.bayit.plus.feature.auth.splash.SplashRoute
 import tv.bayit.plus.feature.auth.subscription.SubscribeRoute
 import tv.bayit.plus.feature.auth.subscription.SubscriptionGateRoute
 import tv.bayit.plus.feature.culture.CultureRoute
@@ -102,7 +103,16 @@ import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 @Composable
 fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Route.Home, modifier = modifier) {
+    NavHost(navController = navController, startDestination = startRoute ?: Route.Splash, modifier = modifier) {
+        composable<Route.Splash> {
+            SplashRoute(
+                onFinished = {
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.Splash) { inclusive = true }
+                    }
+                },
+            )
+        }
         composable<Route.Home> {
             HomeRoute(
                 onNavigateToContent = { id, _ -> navController.navigate(Route.MovieDetail(movieId = id)) },

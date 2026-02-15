@@ -140,6 +140,7 @@ sealed class Route {
     @Serializable data class ZehAniAvatarSettings(val profileId: String, val avatarId: String) : Route()
 
     // Auth
+    @Serializable data object Splash : Route()
     @Serializable data object Login : Route()
     @Serializable data object Register : Route()
     @Serializable data object ForgotPassword : Route()
@@ -172,6 +173,7 @@ sealed class Route {
 
     val breadcrumbLabel: String
         get() = when (this) {
+            is Splash -> "Splash"
             is Home -> "Home"
             is LiveTV -> "Live TV"
             is Vod -> "VOD"
