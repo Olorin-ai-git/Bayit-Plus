@@ -151,11 +151,13 @@ dependencies {
     testImplementation(libs.hilt.testing)
     kspTest(libs.hilt.compiler)
 
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.compose.ui.test)
     androidTestImplementation(libs.hilt.testing)
     kspAndroidTest(libs.hilt.compiler)
 
+    debugImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 }
