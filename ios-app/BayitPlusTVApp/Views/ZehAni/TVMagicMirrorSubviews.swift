@@ -135,58 +135,96 @@ struct MagicMirrorAvatarSceneView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> SCNView {
         let scnView = SCNView()
-        scnView.backgroundColor = .clear
-        scnView.allowsCameraControl = false
-        scnView.autoenablesDefaultLighting = false
+        scnView.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.15, alpha: 1.0)
+        scnView.allowsCameraControl = true
+        scnView.autoenablesDefaultLighting = true
         scnView.antialiasingMode = .multisampling4X
 
         let scene = SCNScene()
-        configureCamera(scene: scene)
-        configureLighting(scene: scene)
-        loadModel(into: scene)
         scnView.scene = scene
+
+        if let loadedScene = loadGLB(from: glbData, in: scnView) {
+            let children = loadedScene.rootNode.childNodes
+            for child in children {
+                scene.rootNode.addChildNode(child)
+            }
+            if !children.isEmpty {
+                frameCameraToFit(scene: scene, in: scnView)
+                setupLighting(in: scene)
+                addDebugLabel(to: scnView, text: "nodes: \(children.count)")
+            }
+        } else {
+            addDebugLabel(to: scnView, text: "GLB LOAD FAILED")
+        }
 
         return scnView
     }
 
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
-    private func configureCamera(scene: SCNScene) {
+    private func addDebugLabel(to view: SCNView, text: String) {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .green
+        label.font = .systemFont(ofSize: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+        ])
+    }
+
+    private func loadGLB(from data: Data, in view: SCNView) -> SCNScene? {
+        do {
+            let scene = try GLBSceneLoader.loadScene(from: data)
+            NSLog("BAYIT_TV_3D loadGLB success children=\(scene.rootNode.childNodes.count)")
+            return scene
+        } catch {
+            NSLog("BAYIT_TV_3D loadGLB error: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    private func frameCameraToFit(scene: SCNScene, in scnView: SCNView) {
+        let (minVec, maxVec) = scene.rootNode.boundingBox
+        let center = SCNVector3(
+            x: (minVec.x + maxVec.x) / 2,
+            y: (minVec.y + maxVec.y) / 2,
+            z: (minVec.z + maxVec.z) / 2
+        )
+        let height = maxVec.y - minVec.y
+        let depth = maxVec.z - minVec.z
+        let cameraDistance = max(height, depth) * 2.0
+
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.camera?.zNear = 0.1
-        cameraNode.camera?.zFar = 100
-        cameraNode.camera?.fieldOfView = 45
-        cameraNode.position = SCNVector3(x: 0, y: 1.2, z: 3.0)
-        cameraNode.look(at: SCNVector3(x: 0, y: 0.8, z: 0))
+        cameraNode.camera?.automaticallyAdjustsZRange = true
+        cameraNode.position = SCNVector3(
+            x: center.x,
+            y: center.y,
+            z: center.z + Float(cameraDistance)
+        )
+        cameraNode.look(at: center)
         scene.rootNode.addChildNode(cameraNode)
+        scnView.pointOfView = cameraNode
     }
 
-    private func configureLighting(scene: SCNScene) {
-        let ambient = SCNNode()
-        ambient.light = SCNLight()
-        ambient.light?.type = .ambient
-        ambient.light?.intensity = 400
-        ambient.light?.color = UIColor(white: 0.85, alpha: 1.0)
-        scene.rootNode.addChildNode(ambient)
+    private func setupLighting(in scene: SCNScene) {
+        let ambientLight = SCNNode()
+        ambientLight.light = SCNLight()
+        ambientLight.light?.type = .ambient
+        ambientLight.light?.intensity = 800
+        ambientLight.light?.color = UIColor.white
+        scene.rootNode.addChildNode(ambientLight)
 
-        let directional = SCNNode()
-        directional.light = SCNLight()
-        directional.light?.type = .directional
-        directional.light?.intensity = 800
-        directional.light?.castsShadow = true
-        directional.position = SCNVector3(x: 2, y: 4, z: 3)
-        directional.look(at: SCNVector3(0, 0, 0))
-        scene.rootNode.addChildNode(directional)
-    }
-
-    private func loadModel(into scene: SCNScene) {
-        guard let loadedScene = try? GLBSceneLoader.loadScene(from: glbData) else {
-            return
-        }
-        for child in loadedScene.rootNode.childNodes {
-            scene.rootNode.addChildNode(child)
-        }
+        let directionalLight = SCNNode()
+        directionalLight.light = SCNLight()
+        directionalLight.light?.type = .directional
+        directionalLight.light?.intensity = 1200
+        directionalLight.position = SCNVector3(x: 2, y: 5, z: 4)
+        directionalLight.look(at: SCNVector3(0, 0, 0))
+        scene.rootNode.addChildNode(directionalLight)
     }
 }
 #endif
