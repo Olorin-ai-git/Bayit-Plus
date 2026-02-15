@@ -105,7 +105,7 @@ private data class ChaptersResponse(
 
 /** A single chapter within content. */
 @Serializable
-private data class ContentContentChapterItem(
+private data class ContentChapterItem(
     @SerialName("start_time") val startTime: Double,
     @SerialName("end_time") val endTime: Double,
     val title: String? = null,

@@ -133,7 +133,7 @@ private data class AudiobookWithChaptersServiceResponse(
 
 /** A chapter item returned by the chapters endpoint. */
 @Serializable
-private data class AudiobookAudiobookChapterItem(
+private data class AudiobookChapterItem(
     val id: String,
     val title: String? = null,
     @SerialName("chapter_number") val chapterNumber: Int? = null,
