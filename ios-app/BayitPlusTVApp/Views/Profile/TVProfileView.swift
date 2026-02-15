@@ -22,6 +22,8 @@ struct TVProfileView: View {
     @State private var showingFriends = false
     @State private var showingMessages = false
     @State private var showingSettings = false
+    @State private var showingHelp = false
+    @State private var showingConnectedAccounts = false
 
     var body: some View {
         NavigationStack {
@@ -103,6 +105,12 @@ struct TVProfileView: View {
             .fullScreenCover(isPresented: $showingSettings) {
                 TVSettingsView()
             }
+            .fullScreenCover(isPresented: $showingHelp) {
+                TVHelpView()
+            }
+            .fullScreenCover(isPresented: $showingConnectedAccounts) {
+                TVConnectedAccountsView(onDismiss: { showingConnectedAccounts = false })
+            }
         }
     }
 
@@ -157,7 +165,7 @@ struct TVProfileView: View {
                 // Profile info
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
                     HStack {
-                        Text(profile.displayName ?? "Guest")
+                        Text(profile.displayName ?? localization.t("common.guest"))
                             .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                             .foregroundStyle(DesignTokens.Text.primary)
 
@@ -327,21 +335,21 @@ struct TVProfileView: View {
             ) {
                 statCard(
                     icon: "play.circle.fill",
-                    title: "Watched",
+                    title: localization.t("profile.watched"),
                     value: "\(stats.totalWatched ?? 0)",
                     color: DesignTokens.Primary.p400
                 )
 
                 statCard(
                     icon: "heart.fill",
-                    title: "Favorites",
+                    title: localization.t("profile.favorites"),
                     value: "\(stats.totalFavorites ?? 0)",
                     color: DesignTokens.ErrorColor.e400
                 )
 
                 statCard(
                     icon: "list.bullet",
-                    title: "Playlists",
+                    title: localization.t("profile.playlists"),
                     value: "\(stats.totalPlaylists ?? 0)",
                     color: DesignTokens.Secondary.s400
                 )
@@ -349,7 +357,7 @@ struct TVProfileView: View {
                 if let recordings = stats.totalRecordings, recordings > 0 {
                     statCard(
                         icon: "record.circle",
-                        title: "Recordings",
+                        title: localization.t("profile.recordings"),
                         value: "\(recordings)",
                         color: DesignTokens.Warning.default
                     )
@@ -358,7 +366,7 @@ struct TVProfileView: View {
                 if let streak = stats.streakDays, streak > 0 {
                     statCard(
                         icon: "flame.fill",
-                        title: "Day Streak",
+                        title: localization.t("profile.dayStreak"),
                         value: "\(streak)",
                         color: DesignTokens.Warning.w500
                     )
@@ -368,7 +376,7 @@ struct TVProfileView: View {
                     let hours = watchTime / 60
                     statCard(
                         icon: "clock.fill",
-                        title: "Watch Time",
+                        title: localization.t("profile.watchTime"),
                         value: "\(hours)h",
                         color: DesignTokens.Info.default
                     )
@@ -376,7 +384,7 @@ struct TVProfileView: View {
             }
             .padding(.vertical, TVDesignTokens.Spacing.sm)
         } header: {
-            sectionHeader("Your Statistics")
+            sectionHeader(localization.t("profile.yourStatistics"))
         }
     }
 
@@ -466,8 +474,8 @@ struct TVProfileView: View {
         Section {
             actionRow(
                 icon: "heart.fill",
-                title: "My Favorites",
-                subtitle: "View your favorite content",
+                title: localization.t("profile.myFavorites"),
+                subtitle: localization.t("profile.viewFavoriteContent"),
                 color: DesignTokens.ErrorColor.e400
             ) {
                 showingFavorites = true
@@ -475,8 +483,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "record.circle",
-                title: "My Recordings",
-                subtitle: "Manage DVR recordings",
+                title: localization.t("profile.myRecordings"),
+                subtitle: localization.t("profile.manageDvrRecordings"),
                 color: DesignTokens.Warning.default
             ) {
                 showingRecordings = true
@@ -484,8 +492,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "list.bullet",
-                title: "My Playlists",
-                subtitle: "Organize your content",
+                title: localization.t("profile.myPlaylists"),
+                subtitle: localization.t("profile.organizeContent"),
                 color: DesignTokens.Secondary.s400
             ) {
                 // Navigate to playlists
@@ -493,14 +501,14 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "clock.arrow.circlepath",
-                title: "Viewing History",
-                subtitle: "See what you've watched",
+                title: localization.t("profile.viewingHistory"),
+                subtitle: localization.t("profile.seeWhatYouWatched"),
                 color: DesignTokens.Info.default
             ) {
                 showingViewingHistory = true
             }
         } header: {
-            sectionHeader("Quick Actions")
+            sectionHeader(localization.t("profile.quickActions"))
         }
     }
 
@@ -510,8 +518,8 @@ struct TVProfileView: View {
         Section {
             actionRow(
                 icon: "gearshape.fill",
-                title: "Preferences",
-                subtitle: "Content, language, quality settings",
+                title: localization.t("profile.preferences"),
+                subtitle: localization.t("profile.preferencesDesc"),
                 color: DesignTokens.Primary.p400
             ) {
                 showingPreferences = true
@@ -519,8 +527,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "lock.fill",
-                title: "Account Security",
-                subtitle: "Password, 2FA, linked accounts",
+                title: localization.t("profile.accountSecurity"),
+                subtitle: localization.t("profile.accountSecurityDesc"),
                 color: DesignTokens.Warning.default
             ) {
                 showingAccountSettings = true
@@ -529,8 +537,8 @@ struct TVProfileView: View {
             if !(profile.emailVerified ?? false) {
                 actionRow(
                     icon: "envelope.badge",
-                    title: "Verify Email",
-                    subtitle: "Confirm your email address",
+                    title: localization.t("profile.verifyEmail"),
+                    subtitle: localization.t("profile.verifyEmailDesc"),
                     color: DesignTokens.ErrorColor.e400
                 ) {
                     // Trigger email verification
@@ -540,15 +548,15 @@ struct TVProfileView: View {
             if !(profile.phoneVerified ?? false) && profile.phoneNumber != nil {
                 actionRow(
                     icon: "phone.badge.checkmark",
-                    title: "Verify Phone",
-                    subtitle: "Confirm your phone number",
+                    title: localization.t("profile.verifyPhone"),
+                    subtitle: localization.t("profile.verifyPhoneDesc"),
                     color: DesignTokens.ErrorColor.e400
                 ) {
                     // Trigger phone verification
                 }
             }
         } header: {
-            sectionHeader("Account Management")
+            sectionHeader(localization.t("profile.accountManagement"))
         }
     }
 
@@ -558,8 +566,8 @@ struct TVProfileView: View {
         Section {
             actionRow(
                 icon: "person.2.fill",
-                title: "Household Profiles",
-                subtitle: "Manage family profiles",
+                title: localization.t("profile.householdProfiles"),
+                subtitle: localization.t("profile.householdProfilesDesc"),
                 color: DesignTokens.Secondary.s400
             ) {
                 // Navigate to household management
@@ -567,23 +575,41 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "bell.fill",
-                title: "Notifications",
-                subtitle: "Manage notification preferences",
+                title: localization.t("profile.notifications"),
+                subtitle: localization.t("profile.notificationSettings"),
                 color: DesignTokens.Primary.p400
             ) {
                 // Navigate to notification settings
             }
 
             actionRow(
+                icon: "questionmark.circle.fill",
+                title: localization.t("settings.help"),
+                subtitle: localization.t("profile.helpDesc"),
+                color: DesignTokens.Info.default
+            ) {
+                showingHelp = true
+            }
+
+            actionRow(
+                icon: "link.circle.fill",
+                title: localization.t("profile.connectedAccounts"),
+                subtitle: localization.t("profile.connectedAccountsDesc"),
+                color: DesignTokens.Secondary.s400
+            ) {
+                showingConnectedAccounts = true
+            }
+
+            actionRow(
                 icon: "info.circle.fill",
-                title: "About",
-                subtitle: "App version, terms, privacy",
+                title: localization.t("settings.about"),
+                subtitle: localization.t("profile.aboutDesc"),
                 color: DesignTokens.Info.default
             ) {
                 // Navigate to about screen
             }
         } header: {
-            sectionHeader("Advanced")
+            sectionHeader(localization.t("profile.advanced"))
         }
     }
 
@@ -593,8 +619,8 @@ struct TVProfileView: View {
         Section {
             actionRow(
                 icon: "person.2.fill",
-                title: "Friends",
-                subtitle: "Connect with other viewers",
+                title: localization.t("nav.friends"),
+                subtitle: localization.t("profile.friendsDesc"),
                 color: DesignTokens.Primary.p400
             ) {
                 showingFriends = true
@@ -602,8 +628,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "bubble.left.and.bubble.right",
-                title: "Messages",
-                subtitle: "Direct messages",
+                title: localization.t("profile.messages"),
+                subtitle: localization.t("profile.messagesDesc"),
                 color: DesignTokens.Info.default
             ) {
                 showingMessages = true
@@ -611,8 +637,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "gear",
-                title: "Settings",
-                subtitle: "App settings and preferences",
+                title: localization.t("nav.settings"),
+                subtitle: localization.t("profile.settingsDesc"),
                 color: DesignTokens.Text.secondary
             ) {
                 showingSettings = true
@@ -620,14 +646,14 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "square.grid.2x2",
-                title: "Widgets",
-                subtitle: "Manage your widgets",
+                title: localization.t("nav.widgets"),
+                subtitle: localization.t("profile.widgetsDesc"),
                 color: DesignTokens.Secondary.s400
             ) {
                 // Widgets are managed via the overlay dock
             }
         } header: {
-            sectionHeader("Social & Settings")
+            sectionHeader(localization.t("profile.socialSettings"))
         }
     }
 

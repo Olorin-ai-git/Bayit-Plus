@@ -2,7 +2,9 @@
 import SwiftUI
 
 /// Full-width hero banner carousel for tvOS home screen.
-/// Uses manual offset-based paging for full-bleed rendering without TabView safe area insets.
+/// Uses crossfade transitions for smooth page changes (including wrap-around).
+/// Child views provide their own focusable buttons; page navigation via
+/// focusable indicator dots or auto-advance timer.
 public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
     let items: [Item]
     let autoAdvanceInterval: TimeInterval
@@ -10,7 +12,7 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
 
     @State private var currentIndex = 0
     @State private var autoAdvanceTask: Task<Void, Never>?
-    @FocusState private var isFocused: Bool
+    @FocusState private var focusedDotIndex: Int?
 
     public init(
         items: [Item],
@@ -25,80 +27,69 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
     public var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             GeometryReader { geo in
-                let width = geo.size.width
-                HStack(spacing: 0) {
-                    ForEach(Array(items.enumerated()), id: \.element.id) { _, item in
-                        itemBuilder(item)
-                            .frame(width: width, height: geo.size.height)
+                ZStack {
+                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        if index == currentIndex {
+                            itemBuilder(item)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .transition(.opacity)
+                        }
                     }
                 }
-                .offset(x: -CGFloat(currentIndex) * width)
-                .animation(.easeInOut(duration: 0.5), value: currentIndex)
             }
             .frame(height: TVDesignTokens.MinSize.heroHeight)
             .clipped()
+            .animation(.easeInOut(duration: 0.6), value: currentIndex)
 
             pageIndicator
-        }
-        .focusable(true)
-        .focused($isFocused)
-        .focusSection()
-        .onMoveCommand { direction in
-            handleMove(direction)
-        }
-        .onChange(of: isFocused) { _, focused in
-            if focused {
-                stopAutoAdvance()
-            } else {
-                startAutoAdvance()
-            }
         }
         .onAppear { startAutoAdvance() }
         .onDisappear { stopAutoAdvance() }
     }
 
+    // MARK: - Page Indicator
+
     private var pageIndicator: some View {
-        HStack(spacing: TVDesignTokens.Spacing.xs) {
+        HStack(spacing: TVDesignTokens.Spacing.sm) {
             ForEach(items.indices, id: \.self) { index in
-                Circle()
-                    .fill(
-                        index == currentIndex
-                            ? DesignTokens.Colors.Primary.light
-                            : DesignTokens.Text.muted
-                    )
-                    .frame(
-                        width: index == currentIndex ? 10 : 6,
-                        height: index == currentIndex ? 10 : 6
-                    )
-                    .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                Button {
+                    selectPage(index)
+                } label: {
+                    Circle()
+                        .fill(
+                            index == currentIndex
+                                ? DesignTokens.Colors.Primary.light
+                                : DesignTokens.Text.muted
+                        )
+                        .frame(
+                            width: dotSize(for: index),
+                            height: dotSize(for: index)
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                        .animation(.easeInOut(duration: 0.15), value: focusedDotIndex)
+                }
+                .buttonStyle(.plain)
+                .focused($focusedDotIndex, equals: index)
+            }
+        }
+        .onChange(of: focusedDotIndex) { _, newIndex in
+            if let newIndex {
+                selectPage(newIndex)
             }
         }
     }
 
-    // MARK: - Navigation
-
-    private func handleMove(_ direction: MoveCommandDirection) {
-        switch direction {
-        case .left:
-            moveToPrevious()
-        case .right:
-            moveToNext()
-        default:
-            break
-        }
+    private func dotSize(for index: Int) -> CGFloat {
+        if index == focusedDotIndex { return 14 }
+        if index == currentIndex { return 10 }
+        return 6
     }
 
-    private func moveToPrevious() {
-        guard items.count > 1 else { return }
-        withAnimation(.easeInOut(duration: 0.5)) {
-            currentIndex = currentIndex == 0 ? items.count - 1 : currentIndex - 1
-        }
-    }
-
-    private func moveToNext() {
-        guard items.count > 1 else { return }
-        withAnimation(.easeInOut(duration: 0.5)) {
-            currentIndex = (currentIndex + 1) % items.count
+    private func selectPage(_ index: Int) {
+        pauseAutoAdvance()
+        guard index != currentIndex, index >= 0, index < items.count else { return }
+        withAnimation(.easeInOut(duration: 0.6)) {
+            currentIndex = index
         }
     }
 
@@ -111,7 +102,7 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
                 try? await Task.sleep(for: .seconds(autoAdvanceInterval))
                 guard !Task.isCancelled else { break }
                 await MainActor.run {
-                    withAnimation(.easeInOut(duration: 0.5)) {
+                    withAnimation(.easeInOut(duration: 0.6)) {
                         currentIndex = (currentIndex + 1) % items.count
                     }
                 }
@@ -124,9 +115,14 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
         autoAdvanceTask = nil
     }
 
-    private func restartAutoAdvance() {
+    private func pauseAutoAdvance() {
         stopAutoAdvance()
-        startAutoAdvance()
+        let resumeDelay = autoAdvanceInterval * 2
+        autoAdvanceTask = Task {
+            try? await Task.sleep(for: .seconds(resumeDelay))
+            guard !Task.isCancelled else { return }
+            await MainActor.run { startAutoAdvance() }
+        }
     }
 }
 #endif

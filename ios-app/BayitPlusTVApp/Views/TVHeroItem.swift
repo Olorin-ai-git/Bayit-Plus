@@ -1,12 +1,17 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 /// Hero carousel item with background image, gradient overlay, metadata,
-/// subtitle flags pill, and a "Watch Now" button.
+/// subtitle flags pill, and focusable "Watch Now" / "More Info" buttons.
+/// Each button receives independent focus on tvOS Siri Remote.
 struct TVHeroItem: View {
     let item: SpotlightItem
     let onWatchNow: () -> Void
+    let onMoreInfo: () -> Void
+
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -79,26 +84,56 @@ struct TVHeroItem: View {
                         .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
                 }
 
-                // Watch Now button
-                Button(action: onWatchNow) {
-                    HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: TVDesignTokens.FontSize.md))
-                        Text("Watch Now")
-                            .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-                    }
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                    .padding(.vertical, TVDesignTokens.Spacing.md)
-                    .background(DesignTokens.Primary.default)
-                    .clipShape(Capsule())
+                // Action buttons row
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    watchNowButton
+                    moreInfoButton
                 }
-                .buttonStyle(.plain)
                 .padding(.top, TVDesignTokens.Spacing.sm)
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             .padding(.bottom, TVDesignTokens.Spacing.xl)
         }
+    }
+
+    // MARK: - Watch Now Button
+
+    private var watchNowButton: some View {
+        Button(action: onWatchNow) {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "play.fill")
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                Text(localization.t("hero.watchNow"))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(DesignTokens.Primary.default)
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.card)
+        .accessibilityLabel(localization.t("hero.watchNow"))
+    }
+
+    // MARK: - More Info Button
+
+    private var moreInfoButton: some View {
+        Button(action: onMoreInfo) {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                Text(localization.t("common.moreInfo"))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.card)
+        .accessibilityLabel(localization.t("common.moreInfo"))
     }
 
     private func metadataText(_ text: String) -> some View {

@@ -42,6 +42,42 @@ enum TVDeepLinkRouter {
             guard let movieId = pathComponents.dropFirst().first else { return nil }
             return .movieDetail(movieId: movieId)
 
+        case "help":
+            return .help
+
+        case "missions":
+            return .missions
+
+        case "leaderboard":
+            return .missionsLeaderboard
+
+        case "wallet":
+            return .shekelsWallet
+
+        case "coupons":
+            return .couponShop
+
+        case "culture":
+            guard let cultureId = pathComponents.dropFirst().first else { return nil }
+            return .cultureDetail(id: cultureId)
+
+        case "subscribe":
+            return .subscriptionGate
+
+        case "credits":
+            return nil // Handled by tab navigation to profile
+
+        case "accounts":
+            return .connectedAccounts
+
+        case "companion":
+            guard let contentId = pathComponents.dropFirst().first else { return nil }
+            return .aiCompanion(contentId: contentId)
+
+        case "quiz":
+            guard let contentId = pathComponents.dropFirst().first else { return nil }
+            return .quiz(contentId: contentId)
+
         default:
             return nil
         }
@@ -61,7 +97,9 @@ enum TVDeepLinkRouter {
         case "podcasts", "audiobooks": return .podcasts
         case "kids", "children", "youngsters": return .kids
         case "search": return .search
-        case "profile", "settings", "favorites", "messages", "friends": return .profile
+        case "profile", "settings", "favorites", "messages", "friends",
+             "help", "accounts", "credits", "subscribe": return .profile
+        case "missions", "leaderboard", "wallet", "coupons": return .profile
         default: return nil
         }
     }

@@ -18,8 +18,32 @@ enum TVRoute: Hashable, Identifiable {
     case collectionDetail(collectionId: String)
     /// Navigate to audiobook detail screen.
     case audiobookDetail(audiobookId: String)
+    /// Navigate to full audiobooks listing.
+    case audiobooks
     /// Show voice assistant overlay.
     case voiceAssistant
+    /// Show help center.
+    case help
+    /// Show daily missions.
+    case missions
+    /// Show missions leaderboard.
+    case missionsLeaderboard
+    /// Show shekels wallet.
+    case shekelsWallet
+    /// Show coupon shop.
+    case couponShop
+    /// Show culture detail for a specific item.
+    case cultureDetail(id: String)
+    /// Show subscription gate.
+    case subscriptionGate
+    /// Show connected accounts settings.
+    case connectedAccounts
+    /// Show AI companion for content.
+    case aiCompanion(contentId: String)
+    /// Show catch-up summary for content.
+    case catchUpSummary(contentId: String)
+    /// Show trivia quiz for content.
+    case quiz(contentId: String)
 
     // MARK: - Hashable
 
@@ -45,8 +69,36 @@ enum TVRoute: Hashable, Identifiable {
         case .audiobookDetail(let audiobookId):
             hasher.combine("audiobookDetail")
             hasher.combine(audiobookId)
+        case .audiobooks:
+            hasher.combine("audiobooks")
         case .voiceAssistant:
             hasher.combine("voiceAssistant")
+        case .help:
+            hasher.combine("help")
+        case .missions:
+            hasher.combine("missions")
+        case .missionsLeaderboard:
+            hasher.combine("missionsLeaderboard")
+        case .shekelsWallet:
+            hasher.combine("shekelsWallet")
+        case .couponShop:
+            hasher.combine("couponShop")
+        case .cultureDetail(let id):
+            hasher.combine("cultureDetail")
+            hasher.combine(id)
+        case .subscriptionGate:
+            hasher.combine("subscriptionGate")
+        case .connectedAccounts:
+            hasher.combine("connectedAccounts")
+        case .aiCompanion(let contentId):
+            hasher.combine("aiCompanion")
+            hasher.combine(contentId)
+        case .catchUpSummary(let contentId):
+            hasher.combine("catchUpSummary")
+            hasher.combine(contentId)
+        case .quiz(let contentId):
+            hasher.combine("quiz")
+            hasher.combine(contentId)
         }
     }
 
@@ -64,8 +116,32 @@ enum TVRoute: Hashable, Identifiable {
             return lId == rId
         case let (.audiobookDetail(lId), .audiobookDetail(rId)):
             return lId == rId
+        case (.audiobooks, .audiobooks):
+            return true
         case (.voiceAssistant, .voiceAssistant):
             return true
+        case (.help, .help):
+            return true
+        case (.missions, .missions):
+            return true
+        case (.missionsLeaderboard, .missionsLeaderboard):
+            return true
+        case (.shekelsWallet, .shekelsWallet):
+            return true
+        case (.couponShop, .couponShop):
+            return true
+        case let (.cultureDetail(lId), .cultureDetail(rId)):
+            return lId == rId
+        case (.subscriptionGate, .subscriptionGate):
+            return true
+        case (.connectedAccounts, .connectedAccounts):
+            return true
+        case let (.aiCompanion(lId), .aiCompanion(rId)):
+            return lId == rId
+        case let (.catchUpSummary(lId), .catchUpSummary(rId)):
+            return lId == rId
+        case let (.quiz(lId), .quiz(rId)):
+            return lId == rId
         default:
             return false
         }

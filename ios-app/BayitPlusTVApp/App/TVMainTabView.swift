@@ -1,15 +1,18 @@
 #if os(tvOS)
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Main tab navigation for the tvOS app.
 /// Uses TabView with tvOS-native top shelf styling.
-/// Overlays the widget dock at the bottom and profile pill at the top-right.
+/// Overlays the widget dock at the bottom, language picker at the top-right.
 struct TVMainTabView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var dockViewModel: WidgetDockViewModel?
+    @State private var showLanguagePicker = false
 
     var body: some View {
         @Bindable var coord = coordinator
@@ -17,39 +20,45 @@ struct TVMainTabView: View {
         HStack(spacing: 0) {
             TabView(selection: $coord.selectedTab) {
                 TVHomeView()
-                    .tabItem { Label(TVTab.home.title, systemImage: TVTab.home.iconName) }
+                    .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
                     .tag(TVTab.home)
 
                 TVLiveTVView()
-                    .tabItem { Label(TVTab.liveTV.title, systemImage: TVTab.liveTV.iconName) }
+                    .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
                     .tag(TVTab.liveTV)
 
                 TVVODView()
-                    .tabItem { Label(TVTab.vod.title, systemImage: TVTab.vod.iconName) }
+                    .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
                     .tag(TVTab.vod)
 
                 TVZehAniHubView()
-                    .tabItem { Label(TVTab.zehAni.title, systemImage: TVTab.zehAni.iconName) }
+                    .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
                     .tag(TVTab.zehAni)
 
                 TVPodcastsView()
-                    .tabItem { Label(TVTab.podcasts.title, systemImage: TVTab.podcasts.iconName) }
+                    .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
                     .tag(TVTab.podcasts)
 
                 TVKidsHubView()
-                    .tabItem { Label(TVTab.kids.title, systemImage: TVTab.kids.iconName) }
+                    .tabItem { Label(localization.t("nav.children"), systemImage: TVTab.kids.iconName) }
                     .tag(TVTab.kids)
 
                 TVSearchView()
-                    .tabItem { Label(TVTab.search.title, systemImage: TVTab.search.iconName) }
+                    .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
                     .tag(TVTab.search)
 
                 TVProfileView()
-                    .tabItem { Label(TVTab.profile.title, systemImage: TVTab.profile.iconName) }
+                    .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
                     .tag(TVTab.profile)
             }
             .onAppear {
                 coord.selectedTab = .home
+            }
+            // Language picker pill at top-right
+            .overlay(alignment: .topTrailing) {
+                languageButton
+                    .padding(.top, TVDesignTokens.Spacing.md)
+                    .padding(.trailing, TVDesignTokens.Spacing.xl)
             }
             // Widget dock floats above content (overlay avoids focus trapping)
             .overlay(alignment: .bottom) {
@@ -62,6 +71,9 @@ struct TVMainTabView: View {
                     )
                     .padding(.bottom, TVDesignTokens.Spacing.lg)
                 }
+            }
+            .fullScreenCover(isPresented: $showLanguagePicker) {
+                languagePickerSheet
             }
 
             // Widget sidebar (no .focusSection to avoid trapping focus)
@@ -81,7 +93,53 @@ struct TVMainTabView: View {
         }
     }
 
-    // MARK: - Profile Pill
+    // MARK: - Language Button
 
+    private var languageButton: some View {
+        Button {
+            showLanguagePicker = true
+        } label: {
+            HStack(spacing: TVDesignTokens.Spacing.xs) {
+                Image(systemName: "globe")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                Text(localization.currentLanguage.rawValue.uppercased())
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.xs,
+                        weight: .semibold
+                    ))
+            }
+            .foregroundStyle(DesignTokens.Text.primary)
+            .padding(.horizontal, TVDesignTokens.Spacing.md)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
+            .background(DesignTokens.Glass.bgMedium)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.card)
+        .accessibilityLabel(localization.t("settings.chooseLanguage"))
+    }
+
+    // MARK: - Language Picker Sheet
+
+    private var languagePickerSheet: some View {
+        ZStack(alignment: .topTrailing) {
+            TVLanguageSettingsView()
+
+            Button {
+                showLanguagePicker = false
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: TVDesignTokens.FontSize.xl))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+            }
+            .buttonStyle(.card)
+            .padding(.top, TVDesignTokens.Spacing.xl)
+            .padding(.trailing, TVDesignTokens.Spacing.xl)
+            .accessibilityLabel(localization.t("common.dismiss"))
+        }
+        .background(DesignTokens.Background.primary)
+    }
 }
 #endif

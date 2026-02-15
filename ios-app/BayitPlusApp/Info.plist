@@ -42,9 +42,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>75</string>
+	<string>76</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
+	<key>FirebaseCrashlyticsCollectionEnabled</key>
+	<true/>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
@@ -58,8 +60,6 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Bayit+ uses the local network to discover and connect to Chromecast devices for streaming content to your TV</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_googlecast._tcp</string>
@@ -69,6 +69,8 @@
 	<string>Bayit+ uses the camera to record a video selfie for creating your 3D avatar</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Bayit+ uses Face ID to securely sign in to your account</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Bayit+ uses the local network to discover and connect to Chromecast devices for streaming content to your TV</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -93,8 +95,6 @@
 		<string>audio</string>
 		<string>remote-notification</string>
 	</array>
-	<key>FirebaseCrashlyticsCollectionEnabled</key>
-	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

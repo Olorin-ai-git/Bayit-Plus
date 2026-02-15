@@ -19,6 +19,14 @@ final class LiveSubtitlesWebSocketService {
     private let authTokenProvider: AuthTokenProvider
     private let logger = BayitLogger(category: "LiveSubtitlesWebSocket")
 
+    private static var platformIdentifier: String {
+        #if os(tvOS)
+        return "tvos"
+        #else
+        return "ios"
+        #endif
+    }
+
     init(configuration: any EnvironmentConfiguration, authTokenProvider: AuthTokenProvider) {
         self.configuration = configuration
         self.authTokenProvider = authTokenProvider
@@ -47,7 +55,7 @@ final class LiveSubtitlesWebSocketService {
             URLQueryItem(name: "source_lang", value: sourceLang),
             URLQueryItem(name: "target_lang", value: targetLanguage),
             URLQueryItem(name: "audio_source", value: "server"),
-            URLQueryItem(name: "platform", value: "ios")
+            URLQueryItem(name: "platform", value: Self.platformIdentifier)
         ]
 
         guard let url = urlComponents?.url else {

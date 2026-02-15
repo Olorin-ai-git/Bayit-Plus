@@ -1,4 +1,3 @@
-#if os(iOS)
 import BayitCore
 import Foundation
 import Observation
@@ -117,4 +116,3 @@ final class AICompanionViewModel {
         isLoading = false
     }
 }
-#endif

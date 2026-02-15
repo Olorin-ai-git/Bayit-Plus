@@ -1,9 +1,11 @@
+import BayitAnalytics
 import BayitAuth
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
 import BayitMedia
 import BayitNetworking
+import FirebaseCrashlytics
 import FirebaseCore
 import Foundation
 import SwiftUI
@@ -25,6 +27,10 @@ struct BayitPlusTVApp: App {
            options.googleAppID != "placeholder" {
             FirebaseApp.configure()
         }
+
+        #if !DEBUG
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+        #endif
 
         let appConfig = AppConfiguration()
         let apiLogger = TVAppAPILogger()

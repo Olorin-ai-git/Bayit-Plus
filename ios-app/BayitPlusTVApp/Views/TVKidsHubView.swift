@@ -1,21 +1,23 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Kids hub for tvOS - consolidates Children and Youngsters content.
 /// Provides age-appropriate content sections with visual separation.
 struct TVKidsHubView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var selectedSection: KidsSection = .children
 
     enum KidsSection: String, CaseIterable {
         case children
         case youngsters
 
-        var title: String {
+        var titleKey: String {
             switch self {
-            case .children: return "Kids"
-            case .youngsters: return "Youngsters"
+            case .children: return "nav.children"
+            case .youngsters: return "nav.youngsters"
             }
         }
 
@@ -54,7 +56,7 @@ struct TVKidsHubView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: section.icon)
                             .font(.system(size: TVDesignTokens.FontSize.lg))
-                        Text(section.title)
+                        Text(localization.t(section.titleKey))
                             .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                     }
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)

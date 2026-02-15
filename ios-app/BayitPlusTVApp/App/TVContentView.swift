@@ -91,11 +91,16 @@ struct TVContentView: View {
             TVPodcastDetailView(showId: showId)
         case .audiobookDetail(let audiobookId):
             TVAudiobookDetailView(audiobookId: audiobookId)
+        case .audiobooks:
+            TVAudiobooksView()
         case .voiceAssistant:
             TVVoiceAssistantSheet(
                 chatRepository: repos.chat,
                 onDismiss: { coordinator.dismissFullscreen() }
             )
+        default:
+            EmptyView()
+                .onAppear { coordinator.dismissFullscreen() }
         }
     }
 

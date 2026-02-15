@@ -49,6 +49,8 @@ struct TVPlayerView: View {
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
     @State private var showCatchUp = false
+    @State private var showCompanion = false
+    @State private var showQuiz = false
 
     // MARK: - Playback State
 
@@ -132,6 +134,7 @@ struct TVPlayerView: View {
                                 onDubbingTap: { toggleLiveDubbing() },
                                 onTriviaTap: { toggleLiveTrivia() },
                                 onCatchUpTap: { showCatchUp = true },
+                                onCompanionTap: { showCompanion = true },
                                 onSplitTap: { showSplitLanguagePicker = true },
                                 onLanguageTap: { showAILanguagePicker = true }
                             )
@@ -296,6 +299,19 @@ struct TVPlayerView: View {
                     onDismiss: { showCatchUp = false }
                 )
             }
+        }
+        .fullScreenCover(isPresented: $showCompanion) {
+            TVAICompanionView(
+                contentId: contentId,
+                onDismiss: { showCompanion = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showQuiz) {
+            TVQuizOverlayView(
+                contentId: contentId,
+                profileId: authManager.user?.id,
+                onDismiss: { showQuiz = false }
+            )
         }
     }
 
@@ -711,8 +727,12 @@ struct TVPlayerView: View {
                 // Start periodic progress tracking
                 startProgressTracking()
             }
+        } catch let error as StreamResolutionError {
+            streamError = error.errorDescription
+                ?? localization.t("player.streamLoadFailed")
+            isResolvingStream = false
         } catch {
-            streamError = "Unable to load stream. Please try again."
+            streamError = error.localizedDescription
             isResolvingStream = false
         }
     }
@@ -720,10 +740,14 @@ struct TVPlayerView: View {
     private func fetchStreamURL() async throws -> String {
         switch contentType {
         case .liveTV:
+            let channel = try await repos.liveTV.fetchChannelDetail(
+                id: channelId ?? contentId
+            )
             let stream = try await repos.media.fetchLiveStream(
                 channelId: channelId ?? contentId
             )
-            guard let url = stream.resolvedURL else {
+            guard let url = stream.url ?? channel.streamUrl,
+                  !url.isEmpty else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -732,7 +756,7 @@ struct TVPlayerView: View {
             let stream = try await repos.media.fetchRadioStream(
                 stationId: contentId
             )
-            guard let url = stream.url else {
+            guard let url = stream.url, !url.isEmpty else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -749,10 +773,16 @@ struct TVPlayerView: View {
             return url
 
         case .vod, .audiobook:
+            let detail = try await repos.content.fetchContentDetail(
+                id: contentId
+            )
             let stream = try await repos.media.fetchStream(
                 contentId: contentId, quality: nil
             )
-            guard let url = stream.resolvedURL else {
+            // Match iOS: fall back to content detail streamUrl/directUrl
+            guard let url = stream.url ?? detail.streamUrl ?? detail.directUrl
+                    ?? stream.streamUrl ?? stream.directUrl,
+                  !url.isEmpty else {
                 throw StreamResolutionError.noURL
             }
             return url

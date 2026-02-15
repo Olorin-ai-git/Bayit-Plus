@@ -4133,7 +4133,11 @@
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "untitled": "Sin titulo",
+    "guest": "Invitado",
+    "anonymous": "Anonimo",
+    "content": "Contenido"
   },
   "components": {
     "select": {
@@ -5464,7 +5468,19 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "radio": "Radio",
+    "israelisInCity": "Israelies en tu ciudad",
+    "israeliBusinesses": "Negocios israelies cerca de ti",
+    "whatsHot": "Lo popular en Israel",
+    "collection": "Coleccion",
+    "discoverCollection": "Descubre esta increible coleccion",
+    "nearMe": "Cerca de mi",
+    "israeliSeries": "Series israelies",
+    "movies": "Peliculas",
+    "music": "Musica",
+    "documentary": "Documental",
+    "series": "Series"
   },
   "household": {
     "title": "Gestion del Hogar",
@@ -5941,7 +5957,9 @@
     "menu": "Menú",
     "more": "Más",
     "playlist": "Lista de reproducción",
-    "zehAni": "Zeh Ani"
+    "zehAni": "Zeh Ani",
+    "listen": "Escuchar",
+    "youngsters": "Jovenes"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -6324,7 +6342,13 @@
     "streamLimitReached": "Stream Limit Reached",
     "upgradeToPremium": "Upgrade to Premium",
     "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
-    "videoQuality": "Video Quality"
+    "videoQuality": "Video Quality",
+    "audio": "Audio",
+    "catchUp": "Ponerse al dia",
+    "scenes": "Escenas",
+    "translate": "Traducir",
+    "split": "Dividir",
+    "dubbing": "Doblaje"
   },
   "playlist": {
     "title": "Mi Lista",
@@ -6988,7 +7012,35 @@
     "noViewingHistoryDescription": "Start watching content to see your history here",
     "primarySignIn": "Primary sign-in method",
     "signOut": "Sign Out",
-    "signOutConfirmation": "You'll need to sign in again"
+    "signOutConfirmation": "You'll need to sign in again",
+    "playlists": "Listas",
+    "dayStreak": "Racha diaria",
+    "yourStatistics": "Tus estadisticas",
+    "quickActions": "Acciones rapidas",
+    "myFavorites": "Mis favoritos",
+    "viewFavoriteContent": "Ver tu contenido favorito",
+    "myRecordings": "Mis grabaciones",
+    "manageDvrRecordings": "Gestionar grabaciones DVR",
+    "myPlaylists": "Mis listas",
+    "organizeContent": "Organiza tu contenido",
+    "seeWhatYouWatched": "Mira lo que has visto",
+    "preferences": "Preferencias",
+    "preferencesDesc": "Contenido, idioma, ajustes de calidad",
+    "accountSecurityDesc": "Contrasena, 2FA, cuentas vinculadas",
+    "verifyEmail": "Verificar email",
+    "verifyEmailDesc": "Confirma tu direccion de email",
+    "verifyPhone": "Verificar telefono",
+    "verifyPhoneDesc": "Confirma tu numero de telefono",
+    "accountManagement": "Gestion de cuenta",
+    "householdProfiles": "Perfiles del hogar",
+    "householdProfilesDesc": "Gestionar perfiles familiares",
+    "aboutDesc": "Version de la app, terminos, privacidad",
+    "advanced": "Avanzado",
+    "friendsDesc": "Conecta con otros espectadores",
+    "messagesDesc": "Mensajes directos",
+    "settingsDesc": "Ajustes y preferencias de la app",
+    "widgetsDesc": "Gestionar tus widgets",
+    "socialSettings": "Social y ajustes"
   },
   "mfa": {
     "title": "Autenticacion multifactor",

@@ -3,13 +3,14 @@ import BayitLocalization
 import BayitMedia
 import SwiftUI
 
-/// tvOS Listen screen - Radio stations and Podcasts in one tab.
-/// Reuses PodcastsViewModel and RadioViewModel from shared ViewModels.
+/// tvOS Listen screen - Radio, Podcasts, and Audiobooks in one tab.
+/// Reuses PodcastsViewModel, RadioViewModel, and AudiobooksViewModel.
 struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastsViewModel?
+    @State private var audiobooksViewModel: AudiobooksViewModel?
     @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
 
@@ -42,9 +43,13 @@ struct TVPodcastsView: View {
             if viewModel == nil {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
             }
+            if audiobooksViewModel == nil {
+                audiobooksViewModel = AudiobooksViewModel(repository: repos.audiobook)
+            }
             async let podcastsLoad: () = viewModel?.loadInitial() ?? ()
             async let radioLoad: () = loadRadioStations()
-            _ = await (podcastsLoad, radioLoad)
+            async let audiobooksLoad: () = audiobooksViewModel?.loadInitial() ?? ()
+            _ = await (podcastsLoad, radioLoad, audiobooksLoad)
         }
     }
 
@@ -71,6 +76,11 @@ struct TVPodcastsView: View {
 
             if !vm.shows.isEmpty {
                 podcastsGrid(vm)
+            }
+
+            // Audiobooks section
+            if let abVM = audiobooksViewModel, !abVM.items.isEmpty {
+                audiobooksSection(abVM)
             }
         }
     }
@@ -207,6 +217,9 @@ struct TVPodcastsView: View {
 
     // MARK: - Radio
 
+    /// Radio station card width for consistent horizontal layout
+    private let radioCardWidth: CGFloat = 220
+
     private var radioSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             Text(localization.t("radio.title"))
@@ -217,25 +230,77 @@ struct TVPodcastsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(radioStations) { station in
-                        TVContentCard(
-                            imageURL: station.logo,
+                        GlassFocusPoster(
+                            thumbnailURL: station.logo,
                             title: station.name ?? "Station",
                             subtitle: station.currentSong ?? station.currentShow,
+                            width: radioCardWidth,
                             aspectRatio: 1.0,
-                            placeholderIcon: "radio"
-                        ) {
-                            coordinator.presentPlayer(
-                                contentId: station.id,
-                                contentType: .radio
-                            )
-                        }
-                        .frame(width: TVDesignTokens.MinSize.posterWidth)
+                            onSelect: {
+                                coordinator.presentPlayer(
+                                    contentId: station.id,
+                                    contentType: .radio
+                                )
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
         }
     }
+
+    // MARK: - Audiobooks
+
+    private func audiobooksSection(_ audiobookVM: AudiobooksViewModel) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+            HStack {
+                Text(localization.t("audiobooks.title"))
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                Spacer()
+
+                Button {
+                    coordinator.fullscreenRoute = .audiobooks
+                } label: {
+                    Text(localization.t("common.seeAll"))
+                        .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Primary.default)
+                        .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                        .padding(.vertical, TVDesignTokens.Spacing.md)
+                        .background(DesignTokens.Glass.bg)
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    ForEach(Array(audiobookVM.items.prefix(10))) { audiobook in
+                        GlassFocusPoster(
+                            thumbnailURL: audiobook.thumbnail,
+                            title: audiobook.title ?? "Audiobook",
+                            subtitle: audiobook.author,
+                            badge: audiobook.duration,
+                            aspectRatio: 2 / 3,
+                            onSelect: {
+                                coordinator.presentPlayer(
+                                    contentId: audiobook.id,
+                                    contentType: .audiobook
+                                )
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            }
+        }
+    }
+
+    // MARK: - Loading & Data
 
     private func loadRadioStations() async {
         do {

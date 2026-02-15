@@ -92,6 +92,7 @@ targets:
       - path: BayitPlusApp/Services/AvatarStateMachine.swift
       - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
+      - path: BayitPlusApp/App/FeatureFlags.swift
       - path: BayitPlusApp/Resources/Bayit_Intro_Hebrew.mp4
         buildPhase: resources
       - path: BayitPlusApp/Resources/Bayit_Intro_English.mp4
@@ -113,6 +114,8 @@ targets:
         product: BayitMedia
       - package: BayitPlus
         product: BayitVoice
+      - package: BayitPlus
+        product: BayitAnalytics
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus.tvos

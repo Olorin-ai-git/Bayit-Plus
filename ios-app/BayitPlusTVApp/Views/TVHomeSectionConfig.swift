@@ -1,3 +1,4 @@
+import BayitLocalization
 import BayitMedia
 import Foundation
 
@@ -20,25 +21,29 @@ enum TVHomeSection: Int, CaseIterable {
     case podcasts
     case audiobooks
 
-    var title: String {
+    var titleKey: String {
         switch self {
-        case .continueWatching: return "Continue Watching"
-        case .nearMe: return "Near Me"
-        case .whatsHot: return "What's Hot in Israel"
-        case .jerusalem: return "Jerusalem"
-        case .telAviv: return "Tel Aviv"
-        case .liveTV: return "Live TV"
-        case .israeliMovies: return "Israeli Movies"
-        case .movies: return "Movies"
-        case .kids: return "Kids"
-        case .youngsters: return "Youngsters"
-        case .music: return "Music"
-        case .documentary: return "Documentary"
-        case .israeliSeries: return "Israeli Series"
-        case .series: return "Series"
-        case .podcasts: return "Podcasts"
-        case .audiobooks: return "Audiobooks"
+        case .continueWatching: return "home.continueWatching"
+        case .nearMe: return "home.nearMe"
+        case .whatsHot: return "home.whatsHot"
+        case .jerusalem: return "home.jerusalemConnection"
+        case .telAviv: return "home.telAvivConnection"
+        case .liveTV: return "home.liveTV"
+        case .israeliMovies: return "home.israeliMovies"
+        case .movies: return "home.movies"
+        case .kids: return "nav.children"
+        case .youngsters: return "nav.youngsters"
+        case .music: return "home.music"
+        case .documentary: return "home.documentary"
+        case .israeliSeries: return "home.israeliSeries"
+        case .series: return "home.series"
+        case .podcasts: return "nav.podcasts"
+        case .audiobooks: return "nav.audiobooks"
         }
+    }
+
+    func localizedTitle(_ localization: LocalizationManager) -> String {
+        localization.t(titleKey)
     }
 
     var icon: String {

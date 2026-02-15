@@ -9,6 +9,14 @@ final class LiveTriviaWebSocketService {
     private let authTokenProvider: AuthTokenProvider
     private let logger = BayitLogger(category: "LiveTrivia")
 
+    private static var platformIdentifier: String {
+        #if os(tvOS)
+        return "tvos"
+        #else
+        return "ios"
+        #endif
+    }
+
     var onFactReceived: ((TriviaFact) -> Void)?
     var onConnectionStatusChanged: ((ConnectionStatus) -> Void)?
 
@@ -35,7 +43,7 @@ final class LiveTriviaWebSocketService {
         var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: true)!
         urlComponents.queryItems = [
             URLQueryItem(name: "target_language", value: targetLanguage),
-            URLQueryItem(name: "platform", value: "ios")
+            URLQueryItem(name: "platform", value: Self.platformIdentifier)
         ]
 
         let session = URLSession(configuration: .default)

@@ -11,10 +11,14 @@ final class FeatureFlags {
     let isLLMSearchEnabled: Bool
     let isShabbatModeEnabled: Bool
     let isFamilyControlsEnabled: Bool
+    #if os(iOS)
     let isWakeWordEnabled: Bool
+    #endif
     let isBeta500Enabled: Bool
+    #if os(iOS)
     let isPasskeyEnabled: Bool
     let isCarPlayEnabled: Bool
+    #endif
     let isAvatarModeEnabled: Bool
     let isProactiveVoiceEnabled: Bool
     let isInteractiveSubtitlesEnabled: Bool
@@ -34,10 +38,14 @@ final class FeatureFlags {
         self.isLLMSearchEnabled = Self.flag("FEATURE_LLM_SEARCH", info: info, env: env)
         self.isShabbatModeEnabled = Self.flag("FEATURE_SHABBAT_MODE", info: info, env: env)
         self.isFamilyControlsEnabled = Self.flag("FEATURE_FAMILY_CONTROLS", info: info, env: env)
+        #if os(iOS)
         self.isWakeWordEnabled = Self.flag("FEATURE_WAKE_WORD", info: info, env: env)
+        #endif
         self.isBeta500Enabled = Self.flag("FEATURE_BETA_500", info: info, env: env)
+        #if os(iOS)
         self.isPasskeyEnabled = Self.flag("FEATURE_PASSKEY", info: info, env: env)
         self.isCarPlayEnabled = Self.flag("FEATURE_CARPLAY", info: info, env: env)
+        #endif
         self.isAvatarModeEnabled = Self.flag("FEATURE_AVATAR_MODE", info: info, env: env)
         self.isProactiveVoiceEnabled = Self.flag("FEATURE_PROACTIVE_VOICE", info: info, env: env)
         self.isInteractiveSubtitlesEnabled = Self.flag("FEATURE_INTERACTIVE_SUBTITLES", info: info, env: env)

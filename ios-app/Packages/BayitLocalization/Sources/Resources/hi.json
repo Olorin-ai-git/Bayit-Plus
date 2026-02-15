@@ -4064,7 +4064,11 @@
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "untitled": "Untitled",
+    "guest": "Guest",
+    "anonymous": "Anonymous",
+    "content": "Content"
   },
   "components": {
     "select": {
@@ -5390,7 +5394,19 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "radio": "Radio",
+    "israelisInCity": "Israelis in Your City",
+    "israeliBusinesses": "Israeli Businesses Near You",
+    "whatsHot": "What's Hot in Israel",
+    "collection": "Collection",
+    "discoverCollection": "Discover this amazing collection",
+    "nearMe": "Near Me",
+    "israeliSeries": "Israeli Series",
+    "movies": "Movies",
+    "music": "Music",
+    "documentary": "Documentary",
+    "series": "Series"
   },
   "household": {
     "title": "घर प्रबंधन",
@@ -5863,7 +5879,9 @@
     "menu": "मेनू",
     "more": "और",
     "playlist": "प्लेलिस्ट",
-    "zehAni": "Zeh Ani"
+    "zehAni": "Zeh Ani",
+    "listen": "Listen",
+    "youngsters": "Youngsters"
   },
   "notFound": {
     "title": "पेज नहीं मिला",
@@ -6247,7 +6265,13 @@
     "streamLimitReached": "Stream Limit Reached",
     "upgradeToPremium": "Upgrade to Premium",
     "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
-    "videoQuality": "Video Quality"
+    "videoQuality": "Video Quality",
+    "audio": "Audio",
+    "catchUp": "Catch Up",
+    "scenes": "Scenes",
+    "translate": "Translate",
+    "split": "Split",
+    "dubbing": "Dubbing"
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -6903,7 +6927,36 @@
     "noViewingHistoryDescription": "Start watching content to see your history here",
     "primarySignIn": "Primary sign-in method",
     "signOut": "Sign Out",
-    "signOutConfirmation": "You'll need to sign in again"
+    "signOutConfirmation": "You'll need to sign in again",
+    "playlists": "Playlists",
+    "dayStreak": "Day Streak",
+    "yourStatistics": "Your Statistics",
+    "quickActions": "Quick Actions",
+    "myFavorites": "My Favorites",
+    "viewFavoriteContent": "View your favorite content",
+    "myRecordings": "My Recordings",
+    "manageDvrRecordings": "Manage DVR recordings",
+    "myPlaylists": "My Playlists",
+    "organizeContent": "Organize your content",
+    "viewingHistory": "Viewing History",
+    "seeWhatYouWatched": "See what you've watched",
+    "preferences": "Preferences",
+    "preferencesDesc": "Content, language, quality settings",
+    "accountSecurityDesc": "Password, 2FA, linked accounts",
+    "verifyEmail": "Verify Email",
+    "verifyEmailDesc": "Confirm your email address",
+    "verifyPhone": "Verify Phone",
+    "verifyPhoneDesc": "Confirm your phone number",
+    "accountManagement": "Account Management",
+    "householdProfiles": "Household Profiles",
+    "householdProfilesDesc": "Manage family profiles",
+    "aboutDesc": "App version, terms, privacy",
+    "advanced": "Advanced",
+    "friendsDesc": "Connect with other viewers",
+    "messagesDesc": "Direct messages",
+    "settingsDesc": "App settings and preferences",
+    "widgetsDesc": "Manage your widgets",
+    "socialSettings": "Social & Settings"
   },
   "mfa": {
     "title": "बहु-कारक प्रमाणीकरण",

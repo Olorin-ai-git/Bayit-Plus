@@ -1,4 +1,3 @@
-#if os(iOS)
 import Foundation
 
 /// Response from companion context endpoint.
@@ -37,4 +36,3 @@ struct VocabularyWord: Decodable, Sendable, Identifiable {
     let language: String?
     let pronunciation: String?
 }
-#endif

@@ -18,7 +18,7 @@ struct TVHomeView: View {
                 if vm.isLoading && vm.categories.isEmpty {
                     loadingState
                 } else if let error = vm.error, vm.categories.isEmpty {
-                    tvErrorState(error) {
+                    tvErrorState(error, retryLabel: localization.t("common.retry")) {
                         Task { await vm.refresh() }
                     }
                 } else {
@@ -57,18 +57,19 @@ struct TVHomeView: View {
             // Hero carousel with auto-rotation
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
-                    Button {
-                        coordinator.fullscreenRoute = detailRoute(for: item)
-                    } label: {
-                        TVHeroItem(item: item) {
+                    TVHeroItem(
+                        item: item,
+                        onWatchNow: {
                             let contentType = TVContentTypeMapper.map(item.type)
                             coordinator.presentPlayer(
                                 contentId: item.id,
                                 contentType: contentType
                             )
+                        },
+                        onMoreInfo: {
+                            coordinator.fullscreenRoute = detailRoute(for: item)
                         }
-                    }
-                    .buttonStyle(.card)
+                    )
                 }
             }
 
@@ -76,9 +77,9 @@ struct TVHomeView: View {
             if let collection = featuredCollection {
                 TVCollectionPromoBannerView(
                     collectionId: collection.id,
-                    title: collection.title ?? "Collection",
+                    title: collection.title ?? localization.t("home.collection"),
                     posterUrl: collection.thumbnail,
-                    promoText: collection.promoText ?? "Discover this amazing collection",
+                    promoText: collection.promoText ?? localization.t("home.discoverCollection"),
                     movieCount: collection.availableMovies ?? 0
                 )
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -127,7 +128,7 @@ struct TVHomeView: View {
     @ViewBuilder
     private func continueWatchingSection(_ vm: HomeViewModel) -> some View {
         TVContentSection(
-            title: "Continue Watching",
+            title: localization.t("home.continueWatching"),
             icon: "play.circle.fill",
             items: vm.continueWatching,
             maxItems: 4,
@@ -135,7 +136,7 @@ struct TVHomeView: View {
         ) { item in
             TVContentCard(
                 imageURL: item.thumbnail,
-                title: item.title ?? "Untitled",
+                title: item.title ?? localization.t("common.untitled"),
                 subtitle: item.type,
                 aspectRatio: 2.0/3.0,
                 placeholderIcon: "play.circle.fill"
@@ -155,7 +156,7 @@ struct TVHomeView: View {
            let newsArticles = content.newsArticles, !newsArticles.isEmpty {
             let items = newsArticles + (content.communityEvents ?? [])
             TVLocationContentRow(
-                title: "Israelis in Your City",
+                title: localization.t("home.israelisInCity"),
                 items: items,
                 coverage: israelisResponse.coverage
             )
@@ -165,7 +166,7 @@ struct TVHomeView: View {
            let content = businessesResponse.content,
            let businesses = content.newsArticles, !businesses.isEmpty {
             TVLocationContentRow(
-                title: "Israeli Businesses Near You",
+                title: localization.t("home.israeliBusinesses"),
                 items: businesses,
                 coverage: businessesResponse.coverage
             )
@@ -185,7 +186,7 @@ struct TVHomeView: View {
     @ViewBuilder
     private func liveChannelsSection(_ vm: HomeViewModel) -> some View {
         TVContentSection(
-            title: "Live TV",
+            title: localization.t("home.liveTV"),
             icon: "dot.radiowaves.left.and.right",
             items: vm.liveChannels,
             maxItems: 4,
@@ -193,7 +194,7 @@ struct TVHomeView: View {
         ) { channel in
             TVContentCard(
                 imageURL: channel.logo ?? channel.thumbnail,
-                title: channel.name ?? "Channel",
+                title: channel.name ?? localization.t("liveTV.channel"),
                 subtitle: channel.currentShow,
                 badge: "LIVE",
                 aspectRatio: 1.0,
@@ -211,7 +212,7 @@ struct TVHomeView: View {
     @ViewBuilder
     private func radioStationsSection(_ stations: [RadioStationItem]) -> some View {
         TVContentSection(
-            title: "Radio",
+            title: localization.t("home.radio"),
             icon: "radio",
             items: stations,
             maxItems: 8,
@@ -219,7 +220,7 @@ struct TVHomeView: View {
         ) { station in
             TVContentCard(
                 imageURL: station.logo,
-                title: station.name ?? "Station",
+                title: station.name ?? localization.t("nav.radio"),
                 subtitle: station.currentSong ?? station.currentShow,
                 aspectRatio: 1.0,
                 placeholderIcon: "radio"
@@ -235,7 +236,7 @@ struct TVHomeView: View {
     @ViewBuilder
     private func categorySection(_ section: TVHomeSection, category: ContentCategory) -> some View {
         TVContentSection(
-            title: section.title,
+            title: section.localizedTitle(localization),
             icon: section.icon,
             items: category.items,
             maxItems: 15,
@@ -243,8 +244,8 @@ struct TVHomeView: View {
         ) { item in
             TVContentCard(
                 imageURL: item.thumbnail,
-                title: item.title ?? "Untitled",
-                badge: item.isSeries == true ? "Series" : nil,
+                title: item.title ?? localization.t("common.untitled"),
+                badge: item.isSeries == true ? localization.t("home.series") : nil,
                 aspectRatio: section.aspectRatio,
                 placeholderIcon: placeholderIcon(for: section),
                 availableSubtitleLanguages: item.availableSubtitleLanguages
@@ -314,7 +315,7 @@ struct TVHomeView: View {
         guard let vm = viewModel else { return }
 
         let continueItems = vm.continueWatching.prefix(10).map { item in
-            TopShelfCachedItem(id: item.id, title: item.title ?? "Untitled", imageURL: item.thumbnail)
+            TopShelfCachedItem(id: item.id, title: item.title ?? localization.t("common.untitled"), imageURL: item.thumbnail)
         }
         TopShelfDataProvider.cacheContinueWatching(Array(continueItems))
 
@@ -341,6 +342,7 @@ struct TVHomeView: View {
 
 func tvErrorState(
     _ message: String,
+    retryLabel: String = "Retry",
     retry: @escaping () -> Void
 ) -> some View {
     VStack(spacing: TVDesignTokens.Spacing.xl) {
@@ -354,7 +356,7 @@ func tvErrorState(
             .multilineTextAlignment(.center)
             .frame(maxWidth: 600)
 
-        GlassButton("Retry", variant: .secondary, size: .large, action: retry)
+        GlassButton(retryLabel, variant: .secondary, size: .large, action: retry)
             .frame(maxWidth: 300)
     }
     .frame(maxWidth: .infinity)

@@ -106,12 +106,7 @@ struct TVTrendingRow: View {
     }
 
     private var localizedTitle: String {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
-        switch lang {
-        case "he": return "מה חם בישראל"
-        case "es": return "Lo popular en Israel"
-        default: return "What's Hot in Israel"
-        }
+        localization.t("home.whatsHot")
     }
 
     private var uniqueSources: [String] {

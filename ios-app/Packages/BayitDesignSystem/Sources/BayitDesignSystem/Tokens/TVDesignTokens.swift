@@ -63,7 +63,7 @@ public enum TVDesignTokens {
         /// Content poster height (2:3 aspect)
         public static let posterHeight: CGFloat = 450
         /// Hero banner height
-        public static let heroHeight: CGFloat = 500
+        public static let heroHeight: CGFloat = 620
         /// Content shelf row height
         public static let shelfRowHeight: CGFloat = 320
     }

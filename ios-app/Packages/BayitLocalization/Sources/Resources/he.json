@@ -4082,7 +4082,11 @@
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "untitled": "ללא כותרת",
+    "guest": "אורח",
+    "anonymous": "אנונימי",
+    "content": "תוכן"
   },
   "components": {
     "select": {
@@ -5432,7 +5436,20 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "radio": "רדיו",
+    "israelisInCity": "ישראלים בעיר שלך",
+    "israeliBusinesses": "עסקים ישראליים ליד שלך",
+    "whatsHot": "מה חם בישראל",
+    "collection": "אוסף",
+    "discoverCollection": "גלה את האוסף המדהים הזה",
+    "nearMe": "ליד שלי",
+    "israeliMovies": "סרטים ישראליים",
+    "israeliSeries": "סדרות ישראליות",
+    "movies": "סרטים",
+    "music": "מוזיקה",
+    "documentary": "דוקומנטרי",
+    "series": "סדרות"
   },
   "household": {
     "title": "ניהול משק בית",
@@ -5908,7 +5925,9 @@
     "menu": "תפריט",
     "more": "עוד",
     "playlist": "רשימת השמעה",
-    "zehAni": "Zeh Ani"
+    "zehAni": "Zeh Ani",
+    "listen": "האזנה",
+    "youngsters": "נוער"
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -6297,7 +6316,13 @@
     "streamLimitReached": "Stream Limit Reached",
     "upgradeToPremium": "Upgrade to Premium",
     "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
-    "videoQuality": "Video Quality"
+    "videoQuality": "Video Quality",
+    "audio": "שמע",
+    "catchUp": "צפייה חוזרת",
+    "scenes": "סצנות",
+    "translate": "תרגום",
+    "split": "פיצול",
+    "dubbing": "דיבוב"
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -6953,7 +6978,36 @@
     "noViewingHistoryDescription": "Start watching content to see your history here",
     "primarySignIn": "Primary sign-in method",
     "signOut": "Sign Out",
-    "signOutConfirmation": "You'll need to sign in again"
+    "signOutConfirmation": "You'll need to sign in again",
+    "playlists": "רשימות השמעה",
+    "dayStreak": "ימים רצופים",
+    "yourStatistics": "הסטטיסטיקות שלך",
+    "quickActions": "פעולות מהירות",
+    "myFavorites": "המועדפים שלי",
+    "viewFavoriteContent": "צפה בתוכן המועדף שלך",
+    "myRecordings": "ההקלטות שלי",
+    "manageDvrRecordings": "נהל הקלטות DVR",
+    "myPlaylists": "הרשימות שלי",
+    "organizeContent": "ארגן את התוכן שלך",
+    "viewingHistory": "היסטוריית צפייה",
+    "seeWhatYouWatched": "ראה מה צפית",
+    "preferences": "העדפות",
+    "preferencesDesc": "תוכן, שפה, הגדרות איכות",
+    "accountSecurityDesc": "סיסמה, אימות דו-שלבי, חשבונות מקושרים",
+    "verifyEmail": "אימות אימייל",
+    "verifyEmailDesc": "אשר את כתובת האימייל שלך",
+    "verifyPhone": "אימות טלפון",
+    "verifyPhoneDesc": "אשר את מספר הטלפון שלך",
+    "accountManagement": "ניהול חשבון",
+    "householdProfiles": "פרופילי משק בית",
+    "householdProfilesDesc": "נהל פרופילי משפחה",
+    "aboutDesc": "גרסת אפליקציה, תנאים, פרטיות",
+    "advanced": "מתקדם",
+    "friendsDesc": "התחבר עם צופים אחרים",
+    "messagesDesc": "הודעות ישירות",
+    "settingsDesc": "הגדרות ותצורת אפליקציה",
+    "widgetsDesc": "נהל את הווידג'טים שלך",
+    "socialSettings": "חברתי והגדרות"
   },
   "mfa": {
     "title": "אימות דו-שלבי",

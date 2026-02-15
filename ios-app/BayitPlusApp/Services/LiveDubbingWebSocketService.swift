@@ -19,6 +19,14 @@ final class LiveDubbingWebSocketService {
     private let authTokenProvider: AuthTokenProvider
     private let logger = BayitLogger(category: "LiveDubbingWebSocket")
 
+    private static var platformIdentifier: String {
+        #if os(tvOS)
+        return "tvos"
+        #else
+        return "ios"
+        #endif
+    }
+
     init(configuration: any EnvironmentConfiguration, authTokenProvider: AuthTokenProvider) {
         self.configuration = configuration
         self.authTokenProvider = authTokenProvider
@@ -33,7 +41,7 @@ final class LiveDubbingWebSocketService {
         var queryItems = [
             URLQueryItem(name: "channel_id", value: channelId),
             URLQueryItem(name: "target_language", value: targetLanguage),
-            URLQueryItem(name: "platform", value: "ios")
+            URLQueryItem(name: "platform", value: Self.platformIdentifier)
         ]
         if let voiceId = voiceId {
             queryItems.append(URLQueryItem(name: "voice_id", value: voiceId))

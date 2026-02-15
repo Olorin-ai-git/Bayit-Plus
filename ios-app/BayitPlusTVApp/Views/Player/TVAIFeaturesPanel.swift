@@ -17,6 +17,7 @@ struct TVAIFeaturesPanel: View {
     let onDubbingTap: () -> Void
     let onTriviaTap: () -> Void
     let onCatchUpTap: (() -> Void)?
+    let onCompanionTap: (() -> Void)?
     let onSplitTap: () -> Void
     let onLanguageTap: () -> Void
 
@@ -31,6 +32,7 @@ struct TVAIFeaturesPanel: View {
         onDubbingTap: @escaping () -> Void,
         onTriviaTap: @escaping () -> Void,
         onCatchUpTap: (() -> Void)? = nil,
+        onCompanionTap: (() -> Void)? = nil,
         onSplitTap: @escaping () -> Void,
         onLanguageTap: @escaping () -> Void
     ) {
@@ -44,6 +46,7 @@ struct TVAIFeaturesPanel: View {
         self.onDubbingTap = onDubbingTap
         self.onTriviaTap = onTriviaTap
         self.onCatchUpTap = onCatchUpTap
+        self.onCompanionTap = onCompanionTap
         self.onSplitTap = onSplitTap
         self.onLanguageTap = onLanguageTap
     }
@@ -81,6 +84,15 @@ struct TVAIFeaturesPanel: View {
                         label: "Catch Up",
                         isActive: false,
                         action: onCatchUpTap
+                    )
+                }
+
+                if let onCompanionTap {
+                    featureButton(
+                        icon: "brain.head.profile",
+                        label: "Companion",
+                        isActive: false,
+                        action: onCompanionTap
                     )
                 }
 

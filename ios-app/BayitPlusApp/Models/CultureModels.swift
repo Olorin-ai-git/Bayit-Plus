@@ -9,6 +9,9 @@ struct CultureItem: Decodable, Sendable, Identifiable {
     let title: String?
     let titleHe: String?
     let titleEn: String?
+    let description: String?
+    let imageUrl: String?
+    let contentUrl: String?
     let url: String?
     let category: String?
     let tags: [String]?
