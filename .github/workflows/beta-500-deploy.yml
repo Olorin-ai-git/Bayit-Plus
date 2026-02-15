@@ -10,9 +10,9 @@ on:
       - 'backend/app/api/routes/beta/**'
       - 'backend/app/models/beta_*.py'
       - 'shared/components/beta/**'
-      - 'mobile-app/src/components/beta/**'
       - 'web/src/components/beta/**'
       - 'tvos-app/src/components/beta/**'
+      - 'ios-app/BayitPlusApp/Views/Beta/**'
       - '.github/workflows/beta-500-deploy.yml'
   pull_request:
     branches:
@@ -145,7 +145,7 @@ jobs:
     needs: validate
     strategy:
       matrix:
-        platform: [web, mobile-app, tvos-app]
+        platform: [web, ios-app, tvos-app]
     steps:
       - uses: actions/checkout@v4
 

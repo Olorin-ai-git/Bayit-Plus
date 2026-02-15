@@ -48,7 +48,7 @@ class GrandparentBridgeViewModel @Inject constructor(
             when (val result = repository.getBridgeConnections()) {
                 is BayitResult.Success -> {
                     val connections = result.data
-                    logger.info("Loaded connections", mapOf("count" to connections.size))
+                    logger.info("Loaded connections", mapOf("count" to connections.size.toString()))
                     _uiState.value = GrandparentBridgeUiState.Success(connections)
                 }
                 is BayitResult.Error -> {

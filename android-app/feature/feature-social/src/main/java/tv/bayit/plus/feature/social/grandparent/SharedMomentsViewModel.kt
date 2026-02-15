@@ -46,7 +46,7 @@ class SharedMomentsViewModel @Inject constructor(
             when (val result = repository.getSharedContent(connectionId)) {
                 is BayitResult.Success -> {
                     val content = result.data
-                    logger.info("Loaded shared content", mapOf("count" to content.size))
+                    logger.info("Loaded shared content", mapOf("count" to content.size.toString()))
                     _uiState.value = SharedMomentsUiState.Success(content)
                 }
                 is BayitResult.Error -> {

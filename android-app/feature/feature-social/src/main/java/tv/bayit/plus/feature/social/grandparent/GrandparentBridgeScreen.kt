@@ -163,7 +163,7 @@ private fun ConnectionCard(connection: Any, onViewSharedMoments: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CachedAsyncImage(
-                imageUrl = null,
+                url = null,
                 contentDescription = "Grandparent avatar",
                 modifier = Modifier.size(56.dp).clip(CircleShape),
             )

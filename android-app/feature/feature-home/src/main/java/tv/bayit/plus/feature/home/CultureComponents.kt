@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.delay
-import tv.bayit.plus.core.model.IsraeliBusiness esResponse
+import tv.bayit.plus.core.model.IsraeliBusinessesResponse
 import tv.bayit.plus.core.model.IsraelisInCityResponse
 import tv.bayit.plus.core.model.SectionContentItem
 import tv.bayit.plus.designsystem.component.GlassCard

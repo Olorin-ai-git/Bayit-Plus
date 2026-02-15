@@ -74,7 +74,7 @@ jobs:
 
     strategy:
       matrix:
-        component: [backend, web, mobile-app, partner-portal]
+        component: [backend, web, ios-app, partner-portal]
 
     steps:
       - name: Checkout code
@@ -181,7 +181,7 @@ jobs:
 
       - name: Verify .env.example files exist
         run: |
-          for dir in backend web mobile-app tvos-app partner-portal; do
+          for dir in backend web ios-app tvos-app partner-portal; do
             if [ -f "$dir/.env.example" ]; then
               echo "✅ $dir/.env.example exists"
             else

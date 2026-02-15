@@ -131,9 +131,9 @@ private fun SharedItemCard(item: Any, onPlay: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CachedAsyncImage(
-                imageUrl = null,
+                url = null,
                 contentDescription = "Content thumbnail",
-                modifier = Modifier.size(80.dp).clip(RoundedCornerShape(DesignTokens.BorderRadius.md)),
+                modifier = Modifier.size(80.dp).clip(RoundedCornerShape(DesignTokens.Radius.md)),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
