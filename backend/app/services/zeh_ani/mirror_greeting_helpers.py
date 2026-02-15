@@ -19,23 +19,31 @@ def select_vocabulary_of_the_day(
     proficiency: Optional[ChildProficiency],
 ) -> str:
     """Pick a vocabulary word based on the child's learning progress."""
+    from random import choice
+
+    common_words = [
+        "שלום (shalom)",
+        "תודה (toda)",
+        "בבקשה (bevakasha)",
+        "משפחה (mishpacha)",
+        "אהבה (ahava)",
+    ]
+
     if not proficiency or not proficiency.vocabulary_learning:
-        common_words = [
-            "שלום (shalom)",
-            "תודה (toda)",
-            "בבקשה (bevakasha)",
-            "משפחה (mishpacha)",
-            "אהבה (ahava)",
-        ]
-        from random import choice
         return choice(common_words)
 
     learning_words = proficiency.vocabulary_learning
+    if not learning_words:
+        return choice(common_words)
+
     candidates = [
         w for w in learning_words if w.mastery < 0.8
     ]
     if not candidates:
         candidates = learning_words
+
+    if not candidates:
+        return choice(common_words)
 
     candidates.sort(key=lambda w: w.mastery)
     selected = candidates[0]
