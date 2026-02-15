@@ -86,7 +86,7 @@ private fun LazyVerticalGridContent(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         modifier = modifier.fillMaxSize(),
     ) {
-        androidx.compose.foundation.lazy.grid.items(
+        items(
             items = audiobooks,
             key = { it.id },
         ) { audiobook ->

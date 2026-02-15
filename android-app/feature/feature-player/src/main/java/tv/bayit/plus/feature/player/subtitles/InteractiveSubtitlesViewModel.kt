@@ -46,9 +46,9 @@ class InteractiveSubtitlesViewModel @Inject constructor(
     private fun loadSubtitles() {
         viewModelScope.launch {
             logger.debug("Loading interactive subtitles", mapOf("contentId" to contentId, "language" to _selectedLanguage.value))
-            when (val result = subtitleRepository.getSubtitles(contentId, _selectedLanguage.value)) {
+            when (val result = subtitleRepository.getSubtitleTrack(contentId, _selectedLanguage.value)) {
                 is BayitResult.Success -> {
-                    val subtitles = result.data
+                    val subtitles = listOf(result.data) // Wrap single track in list
                     logger.info("Interactive subtitles loaded", mapOf("count" to subtitles.size.toString()))
                     _uiState.value = InteractiveSubtitlesUiState.Success(
                         subtitles = subtitles,

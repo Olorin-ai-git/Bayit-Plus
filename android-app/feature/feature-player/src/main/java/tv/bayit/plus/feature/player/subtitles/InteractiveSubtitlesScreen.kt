@@ -58,7 +58,7 @@ internal fun InteractiveSubtitlesScreen(
                             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
                         ) {
                             uiState.availableLanguages.forEach { lang ->
-                                GlassChip(lang, lang == selectedLanguage) { onSelectLanguage(lang) }
+                                GlassChip(lang, lang == selectedLanguage, onClick = { onSelectLanguage(lang) })
                             }
                         }
                     }
