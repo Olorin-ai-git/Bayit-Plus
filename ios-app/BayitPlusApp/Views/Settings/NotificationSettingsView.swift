@@ -93,7 +93,7 @@ struct NotificationSettingsView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
 
-                GlassButton(title: "Enable Notifications") {
+                GlassButton("Enable Notifications") {
                     showPermissionAlert = true
                 }
             }

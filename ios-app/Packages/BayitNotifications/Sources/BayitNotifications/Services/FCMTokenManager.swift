@@ -3,6 +3,10 @@ import BayitNetworking
 import FirebaseMessaging
 import Foundation
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 /// Manages FCM token registration and synchronization with backend.
 public actor FCMTokenManager {
 
@@ -49,15 +53,20 @@ public actor FCMTokenManager {
 
         logger.info("Registering FCM token", context: ["tokenPrefix": String(token.prefix(10))])
 
+        let deviceInfo = await Self.deviceInfo()
         let request = FCMTokenRequest(
             token: token,
             platform: "ios",
-            deviceModel: await UIDevice.current.model,
-            osVersion: await UIDevice.current.systemVersion
+            deviceModel: deviceInfo.model,
+            osVersion: deviceInfo.osVersion
         )
 
         do {
-            let _: EmptyResponse = try await apiClient.post("/notifications/register-token", body: request)
+            let _: EmptyResponse = try await apiClient.post(
+                "/notifications/register-token",
+                body: request,
+                as: EmptyResponse.self
+            )
             logger.info("FCM token registered successfully")
         } catch {
             logger.error("Failed to register FCM token", error: error)
@@ -67,22 +76,29 @@ public actor FCMTokenManager {
 
     /// Unregister FCM token from backend (on logout).
     public func unregisterToken() async throws {
-        guard let token = cachedToken ?? (try? await getCurrentToken()) else {
-            logger.warning("No FCM token to unregister")
-            return
+        let token: String
+        if let cached = cachedToken {
+            token = cached
+        } else {
+            token = try await getCurrentToken()
         }
 
         logger.info("Unregistering FCM token", context: ["tokenPrefix": String(token.prefix(10))])
 
+        let deviceInfo = await Self.deviceInfo()
         let request = FCMTokenRequest(
             token: token,
             platform: "ios",
-            deviceModel: await UIDevice.current.model,
-            osVersion: await UIDevice.current.systemVersion
+            deviceModel: deviceInfo.model,
+            osVersion: deviceInfo.osVersion
         )
 
         do {
-            let _: EmptyResponse = try await apiClient.post("/notifications/unregister-token", body: request)
+            let _: EmptyResponse = try await apiClient.post(
+                "/notifications/unregister-token",
+                body: request,
+                as: EmptyResponse.self
+            )
             logger.info("FCM token unregistered successfully")
         } catch {
             logger.error("Failed to unregister FCM token", error: error)
@@ -119,18 +135,29 @@ public actor FCMTokenManager {
             logger.error("Failed to register refreshed FCM token", error: error)
         }
     }
+
+    // MARK: - Device Info
+
+    @MainActor
+    private static func deviceInfo() -> (model: String, osVersion: String) {
+        #if canImport(UIKit)
+        return (UIDevice.current.model, UIDevice.current.systemVersion)
+        #else
+        return ("unknown", "unknown")
+        #endif
+    }
 }
 
 // MARK: - Supporting Types
 
-private struct FCMTokenRequest: Codable {
+private struct FCMTokenRequest: Codable, Sendable {
     let token: String
     let platform: String
     let deviceModel: String
     let osVersion: String
 }
 
-private struct EmptyResponse: Codable {}
+private struct EmptyResponse: Codable, Sendable {}
 
 public enum FCMError: Error {
     case noToken

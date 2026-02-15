@@ -1,3 +1,4 @@
+import AVFoundation
 import BayitCore
 import BayitMedia
 import Combine

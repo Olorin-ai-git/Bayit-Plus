@@ -177,12 +177,15 @@ struct ResolvedStream {
 /// Errors that can occur during stream resolution.
 enum StreamResolutionError: LocalizedError {
     case invalidURL
+    case noURL
     case noAudioAvailable
 
     var errorDescription: String? {
         switch self {
         case .invalidURL:
             return "Invalid stream URL"
+        case .noURL:
+            return "No stream URL available"
         case .noAudioAvailable:
             return "No audio URL available for this episode"
         }

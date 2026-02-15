@@ -1,6 +1,7 @@
 import BayitCore
 import Combine
 import Foundation
+import Observation
 
 /// Production implementation of cast session management.
 ///
@@ -11,38 +12,27 @@ import Foundation
 /// 1. Add google-cast-sdk dependency (via CocoaPods or binary XCFramework)
 /// 2. Import GoogleCast framework
 /// 3. Replace mock implementations with actual GCKCastContext calls
+@Observable
 @MainActor
-public final class CastSessionManager: CastSessionProtocol, ObservableObject {
+public final class CastSessionManager: CastSessionProtocol {
 
     private let logger = BayitLogger(category: "CastSessionManager")
     private var receiverAppId: String?
 
-    @Published public private(set) var state: CastSessionState = .noDevicesAvailable
-    @Published public private(set) var deviceInfo: CastDeviceInfo?
+    public private(set) var state: CastSessionState = .noDevicesAvailable {
+        didSet { stateSubject.send(state) }
+    }
+
+    public private(set) var deviceInfo: CastDeviceInfo? {
+        didSet { deviceInfoSubject.send(deviceInfo) }
+    }
 
     private let stateSubject = CurrentValueSubject<CastSessionState, Never>(.noDevicesAvailable)
     private let deviceInfoSubject = CurrentValueSubject<CastDeviceInfo?, Never>(nil)
 
     private var currentMedia: CastMedia?
-    private var cancellables = Set<AnyCancellable>()
 
-    public init() {
-        setupPublishers()
-    }
-
-    private func setupPublishers() {
-        $state
-            .sink { [weak self] newState in
-                self?.stateSubject.send(newState)
-            }
-            .store(in: &cancellables)
-
-        $deviceInfo
-            .sink { [weak self] newInfo in
-                self?.deviceInfoSubject.send(newInfo)
-            }
-            .store(in: &cancellables)
-    }
+    public init() {}
 
     public var statePublisher: AnyPublisher<CastSessionState, Never> {
         stateSubject.eraseToAnyPublisher()

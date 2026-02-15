@@ -38,6 +38,7 @@ final class MediaPlayerViewModel {
 
     // MARK: - Init
 
+    #if os(iOS)
     init(
         contentId: String,
         contentType: ContentType,
@@ -67,20 +68,43 @@ final class MediaPlayerViewModel {
             contentType: contentType,
             intervalSeconds: 15
         )
-        #if os(iOS)
-        if let widgetSync = widgetSync {
-            self.widgetBridge = MediaPlayerWidgetBridge(
-                mediaPlayer: player,
-                widgetSync: widgetSync
-            )
-        } else {
-            self.widgetBridge = MediaPlayerWidgetBridge(
-                mediaPlayer: player,
-                widgetSync: WidgetDataSyncService()
-            )
-        }
-        #endif
+        let sync = widgetSync ?? WidgetDataSyncService()
+        self.widgetBridge = MediaPlayerWidgetBridge(
+            mediaPlayer: player,
+            widgetSync: sync
+        )
     }
+    #else
+    init(
+        contentId: String,
+        contentType: ContentType,
+        player: MediaPlayer,
+        repository: any MediaRepository,
+        contentRepository: any ContentRepository,
+        liveTVRepository: any LiveTVRepository,
+        radioRepository: any RadioRepository,
+        podcastRepository: any PodcastRepository
+    ) {
+        self.contentId = contentId
+        self.contentType = contentType
+        self.player = player
+        self.repository = repository
+        self.streamResolver = StreamResolver(
+            mediaRepository: repository,
+            contentRepository: contentRepository,
+            liveTVRepository: liveTVRepository,
+            radioRepository: radioRepository,
+            podcastRepository: podcastRepository
+        )
+        self.progressTracker = ProgressTracker(
+            repository: repository,
+            player: player,
+            contentId: contentId,
+            contentType: contentType,
+            intervalSeconds: 15
+        )
+    }
+    #endif
 
     // MARK: - Loading
 

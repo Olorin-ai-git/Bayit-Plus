@@ -1,6 +1,7 @@
-import Foundation
-import FirebaseAuth
 import BayitCore
+import FirebaseAuth
+import FirebaseCore
+import Foundation
 
 // MARK: - Internal Helpers
 
@@ -170,6 +171,8 @@ extension AuthManager {
     /// has never had a user — which is the normal state for email, passkey,
     /// biometric, and device-pairing sign-in methods.
     func listenForAuthStateChanges() {
+        guard FirebaseApp.app() != nil else { return }
+
         var hadFirebaseUser = Auth.auth().currentUser != nil
 
         authStateHandle = Auth.auth().addStateDidChangeListener { [weak self] _, firebaseUser in

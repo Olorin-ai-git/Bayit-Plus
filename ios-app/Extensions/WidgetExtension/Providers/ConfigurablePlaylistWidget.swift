@@ -4,13 +4,13 @@ import BayitWidgetShared
 import BayitCore
 
 /// Configurable Playlist widget that allows users to select which playlist to display.
-/// Available on iOS 17.0+ with IntentConfiguration support.
+/// Available on iOS 17.0+ with AppIntentConfiguration support.
 @available(iOS 17.0, *)
 struct ConfigurablePlaylistWidget: Widget {
     let kind = WidgetConfigurationKeys.WidgetKind.configurablePlaylist
 
     var body: some WidgetConfiguration {
-        IntentConfiguration(
+        AppIntentConfiguration(
             kind: kind,
             intent: SelectPlaylistIntent.self,
             provider: PlaylistIntentProvider()

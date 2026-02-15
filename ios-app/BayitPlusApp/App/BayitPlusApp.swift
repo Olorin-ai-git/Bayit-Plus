@@ -33,10 +33,13 @@ struct BayitPlusApp: App {
     @State private var mediaPlayerCastBridge: MediaPlayerCastBridge?
 
     init() {
-        FirebaseApp.configure()
-
-        // Initialize Crashlytics
-        CrashlyticsLogger.initialize()
+        if FirebaseApp.app() == nil {
+            if let options = FirebaseOptions.defaultOptions(),
+               options.googleAppID != "placeholder" {
+                FirebaseApp.configure()
+                CrashlyticsLogger.initialize()
+            }
+        }
 
         let appConfig = AppConfiguration()
         let apiLogger = AppAPILogger()
@@ -87,7 +90,7 @@ struct BayitPlusApp: App {
 
     /// Initialize Crashlytics user context.
     private func initializeCrashlyticsContext() {
-        if authManager.isAuthenticated, let userId = authManager.currentUser?.id {
+        if authManager.isAuthenticated, let userId = authManager.user?.id {
             crashlyticsService.setUserID(userId)
         }
 
@@ -109,20 +112,36 @@ struct BayitPlusApp: App {
     private func initializePushNotifications() {
         if pushNotificationService == nil {
             let service = PushNotificationService(apiClient: apiClient)
+            let nav = coordinator
+            let appLogger = BayitLogger(category: "App")
 
             // Handle foreground notifications
-            service.onForegroundNotification = { [weak self] notification in
-                self?.handleForegroundNotification(notification)
+            service.onForegroundNotification = { notification in
+                appLogger.info("Foreground notification received", context: [
+                    "type": notification.type.rawValue,
+                    "title": notification.title
+                ])
             }
 
             // Handle notification taps
-            service.onNotificationTapped = { [weak self] notification in
-                self?.handleNotificationTap(notification)
+            service.onNotificationTapped = { notification in
+                if let deepLink = notification.deepLink,
+                   let url = URL(string: deepLink) {
+                    nav.handleDeepLink(url)
+                }
             }
 
             // Handle notification actions
-            service.onNotificationAction = { [weak self] notification, action in
-                self?.handleNotificationAction(notification, action: action)
+            service.onNotificationAction = { notification, action in
+                appLogger.info("Notification action performed", context: [
+                    "action": action.rawValue,
+                    "notificationType": notification.type.rawValue
+                ])
+                if [.play, .view, .join].contains(action),
+                   let deepLink = notification.deepLink,
+                   let url = URL(string: deepLink) {
+                    nav.handleDeepLink(url)
+                }
             }
 
             pushNotificationService = service
@@ -135,54 +154,9 @@ struct BayitPlusApp: App {
                 do {
                     try await service.initialize()
                 } catch {
-                    BayitLogger(category: "App").error("Failed to initialize push notifications", error: error)
+                    appLogger.error("Failed to initialize push notifications", error: error)
                 }
             }
-        }
-    }
-
-    /// Handle notification received in foreground.
-    private func handleForegroundNotification(_ notification: PushNotification) {
-        // Show in-app banner or handle silently based on notification type
-        // For now, just log
-        BayitLogger(category: "App").info("Foreground notification received", context: [
-            "type": notification.type.rawValue,
-            "title": notification.title
-        ])
-    }
-
-    /// Handle notification tap.
-    private func handleNotificationTap(_ notification: PushNotification) {
-        // Navigate to deep link
-        if let deepLink = notification.deepLink,
-           let url = URL(string: deepLink) {
-            coordinator.handleDeepLink(url)
-        }
-    }
-
-    /// Handle notification action.
-    private func handleNotificationAction(_ notification: PushNotification, action: NotificationAction) {
-        BayitLogger(category: "App").info("Notification action performed", context: [
-            "action": action.rawValue,
-            "notificationType": notification.type.rawValue
-        ])
-
-        // Handle specific actions
-        switch action {
-        case .play:
-            if let deepLink = notification.deepLink, let url = URL(string: deepLink) {
-                coordinator.handleDeepLink(url)
-            }
-        case .view:
-            if let deepLink = notification.deepLink, let url = URL(string: deepLink) {
-                coordinator.handleDeepLink(url)
-            }
-        case .join:
-            if let deepLink = notification.deepLink, let url = URL(string: deepLink) {
-                coordinator.handleDeepLink(url)
-            }
-        default:
-            break
         }
     }
 
@@ -220,8 +194,6 @@ struct BayitPlusApp: App {
                 .environment(liveActivityManager)
                 .environment(locationProvider)
                 .environment(featureFlags)
-                .environment(crashlyticsService)
-                .environment(pushNotificationService)
                 .environment(castSessionManager)
                 .task {
                     initializeWidgetBridge()

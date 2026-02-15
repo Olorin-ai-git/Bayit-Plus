@@ -44,6 +44,12 @@ targets:
         product: BayitVoice
       - package: BayitPlus
         product: BayitWidgetShared
+      - package: BayitPlus
+        product: BayitAnalytics
+      - package: BayitPlus
+        product: BayitCast
+      - package: BayitPlus
+        product: BayitNotifications
       - target: BayitWidgets
         embed: true
     settings:
@@ -70,6 +76,8 @@ targets:
         type: group
       - path: BayitPlusApp/ViewModels
         type: group
+      - path: BayitPlusApp/Helpers/MultipartFormData.swift
+      - path: BayitPlusApp/Helpers/HTMLSanitizer.swift
       - path: BayitPlusApp/Services/ShabbatModeService.swift
       - path: BayitPlusApp/Services/RecentSearchesService.swift
       - path: BayitPlusApp/Services/OfflineCacheService.swift
@@ -83,6 +91,7 @@ targets:
       - path: BayitPlusApp/Services/KeychainHelper.swift
       - path: BayitPlusApp/Services/AvatarStateMachine.swift
       - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
+      - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
       - path: BayitPlusApp/Views/Player/DubbingPremiumGateView.swift
       - path: BayitPlusApp/Views/Shared/SubtitleFlagsPill.swift
     dependencies:

@@ -55,7 +55,7 @@ public enum NotificationAction: String, Sendable {
 }
 
 /// Notification category identifiers for grouping related notifications.
-public enum NotificationCategory: String, Sendable {
+public enum NotificationCategory: String, Sendable, CaseIterable {
     case newContent = "NEW_CONTENT"
     case liveEvent = "LIVE_EVENT"
     case socialMessage = "SOCIAL_MESSAGE"

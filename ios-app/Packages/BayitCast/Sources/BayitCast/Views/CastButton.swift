@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Cast button that displays casting status and allows users to start/stop casting.
 public struct CastButton: View {
-    @ObservedObject private var sessionManager: CastSessionManager
+    private var sessionManager: CastSessionManager
     private let size: CGFloat
     private let activeColor: Color
     private let inactiveColor: Color

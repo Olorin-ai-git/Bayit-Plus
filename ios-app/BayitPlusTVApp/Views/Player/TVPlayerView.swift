@@ -915,9 +915,3 @@ struct TVPlayerView: View {
     }
 
 }
-
-// MARK: - Stream Resolution Error
-
-private enum StreamResolutionError: Error {
-    case noURL
-}
