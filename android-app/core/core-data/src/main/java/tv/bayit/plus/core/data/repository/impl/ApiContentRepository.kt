@@ -61,6 +61,16 @@ class ApiContentRepository(
     override suspend fun getRecommendations(): BayitResult<List<Any>> = runCatchingResult {
         client.safeApiCall { service.getRecommendations() }
     }
+
+    override suspend fun getFavorites(): BayitResult<List<Any>> = runCatchingResult {
+        client.safeApiCall { service.getFavorites() }
+    }
+
+    override suspend fun removeFavorite(contentId: String): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.removeFavorite(contentId) }
+            Unit
+        }
 }
 
 private interface ContentService {
@@ -89,7 +99,18 @@ private interface ContentService {
 
     @GET("api/v1/content/recommendations")
     suspend fun getRecommendations(): List<ContentItem>
+
+    @GET("api/v1/user/favorites")
+    suspend fun getFavorites(): List<ContentItem>
+
+    @retrofit2.http.DELETE("api/v1/user/favorites/{contentId}")
+    suspend fun removeFavorite(@Path("contentId") contentId: String): ContentRemoveResponse
 }
+
+@kotlinx.serialization.Serializable
+private data class ContentRemoveResponse(
+    val status: String? = null,
+)
 
 /**
  * Wrapper for the category content endpoint response.

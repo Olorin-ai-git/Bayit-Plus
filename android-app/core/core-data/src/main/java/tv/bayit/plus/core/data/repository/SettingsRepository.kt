@@ -9,4 +9,5 @@ interface SettingsRepository {
     suspend fun setLanguage(languageCode: String): BayitResult<Unit>
     suspend fun getStreamingQuality(): BayitResult<String>
     suspend fun setStreamingQuality(quality: String): BayitResult<Unit>
+    suspend fun submitSupportRequest(subject: String, message: String): BayitResult<Unit>
 }

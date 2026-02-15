@@ -58,6 +58,21 @@ class ApiCultureRepository(
         val defaultCulture = client.safeApiCall { service.getDefaultCulture() }
         client.safeApiCall { service.getCultureTime(defaultCulture.id) }
     }
+
+    override suspend fun getJerusalemContent(): BayitResult<List<Any>> =
+        runCatchingResult {
+            client.safeApiCall { service.getCityContent(CITY_JERUSALEM) }
+        }
+
+    override suspend fun getTelAvivContent(): BayitResult<List<Any>> =
+        runCatchingResult {
+            client.safeApiCall { service.getCityContent(CITY_TEL_AVIV) }
+        }
+
+    private companion object {
+        const val CITY_JERUSALEM = "jerusalem"
+        const val CITY_TEL_AVIV = "tel-aviv"
+    }
 }
 
 private interface CultureService {
@@ -86,6 +101,11 @@ private interface CultureService {
 
     @GET("api/v1/judaism/shabbat/featured")
     suspend fun getShabbatFeatured(): ShabbatFeaturedResponse
+
+    @GET("api/v1/cultures/city/{citySlug}/content")
+    suspend fun getCityContent(
+        @Path("citySlug") citySlug: String,
+    ): List<CultureContentItem>
 }
 
 /** A culture entry from the cultures list or default endpoint. */

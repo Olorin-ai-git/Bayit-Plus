@@ -9,4 +9,5 @@ interface HouseholdRepository {
     suspend fun removeMember(memberId: String): BayitResult<Unit>
     suspend fun updateMemberRole(memberId: String, role: String): BayitResult<Unit>
     suspend fun getDevices(): BayitResult<List<Any>>
+    suspend fun addProfile(name: String, avatarUrl: String?, ageGroup: String): BayitResult<Any>
 }

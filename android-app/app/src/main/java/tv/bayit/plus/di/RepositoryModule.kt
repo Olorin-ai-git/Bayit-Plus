@@ -16,6 +16,7 @@ import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.CultureRepository
 import tv.bayit.plus.core.data.repository.DevicePairingRepository
 import tv.bayit.plus.core.data.repository.DirectMessageRepository
+import tv.bayit.plus.core.data.repository.DownloadsRepository
 import tv.bayit.plus.core.data.repository.EPGRepository
 import tv.bayit.plus.core.data.repository.FamilyControlsRepository
 import tv.bayit.plus.core.data.repository.FamilySnapRepository
@@ -65,6 +66,7 @@ import tv.bayit.plus.core.data.repository.impl.ApiContentRepository
 import tv.bayit.plus.core.data.repository.impl.ApiCultureRepository
 import tv.bayit.plus.core.data.repository.impl.ApiDevicePairingRepository
 import tv.bayit.plus.core.data.repository.impl.ApiDirectMessageRepository
+import tv.bayit.plus.core.data.repository.impl.ApiDownloadsRepository
 import tv.bayit.plus.core.data.repository.impl.ApiEPGRepository
 import tv.bayit.plus.core.data.repository.impl.ApiFamilyControlsRepository
 import tv.bayit.plus.core.data.repository.impl.ApiFamilySnapRepository
@@ -259,6 +261,11 @@ object RepositoryModule {
     @Singleton
     fun provideDevicePairingRepository(client: BayitApiClient): DevicePairingRepository =
         ApiDevicePairingRepository(client)
+
+    @Provides
+    @Singleton
+    fun provideDownloadsRepository(client: BayitApiClient): DownloadsRepository =
+        ApiDownloadsRepository(client)
 
     @Provides
     @Singleton

@@ -9,4 +9,6 @@ interface ContentRepository {
     suspend fun getFeatured(): BayitResult<List<Any>>
     suspend fun getByCategory(categoryId: String): BayitResult<List<Any>>
     suspend fun getRecommendations(): BayitResult<List<Any>>
+    suspend fun getFavorites(): BayitResult<List<Any>>
+    suspend fun removeFavorite(contentId: String): BayitResult<Unit>
 }

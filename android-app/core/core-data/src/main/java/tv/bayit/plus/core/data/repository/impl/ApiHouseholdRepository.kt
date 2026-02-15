@@ -81,6 +81,15 @@ class ApiHouseholdRepository(
         }
         response.devices ?: emptyList()
     }
+
+    override suspend fun addProfile(
+        name: String,
+        avatarUrl: String?,
+        ageGroup: String,
+    ): BayitResult<Any> = runCatchingResult {
+        val request = AddProfileBody(name = name, avatarUrl = avatarUrl, ageGroup = ageGroup)
+        client.safeApiCall { service.addProfile(request) }
+    }
 }
 
 private interface HouseholdService {
@@ -111,7 +120,23 @@ private interface HouseholdService {
     suspend fun getSharedControls(
         @Path("householdId") householdId: String,
     ): SharedControlsResponse
+
+    @POST("api/v1/profiles")
+    suspend fun addProfile(@Body request: AddProfileBody): ProfileResponse
 }
+
+@Serializable
+private data class AddProfileBody(
+    val name: String,
+    @SerialName("avatar_url") val avatarUrl: String? = null,
+    @SerialName("age_group") val ageGroup: String,
+)
+
+@Serializable
+private data class ProfileResponse(
+    @SerialName("profile_id") val profileId: String? = null,
+    val name: String? = null,
+)
 
 /** Response from GET /api/v1/household. */
 @Serializable

@@ -10,26 +10,47 @@ import androidx.navigation.toRoute
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
 import tv.bayit.plus.feature.audiobooks.detail.AudiobookDetailRoute
+import tv.bayit.plus.feature.auth.login.LoginRoute
+import tv.bayit.plus.feature.auth.payment.PaymentCancelledRoute
+import tv.bayit.plus.feature.auth.payment.PaymentPendingRoute
+import tv.bayit.plus.feature.auth.payment.PaymentSuccessRoute
+import tv.bayit.plus.feature.auth.forgot.ForgotPasswordRoute
 import tv.bayit.plus.feature.auth.register.RegisterRoute
+import tv.bayit.plus.feature.auth.subscription.SubscribeRoute
+import tv.bayit.plus.feature.auth.subscription.SubscriptionGateRoute
 import tv.bayit.plus.feature.culture.CultureRoute
+import tv.bayit.plus.feature.culture.jerusalem.JerusalemContentRoute
+import tv.bayit.plus.feature.culture.shabbat.ShabbatModeRoute
+import tv.bayit.plus.feature.culture.telaviv.TelAvivContentRoute
 import tv.bayit.plus.feature.culture.flows.FlowsRoute
+import tv.bayit.plus.feature.culture.glossary.GlossaryRoute
+import tv.bayit.plus.feature.culture.glossary.detail.GlossaryDetailRoute
 import tv.bayit.plus.feature.culture.judaism.JudaismRoute
 import tv.bayit.plus.feature.culture.morning.MorningRitualRoute
 import tv.bayit.plus.feature.home.HomeRoute
 import tv.bayit.plus.feature.kids.children.ChildrenRoute
 import tv.bayit.plus.feature.kids.youngsters.YoungstersRoute
 import tv.bayit.plus.feature.livetv.LiveTVRoute
+import tv.bayit.plus.feature.livetv.epg.EPGRoute
 import tv.bayit.plus.feature.missions.MissionsDashboardRoute
 import tv.bayit.plus.feature.missions.interactive.InteractiveMissionRoute
 import tv.bayit.plus.feature.missions.story.StarStoryRoute
 import tv.bayit.plus.feature.player.PlayerRoute
+import tv.bayit.plus.feature.player.chapters.ChaptersRoute
+import tv.bayit.plus.feature.player.subtitles.InteractiveSubtitlesRoute
 import tv.bayit.plus.feature.podcasts.PodcastsRoute
 import tv.bayit.plus.feature.podcasts.detail.PodcastDetailRoute
+import tv.bayit.plus.feature.downloads.DownloadsRoute
+import tv.bayit.plus.feature.profile.add.AddProfileRoute
+import tv.bayit.plus.feature.profile.edit.EditProfileRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.radio.RadioRoute
 import tv.bayit.plus.feature.rewards.RewardsRoute
+import tv.bayit.plus.feature.rewards.beta.BetaCreditsRoute
 import tv.bayit.plus.feature.search.SearchRoute
+import tv.bayit.plus.feature.search.llm.LLMSearchRoute
 import tv.bayit.plus.feature.settings.SettingsRoute
+import tv.bayit.plus.feature.settings.support.SupportRoute
 import tv.bayit.plus.feature.settings.accounts.ConnectedAccountsRoute
 import tv.bayit.plus.feature.settings.billing.BillingRoute
 import tv.bayit.plus.feature.settings.family.FamilyControlsRoute
@@ -39,8 +60,13 @@ import tv.bayit.plus.feature.settings.language.LanguageSettingsRoute
 import tv.bayit.plus.feature.settings.notifications.NotificationSettingsRoute
 import tv.bayit.plus.feature.settings.profile.ProfileRoute
 import tv.bayit.plus.feature.settings.security.SecurityRoute
+import tv.bayit.plus.feature.settings.security.devices.DevicePairingRoute
+import tv.bayit.plus.feature.settings.security.mfa.MFASetupRoute
+import tv.bayit.plus.feature.settings.security.passkey.PasskeyManagementRoute
+import tv.bayit.plus.feature.settings.security.phone.PhoneVerificationRoute
 import tv.bayit.plus.feature.settings.subscription.SubscriptionRoute
 import tv.bayit.plus.feature.social.chess.ChessRoute
+import tv.bayit.plus.feature.social.grandparent.NewsClipRoute
 import tv.bayit.plus.feature.social.conversation.ConversationRoute
 import tv.bayit.plus.feature.social.feed.ActivityFeedRoute
 import tv.bayit.plus.feature.social.friends.FriendsRoute
@@ -53,7 +79,25 @@ import tv.bayit.plus.feature.vod.collection.CollectionDetailRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
 import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
+import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
+import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
 import tv.bayit.plus.feature.vod.trending.TrendingRoute
+import tv.bayit.plus.feature.voice.chatbot.ChatbotRoute
+import tv.bayit.plus.feature.voice.onboarding.AIOnboardingRoute
+import tv.bayit.plus.feature.voice.onboarding.VoiceOnboardingRoute
+import tv.bayit.plus.feature.widgets.WidgetGalleryRoute
+import tv.bayit.plus.feature.zehani.ZehAniDashboardRoute
+import tv.bayit.plus.feature.zehani.mesh.MeshAvatarRoute
+import tv.bayit.plus.feature.zehani.mode.AvatarModeRoute
+import tv.bayit.plus.feature.zehani.selfie.VideoSelfieRoute
+import tv.bayit.plus.feature.zehani.wardrobe.AvatarWardrobeRoute
+import tv.bayit.plus.feature.zehani.avatar.Avatar3DRoute
+import tv.bayit.plus.feature.zehani.contacts.ContactsRoute
+import tv.bayit.plus.feature.zehani.feedback.FeedbackRoute
+import tv.bayit.plus.feature.zehani.highlights.HighlightsRoute
+import tv.bayit.plus.feature.zehani.mirror.MagicMirrorRoute
+import tv.bayit.plus.feature.zehani.settings.AvatarSettingsRoute
+import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 
 @Composable
 fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
@@ -110,8 +154,24 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Route.Epg> { GlassLoadingIndicator() }
-        composable<Route.Login> { GlassLoadingIndicator() }
+        composable<Route.Epg> {
+            EPGRoute(
+                onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Login> {
+            LoginRoute(
+                onNavigateToHome = {
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.Login) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = { navController.navigate(Route.Register) },
+                onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
+                onRequestGoogleSignIn = { /* Google sign-in handled by Activity */ },
+            )
+        }
         composable<Route.Register> {
             RegisterRoute(
                 onNavigateToProfileSelection = {
@@ -122,7 +182,12 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
                 onNavigateToLogin = { navController.popBackStack() },
             )
         }
-        composable<Route.ForgotPassword> { GlassLoadingIndicator() }
+        composable<Route.ForgotPassword> {
+            ForgotPasswordRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onResetSent = { navController.popBackStack() },
+            )
+        }
         composable<Route.ProfileSelection> {
             ProfileSelectionRoute(
                 onNavigateToHome = {
@@ -133,14 +198,39 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
                 onNavigateToAddProfile = { navController.navigate(Route.AddProfile) },
             )
         }
-        composable<Route.AddProfile> { GlassLoadingIndicator() }
-        composable<Route.EditProfile> { GlassLoadingIndicator() }
+        composable<Route.AddProfile> {
+            AddProfileRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onProfileCreated = { navController.popBackStack() },
+            )
+        }
+        composable<Route.EditProfile> {
+            EditProfileRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onProfileSaved = { navController.popBackStack() },
+            )
+        }
         composable<Route.Profile> {
             ProfileRoute(onNavigateBack = { navController.popBackStack() })
         }
-        composable<Route.Favorites> { GlassLoadingIndicator() }
-        composable<Route.Playlist> { GlassLoadingIndicator() }
-        composable<Route.Downloads> { GlassLoadingIndicator() }
+        composable<Route.Favorites> {
+            FavoritesRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Playlist> {
+            PlaylistRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Downloads> {
+            DownloadsRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable<Route.Recordings> {
             RecordingsRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
         }
@@ -243,46 +333,135 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.Trending> {
             TrendingRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
         }
-        composable<Route.LlmSearch> { GlassLoadingIndicator() }
-        composable<Route.Chatbot> { GlassLoadingIndicator() }
-        composable<Route.VoiceOnboarding> { GlassLoadingIndicator() }
-        composable<Route.OnboardingAI> { GlassLoadingIndicator() }
-        composable<Route.ShabbatMode> { GlassLoadingIndicator() }
-        composable<Route.JerusalemContent> { GlassLoadingIndicator() }
-        composable<Route.TelAvivContent> { GlassLoadingIndicator() }
+        composable<Route.LlmSearch> {
+            LLMSearchRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Chatbot> {
+            ChatbotRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.VoiceOnboarding> {
+            VoiceOnboardingRoute(
+                onComplete = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.OnboardingAI> {
+            AIOnboardingRoute(
+                onComplete = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.ShabbatMode> {
+            ShabbatModeRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.JerusalemContent> {
+            JerusalemContentRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.TelAvivContent> {
+            TelAvivContentRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable<Route.FamilyControls> {
             FamilyControlsRoute(onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.Household> {
             HouseholdRoute(onNavigateBack = { navController.popBackStack() })
         }
-        composable<Route.DevicePairing> { GlassLoadingIndicator() }
-        composable<Route.BetaCredits> { GlassLoadingIndicator() }
-        composable<Route.SubscriptionGate> { GlassLoadingIndicator() }
-        composable<Route.AvatarMode> { GlassLoadingIndicator() }
-        composable<Route.PasskeyManagement> { GlassLoadingIndicator() }
-        composable<Route.Widgets> { GlassLoadingIndicator() }
+        composable<Route.DevicePairing> {
+            DevicePairingRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.BetaCredits> {
+            BetaCreditsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.SubscriptionGate> {
+            SubscriptionGateRoute(
+                onNavigateToSubscribe = { navController.navigate(Route.Subscribe) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.AvatarMode> {
+            AvatarModeRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.PasskeyManagement> {
+            PasskeyManagementRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Widgets> {
+            WidgetGalleryRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.HelpCenter> {
             HelpRoute(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToSupport = { navController.navigate(Route.Support) },
             )
         }
-        composable<Route.Support> { GlassLoadingIndicator() }
-        composable<Route.MfaSetup> { GlassLoadingIndicator() }
-        composable<Route.PhoneVerification> { GlassLoadingIndicator() }
-        composable<Route.InteractiveSubtitles> { GlassLoadingIndicator() }
-        composable<Route.Chapters> { GlassLoadingIndicator() }
-        composable<Route.Glossary> { GlassLoadingIndicator() }
-        composable<Route.GlossaryDetail> { GlassLoadingIndicator() }
-        composable<Route.ZehAni> { GlassLoadingIndicator() }
-        composable<Route.ZehAniMagicMirror> { GlassLoadingIndicator() }
-        composable<Route.ZehAniV2V> { GlassLoadingIndicator() }
-        composable<Route.ZehAniAvatar3D> { GlassLoadingIndicator() }
-        composable<Route.ZehAniHighlights> { GlassLoadingIndicator() }
-        composable<Route.ZehAniContacts> { GlassLoadingIndicator() }
-        composable<Route.ZehAniFeedback> { GlassLoadingIndicator() }
-        composable<Route.ZehAniAvatarSettings> { GlassLoadingIndicator() }
+        composable<Route.Support> {
+            SupportRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.MfaSetup> {
+            MFASetupRoute(
+                onComplete = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.PhoneVerification> {
+            PhoneVerificationRoute(
+                onComplete = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.InteractiveSubtitles> {
+            InteractiveSubtitlesRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Chapters> {
+            ChaptersRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Glossary> {
+            GlossaryRoute(
+                onNavigateToTerm = { termId -> navController.navigate(Route.GlossaryDetail(termId = termId)) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.GlossaryDetail> {
+            GlossaryDetailRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAni> {
+            ZehAniDashboardRoute(
+                onNavigateToMagicMirror = { navController.navigate(Route.ZehAniMagicMirror(profileId = "current")) },
+                onNavigateToV2V = { navController.navigate(Route.ZehAniV2V(avatarId = "default", profileId = "current")) },
+                onNavigateToAvatar3D = { navController.navigate(Route.ZehAniAvatar3D(avatarId = "default")) },
+                onNavigateToHighlights = { navController.navigate(Route.ZehAniHighlights(profileId = "current")) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.ZehAniMagicMirror> {
+            MagicMirrorRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniV2V> {
+            V2VPracticeRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniAvatar3D> {
+            Avatar3DRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniHighlights> {
+            HighlightsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniContacts> {
+            ContactsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniFeedback> {
+            FeedbackRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniAvatarSettings> {
+            AvatarSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.MissionsDashboard> {
             MissionsDashboardRoute(
                 onNavigateToInteractiveMission = { missionId ->
@@ -297,16 +476,53 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.StarStory> {
             StarStoryRoute(onNavigateBack = { navController.popBackStack() })
         }
-        composable<Route.V2VPractice> { GlassLoadingIndicator() }
-        composable<Route.AvatarWardrobe> { GlassLoadingIndicator() }
-        composable<Route.MeshAvatar> { GlassLoadingIndicator() }
-        composable<Route.VideoSelfie> { GlassLoadingIndicator() }
-        composable<Route.NewsClip> { GlassLoadingIndicator() }
-        composable<Route.WidgetGallery> { GlassLoadingIndicator() }
-        composable<Route.PaymentSuccess> { GlassLoadingIndicator() }
-        composable<Route.PaymentCancelled> { GlassLoadingIndicator() }
-        composable<Route.PaymentPending> { GlassLoadingIndicator() }
-        composable<Route.Subscribe> { GlassLoadingIndicator() }
+        composable<Route.V2VPractice> {
+            V2VPracticeRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.AvatarWardrobe> {
+            AvatarWardrobeRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.MeshAvatar> {
+            MeshAvatarRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.VideoSelfie> {
+            VideoSelfieRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.NewsClip> {
+            NewsClipRoute(
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.WidgetGallery> {
+            WidgetGalleryRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.PaymentSuccess> {
+            PaymentSuccessRoute(onNavigateToHome = {
+                navController.navigate(Route.Home) {
+                    popUpTo(Route.PaymentSuccess) { inclusive = true }
+                }
+            })
+        }
+        composable<Route.PaymentCancelled> {
+            PaymentCancelledRoute(
+                onNavigateToSubscribe = { navController.navigate(Route.Subscribe) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.PaymentPending> {
+            PaymentPendingRoute(onNavigateToHome = {
+                navController.navigate(Route.Home) {
+                    popUpTo(Route.PaymentPending) { inclusive = true }
+                }
+            })
+        }
+        composable<Route.Subscribe> {
+            SubscribeRoute(
+                onNavigateToCheckout = { /* Stripe checkout handled externally */ },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
     }
 }
 
@@ -337,5 +553,9 @@ private fun NavController.navigateToSettingsSubScreen(route: String) {
         "family" -> navigate(Route.FamilyControls)
         "household" -> navigate(Route.Household)
         "help" -> navigate(Route.HelpCenter)
+        "passkeys" -> navigate(Route.PasskeyManagement)
+        "mfa" -> navigate(Route.MfaSetup)
+        "phone" -> navigate(Route.PhoneVerification)
+        "devices" -> navigate(Route.DevicePairing)
     }
 }

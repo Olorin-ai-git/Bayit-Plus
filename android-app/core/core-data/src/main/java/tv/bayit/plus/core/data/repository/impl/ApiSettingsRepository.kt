@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
@@ -63,6 +64,15 @@ class ApiSettingsRepository(
             client.safeApiCall { service.updateQuality(update) }
             Unit
         }
+
+    override suspend fun submitSupportRequest(
+        subject: String,
+        message: String,
+    ): BayitResult<Unit> = runCatchingResult {
+        val request = SupportRequestBody(subject = subject, message = message)
+        client.safeApiCall { service.submitSupport(request) }
+        Unit
+    }
 }
 
 private interface SettingsService {
@@ -78,6 +88,9 @@ private interface SettingsService {
 
     @PUT("api/v1/users/me/preferences/quality")
     suspend fun updateQuality(@Body request: QualityUpdateBody): MessageResponse
+
+    @POST("api/v1/support/tickets")
+    suspend fun submitSupport(@Body request: SupportRequestBody): MessageResponse
 }
 
 /** Request body for updating a single setting by key-value pair. */
@@ -97,4 +110,11 @@ private data class LanguageUpdateBody(
 @Serializable
 private data class QualityUpdateBody(
     val quality: String,
+)
+
+/** Request body for submitting a support request. */
+@Serializable
+private data class SupportRequestBody(
+    val subject: String,
+    val message: String,
 )

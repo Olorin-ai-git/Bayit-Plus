@@ -13,4 +13,6 @@ import tv.bayit.plus.core.model.AccountProfile
 interface ProfileRepository {
     suspend fun getProfiles(): BayitResult<List<AccountProfile>>
     suspend fun selectProfile(profileId: String, pin: String? = null): BayitResult<AccountProfile>
+    suspend fun getProfile(profileId: String): BayitResult<AccountProfile>
+    suspend fun updateProfile(profileId: String, name: String, avatarUrl: String?): BayitResult<AccountProfile>
 }

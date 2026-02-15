@@ -8,4 +8,6 @@ interface CultureRepository {
     suspend fun getHolidayContent(holidayId: String): BayitResult<List<Any>>
     suspend fun getUpcomingHolidays(): BayitResult<List<Any>>
     suspend fun getHebrewDate(): BayitResult<Any>
+    suspend fun getJerusalemContent(): BayitResult<List<Any>>
+    suspend fun getTelAvivContent(): BayitResult<List<Any>>
 }
