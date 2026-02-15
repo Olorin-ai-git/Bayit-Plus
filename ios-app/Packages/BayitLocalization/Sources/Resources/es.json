@@ -4266,6 +4266,14 @@
       "name": "Indio",
       "description": "Contenido para la comunidad india"
     },
+    "jerusalem": {
+      "name": "Jerusalen",
+      "description": "Descubre la ciudad santa"
+    },
+    "telAviv": {
+      "name": "Tel Aviv",
+      "description": "La ciudad que nunca duerme"
+    },
     "loading": "Loading Culture..."
   },
   "demo": {
@@ -7586,6 +7594,15 @@
     "unlink": "Desvincular",
     "unlinkAccountConfirmTitle": "¿Desvincular Cuenta?",
     "unlinkConfirm": "Desvincular",
+    "connected": "Conectado",
+    "notConnected": "No Conectado",
+    "help": {
+      "title": "Centro de Ayuda",
+      "subtitle": "Encuentra respuestas a preguntas frecuentes",
+      "loading": "Cargando Ayuda...",
+      "noFaqs": "No hay preguntas frecuentes disponibles",
+      "contactSupport": "Contactar Soporte"
+    },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7729,7 +7746,13 @@
     "tvSubscribeMessage": "Suscríbete en bayit.tv o desde tu dispositivo móvil",
     "externalPaymentTitle": "Continuar al sitio web",
     "externalPaymentMessage": "Serás redirigido a nuestro sitio web para completar tu suscripción. Tu suscripción se gestionará a través de tu cuenta Bayit+.",
-    "continueToWebsite": "Continuar al sitio web"
+    "continueToWebsite": "Continuar al sitio web",
+    "loading": "Cargando Planes...",
+    "noPlans": "No hay planes de suscripcion disponibles",
+    "premiumContent": "Contenido Premium",
+    "recommended": "Recomendado",
+    "restorePurchase": "Restaurar Compra",
+    "upgradeRequired": "Actualiza tu suscripcion para acceder a este contenido"
   },
   "subtitles": {
     "nikud": "Nikud",

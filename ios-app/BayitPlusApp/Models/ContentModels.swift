@@ -168,7 +168,11 @@ struct CollectionListItem: Decodable, Sendable, Identifiable {
 
     /// Returns localized promo text based on device locale, falling back to English then Hebrew.
     var localizedPromoText: String? {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        localizedPromoText(for: Locale.current.language.languageCode?.identifier ?? "en")
+    }
+
+    /// Returns localized promo text for the given language code.
+    func localizedPromoText(for lang: String) -> String? {
         let localized: String? = (lang == "he") ? promoText : promoTextEn
         return localized ?? promoTextEn ?? promoText
     }
@@ -225,7 +229,11 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
 
     /// Returns localized promo text based on device locale, falling back to English then Hebrew.
     var localizedPromoText: String? {
-        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        localizedPromoText(for: Locale.current.language.languageCode?.identifier ?? "en")
+    }
+
+    /// Returns localized promo text for the given language code.
+    func localizedPromoText(for lang: String) -> String? {
         let localized: String? = switch lang {
         case "he": promoText
         case "en": promoTextEn

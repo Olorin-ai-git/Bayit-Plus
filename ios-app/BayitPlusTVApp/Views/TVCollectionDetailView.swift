@@ -58,7 +58,7 @@ struct TVCollectionDetailView: View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
                 collectionHeader(collection)
 
-                if let promoText = collection.localizedPromoText {
+                if let promoText = collection.localizedPromoText(for: localization.currentLanguage.rawValue) {
                     promoCard(promoText)
                 }
 

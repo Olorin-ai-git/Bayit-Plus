@@ -93,7 +93,7 @@ struct TVSubscriptionGateView: View {
                     .font(.system(size: 50))
                     .foregroundStyle(DesignTokens.Glass.purpleLight)
 
-                Text(localization.t("subscription.premium_content"))
+                Text(localization.t("subscription.premiumContent"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -110,7 +110,7 @@ struct TVSubscriptionGateView: View {
                 .tvFocusStyle()
             }
 
-            Text(localization.t("subscription.upgrade_required"))
+            Text(localization.t("subscription.upgradeRequired"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -122,7 +122,7 @@ struct TVSubscriptionGateView: View {
             Image(systemName: "rectangle.stack")
                 .font(.system(size: 60))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text(localization.t("subscription.no_plans"))
+            Text(localization.t("subscription.noPlans"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -207,7 +207,7 @@ struct TVSubscriptionGateView: View {
             Button {
                 handleRestorePurchase()
             } label: {
-                Text(localization.t("subscription.restore_purchase"))
+                Text(localization.t("subscription.restorePurchase"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .padding(TVDesignTokens.Spacing.lg)

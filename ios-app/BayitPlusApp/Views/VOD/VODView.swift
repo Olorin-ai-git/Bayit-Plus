@@ -30,9 +30,9 @@ struct VODView: View {
                 if let collection = featuredCollection, vm.selectedType == .all {
                     CollectionPromoBannerView(
                         collectionId: collection.id,
-                        title: collection.title ?? "Collection",
+                        title: collection.title ?? localization.t("home.collection"),
                         posterUrl: collection.thumbnail,
-                        promoText: collection.localizedPromoText ?? "Discover this amazing collection",
+                        promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
                         movieCount: collection.availableMovies ?? 0
                     )
                     .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -81,7 +81,7 @@ struct VODView: View {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(VODFilterType.allCases) { type in
                     FilterPill(
-                        title: type.displayName,
+                        title: localization.t(type.localizationKey),
                         isSelected: vm.selectedType == type
                     ) {
                         vm.selectedType = type
@@ -275,13 +275,15 @@ private struct VODCard: View {
     }
 
     private var collectionBadge: some View {
+        let movies = localization.t("vod.collection.movies")
+        let of = localization.t("vod.collection.of")
         let badgeText: String
         if let available = item.availableMovies, let total = item.totalMovies, total > available {
-            badgeText = "\(available) of \(total) movies"
+            badgeText = "\(available) \(of) \(total) \(movies)"
         } else if let available = item.availableMovies {
-            badgeText = "\(available) movies"
+            badgeText = "\(available) \(movies)"
         } else {
-            badgeText = "Collection"
+            badgeText = localization.t("home.collection")
         }
 
         return Text(badgeText)

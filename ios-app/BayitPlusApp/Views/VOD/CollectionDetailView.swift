@@ -55,7 +55,7 @@ struct CollectionDetailView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 collectionHeader(collection)
 
-                if let promoText = collection.localizedPromoText {
+                if let promoText = collection.localizedPromoText(for: localization.currentLanguage.rawValue) {
                     promoCard(promoText)
                 }
 

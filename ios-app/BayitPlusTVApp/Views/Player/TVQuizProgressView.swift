@@ -28,7 +28,7 @@ struct TVQuizProgressView: View {
     }
 
     private var questionLabel: some View {
-        Text(localization.t("trivia.question.counter", ["current": "\(current)", "total": "\(total)"]))
+        Text(localization.t("trivia.question.counter", ["current": String(current), "total": String(total)]))
             .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
             .foregroundStyle(DesignTokens.Text.primary)
     }
@@ -39,7 +39,7 @@ struct TVQuizProgressView: View {
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text(localization.t("trivia.score", ["score": "\(score)"]))
+            Text(localization.t("trivia.score", ["score": String(score)]))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }

@@ -72,7 +72,7 @@ struct TVQuizResultsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text(localization.t("trivia.results.shekels.earned", ["amount": "\(amount)"]))
+            Text(localization.t("trivia.results.shekelsEarned", ["amount": String(amount)]))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }
@@ -97,7 +97,7 @@ struct TVQuizResultsView: View {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: TVDesignTokens.FontSize.md))
 
-                    Text(localization.t("trivia.results.play.again"))
+                    Text(localization.t("trivia.results.playAgain"))
                         .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                 }
                 .foregroundStyle(DesignTokens.Text.primary)

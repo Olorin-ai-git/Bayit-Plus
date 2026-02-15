@@ -29,9 +29,9 @@ struct TVVODView: View {
                     if let collection = featuredCollection, vm.selectedType == .all {
                         TVCollectionPromoBannerView(
                             collectionId: collection.id,
-                            title: collection.title ?? "Collection",
+                            title: collection.title ?? localization.t("home.collection"),
                             posterUrl: collection.thumbnail,
-                            promoText: collection.promoText ?? "Discover this amazing collection",
+                            promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
                             movieCount: collection.availableMovies ?? 0
                         )
                         .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -76,7 +76,7 @@ struct TVVODView: View {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(VODFilterType.allCases) { type in
                     TVFilterPill(
-                        title: type.displayName,
+                        title: localization.t(type.localizationKey),
                         isSelected: vm.selectedType == type
                     ) {
                         vm.selectedType = type
@@ -168,15 +168,17 @@ struct TVVODView: View {
     }
 
     private func badgeText(for item: ContentItem) -> String? {
+        let movies = localization.t("vod.collection.movies")
+        let of = localization.t("vod.collection.of")
         if item.isCollectionParent == true {
             if let available = item.availableMovies, let total = item.totalMovies, total > available {
-                return "\(available) of \(total) movies"
+                return "\(available) \(of) \(total) \(movies)"
             } else if let available = item.availableMovies {
-                return "\(available) movies"
+                return "\(available) \(movies)"
             }
-            return "Collection"
+            return localization.t("home.collection")
         } else if item.isSeries == true {
-            return "Series"
+            return localization.t("vod.series")
         }
         return nil
     }

@@ -98,7 +98,7 @@ struct TVConnectedAccountsView: View {
                 .font(.system(size: 50))
                 .foregroundStyle(DesignTokens.Glass.purpleLight)
 
-            Text(localization.t("settings.connected_accounts"))
+            Text(localization.t("settings.connectedAccounts"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -135,7 +135,7 @@ struct TVConnectedAccountsView: View {
                         .font(.system(size: TVDesignTokens.FontSize.md))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 } else {
-                    Text(localization.t("settings.not_connected"))
+                    Text(localization.t("settings.notConnected"))
                         .font(.system(size: TVDesignTokens.FontSize.md))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }

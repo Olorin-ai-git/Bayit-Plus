@@ -9,12 +9,12 @@ enum VODFilterType: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var displayName: String {
+    var localizationKey: String {
         switch self {
-        case .all: return "All Content"
-        case .movies: return "Movies"
-        case .series: return "Series"
-        case .collections: return "Collections"
+        case .all: return "vod.allContent"
+        case .movies: return "vod.movies"
+        case .series: return "vod.series"
+        case .collections: return "vod.collectionsOnly"
         }
     }
 }

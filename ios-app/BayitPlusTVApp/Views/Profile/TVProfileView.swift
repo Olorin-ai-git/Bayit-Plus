@@ -585,7 +585,7 @@ struct TVProfileView: View {
             actionRow(
                 icon: "questionmark.circle.fill",
                 title: localization.t("settings.help"),
-                subtitle: localization.t("profile.helpDesc"),
+                subtitle: localization.t("help.subtitle"),
                 color: DesignTokens.Info.default
             ) {
                 showingHelp = true
@@ -593,8 +593,8 @@ struct TVProfileView: View {
 
             actionRow(
                 icon: "link.circle.fill",
-                title: localization.t("profile.connectedAccounts"),
-                subtitle: localization.t("profile.connectedAccountsDesc"),
+                title: localization.t("settings.connectedAccounts"),
+                subtitle: localization.t("settings.connectedAccountsDescription"),
                 color: DesignTokens.Secondary.s400
             ) {
                 showingConnectedAccounts = true

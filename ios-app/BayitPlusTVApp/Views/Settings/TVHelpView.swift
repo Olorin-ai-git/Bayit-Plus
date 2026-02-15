@@ -95,7 +95,7 @@ struct TVHelpView: View {
             Image(systemName: "list.bullet.rectangle")
                 .font(.system(size: 60))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text(localization.t("settings.help.no_faqs"))
+            Text(localization.t("settings.help.noFaqs"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -156,7 +156,7 @@ struct TVHelpView: View {
                 Image(systemName: "envelope.fill")
                     .font(.system(size: TVDesignTokens.FontSize.base))
 
-                Text(localization.t("settings.help.contact_support"))
+                Text(localization.t("settings.help.contactSupport"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
             }
             .foregroundStyle(DesignTokens.Text.primary)

@@ -3429,7 +3429,11 @@
     "upgradeMessage": "שדרג לפרימיום לקרדיטי AI ללא הגבלה.",
     "upgradeTitle": "שדרג לפרימיום",
     "usage": "שימוש",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "insufficient": {
+      "title": "קרדיטים לא מספיקים",
+      "message": "אין לך מספיק קרדיטים לתכונה זו"
+    }
   },
   "billing": {
     "currentPlan": "תוכנית נוכחית",
@@ -4212,6 +4216,14 @@
     "indian": {
       "name": "הודי",
       "description": "תוכן לקהילה ההודית"
+    },
+    "jerusalem": {
+      "name": "ירושלים",
+      "description": "גלה את העיר הקדושה"
+    },
+    "telAviv": {
+      "name": "תל אביב",
+      "description": "העיר שלא ישנה לעולם"
     },
     "loading": "Loading Culture..."
   },
@@ -7545,6 +7557,15 @@
     "unlink": "נתק",
     "unlinkAccountConfirmTitle": "לנתק חשבון?",
     "unlinkConfirm": "נתק",
+    "connected": "מחובר",
+    "notConnected": "לא מחובר",
+    "help": {
+      "title": "מרכז עזרה",
+      "subtitle": "מצא תשובות לשאלות נפוצות",
+      "loading": "טוען עזרה...",
+      "noFaqs": "אין שאלות נפוצות זמינות",
+      "contactSupport": "צור קשר עם התמיכה"
+    },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7688,7 +7709,13 @@
     "tvSubscribeMessage": "הירשם ב-bayit.tv או מהמכשיר הנייד שלך",
     "externalPaymentTitle": "המשך לאתר",
     "externalPaymentMessage": "תועבר לאתר שלנו כדי להשלים את המנוי שלך. המנוי שלך ינוהל דרך חשבון Bayit+ שלך.",
-    "continueToWebsite": "המשך לאתר"
+    "continueToWebsite": "המשך לאתר",
+    "loading": "טוען תוכניות...",
+    "noPlans": "אין תוכניות מנוי זמינות",
+    "premiumContent": "תוכן פרימיום",
+    "recommended": "מומלץ",
+    "restorePurchase": "שחזור רכישה",
+    "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה"
   },
   "subtitles": {
     "nikud": "ניקוד",
@@ -8148,7 +8175,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "חידון טריוויה"
+    },
+    "question": {
+      "counter": "שאלה {{current}} מתוך {{total}}"
+    },
+    "results": {
+      "title": "החידון הושלם!",
+      "playAgain": "שחק שוב",
+      "shekelsEarned": "{{amount}} שקלים הרווחת"
+    }
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -9560,7 +9598,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "חנות קופונים",
+      "loading": "טוען קופונים...",
+      "redeem": "מימוש",
+      "redeemed": "מומש בהצלחה",
+      "redemptionCode": "קוד מימוש",
+      "insufficientFunds": "אין מספיק שקלים"
+    },
+    "wallet": {
+      "title": "ארנק שקלים",
+      "loading": "טוען ארנק...",
+      "totalEarned": "סה\"כ הרוויח",
+      "totalSpent": "סה\"כ הוצא",
+      "recentTransactions": "עסקאות אחרונות",
+      "noTransactions": "אין עסקאות עדיין"
+    }
   },
   "shekels": {
     "title": "שקלים",
@@ -9810,6 +9864,7 @@
     "newTitle": "תואר חדש: {{title}}",
     "perkUnlocked": "הטבה נפתחה: {{perk}}",
     "claimPerk": "מימוש",
+    "awesome": "מדהים!",
     "claimed": "מומש",
     "leaderboard": {
       "title": "טבלת מובילים",

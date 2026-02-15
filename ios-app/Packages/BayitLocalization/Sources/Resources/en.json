@@ -3413,7 +3413,11 @@
     "credits": {
       "loading": "Loading Credits...",
       "remaining": "Credits Remaining",
-      "title": "Beta 500"
+      "title": "Beta 500",
+      "insufficient": {
+        "title": "Insufficient Credits",
+        "message": "You don't have enough credits for this feature"
+      }
     },
     "beta500": "Beta 500",
     "creditsExplanation": "Credits are used for AI-powered features like search, recommendations, and dubbing.",
@@ -4241,6 +4245,14 @@
     "indian": {
       "name": "Indian",
       "description": "Indian community content"
+    },
+    "jerusalem": {
+      "name": "Jerusalem",
+      "description": "Discover the holy city"
+    },
+    "telAviv": {
+      "name": "Tel Aviv",
+      "description": "The city that never sleeps"
     },
     "loading": "Loading Culture..."
   },
@@ -7512,6 +7524,15 @@
     "unlink": "Unlink",
     "unlinkAccountConfirmTitle": "Unlink Account?",
     "unlinkConfirm": "Unlink",
+    "connected": "Connected",
+    "notConnected": "Not Connected",
+    "help": {
+      "title": "Help Center",
+      "subtitle": "Find answers to common questions",
+      "loading": "Loading Help...",
+      "noFaqs": "No frequently asked questions available",
+      "contactSupport": "Contact Support"
+    },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7655,7 +7676,13 @@
     "tvSubscribeMessage": "Subscribe at bayit.tv or from your mobile device",
     "externalPaymentTitle": "Continue to Website",
     "externalPaymentMessage": "You will be redirected to our website to complete your subscription. Your subscription will be managed through your Bayit+ account.",
-    "continueToWebsite": "Continue to Website"
+    "continueToWebsite": "Continue to Website",
+    "loading": "Loading Plans...",
+    "noPlans": "No subscription plans available",
+    "premiumContent": "Premium Content",
+    "recommended": "Recommended",
+    "restorePurchase": "Restore Purchase",
+    "upgradeRequired": "Upgrade your subscription to access this content"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -8089,7 +8116,18 @@
     "selectContent": "Select content to start a quiz",
     "selectLanguagesHint": "Select up to 3 languages for trivia facts",
     "title": "Trivia",
-    "topPlayers": "Top Players"
+    "topPlayers": "Top Players",
+    "quiz": {
+      "title": "Trivia Quiz"
+    },
+    "question": {
+      "counter": "Question {{current}} of {{total}}"
+    },
+    "results": {
+      "title": "Quiz Complete!",
+      "playAgain": "Play Again",
+      "shekelsEarned": "{{amount}} Shekels Earned"
+    }
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -9256,7 +9294,23 @@
     "claim": "Claim",
     "loading": "Loading Missions...",
     "shekels": "Shekels",
-    "shekelsAvailable": "Shekels Available"
+    "shekelsAvailable": "Shekels Available",
+    "shop": {
+      "title": "Coupon Shop",
+      "loading": "Loading Coupons...",
+      "redeem": "Redeem",
+      "redeemed": "Redeemed Successfully",
+      "redemptionCode": "Redemption Code",
+      "insufficientFunds": "Not enough Shekels"
+    },
+    "wallet": {
+      "title": "Shekels Wallet",
+      "loading": "Loading Wallet...",
+      "totalEarned": "Total Earned",
+      "totalSpent": "Total Spent",
+      "recentTransactions": "Recent Transactions",
+      "noTransactions": "No transactions yet"
+    }
   },
   "shekels": {
     "title": "Shekels",
@@ -9506,6 +9560,7 @@
     "newTitle": "New title: {{title}}",
     "perkUnlocked": "Perk unlocked: {{perk}}",
     "claimPerk": "Claim",
+    "awesome": "Awesome!",
     "claimed": "Claimed",
     "leaderboard": {
       "title": "Leaderboard",

@@ -35,7 +35,7 @@ struct TVJerusalemRowView: View {
                 .font(.system(size: TVDesignTokens.FontSize.xl))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text(localization.t("cultures.jerusalem"))
+            Text(localization.t("cultures.jerusalem.name"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }

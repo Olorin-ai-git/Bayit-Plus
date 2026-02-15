@@ -1,3 +1,4 @@
+import BayitNetworking
 import Foundation
 
 extension Data {
@@ -24,6 +25,11 @@ extension Error {
     var isCancellation: Bool {
         // Check for CancellationError (Swift concurrency)
         if self is CancellationError {
+            return true
+        }
+
+        // Check for APIError.cancelled (networking layer wraps CancellationError)
+        if let apiError = self as? APIError, apiError == .cancelled {
             return true
         }
 
