@@ -2,6 +2,8 @@ package tv.bayit.plus.core.data.repository.impl
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
@@ -10,6 +12,7 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.VoiceRepository
+import tv.bayit.plus.core.model.MessageResponse
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,6 +78,25 @@ class ApiVoiceRepository @Inject constructor(
         client.safeApiCall { service.updateVoiceSettings(body) }
         Unit
     }
+
+    override suspend fun completeAIOnboarding(): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.completeAIOnboarding() }
+            Unit
+        }
+
+    override suspend fun completeVoiceSetup(): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.completeVoiceSetup() }
+            Unit
+        }
+
+    override suspend fun trainVoiceModel(audioData: ByteArray): BayitResult<Unit> =
+        runCatchingResult {
+            val body = audioData.toRequestBody("audio/wav".toMediaType())
+            client.safeApiCall { service.trainVoiceModel(body) }
+            Unit
+        }
 }
 
 private interface VoiceService {
@@ -101,6 +123,17 @@ private interface VoiceService {
     suspend fun previewVoice(
         @Body request: VoicePreviewBody,
     ): VoicePreviewResponse
+
+    @POST("api/v1/voice/onboarding/ai/complete")
+    suspend fun completeAIOnboarding(): MessageResponse
+
+    @POST("api/v1/voice/onboarding/voice/complete")
+    suspend fun completeVoiceSetup(): MessageResponse
+
+    @POST("api/v1/voice/train")
+    suspend fun trainVoiceModel(
+        @Body audioData: okhttp3.RequestBody,
+    ): MessageResponse
 }
 
 /** Response from the available voices endpoint. */

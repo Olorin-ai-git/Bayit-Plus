@@ -28,7 +28,7 @@ class AvatarSettingsViewModel @Inject constructor(
     fun selectOutfit(outfitId: String) {
         viewModelScope.launch {
             logger.debug("Selecting avatar outfit", mapOf("outfitId" to outfitId))
-            when (val result = avatarOutfitRepository.selectOutfit(outfitId)) {
+            when (val result = avatarOutfitRepository.equipOutfit(outfitId)) {
                 is BayitResult.Success -> {
                     logger.info("Outfit selected", mapOf("outfitId" to outfitId))
                     loadAvatarSettings()

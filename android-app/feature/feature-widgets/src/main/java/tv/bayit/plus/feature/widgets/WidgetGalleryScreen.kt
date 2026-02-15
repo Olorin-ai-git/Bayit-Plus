@@ -48,7 +48,7 @@ internal fun WidgetGalleryScreen(uiState: WidgetGalleryUiState, onConfigureWidge
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(widget.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
-                            GlassButton("Configure") { onConfigureWidget(widget.hashCode().toString()) }
+                            GlassButton(text = "Configure", onClick = { onConfigureWidget(widget.hashCode().toString()) })
                         }
                     }
                 }

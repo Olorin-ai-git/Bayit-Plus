@@ -5,12 +5,14 @@ import kotlinx.serialization.Serializable
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.MessageResponse
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 /**
@@ -67,6 +69,44 @@ class ApiZehAniRepository(
             val response = client.safeApiCall { service.getHistory() }
             response.items
         }
+
+    override suspend fun addContact(name: String, photoUri: String?): BayitResult<Unit> =
+        runCatchingResult {
+            val request = AddContactRequest(name = name, photoUri = photoUri)
+            client.safeApiCall { service.addContact(request) }
+            Unit
+        }
+
+    override suspend fun deleteContact(contactId: String): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.deleteContact(contactId) }
+            Unit
+        }
+
+    override suspend fun getContacts(): BayitResult<List<Any>> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getContacts() }
+            response.items
+        }
+
+    override suspend fun submitFeedback(feedback: String, rating: Int): BayitResult<Unit> =
+        runCatchingResult {
+            val request = FeedbackRequest(feedback = feedback, rating = rating)
+            client.safeApiCall { service.submitFeedback(request) }
+            Unit
+        }
+
+    override suspend fun shareIdentification(identificationId: String): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.shareIdentification(identificationId) }
+            Unit
+        }
+
+    override suspend fun getIdentificationHistory(): BayitResult<List<Any>> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getIdentificationHistory() }
+            response.items
+        }
 }
 
 private interface ZehAniService {
@@ -93,6 +133,24 @@ private interface ZehAniService {
 
     @GET("api/v1/zehani/history")
     suspend fun getHistory(): ZehAniHistoryResponse
+
+    @POST("api/v1/zehani/contacts")
+    suspend fun addContact(@Body request: AddContactRequest): MessageResponse
+
+    @DELETE("api/v1/zehani/contacts/{id}")
+    suspend fun deleteContact(@Path("id") contactId: String): MessageResponse
+
+    @GET("api/v1/zehani/contacts")
+    suspend fun getContacts(): ContactListResponse
+
+    @POST("api/v1/zehani/feedback")
+    suspend fun submitFeedback(@Body request: FeedbackRequest): MessageResponse
+
+    @POST("api/v1/zehani/share/{id}")
+    suspend fun shareIdentification(@Path("id") identificationId: String): MessageResponse
+
+    @GET("api/v1/zehani/identifications")
+    suspend fun getIdentificationHistory(): IdentificationHistoryResponse
 }
 
 /** Response from the face identification endpoint. */
@@ -177,6 +235,51 @@ private data class ZehAniHistoryItem(
     @SerialName("media_id") val mediaId: String? = null,
     @SerialName("recognized_at") val recognizedAt: String? = null,
     val confidence: Double? = null,
+)
+
+/** Request body for adding a contact. */
+@Serializable
+private data class AddContactRequest(
+    val name: String,
+    @SerialName("photo_uri") val photoUri: String? = null,
+)
+
+/** Contact list response wrapper. */
+@Serializable
+private data class ContactListResponse(
+    val items: List<ContactItem> = emptyList(),
+)
+
+/** A single contact item. */
+@Serializable
+private data class ContactItem(
+    val id: String,
+    val name: String? = null,
+    @SerialName("photo_uri") val photoUri: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+)
+
+/** Request body for submitting feedback. */
+@Serializable
+private data class FeedbackRequest(
+    val feedback: String,
+    val rating: Int,
+)
+
+/** Identification history response wrapper. */
+@Serializable
+private data class IdentificationHistoryResponse(
+    val items: List<IdentificationItem> = emptyList(),
+)
+
+/** A single identification history item. */
+@Serializable
+private data class IdentificationItem(
+    val id: String,
+    @SerialName("person_id") val personId: String,
+    @SerialName("person_name") val personName: String? = null,
+    @SerialName("identified_at") val identifiedAt: String? = null,
+    @SerialName("thumbnail_url") val thumbnailUrl: String? = null,
 )
 
 private val OCTET_STREAM_TYPE = "application/octet-stream".toMediaType()

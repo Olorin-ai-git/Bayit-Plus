@@ -19,7 +19,7 @@ class WidgetGalleryViewModel @Inject constructor(private val widgetRepository: W
     fun configureWidget(widgetId: String) {
         viewModelScope.launch {
             logger.debug("Configuring widget", mapOf("widgetId" to widgetId))
-            when (val result = widgetRepository.configureWidget(widgetId, emptyMap())) {
+            when (val result = widgetRepository.updateWidgetConfig(widgetId, emptyMap())) {
                 is BayitResult.Success -> { logger.info("Widget configured"); loadWidgets() }
                 is BayitResult.Error -> logger.error("Widget configuration failed", result.exception)
                 is BayitResult.Loading -> Unit

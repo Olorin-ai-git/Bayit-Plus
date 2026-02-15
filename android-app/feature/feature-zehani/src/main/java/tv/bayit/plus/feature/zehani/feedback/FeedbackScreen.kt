@@ -100,8 +100,7 @@ internal fun FeedbackScreen(
                         value = feedbackText,
                         onValueChange = onFeedbackTextChange,
                         placeholder = "Share your experience with Zeh Ani features...",
-                        minLines = 4,
-                        maxLines = 8,
+                        singleLine = false,
                     )
                 }
             }

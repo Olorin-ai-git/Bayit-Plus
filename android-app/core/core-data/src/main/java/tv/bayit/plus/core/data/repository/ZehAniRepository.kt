@@ -8,4 +8,10 @@ interface ZehAniRepository {
     suspend fun getPersonFilmography(personId: String): BayitResult<List<Any>>
     suspend fun identifyFromTimestamp(mediaId: String, timestampMs: Long): BayitResult<List<Any>>
     suspend fun getRecognitionHistory(): BayitResult<List<Any>>
+    suspend fun addContact(name: String, photoUri: String?): BayitResult<Unit>
+    suspend fun deleteContact(contactId: String): BayitResult<Unit>
+    suspend fun getContacts(): BayitResult<List<Any>>
+    suspend fun submitFeedback(feedback: String, rating: Int): BayitResult<Unit>
+    suspend fun shareIdentification(identificationId: String): BayitResult<Unit>
+    suspend fun getIdentificationHistory(): BayitResult<List<Any>>
 }

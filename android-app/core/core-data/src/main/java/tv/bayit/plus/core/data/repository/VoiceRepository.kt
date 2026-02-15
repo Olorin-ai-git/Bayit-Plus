@@ -9,4 +9,7 @@ interface VoiceRepository {
     suspend fun previewVoice(voiceId: String): BayitResult<String>
     suspend fun getVoiceSettings(): BayitResult<Any>
     suspend fun updateVoiceSettings(settings: Map<String, Any>): BayitResult<Unit>
+    suspend fun completeAIOnboarding(): BayitResult<Unit>
+    suspend fun completeVoiceSetup(): BayitResult<Unit>
+    suspend fun trainVoiceModel(audioData: ByteArray): BayitResult<Unit>
 }
