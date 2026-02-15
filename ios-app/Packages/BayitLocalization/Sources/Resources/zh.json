@@ -7987,6 +7987,8 @@
   },
   "trivia": {
     "didYouKnow": "你知道吗？",
+    "aiTrivia": "AI 问答",
+    "more": "更多",
     "dismissHint": "关闭小知识",
     "wantToKnowMore": "想了解更多吗？",
     "followUpHint": "点击查看更深入的后续趣事",

@@ -106,6 +106,29 @@ final class TriviaFactsViewModel {
         autoDismissTask?.cancel()
     }
 
+    /// Request a follow-up fact for the current active fact's chain.
+    /// Sends a WebSocket message to the live trivia service to fetch the next fact in the chain.
+    @MainActor
+    func requestFollowUp() {
+        guard let fact = activeFact, fact.hasFollowUp == true else { return }
+
+        // Check if next fact in chain is already loaded
+        if let chainId = fact.chainId, let nextOrder = fact.chainOrder.map({ $0 + 1 }) {
+            if let nextFact = facts.first(where: {
+                $0.chainId == chainId && $0.chainOrder == nextOrder
+            }) {
+                showFact(nextFact)
+                return
+            }
+        }
+
+        // Request via WebSocket if connected
+        liveWebSocketService?.requestFollowUp(
+            factId: fact.factId,
+            chainId: fact.chainId
+        )
+    }
+
     @MainActor
     func cleanup() {
         autoDismissTask?.cancel()

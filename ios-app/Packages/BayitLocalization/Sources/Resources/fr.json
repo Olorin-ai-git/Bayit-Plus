@@ -8722,6 +8722,8 @@
   },
   "trivia": {
     "didYouKnow": "Le Saviez-Vous?",
+    "aiTrivia": "Trivia IA",
+    "more": "Plus",
     "dismissHint": "Fermer l'anecdote",
     "wantToKnowMore": "Vous voulez en savoir plus ?",
     "followUpHint": "Appuyez pour voir un fait complémentaire qui approfondit cette histoire",

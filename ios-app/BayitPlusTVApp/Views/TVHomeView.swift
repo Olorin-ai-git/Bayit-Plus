@@ -10,6 +10,7 @@ struct TVHomeView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: HomeViewModel?
+    @State private var featuredCollection: CollectionDetail?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -38,6 +39,7 @@ struct TVHomeView: View {
                 )
             }
             await viewModel?.loadFeatured()
+            await loadFeaturedCollection()
             ShabbatModeService.shared.startPolling(repository: repos.shabbat)
             cacheTopShelfData()
         }
@@ -56,16 +58,30 @@ struct TVHomeView: View {
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
                     Button {
-                        let contentType = TVContentTypeMapper.map(item.type)
-                        coordinator.presentPlayer(
-                            contentId: item.id,
-                            contentType: contentType
-                        )
+                        coordinator.fullscreenRoute = detailRoute(for: item)
                     } label: {
-                        TVHeroItem(item: item)
+                        TVHeroItem(item: item) {
+                            let contentType = TVContentTypeMapper.map(item.type)
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: contentType
+                            )
+                        }
                     }
                     .buttonStyle(.card)
                 }
+            }
+
+            // Featured collection banner
+            if let collection = featuredCollection {
+                TVCollectionPromoBannerView(
+                    collectionId: collection.id,
+                    title: collection.title ?? "Collection",
+                    posterUrl: collection.thumbnail,
+                    promoText: collection.promoText ?? "Discover this amazing collection",
+                    movieCount: collection.availableMovies ?? 0
+                )
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
 
             // Shabbat banner
@@ -249,6 +265,32 @@ struct TVHomeView: View {
         case .liveTV: return .liveTV
         case .continueWatching: return .profile
         default: return .vod
+        }
+    }
+
+    private func loadFeaturedCollection() async {
+        do {
+            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
+            if let first = collections.first {
+                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
+            }
+        } catch {
+            // Collection banner is optional - fail silently
+        }
+    }
+
+    /// Maps a spotlight item to the appropriate detail route.
+    private func detailRoute(for item: SpotlightItem) -> TVRoute {
+        let type = item.type?.lowercased() ?? ""
+        switch type {
+        case "series":
+            return .seriesDetail(seriesId: item.id)
+        case "podcast", "podcast_episode":
+            return .podcastDetail(showId: item.id)
+        case "audiobook", "audiobook_chapter":
+            return .audiobookDetail(audiobookId: item.id)
+        default:
+            return .movieDetail(movieId: item.id)
         }
     }
 

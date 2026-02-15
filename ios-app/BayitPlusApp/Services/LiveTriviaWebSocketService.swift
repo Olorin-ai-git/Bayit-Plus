@@ -61,6 +61,31 @@ final class LiveTriviaWebSocketService {
         logger.info("Disconnected from live trivia WebSocket")
     }
 
+    /// Request a follow-up fact for a given fact chain via the WebSocket.
+    func requestFollowUp(factId: String, chainId: String?) {
+        var message: [String: Any] = [
+            "type": "follow_up",
+            "fact_id": factId,
+        ]
+        if let chainId {
+            message["chain_id"] = chainId
+        }
+
+        guard let data = try? JSONSerialization.data(withJSONObject: message),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+
+        webSocket?.send(.string(jsonString)) { [weak self] error in
+            if let error {
+                self?.logger.error("Failed to send follow-up request", context: [
+                    "error": error.localizedDescription,
+                    "factId": factId,
+                ])
+            }
+        }
+    }
+
     private func sendAuthMessage() async {
         guard let token = try? await authTokenProvider.currentToken() else {
             onConnectionStatusChanged?(.error("No auth token"))
@@ -150,7 +175,9 @@ final class LiveTriviaWebSocketService {
             relatedPerson: json["related_person"] as? String,
             chainId: json["chain_id"] as? String,
             chainOrder: json["chain_order"] as? Int,
-            hasFollowUp: json["has_follow_up"] as? Bool
+            hasFollowUp: json["has_follow_up"] as? Bool,
+            detectedTopic: json["detected_topic"] as? String,
+            topicType: json["topic_type"] as? String
         )
     }
 }

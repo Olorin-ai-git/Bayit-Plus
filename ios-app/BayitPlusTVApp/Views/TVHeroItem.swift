@@ -2,9 +2,11 @@ import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
-/// Hero carousel item with background image, gradient overlay, and metadata.
+/// Hero carousel item with background image, gradient overlay, metadata,
+/// subtitle flags pill, and a "Watch Now" button.
 struct TVHeroItem: View {
     let item: SpotlightItem
+    let onWatchNow: () -> Void
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -57,6 +59,16 @@ struct TVHeroItem: View {
                     if let rating = item.rating {
                         ratingBadge(rating.value)
                     }
+
+                    // Subtitle emoji flags
+                    if let languages = item.availableSubtitleLanguages,
+                       !languages.isEmpty {
+                        SubtitleFlagsPill(
+                            languages: languages,
+                            aiLanguages: [],
+                            size: .medium
+                        )
+                    }
                 }
 
                 if let desc = item.description {
@@ -66,6 +78,23 @@ struct TVHeroItem: View {
                         .lineLimit(2)
                         .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
                 }
+
+                // Watch Now button
+                Button(action: onWatchNow) {
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: TVDesignTokens.FontSize.md))
+                        Text("Watch Now")
+                            .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                    .background(DesignTokens.Primary.default)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .padding(.top, TVDesignTokens.Spacing.sm)
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             .padding(.bottom, TVDesignTokens.Spacing.xl)

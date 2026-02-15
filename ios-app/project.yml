@@ -92,6 +92,10 @@ targets:
       - path: BayitPlusApp/Services/AvatarStateMachine.swift
       - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
+      - path: BayitPlusApp/Resources/Bayit_Intro_Hebrew.mp4
+        buildPhase: resources
+      - path: BayitPlusApp/Resources/Bayit_Intro_English.mp4
+        buildPhase: resources
       - path: BayitPlusApp/Views/Player/DubbingPremiumGateView.swift
       - path: BayitPlusApp/Views/Shared/SubtitleFlagsPill.swift
     dependencies:

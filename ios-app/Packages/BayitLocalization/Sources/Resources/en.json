@@ -7995,6 +7995,8 @@
   },
   "trivia": {
     "didYouKnow": "Did You Know?",
+    "aiTrivia": "AI Trivia",
+    "more": "More",
     "dismissHint": "Tap to dismiss this trivia fact",
     "wantToKnowMore": "Want to know more?",
     "followUpHint": "Tap to see a follow-up fact that dives deeper into this story",

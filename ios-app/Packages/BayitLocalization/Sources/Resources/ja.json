@@ -8840,6 +8840,8 @@
   },
   "trivia": {
     "didYouKnow": "知っていますか？",
+    "aiTrivia": "AIトリビア",
+    "more": "もっと",
     "dismissHint": "トリビアを閉じる",
     "wantToKnowMore": "もっと知りたい？",
     "followUpHint": "タップすると、この話をさらに掘り下げる追加の事実が表示されます",

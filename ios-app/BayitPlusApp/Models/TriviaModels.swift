@@ -21,6 +21,8 @@ struct TriviaFact: Codable, Sendable, Identifiable {
     let chainId: String?
     let chainOrder: Int?
     let hasFollowUp: Bool?
+    let detectedTopic: String?
+    let topicType: String?
 
     var id: String { factId }
 }

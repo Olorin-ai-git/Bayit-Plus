@@ -8039,6 +8039,8 @@
   },
   "trivia": {
     "didYouKnow": "הידעת?",
+    "aiTrivia": "טריוויה AI",
+    "more": "עוד",
     "dismissHint": "הקש לסגירת הטריוויה",
     "wantToKnowMore": "רוצה לדעת עוד?",
     "followUpHint": "הקש כדי לראות עובדה נוספת שמעמיקה בסיפור",

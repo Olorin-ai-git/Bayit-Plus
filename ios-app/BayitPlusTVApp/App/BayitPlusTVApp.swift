@@ -20,7 +20,11 @@ struct BayitPlusTVApp: App {
     @State private var featureFlags = FeatureFlags()
 
     init() {
-        FirebaseApp.configure()
+        if FirebaseApp.app() == nil,
+           let options = FirebaseOptions.defaultOptions(),
+           options.googleAppID != "placeholder" {
+            FirebaseApp.configure()
+        }
 
         let appConfig = AppConfiguration()
         let apiLogger = TVAppAPILogger()

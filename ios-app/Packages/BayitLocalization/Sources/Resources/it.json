@@ -8240,6 +8240,8 @@
   },
   "trivia": {
     "didYouKnow": "Lo Sapevi?",
+    "aiTrivia": "Trivia IA",
+    "more": "Altro",
     "dismissHint": "Chiudi curiosità",
     "wantToKnowMore": "Vuoi saperne di più?",
     "followUpHint": "Tocca per vedere un fatto aggiuntivo che approfondisce questa storia",
