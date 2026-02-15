@@ -49,6 +49,16 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     CSRF_ENABLED: bool = False  # CSRF protection disabled by default
 
+    # Auth Service Integration
+    AUTH_SERVICE_URL: str = Field(
+        default="https://auth.olorin.ai",
+        description="Olorin Auth Service URL for RS256 token verification"
+    )
+    AUTH_SERVICE_ENABLED: bool = Field(
+        default=True,
+        description="Enable auth service integration (dual-mode during migration)"
+    )
+
     # MongoDB (REQUIRED - no defaults for connection strings)
     MONGODB_URI: str  # Required, must be set via environment
     MONGODB_DB_NAME: str = "bayit_plus"

@@ -11,6 +11,7 @@ from olorin_shared.auth import \
 from passlib.context import CryptContext
 
 from app.core.config import settings
+from app.core.auth_client import get_auth_client
 from app.models.passkey_credential import PasskeySession
 from app.models.user import User
 
@@ -38,42 +39,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     )
 
 
-def decode_token(token: str) -> Optional[dict]:
-    """Decode and validate a JWT token with fallback for zero-downtime rotation.
-
-    During JWT secret rotation, attempts validation with new SECRET_KEY first,
-    then falls back to SECRET_KEY_OLD if present. This enables zero-downtime
-    secret rotation where old tokens remain valid for 7 days.
+async def decode_token(token: str) -> Optional[dict]:
     """
-    try:
-        # Try new secret first
-        payload = shared_verify_access_token(
-            token=token, secret_key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
-        )
-        return payload
-    except (jwt.InvalidTokenError, ValueError) as e:
-        # If new secret fails and old secret exists, try old secret
-        if settings.SECRET_KEY_OLD:
-            try:
-                payload = shared_verify_access_token(
-                    token=token,
-                    secret_key=settings.SECRET_KEY_OLD,
-                    algorithm=settings.ALGORITHM,
-                )
-                # Log successful validation with old secret for monitoring
-                import logging
+    Decode and validate JWT token with dual-mode support.
 
-                logger = logging.getLogger(__name__)
-                logger.warning(
-                    "Token validated with OLD secret during rotation",
-                    extra={"user_id": payload.get("sub"), "rotation_active": True},
-                )
-                return payload
-            except (jwt.InvalidTokenError, ValueError):
-                # Both secrets failed
-                return None
-        # No old secret configured, return None
-        return None
+    Migration phase: Supports both HS256 (legacy) and RS256 (auth service).
+    Tries RS256 first (new tokens), falls back to HS256 (legacy tokens).
+    """
+    auth_client = get_auth_client()
+    return await auth_client.verify_token(token)
 
 
 async def get_current_user(
