@@ -14,19 +14,19 @@ import kotlin.time.Duration
  */
 data class NetworkConfiguration(
     /** Base URL for all API requests (e.g. "https://api.bayit.tv/api/v1"). */
-    val baseUrl: String,
+    override val baseUrl: String,
 
     /** Base URL for WebSocket connections (e.g. "wss://api.bayit.tv/ws"). */
-    val webSocketBaseUrl: String,
+    override val webSocketBaseUrl: String,
 
     /** Timeout for connect, read, and write operations. */
-    val timeout: Duration,
+    val timeoutDuration: Duration,
 
     /** Maximum number of automatic retries for retryable failures. */
-    val maxRetries: Int,
+    override val maxRetries: Int,
 
     /** Base delay for the first retry. Subsequent retries use exponential backoff. */
-    val retryBaseDelay: Duration,
+    val retryBaseDelayDuration: Duration,
 
     /**
      * HTTP status codes eligible for automatic retry.
@@ -35,10 +35,10 @@ data class NetworkConfiguration(
     val retryableStatusCodes: Set<Int>,
 
     /** Maximum number of concurrent WebSocket connections allowed. */
-    val webSocketMaxConcurrentConnections: Int,
+    override val webSocketMaxConnections: Int,
 
     /** Interval between WebSocket ping/keepalive messages. */
-    val webSocketPingInterval: Duration,
+    val webSocketPingIntervalDuration: Duration,
 
     /** Maximum number of WebSocket reconnection attempts before giving up. */
     val webSocketMaxReconnectAttempts: Int,
@@ -48,17 +48,16 @@ data class NetworkConfiguration(
 ) : NetworkConfig {
 
     /** Timeout in milliseconds for OkHttp configuration. */
-    val timeoutMillis: Long get() = timeout.inWholeMilliseconds
+    val timeoutMillis: Long get() = timeoutDuration.inWholeMilliseconds
 
     /** Retry base delay in milliseconds for interceptor calculations. */
-    val retryBaseDelayMillis: Long get() = retryBaseDelay.inWholeMilliseconds
+    val retryBaseDelayMillis: Long get() = retryBaseDelayDuration.inWholeMilliseconds
 
     /** WebSocket ping interval in seconds for OkHttp configuration. */
-    val webSocketPingIntervalSeconds: Long get() = webSocketPingInterval.inWholeSeconds
+    val webSocketPingIntervalSeconds: Long get() = webSocketPingIntervalDuration.inWholeSeconds
 
     // NetworkConfig interface implementations (backward compatibility)
     override val timeout: Long get() = timeoutMillis
     override val retryBaseDelay: Long get() = retryBaseDelayMillis
     override val webSocketPingInterval: Long get() = webSocketPingIntervalSeconds
-    override val webSocketMaxConnections: Int get() = webSocketMaxConcurrentConnections
 }
