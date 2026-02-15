@@ -14,17 +14,17 @@ struct TVZehAniHubView: View {
     private let features: [(icon: String, title: String, color: Color, view: AnyView)] = []
 
     var body: some View {
-        NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: TVDesignTokens.Spacing.xxl) {
-                    headerSection
+        ZStack {
+            DesignTokens.Background.primary.ignoresSafeArea()
 
-                    featureGrid
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: TVDesignTokens.Spacing.xl) {
+                    headerSection
+                    featureList
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                 .padding(.bottom, TVDesignTokens.Spacing.xxl)
             }
-            .background(DesignTokens.Background.primary)
         }
     }
 
@@ -51,135 +51,178 @@ struct TVZehAniHubView: View {
         .padding(.top, TVDesignTokens.Spacing.xxl)
     }
 
-    private var featureGrid: some View {
-        LazyVGrid(
-            columns: [
-                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.xl),
-                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.xl),
-                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.xl),
-                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.xl)
-            ],
-            spacing: TVDesignTokens.Spacing.xl
-        ) {
+    private var featureList: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
             featureCard(
-                icon: "person.crop.circle.badge.moon",
-                title: "Avatar",
-                subtitle: "Create your digital self",
-                color: DesignTokens.Primary.p400
-            ) {
-                TVAvatarModeView()
-            }
-
-            featureCard(
-                icon: "sparkle.magnifyingglass",
-                title: "Magic Mirror",
-                subtitle: "Your personalized greeting",
-                color: DesignTokens.Primary.p500
+                icon: "wand.and.stars",
+                title: localization.t("zehAni.hub.magicMirror"),
+                subtitle: localization.t("zehAni.hub.magicMirrorDesc")
             ) {
                 if let profileId = authManager.activeProfile?.id {
                     TVMagicMirrorView(profileId: profileId)
                 } else {
-                    VStack(spacing: TVDesignTokens.Spacing.lg) {
-                        Text("Please select a profile first")
-                            .font(.system(size: TVDesignTokens.FontSize.lg))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(DesignTokens.Background.primary)
+                    profileRequiredView
                 }
             }
 
             featureCard(
-                icon: "tv.and.hifispeaker.fill",
-                title: "Watch Party",
-                subtitle: "Watch together",
-                color: DesignTokens.Secondary.s400
+                icon: "film.fill",
+                title: localization.t("zehAni.hub.highlights"),
+                subtitle: localization.t("zehAni.hub.highlightsDesc")
             ) {
-                TVWatchPartyView()
+                if let profileId = authManager.activeProfile?.id {
+                    TVHighlightsView(profileId: profileId)
+                } else {
+                    profileRequiredView
+                }
             }
 
             featureCard(
-                icon: "questionmark.circle",
-                title: "Trivia",
-                subtitle: "Test your knowledge",
-                color: DesignTokens.Warning.default
+                icon: "person.2.fill",
+                title: localization.t("zehAni.hub.contacts"),
+                subtitle: localization.t("zehAni.hub.contactsDesc")
             ) {
-                TVTriviaView()
+                if let profileId = authManager.activeProfile?.id {
+                    TVContactsView(profileId: profileId)
+                } else {
+                    profileRequiredView
+                }
             }
 
             featureCard(
-                icon: "checkerboard.rectangle",
-                title: "Chess",
-                subtitle: "Play a match",
-                color: DesignTokens.Info.default
+                icon: "tray.full.fill",
+                title: localization.t("zehAni.hub.feedback"),
+                subtitle: localization.t("zehAni.hub.feedbackDesc")
             ) {
-                TVChessView()
-            }
-
-            featureCard(
-                icon: "bubble.left.and.bubble.right.fill",
-                title: "AI Chat",
-                subtitle: "Talk with AI",
-                color: DesignTokens.Primary.p400
-            ) {
-                TVChatbotView()
-            }
-
-            featureCard(
-                icon: "trophy",
-                title: "Rewards",
-                subtitle: "Your achievements",
-                color: DesignTokens.Warning.w500
-            ) {
-                TVRewardsView()
-            }
-
-            featureCard(
-                icon: "sparkles",
-                title: "Beta Credits",
-                subtitle: "AI feature credits",
-                color: DesignTokens.Secondary.s400
-            ) {
-                TVBetaCreditsView()
+                if let profileId = authManager.activeProfile?.id {
+                    TVFeedbackView(profileId: profileId)
+                } else {
+                    profileRequiredView
+                }
             }
         }
+    }
+
+    private var profileRequiredView: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            Image(systemName: "person.crop.circle.badge.exclamationmark")
+                .font(.system(size: 80))
+                .foregroundStyle(DesignTokens.Text.muted)
+
+            Text(localization.t("zehAni.profileRequired"))
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+
+            Text(localization.t("zehAni.profileRequiredDesc"))
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
     }
 
     private func featureCard<Destination: View>(
         icon: String,
         title: String,
         subtitle: String,
-        color: Color,
         @ViewBuilder destination: @escaping () -> Destination
     ) -> some View {
         NavigationLink {
             destination()
         } label: {
-            VStack(spacing: TVDesignTokens.Spacing.lg) {
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
                 Image(systemName: icon)
-                    .font(.system(size: 48))
-                    .foregroundStyle(color)
+                    .font(.system(size: TVDesignTokens.FontSize.xxxl))
+                    .foregroundStyle(DesignTokens.Primary.default)
+                    .frame(width: 60)
 
-                VStack(spacing: TVDesignTokens.Spacing.xs) {
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
                     Text(title)
-                        .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                        .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     Text(subtitle)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .font(.system(size: TVDesignTokens.FontSize.base))
                         .foregroundStyle(DesignTokens.Text.secondary)
+                        .lineLimit(2)
                 }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
-            .frame(maxWidth: .infinity)
             .padding(TVDesignTokens.Spacing.xl)
+            .frame(maxWidth: .infinity)
             .background(DesignTokens.Glass.bgMedium)
-            .cornerRadius(TVDesignTokens.Radius.xl)
+            .cornerRadius(TVDesignTokens.Radius.lg)
             .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                     .stroke(DesignTokens.Glass.border, lineWidth: 1)
             )
         }
         .buttonStyle(.card)
     }
 }
+
+// MARK: - Placeholder Views
+
+struct TVHighlightsView: View {
+    let profileId: String
+
+    var body: some View {
+        ComingSoonView(feature: "Highlights")
+    }
+}
+
+struct TVContactsView: View {
+    let profileId: String
+
+    var body: some View {
+        ComingSoonView(feature: "Contacts")
+    }
+}
+
+struct TVFeedbackView: View {
+    let profileId: String
+
+    var body: some View {
+        ComingSoonView(feature: "Feedback")
+    }
+}
+
+struct ComingSoonView: View {
+    @Environment(LocalizationManager.self) private var localization
+    let feature: String
+
+    var body: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 100))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            Text("\(feature) Coming Soon")
+                .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+
+            Text("This feature is currently in development and will be available in a future update.")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, TVDesignTokens.Spacing.xxxl)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
+    }
+}
+
 #endif

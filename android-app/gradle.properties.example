@@ -1,0 +1,23 @@
+# Gradle Build Configuration
+org.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configuration-cache=true
+
+# Android Configuration
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+android.enableJetifier=false
+
+# Kotlin Configuration
+kotlin.code.style=official
+
+# Bayit+ API Configuration
+# Set these in your local gradle.properties (do not commit)
+bayit.api.baseUrl=https://api.bayit.tv/
+bayit.ws.baseUrl=wss://ws.bayit.tv/
+
+# Google OAuth Configuration
+# Get this from Google Cloud Console > APIs & Services > Credentials
+# Create OAuth 2.0 Client ID for Android
+bayit.google.clientId=YOUR_CLIENT_ID_HERE.apps.googleusercontent.com

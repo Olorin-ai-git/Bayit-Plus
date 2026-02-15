@@ -112,6 +112,16 @@ sealed class BayitError {
         override val cause: Throwable? = null
     ) : BayitError()
 
+    data class Configuration(
+        override val message: String,
+        override val cause: Throwable? = null
+    ) : BayitError()
+
+    data class Cancelled(
+        override val message: String,
+        override val cause: Throwable? = null
+    ) : BayitError()
+
     data class Unknown(
         override val message: String,
         override val cause: Throwable? = null

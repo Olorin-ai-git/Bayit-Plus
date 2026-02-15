@@ -28,6 +28,7 @@ android {
 
         buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
         buildConfigField("String", "WS_BASE_URL", "\"${project.findProperty("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${project.findProperty("bayit.google.clientId") ?: ""}\"")
 
     }
 
@@ -141,6 +142,11 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+
+    // Google Identity (Credential Manager)
+    implementation(libs.credential.manager)
+    implementation(libs.credential.manager.play)
+    implementation(libs.google.id)
 
     // Coroutines
     implementation(libs.coroutines.core)

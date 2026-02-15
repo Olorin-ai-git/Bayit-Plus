@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.FirebaseAuthService
+import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
 import tv.bayit.plus.navigation.Route
@@ -26,6 +27,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var authService: FirebaseAuthService
+
+    @Inject
+    lateinit var googleSignInHelper: GoogleSignInHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +60,7 @@ class MainActivity : ComponentActivity() {
                     BayitMainScaffold(navController = navController) {
                         BayitNavHost(
                             navController = navController,
+                            googleSignInHelper = googleSignInHelper,
                             modifier = Modifier.fillMaxSize()
                         )
                     }

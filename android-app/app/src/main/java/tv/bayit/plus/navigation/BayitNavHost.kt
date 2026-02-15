@@ -1,12 +1,19 @@
 package tv.bayit.plus.navigation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import kotlinx.coroutines.launch
+import tv.bayit.plus.BuildConfig
+import tv.bayit.plus.core.auth.GoogleSignInHelper
+import tv.bayit.plus.core.common.result.BayitResult
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
 import tv.bayit.plus.feature.audiobooks.detail.AudiobookDetailRoute
@@ -103,9 +110,12 @@ import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 @Composable
 fun BayitNavHost(
     navController: NavHostController,
+    googleSignInHelper: GoogleSignInHelper,
     modifier: Modifier = Modifier,
     startRoute: Route? = null
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     NavHost(navController = navController, startDestination = startRoute ?: Route.Splash, modifier = modifier) {
         composable<Route.Splash> {
             SplashRoute(
@@ -188,8 +198,20 @@ fun BayitNavHost(
                 onNavigateToRegister = { navController.navigate(Route.Register) },
                 onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                 onRequestGoogleSignIn = { onTokenReceived ->
-                    // TODO: Implement Google Sign-In with ActivityResultLauncher
-                    // For now, users can use email/password authentication
+                    coroutineScope.launch {
+                        val activity = context as? Activity
+                        if (activity == null) {
+                            return@launch
+                        }
+
+                        when (val result = googleSignInHelper.signIn(activity, BuildConfig.GOOGLE_CLIENT_ID)) {
+                            is BayitResult.Success -> {
+                                onTokenReceived(result.data)
+                            }
+                            is BayitResult.Failure -> {
+                            }
+                        }
+                    }
                 },
             )
         }
