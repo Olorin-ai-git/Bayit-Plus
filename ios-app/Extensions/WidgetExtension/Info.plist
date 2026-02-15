@@ -19,7 +19,11 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
     <key>CFBundleVersion</key>
-    <string>16</string>
+    <string>74</string>
+    <key>WIDGET_APP_GROUP_ID</key>
+    <string>group.tv.bayit.plus</string>
+    <key>KEYCHAIN_ACCESS_GROUP</key>
+    <string>$(AppIdentifierPrefix)tv.bayit.BayitPlus</string>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsLocalNetworking</key>

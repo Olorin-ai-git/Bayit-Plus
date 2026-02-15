@@ -40,9 +40,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>71</string>
+	<string>74</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
+	<key>WIDGET_APP_GROUP_ID</key>
+	<string>group.tv.bayit.plus</string>
+	<key>KEYCHAIN_ACCESS_GROUP</key>
+	<string>$(AppIdentifierPrefix)tv.bayit.BayitPlus</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>

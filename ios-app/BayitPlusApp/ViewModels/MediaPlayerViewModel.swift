@@ -1,5 +1,7 @@
 import BayitMedia
+#if os(iOS)
 import BayitWidgetShared
+#endif
 import Foundation
 import Observation
 
@@ -29,7 +31,9 @@ final class MediaPlayerViewModel {
 
     private let streamResolver: StreamResolver
     private let progressTracker: ProgressTracker
+    #if os(iOS)
     private let widgetBridge: MediaPlayerWidgetBridge
+    #endif
     private let repository: any MediaRepository
 
     // MARK: - Init
@@ -43,7 +47,7 @@ final class MediaPlayerViewModel {
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
         podcastRepository: any PodcastRepository,
-        widgetSync: WidgetDataSyncService
+        widgetSync: WidgetDataSyncService? = nil
     ) {
         self.contentId = contentId
         self.contentType = contentType
@@ -63,10 +67,19 @@ final class MediaPlayerViewModel {
             contentType: contentType,
             intervalSeconds: 15
         )
-        self.widgetBridge = MediaPlayerWidgetBridge(
-            mediaPlayer: player,
-            widgetSync: widgetSync
-        )
+        #if os(iOS)
+        if let widgetSync = widgetSync {
+            self.widgetBridge = MediaPlayerWidgetBridge(
+                mediaPlayer: player,
+                widgetSync: widgetSync
+            )
+        } else {
+            self.widgetBridge = MediaPlayerWidgetBridge(
+                mediaPlayer: player,
+                widgetSync: WidgetDataSyncService()
+            )
+        }
+        #endif
     }
 
     // MARK: - Loading
@@ -106,7 +119,9 @@ final class MediaPlayerViewModel {
             player.play()
 
             // Immediately sync playback to widgets
+            #if os(iOS)
             await syncToWidgets()
+            #endif
 
             // Seek to resume position if available
             if initialPosition > 0 {
@@ -132,7 +147,9 @@ final class MediaPlayerViewModel {
     /// Call this after toggling play/pause from UI controls.
     @MainActor
     func syncPlaybackState() async {
+        #if os(iOS)
         await syncToWidgets()
+        #endif
     }
 
     // MARK: - Quality
@@ -157,7 +174,9 @@ final class MediaPlayerViewModel {
             await player.seek(to: currentPos)
 
             // Sync quality change to widgets
+            #if os(iOS)
             await syncToWidgets()
+            #endif
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -170,7 +189,9 @@ final class MediaPlayerViewModel {
     func cleanup() async {
         await progressTracker.stopTracking()
         player.stop()
+        #if os(iOS)
         await widgetBridge.clearNowPlaying()
+        #endif
     }
 
     // MARK: - Private
@@ -185,6 +206,7 @@ final class MediaPlayerViewModel {
         }
     }
 
+    #if os(iOS)
     /// Sync current playback state to widgets immediately.
     @MainActor
     private func syncToWidgets() async {
@@ -197,4 +219,5 @@ final class MediaPlayerViewModel {
             artworkURL: artworkURL
         )
     }
+    #endif
 }

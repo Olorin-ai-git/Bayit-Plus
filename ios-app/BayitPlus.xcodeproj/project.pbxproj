@@ -589,6 +589,8 @@
 		9DED09B756A241D05E7539B2 /* SceneTriggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B847685E8B4619EB91931CA /* SceneTriggerView.swift */; };
 		9E113ABD34B3CEEA96529D06 /* LiveSubtitlesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EAC98F992AE2C1ED236821 /* LiveSubtitlesViewModel.swift */; };
 		9E622A39F5CEB81B8288EA59 /* MediaPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B12ED7C60671D9D2A76E6D /* MediaPlayerViewModel.swift */; };
+		C3D4E5F6A7B8091A30DDEECC /* MediaPlayerWidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6071829AABBCC /* MediaPlayerWidgetBridge.swift */; };
+		D4E5F6A7B8C9091A30EEFFDD /* PendingIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829DDEEFF /* PendingIntentHandler.swift */; };
 		9E647E8E197846F8F33D78E2 /* TVTrendingRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62E9A479372DF7AF1C5FC8EE /* TVTrendingRow.swift */; };
 		9E875869E2ECDDA07A2BCD86 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6201B747046CE4B24167138F /* ConversationView.swift */; };
 		9E99AE1131EF99B13B78C56A /* ContentPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C12F53F87C93E1E6F3E688 /* ContentPickerViewModel.swift */; };
@@ -3664,8 +3666,6 @@
 				2459FE2A492C1301AF4F2FFC /* LiveTriviaWebSocketService.swift in Sources */,
 				672D08A98178D4F77D7FC347 /* LocationModels.swift in Sources */,
 				6D7F1BE1363156329FBA1A8D /* MediaModels.swift in Sources */,
-				3CB9C186846D755D14603934 /* MediaPlayerViewModel.swift in Sources */,
-				B2C3D4E5F6A7081930BBCCDD /* MediaPlayerWidgetBridge.swift in Sources */,
 				08CA70D5B7675A1D012AC8BD /* MediaRepository.swift in Sources */,
 				F5A46FE9DD204259468C186D /* MissionsModels.swift in Sources */,
 				D3AAF38E609E97DD0883A45E /* MissionsRepository.swift in Sources */,
@@ -4245,6 +4245,8 @@
 				06402614BC496AC3BD69B440 /* MainTabView.swift in Sources */,
 				448F0AFB69292F7D0F44E05E /* MediaModels.swift in Sources */,
 				9E622A39F5CEB81B8288EA59 /* MediaPlayerViewModel.swift in Sources */,
+				C3D4E5F6A7B8091A30DDEECC /* MediaPlayerWidgetBridge.swift in Sources */,
+				D4E5F6A7B8C9091A30EEFFDD /* PendingIntentHandler.swift in Sources */,
 				1DC839A7C0DDA192492195CD /* MediaRepository.swift in Sources */,
 				C089CF721A69B467994256C2 /* MeshGenerationView.swift in Sources */,
 				E088CDE3B9EBFC4AAB660A25 /* MessageBubble.swift in Sources */,
