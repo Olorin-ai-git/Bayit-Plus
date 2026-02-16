@@ -22,6 +22,19 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/v2")
 
 
+class SocialAuthRequest(BaseModel):
+    """Request for social auth (Google/Apple)."""
+    id_token: str
+    device_id: str | None = None
+
+
+class GoogleCallbackRequest(BaseModel):
+    """Request for Google OAuth callback (web flow)."""
+    code: str
+    redirect_uri: str | None = None
+    state: str | None = None
+
+
 class AuthProxyResponse(BaseModel):
     """Response from auth proxy endpoints."""
     access_token: str
@@ -172,6 +185,216 @@ async def login_via_auth_service(request: Request, credentials: UserLogin):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
+        )
+
+
+@router.post("/google", response_model=AuthProxyResponse)
+@limiter.limit("10/minute")
+async def login_google_via_auth_service(request: Request, auth_data: SocialAuthRequest):
+    """
+    Google OAuth via Olorin Auth Service.
+
+    Accepts Google ID token from mobile/web clients, delegates to auth.olorin.ai,
+    and syncs with Bayit+ database for app-specific features.
+    """
+    auth_client = get_auth_service_client()
+
+    try:
+        # Login with Google via auth service
+        auth_response = await auth_client.login_google(
+            id_token=auth_data.id_token,
+            device_id=auth_data.device_id,
+        )
+
+        # Sync/get user from Bayit+ DB
+        user = await auth_client.create_user_in_bayit_db(
+            auth_service_user_id=auth_response["user_id"],
+            email=auth_response["email"],
+            name=auth_response["name"],
+            role=auth_response.get("role", "user"),
+            avatar=auth_response.get("avatar"),
+        )
+
+        # Sync beta user status
+        from app.api.routes.auth import _sync_beta_user_status
+        await _sync_beta_user_status(user)
+        await user.save()
+
+        # Audit log
+        await audit_logger.log_oauth_login(user, request, "google")
+
+        logger.info(
+            "Google OAuth login via auth service",
+            extra={"user_id": str(user.id), "email": user.email}
+        )
+
+        return AuthProxyResponse(
+            access_token=auth_response["access_token"],
+            refresh_token=auth_response["refresh_token"],
+            user=user.to_response().dict(),
+            requires_payment=user.payment_pending,
+        )
+
+    except ValueError as e:
+        await audit_logger.log_login_failure(auth_data.id_token[:20], request)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Google OAuth failed: {str(e)}",
+        )
+
+
+@router.post("/google/callback", response_model=AuthProxyResponse)
+@limiter.limit("10/minute")
+async def google_callback_via_auth_service(request: Request, auth_data: GoogleCallbackRequest):
+    """
+    Google OAuth callback (web flow) via Olorin Auth Service.
+
+    Handles the redirect from Google OAuth, exchanges code for ID token,
+    then delegates to auth.olorin.ai for RS256 token generation.
+    """
+    import httpx
+    from app.core.config import settings
+
+    auth_client = get_auth_service_client()
+
+    # Verify state parameter for CSRF protection
+    if not auth_data.state or len(auth_data.state) < 16:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing or invalid state parameter",
+        )
+
+    final_redirect_uri = auth_data.redirect_uri or settings.GOOGLE_REDIRECT_URI
+
+    try:
+        # Step 1: Exchange Google authorization code for tokens
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            token_response = await client.post(
+                "https://oauth2.googleapis.com/token",
+                data={
+                    "code": auth_data.code,
+                    "client_id": settings.GOOGLE_CLIENT_ID,
+                    "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                    "redirect_uri": final_redirect_uri,
+                    "grant_type": "authorization_code",
+                },
+            )
+
+            if token_response.status_code != 200:
+                error_detail = token_response.json() if token_response.text else {}
+                google_error = error_detail.get(
+                    "error_description",
+                    error_detail.get("error", "Failed to exchange code"),
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Google OAuth error: {google_error}",
+                )
+
+            google_tokens = token_response.json()
+            google_id_token = google_tokens.get("id_token")
+
+            if not google_id_token:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="No ID token in Google response",
+                )
+
+        # Step 2: Send Google ID token to auth.olorin.ai for RS256 token generation
+        auth_response = await auth_client.login_google(
+            id_token=google_id_token,
+            device_id=None,  # Web doesn't have device_id
+        )
+
+        # Step 3: Sync user to Bayit+ database
+        user = await auth_client.create_user_in_bayit_db(
+            auth_service_user_id=auth_response["user_id"],
+            email=auth_response["email"],
+            name=auth_response["name"],
+            role=auth_response.get("role", "user"),
+            avatar=auth_response.get("avatar"),
+        )
+
+        # Sync beta user status
+        from app.api.routes.auth import _sync_beta_user_status
+        await _sync_beta_user_status(user)
+        await user.save()
+
+        # Audit log
+        await audit_logger.log_oauth_login(user, request, "google")
+
+        logger.info(
+            "Google OAuth web callback via auth service",
+            extra={"user_id": str(user.id), "email": user.email}
+        )
+
+        return AuthProxyResponse(
+            access_token=auth_response["access_token"],
+            refresh_token=auth_response["refresh_token"],
+            user=user.to_response().dict(),
+            requires_payment=user.payment_pending,
+        )
+
+    except ValueError as e:
+        await audit_logger.log_login_failure("google_oauth", request)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Google OAuth failed: {str(e)}",
+        )
+
+
+@router.post("/apple", response_model=AuthProxyResponse)
+@limiter.limit("10/minute")
+async def login_apple_via_auth_service(request: Request, auth_data: SocialAuthRequest):
+    """
+    Apple Sign In via Olorin Auth Service.
+
+    Accepts Apple ID token from mobile/web clients, delegates to auth.olorin.ai,
+    and syncs with Bayit+ database for app-specific features.
+    """
+    auth_client = get_auth_service_client()
+
+    try:
+        # Login with Apple via auth service
+        auth_response = await auth_client.login_apple(
+            id_token=auth_data.id_token,
+            device_id=auth_data.device_id,
+        )
+
+        # Sync/get user from Bayit+ DB
+        user = await auth_client.create_user_in_bayit_db(
+            auth_service_user_id=auth_response["user_id"],
+            email=auth_response["email"],
+            name=auth_response["name"],
+            role=auth_response.get("role", "user"),
+            avatar=auth_response.get("avatar"),
+        )
+
+        # Sync beta user status
+        from app.api.routes.auth import _sync_beta_user_status
+        await _sync_beta_user_status(user)
+        await user.save()
+
+        # Audit log
+        await audit_logger.log_oauth_login(user, request, "apple")
+
+        logger.info(
+            "Apple Sign In via auth service",
+            extra={"user_id": str(user.id), "email": user.email}
+        )
+
+        return AuthProxyResponse(
+            access_token=auth_response["access_token"],
+            refresh_token=auth_response["refresh_token"],
+            user=user.to_response().dict(),
+            requires_payment=user.payment_pending,
+        )
+
+    except ValueError as e:
+        await audit_logger.log_login_failure(auth_data.id_token[:20], request)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Apple Sign In failed: {str(e)}",
         )
 
 

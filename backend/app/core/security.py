@@ -41,10 +41,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 async def decode_token(token: str) -> Optional[dict]:
     """
-    Decode and validate JWT token with dual-mode support.
+    Decode and validate RS256 JWT tokens from auth.olorin.ai.
 
-    Migration phase: Supports both HS256 (legacy) and RS256 (auth service).
-    Tries RS256 first (new tokens), falls back to HS256 (legacy tokens).
+    Post-migration: Only accepts RS256 tokens. HS256 tokens are rejected.
+    Logs warnings for rejected HS256 tokens for monitoring purposes.
     """
     auth_client = get_auth_client()
     return await auth_client.verify_token(token)

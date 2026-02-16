@@ -7,14 +7,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import tv.bayit.plus.core.auth.FirebaseAuthService
+import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val firebaseAuthService: FirebaseAuthService,
+    private val olorinAuthService: OlorinAuthService,
+    private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -52,13 +54,28 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 
-            when (val result = firebaseAuthService.signInWithEmail(current.email, current.password)) {
+            when (val result = olorinAuthService.loginWithEmail(
+                email = current.email,
+                password = current.password,
+            )) {
                 is BayitResult.Success -> {
+                    // Store tokens in secure storage
+                    secureStorage.saveAccessToken(result.data.accessToken)
+                    result.data.refreshToken?.let { refreshToken ->
+                        secureStorage.saveRefreshToken(refreshToken)
+                    }
+
                     logger.info(
-                        "Login successful",
-                        mapOf("uid" to result.data.uid),
+                        "Login successful via Olorin Auth",
+                        mapOf(
+                            "user_id" to result.data.user.id,
+                            "email" to result.data.user.email,
+                            "requires_payment" to result.data.requiresPayment.toString(),
+                        ),
                     )
-                    _uiState.value = LoginUiState.Success
+                    _uiState.value = LoginUiState.Success(
+                        requiresPayment = result.data.requiresPayment,
+                    )
                 }
 
                 is BayitResult.Failure -> {
@@ -140,5 +157,7 @@ sealed interface LoginUiState {
         val previousPassword: String,
     ) : LoginUiState
 
-    data object Success : LoginUiState
+    data class Success(
+        val requiresPayment: Boolean = false,
+    ) : LoginUiState
 }

@@ -255,9 +255,91 @@ extension AuthManager {
         }
     }
 
-    /// Signs in with email and password via the backend API only.
-    /// The backend login endpoint returns a JWT directly, so no Firebase or token exchange is needed.
-    /// Firebase Auth is skipped for email/password since the backend is the authoritative source.
+    /// Registers a new user with email and password via Olorin Auth.
+    ///
+    /// Calls the backend `/auth/v2/register` endpoint which delegates to auth.olorin.ai
+    /// while maintaining Bayit+ specific features (payment flow, beta users, etc).
+    public func signUpWithEmail(email: String, password: String, name: String) async throws {
+        isLoading = true
+        error = nil
+
+        do {
+            try Task.checkCancellation()
+
+            // Register via Olorin Auth proxy
+            let registrationResponse = try await BackendTokenExchangeClient.registerWithEmail(
+                email: email,
+                password: password,
+                name: name,
+                logger: logger
+            )
+
+            // Store backend tokens in keychain
+            try keychainService.save(
+                token: registrationResponse.accessToken,
+                for: backendTokenKeychainKey
+            )
+            if let refresh = registrationResponse.refreshToken {
+                try keychainService.save(
+                    token: refresh,
+                    for: refreshTokenKeychainKey
+                )
+            }
+
+            // Build BayitUser from registration response
+            let bayitUser = BayitUser(
+                id: registrationResponse.user.id,
+                email: registrationResponse.user.email,
+                displayName: registrationResponse.user.name,
+                photoURL: registrationResponse.user.profileImageUrl != nil ? URL(string: registrationResponse.user.profileImageUrl!) : nil,
+                role: UserRole(rawValue: registrationResponse.user.role) ?? .user,
+                isActive: registrationResponse.user.isActive,
+                subscription: nil,
+                isBetaUser: registrationResponse.user.isBetaUser ?? false,
+                isVerified: registrationResponse.user.isVerified ?? false,
+                createdAt: nil,
+                lastLogin: nil
+            )
+
+            // Cache user data in Keychain
+            if let userData = try? JSONEncoder().encode(bayitUser) {
+                try? keychainService.save(
+                    token: String(data: userData, encoding: .utf8) ?? "",
+                    for: userKeychainKey
+                )
+            }
+
+            // Update state
+            user = bayitUser
+            token = registrationResponse.accessToken
+            stampSessionTimestamp()
+            isLoading = false
+
+            logger.info(
+                "Email registration succeeded",
+                metadata: ["user_id": bayitUser.id]
+            )
+        } catch is CancellationError {
+            isLoading = false
+            throw AuthError.cancelled
+        } catch let authError as AuthError {
+            isLoading = false
+            error = authError
+            throw authError
+        } catch {
+            let wrapped = AuthError.registrationFailed(
+                underlying: error.localizedDescription
+            )
+            isLoading = false
+            self.error = wrapped
+            throw wrapped
+        }
+    }
+
+    /// Signs in with email and password via Olorin Auth.
+    ///
+    /// Calls the backend `/auth/v2/login` endpoint which delegates to auth.olorin.ai
+    /// while syncing with Bayit+ database for app-specific features.
     public func signInWithEmail(email: String, password: String) async throws {
         isLoading = true
         error = nil

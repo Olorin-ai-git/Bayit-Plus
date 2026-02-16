@@ -150,9 +150,26 @@ async def companion_connect(request: CompanionConnectRequest):
 @router.post("/complete", response_model=TokenResponse)
 async def complete_auth(request: CompleteAuthRequest):
     """
-    Complete authentication via companion device.
-    Called by companion with user credentials to authenticate the TV session.
+    DEPRECATED: Legacy HS256 device pairing endpoint.
+
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    Device pairing now requires RS256 tokens.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
     """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Device pairing no longer supported with HS256 tokens. Please update your TV app",
+            "migration_guide": "https://docs.bayit.tv/auth-migration#device-pairing",
+            "deprecated_since": "2026-02-16",
+            "action_required": "update_tv_app",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     # Verify session exists
     session = await pairing_manager.get_session(request.session_id)
     if not session:
@@ -227,9 +244,26 @@ async def complete_auth_token(
     current_user: User = Depends(get_current_user),
 ):
     """
-    Complete authentication via already-authenticated companion device.
-    Called by companion with user already logged in via Bearer token.
+    DEPRECATED: Legacy HS256 device pairing with token endpoint.
+
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    Device pairing now requires RS256 tokens.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
     """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Device pairing with token no longer supported with HS256 tokens. Please update your TV app",
+            "migration_guide": "https://docs.bayit.tv/auth-migration#device-pairing",
+            "deprecated_since": "2026-02-16",
+            "action_required": "update_tv_app",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     # Verify session exists
     session = await pairing_manager.get_session(request.session_id)
     if not session:

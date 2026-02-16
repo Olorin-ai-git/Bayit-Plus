@@ -7,14 +7,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import tv.bayit.plus.core.auth.FirebaseAuthService
+import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val firebaseAuthService: FirebaseAuthService,
+    private val olorinAuthService: OlorinAuthService,
+    private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -22,6 +24,11 @@ class RegisterViewModel @Inject constructor(
         RegisterUiState.Input(),
     )
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+
+    fun updateName(name: String) {
+        val current = _uiState.value as? RegisterUiState.Input ?: return
+        _uiState.value = current.copy(name = name)
+    }
 
     fun updateEmail(email: String) {
         val current = _uiState.value as? RegisterUiState.Input ?: return
@@ -51,13 +58,29 @@ class RegisterViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = RegisterUiState.Loading
-            when (val result = firebaseAuthService.signUpWithEmail(current.email, current.password)) {
+            when (val result = olorinAuthService.registerWithEmail(
+                email = current.email,
+                password = current.password,
+                name = current.name,
+            )) {
                 is BayitResult.Success -> {
+                    // Store tokens in secure storage
+                    secureStorage.saveAccessToken(result.data.accessToken)
+                    result.data.refreshToken?.let { refreshToken ->
+                        secureStorage.saveRefreshToken(refreshToken)
+                    }
+
                     logger.info(
-                        "Registration successful",
-                        mapOf("uid" to result.data.uid),
+                        "Registration successful via Olorin Auth",
+                        mapOf(
+                            "user_id" to result.data.user.id,
+                            "email" to result.data.user.email,
+                            "requires_payment" to result.data.requiresPayment.toString(),
+                        ),
                     )
-                    _uiState.value = RegisterUiState.Success
+                    _uiState.value = RegisterUiState.Success(
+                        requiresPayment = result.data.requiresPayment,
+                    )
                 }
 
                 is BayitResult.Failure -> {
@@ -83,6 +106,9 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun validateFields(input: RegisterUiState.Input): FieldError? {
+        if (input.name.isBlank()) {
+            return FieldError(field = "name", message = "Name is required")
+        }
         if (input.email.isBlank()) {
             return FieldError(field = "email", message = "Email is required")
         }
@@ -130,6 +156,7 @@ data class FieldError(val field: String, val message: String)
 
 sealed interface RegisterUiState {
     data class Input(
+        val name: String = "",
         val email: String = "",
         val password: String = "",
         val confirmPassword: String = "",
@@ -144,5 +171,7 @@ sealed interface RegisterUiState {
         val previousInput: Input,
     ) : RegisterUiState
 
-    data object Success : RegisterUiState
+    data class Success(
+        val requiresPayment: Boolean = false,
+    ) : RegisterUiState
 }

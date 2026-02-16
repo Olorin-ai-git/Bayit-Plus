@@ -204,121 +204,35 @@ api.interceptors.response.use(
       return api(config)
     }
 
-    // Handle 401 errors with token refresh and retry
+    // Handle 401 errors - token is invalid, log out and redirect to login
+    // RS256 tokens from auth.olorin.ai cannot be refreshed client-side;
+    // users must re-authenticate to get new tokens.
     if (error.response?.status === 401) {
-      const errorDetail = error.response?.data?.detail || ''
       const requestUrl = config?.url || ''
 
-      // Prevent infinite loops - check if this is already a retry
-      const isRetry = config.headers['X-Bayit-Retry-After-Refresh']
+      apiLogger.warn('401 Unauthorized - logging out', {
+        correlationId,
+        url: requestUrl,
+      })
 
-      if (isRetry) {
-        apiLogger.warn('401 after refresh retry, logging out', {
-          correlationId,
-          url: requestUrl
-        })
-        useAuthStore.getState().logout()
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
-        return Promise.reject(error.response?.data || error)
-      }
-
-      // Check if this is the refresh endpoint itself
-      const isRefreshEndpoint = requestUrl.includes('/auth/refresh')
-
-      if (isRefreshEndpoint) {
-        apiLogger.error('Token refresh endpoint failed, logging out', { correlationId })
-        useAuthStore.getState().logout()
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
-        return Promise.reject(error.response?.data || error)
-      }
-
-      // Attempt token refresh
-      const refreshToken = useAuthStore.getState().refreshToken
-      if (!refreshToken) {
-        apiLogger.warn('No refresh token available, logging out', { correlationId })
-        useAuthStore.getState().logout()
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
-        return Promise.reject(error.response?.data || error)
-      }
-
-      try {
-        apiLogger.info('Attempting token refresh after 401', {
-          correlationId,
-          url: requestUrl
-        })
-
-        const refreshed = await useAuthStore.getState().refreshAccessToken()
-
-        if (refreshed) {
-          // Retry original request with new token
-          const newToken = useAuthStore.getState().token
-          config.headers.Authorization = `Bearer ${newToken}`
-          config.headers['X-Bayit-Retry-After-Refresh'] = 'true'
-
-          apiLogger.info('Retrying request with refreshed token', {
-            correlationId,
-            url: requestUrl
-          })
-
-          return api(config)
-        }
-      } catch (refreshError) {
-        apiLogger.error('Token refresh failed', {
-          correlationId,
-          error: refreshError
-        })
-      }
-
-      // Refresh failed - logout
       useAuthStore.getState().logout()
-      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+
+      // Only redirect if not already on login/auth pages
+      const currentPath = window.location.pathname
+      if (!currentPath.startsWith('/login') && !currentPath.startsWith('/auth/')) {
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      }
     }
 
     return Promise.reject(error.response?.data || error)
   }
 )
 
-// Auth Service (API)
+// Auth Service (API) - password reset only; all other auth flows use shared authStore
 const apiAuthService = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (userData) => api.post('/auth/register', userData),
-  logout: () => api.post('/auth/logout'),
-  me: () => api.get('/auth/me'),
-  updateProfile: (updates) => api.patch('/auth/profile', updates),
   requestPasswordReset: (email) => api.post('/auth/password-reset/request', { email }),
   confirmPasswordReset: (token, newPassword) =>
     api.post('/auth/password-reset/confirm', { token, new_password: newPassword }),
-  refreshToken: (refreshToken) => api.post('/auth/refresh', { refresh_token: refreshToken }),
-  getGoogleAuthUrl: async (redirectUri) => {
-    const response = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
-    // Store state in sessionStorage for CSRF validation
-    if (response.state) {
-      sessionStorage.setItem('oauth_state', response.state);
-    }
-    return response;
-  },
-  googleCallback: async (code, redirectUri, state) => {
-    // Retrieve state from sessionStorage if not provided
-    let finalState = state;
-    if (!finalState) {
-      finalState = sessionStorage.getItem('oauth_state') || undefined;
-      // Clean up after use
-      if (finalState) {
-        sessionStorage.removeItem('oauth_state');
-      }
-    }
-    apiLogger.info('googleCallback request', {
-      redirectUri,
-      hasState: !!finalState,
-      statePreview: finalState?.substring(0, 10)
-    });
-    const response = await api.post('/auth/google/callback', { code, redirect_uri: redirectUri, state: finalState });
-    apiLogger.info('googleCallback response', {
-      hasUser: !!response?.user,
-      hasToken: !!response?.access_token
-    });
-    return response;
-  },
 }
 
 // Content Service (API)

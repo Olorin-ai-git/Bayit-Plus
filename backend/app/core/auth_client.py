@@ -1,7 +1,8 @@
 """
-Dual-mode authentication client for Bayit+ migration.
+RS256-only authentication client for Bayit+.
 
-Supports both legacy HS256 tokens and new RS256 tokens from auth.olorin.ai.
+Post-migration: Only accepts RS256 tokens from auth.olorin.ai.
+Legacy HS256 tokens are rejected with warning logs for monitoring.
 """
 
 import httpx
@@ -16,11 +17,10 @@ logger = structlog.get_logger(__name__)
 
 class DualModeAuthClient:
     """
-    Auth client supporting both HS256 (legacy) and RS256 (new auth service).
+    RS256-only auth client for Bayit+.
 
-    During migration phase, accepts tokens from either:
-    1. Legacy HS256 tokens (issued by Bayit+ backend)
-    2. RS256 tokens (issued by auth.olorin.ai)
+    Post-migration: Only accepts RS256 tokens from auth.olorin.ai.
+    HS256 tokens are rejected and logged for monitoring.
     """
 
     def __init__(self):
@@ -29,8 +29,7 @@ class DualModeAuthClient:
         )
         self.jwks_url = f"{self.auth_service_url}/.well-known/jwks.json"
         self._jwks_cache: Optional[dict] = None
-        self.hs256_secret = settings.SECRET_KEY
-        self.hs256_secret_old = getattr(settings, "SECRET_KEY_OLD", None)
+        # HS256 secrets removed - RS256-only mode (Task #6)
 
     async def get_jwks(self) -> dict:
         """Fetch and cache JWKS from auth service."""
@@ -52,7 +51,7 @@ class DualModeAuthClient:
 
     async def verify_token(self, token: str) -> Optional[dict]:
         """
-        Verify token in dual mode: try RS256 first, fallback to HS256.
+        Verify RS256 tokens only - HS256 support removed.
 
         Args:
             token: JWT token string
@@ -64,13 +63,16 @@ class DualModeAuthClient:
             header = jwt.get_unverified_header(token)
             algorithm = header.get("alg", "HS256")
 
-            if algorithm == "RS256":
-                return await self._verify_rs256(token)
-            elif algorithm == "HS256":
-                return self._verify_hs256(token)
-            else:
-                logger.warning("unsupported_algorithm", alg=algorithm)
+            # RS256-ONLY MODE: Reject non-RS256 tokens
+            if algorithm != "RS256":
+                logger.warning(
+                    "rejected_non_rs256_token",
+                    alg=algorithm,
+                    token_prefix=token[:20] if token else "",
+                )
                 return None
+
+            return await self._verify_rs256(token)
 
         except Exception as e:
             logger.warning("token_verification_failed", error=str(e))
@@ -134,32 +136,10 @@ class DualModeAuthClient:
             logger.warning("rs256_verification_failed", error=str(e))
             return None
 
-    def _verify_hs256(self, token: str) -> Optional[dict]:
-        """Verify HS256 token (legacy Bayit+ tokens)."""
-        try:
-            claims = jwt.decode(
-                token,
-                self.hs256_secret,
-                algorithms=["HS256"],
-            )
-            logger.info("hs256_token_verified", user_id=claims.get("sub"))
-            return claims
-
-        except JWTError:
-            if self.hs256_secret_old:
-                try:
-                    claims = jwt.decode(
-                        token,
-                        self.hs256_secret_old,
-                        algorithms=["HS256"],
-                    )
-                    logger.warning("hs256_old_secret_used", user_id=claims.get("sub"))
-                    return claims
-                except JWTError:
-                    pass
-
-            logger.warning("hs256_verification_failed")
-            return None
+    # REMOVED: _verify_hs256() method
+    # HS256 support completely removed as of Task #6 (2026-02-15)
+    # All tokens must be RS256 from auth.olorin.ai
+    # Original implementation available in git history if rollback needed
 
 
 _auth_client: Optional[DualModeAuthClient] = None

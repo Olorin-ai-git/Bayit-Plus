@@ -69,8 +69,14 @@ export default function useWidgetToggle(
           newStates.set(key, Boolean(value));
         }
         setWidgetStates(newStates);
-      } catch (error) {
-        log.error('Failed to batch-check widget states', { error });
+      } catch (error: any) {
+        // Silently handle 401 errors (expected when token is invalid/expired)
+        // The auth middleware will handle redirecting to login
+        if (error?.response?.status === 401 || error?.status === 401) {
+          log.debug('Widget check failed - not authenticated (401)', { error });
+        } else {
+          log.error('Failed to batch-check widget states', { error });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -111,18 +117,27 @@ export default function useWidgetToggle(
         });
 
         return Boolean(serverState);
-      } catch (error) {
+      } catch (error: any) {
         // Revert optimistic update on failure
         setWidgetStates((prev) => {
           const next = new Map(prev);
           next.set(key, currentState);
           return next;
         });
-        log.error('Failed to toggle widget', {
-          contentType: params.content_type,
-          contentId: params.content_id,
-          error,
-        });
+
+        // Silently handle 401 errors (expected when token is invalid/expired)
+        if (error?.response?.status === 401 || error?.status === 401) {
+          log.debug('Widget toggle failed - not authenticated (401)', {
+            contentType: params.content_type,
+            contentId: params.content_id,
+          });
+        } else {
+          log.error('Failed to toggle widget', {
+            contentType: params.content_type,
+            contentId: params.content_id,
+            error,
+          });
+        }
         return currentState;
       }
     },

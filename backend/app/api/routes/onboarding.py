@@ -137,11 +137,26 @@ async def send_message(request: SendMessageRequest):
 @router.post("/complete", response_model=CompleteOnboardingResponse)
 async def complete_onboarding(request: CompleteOnboardingRequest):
     """
-    Complete the onboarding and create the user account.
+    DEPRECATED: Legacy HS256 AI onboarding endpoint.
 
-    If password is not provided, a temporary password will be generated
-    and the user can set their password later via email.
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    Use the v2 registration endpoints for new user signups.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
     """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "AI onboarding no longer supported with HS256 tokens. Please use /api/v1/auth/v2/register",
+            "migration_guide": "https://docs.bayit.tv/auth-migration",
+            "deprecated_since": "2026-02-16",
+            "action_required": "use_v2_endpoints",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     session, data = await ai_onboarding_service.complete_onboarding(
         request.conversation_id
     )

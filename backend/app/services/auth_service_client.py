@@ -145,12 +145,131 @@ class AuthServiceClient:
                 logger.error("auth_service_request_error", error=str(e))
                 raise ValueError(f"Failed to connect to auth service: {str(e)}")
 
+    async def login_google(
+        self,
+        id_token: str,
+        device_id: Optional[str] = None,
+    ) -> dict:
+        """
+        Login with Google via auth service.
+
+        Args:
+            id_token: Google ID token from mobile/web SDK
+            device_id: Optional device identifier
+
+        Returns:
+            Dict with user_id, email, name, role, access_token, refresh_token, avatar
+
+        Raises:
+            ValueError: If Google login fails
+        """
+        async with httpx.AsyncClient() as client:
+            try:
+                # Use service account credentials
+                import subprocess
+                token = subprocess.check_output(
+                    ["gcloud", "auth", "print-identity-token"],
+                    text=True
+                ).strip()
+
+                response = await client.post(
+                    f"{self.base_url}/api/v1/auth/login/google",
+                    json={
+                        "id_token": id_token,
+                        "tenant_id": self.tenant_id,
+                        "device_id": device_id,
+                    },
+                    headers={"Authorization": f"Bearer {token}"},
+                    timeout=self.timeout,
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(
+                        "auth_service_google_login_success",
+                        user_id=data.get("user_id"),
+                        email=data.get("email"),
+                    )
+                    return data
+                else:
+                    error_detail = response.json().get("detail", "Google login failed")
+                    logger.warning(
+                        "auth_service_google_login_failed",
+                        status_code=response.status_code,
+                        detail=error_detail,
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
+    async def login_apple(
+        self,
+        id_token: str,
+        device_id: Optional[str] = None,
+    ) -> dict:
+        """
+        Login with Apple via auth service.
+
+        Args:
+            id_token: Apple identity token from mobile SDK
+            device_id: Optional device identifier
+
+        Returns:
+            Dict with user_id, email, name, role, access_token, refresh_token, avatar
+
+        Raises:
+            ValueError: If Apple login fails
+        """
+        async with httpx.AsyncClient() as client:
+            try:
+                # Use service account credentials
+                import subprocess
+                token = subprocess.check_output(
+                    ["gcloud", "auth", "print-identity-token"],
+                    text=True
+                ).strip()
+
+                response = await client.post(
+                    f"{self.base_url}/api/v1/auth/login/apple",
+                    json={
+                        "id_token": id_token,
+                        "tenant_id": self.tenant_id,
+                        "device_id": device_id,
+                    },
+                    headers={"Authorization": f"Bearer {token}"},
+                    timeout=self.timeout,
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(
+                        "auth_service_apple_login_success",
+                        user_id=data.get("user_id"),
+                        email=data.get("email"),
+                    )
+                    return data
+                else:
+                    error_detail = response.json().get("detail", "Apple login failed")
+                    logger.warning(
+                        "auth_service_apple_login_failed",
+                        status_code=response.status_code,
+                        detail=error_detail,
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
     async def create_user_in_bayit_db(
         self,
         auth_service_user_id: str,
         email: str,
         name: str,
         role: str = "user",
+        avatar: Optional[str] = None,
     ):
         """
         Create corresponding user record in Bayit+ MongoDB.
@@ -189,6 +308,7 @@ class AuthServiceClient:
             email_verified=True,  # Auth service handles verification
             is_verified=True,
             payment_pending=False,  # Will be set later if needed
+            avatar=avatar,  # Profile picture from OAuth provider
         )
 
         # Check beta status

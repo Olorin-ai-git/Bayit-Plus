@@ -18,6 +18,7 @@ from app.models.admin import (AuditLog, Campaign, EmailCampaign,
 from app.models.ai_generation_job import AIGenerationJob
 from app.models.audio_tracks import AudioTrackDoc
 # Beta 500 program models
+from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
@@ -352,6 +353,7 @@ async def connect_to_mongo():
         ChatReaction,
         ModerationAuditLog,
         # Beta 500 program models
+        BetaUser,
         BetaCredit,
         BetaCreditTransaction,
         # Judaism Section models

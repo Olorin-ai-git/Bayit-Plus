@@ -59,12 +59,12 @@ api.interceptors.response.use(
 // Auth Service (API)
 const apiAuthService = {
   login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
+    api.post('/auth/v2/login', { email, password }),
   register: (userData: { email: string; name: string; password: string }) =>
-    api.post('/auth/register', userData),
+    api.post('/auth/v2/register', userData),
   me: () => api.get('/auth/me'),
   getGoogleAuthUrl: () => api.get('/auth/google/url'),
-  googleCallback: (code: string) => api.post('/auth/google/callback', { code }),
+  googleCallback: (code: string) => api.post('/auth/v2/google/callback', { code }),
 };
 
 // Content Service (API)

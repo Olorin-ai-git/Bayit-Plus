@@ -98,15 +98,26 @@ def should_require_payment(user_id: str) -> bool:
 @router.post("/register", response_model=TokenResponse)
 @limiter.limit("3/hour")
 async def register(request: Request, user_data: UserCreate):
-    """Register a new user with enumeration protection and payment flow.
-
-    With REQUIRE_PAYMENT_ON_SIGNUP enabled, users must complete payment
-    before accessing the app. Uses gradual rollout via percentage setting.
-
-    Timing Attack Protection:
-        - Minimum 500ms response time to prevent user enumeration
-        - Constant time regardless of success/failure
     """
+    DEPRECATED: Legacy HS256 registration endpoint.
+
+    This endpoint has been replaced by /auth/v2/register which uses RS256 tokens
+    from auth.olorin.ai. All clients must migrate to v2 endpoints.
+
+    Migration completed: 2026-02-15
+    Deprecated since: Task #6 (Remove HS256 Support)
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "This endpoint no longer accepts registrations. Please use /api/v1/auth/v2/register",
+            "migration_guide": "https://docs.bayit.tv/auth-migration",
+            "deprecated_since": "2026-02-15",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     start_time = asyncio.get_event_loop().time()
 
     # Check if user exists
@@ -222,7 +233,26 @@ async def register(request: Request, user_data: UserCreate):
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute")
 async def login(request: Request, credentials: UserLogin):
-    """Login with email and password - with timing attack protection and account lockout."""
+    """
+    DEPRECATED: Legacy HS256 login endpoint.
+
+    This endpoint has been replaced by /auth/v2/login which uses RS256 tokens
+    from auth.olorin.ai. All clients must migrate to v2 endpoints.
+
+    Migration completed: 2026-02-15
+    Deprecated since: Task #6 (Remove HS256 Support)
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "This endpoint no longer accepts logins. Please use /api/v1/auth/v2/login",
+            "migration_guide": "https://docs.bayit.tv/auth-migration",
+            "deprecated_since": "2026-02-15",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     import logging
 
     logger = logging.getLogger(__name__)
@@ -398,65 +428,25 @@ class RefreshTokenRequest(BaseModel):
 @router.post("/refresh", response_model=TokenResponse)
 @limiter.limit("10/minute")
 async def refresh_access_token(request: Request, refresh_request: RefreshTokenRequest):
-    """Refresh access token using a valid refresh token."""
-    import logging
+    """
+    DEPRECATED: Legacy HS256 token refresh endpoint.
 
-    logger = logging.getLogger(__name__)
+    This endpoint has been replaced by the RS256 authentication flow from auth.olorin.ai.
+    Clients should re-authenticate using /auth/v2/login to obtain new RS256 tokens.
 
-    try:
-        # Verify refresh token and extract user ID
-        user_id = verify_refresh_token(
-            token=refresh_request.refresh_token,
-            secret_key=settings.SECRET_KEY,
-            algorithm=settings.ALGORITHM,
-        )
-
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid refresh token",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        # Get user from database
-        user = await User.get(user_id)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        # Check if user is active
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Account is inactive",
-            )
-
-        # Create new access and refresh tokens
-        access_token = create_access_token(data={"sub": str(user.id)})
-        new_refresh_token = create_refresh_token(
-            user_id=str(user.id),
-            secret_key=settings.SECRET_KEY,
-            algorithm=settings.ALGORITHM,
-        )
-
-        logger.info(f"Token refreshed for user: {user.email}")
-
-        return TokenResponse(
-            access_token=access_token,
-            refresh_token=new_refresh_token,
-            user=user.to_response(),
-        )
-
-    except Exception as e:
-        logger.error(f"Token refresh failed: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not refresh token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Token refresh no longer supported for HS256 tokens. Please re-login using /api/v1/auth/v2/login",
+            "migration_guide": "https://docs.bayit.tv/auth-migration",
+            "deprecated_since": "2026-02-16",
+            "action_required": "logout_and_relogin",
+        }
+    )
 
 
 # ==========================================
@@ -466,12 +456,27 @@ async def refresh_access_token(request: Request, refresh_request: RefreshTokenRe
 @router.post("/mobile/google", response_model=TokenResponse)
 @limiter.limit("10/minute")
 async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
-    """Handle Google Sign-In from iOS/Android apps with ID token validation.
-
-    This endpoint is called by mobile apps after they obtain a Google ID token
-    via the Google Sign-In SDK. The backend validates the token with Google
-    and creates/updates the user account.
     """
+    DEPRECATED: Legacy HS256 mobile Google Sign-In endpoint.
+
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    Mobile apps should use the web OAuth flow or implement native auth with backend sync.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Mobile Google Sign-In no longer supported with HS256 tokens. Please update your app to use the v2 authentication flow",
+            "migration_guide": "https://docs.bayit.tv/auth-migration#mobile-oauth",
+            "deprecated_since": "2026-02-16",
+            "action_required": "update_mobile_app",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     from google.auth.transport import requests as google_requests
     from google.oauth2 import id_token
 
@@ -584,11 +589,27 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
 @router.post("/mobile/apple", response_model=TokenResponse)
 @limiter.limit("10/minute")
 async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
-    """Handle Apple Sign-In from iOS/tvOS apps with identity token validation.
-
-    This endpoint is called by mobile apps after they obtain an Apple identity token
-    via Sign in with Apple. The backend validates the token and creates/updates the user account.
     """
+    DEPRECATED: Legacy HS256 mobile Apple Sign-In endpoint.
+
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    Mobile apps should use the web OAuth flow or implement native auth with backend sync.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Mobile Apple Sign-In no longer supported with HS256 tokens. Please update your app to use the v2 authentication flow",
+            "migration_guide": "https://docs.bayit.tv/auth-migration#mobile-oauth",
+            "deprecated_since": "2026-02-16",
+            "action_required": "update_mobile_app",
+        }
+    )
+
+    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
     import jwt
     from jwt import PyJWKClient
 
@@ -747,7 +768,27 @@ async def get_google_auth_url(redirect_uri: str | None = None):
 @router.post("/google/callback", response_model=TokenResponse)
 @limiter.limit("10/minute")
 async def google_callback(request: Request, auth_data: GoogleAuthCode):
-    """Handle Google OAuth callback with CSRF validation."""
+    """
+    DEPRECATED: Legacy HS256 Google OAuth callback endpoint.
+
+    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
+    OAuth should be implemented in the auth.olorin.ai service, not here.
+
+    Migration completed: 2026-02-16
+    Deprecated since: RS256-only enforcement
+
+    TODO: Implement OAuth in auth.olorin.ai, then create v2 proxy endpoint
+    """
+    raise HTTPException(
+        status_code=status.HTTP_410_GONE,
+        detail={
+            "error": "endpoint_deprecated",
+            "message": "Google OAuth callback deprecated. Use email/password login via /api/v1/auth/v2/login until OAuth v2 is implemented",
+            "migration_guide": "https://docs.bayit.tv/auth-migration#oauth",
+            "deprecated_since": "2026-02-16",
+            "action_required": "use_email_password_login",
+        }
+    )
 
     # Verify state parameter to prevent CSRF attacks
     if not auth_data.state:

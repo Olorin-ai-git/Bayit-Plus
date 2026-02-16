@@ -7,6 +7,7 @@ public enum AuthError: LocalizedError, Sendable {
     case googleSignInFailed(underlying: String)
     case appleSignInFailed(underlying: String)
     case emailSignInFailed(underlying: String)
+    case registrationFailed(underlying: String)
     case passkeySignInFailed(underlying: String)
     case keychainSaveFailed(status: OSStatus)
     case keychainLoadFailed(status: OSStatus)
@@ -29,6 +30,7 @@ public enum AuthError: LocalizedError, Sendable {
     case providerAlreadyLinked(underlying: String)
     case networkError(underlying: String)
     case passwordResetFailed(underlying: String)
+    case endpointDeprecated(message: String)
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -44,6 +46,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Apple sign-in failed. Please try again."
         case .emailSignInFailed:
             return "Invalid email or password"
+        case .registrationFailed:
+            return "Registration failed. Please try again."
         case .passkeySignInFailed:
             return "Passkey sign-in failed. Please try again."
         case .keychainSaveFailed, .keychainLoadFailed, .keychainDeleteFailed, .keychainItemNotFound:
@@ -80,6 +84,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Network error. Please check your connection."
         case .passwordResetFailed:
             return "Password reset failed. Please try again."
+        case .endpointDeprecated:
+            return "Please update your app. Your session has expired."
         }
     }
 
@@ -95,6 +101,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Apple sign-in failed: \(underlying)"
         case .emailSignInFailed(let underlying):
             return "Email sign-in failed: \(underlying)"
+        case .registrationFailed(let underlying):
+            return "Registration failed: \(underlying)"
         case .passkeySignInFailed(let underlying):
             return "Passkey sign-in failed: \(underlying)"
         case .keychainSaveFailed(let status):
@@ -139,6 +147,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Network error: \(underlying)"
         case .passwordResetFailed(let underlying):
             return "Password reset failed: \(underlying)"
+        case .endpointDeprecated(let message):
+            return "Endpoint deprecated: \(message). Please update your app."
         }
     }
 }

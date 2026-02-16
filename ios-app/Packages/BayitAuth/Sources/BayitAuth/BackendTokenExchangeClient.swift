@@ -73,65 +73,100 @@ enum BackendTokenExchangeClient {
 
     /// Exchanges a Google ID token for a backend-issued JWT.
     ///
-    /// Calls `POST /api/v1/auth/mobile/google` on the backend.
+    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
+    /// The backend now uses RS256 tokens from auth.olorin.ai.
+    /// Use the v2 login flow instead.
+    @available(*, deprecated, message: "Use v2 authentication endpoints. This endpoint returns HTTP 410 GONE.")
     static func exchangeGoogleToken(
         idToken: String,
         logger: APILogger
     ) async throws -> TokenExchangeResponse {
-        let config = AppConfiguration()
-        let url = config.apiBaseURL.appendingPathComponent("auth/mobile/google")
-
-        let body: [String: String] = ["id_token": idToken]
-
-        return try await performExchange(
-            url: url,
-            body: body,
-            timeout: config.apiTimeout,
-            logger: logger,
-            provider: "google"
+        throw AuthError.endpointDeprecated(
+            message: "/mobile/google endpoint deprecated. Please update app to use RS256 authentication."
         )
     }
 
     /// Exchanges an Apple identity token for a backend-issued JWT.
     ///
-    /// Calls `POST /api/v1/auth/mobile/apple` on the backend.
+    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
+    /// The backend now uses RS256 tokens from auth.olorin.ai.
+    /// Use the v2 login flow instead.
+    @available(*, deprecated, message: "Use v2 authentication endpoints. This endpoint returns HTTP 410 GONE.")
     static func exchangeAppleToken(
         identityToken: String,
         fullName: String?,
         email: String?,
         logger: APILogger
     ) async throws -> TokenExchangeResponse {
-        let config = AppConfiguration()
-        let url = config.apiBaseURL.appendingPathComponent("auth/mobile/apple")
-
-        var body: [String: String] = ["identity_token": identityToken]
-        if let name = fullName {
-            body["full_name"] = name
-        }
-        if let email = email {
-            body["email"] = email
-        }
-
-        return try await performExchange(
-            url: url,
-            body: body,
-            timeout: config.apiTimeout,
-            logger: logger,
-            provider: "apple"
+        throw AuthError.endpointDeprecated(
+            message: "/mobile/apple endpoint deprecated. Please update app to use RS256 authentication."
         )
     }
 
-    /// Authenticates with email and password directly with the backend.
+    /// Registers a new user with email and password via the backend Olorin Auth proxy.
     ///
-    /// Calls `POST /api/v1/auth/login` on the backend, which returns
-    /// backend-issued JWTs and user data directly (no provider token exchange needed).
+    /// Calls `POST /api/v1/auth/v2/register` which delegates to auth.olorin.ai
+    /// while maintaining Bayit+ specific features (payment flow, beta users, etc).
+    static func registerWithEmail(
+        email: String,
+        password: String,
+        name: String,
+        logger: APILogger
+    ) async throws -> LoginResponse {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("auth/v2/register")
+
+        let body: [String: String] = [
+            "email": email,
+            "password": password,
+            "name": name,
+        ]
+
+        let bodyData = try JSONEncoder().encode(body)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+        request.httpBody = bodyData
+
+        logger.debug("Registering with email via Olorin Auth", metadata: ["email": email])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.registrationFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            logger.warning(
+                "Registration failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "error": errorMessage,
+                ]
+            )
+            throw AuthError.registrationFailed(underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)")
+        }
+
+        logger.info("Registration succeeded via Olorin Auth", metadata: ["email": email])
+
+        return try JSONDecoder().decode(LoginResponse.self, from: data)
+    }
+
+    /// Authenticates with email and password via the backend Olorin Auth proxy.
+    ///
+    /// Calls `POST /api/v1/auth/v2/login` which delegates to auth.olorin.ai
+    /// while syncing with Bayit+ database for app-specific features.
     static func loginWithEmail(
         email: String,
         password: String,
         logger: APILogger
     ) async throws -> LoginResponse {
         let config = AppConfiguration()
-        let url = config.apiBaseURL.appendingPathComponent("auth/login")
+        let url = config.apiBaseURL.appendingPathComponent("auth/v2/login")
 
         let body: [String: String] = [
             "email": email,
@@ -147,7 +182,7 @@ enum BackendTokenExchangeClient {
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
-        logger.debug("Logging in with email", metadata: ["provider": "email"])
+        logger.debug("Logging in with email via Olorin Auth", metadata: ["provider": "email"])
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -157,30 +192,33 @@ enum BackendTokenExchangeClient {
 
         guard httpResponse.statusCode == 200 else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            logger.warning(
+                "Login failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "error": errorMessage,
+                ]
+            )
             throw AuthError.emailSignInFailed(underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)")
         }
+
+        logger.info("Login succeeded via Olorin Auth", metadata: ["email": email])
 
         return try JSONDecoder().decode(LoginResponse.self, from: data)
     }
 
     /// Refreshes a backend JWT using the refresh token.
     ///
-    /// Calls `POST /api/v1/auth/refresh` on the backend.
+    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
+    /// The backend no longer supports token refresh for HS256 tokens.
+    /// Users must re-authenticate to get new RS256 tokens.
+    @available(*, deprecated, message: "Token refresh no longer supported. Users must re-authenticate.")
     static func refreshBackendToken(
         refreshToken: String,
         logger: APILogger
     ) async throws -> TokenExchangeResponse {
-        let config = AppConfiguration()
-        let url = config.apiBaseURL.appendingPathComponent("auth/refresh")
-
-        let body: [String: String] = ["refresh_token": refreshToken]
-
-        return try await performExchange(
-            url: url,
-            body: body,
-            timeout: config.apiTimeout,
-            logger: logger,
-            provider: "refresh"
+        throw AuthError.endpointDeprecated(
+            message: "/auth/refresh endpoint deprecated. Please re-authenticate to get new RS256 tokens."
         )
     }
 
