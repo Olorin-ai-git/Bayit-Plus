@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.OlorinAuthService
-import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
-    private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -64,12 +62,7 @@ class RegisterViewModel @Inject constructor(
                 name = current.name,
             )) {
                 is BayitResult.Success -> {
-                    // Store tokens in secure storage
-                    secureStorage.saveAccessToken(result.data.accessToken)
-                    result.data.refreshToken?.let { refreshToken ->
-                        secureStorage.saveRefreshToken(refreshToken)
-                    }
-
+                    olorinAuthService.storeAuthTokens(result.data)
                     logger.info(
                         "Registration successful via Olorin Auth",
                         mapOf(

@@ -14,8 +14,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import tv.bayit.plus.core.auth.AuthState
-import tv.bayit.plus.core.auth.FirebaseAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
 import tv.bayit.plus.navigation.Route
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var authService: FirebaseAuthService
+    lateinit var authService: OlorinAuthService
 
     @Inject
     lateinit var googleSignInHelper: GoogleSignInHelper

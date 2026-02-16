@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import tv.bayit.plus.core.auth.FirebaseAuthService
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.UserRepository
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val firebaseAuthService: FirebaseAuthService,
+    private val olorinAuthService: OlorinAuthService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -63,7 +63,7 @@ class SettingsViewModel @Inject constructor(
 
     fun logout() {
         logger.info("User initiated logout from settings")
-        firebaseAuthService.signOut()
+        olorinAuthService.signOut()
     }
 }
 

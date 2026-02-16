@@ -151,6 +151,27 @@ class SecureStorageService @Inject constructor(
         BayitResult.failure(BayitError.Unknown("Failed to $operation: ${e.message}", e))
     }
 
+    // MARK: - Auth Token Convenience Methods
+
+    fun saveAccessToken(token: String) {
+        storagePrefs.edit().putString(ACCESS_TOKEN_KEY, token).apply()
+    }
+
+    fun getAccessToken(): String? = storagePrefs.getString(ACCESS_TOKEN_KEY, null)
+
+    fun saveRefreshToken(token: String) {
+        storagePrefs.edit().putString(REFRESH_TOKEN_KEY, token).apply()
+    }
+
+    fun getRefreshToken(): String? = storagePrefs.getString(REFRESH_TOKEN_KEY, null)
+
+    fun clearAuthTokens() {
+        storagePrefs.edit()
+            .remove(ACCESS_TOKEN_KEY)
+            .remove(REFRESH_TOKEN_KEY)
+            .apply()
+    }
+
     companion object {
         private const val STORAGE_PREF_NAME = "bayit_plus_secure_storage"
         private const val TOKEN_PREF_NAME = "bayit_token_manager"
@@ -161,5 +182,7 @@ class SecureStorageService @Inject constructor(
         private const val METADATA_PREFIX = "metadata_"
         private const val REFRESH_WINDOW_SECONDS = 300L
         private const val MS_PER_SEC = 1000L
+        private const val ACCESS_TOKEN_KEY = "bayit_access_token"
+        private const val REFRESH_TOKEN_KEY = "bayit_refresh_token"
     }
 }

@@ -74,25 +74,38 @@ extension AuthManager {
 
     /// Exchanges a provider-specific token with the backend for a JWT.
     func exchangeForBackendJWT(providerToken: ProviderToken) async throws -> String {
-        let response: BackendTokenExchangeClient.TokenExchangeResponse
-
         switch providerToken {
         case .google(let idToken):
-            response = try await BackendTokenExchangeClient.exchangeGoogleToken(
+            let response = try await BackendTokenExchangeClient.loginWithGoogle(
                 idToken: idToken,
                 logger: logger
             )
+            try keychainService.save(
+                token: response.accessToken, for: backendTokenKeychainKey
+            )
+            if let refreshToken = response.refreshToken {
+                try keychainService.save(
+                    token: refreshToken, for: refreshTokenKeychainKey
+                )
+            }
+            return response.accessToken
 
-        case .apple(let identityToken, let fullName, let email):
-            response = try await BackendTokenExchangeClient.exchangeAppleToken(
-                identityToken: identityToken,
-                fullName: fullName,
-                email: email,
+        case .apple(let identityToken, _, _):
+            let response = try await BackendTokenExchangeClient.loginWithApple(
+                idToken: identityToken,
                 logger: logger
             )
+            try keychainService.save(
+                token: response.accessToken, for: backendTokenKeychainKey
+            )
+            if let refreshToken = response.refreshToken {
+                try keychainService.save(
+                    token: refreshToken, for: refreshTokenKeychainKey
+                )
+            }
+            return response.accessToken
 
         case .emailPassword(let accessToken, let refreshToken):
-            // Email sign-in already returns backend tokens directly
             try keychainService.save(
                 token: accessToken, for: backendTokenKeychainKey
             )
@@ -103,18 +116,6 @@ extension AuthManager {
             }
             return accessToken
         }
-
-        // Store backend JWT and refresh token
-        try keychainService.save(
-            token: response.accessToken, for: backendTokenKeychainKey
-        )
-        if let refreshToken = response.refreshToken {
-            try keychainService.save(
-                token: refreshToken, for: refreshTokenKeychainKey
-            )
-        }
-
-        return response.accessToken
     }
 
     /// Parses the user role from Firebase custom claims.

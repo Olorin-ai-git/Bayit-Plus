@@ -3,7 +3,7 @@ package tv.bayit.plus.core.network
 /**
  * Provides the current authentication token for Bearer header injection.
  *
- * The host app implements this -- typically reading a Firebase ID token --
+ * The host app implements this -- reading RS256 tokens from secure storage --
  * so the networking layer never depends on a specific auth SDK.
  *
  * Mirrors the iOS [AuthTokenProvider] protocol from BayitNetworking.

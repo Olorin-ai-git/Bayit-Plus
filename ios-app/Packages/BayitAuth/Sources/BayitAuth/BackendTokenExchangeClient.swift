@@ -69,38 +69,114 @@ enum BackendTokenExchangeClient {
         }
     }
 
-    // MARK: - Google Token Exchange
+    // MARK: - Google OAuth (v2)
 
-    /// Exchanges a Google ID token for a backend-issued JWT.
+    /// Authenticates with Google via the backend Olorin Auth proxy.
     ///
-    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
-    /// The backend now uses RS256 tokens from auth.olorin.ai.
-    /// Use the v2 login flow instead.
-    @available(*, deprecated, message: "Use v2 authentication endpoints. This endpoint returns HTTP 410 GONE.")
-    static func exchangeGoogleToken(
+    /// Calls `POST /api/v1/auth/v2/google` which delegates to auth.olorin.ai
+    /// while syncing with Bayit+ database for app-specific features.
+    static func loginWithGoogle(
         idToken: String,
+        deviceId: String? = nil,
         logger: APILogger
-    ) async throws -> TokenExchangeResponse {
-        throw AuthError.endpointDeprecated(
-            message: "/mobile/google endpoint deprecated. Please update app to use RS256 authentication."
-        )
+    ) async throws -> LoginResponse {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("auth/v2/google")
+
+        var bodyDict: [String: String] = ["id_token": idToken]
+        if let deviceId = deviceId {
+            bodyDict["device_id"] = deviceId
+        }
+
+        let bodyData = try JSONEncoder().encode(bodyDict)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+        request.httpBody = bodyData
+
+        logger.debug("Logging in with Google via Olorin Auth", metadata: ["provider": "google"])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.googleSignInFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            logger.warning(
+                "Google login failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "error": errorMessage,
+                ]
+            )
+            throw AuthError.googleSignInFailed(
+                underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)"
+            )
+        }
+
+        logger.info("Google login succeeded via Olorin Auth", metadata: ["provider": "google"])
+
+        return try JSONDecoder().decode(LoginResponse.self, from: data)
     }
 
-    /// Exchanges an Apple identity token for a backend-issued JWT.
+    // MARK: - Apple OAuth (v2)
+
+    /// Authenticates with Apple via the backend Olorin Auth proxy.
     ///
-    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
-    /// The backend now uses RS256 tokens from auth.olorin.ai.
-    /// Use the v2 login flow instead.
-    @available(*, deprecated, message: "Use v2 authentication endpoints. This endpoint returns HTTP 410 GONE.")
-    static func exchangeAppleToken(
-        identityToken: String,
-        fullName: String?,
-        email: String?,
+    /// Calls `POST /api/v1/auth/v2/apple` which delegates to auth.olorin.ai
+    /// while syncing with Bayit+ database for app-specific features.
+    static func loginWithApple(
+        idToken: String,
+        deviceId: String? = nil,
         logger: APILogger
-    ) async throws -> TokenExchangeResponse {
-        throw AuthError.endpointDeprecated(
-            message: "/mobile/apple endpoint deprecated. Please update app to use RS256 authentication."
-        )
+    ) async throws -> LoginResponse {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("auth/v2/apple")
+
+        var bodyDict: [String: String] = ["id_token": idToken]
+        if let deviceId = deviceId {
+            bodyDict["device_id"] = deviceId
+        }
+
+        let bodyData = try JSONEncoder().encode(bodyDict)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+        request.httpBody = bodyData
+
+        logger.debug("Logging in with Apple via Olorin Auth", metadata: ["provider": "apple"])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.appleSignInFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            logger.warning(
+                "Apple login failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "error": errorMessage,
+                ]
+            )
+            throw AuthError.appleSignInFailed(
+                underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)"
+            )
+        }
+
+        logger.info("Apple login succeeded via Olorin Auth", metadata: ["provider": "apple"])
+
+        return try JSONDecoder().decode(LoginResponse.self, from: data)
     }
 
     /// Registers a new user with email and password via the backend Olorin Auth proxy.
@@ -205,21 +281,6 @@ enum BackendTokenExchangeClient {
         logger.info("Login succeeded via Olorin Auth", metadata: ["email": email])
 
         return try JSONDecoder().decode(LoginResponse.self, from: data)
-    }
-
-    /// Refreshes a backend JWT using the refresh token.
-    ///
-    /// ⚠️ DEPRECATED: This endpoint has been removed (2026-02-16).
-    /// The backend no longer supports token refresh for HS256 tokens.
-    /// Users must re-authenticate to get new RS256 tokens.
-    @available(*, deprecated, message: "Token refresh no longer supported. Users must re-authenticate.")
-    static func refreshBackendToken(
-        refreshToken: String,
-        logger: APILogger
-    ) async throws -> TokenExchangeResponse {
-        throw AuthError.endpointDeprecated(
-            message: "/auth/refresh endpoint deprecated. Please re-authenticate to get new RS256 tokens."
-        )
     }
 
     /// Gets WebAuthn authentication options for passkey sign-in.
@@ -344,56 +405,4 @@ enum BackendTokenExchangeClient {
         return decoded
     }
 
-    // MARK: - Private
-
-    private static func performExchange(
-        url: URL,
-        body: [String: String],
-        timeout: TimeInterval,
-        logger: APILogger,
-        provider: String
-    ) async throws -> TokenExchangeResponse {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
-        request.timeoutInterval = timeout
-
-        request.httpBody = try JSONEncoder().encode(body)
-
-        logger.debug(
-            "Exchanging \(provider) token with backend",
-            metadata: ["url": url.absoluteString]
-        )
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.tokenRefreshFailed(underlying: "Invalid response type")
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            let responseBody = String(data: data, encoding: .utf8) ?? "empty"
-            logger.warning(
-                "Backend token exchange failed",
-                metadata: [
-                    "provider": provider,
-                    "status_code": String(httpResponse.statusCode),
-                    "response": String(responseBody.prefix(200)),
-                ]
-            )
-            throw AuthError.tokenRefreshFailed(
-                underlying: "Backend returned HTTP \(httpResponse.statusCode)"
-            )
-        }
-
-        let decoded = try JSONDecoder().decode(TokenExchangeResponse.self, from: data)
-
-        logger.debug(
-            "Backend token exchange succeeded",
-            metadata: ["provider": provider]
-        )
-
-        return decoded
-    }
 }

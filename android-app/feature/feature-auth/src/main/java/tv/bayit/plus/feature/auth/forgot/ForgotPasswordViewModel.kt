@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import tv.bayit.plus.core.auth.FirebaseAuthService
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val firebaseAuthService: FirebaseAuthService,
+    private val olorinAuthService: OlorinAuthService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -58,7 +58,7 @@ class ForgotPasswordViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = ForgotPasswordUiState.Loading
 
-            when (val result = firebaseAuthService.sendPasswordResetEmail(email)) {
+            when (val result = olorinAuthService.requestPasswordReset(email)) {
                 is BayitResult.Success -> {
                     logger.info(
                         "Password reset email sent",

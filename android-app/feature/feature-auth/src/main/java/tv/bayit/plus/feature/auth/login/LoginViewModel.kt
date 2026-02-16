@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.OlorinAuthService
-import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
-    private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -59,12 +57,7 @@ class LoginViewModel @Inject constructor(
                 password = current.password,
             )) {
                 is BayitResult.Success -> {
-                    // Store tokens in secure storage
-                    secureStorage.saveAccessToken(result.data.accessToken)
-                    result.data.refreshToken?.let { refreshToken ->
-                        secureStorage.saveRefreshToken(refreshToken)
-                    }
-
+                    olorinAuthService.storeAuthTokens(result.data)
                     logger.info(
                         "Login successful via Olorin Auth",
                         mapOf(
@@ -95,7 +88,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun loginWithGoogle(idToken: String) {
-        // Handle empty token (sign-in was cancelled or failed)
         if (idToken.isBlank()) {
             _uiState.value = LoginUiState.Error(
                 message = "Google Sign-In was cancelled or failed. Please try again.",
@@ -108,13 +100,19 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 
-            when (val result = firebaseAuthService.signInWithGoogle(idToken)) {
+            when (val result = olorinAuthService.loginWithGoogle(idToken)) {
                 is BayitResult.Success -> {
+                    olorinAuthService.storeAuthTokens(result.data)
                     logger.info(
-                        "Google login successful",
-                        mapOf("uid" to result.data.uid),
+                        "Google login successful via Olorin Auth",
+                        mapOf(
+                            "user_id" to result.data.user.id,
+                            "requires_payment" to result.data.requiresPayment.toString(),
+                        ),
                     )
-                    _uiState.value = LoginUiState.Success
+                    _uiState.value = LoginUiState.Success(
+                        requiresPayment = result.data.requiresPayment,
+                    )
                 }
 
                 is BayitResult.Failure -> {

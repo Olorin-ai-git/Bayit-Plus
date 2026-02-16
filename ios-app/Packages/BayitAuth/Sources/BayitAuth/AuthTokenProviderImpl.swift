@@ -68,44 +68,13 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
 
     /// Refreshes the backend JWT using the stored refresh token.
     private func refreshAndCacheToken() async throws -> String {
-        guard let refreshToken = try? keychainService.load(
-            for: refreshTokenKeychainKey
-        ) else {
-            logger.warning(
-                "No refresh token available for backend JWT refresh",
-                metadata: [:]
-            )
-            throw AuthError.notAuthenticated
-        }
-
-        do {
-            let response = try await BackendTokenExchangeClient.refreshBackendToken(
-                refreshToken: refreshToken,
-                logger: logger
-            )
-
-            try keychainService.save(
-                token: response.accessToken, for: tokenKeychainKey
-            )
-            if let newRefresh = response.refreshToken {
-                try keychainService.save(
-                    token: newRefresh, for: refreshTokenKeychainKey
-                )
-            }
-
-            logger.debug(
-                "Refreshed and cached backend JWT",
-                metadata: [:]
-            )
-
-            return response.accessToken
-        } catch {
-            logger.error(
-                "Backend JWT refresh failed",
-                metadata: ["error": error.localizedDescription]
-            )
-            throw AuthError.tokenRefreshFailed(underlying: error.localizedDescription)
-        }
+        // RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
+        // Users must re-authenticate to get new tokens.
+        logger.warning(
+            "Token refresh not supported for RS256 tokens, re-authentication required",
+            metadata: [:]
+        )
+        throw AuthError.notAuthenticated
     }
 
     /// Checks whether a JWT token will expire within the refresh margin.

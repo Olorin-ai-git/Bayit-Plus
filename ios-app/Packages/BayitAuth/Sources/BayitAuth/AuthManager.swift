@@ -185,36 +185,16 @@ public final class AuthManager {
     // MARK: - Token Refresh
 
     /// Forces a backend token refresh using the stored refresh token.
+    ///
+    /// RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
+    /// Users must re-authenticate to get new tokens.
     @discardableResult
     public func refreshToken() async throws -> String {
-        guard let storedRefresh = try? keychainService.load(
-            for: refreshTokenKeychainKey
-        ) else {
-            throw AuthError.notAuthenticated
-        }
-
-        do {
-            let response = try await BackendTokenExchangeClient.refreshBackendToken(
-                refreshToken: storedRefresh,
-                logger: logger
-            )
-
-            try keychainService.save(
-                token: response.accessToken, for: backendTokenKeychainKey
-            )
-            if let newRefresh = response.refreshToken {
-                try keychainService.save(
-                    token: newRefresh, for: refreshTokenKeychainKey
-                )
-            }
-            token = response.accessToken
-
-            logger.debug("Backend token refreshed successfully", metadata: [:])
-
-            return response.accessToken
-        } catch {
-            throw AuthError.tokenRefreshFailed(underlying: error.localizedDescription)
-        }
+        logger.warning(
+            "Token refresh not supported for RS256 tokens, re-authentication required",
+            metadata: [:]
+        )
+        throw AuthError.notAuthenticated
     }
 
     // MARK: - Profile Management
