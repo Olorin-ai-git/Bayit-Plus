@@ -51,7 +51,7 @@ final class VODViewModel {
 
         do {
             // Load categories and content in parallel
-            async let categoriesTask = loadCategoriesIfNeeded()
+            async let categoriesTask: Void = loadCategoriesIfNeeded()
 
             if selectedType == .collections {
                 let collections = try await repository.fetchCollections(

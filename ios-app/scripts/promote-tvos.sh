@@ -47,6 +47,7 @@ xcodebuild -project BayitPlus.xcodeproj \
 echo -e "${GREEN}✅ Archive succeeded${NC}"
 
 # Create ExportOptions.plist
+# Note: uploadSymbols=false because Firebase handles its own symbolication via Crashlytics SDK
 cat > /tmp/tvOSExportOptions.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -56,7 +57,8 @@ cat > /tmp/tvOSExportOptions.plist << 'EOF'
   <key>teamID</key><string>963B7732N5</string>
   <key>destination</key><string>upload</string>
   <key>signingStyle</key><string>automatic</string>
-  <key>uploadSymbols</key><true/>
+  <key>uploadSymbols</key><false/>
+  <key>uploadBitcode</key><false/>
 </dict>
 </plist>
 EOF

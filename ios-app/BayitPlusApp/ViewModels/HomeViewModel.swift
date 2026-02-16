@@ -101,14 +101,14 @@ final class HomeViewModel {
     /// Load additional sections in parallel (non-blocking)
     @MainActor
     private func loadAdditionalSections() async {
-        async let liveTask = loadLiveChannels()
-        async let radioTask = loadRadioStations()
-        async let continueTask = loadContinueWatching()
-        async let telAvivTask = loadTelAvivContent()
-        async let jerusalemTask = loadJerusalemContent()
-        async let trendingTask = loadTrending()
-        async let locationTask = loadLocationContent()
-        async let youngstersTask = loadYoungstersTrending()
+        async let liveTask: Void = loadLiveChannels()
+        async let radioTask: Void = loadRadioStations()
+        async let continueTask: Void = loadContinueWatching()
+        async let telAvivTask: Void = loadTelAvivContent()
+        async let jerusalemTask: Void = loadJerusalemContent()
+        async let trendingTask: Void = loadTrending()
+        async let locationTask: Void = loadLocationContent()
+        async let youngstersTask: Void = loadYoungstersTrending()
 
         await liveTask
         await radioTask
@@ -201,8 +201,8 @@ final class HomeViewModel {
         }
         let state = location.state ?? ""
 
-        async let israelisTask = loadIsraelisInCity(city: city, state: state)
-        async let businessesTask = loadIsraeliBusinesses(city: city, state: state)
+        async let israelisTask: Void = loadIsraelisInCity(city: city, state: state)
+        async let businessesTask: Void = loadIsraeliBusinesses(city: city, state: state)
 
         await israelisTask
         await businessesTask

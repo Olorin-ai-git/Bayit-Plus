@@ -21,13 +21,14 @@ struct LocationContentRow: View {
                     subtitle: locationSubtitle(for: item),
                     badge: nil,
                     aspectRatio: 1.0,  // Square
-                    width: 160
-                ) {
-                    // Open URL in web view or external browser
-                    if let urlString = item.url, let url = URL(string: urlString) {
-                        UIApplication.shared.open(url)
+                    width: 160,
+                    onTap: {
+                        // Open URL in web view or external browser
+                        if let urlString = item.url, let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        }
                     }
-                }
+                )
             }
         }
     }

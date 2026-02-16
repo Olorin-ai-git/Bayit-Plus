@@ -107,16 +107,16 @@ class OlorinAuthService @Inject constructor(
     }
 
     private interface OlorinAuthApi {
-        @POST("auth/v2/register")
+        @POST("api/v1/auth/v2/register")
         suspend fun register(@Body request: RegisterRequest): AuthResponse
 
-        @POST("auth/v2/login")
+        @POST("api/v1/auth/v2/login")
         suspend fun login(@Body request: LoginRequest): AuthResponse
 
-        @POST("auth/v2/google")
+        @POST("api/v1/auth/v2/google")
         suspend fun loginGoogle(@Body request: GoogleLoginRequest): AuthResponse
 
-        @POST("auth/password-reset/request")
+        @POST("api/v1/auth/password-reset/request")
         suspend fun requestPasswordReset(@Body request: PasswordResetRequest)
     }
 

@@ -149,10 +149,11 @@ struct TrendingRowView: View {
                         subtitle: item.category,
                         subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                         aspectRatio: 2 / 3,
-                        width: 160
-                    ) {
-                        navigateToItem(item)
-                    }
+                        width: 160,
+                        onTap: {
+                            navigateToItem(item)
+                        }
+                    )
                 }
             }
         }

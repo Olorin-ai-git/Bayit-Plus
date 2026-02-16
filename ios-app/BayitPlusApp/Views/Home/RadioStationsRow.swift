@@ -22,13 +22,14 @@ struct RadioStationsRow: View {
                     subtitle: station.currentSong ?? station.currentShow,
                     aspectRatio: 1.0,
                     width: 140,
-                    placeholderIcon: .radio
-                ) {
-                    coordinator.navigate(to: .player(
-                        contentId: station.id,
-                        contentType: .radio
-                    ))
-                }
+                    placeholderIcon: .radio,
+                    onTap: {
+                        coordinator.navigate(to: .player(
+                            contentId: station.id,
+                            contentType: .radio
+                        ))
+                    }
+                )
             }
         }
     }

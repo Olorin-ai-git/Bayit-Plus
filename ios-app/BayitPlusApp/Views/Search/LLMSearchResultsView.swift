@@ -56,8 +56,9 @@ struct LLMSearchResultsView: View {
                     title: nil,
                     subtitle: nil,
                     aspectRatio: 16 / 9,
-                    width: 120
-                ) { }
+                    width: 120,
+                    onTap: {}
+                )
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                     Text(item.title ?? "")

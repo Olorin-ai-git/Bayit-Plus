@@ -48,10 +48,11 @@ struct YoungtersView: View {
                     title: hero.title,
                     subtitle: hero.category,
                     aspectRatio: 21/9,
-                    width: .infinity
-                ) {
-                    coordinator.pushToCurrentTab(.movieDetail(movieId: hero.id))
-                }
+                    width: .infinity,
+                    onTap: {
+                        coordinator.pushToCurrentTab(.movieDetail(movieId: hero.id))
+                    }
+                )
                 .padding(.horizontal, DesignTokens.Spacing.lg)
             }
 
@@ -87,12 +88,13 @@ struct YoungtersView: View {
                         GlassContentCard(
                             thumbnailURL: item.thumbnail,
                             title: item.title,
-                            subtitle: item.duration
-                        ) {
-                            coordinator.pushToCurrentTab(
-                                .movieDetail(movieId: item.id)
-                            )
-                        }
+                            subtitle: item.duration,
+                            onTap: {
+                                coordinator.pushToCurrentTab(
+                                    .movieDetail(movieId: item.id)
+                                )
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -124,10 +126,11 @@ struct YoungtersView: View {
                     thumbnailURL: item.thumbnail,
                     title: item.title,
                     subtitle: item.duration,
-                    width: .infinity
-                ) {
-                    coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
-                }
+                    width: .infinity,
+                    onTap: {
+                        coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
+                    }
+                )
             }
 
             if vm.items.count < vm.total {

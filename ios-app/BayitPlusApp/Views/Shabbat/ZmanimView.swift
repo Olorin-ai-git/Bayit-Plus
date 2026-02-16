@@ -250,8 +250,9 @@ struct ZmanimView: View {
                             title: item.title,
                             subtitle: item.category,
                             aspectRatio: 16 / 9,
-                            width: 240
-                        ) {}
+                            width: 240,
+                            onTap: {}
+                        )
                     }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.lg)

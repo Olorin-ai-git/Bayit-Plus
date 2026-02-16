@@ -51,14 +51,15 @@ struct FavoritesView: View {
                     thumbnailURL: item.thumbnail,
                     title: item.title,
                     subtitle: item.type?.capitalized,
-                    width: .infinity
-                ) {
-                    if let contentId = item.contentId {
-                        coordinator.pushToCurrentTab(
-                            .movieDetail(movieId: contentId)
-                        )
+                    width: .infinity,
+                    onTap: {
+                        if let contentId = item.contentId {
+                            coordinator.pushToCurrentTab(
+                                .movieDetail(movieId: contentId)
+                            )
+                        }
                     }
-                }
+                )
                 .contextMenu {
                     Button(role: .destructive) {
                         Task {

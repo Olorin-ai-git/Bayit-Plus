@@ -30,9 +30,9 @@ final class ChildrenViewModel {
         error = nil
 
         // Load each endpoint independently so one failure doesn't block the rest
-        async let categoriesResult = loadCategories()
-        async let featuredResult = loadFeatured()
-        async let ageGroupsResult = loadAgeGroups()
+        async let categoriesResult: Void = loadCategories()
+        async let featuredResult: Void = loadFeatured()
+        async let ageGroupsResult: Void = loadAgeGroups()
 
         _ = await (categoriesResult, featuredResult, ageGroupsResult)
 

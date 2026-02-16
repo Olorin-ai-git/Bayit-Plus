@@ -56,8 +56,9 @@ struct FlowsView: View {
                         title: flow.name,
                         subtitle: flowSubtitle(flow),
                         aspectRatio: 21/9,
-                        width: .infinity
-                    ) {}
+                        width: .infinity,
+                        onTap: {}
+                    )
                 }
 
                 if let desc = flow.description {
@@ -104,12 +105,13 @@ struct FlowsView: View {
             title: item.title,
             subtitle: item.duration,
             badge: item.position.map { "#\($0)" },
-            width: 160
-        ) {
-            if let contentId = item.contentId {
-                coordinator.pushToCurrentTab(.movieDetail(movieId: contentId))
+            width: 160,
+            onTap: {
+                if let contentId = item.contentId {
+                    coordinator.pushToCurrentTab(.movieDetail(movieId: contentId))
+                }
             }
-        }
+        )
     }
 
     private var emptyState: some View {

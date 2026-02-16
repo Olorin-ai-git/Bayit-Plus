@@ -23,10 +23,11 @@ struct ContinueWatchingRow: View {
                         subtitle: itemSubtitle(for: item),
                         badge: itemBadge(for: item),
                         aspectRatio: 2 / 3,
-                        width: 160
-                    ) {
-                        navigateToItem(item)
-                    }
+                        width: 160,
+                        onTap: {
+                            navigateToItem(item)
+                        }
+                    )
 
                     // Progress bar
                     if let progress = item.progress, progress > 0 {

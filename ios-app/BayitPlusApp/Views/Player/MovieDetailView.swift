@@ -192,10 +192,11 @@ struct MovieDetailView: View {
                             subtitle: relatedSubtitle(item),
                             aspectRatio: 2 / 3,
                             width: 120,
-                            placeholderIcon: .movie
-                        ) {
-                            coordinator.navigate(to: .movieDetail(movieId: item.id))
-                        }
+                            placeholderIcon: .movie,
+                            onTap: {
+                                coordinator.navigate(to: .movieDetail(movieId: item.id))
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.lg)

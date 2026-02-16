@@ -177,14 +177,15 @@ struct StarStoryHomeView: View {
             thumbnailURL: episode.thumbnailUrl,
             title: episode.title,
             subtitle: "\(episode.theme) - \(episode.formattedDuration)",
-            width: .infinity
-        ) {
-            if let url = episode.hlsUrl {
-                coordinator.pushToCurrentTab(
-                    .player(contentId: episode.episodeId, contentType: .movie)
-                )
+            width: .infinity,
+            onTap: {
+                if let url = episode.hlsUrl {
+                    coordinator.pushToCurrentTab(
+                        .player(contentId: episode.episodeId, contentType: .movie)
+                    )
+                }
             }
-        }
+        )
     }
 
     private var loadingState: some View {

@@ -16,10 +16,11 @@ struct SpotlightSection: View {
                     badge: item.isSeries == true ? "Series" : nil,
                     subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                     aspectRatio: 16 / 9,
-                    width: 300
-                ) {
-                    navigateToItem(item)
-                }
+                    width: 300,
+                    onTap: {
+                        navigateToItem(item)
+                    }
+                )
 
                 if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
                     SubtitleFlagsPill(

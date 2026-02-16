@@ -29,10 +29,10 @@ final class YoungstersViewModel {
         isLoading = true
         error = nil
 
-        async let catTask = loadCategories()
-        async let featTask = loadFeatured()
-        async let trendTask = loadTrending()
-        async let newsTask = loadNews()
+        async let catTask: Void = loadCategories()
+        async let featTask: Void = loadFeatured()
+        async let trendTask: Void = loadTrending()
+        async let newsTask: Void = loadNews()
 
         _ = await (catTask, featTask, trendTask, newsTask)
 

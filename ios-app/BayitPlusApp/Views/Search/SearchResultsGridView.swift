@@ -33,10 +33,11 @@ struct SearchResultsGridView: View {
                         badge: result.contentType,
                         subtitleFlags: result.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                         aspectRatio: 2 / 3,
-                        width: cardWidth
-                    ) {
-                        onNavigate(routeForResult(result))
-                    }
+                        width: cardWidth,
+                        onTap: {
+                            onNavigate(routeForResult(result))
+                        }
+                    )
 
                     if let languages = result.availableSubtitleLanguages, !languages.isEmpty {
                         SubtitleFlagsPill(

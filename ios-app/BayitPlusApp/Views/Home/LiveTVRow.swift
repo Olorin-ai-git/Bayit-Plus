@@ -23,13 +23,14 @@ struct LiveTVRow: View {
                     badge: "LIVE",
                     aspectRatio: 1.0,  // Square
                     width: 140,
-                    placeholderIcon: .live
-                ) {
-                    coordinator.navigate(to: .player(
-                        contentId: channel.id,
-                        contentType: .liveTV
-                    ))
-                }
+                    placeholderIcon: .live,
+                    onTap: {
+                        coordinator.navigate(to: .player(
+                            contentId: channel.id,
+                            contentType: .liveTV
+                        ))
+                    }
+                )
             }
         }
     }

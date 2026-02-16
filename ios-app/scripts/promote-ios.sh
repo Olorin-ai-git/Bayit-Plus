@@ -26,8 +26,12 @@ NEW_BUILD=$((CURRENT_BUILD + 1))
 
 echo -e "${BLUE}📦 Bumping build number: $CURRENT_BUILD → $NEW_BUILD${NC}"
 
-# Update Info.plist
+# Update Info.plist files
 plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusApp/Info.plist
+plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/Info.plist
+
+echo -e "${GREEN}✅ Updated BayitPlusApp/Info.plist${NC}"
+echo -e "${GREEN}✅ Updated Extensions/WidgetExtension/Info.plist${NC}"
 
 # Update project.pbxproj (iOS app configurations only)
 sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
@@ -48,6 +52,7 @@ xcodebuild -project BayitPlus.xcodeproj \
 echo -e "${GREEN}✅ Archive succeeded${NC}"
 
 # Create ExportOptions.plist
+# Note: uploadSymbols=false because Firebase handles its own symbolication via Crashlytics SDK
 cat > /tmp/iOSExportOptions.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -57,7 +62,8 @@ cat > /tmp/iOSExportOptions.plist << 'EOF'
   <key>teamID</key><string>963B7732N5</string>
   <key>destination</key><string>upload</string>
   <key>signingStyle</key><string>automatic</string>
-  <key>uploadSymbols</key><true/>
+  <key>uploadSymbols</key><false/>
+  <key>uploadBitcode</key><false/>
 </dict>
 </plist>
 EOF

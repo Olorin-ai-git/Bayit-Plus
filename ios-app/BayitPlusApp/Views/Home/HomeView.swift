@@ -200,10 +200,11 @@ struct HomeView: View {
                     title: item.title,
                     subtitle: item.duration,
                     aspectRatio: 2.0 / 3.0,
-                    width: 160
-                ) {
-                    coordinator.navigate(to: .movieDetail(movieId: item.id))
-                }
+                    width: 160,
+                    onTap: {
+                        coordinator.navigate(to: .movieDetail(movieId: item.id))
+                    }
+                )
             }
         }
     }
