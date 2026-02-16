@@ -151,10 +151,13 @@ class User(Document):
     # OAuth - Multi-provider support
     google_id: Optional[str] = None
     apple_id: Optional[str] = None
-    auth_provider: str = "local"  # Primary provider: local, google, apple
+    auth_provider: str = "local"  # Primary provider: local, google, apple, olorin_auth
     linked_providers: List[str] = Field(
         default_factory=list
-    )  # All linked providers: ["local", "google", "apple"]
+    )  # All linked providers: ["local", "google", "apple", "olorin_auth"]
+
+    # Olorin Auth Service integration
+    auth_service_user_id: Optional[str] = None  # User ID from auth.olorin.ai
 
     # Email verification
     email_verified: bool = False

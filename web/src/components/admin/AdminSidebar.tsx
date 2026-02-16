@@ -101,6 +101,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: Film,
     children: [
       { key: 'content-library', labelKey: 'admin.nav.contentLibrary', route: '/admin/content' },
+      { key: 'avatar-studio', labelKey: 'admin.nav.avatarStudio', route: '/admin/avatar-movie-studio' },
       { key: 'featured', labelKey: 'admin.nav.featured', route: '/admin/featured' },
       { key: 'categories', labelKey: 'admin.nav.categories', route: '/admin/categories' },
       { key: 'live-channels', labelKey: 'admin.nav.liveChannels', route: '/admin/live-channels' },

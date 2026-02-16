@@ -150,6 +150,7 @@ const RadioStationsPage = lazy(() => import('./pages/admin/RadioStationsPage'))
 const AdminPodcastsPage = lazy(() => import('./pages/admin/PodcastsPage'))
 const PodcastEpisodesPage = lazy(() => import('./pages/admin/PodcastEpisodesPage'))
 const AdminAudiobooksPage = lazy(() => import('./pages/admin/AudiobooksPage'))
+const AvatarMovieStudioPage = lazy(() => import('./pages/admin/AvatarMovieStudio'))
 const WidgetsPage = lazy(() => import('./pages/admin/WidgetsPage'))
 const LibrarianAgentPage = lazy(() => import('./pages/admin/LibrarianAgentPage'))
 const RecordingsManagementPage = lazy(() => import('./pages/admin/RecordingsManagementPage'))
@@ -266,6 +267,7 @@ const AppContent = () => {
         <Route path="content" element={<ContentLibraryPage />} />
         <Route path="content/new" element={<ContentEditorPage />} />
         <Route path="content/:contentId/edit" element={<ContentEditorPage />} />
+        <Route path="avatar-movie-studio" element={<AvatarMovieStudioPage />} />
         <Route path="featured" element={<FeaturedManagementPage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="live-channels" element={<LiveChannelsPage />} />

@@ -45,7 +45,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_radio_stations, admin_subtitle_sync, admin_taxonomy,
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
-                                auth, avatar_dialogue, chapters, chat,
+                                auth, auth_proxy, avatar_dialogue, avatar_studio, chapters, chat,
                                 mfa, mobile_auth,
                                 channel_chat, chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
@@ -150,6 +150,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Authentication Routes
     # ============================================
     app.include_router(auth.router, prefix=f"{prefix}/auth", tags=["auth"])
+    app.include_router(auth_proxy.router, prefix=f"{prefix}/auth", tags=["auth-proxy"])
     app.include_router(
         mobile_auth.router,
         prefix=f"{prefix}/auth",
@@ -470,6 +471,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         admin_subtitle_sync.router, prefix=prefix, tags=["admin-subtitles"]
+    )
+    app.include_router(
+        avatar_studio.router, prefix=f"{prefix}/admin", tags=["admin-avatar-studio"]
     )
     logger.debug("Registered admin routes")
 
