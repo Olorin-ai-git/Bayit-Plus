@@ -61,6 +61,8 @@ fun PlayerRoute(
 
     var showLanguagePicker by remember { mutableStateOf(false) }
     var showSubtitlePicker by remember { mutableStateOf(false) }
+    var showSplitSubtitlePicker by remember { mutableStateOf(false) }
+    var showOpenSubtitles by remember { mutableStateOf(false) }
 
     DisposableEffect(contentId) {
         viewModel.loadContent(contentId, contentType)
@@ -99,6 +101,22 @@ fun PlayerRoute(
         onToggleTrivia = viewModel::toggleLiveTrivia,
         onSelectLanguage = viewModel::selectAILanguage,
         onSelectSubtitleLanguage = viewModel::selectSubtitleLanguage,
+        onToggleSplitMode = {
+            if (!extendedState.isSplitSubtitleMode) {
+                showSplitSubtitlePicker = true
+            } else {
+                viewModel.toggleSplitSubtitleMode()
+            }
+            showSubtitlePicker = false
+        },
+        onShowOpenSubtitles = {
+            showOpenSubtitles = true
+            showSubtitlePicker = false
+        },
+        onSelectPrimaryLanguage = viewModel::selectPrimarySubtitleLanguage,
+        onSelectSecondaryLanguage = viewModel::selectSecondarySubtitleLanguage,
+        onFetchExternalSubtitles = viewModel::fetchExternalSubtitles,
+        onSelectExternalSubtitle = viewModel::selectExternalSubtitle,
         onDismissTrivia = viewModel::dismissTriviaFact,
         onTriviaFollowUp = viewModel::requestTriviaFollowUp,
         onBack = {
@@ -137,6 +155,12 @@ private fun PlayerScreen(
     onToggleTrivia: () -> Unit,
     onSelectLanguage: (String) -> Unit,
     onSelectSubtitleLanguage: (String) -> Unit,
+    onToggleSplitMode: () -> Unit,
+    onShowOpenSubtitles: () -> Unit,
+    onSelectPrimaryLanguage: (String) -> Unit,
+    onSelectSecondaryLanguage: (String) -> Unit,
+    onFetchExternalSubtitles: () -> Unit,
+    onSelectExternalSubtitle: (tv.bayit.plus.core.model.ImportedTrack) -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onBack: () -> Unit,
@@ -170,6 +194,8 @@ private fun PlayerScreen(
                     onToggleTrivia = onToggleTrivia,
                     onShowLanguagePicker = onShowLanguagePicker,
                     onShowSubtitlePicker = onShowSubtitlePicker,
+                    onToggleSplitMode = onToggleSplitMode,
+                    onShowOpenSubtitles = onShowOpenSubtitles,
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp,
                     onBack = onBack,
@@ -190,14 +216,43 @@ private fun PlayerScreen(
                     tv.bayit.plus.feature.player.subtitles.SubtitleLanguagePicker(
                         selectedLanguage = extendedState.selectedSubtitleLanguage.orEmpty(),
                         availableLanguages = extendedState.availableSubtitleLanguages,
-                        isSplitMode = false,
+                        isSplitMode = extendedState.isSplitSubtitleMode,
                         onLanguageSelected = { lang ->
                             onSelectSubtitleLanguage(lang)
                             onHideSubtitlePicker()
                         },
-                        onSplitToggle = { /* TODO: Implement split mode */ },
-                        onOpenSubtitlesClick = { /* TODO: Implement OpenSubtitles */ },
+                        onSplitToggle = onToggleSplitMode,
+                        onOpenSubtitlesClick = onShowOpenSubtitles,
                         onDismiss = onHideSubtitlePicker,
+                    )
+                }
+
+                if (showSplitSubtitlePicker) {
+                    tv.bayit.plus.feature.player.subtitles.SplitSubtitleLanguagePicker(
+                        primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
+                        secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
+                        availableLanguages = extendedState.availableSubtitleLanguages,
+                        onPrimarySelected = { lang ->
+                            onSelectPrimaryLanguage(lang)
+                            showSplitSubtitlePicker = false
+                        },
+                        onSecondarySelected = { lang ->
+                            onSelectSecondaryLanguage(lang)
+                            showSplitSubtitlePicker = false
+                        },
+                    )
+                }
+
+                if (showOpenSubtitles) {
+                    tv.bayit.plus.feature.player.subtitles.OpenSubtitlesDownload(
+                        tracks = extendedState.externalSubtitleTracks,
+                        isLoading = extendedState.isLoadingExternalSubtitles,
+                        onFetchExternal = onFetchExternalSubtitles,
+                        onTrackSelected = { track ->
+                            onSelectExternalSubtitle(track)
+                            showOpenSubtitles = false
+                        },
+                        onDismiss = { showOpenSubtitles = false },
                     )
                 }
             }

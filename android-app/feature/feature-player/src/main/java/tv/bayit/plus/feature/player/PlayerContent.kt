@@ -49,6 +49,8 @@ internal fun ReadyContent(
     onToggleTrivia: () -> Unit,
     onShowLanguagePicker: () -> Unit,
     onShowSubtitlePicker: () -> Unit,
+    onToggleSplitMode: () -> Unit,
+    onShowOpenSubtitles: () -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onBack: () -> Unit,

@@ -67,6 +67,8 @@ interface DevicePairingState {
   // Authentication result
   authenticatedUser: AuthenticatedUser | null;
   accessToken: string | null;
+  refreshToken: string | null;  // Added for v2
+  requiresPayment: boolean;  // Added for v2
 
   // WebSocket
   ws: WebSocket | null;
@@ -97,6 +99,8 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
   companionDeviceInfo: null,
   authenticatedUser: null,
   accessToken: null,
+  refreshToken: null,  // Added for v2
+  requiresPayment: false,  // Added for v2
   ws: null,
 
   initSession: async () => {
@@ -204,18 +208,23 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
 
       case 'pairing_success':
         const user = data.user;
-        const token = data.token;
+        const token = data.token || data.access_token;  // v2 uses access_token
+        const refreshToken = data.refresh_token;  // v2 includes refresh_token
+        const requiresPayment = data.requires_payment || false;
 
         set({
           pairingStatus: 'success',
           authenticatedUser: user,
           accessToken: token,
+          refreshToken,  // Store refresh token for v2
+          requiresPayment,  // Store payment status for v2
         });
 
         // Update auth store with the received credentials
         useAuthStore.getState().setUser(user);
         useAuthStore.setState({
           token,
+          refreshToken,  // Store refresh token in auth store
           isAuthenticated: true,
         });
         break;

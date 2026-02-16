@@ -51,6 +51,7 @@ export interface SessionStatus {
 
 export interface CompleteAuthResponse {
   access_token: string;
+  refresh_token: string;  // Added for v2
   user: {
     id: string;
     email: string;
@@ -65,6 +66,7 @@ export interface CompleteAuthResponse {
     created_at: string;
     last_login?: string;
   };
+  requires_payment?: boolean;  // Added for v2
 }
 
 /**
@@ -100,17 +102,52 @@ export const devicePairingService = {
     }),
 
   /**
-   * Complete authentication with credentials (called by companion)
+   * Complete authentication with email/password (called by companion)
+   * Uses v2 endpoint with RS256 tokens from auth.olorin.ai
    */
   completeAuth: (
     sessionId: string,
     email: string,
     password: string
   ): Promise<CompleteAuthResponse> =>
-    api.post('/auth/device-pairing/complete', {
+    api.post('/auth/device-pairing/v2/complete', {
       session_id: sessionId,
       email,
       password,
+    }),
+
+  /**
+   * Complete authentication with Google OAuth (called by companion)
+   * Uses v2 endpoint with RS256 tokens from auth.olorin.ai
+   */
+  completeAuthGoogle: (
+    sessionId: string,
+    idToken: string,
+    deviceId?: string
+  ): Promise<CompleteAuthResponse> =>
+    api.post('/auth/device-pairing/v2/complete-google', {
+      session_id: sessionId,
+      id_token: idToken,
+      device_id: deviceId,
+    }),
+
+  /**
+   * Complete authentication with Apple Sign In (called by companion)
+   * Uses v2 endpoint with RS256 tokens from auth.olorin.ai
+   */
+  completeAuthApple: (
+    sessionId: string,
+    idToken: string,
+    fullName?: string,
+    email?: string,
+    deviceId?: string
+  ): Promise<CompleteAuthResponse> =>
+    api.post('/auth/device-pairing/v2/complete-apple', {
+      session_id: sessionId,
+      id_token: idToken,
+      full_name: fullName,
+      email,
+      device_id: deviceId,
     }),
 
   /**

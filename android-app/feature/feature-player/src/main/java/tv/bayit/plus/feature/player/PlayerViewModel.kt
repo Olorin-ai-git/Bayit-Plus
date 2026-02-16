@@ -175,6 +175,64 @@ class PlayerViewModel @Inject constructor(
         logger.debug("Toggled subtitles", mapOf("enabled" to (!current).toString()))
     }
 
+    fun toggleSplitSubtitleMode() {
+        val current = _extendedState.value.isSplitSubtitleMode
+        _extendedState.value = _extendedState.value.copy(isSplitSubtitleMode = !current)
+        logger.debug("Toggled split subtitle mode", mapOf("enabled" to (!current).toString()))
+    }
+
+    fun selectPrimarySubtitleLanguage(languageCode: String) {
+        _extendedState.value = _extendedState.value.copy(
+            primarySubtitleLanguage = languageCode,
+            isSubtitlesEnabled = true,
+        )
+        logger.debug("Selected primary subtitle language", mapOf("language" to languageCode))
+    }
+
+    fun selectSecondarySubtitleLanguage(languageCode: String) {
+        _extendedState.value = _extendedState.value.copy(
+            secondarySubtitleLanguage = languageCode,
+            isSplitSubtitleMode = true,
+            isSubtitlesEnabled = true,
+        )
+        logger.debug("Selected secondary subtitle language", mapOf("language" to languageCode))
+    }
+
+    fun fetchExternalSubtitles() {
+        val contentId = currentContentId ?: return
+        viewModelScope.launch {
+            _extendedState.value = _extendedState.value.copy(isLoadingExternalSubtitles = true)
+            when (val result = subtitleRepository.fetchExternalSubtitles(contentId)) {
+                is BayitResult.Success -> {
+                    _extendedState.value = _extendedState.value.copy(
+                        externalSubtitleTracks = result.data.tracks,
+                        isLoadingExternalSubtitles = false,
+                    )
+                    logger.info("Fetched external subtitles", mapOf(
+                        "count" to result.data.tracks.size.toString(),
+                        "provider" to (result.data.provider ?: "unknown"),
+                    ))
+                }
+                is BayitResult.Error -> {
+                    _extendedState.value = _extendedState.value.copy(isLoadingExternalSubtitles = false)
+                    logger.error("Failed to fetch external subtitles", result.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
+    fun selectExternalSubtitle(track: tv.bayit.plus.core.model.ImportedTrack) {
+        _extendedState.value = _extendedState.value.copy(
+            selectedSubtitleLanguage = track.language,
+            isSubtitlesEnabled = true,
+        )
+        logger.info("Selected external subtitle", mapOf(
+            "language" to track.language,
+            "provider" to (track.provider ?: "unknown"),
+        ))
+    }
+
     private val channelId get() = (_uiState.value as? PlayerUiState.Ready)?.channelId
     fun toggleAIPanel() = liveAICoordinator.togglePanel()
     fun toggleLiveSubtitles() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleSubtitles(it, viewModelScope) } }
