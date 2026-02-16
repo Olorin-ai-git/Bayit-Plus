@@ -170,8 +170,8 @@ private fun FeedbackSection(feedback: V2VTransformResult, onReset: () -> Unit) {
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
                 )
-                if (feedback.pronunciationFeedback != null) {
-                    Text(text = feedback.pronunciationFeedback, color = DesignTokens.Colors.Text.secondary)
+                feedback.pronunciationFeedback?.let { feedbackText ->
+                    Text(text = feedbackText, color = DesignTokens.Colors.Text.secondary)
                 }
             }
         }

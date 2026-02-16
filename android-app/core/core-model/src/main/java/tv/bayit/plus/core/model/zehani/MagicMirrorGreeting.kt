@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * audio path, lip-sync data, and vocabulary of the day.
  *
  * Maps to the backend MagicMirrorGreeting model returned from
- * `/api/v1/zeh-ani/magic-mirror/*` endpoints.
+ * `/api/v1/zeh-ani/magic-mirror/` endpoints.
  */
 @Serializable
 data class MagicMirrorGreeting(

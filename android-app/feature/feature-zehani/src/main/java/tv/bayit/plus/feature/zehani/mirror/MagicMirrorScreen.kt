@@ -105,8 +105,9 @@ private fun GreetingContent(
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
+                    val vocabulary = greeting.vocabularyOfTheDay ?: return@GlassCard
                     Text(
-                        text = greeting.vocabularyOfTheDay,
+                        text = vocabulary,
                         style = MaterialTheme.typography.bodyLarge,
                         color = DesignTokens.Colors.Primary.light,
                         fontWeight = FontWeight.Medium,

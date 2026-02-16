@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * parental consent and PIN verification.
  *
  * Maps to the backend BiometricConsent model returned from
- * `/api/v1/zeh-ani/consent/*` endpoints.
+ * `/api/v1/zeh-ani/consent/` endpoints.
  */
 @Serializable
 data class BiometricConsent(

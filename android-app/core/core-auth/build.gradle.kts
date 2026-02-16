@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -39,6 +40,8 @@ dependencies {
     implementation(libs.security.crypto)
     implementation(libs.datastore.preferences)
 
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     implementation(libs.timber)

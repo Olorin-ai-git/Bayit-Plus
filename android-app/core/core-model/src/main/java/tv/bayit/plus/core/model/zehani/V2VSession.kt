@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * Voice-to-voice transformation session with improvement metrics.
  *
  * Maps to the backend V2VSession model returned from
- * `/api/v1/zeh-ani/v2v/*` endpoints.
+ * `/api/v1/zeh-ani/v2v/` endpoints.
  */
 @Serializable
 data class V2VSession(

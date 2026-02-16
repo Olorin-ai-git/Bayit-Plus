@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * Highlight reel compilation from Zeh Ani moments.
  *
  * Maps to the backend HighlightReel model returned from
- * `/api/v1/zeh-ani/highlights/*` endpoints.
+ * `/api/v1/zeh-ani/highlights/` endpoints.
  */
 @Serializable
 data class HighlightReel(

@@ -98,16 +98,6 @@ sealed class Route {
     // Device Pairing
     @Serializable data object DevicePairing : Route()
 
-    // Zeh Ani (Me in the Story) - AI Avatar Features
-    @Serializable data class ZehAniHub(val profileId: String) : Route()
-    @Serializable data class ZehAniMagicMirror(val profileId: String, val avatarId: String?) : Route()
-    @Serializable data class ZehAniAvatar3D(val avatarId: String) : Route()
-    @Serializable data class ZehAniV2V(val profileId: String, val avatarId: String) : Route()
-    @Serializable data class ZehAniHighlights(val profileId: String, val avatarId: String) : Route()
-    @Serializable data class ZehAniContacts(val profileId: String) : Route()
-    @Serializable data class ZehAniFeedback(val profileId: String) : Route()
-    @Serializable data class ZehAniConsent(val profileId: String) : Route()
-
     // Help Center
     @Serializable data object HelpCenter : Route()
 

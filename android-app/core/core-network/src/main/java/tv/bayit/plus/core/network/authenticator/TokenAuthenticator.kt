@@ -53,9 +53,8 @@ class TokenAuthenticator @Inject constructor(
             try {
                 authTokenProvider.refreshToken()
             } catch (e: Exception) {
-                logger.error("Token refresh failed", mapOf(
+                logger.error("Token refresh failed", e, mapOf(
                     "url" to url,
-                    "error" to (e.message ?: "Unknown error")
                 ))
                 null
             }

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * WhatsApp contact for grandparent highlight reel sharing.
  *
  * Maps to the backend WhatsAppContact model returned from
- * `/api/v1/zeh-ani/contacts/*` endpoints.
+ * `/api/v1/zeh-ani/contacts/` endpoints.
  */
 @Serializable
 data class WhatsAppContact(

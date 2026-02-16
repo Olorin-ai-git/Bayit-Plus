@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * Represents a 3D avatar mesh with blend shapes and metadata.
  *
  * Maps to the backend AvatarMesh model returned from
- * `/api/v1/zeh-ani/mesh/*` endpoints.
+ * `/api/v1/zeh-ani/mesh/` endpoints.
  */
 @Serializable
 data class AvatarMesh(
