@@ -68,6 +68,7 @@ struct PlayerView: View {
     @State var splitModeEnabled = false
     @State var splitLanguages: [String] = []
     @State var showSplitLanguagePicker = false
+    @State var splitLayout: SplitSubtitleLayout = .stacked
     @State var primarySubtitleCues: [SubtitleCue] = []
     @State var secondarySubtitleCues: [SubtitleCue] = []
 
@@ -285,6 +286,7 @@ struct PlayerView: View {
                 sourceLanguage: "he",
                 selectedLanguages: $splitLanguages,
                 splitModeEnabled: $splitModeEnabled,
+                layout: $splitLayout,
                 onConfirm: { languages in
                     splitLanguages = languages
                     splitModeEnabled = true

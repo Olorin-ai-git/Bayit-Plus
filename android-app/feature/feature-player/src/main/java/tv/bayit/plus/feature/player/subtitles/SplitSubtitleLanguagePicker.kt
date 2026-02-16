@@ -5,12 +5,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,6 +43,7 @@ fun SplitSubtitleLanguagePicker(
     onPrimarySelected: (String) -> Unit,
     onSecondarySelected: (String) -> Unit,
     onLayoutSelected: (tv.bayit.plus.core.model.SplitSubtitleLayout) -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,6 +51,29 @@ fun SplitSubtitleLanguagePicker(
             .fillMaxWidth()
             .padding(DesignTokens.Spacing.base),
     ) {
+        // Header with close button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = bayitString("subtitles.splitMode"),
+                color = DesignTokens.Colors.Text.primary,
+                fontSize = DesignTokens.FontSize.lg,
+                fontWeight = FontWeight.Bold,
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = bayitString("player.controls.close"),
+                    tint = DesignTokens.Colors.Text.secondary,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+
         // Layout mode toggle
         Text(
             text = bayitString("subtitles.layout_mode"),
@@ -68,32 +98,55 @@ fun SplitSubtitleLanguagePicker(
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
 
-        LanguageSection(
-            title = bayitString("subtitles.primary_language"),
-            selectedLanguage = primaryLanguage,
-            availableLanguages = availableLanguages,
-            onSelected = onPrimarySelected,
-        )
+        // Two-column layout for primary and secondary languages
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+        ) {
+            // Primary language column
+            LanguageColumn(
+                title = bayitString("subtitles.primary_language"),
+                selectedLanguage = primaryLanguage,
+                availableLanguages = availableLanguages,
+                onSelected = onPrimarySelected,
+                modifier = Modifier.weight(1f),
+            )
 
-        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+            // Secondary language column
+            LanguageColumn(
+                title = bayitString("subtitles.secondary_language"),
+                selectedLanguage = secondaryLanguage,
+                availableLanguages = availableLanguages.filter { it != primaryLanguage },
+                onSelected = onSecondarySelected,
+                modifier = Modifier.weight(1f),
+            )
+        }
 
-        LanguageSection(
-            title = bayitString("subtitles.secondary_language"),
-            selectedLanguage = secondaryLanguage,
-            availableLanguages = availableLanguages.filter { it != primaryLanguage },
-            onSelected = onSecondarySelected,
-        )
+        // OK button (only show when both languages selected)
+        if (primaryLanguage.isNotEmpty() && secondaryLanguage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+            tv.bayit.plus.designsystem.component.GlassButton(
+                text = bayitString("common.ok"),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
 @Composable
-private fun LanguageSection(
+private fun LanguageColumn(
     title: String,
     selectedLanguage: String,
     availableLanguages: List<String>,
     onSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    val scrollState = rememberScrollState()
+
+    Column(modifier = modifier) {
         Text(
             text = title,
             color = DesignTokens.Colors.Text.primary,
@@ -103,30 +156,37 @@ private fun LanguageSection(
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
-        availableLanguages.forEach { langCode ->
-            val info = SubtitleLanguages.info(langCode)
-            GlassCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onSelected(langCode) },
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
+        ) {
+            availableLanguages.forEach { langCode ->
+                val info = SubtitleLanguages.info(langCode)
+                GlassCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelected(langCode) },
                 ) {
-                    Text(
-                        text = info?.name ?: langCode,
-                        color = DesignTokens.Colors.Text.primary,
-                        fontSize = DesignTokens.FontSize.base,
-                    )
-                    if (langCode == selectedLanguage) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Selected",
-                            tint = DesignTokens.Colors.Semantic.success,
-                            modifier = Modifier.height(20.dp),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            text = info?.name ?: langCode,
+                            color = DesignTokens.Colors.Text.primary,
+                            fontSize = DesignTokens.FontSize.sm,
                         )
+                        if (langCode == selectedLanguage) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Selected",
+                                tint = DesignTokens.Colors.Semantic.success,
+                                modifier = Modifier.height(16.dp),
+                            )
+                        }
                     }
                 }
             }

@@ -195,6 +195,7 @@ private fun PlayerScreen(
                     triviaState = triviaState,
                     triviaProgress = triviaProgress,
                     aiPanelState = aiPanelState,
+                    extendedState = extendedState,
                     onToggleControls = onToggleControls,
                     onPlayPause = onPlayPause,
                     onSeek = onSeek,
@@ -241,15 +242,10 @@ private fun PlayerScreen(
                         secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
                         availableLanguages = extendedState.availableSubtitleLanguages,
                         layout = extendedState.splitSubtitleLayout,
-                        onPrimarySelected = { lang ->
-                            onSelectPrimaryLanguage(lang)
-                            onHideSplitSubtitlePicker()
-                        },
-                        onSecondarySelected = { lang ->
-                            onSelectSecondaryLanguage(lang)
-                            onHideSplitSubtitlePicker()
-                        },
+                        onPrimarySelected = onSelectPrimaryLanguage,
+                        onSecondarySelected = onSelectSecondaryLanguage,
                         onLayoutSelected = onSelectSplitLayout,
+                        onDismiss = onHideSplitSubtitlePicker,
                     )
                 }
 

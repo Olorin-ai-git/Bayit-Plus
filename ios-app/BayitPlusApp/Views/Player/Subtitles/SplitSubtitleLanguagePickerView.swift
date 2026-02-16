@@ -12,6 +12,7 @@ struct SplitSubtitleLanguagePickerView: View {
     let sourceLanguage: String
     @Binding var selectedLanguages: [String]
     @Binding var splitModeEnabled: Bool
+    @Binding var layout: SplitSubtitleLayout
     let onConfirm: ([String]) -> Void
 
     @State private var tempSelection: [String] = []
@@ -38,6 +39,19 @@ struct SplitSubtitleLanguagePickerView: View {
             // Split mode toggle
             SplitModeToggleView(isEnabled: $splitModeEnabled)
                 .padding(.horizontal, DesignTokens.Spacing.md)
+
+            // Layout toggle
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ForEach(SplitSubtitleLayout.allCases, id: \.self) { layoutOption in
+                    GlassChip(
+                        title: layoutOption.label,
+                        isSelected: layout == layoutOption
+                    ) {
+                        layout = layoutOption
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.md)
 
             // Language list
             ScrollView {

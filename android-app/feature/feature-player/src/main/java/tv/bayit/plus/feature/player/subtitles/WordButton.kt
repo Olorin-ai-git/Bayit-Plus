@@ -32,29 +32,21 @@ fun WordButton(
 ) {
     val translateLabel = bayitString("player.subtitles.translateWord", mapOf("word" to text))
 
-    Box(
+    Text(
+        text = text,
+        color = DesignTokens.Colors.Text.primary,
+        fontSize = DesignTokens.FontSize.md,
+        fontWeight = FontWeight.Normal,
+        style = androidx.compose.ui.text.TextStyle(
+            textDirection = if (isHebrew) TextDirection.Rtl else TextDirection.Ltr,
+        ),
         modifier = modifier
-            .defaultMinSize(
-                minWidth = DesignTokens.TouchTarget.minimum,
-                minHeight = DesignTokens.TouchTarget.minimum,
-            )
             .semantics {
                 role = Role.Button
                 contentDescription = translateLabel
             }
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = DesignTokens.Colors.Text.primary,
-            fontSize = DesignTokens.FontSize.md,
-            fontWeight = FontWeight.Normal,
-            style = androidx.compose.ui.text.TextStyle(
-                textDirection = if (isHebrew) TextDirection.Rtl else TextDirection.Ltr,
-            ),
-        )
-    }
+    )
 }
 
 /**

@@ -167,6 +167,33 @@ class PlayerViewModel @Inject constructor(
             isSubtitlesEnabled = true,
         )
         logger.debug("Selected subtitle language", mapOf("language" to languageCode))
+        loadSubtitleTrack(languageCode)
+    }
+
+    private fun loadSubtitleTrack(languageCode: String) {
+        val contentId = currentContentId ?: return
+        viewModelScope.launch {
+            when (val result = subtitleRepository.fetchCues(
+                contentId = contentId,
+                language = languageCode,
+                hebrewMode = null,
+                englishMode = null
+            )) {
+                is BayitResult.Success -> {
+                    _extendedState.value = _extendedState.value.copy(
+                        loadedSubtitleCues = result.data.cues ?: emptyList()
+                    )
+                    logger.debug("Loaded subtitle cues", mapOf(
+                        "language" to languageCode,
+                        "cueCount" to (result.data.cues?.size ?: 0).toString()
+                    ))
+                }
+                is BayitResult.Error -> {
+                    logger.error("Failed to load subtitle cues", result.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
     }
 
     fun toggleSubtitles() {
@@ -184,9 +211,11 @@ class PlayerViewModel @Inject constructor(
     fun selectPrimarySubtitleLanguage(languageCode: String) {
         _extendedState.value = _extendedState.value.copy(
             primarySubtitleLanguage = languageCode,
+            isSplitSubtitleMode = true,
             isSubtitlesEnabled = true,
         )
         logger.debug("Selected primary subtitle language", mapOf("language" to languageCode))
+        loadPrimarySubtitleTrack(languageCode)
     }
 
     fun selectSecondarySubtitleLanguage(languageCode: String) {
@@ -196,6 +225,55 @@ class PlayerViewModel @Inject constructor(
             isSubtitlesEnabled = true,
         )
         logger.debug("Selected secondary subtitle language", mapOf("language" to languageCode))
+        loadSecondarySubtitleTrack(languageCode)
+    }
+
+    private fun loadPrimarySubtitleTrack(languageCode: String) {
+        val contentId = currentContentId ?: return
+        viewModelScope.launch {
+            when (val result = subtitleRepository.fetchCues(
+                contentId = contentId,
+                language = languageCode,
+                hebrewMode = null,
+                englishMode = null
+            )) {
+                is BayitResult.Success -> {
+                    _extendedState.value = _extendedState.value.copy(
+                        primarySubtitleCues = result.data.cues ?: emptyList()
+                    )
+                    logger.debug("Loaded primary subtitle cues", mapOf(
+                        "language" to languageCode,
+                        "cueCount" to (result.data.cues?.size ?: 0).toString()
+                    ))
+                }
+                is BayitResult.Error -> logger.error("Failed to load primary subtitle cues", result.exception)
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
+    private fun loadSecondarySubtitleTrack(languageCode: String) {
+        val contentId = currentContentId ?: return
+        viewModelScope.launch {
+            when (val result = subtitleRepository.fetchCues(
+                contentId = contentId,
+                language = languageCode,
+                hebrewMode = null,
+                englishMode = null
+            )) {
+                is BayitResult.Success -> {
+                    _extendedState.value = _extendedState.value.copy(
+                        secondarySubtitleCues = result.data.cues ?: emptyList()
+                    )
+                    logger.debug("Loaded secondary subtitle cues", mapOf(
+                        "language" to languageCode,
+                        "cueCount" to (result.data.cues?.size ?: 0).toString()
+                    ))
+                }
+                is BayitResult.Error -> logger.error("Failed to load secondary subtitle cues", result.exception)
+                is BayitResult.Loading -> Unit
+            }
+        }
     }
 
     fun selectSplitSubtitleLayout(layout: tv.bayit.plus.core.model.SplitSubtitleLayout) {
@@ -262,6 +340,7 @@ class PlayerViewModel @Inject constructor(
                 _playbackPositionMs.value = pos
                 _totalDurationMs.value = mediaPlayer.getDuration()
                 updateCurrentChapter(pos)
+                updateActiveCue(pos)
                 delay(POSITION_POLL_INTERVAL_MS)
             }
         }
@@ -273,6 +352,49 @@ class PlayerViewModel @Inject constructor(
         val idx = chapters.indexOfLast { it.startTimeMs <= positionMs }
         if (idx != _extendedState.value.currentChapterIndex) {
             _extendedState.value = _extendedState.value.copy(currentChapterIndex = idx)
+        }
+    }
+
+    private fun updateActiveCue(positionMs: Long) {
+        if (!_extendedState.value.isSubtitlesEnabled) {
+            if (_extendedState.value.activeCue != null || _extendedState.value.activePrimaryCue != null || _extendedState.value.activeSecondaryCue != null) {
+                _extendedState.value = _extendedState.value.copy(
+                    activeCue = null,
+                    activePrimaryCue = null,
+                    activeSecondaryCue = null
+                )
+            }
+            return
+        }
+
+        val positionSeconds = positionMs / 1000.0
+
+        if (_extendedState.value.isSplitSubtitleMode) {
+            // Split mode: update both primary and secondary cues
+            val primaryCue = findCueAtPosition(_extendedState.value.primarySubtitleCues, positionSeconds)
+            val secondaryCue = findCueAtPosition(_extendedState.value.secondarySubtitleCues, positionSeconds)
+
+            if (primaryCue != _extendedState.value.activePrimaryCue || secondaryCue != _extendedState.value.activeSecondaryCue) {
+                _extendedState.value = _extendedState.value.copy(
+                    activePrimaryCue = primaryCue,
+                    activeSecondaryCue = secondaryCue
+                )
+            }
+        } else {
+            // Regular mode: single subtitle track
+            val activeCue = findCueAtPosition(_extendedState.value.loadedSubtitleCues, positionSeconds)
+
+            if (activeCue != _extendedState.value.activeCue) {
+                _extendedState.value = _extendedState.value.copy(activeCue = activeCue)
+            }
+        }
+    }
+
+    private fun findCueAtPosition(cues: List<tv.bayit.plus.core.model.SubtitleCue>, positionSeconds: Double): tv.bayit.plus.core.model.SubtitleCue? {
+        return cues.firstOrNull { cue ->
+            val start = cue.startTime ?: return@firstOrNull false
+            val end = cue.endTime ?: return@firstOrNull false
+            positionSeconds >= start && positionSeconds <= end
         }
     }
 

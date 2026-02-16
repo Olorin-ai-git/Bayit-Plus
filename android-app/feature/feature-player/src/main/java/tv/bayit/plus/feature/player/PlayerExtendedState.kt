@@ -25,4 +25,10 @@ data class PlayerExtendedState(
     val secondarySubtitleLanguage: String? = null,
     val externalSubtitleTracks: List<tv.bayit.plus.core.model.ImportedTrack> = emptyList(),
     val isLoadingExternalSubtitles: Boolean = false,
+    val loadedSubtitleCues: List<tv.bayit.plus.core.model.SubtitleCue> = emptyList(),
+    val activeCue: tv.bayit.plus.core.model.SubtitleCue? = null,
+    val primarySubtitleCues: List<tv.bayit.plus.core.model.SubtitleCue> = emptyList(),
+    val secondarySubtitleCues: List<tv.bayit.plus.core.model.SubtitleCue> = emptyList(),
+    val activePrimaryCue: tv.bayit.plus.core.model.SubtitleCue? = null,
+    val activeSecondaryCue: tv.bayit.plus.core.model.SubtitleCue? = null,
 )

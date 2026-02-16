@@ -36,6 +36,10 @@ fun PlayerTopBar(
     isLiveContent: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    selectedSubtitleLanguage: String? = null,
+    isSplitSubtitleMode: Boolean = false,
+    primarySubtitleLanguage: String? = null,
+    secondarySubtitleLanguage: String? = null,
     onSubtitlePickerClick: (() -> Unit)? = null,
     onAIFeaturesClick: (() -> Unit)? = null,
 ) {
@@ -71,7 +75,10 @@ fun PlayerTopBar(
             modifier = Modifier.weight(1f),
         )
 
-        Row(horizontalArrangement = Arrangement.End) {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             onSubtitlePickerClick?.let { onClick ->
                 IconButton(onClick = onClick) {
                     Icon(
@@ -79,6 +86,25 @@ fun PlayerTopBar(
                         contentDescription = bayitString("player.subtitles"),
                         tint = DesignTokens.Colors.Text.primary,
                         modifier = Modifier.size(24.dp),
+                    )
+                }
+
+                // Show language flag(s) when subtitle is active
+                if (isSplitSubtitleMode && primarySubtitleLanguage != null && secondarySubtitleLanguage != null) {
+                    // Split mode: show both flags
+                    Text(
+                        text = tv.bayit.plus.core.model.SubtitleLanguages.flag(primarySubtitleLanguage) +
+                               " " +
+                               tv.bayit.plus.core.model.SubtitleLanguages.flag(secondarySubtitleLanguage),
+                        fontSize = DesignTokens.FontSize.md,
+                        modifier = Modifier.padding(start = 4.dp),
+                    )
+                } else if (selectedSubtitleLanguage != null) {
+                    // Regular mode: show single flag
+                    Text(
+                        text = tv.bayit.plus.core.model.SubtitleLanguages.flag(selectedSubtitleLanguage),
+                        fontSize = DesignTokens.FontSize.md,
+                        modifier = Modifier.padding(start = 4.dp),
                     )
                 }
             }

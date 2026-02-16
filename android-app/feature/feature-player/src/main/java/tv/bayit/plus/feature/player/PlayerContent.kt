@@ -40,6 +40,7 @@ internal fun ReadyContent(
     triviaState: LiveTriviaUiState,
     triviaProgress: Float,
     aiPanelState: AIFeaturesPanelState,
+    extendedState: tv.bayit.plus.feature.player.PlayerExtendedState,
     onToggleControls: () -> Unit,
     onPlayPause: () -> Unit,
     onSeek: (Float) -> Unit,
@@ -80,12 +81,40 @@ internal fun ReadyContent(
                 currentPositionMs = positionMs,
                 totalDurationMs = durationMs,
                 isLiveContent = state.isLiveContent,
+                selectedSubtitleLanguage = extendedState.selectedSubtitleLanguage,
+                isSplitSubtitleMode = extendedState.isSplitSubtitleMode,
+                primarySubtitleLanguage = extendedState.primarySubtitleLanguage,
+                secondarySubtitleLanguage = extendedState.secondarySubtitleLanguage,
                 onToggleControls = onToggleControls,
                 onBack = onBack,
                 onPlayPause = onPlayPause,
                 onSeek = onSeek,
                 onSubtitlePickerClick = onShowSubtitlePicker,
                 onAIFeaturesClick = if (state.isLiveContent) onToggleAIPanel else null,
+                subtitleOverlay = {
+                    if (!state.isLiveContent && extendedState.isSubtitlesEnabled) {
+                        if (extendedState.isSplitSubtitleMode) {
+                            // Split mode: show both primary and secondary subtitles
+                            tv.bayit.plus.feature.player.subtitles.SplitSubtitleOverlay(
+                                primaryCue = extendedState.activePrimaryCue,
+                                secondaryCue = extendedState.activeSecondaryCue,
+                                primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
+                                secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
+                                layout = extendedState.splitSubtitleLayout,
+                                onWordTap = { /* TODO: Add word translation */ },
+                            )
+                        } else if (extendedState.activeCue != null) {
+                            // Regular mode: single subtitle
+                            tv.bayit.plus.feature.player.subtitles.SubtitleCueOverlay(
+                                activeCue = extendedState.activeCue,
+                                hebrewMode = tv.bayit.plus.core.model.SubtitleHebrewMode.STANDARD,
+                                translationResult = null,
+                                onWordTap = { /* TODO: Add word translation */ },
+                                onDismissTranslation = { /* TODO: Add dismiss handler */ },
+                            )
+                        }
+                    }
+                },
             )
 
             if (state.isLiveContent) {
