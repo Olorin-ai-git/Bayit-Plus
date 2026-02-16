@@ -4,7 +4,7 @@ import SwiftUI
 /// Radio screen showing station cards with live status
 struct RadioView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(AudioPlaybackManager.self) private var audioManager
     @State private var viewModel: RadioViewModel?
 
     private let columns = [
@@ -45,11 +45,9 @@ struct RadioView: View {
     private func stationGrid(_ stations: [RadioStationItem]) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(stations) { station in
-                StationCard(station: station) {
-                    coordinator.navigate(to: .player(
-                        contentId: station.id,
-                        contentType: .radio
-                    ))
+                let isActive = audioManager.activeContentId == station.id && audioManager.isActive
+                StationCard(station: station, isActive: isActive) {
+                    audioManager.play(contentId: station.id, contentType: .radio)
                 }
             }
         }
@@ -73,6 +71,7 @@ struct RadioView: View {
 /// Individual radio station card
 private struct StationCard: View {
     let station: RadioStationItem
+    let isActive: Bool
     let onTap: () -> Void
 
     var body: some View {
@@ -104,9 +103,22 @@ private struct StationCard: View {
                 }
 
                 Spacer()
+
+                if isActive {
+                    Image(systemName: "waveform")
+                        .font(.system(size: 16))
+                        .foregroundColor(DesignTokens.Primary.default)
+                        .symbolEffect(.variableColor.iterative, isActive: isActive)
+                }
             }
             .padding(DesignTokens.Spacing.md)
             .glassCard()
+            .overlay {
+                if isActive {
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                        .stroke(DesignTokens.Primary.default.opacity(0.4), lineWidth: 1)
+                }
+            }
         }
         .buttonStyle(.plain)
     }

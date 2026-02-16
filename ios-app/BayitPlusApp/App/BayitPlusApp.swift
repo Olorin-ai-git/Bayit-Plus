@@ -20,7 +20,7 @@ struct BayitPlusApp: App {
     @State private var localizationManager: LocalizationManager
     @State private var apiClient: APIClient
     @State private var repositories: RepositoryProvider
-    @State private var mediaPlayer = MediaPlayer()
+    @State private var mediaPlayer: MediaPlayer
     @State private var widgetSyncService = WidgetDataSyncService()
     @State private var liveActivityManager = LiveActivityManager()
     @State private var mediaPlayerWidgetBridge: MediaPlayerWidgetBridge?
@@ -31,6 +31,7 @@ struct BayitPlusApp: App {
     @State private var pushNotificationService: PushNotificationService?
     @State private var castSessionManager = CastSessionManager()
     @State private var mediaPlayerCastBridge: MediaPlayerCastBridge?
+    @State private var audioPlaybackManager: AudioPlaybackManager
 
     init() {
         if FirebaseApp.app() == nil {
@@ -63,16 +64,33 @@ struct BayitPlusApp: App {
 
         let wsManager = WebSocketManager(configuration: networkConfig, logger: apiLogger)
 
-        _authManager = State(initialValue: authMgr)
-        _localizationManager = State(initialValue: LocalizationManager())
-        _apiClient = State(initialValue: client)
-        _repositories = State(initialValue: RepositoryProvider(
+        let repos = RepositoryProvider(
             client: client,
             webSocketManager: wsManager,
             authTokenProvider: authMgr.authTokenProvider,
             configuration: appConfig
-        ))
+        )
+
+        let mp = MediaPlayer()
+
+        let resolver = StreamResolver(
+            mediaRepository: repos.media,
+            contentRepository: repos.content,
+            liveTVRepository: repos.liveTV,
+            radioRepository: repos.radio,
+            podcastRepository: repos.podcasts
+        )
+
+        _authManager = State(initialValue: authMgr)
+        _localizationManager = State(initialValue: LocalizationManager())
+        _apiClient = State(initialValue: client)
+        _repositories = State(initialValue: repos)
+        _mediaPlayer = State(initialValue: mp)
         _locationProvider = State(initialValue: locProvider)
+        _audioPlaybackManager = State(initialValue: AudioPlaybackManager(
+            mediaPlayer: mp,
+            streamResolver: resolver
+        ))
     }
 
     /// Initialize the media player widget bridge after app launch.
@@ -195,6 +213,7 @@ struct BayitPlusApp: App {
                 .environment(locationProvider)
                 .environment(featureFlags)
                 .environment(castSessionManager)
+                .environment(audioPlaybackManager)
                 .task {
                     initializeWidgetBridge()
                     initializeCrashlyticsContext()

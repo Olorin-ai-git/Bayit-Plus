@@ -49,6 +49,8 @@ struct PodcastDetailView: View {
             metadataSection(detail)
             PodcastEpisodeListView(
                 episodes: vm.episodes,
+                showTitle: detail.title,
+                showCover: detail.cover,
                 isLoadingMore: vm.isLoadingMore,
                 isRefreshing: vm.isLoading,
                 onLoadMore: { await vm.loadMore() },

@@ -76,7 +76,7 @@ struct PodcastsView: View {
     private func contentView(_ vm: PodcastsViewModel) -> some View {
         LazyVStack(spacing: DesignTokens.Spacing.lg) {
             if !radioStations.isEmpty {
-                RadioStationsRow(stations: radioStations, coordinator: coordinator)
+                RadioStationsRow(stations: radioStations)
             }
 
             Text(localization.t("podcasts.title"))
@@ -201,18 +201,29 @@ struct PodcastsView: View {
     }
 }
 
-/// Podcast show card with cover art and metadata
+/// Podcast show card with cover art, metadata, and inline play button
 private struct PodcastShowCard: View {
+    @Environment(AudioPlaybackManager.self) private var audioManager
+
     let show: PodcastShow
     let onTap: () -> Void
     let onDelete: (() async -> Void)?
 
+    private var isCurrentlyPlaying: Bool {
+        audioManager.activeContentId == show.id && audioManager.isActive
+    }
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                coverImage
-                    .aspectRatio(1, contentMode: .fill)
-                    .clipped()
+                ZStack(alignment: .bottomTrailing) {
+                    coverImage
+                        .aspectRatio(1, contentMode: .fill)
+                        .clipped()
+
+                    playButton
+                        .padding(DesignTokens.Spacing.sm)
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(show.title ?? "Podcast")
@@ -249,6 +260,28 @@ private struct PodcastShowCard: View {
                 }
             }
         }
+    }
+
+    private var playButton: some View {
+        Button {
+            if isCurrentlyPlaying {
+                audioManager.togglePlayPause()
+            } else {
+                audioManager.play(contentId: show.id, contentType: .podcast)
+            }
+        } label: {
+            Image(systemName: isCurrentlyPlaying && audioManager.isPlaying
+                ? "pause.circle.fill"
+                : "play.circle.fill")
+                .font(.system(size: 32))
+                .foregroundColor(DesignTokens.Primary.default)
+                .background(
+                    Circle()
+                        .fill(DesignTokens.Background.primary.opacity(0.6))
+                        .frame(width: 28, height: 28)
+                )
+        }
+        .accessibilityLabel(isCurrentlyPlaying ? "Pause \(show.title ?? "podcast")" : "Play \(show.title ?? "podcast")")
     }
 
     private var coverImage: some View {

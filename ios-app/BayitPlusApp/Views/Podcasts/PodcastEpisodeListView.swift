@@ -5,10 +5,12 @@ import UIKit
 
 /// Episode list section for podcast detail with infinite scroll and play buttons
 struct PodcastEpisodeListView: View {
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(AudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
 
     let episodes: [PodcastEpisodeItem]
+    let showTitle: String?
+    let showCover: String?
     let isLoadingMore: Bool
     let isRefreshing: Bool
     let onLoadMore: () async -> Void
@@ -101,21 +103,51 @@ struct PodcastEpisodeListView: View {
                     Button {
                         let generator = UIImpactFeedbackGenerator(style: .light)
                         generator.impactOccurred()
-                        coordinator.navigate(to: .player(
-                            contentId: episode.id,
-                            contentType: .podcast
-                        ))
+                        playEpisode(episode)
                     } label: {
-                        Image(systemName: "play.circle.fill")
+                        Image(systemName: episodePlayIcon(for: episode))
                             .font(.system(size: 32))
                             .foregroundColor(DesignTokens.Primary.default)
                     }
-                    .accessibilityLabel("Play \(episode.title ?? "episode")")
+                    .accessibilityLabel(isEpisodePlaying(episode) ? "Pause \(episode.title ?? "episode")" : "Play \(episode.title ?? "episode")")
                 }
             }
             .padding(DesignTokens.Spacing.md)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .accessibilityElement(children: .combine)
+    }
+
+    // MARK: - Inline Playback
+
+    private func isEpisodePlaying(_ episode: PodcastEpisodeItem) -> Bool {
+        audioManager.activeContentId == episode.id && audioManager.isActive
+    }
+
+    private func episodePlayIcon(for episode: PodcastEpisodeItem) -> String {
+        isEpisodePlaying(episode) && audioManager.isPlaying
+            ? "pause.circle.fill"
+            : "play.circle.fill"
+    }
+
+    private func playEpisode(_ episode: PodcastEpisodeItem) {
+        if isEpisodePlaying(episode) {
+            audioManager.togglePlayPause()
+            return
+        }
+
+        if let urlStr = episode.audioUrl, let url = URL(string: urlStr) {
+            let coverURL: URL? = showCover.flatMap { URL(string: $0) }
+            audioManager.playDirectURL(
+                url: url,
+                title: episode.title ?? "Episode",
+                subtitle: showTitle,
+                artworkURL: coverURL,
+                contentId: episode.id,
+                contentType: .podcast
+            )
+        } else {
+            audioManager.play(contentId: episode.id, contentType: .podcast)
+        }
     }
 }

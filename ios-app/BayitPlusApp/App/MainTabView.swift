@@ -7,6 +7,7 @@ struct MainTabView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) private var repos
     @Environment(FeatureFlags.self) private var featureFlags
+    @Environment(AudioPlaybackManager.self) private var audioPlaybackManager
     @State private var isVoiceModalPresented = false
     @State private var dockViewModel: WidgetDockViewModel?
 
@@ -16,7 +17,10 @@ struct MainTabView: View {
         ZStack(alignment: .bottom) {
             tabContent(for: coordinator.selectedTab)
 
-            GlassTabBar()
+            VStack(spacing: DesignTokens.Spacing.xs) {
+                MiniAudioPlayerBar()
+                GlassTabBar()
+            }
 
             // Floating restored widgets (PiP windows) - shown on all tabs
             if let vm = dockViewModel {

@@ -101,7 +101,7 @@ struct HomeView: View {
 
         // Radio stations row
         if !vm.radioStations.isEmpty {
-            RadioStationsRow(stations: vm.radioStations, coordinator: coordinator)
+            RadioStationsRow(stations: vm.radioStations)
         }
 
         // Location-based sections
