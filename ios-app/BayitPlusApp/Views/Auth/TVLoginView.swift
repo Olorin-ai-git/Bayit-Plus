@@ -374,7 +374,7 @@ struct TVLoginView: View {
         do {
             let config = AppConfiguration()
             let url = config.apiBaseURL
-                .appendingPathComponent("auth/device-pairing/complete-token")
+                .appendingPathComponent("auth/device-pairing/v2/complete-token")
 
             var request = URLRequest(url: url)
             request.httpMethod = "POST"

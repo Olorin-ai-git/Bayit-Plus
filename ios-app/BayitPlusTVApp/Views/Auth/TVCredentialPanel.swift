@@ -25,9 +25,9 @@ struct TVCredentialPanel: View {
     }
 
     var body: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
             // Header
-            VStack(spacing: TVDesignTokens.Spacing.sm) {
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
                 Text(localization.t("login.title"))
                     .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                     .foregroundStyle(
@@ -210,11 +210,11 @@ struct TVCredentialPanel: View {
                 signInWithApple()
             }
             .focused($focusedField, equals: .apple)
-
-            Spacer(minLength: 0)
+            .padding(.bottom, TVDesignTokens.Spacing.md)
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxxl)
-        .padding(.vertical, TVDesignTokens.Spacing.xl)
+        .padding(.top, TVDesignTokens.Spacing.xl)
+        .padding(.bottom, TVDesignTokens.Spacing.md)
     }
 
     // MARK: - Validation

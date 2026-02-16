@@ -12,7 +12,8 @@ from pydantic import BaseModel
 
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter
-from app.models.user import TokenResponse
+from app.core.security import get_current_user
+from app.models.user import TokenResponse, User
 from app.services.audit_logger import audit_logger
 from app.services.auth_service_client import get_auth_service_client
 from app.services.pairing_manager import pairing_manager
@@ -48,6 +49,11 @@ class CompleteAppleRequest(BaseModel):
     full_name: str | None = None
     email: str | None = None
     device_id: str | None = None
+
+
+class CompleteTokenRequest(BaseModel):
+    """Complete device pairing using an existing RS256 Bearer token."""
+    session_id: str
 
 
 class DevicePairingResponse(BaseModel):
@@ -443,6 +449,88 @@ async def complete_apple_v2(request: Request, auth_request: CompleteAppleRequest
         )
 
 
+@router.post("/complete-token")
+@limiter.limit("10/minute")
+async def complete_token_v2(
+    request: Request,
+    body: CompleteTokenRequest,
+    user: User = Depends(get_current_user),
+):
+    """
+    Complete device pairing by forwarding the caller's existing RS256 token.
+
+    Unlike the credential-based endpoints, this is used when the companion
+    device (phone) is already authenticated. The endpoint validates the
+    Bearer token via ``get_current_user``, then sends that same token to
+    the TV via WebSocket so the TV can start an authenticated session.
+
+    Args:
+        body: Contains the pairing session_id from the QR code.
+        user: Authenticated user resolved from the Authorization header.
+
+    Returns:
+        Success status.
+
+    Raises:
+        404: Session not found or expired.
+        401: Invalid or missing Bearer token (handled by dependency).
+    """
+    session = await pairing_manager.get_session(body.session_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found or expired",
+        )
+
+    await pairing_manager.start_authentication(body.session_id)
+
+    try:
+        # Extract the raw RS256 Bearer token from the Authorization header
+        auth_header = request.headers.get("Authorization", "")
+        bearer_token = auth_header.removeprefix("Bearer ").strip()
+
+        # Update last login
+        user.last_login = datetime.now(timezone.utc)
+        await user.save()
+
+        await audit_logger.log_login_success(user, request, "device_pairing_token_v2")
+
+        # Complete pairing - send the existing RS256 token to the TV
+        await pairing_manager.complete_pairing(
+            body.session_id,
+            str(user.id),
+            bearer_token,
+            user.to_response().model_dump(mode="json"),
+        )
+
+        logger.info(
+            "Device pairing token v2 completed",
+            extra={
+                "session_id": body.session_id,
+                "user_id": str(user.id),
+                "email": user.email,
+            },
+        )
+
+        return {"status": "paired", "session_id": body.session_id}
+
+    except Exception as e:
+        await pairing_manager.fail_pairing(body.session_id, "Internal error")
+
+        logger.error(
+            "Device pairing token v2 unexpected error",
+            extra={
+                "session_id": body.session_id,
+                "error": str(e),
+            },
+        )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to complete device pairing",
+        )
+
+
 @router.get("/health")
 async def device_pairing_v2_health():
     """Health check for device pairing v2 endpoints."""
@@ -450,5 +538,10 @@ async def device_pairing_v2_health():
         "status": "healthy",
         "auth_service": "https://auth.olorin.ai",
         "proxy_version": "v2",
-        "features": ["email_password", "google_oauth", "apple_signin"],
+        "features": [
+            "email_password",
+            "google_oauth",
+            "apple_signin",
+            "token_forward",
+        ],
     }

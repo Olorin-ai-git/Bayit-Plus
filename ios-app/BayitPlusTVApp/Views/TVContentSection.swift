@@ -54,15 +54,18 @@ struct TVContentSection<Item, CardContent: View>: View {
                     Button(action: action) {
                         HStack(spacing: TVDesignTokens.Spacing.sm) {
                             Text(localization.t("tvos.common.seeAll"))
-                                .font(.system(size: TVDesignTokens.FontSize.md))
+                                .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                                 .foregroundStyle(DesignTokens.Primary.default)
 
                             Image(systemName: "chevron.right")
                                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                                 .foregroundStyle(DesignTokens.Primary.default)
                         }
+                        .padding(.horizontal, TVDesignTokens.Spacing.md)
+                        .padding(.vertical, TVDesignTokens.Spacing.sm)
                     }
                     .buttonStyle(.plain)
+                    .tvFocusStyle()
                 }
             }
 

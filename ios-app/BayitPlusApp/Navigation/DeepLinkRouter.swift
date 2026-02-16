@@ -13,7 +13,14 @@ public enum DeepLink {
 
         let pathComponents = url.pathComponents.filter { $0 != "/" }
 
-        guard let first = pathComponents.first else {
+        // For custom URL schemes (bayitplus://X), iOS puts X in url.host not pathComponents.
+        // For universal links (https://bayit.tv/X), X is in pathComponents.
+        let first: String
+        if let firstPath = pathComponents.first {
+            first = firstPath
+        } else if url.scheme == "bayitplus", let host = url.host, !host.isEmpty {
+            first = host
+        } else {
             return .home
         }
 

@@ -117,6 +117,7 @@ struct TVCollectionDetailView: View {
                 .padding(.top, TVDesignTokens.Spacing.sm)
             }
         }
+        .focusSection()
     }
 
     private func promoCard(_ text: String) -> some View {
@@ -138,6 +139,7 @@ struct TVCollectionDetailView: View {
         .padding(TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Glass.bgMedium)
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+        .focusable(false)
     }
 
     private func moviesGrid(_ movies: [CollectionMovie]) -> some View {
@@ -170,6 +172,7 @@ struct TVCollectionDetailView: View {
                 }
             }
         }
+        .focusSection()
     }
 
     private func movieSubtitle(_ movie: CollectionMovie) -> String? {

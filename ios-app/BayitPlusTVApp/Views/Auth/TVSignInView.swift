@@ -34,7 +34,7 @@ struct TVSignInView: View {
 
             VStack(spacing: TVDesignTokens.Spacing.lg) {
                 Spacer()
-                    .frame(height: 80)
+                    .frame(height: 20)
 
                 logoHeader
 
@@ -50,8 +50,8 @@ struct TVSignInView: View {
                         .focusSection()
                 }
             }
-            .padding(.top, 60)
-            .padding(.bottom, 80)
+            .padding(.top, 20)
+            .padding(.bottom, 40)
         }
     }
 
