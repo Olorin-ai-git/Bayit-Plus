@@ -155,6 +155,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 credential-manager = { module = "androidx.credentials:credentials", version.ref = "credential-manager" }
 credential-manager-play = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credential-manager" }
 google-id = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "google-id" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 
 # Logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

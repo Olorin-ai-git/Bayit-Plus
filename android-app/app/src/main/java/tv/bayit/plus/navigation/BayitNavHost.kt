@@ -3,7 +3,11 @@ package tv.bayit.plus.navigation
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,6 +19,7 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import tv.bayit.plus.BuildConfig
 import tv.bayit.plus.core.auth.GoogleSignInHelper
+import tv.bayit.plus.core.common.result.BayitError
 import tv.bayit.plus.core.common.result.BayitResult
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
@@ -119,6 +124,19 @@ fun BayitNavHost(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val pendingGoogleCallback = remember { mutableStateOf<((String) -> Unit)?>(null) }
+
+    val legacyGoogleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        val callback = pendingGoogleCallback.value ?: return@rememberLauncherForActivityResult
+        pendingGoogleCallback.value = null
+        when (val result = googleSignInHelper.handleLegacySignInResult(activityResult.data)) {
+            is BayitResult.Success -> callback(result.data)
+            is BayitResult.Failure -> callback("")
+        }
+    }
+
     NavHost(navController = navController, startDestination = startRoute ?: Route.Splash, modifier = modifier) {
         composable<Route.Splash> {
             SplashRoute(
@@ -202,18 +220,21 @@ fun BayitNavHost(
                 onNavigateToForgotPassword = { navController.navigate(Route.ForgotPassword) },
                 onRequestGoogleSignIn = { onTokenReceived ->
                     coroutineScope.launch {
-                        val activity = context as? Activity
-                        if (activity == null) {
-                            return@launch
-                        }
+                        val activity = context as? Activity ?: return@launch
+                        val clientId = BuildConfig.GOOGLE_CLIENT_ID
 
-                        when (val result = googleSignInHelper.signIn(activity, BuildConfig.GOOGLE_CLIENT_ID)) {
-                            is BayitResult.Success -> {
-                                onTokenReceived(result.data)
-                            }
+                        when (val result = googleSignInHelper.signIn(activity, clientId)) {
+                            is BayitResult.Success -> onTokenReceived(result.data)
                             is BayitResult.Failure -> {
-                                // Pass empty token to trigger error state in ViewModel
-                                onTokenReceived("")
+                                val error = result.error
+                                if (error is BayitError.Cancelled || error is BayitError.Configuration) {
+                                    onTokenReceived("")
+                                } else {
+                                    pendingGoogleCallback.value = onTokenReceived
+                                    legacyGoogleSignInLauncher.launch(
+                                        googleSignInHelper.createLegacySignInIntent(activity, clientId)
+                                    )
+                                }
                             }
                         }
                     }
