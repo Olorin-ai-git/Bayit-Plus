@@ -349,7 +349,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.tv;
 				PRODUCT_NAME = BayitPlusTVOS;
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlusTVOS/BayitPlusTVOS-Bridging-Header.h";
@@ -382,7 +382,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
+				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.tv;
 				PRODUCT_NAME = BayitPlusTVOS;
 				SWIFT_INSTALL_OBJC_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "BayitPlusTVOS/BayitPlusTVOS-Bridging-Header.h";

@@ -48,7 +48,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 auth, auth_proxy, avatar_dialogue, avatar_studio, chapters, chat,
                                 mfa, mobile_auth,
                                 channel_chat, chess, children, content, content_taxonomy,
-                                cultures, device_pairing, devices,
+                                cultures, device_pairing, device_pairing_proxy, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
                                 websocket_diagnostics,
                                 extension_config,
@@ -166,6 +166,11 @@ def register_all_routers(app: FastAPI) -> None:
         device_pairing.router,
         prefix=f"{prefix}/auth/device-pairing",
         tags=["device-pairing"],
+    )
+    app.include_router(
+        device_pairing_proxy.router,
+        prefix=f"{prefix}/auth/device-pairing",
+        tags=["device-pairing-v2"],
     )
     app.include_router(webauthn.router, prefix=f"{prefix}/webauthn", tags=["webauthn"])
     app.include_router(

@@ -57,8 +57,10 @@ fun PlayerRoute(
     val triviaState by viewModel.triviaState.collectAsStateWithLifecycle()
     val triviaProgress by viewModel.triviaProgress.collectAsStateWithLifecycle()
     val aiPanelState by viewModel.aiPanelState.collectAsStateWithLifecycle()
+    val extendedState by viewModel.extendedState.collectAsStateWithLifecycle()
 
     var showLanguagePicker by remember { mutableStateOf(false) }
+    var showSubtitlePicker by remember { mutableStateOf(false) }
 
     DisposableEffect(contentId) {
         viewModel.loadContent(contentId, contentType)
@@ -81,9 +83,13 @@ fun PlayerRoute(
         triviaState = triviaState,
         triviaProgress = triviaProgress,
         aiPanelState = aiPanelState,
+        extendedState = extendedState,
         showLanguagePicker = showLanguagePicker,
+        showSubtitlePicker = showSubtitlePicker,
         onShowLanguagePicker = { showLanguagePicker = true },
         onHideLanguagePicker = { showLanguagePicker = false },
+        onShowSubtitlePicker = { showSubtitlePicker = true },
+        onHideSubtitlePicker = { showSubtitlePicker = false },
         onToggleControls = viewModel::toggleControls,
         onPlayPause = viewModel::togglePlayPause,
         onSeek = viewModel::seekToFraction,
@@ -92,6 +98,7 @@ fun PlayerRoute(
         onToggleDubbing = viewModel::toggleLiveDubbing,
         onToggleTrivia = viewModel::toggleLiveTrivia,
         onSelectLanguage = viewModel::selectAILanguage,
+        onSelectSubtitleLanguage = viewModel::selectSubtitleLanguage,
         onDismissTrivia = viewModel::dismissTriviaFact,
         onTriviaFollowUp = viewModel::requestTriviaFollowUp,
         onBack = {
@@ -114,9 +121,13 @@ private fun PlayerScreen(
     triviaState: tv.bayit.plus.feature.player.live.LiveTriviaUiState,
     triviaProgress: Float,
     aiPanelState: tv.bayit.plus.feature.player.live.AIFeaturesPanelState,
+    extendedState: PlayerExtendedState,
     showLanguagePicker: Boolean,
+    showSubtitlePicker: Boolean,
     onShowLanguagePicker: () -> Unit,
     onHideLanguagePicker: () -> Unit,
+    onShowSubtitlePicker: () -> Unit,
+    onHideSubtitlePicker: () -> Unit,
     onToggleControls: () -> Unit,
     onPlayPause: () -> Unit,
     onSeek: (Float) -> Unit,
@@ -125,6 +136,7 @@ private fun PlayerScreen(
     onToggleDubbing: () -> Unit,
     onToggleTrivia: () -> Unit,
     onSelectLanguage: (String) -> Unit,
+    onSelectSubtitleLanguage: (String) -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onBack: () -> Unit,
@@ -157,6 +169,7 @@ private fun PlayerScreen(
                     onToggleDubbing = onToggleDubbing,
                     onToggleTrivia = onToggleTrivia,
                     onShowLanguagePicker = onShowLanguagePicker,
+                    onShowSubtitlePicker = onShowSubtitlePicker,
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp,
                     onBack = onBack,
@@ -170,6 +183,21 @@ private fun PlayerScreen(
                             onHideLanguagePicker()
                         },
                         onDismiss = onHideLanguagePicker
+                    )
+                }
+
+                if (showSubtitlePicker) {
+                    tv.bayit.plus.feature.player.subtitles.SubtitleLanguagePicker(
+                        selectedLanguage = extendedState.selectedSubtitleLanguage.orEmpty(),
+                        availableLanguages = extendedState.availableSubtitleLanguages,
+                        isSplitMode = false,
+                        onLanguageSelected = { lang ->
+                            onSelectSubtitleLanguage(lang)
+                            onHideSubtitlePicker()
+                        },
+                        onSplitToggle = { /* TODO: Implement split mode */ },
+                        onOpenSubtitlesClick = { /* TODO: Implement OpenSubtitles */ },
+                        onDismiss = onHideSubtitlePicker,
                     )
                 }
             }

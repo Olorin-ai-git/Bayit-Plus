@@ -16,4 +16,7 @@ data class PlayerExtendedState(
     val currentChapterIndex: Int = -1,
     val selectedQualityHeight: Int? = null,
     val playbackSpeed: Float = 1.0f,
+    val availableSubtitleLanguages: List<String> = emptyList(),
+    val selectedSubtitleLanguage: String? = null,
+    val isSubtitlesEnabled: Boolean = false,
 )

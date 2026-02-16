@@ -48,6 +48,7 @@ internal fun ReadyContent(
     onToggleDubbing: () -> Unit,
     onToggleTrivia: () -> Unit,
     onShowLanguagePicker: () -> Unit,
+    onShowSubtitlePicker: () -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onBack: () -> Unit,
@@ -83,6 +84,8 @@ internal fun ReadyContent(
                 onBack = onBack,
                 onPlayPause = onPlayPause,
                 onSeek = onSeek,
+                onSubtitlePickerClick = onShowSubtitlePicker,
+                onAIFeaturesClick = if (state.isLiveContent) onToggleAIPanel else null,
             )
 
             if (state.isLiveContent) {

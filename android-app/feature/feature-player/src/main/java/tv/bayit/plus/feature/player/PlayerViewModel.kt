@@ -14,6 +14,7 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.time.TimeProvider
 import tv.bayit.plus.core.data.repository.MediaRepository
+import tv.bayit.plus.core.data.repository.SubtitleRepository
 import tv.bayit.plus.core.media.BayitMediaPlayer
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val mediaRepository: MediaRepository,
+    private val subtitleRepository: SubtitleRepository,
     private val contentResolver: PlayerContentResolver,
     private val mediaPlayer: BayitMediaPlayer,
     private val liveAICoordinator: LiveAICoordinator,
@@ -77,6 +79,7 @@ class PlayerViewModel @Inject constructor(
                         isLiveContent = isLive, channelId = if (isLive) contentId else null,
                     )
                     scheduleControlsHide()
+                    if (!isLive) loadAvailableSubtitles(contentId)
                     logger.info("Playback started", mapOf("contentId" to contentId))
                 }
                 is BayitResult.Error -> {
@@ -142,6 +145,34 @@ class PlayerViewModel @Inject constructor(
     fun setQuality(maxHeight: Int?) {
         mediaPlayer.setQuality(maxHeight)
         _extendedState.value = _extendedState.value.copy(selectedQualityHeight = maxHeight)
+    }
+
+    private fun loadAvailableSubtitles(contentId: String) {
+        viewModelScope.launch {
+            when (val result = subtitleRepository.getAvailableSubtitles(contentId)) {
+                is BayitResult.Success -> {
+                    val languages = result.data.map { it.language }.distinct()
+                    _extendedState.value = _extendedState.value.copy(availableSubtitleLanguages = languages)
+                    logger.debug("Loaded available subtitles", mapOf("languages" to languages.joinToString()))
+                }
+                is BayitResult.Error -> logger.error("Failed to load subtitles", result.exception)
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
+    fun selectSubtitleLanguage(languageCode: String) {
+        _extendedState.value = _extendedState.value.copy(
+            selectedSubtitleLanguage = languageCode,
+            isSubtitlesEnabled = true,
+        )
+        logger.debug("Selected subtitle language", mapOf("language" to languageCode))
+    }
+
+    fun toggleSubtitles() {
+        val current = _extendedState.value.isSubtitlesEnabled
+        _extendedState.value = _extendedState.value.copy(isSubtitlesEnabled = !current)
+        logger.debug("Toggled subtitles", mapOf("enabled" to (!current).toString()))
     }
 
     private val channelId get() = (_uiState.value as? PlayerUiState.Ready)?.channelId
