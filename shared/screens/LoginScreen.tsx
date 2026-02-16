@@ -133,6 +133,19 @@ export const LoginScreen: React.FC = () => {
             )}
           </TouchableOpacity>
 
+          {/* Apple Sign In Button (iOS/tvOS only) */}
+          {(Platform.OS === 'ios' || Platform.OS === 'tvos') && (
+            <TouchableOpacity
+              className={`bg-white p-[18px] rounded-xl items-center mt-4 flex-row justify-center ${isLoading ? 'opacity-60' : ''}`}
+              onPress={handleAppleSignIn}
+              disabled={isLoading}
+            >
+              <Text className="text-[#0d0d1a] text-xl font-bold">
+                {t('login.appleSignIn', 'Sign in with Apple')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* QR Code Login Option */}
           <View className="mt-8 items-center">
             <View className="flex-row items-center mb-6">

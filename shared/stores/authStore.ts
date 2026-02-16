@@ -56,6 +56,7 @@ interface AuthState {
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: (redirectUri?: string) => Promise<string | void>;
   handleGoogleCallback: (code: string, state?: string) => Promise<any>;
+  loginWithApple: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
@@ -218,6 +219,62 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           set({
             error: error.detail || error.message || 'Google login failed',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      loginWithApple: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          // This method will be platform-specific
+          // For iOS/tvOS: Use native module to get identity token
+          // For web: Use OAuth flow with Apple JS SDK
+          const Platform = require('react-native').Platform;
+
+          if (Platform.OS === 'ios' || Platform.OS === 'tvos') {
+            // Native iOS/tvOS implementation
+            const { NativeModules } = require('react-native');
+            const AppleAuth = NativeModules.AppleAuthModule;
+
+            if (!AppleAuth) {
+              throw new Error('Apple Sign In module not available');
+            }
+
+            const { identityToken } = await AppleAuth.signIn();
+
+            if (!identityToken) {
+              throw new Error('Failed to get identity token from Apple');
+            }
+
+            const response: any = await authService.loginWithApple(identityToken);
+
+            set({
+              user: response.user,
+              token: response.access_token,
+              refreshToken: response.refresh_token || null,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+
+            // Schedule token refresh
+            get().scheduleTokenRefresh();
+          } else {
+            // Web or Android - use OAuth flow
+            const response: any = await authService.getAppleAuthUrl();
+
+            if (isWebPlatform() && typeof window !== 'undefined') {
+              window.location.href = response.authorization_url;
+              return;
+            }
+
+            // For native Android, return URL for WebView
+            throw new Error('Apple Sign In on Android requires WebView implementation');
+          }
+        } catch (error: any) {
+          set({
+            error: error.detail || error.message || 'Apple login failed',
             isLoading: false,
           });
           throw error;

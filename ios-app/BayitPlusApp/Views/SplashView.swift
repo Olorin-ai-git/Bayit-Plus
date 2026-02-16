@@ -12,6 +12,7 @@ struct SplashView: View {
     let onFinished: () -> Void
 
     @State private var showLogo = false
+    @State private var showTextAnimation = false
     @State private var showSlogan = false
     @State private var fadeOut = false
     @State private var audioPlayer: AVAudioPlayer?
@@ -47,6 +48,24 @@ struct SplashView: View {
 
     // MARK: - Logo
 
+    private var isHebrew: Bool {
+        localization.currentLanguage == .hebrew
+    }
+
+    /// Slide offset for the word part ("Bayit" or "בית").
+    /// Hebrew (RTL): word enters from the right (+300 -> 0).
+    /// LTR: word enters from the left (-300 -> 0).
+    private var wordOffset: CGFloat {
+        showTextAnimation ? 0 : (isHebrew ? 300 : -300)
+    }
+
+    /// Slide offset for the "+" sign.
+    /// Hebrew (RTL): "+" enters from the left (-300 -> 0).
+    /// LTR: "+" enters from the right (+300 -> 0).
+    private var plusOffset: CGFloat {
+        showTextAnimation ? 0 : (isHebrew ? -300 : 300)
+    }
+
     private var logoSection: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             if let logoImage = UIImage(named: "logo") ?? loadBundleLogo() {
@@ -56,11 +75,31 @@ struct SplashView: View {
                     .frame(width: 120, height: 60)
             }
 
-            (Text(localization.t("splash.bayit"))
-                .foregroundColor(.white)
-            + Text(localization.t("splash.plus"))
-                .foregroundColor(DesignTokens.Colors.Primary.base))
-                .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
+            HStack(spacing: 0) {
+                if isHebrew {
+                    // Hebrew RTL: "+" first (from left), then "בית" (from right)
+                    Text(localization.t("splash.plus"))
+                        .foregroundColor(DesignTokens.Colors.Primary.base)
+                        .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
+                        .offset(x: plusOffset)
+
+                    Text(localization.t("splash.bayit"))
+                        .foregroundColor(.white)
+                        .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
+                        .offset(x: wordOffset)
+                } else {
+                    // LTR: "Bayit" first (from left), then "+" (from right)
+                    Text(localization.t("splash.bayit"))
+                        .foregroundColor(.white)
+                        .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
+                        .offset(x: wordOffset)
+
+                    Text(localization.t("splash.plus"))
+                        .foregroundColor(DesignTokens.Colors.Primary.base)
+                        .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
+                        .offset(x: plusOffset)
+                }
+            }
         }
     }
 
@@ -95,19 +134,25 @@ struct SplashView: View {
     private func startSplash() async {
         playIntroAudio()
 
-        // 0.5s delay then logo scales in
-        try? await Task.sleep(for: .seconds(0.5))
+        // 0.3s delay then logo scales in
+        try? await Task.sleep(for: .seconds(0.3))
         withAnimation(.easeOut(duration: 0.8)) {
             showLogo = true
         }
 
-        // ~2s mark: slogan fades in + slides up
-        try? await Task.sleep(for: .seconds(1.5))
+        // 0.4s after logo: text slides in from opposite sides
+        try? await Task.sleep(for: .seconds(0.4))
+        withAnimation(.easeInOut(duration: 0.6)) {
+            showTextAnimation = true
+        }
+
+        // 1.2s after text: slogan fades in + slides up
+        try? await Task.sleep(for: .seconds(1.2))
         withAnimation(.easeInOut(duration: 0.6)) {
             showSlogan = true
         }
 
-        // Wait for audio to finish (~7-8s total), then fade out
+        // Wait for audio to finish, then fade out
         try? await Task.sleep(for: .seconds(5.0))
         withAnimation(.easeInOut(duration: 0.5)) {
             fadeOut = true
@@ -131,7 +176,6 @@ struct SplashView: View {
     // MARK: - Audio
 
     private func playIntroAudio() {
-        let isHebrew = localization.currentLanguage == .hebrew
         let fileName = isHebrew ? "Bayit_Intro_Hebrew" : "Bayit_Intro_English"
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else { return }
         do {

@@ -1,8 +1,7 @@
 package tv.bayit.plus.feature.auth.splash
 
 import android.media.MediaPlayer
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +36,7 @@ fun SplashRoute(onFinished: () -> Unit, modifier: Modifier = Modifier) {
 internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier) {
     var showLogo by remember { mutableStateOf(false) }
     var showSlogan by remember { mutableStateOf(false) }
+    var showTextAnimation by remember { mutableStateOf(false) }
     var fadeOut by remember { mutableStateOf(false) }
     var skipRequested by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -61,6 +61,23 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
         else -> "bayit_intro_english"
     }
     val audioResId = context.resources.getIdentifier(audioFileName, "raw", context.packageName)
+
+    // Determine if current language is Hebrew (RTL)
+    val isHebrew = currentLanguage in listOf("he", "iw")
+
+    // For Hebrew (RTL): +בית - "+" from left, "בית" from right
+    // For English (LTR): Bayit+ - "Bayit" from left, "+" from right
+    val wordOffset by animateFloatAsState(
+        targetValue = if (showTextAnimation) 0f else if (isHebrew) 300f else -300f,
+        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+        label = "wordSlide"
+    )
+
+    val plusOffset by animateFloatAsState(
+        targetValue = if (showTextAnimation) 0f else if (isHebrew) -300f else 300f,
+        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+        label = "plusSlide"
+    )
 
     val logoAlpha by animateFloatAsState(
         targetValue = if (showLogo) 1f else 0f,
@@ -133,19 +150,49 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
                     contentScale = ContentScale.Fit
                 )
 
-                // Bayit+ Text
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.White)) {
-                            append("בית")
-                        }
-                        withStyle(style = SpanStyle(color = DesignTokens.Colors.Primary.base)) {
-                            append("+")
-                        }
-                    },
-                    fontSize = DesignTokens.FontSize.display,
-                    fontWeight = FontWeight.Bold
-                )
+                // Animated text sliding in from opposite directions
+                // Hebrew (RTL): +בית - "+" from left, "בית" from right
+                // English (LTR): Bayit+ - "Bayit" from left, "+" from right
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if (isHebrew) {
+                        // Hebrew: + comes first (from left)
+                        Text(
+                            text = "+",
+                            color = DesignTokens.Colors.Primary.base,
+                            fontSize = DesignTokens.FontSize.display,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.offset(x = plusOffset.dp)
+                        )
+                        // Hebrew: בית comes second (from right)
+                        Text(
+                            text = "בית",
+                            color = Color.White,
+                            fontSize = DesignTokens.FontSize.display,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.offset(x = wordOffset.dp)
+                        )
+                    } else {
+                        // English: Bayit comes first (from left)
+                        Text(
+                            text = "Bayit",
+                            color = Color.White,
+                            fontSize = DesignTokens.FontSize.display,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.offset(x = wordOffset.dp)
+                        )
+                        // English: + comes second (from right)
+                        Text(
+                            text = "+",
+                            color = DesignTokens.Colors.Primary.base,
+                            fontSize = DesignTokens.FontSize.display,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.offset(x = plusOffset.dp)
+                        )
+                    }
+                }
             }
 
             Box(
@@ -170,10 +217,17 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // "Powered by Olorin.ai" with dark purple "ai"
             Text(
-                text = "Powered by Olorin",
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = DesignTokens.Colors.Text.muted)) {
+                        append("Powered by Olorin")
+                    }
+                    withStyle(style = SpanStyle(color = Color(0xFF6B46C1))) { // Dark purple
+                        append(".ai")
+                    }
+                },
                 style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.muted,
                 modifier = Modifier
                     .alpha(logoAlpha)
                     .padding(bottom = DesignTokens.Spacing.lg)
@@ -193,10 +247,13 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
             }
         }
 
-        delay(500)
+        delay(300)
         showLogo = true
 
-        delay(1500)
+        delay(400)
+        showTextAnimation = true  // Trigger slide-in animation
+
+        delay(1200)
         showSlogan = true
 
         delay(5000)

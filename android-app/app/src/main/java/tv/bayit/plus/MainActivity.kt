@@ -16,7 +16,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.network.SessionEventBus
+import tv.bayit.plus.designsystem.i18n.ProvideBayitStrings
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
 import tv.bayit.plus.navigation.Route
@@ -32,6 +34,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var googleSignInHelper: GoogleSignInHelper
 
+    @Inject
+    lateinit var stringProvider: BayitStringProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,10 +47,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BayitTheme {
-                val navController = rememberNavController()
-                val authState by authService.authState.collectAsStateWithLifecycle()
+                ProvideBayitStrings(provider = stringProvider) {
+                    val navController = rememberNavController()
+                    val authState by authService.authState.collectAsStateWithLifecycle()
 
-                LaunchedEffect(authState) {
+                    LaunchedEffect(authState) {
                     when (authState) {
                         is AuthState.Unauthenticated -> {
                             navController.navigate(Route.Login) {
@@ -82,4 +88,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 }

@@ -50,7 +50,7 @@ export const apiAuthService = {
   confirmPasswordReset: (token: string, newPassword: string) =>
     api.post('/auth/password-reset/confirm', { token, new_password: newPassword }),
   loginWithApple: (idToken: string, deviceId?: string) =>
-    api.post('/auth/v2/login/apple', {
+    api.post('/auth/v2/apple', {
       id_token: idToken,
       tenant_id: 'bayit_plus',
       device_id: deviceId,
