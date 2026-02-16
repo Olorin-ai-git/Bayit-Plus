@@ -23,8 +23,16 @@ router = APIRouter(prefix="/v2")
 
 
 class SocialAuthRequest(BaseModel):
-    """Request for social auth (Google/Apple)."""
+    """Request for social auth (Google)."""
     id_token: str
+    device_id: str | None = None
+
+
+class AppleSocialAuthRequest(BaseModel):
+    """Request for Apple social auth with optional first-sign-in fields."""
+    id_token: str
+    full_name: str | None = None
+    email: str | None = None
     device_id: str | None = None
 
 
@@ -345,12 +353,15 @@ async def google_callback_via_auth_service(request: Request, auth_data: GoogleCa
 
 @router.post("/apple", response_model=AuthProxyResponse)
 @limiter.limit("10/minute")
-async def login_apple_via_auth_service(request: Request, auth_data: SocialAuthRequest):
+async def login_apple_via_auth_service(request: Request, auth_data: AppleSocialAuthRequest):
     """
     Apple Sign In via Olorin Auth Service.
 
     Accepts Apple ID token from mobile/web clients, delegates to auth.olorin.ai,
     and syncs with Bayit+ database for app-specific features.
+
+    full_name and email are only provided by Apple on the user's first sign-in
+    and must be forwarded to the auth service for initial user creation.
     """
     auth_client = get_auth_service_client()
 
@@ -358,14 +369,19 @@ async def login_apple_via_auth_service(request: Request, auth_data: SocialAuthRe
         # Login with Apple via auth service
         auth_response = await auth_client.login_apple(
             id_token=auth_data.id_token,
+            full_name=auth_data.full_name,
+            email=auth_data.email,
             device_id=auth_data.device_id,
         )
 
         # Sync/get user from Bayit+ DB
+        # Prefer client-provided full_name over auth service response
+        # (Apple only provides the name on first sign-in)
+        display_name = auth_data.full_name or auth_response["name"]
         user = await auth_client.create_user_in_bayit_db(
             auth_service_user_id=auth_response["user_id"],
             email=auth_response["email"],
-            name=auth_response["name"],
+            name=display_name,
             role=auth_response.get("role", "user"),
             avatar=auth_response.get("avatar"),
         )

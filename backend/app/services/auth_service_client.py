@@ -247,6 +247,8 @@ class AuthServiceClient:
     async def login_apple(
         self,
         id_token: str,
+        full_name: Optional[str] = None,
+        email: Optional[str] = None,
         device_id: Optional[str] = None,
     ) -> dict:
         """
@@ -254,6 +256,8 @@ class AuthServiceClient:
 
         Args:
             id_token: Apple identity token from mobile SDK
+            full_name: User's full name (only on first Apple Sign-In)
+            email: User's email (only on first Apple Sign-In)
             device_id: Optional device identifier
 
         Returns:
@@ -264,14 +268,20 @@ class AuthServiceClient:
         """
         async with httpx.AsyncClient() as client:
             try:
+                payload = {
+                    "provider": "apple",
+                    "id_token": id_token,
+                    "tenant_id": self.tenant_id,
+                    "device_id": device_id,
+                }
+                if full_name:
+                    payload["full_name"] = full_name
+                if email:
+                    payload["email"] = email
+
                 response = await client.post(
                     f"{self.base_url}/api/v1/auth/login/apple",
-                    json={
-                        "provider": "apple",
-                        "id_token": id_token,
-                        "tenant_id": self.tenant_id,
-                        "device_id": device_id,
-                    },
+                    json=payload,
                     headers=self._get_auth_headers(),
                     timeout=self.timeout,
                 )

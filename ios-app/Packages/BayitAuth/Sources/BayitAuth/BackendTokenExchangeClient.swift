@@ -185,8 +185,17 @@ enum BackendTokenExchangeClient {
     ///
     /// Calls `POST /api/v1/auth/v2/apple` which delegates to auth.olorin.ai
     /// while syncing with Bayit+ database for app-specific features.
+    ///
+    /// - Parameters:
+    ///   - idToken: Apple identity token from ASAuthorization.
+    ///   - fullName: User's full name (only provided on first Apple Sign-In).
+    ///   - email: User's email (only provided on first Apple Sign-In).
+    ///   - deviceId: Optional device identifier.
+    ///   - logger: Structured logger.
     static func loginWithApple(
         idToken: String,
+        fullName: String? = nil,
+        email: String? = nil,
         deviceId: String? = nil,
         logger: APILogger
     ) async throws -> LoginResponse {
@@ -194,6 +203,12 @@ enum BackendTokenExchangeClient {
         let url = config.apiBaseURL.appendingPathComponent("auth/v2/apple")
 
         var bodyDict: [String: String] = ["id_token": idToken]
+        if let fullName = fullName {
+            bodyDict["full_name"] = fullName
+        }
+        if let email = email {
+            bodyDict["email"] = email
+        }
         if let deviceId = deviceId {
             bodyDict["device_id"] = deviceId
         }

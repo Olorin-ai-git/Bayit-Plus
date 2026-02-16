@@ -90,9 +90,11 @@ extension AuthManager {
             }
             return response.accessToken
 
-        case .apple(let identityToken, _, _):
+        case .apple(let identityToken, let fullName, let email):
             let response = try await BackendTokenExchangeClient.loginWithApple(
                 idToken: identityToken,
+                fullName: fullName,
+                email: email,
                 logger: logger
             )
             try keychainService.save(

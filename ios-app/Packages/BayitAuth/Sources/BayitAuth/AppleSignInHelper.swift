@@ -109,15 +109,21 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         #if os(iOS)
         // Get the active window scene and return its key window
-        guard let windowScene = UIApplication.shared.connectedScenes
+        if let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-              let window = windowScene.windows.first(where: { $0.isKeyWindow }) else {
-            // Fallback to first available window
-            return UIApplication.shared.windows.first ?? UIWindow()
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+            return window
         }
-        return window
+        // Fallback: any foreground scene's first window
+        if let windowScene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first,
+           let window = windowScene.windows.first {
+            return window
+        }
+        return UIWindow()
         #else
-        // tvOS doesn't require presentation context
+        // tvOS uses focus-based Apple Sign-In; presentation anchor is unused
         return UIWindow()
         #endif
     }

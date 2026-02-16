@@ -157,12 +157,7 @@ struct LoginView: View {
                 iconName: "g.circle.fill",
                 action: {
                     Task {
-                        do {
-                            try await handleGoogleSignIn()
-                        } catch {
-                            // Error is already handled by authManager
-                            print("Google Sign In error: \(error.localizedDescription)")
-                        }
+                        try? await handleGoogleSignIn()
                     }
                 }
             )
@@ -171,13 +166,7 @@ struct LoginView: View {
                 iconName: "apple.logo",
                 action: {
                     Task {
-                        do {
-                            try await handleAppleSignIn()
-                        } catch {
-                            // Error is already handled by authManager
-                            // Just log it for debugging
-                            print("Apple Sign In error: \(error.localizedDescription)")
-                        }
+                        try? await handleAppleSignIn()
                     }
                 }
             )
