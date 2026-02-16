@@ -30,6 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.TriviaFact
+import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.theme.glassMorphism
 import tv.bayit.plus.feature.player.live.LiveTriviaUiState
 
 /**
@@ -44,14 +47,13 @@ fun TriviaFactBanner(
     onFollowUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val fact = state.activeFact ?: return
-
     AnimatedVisibility(
-        visible = true,
+        visible = state.activeFact != null,
         enter = slideInHorizontally(initialOffsetX = { it }),
         exit = slideOutHorizontally(targetOffsetX = { it }),
         modifier = modifier
     ) {
+        val fact = state.activeFact ?: return@AnimatedVisibility
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,11 +63,11 @@ fun TriviaFactBanner(
             Column(
                 modifier = Modifier
                     .width(320.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                        shape = RoundedCornerShape(16.dp)
+                    .glassMorphism(
+                        cornerRadius = DesignTokens.Radius.lg,
+                        alpha = 0.95f,
+                        borderAlpha = 0.25f
                     )
-                    .clip(RoundedCornerShape(16.dp))
             ) {
                 LinearProgressIndicator(
                     progress = { progressFraction },
@@ -96,7 +98,7 @@ fun TriviaFactBanner(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "AI Trivia",
+                                text = bayitString("trivia.aiTrivia"),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
@@ -105,13 +107,13 @@ fun TriviaFactBanner(
 
                         IconButton(
                             onClick = onDismiss,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(DesignTokens.TouchTarget.minimum)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Dismiss",
+                                contentDescription = bayitString("player.controls.dismiss"),
                                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
@@ -135,13 +137,18 @@ fun TriviaFactBanner(
                     }
 
                     if (fact.hasFollowUp == true) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
                         TextButton(
                             onClick = onFollowUp,
-                            modifier = Modifier.align(Alignment.End)
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .size(
+                                    width = 120.dp,
+                                    height = DesignTokens.TouchTarget.minimum
+                                )
                         ) {
                             Text(
-                                text = "Tell me more",
+                                text = bayitString("trivia.tellMeMore"),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }

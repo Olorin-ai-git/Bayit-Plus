@@ -5,17 +5,20 @@ import tv.bayit.plus.core.model.ExternalSubtitleImportResponse
 import tv.bayit.plus.core.model.SubtitleCuesResponse
 import tv.bayit.plus.core.model.SubtitleEnglishMode
 import tv.bayit.plus.core.model.SubtitleHebrewMode
+import tv.bayit.plus.core.model.SubtitlePreferencesInfo
+import tv.bayit.plus.core.model.SubtitlePreferencesUpdate
+import tv.bayit.plus.core.model.SubtitleTrack
 import tv.bayit.plus.core.model.TranslationResult
 
 interface SubtitleRepository {
 
-    suspend fun getAvailableSubtitles(mediaId: String): BayitResult<List<Any>>
+    suspend fun getAvailableSubtitles(mediaId: String): BayitResult<List<SubtitleTrack>>
 
-    suspend fun getSubtitleTrack(mediaId: String, languageCode: String): BayitResult<Any>
+    suspend fun getSubtitleTrack(mediaId: String, languageCode: String): BayitResult<List<SubtitleTrack>>
 
-    suspend fun getSubtitlePreferences(): BayitResult<Any>
+    suspend fun getSubtitlePreferences(): BayitResult<List<SubtitlePreferencesInfo>>
 
-    suspend fun updateSubtitlePreferences(preferences: Map<String, Any>): BayitResult<Unit>
+    suspend fun updateSubtitlePreferences(preferences: SubtitlePreferencesUpdate): BayitResult<Unit>
 
     suspend fun requestSubtitle(mediaId: String, languageCode: String): BayitResult<Unit>
 
@@ -26,9 +29,7 @@ interface SubtitleRepository {
         englishMode: SubtitleEnglishMode? = null,
     ): BayitResult<SubtitleCuesResponse>
 
-    suspend fun fetchExternalSubtitles(
-        contentId: String,
-    ): BayitResult<ExternalSubtitleImportResponse>
+    suspend fun fetchExternalSubtitles(contentId: String): BayitResult<ExternalSubtitleImportResponse>
 
     suspend fun translateWord(
         word: String,
@@ -42,9 +43,7 @@ interface SubtitleRepository {
         targetLanguage: String,
     ): BayitResult<TranslationResult>
 
-    suspend fun fetchContentPreferences(
-        contentId: String,
-    ): BayitResult<Any>
+    suspend fun fetchContentPreferences(contentId: String): BayitResult<List<SubtitlePreferencesInfo>>
 
     suspend fun updateContentPreferences(
         contentId: String,

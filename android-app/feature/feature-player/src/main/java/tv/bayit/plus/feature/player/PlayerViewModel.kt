@@ -43,10 +43,10 @@ class PlayerViewModel @Inject constructor(
     private val _extendedState = MutableStateFlow(PlayerExtendedState())
     val extendedState: StateFlow<PlayerExtendedState> = _extendedState.asStateFlow()
 
-    val subtitleState = liveAICoordinator.subtitlesManager.state
-    val dubbingState = liveAICoordinator.dubbingManager.state
-    val triviaState = liveAICoordinator.triviaManager.state
-    val triviaProgress = liveAICoordinator.triviaManager.progressFraction
+    val subtitleState = liveAICoordinator.subtitleState
+    val dubbingState = liveAICoordinator.dubbingState
+    val triviaState = liveAICoordinator.triviaState
+    val triviaProgress = liveAICoordinator.triviaProgress
     val aiPanelState = liveAICoordinator.panelState
 
     private var currentContentId: String? = null
@@ -150,11 +150,14 @@ class PlayerViewModel @Inject constructor(
     fun toggleLiveDubbing() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleDubbing(it, viewModelScope) } }
     fun toggleLiveTrivia() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleTrivia(it, viewModelScope) } }
     fun selectAILanguage(lang: String) = channelId?.let { viewModelScope.launch { liveAICoordinator.selectLanguage(lang, it, viewModelScope) } }
-    fun dismissTriviaFact() = liveAICoordinator.triviaManager.dismissFact()
-    fun requestTriviaFollowUp() = viewModelScope.launch { liveAICoordinator.triviaManager.requestFollowUp() }
+    fun dismissTriviaFact() = viewModelScope.launch { liveAICoordinator.dismissTrivia() }
+    fun requestTriviaFollowUp() = liveAICoordinator.requestTriviaFollowUp()
 
     override fun onCleared() {
-        saveProgress(); liveAICoordinator.cleanupAll(); positionPollingJob?.cancel(); mediaPlayer.release()
+        saveProgress()
+        viewModelScope.launch { liveAICoordinator.cleanupAll() }
+        positionPollingJob?.cancel()
+        mediaPlayer.release()
         super.onCleared()
     }
 

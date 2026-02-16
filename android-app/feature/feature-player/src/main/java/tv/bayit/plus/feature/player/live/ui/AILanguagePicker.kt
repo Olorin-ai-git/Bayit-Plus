@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.player.live.LiveAIConfig
 
 /**
@@ -45,7 +50,7 @@ fun AILanguagePicker(
                 .padding(vertical = 16.dp)
         ) {
             Text(
-                text = "Select Language",
+                text = bayitString("player.ai.selectLanguage"),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
@@ -77,11 +82,23 @@ private fun LanguageItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val selectedLabel = bayitString("player.controls.selected")
+    val selectLanguageLabel = bayitString("player.ai.selectLanguage")
+    val accessibilityLabel = if (isSelected) {
+        "$languageName, $selectedLabel"
+    } else {
+        "$selectLanguageLabel $languageName"
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .height(DesignTokens.TouchTarget.minimum)
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+            .semantics {
+                contentDescription = accessibilityLabel
+            }
+            .padding(horizontal = DesignTokens.Spacing.xl, vertical = DesignTokens.Spacing.base),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -89,10 +106,11 @@ private fun LanguageItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = LiveAIConfig.getLanguageFlag(languageCode),
-                style = MaterialTheme.typography.headlineSmall
+                text = LiveAIConfig.getLanguageCode(languageCode),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(DesignTokens.Spacing.base))
             Text(
                 text = languageName,
                 style = MaterialTheme.typography.bodyLarge,
@@ -103,7 +121,7 @@ private fun LanguageItem(
         if (isSelected) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
         }

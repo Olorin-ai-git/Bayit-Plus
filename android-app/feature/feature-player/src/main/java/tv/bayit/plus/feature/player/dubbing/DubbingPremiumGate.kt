@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassButton
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -51,7 +52,7 @@ fun DubbingPremiumGate(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = "Premium Feature",
+            text = bayitString("player.dubbing.premiumTitle"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -61,7 +62,7 @@ fun DubbingPremiumGate(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
         Text(
-            text = "Live dubbing requires a Premium or Beta 500 subscription",
+            text = bayitString("player.dubbing.premiumMessage"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.base,
             textAlign = TextAlign.Center,
@@ -69,10 +70,10 @@ fun DubbingPremiumGate(
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
-        GlassButton(text = "Upgrade", onClick = onUpgrade)
+        GlassButton(text = bayitString("player.dubbing.upgrade"), onClick = onUpgrade)
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
-        GlassButton(text = "Not Now", onClick = onDismiss)
+        GlassButton(text = bayitString("player.dubbing.notNow"), onClick = onDismiss)
     }
 }

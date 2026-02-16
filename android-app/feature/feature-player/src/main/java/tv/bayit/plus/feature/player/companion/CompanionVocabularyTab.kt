@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -45,7 +46,7 @@ fun CompanionVocabularyTab(
     ) {
         item {
             Text(
-                text = "Vocabulary",
+                text = bayitString("player.companion.tabVocabulary"),
                 color = DesignTokens.Colors.Text.primary,
                 fontSize = DesignTokens.FontSize.base,
                 fontWeight = FontWeight.SemiBold,
@@ -75,7 +76,7 @@ private fun VocabularyEmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Tap words in subtitles to add them here",
+            text = bayitString("player.companion.tapWords"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
         )

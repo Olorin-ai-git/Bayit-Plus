@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -69,7 +70,7 @@ fun PlayerControlsOverlay(
                 IconButton(onClick = onPlayPause) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        contentDescription = if (isPlaying) bayitString("player.controls.pause") else bayitString("player.controls.play"),
                         tint = DesignTokens.Colors.Text.primary,
                         modifier = Modifier.size(32.dp),
                     )
@@ -144,7 +145,7 @@ private fun LiveIndicator() {
         )
         Spacer(modifier = Modifier.width(DesignTokens.Spacing.xs))
         Text(
-            text = "LIVE",
+            text = bayitString("player.liveBadge"),
             color = DesignTokens.Colors.live,
             fontSize = DesignTokens.FontSize.sm,
         )

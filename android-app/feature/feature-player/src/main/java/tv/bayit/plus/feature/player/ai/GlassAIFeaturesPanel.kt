@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassLiveControlButton
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -67,7 +68,7 @@ fun GlassAIFeaturesPanel(
         IconButton(onClick = onToggleExpand, modifier = Modifier.size(36.dp)) {
             Icon(
                 imageVector = Icons.Default.AutoAwesome,
-                contentDescription = "AI Features",
+                contentDescription = bayitString("player.ai.featuresTitle"),
                 tint = DesignTokens.Colors.Primary.light,
                 modifier = Modifier.size(20.dp),
             )
@@ -91,25 +92,25 @@ fun GlassAIFeaturesPanel(
             ) {
                 FeatureToggleButton(
                     icon = Icons.Default.ClosedCaption,
-                    label = "Translate",
+                    label = bayitString("player.ai.translate"),
                     isEnabled = isLiveTranslateEnabled,
                     onClick = onLiveTranslateToggle,
                 )
                 FeatureToggleButton(
                     icon = Icons.Default.LiveTv,
-                    label = "Split",
+                    label = bayitString("player.ai.split"),
                     isEnabled = isSplitSubtitlesEnabled,
                     onClick = onSplitSubtitlesToggle,
                 )
                 FeatureToggleButton(
                     icon = Icons.Default.GraphicEq,
-                    label = "Dub",
+                    label = bayitString("player.ai.dub"),
                     isEnabled = isDubbingEnabled,
                     onClick = onDubbingToggle,
                 )
                 FeatureToggleButton(
                     icon = Icons.Default.Quiz,
-                    label = "Trivia",
+                    label = bayitString("player.ai.trivia"),
                     isEnabled = isTriviaEnabled,
                     onClick = onTriviaToggle,
                 )
@@ -130,6 +131,6 @@ private fun FeatureToggleButton(
         label = label,
         onClick = onClick,
         isLive = isEnabled,
-        liveLabel = "ON",
+        liveLabel = bayitString("player.controls.on"),
     )
 }

@@ -21,6 +21,7 @@ import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -44,7 +45,7 @@ fun OpenSubtitlesDownload(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "OpenSubtitles",
+            text = bayitString("subtitles.opensubtitles"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -60,12 +61,12 @@ fun OpenSubtitlesDownload(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Search for external subtitles",
+                    text = bayitString("subtitles.searchExternal"),
                     color = DesignTokens.Colors.Text.secondary,
                     fontSize = DesignTokens.FontSize.base,
                 )
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-                GlassButton(text = "Fetch Subtitles", onClick = onFetchExternal)
+                GlassButton(text = bayitString("subtitles.fetchSubtitles"), onClick = onFetchExternal)
             }
         } else {
             LazyColumn(

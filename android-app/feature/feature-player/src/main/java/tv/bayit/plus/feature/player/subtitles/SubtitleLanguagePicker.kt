@@ -24,6 +24,7 @@ import tv.bayit.plus.core.model.SubtitleLanguageInfo
 import tv.bayit.plus.core.model.SubtitleLanguages
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -50,7 +51,7 @@ fun SubtitleLanguagePicker(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "Subtitle Language",
+            text = bayitString("subtitles.selectLanguage"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -80,11 +81,11 @@ fun SubtitleLanguagePicker(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
             GlassButton(
-                text = if (isSplitMode) "Single Mode" else "Split Mode",
+                text = if (isSplitMode) bayitString("subtitles.singleMode") else bayitString("subtitles.splitMode"),
                 onClick = onSplitToggle,
             )
             GlassButton(
-                text = "OpenSubtitles",
+                text = bayitString("subtitles.opensubtitles"),
                 onClick = onOpenSubtitlesClick,
             )
         }
@@ -127,7 +128,7 @@ private fun LanguageRow(
                 if (code == "he") {
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = "AI modes available",
+                        contentDescription = bayitString("subtitles.aiModesAvailable"),
                         tint = DesignTokens.Colors.Primary.light,
                         modifier = Modifier.height(16.dp),
                     )
@@ -135,7 +136,7 @@ private fun LanguageRow(
                 if (isSelected) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
+                        contentDescription = bayitString("player.controls.selected"),
                         tint = DesignTokens.Colors.Semantic.success,
                         modifier = Modifier.height(20.dp),
                     )

@@ -42,16 +42,14 @@ fun PlayerLiveOverlays(
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 
-        if (triviaState.activeFact != null) {
-            TriviaFactBanner(
-                state = triviaState,
-                progressFraction = triviaProgress,
-                currentLanguage = panelState.selectedLanguage,
-                onDismiss = onDismissTrivia,
-                onFollowUp = onTriviaFollowUp,
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
-        }
+        TriviaFactBanner(
+            state = triviaState,
+            progressFraction = triviaProgress,
+            currentLanguage = panelState.selectedLanguage,
+            onDismiss = onDismissTrivia,
+            onFollowUp = onTriviaFollowUp,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
 
         AIFeaturesPanel(
             state = panelState,

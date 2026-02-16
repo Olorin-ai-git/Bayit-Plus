@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.AudioTrack
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -40,7 +41,7 @@ fun AudioTrackSelector(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Audio Track",
+            text = bayitString("player.controls.audioTrack"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.base,
             fontWeight = FontWeight.SemiBold,
@@ -76,7 +77,7 @@ fun AudioTrackSelector(
                         if (track.id == selectedTrackId) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = "Selected",
+                                contentDescription = bayitString("player.controls.selected"),
                                 tint = DesignTokens.Colors.Semantic.success,
                                 modifier = Modifier.padding(end = DesignTokens.Spacing.xs),
                             )

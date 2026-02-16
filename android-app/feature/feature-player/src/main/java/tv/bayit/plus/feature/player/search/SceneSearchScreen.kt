@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassSearchBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.player.ui.formatTimestamp
 
@@ -44,7 +45,7 @@ fun SceneSearchScreen(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "Scene Search",
+            text = bayitString("player.scene_search"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -58,7 +59,7 @@ fun SceneSearchScreen(
                 query = newQuery
                 onSearch(newQuery)
             },
-            placeholder = "Search for a scene...",
+            placeholder = bayitString("player.search_placeholder"),
         )
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))

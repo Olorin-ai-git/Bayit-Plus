@@ -19,6 +19,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassButton
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.player.live.AIFeaturesPanelState
 import tv.bayit.plus.feature.player.live.LiveDubbingUiState
@@ -140,6 +141,6 @@ internal fun ErrorContent(message: String, onBack: () -> Unit) {
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Go Back", onClick = onBack)
+        GlassButton(text = bayitString("player.go_back"), onClick = onBack)
     }
 }

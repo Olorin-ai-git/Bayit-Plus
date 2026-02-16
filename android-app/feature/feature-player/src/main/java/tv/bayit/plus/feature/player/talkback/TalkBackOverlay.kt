@@ -1,6 +1,7 @@
 package tv.bayit.plus.feature.player.talkback
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.runtime.Composable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -65,7 +67,7 @@ fun TalkBackOverlay(
                     )
                     Spacer(modifier = Modifier.width(DesignTokens.Spacing.sm))
                     Text(
-                        text = "Audio Description",
+                        text = bayitString("player.audio_description"),
                         color = DesignTokens.Colors.Semantic.info,
                         fontSize = DesignTokens.FontSize.xs,
                         fontWeight = FontWeight.SemiBold,

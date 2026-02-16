@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -34,11 +35,17 @@ fun AICompanionSidebar(
             .padding(DesignTokens.Spacing.sm),
     ) {
         Text(
-            text = "AI Companion",
+            text = bayitString("player.companion.title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
+        )
+
+        val companionTabs = listOf(
+            bayitString("player.companion.tabContext"),
+            bayitString("player.companion.tabQuiz"),
+            bayitString("player.companion.tabVocabulary"),
         )
 
         ScrollableTabRow(
@@ -47,7 +54,7 @@ fun AICompanionSidebar(
             contentColor = DesignTokens.Colors.Text.primary,
             edgePadding = DesignTokens.Spacing.xs,
         ) {
-            COMPANION_TABS.forEachIndexed { index, tab ->
+            companionTabs.forEachIndexed { index, tab ->
                 Tab(
                     selected = selectedTab == index,
                     onClick = { selectedTab = index },
@@ -74,7 +81,6 @@ fun AICompanionSidebar(
     }
 }
 
-private val COMPANION_TABS = listOf("Context", "Quiz", "Vocabulary")
 private const val TAB_CONTEXT = 0
 private const val TAB_QUIZ = 1
 private const val TAB_VOCABULARY = 2

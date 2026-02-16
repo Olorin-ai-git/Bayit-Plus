@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -50,7 +51,7 @@ fun CompanionContextTab(
     ) {
         item {
             Text(
-                text = "Cultural Context",
+                text = bayitString("player.companion.tabContext"),
                 color = DesignTokens.Colors.Text.primary,
                 fontSize = DesignTokens.FontSize.base,
                 fontWeight = FontWeight.SemiBold,
@@ -76,7 +77,7 @@ private fun ContextEmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "No cultural context available for this content yet.",
+            text = bayitString("player.companion.noContext"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
         )

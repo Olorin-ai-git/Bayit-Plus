@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -53,7 +54,7 @@ fun AISubtitlesPicker(
                 modifier = Modifier.height(18.dp),
             )
             Text(
-                text = "AI Subtitle Modes",
+                text = bayitString("subtitles.aiModesTitle"),
                 color = DesignTokens.Colors.Primary.light,
                 fontSize = DesignTokens.FontSize.sm,
                 fontWeight = FontWeight.SemiBold,
@@ -83,9 +84,10 @@ private val AI_MODES = listOf(
     SubtitleHebrewMode.SHORESH,
 )
 
+@Composable
 private fun aiModeLabel(mode: SubtitleHebrewMode): String = when (mode) {
-    SubtitleHebrewMode.HEBLISH -> "Heblish"
-    SubtitleHebrewMode.NIKUD -> "Nikud"
-    SubtitleHebrewMode.SHORESH -> "Shoresh"
-    SubtitleHebrewMode.STANDARD -> "Standard"
+    SubtitleHebrewMode.HEBLISH -> bayitString("subtitles.mode.heblish")
+    SubtitleHebrewMode.NIKUD -> bayitString("subtitles.nikud")
+    SubtitleHebrewMode.SHORESH -> bayitString("subtitles.mode.shoresh")
+    SubtitleHebrewMode.STANDARD -> bayitString("subtitles.mode.standard")
 }

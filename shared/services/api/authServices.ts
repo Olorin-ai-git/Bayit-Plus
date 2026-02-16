@@ -49,6 +49,40 @@ export const apiAuthService = {
     api.post('/auth/password-reset/request', { email }),
   confirmPasswordReset: (token: string, newPassword: string) =>
     api.post('/auth/password-reset/confirm', { token, new_password: newPassword }),
+  loginWithApple: (idToken: string, deviceId?: string) =>
+    api.post('/auth/v2/login/apple', {
+      id_token: idToken,
+      tenant_id: 'bayit_plus',
+      device_id: deviceId,
+    }),
+  getAppleAuthUrl: async (redirectUri?: string) => {
+    const uri = redirectUri || (isWebPlatform() && typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/apple/callback`
+      : undefined);
+    const response: any = await api.get('/auth/apple/authorize', { params: { redirect_uri: uri } });
+
+    if (isWebPlatform() && typeof window !== 'undefined' && response.state) {
+      sessionStorage.setItem('apple_oauth_state', response.state);
+    }
+
+    return response;
+  },
+  appleCallback: (code: string, redirectUri?: string, state?: string) => {
+    let finalState = state;
+    if (!finalState && isWebPlatform() && typeof window !== 'undefined') {
+      finalState = sessionStorage.getItem('apple_oauth_state') || undefined;
+      if (finalState) {
+        sessionStorage.removeItem('apple_oauth_state');
+      }
+    }
+
+    return api.post('/auth/v2/apple/callback', {
+      code,
+      redirect_uri: redirectUri,
+      state: finalState,
+      tenant_id: 'bayit_plus',
+    });
+  },
 };
 
 // Verification Service (API)

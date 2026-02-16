@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.designsystem.component.GlassBadge
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -109,7 +110,7 @@ private fun FactBanner(
             IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss",
+                    contentDescription = bayitString("player.dismiss"),
                     tint = DesignTokens.Colors.Text.secondary,
                     modifier = Modifier.size(16.dp),
                 )
@@ -144,7 +145,7 @@ private fun FactBanner(
                 modifier = Modifier.align(Alignment.End),
             ) {
                 Text(
-                    text = "More",
+                    text = bayitString("trivia.more"),
                     color = DesignTokens.Colors.Primary.light,
                     fontSize = DesignTokens.FontSize.xs,
                     fontWeight = FontWeight.SemiBold,
@@ -152,7 +153,7 @@ private fun FactBanner(
                 IconButton(onClick = onFollowUp, modifier = Modifier.size(20.dp)) {
                     Icon(
                         imageVector = Icons.Default.NavigateNext,
-                        contentDescription = "Follow up",
+                        contentDescription = bayitString("trivia.follow_up"),
                         tint = DesignTokens.Colors.Primary.light,
                         modifier = Modifier.size(16.dp),
                     )

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassButton
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -47,7 +48,7 @@ fun StreamLimitExceeded(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = "Stream Limit Reached",
+            text = bayitString("player.errors.streamLimitTitle"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.xl,
             fontWeight = FontWeight.Bold,
@@ -57,8 +58,7 @@ fun StreamLimitExceeded(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
         Text(
-            text = "You have reached the maximum of $maxStreams concurrent streams. " +
-                "Please stop another stream or upgrade your plan.",
+            text = bayitString("player.errors.streamLimitMessage", mapOf("maxStreams" to maxStreams.toString())),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.base,
             textAlign = TextAlign.Center,
@@ -66,10 +66,10 @@ fun StreamLimitExceeded(
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
-        GlassButton(text = "Upgrade Plan", onClick = onUpgrade)
+        GlassButton(text = bayitString("player.errors.upgradePlan"), onClick = onUpgrade)
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
-        GlassButton(text = "Go Back", onClick = onGoBack)
+        GlassButton(text = bayitString("player.controls.goBack"), onClick = onGoBack)
     }
 }

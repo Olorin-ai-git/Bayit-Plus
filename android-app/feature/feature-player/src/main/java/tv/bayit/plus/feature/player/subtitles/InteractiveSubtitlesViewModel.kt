@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.SubtitleRepository
+import tv.bayit.plus.core.model.SubtitleTrack
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,11 +49,11 @@ class InteractiveSubtitlesViewModel @Inject constructor(
             logger.debug("Loading interactive subtitles", mapOf("contentId" to contentId, "language" to _selectedLanguage.value))
             when (val result = subtitleRepository.getSubtitleTrack(contentId, _selectedLanguage.value)) {
                 is BayitResult.Success -> {
-                    val subtitles = listOf(result.data) // Wrap single track in list
-                    logger.info("Interactive subtitles loaded", mapOf("count" to subtitles.size.toString()))
+                    val tracks = result.data
+                    logger.info("Interactive subtitles loaded", mapOf("count" to tracks.size.toString()))
                     _uiState.value = InteractiveSubtitlesUiState.Success(
-                        subtitles = subtitles,
-                        availableLanguages = listOf("en", "he", "es", "fr", "ar"),
+                        subtitles = tracks,
+                        availableLanguages = tracks.map { it.language }.distinct(),
                     )
                 }
                 is BayitResult.Error -> {
@@ -69,6 +70,6 @@ class InteractiveSubtitlesViewModel @Inject constructor(
 
 sealed interface InteractiveSubtitlesUiState {
     data object Loading : InteractiveSubtitlesUiState
-    data class Success(val subtitles: List<Any>, val availableLanguages: List<String>) : InteractiveSubtitlesUiState
+    data class Success(val subtitles: List<SubtitleTrack>, val availableLanguages: List<String>) : InteractiveSubtitlesUiState
     data class Error(val message: String) : InteractiveSubtitlesUiState
 }

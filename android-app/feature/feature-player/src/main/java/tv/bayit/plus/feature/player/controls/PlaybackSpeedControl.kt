@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -32,7 +33,7 @@ fun PlaybackSpeedControl(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Playback Speed",
+            text = bayitString("player.playbackSpeed"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.base,
             fontWeight = FontWeight.SemiBold,

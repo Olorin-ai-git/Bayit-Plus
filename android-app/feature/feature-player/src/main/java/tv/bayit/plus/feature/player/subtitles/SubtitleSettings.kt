@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -40,7 +41,7 @@ fun SubtitleSettings(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Subtitle Settings",
+            text = bayitString("subtitles.settingsTitle"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.base,
             fontWeight = FontWeight.SemiBold,
@@ -49,7 +50,7 @@ fun SubtitleSettings(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = "Font Size",
+            text = bayitString("subtitles.fontSize"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
         )
@@ -73,7 +74,7 @@ fun SubtitleSettings(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "Show Background",
+                text = bayitString("subtitles.showBackground"),
                 color = DesignTokens.Colors.Text.secondary,
                 fontSize = DesignTokens.FontSize.sm,
             )

@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player.live
 
+import android.net.Uri
 import tv.bayit.plus.core.model.TriviaFact
 
 /**
@@ -41,10 +42,11 @@ data class LiveTriviaUiState(
 
 /**
  * Aggregated state for AI features panel
+ * Note: selectedLanguage should be initialized from user preferences, not hardcoded
  */
 data class AIFeaturesPanelState(
     val isExpanded: Boolean = false,
-    val selectedLanguage: String = "en",
+    val selectedLanguage: String, // No default - must be provided from config/preferences
     val subtitlesState: LiveSubtitleUiState = LiveSubtitleUiState(),
     val dubbingState: LiveDubbingUiState = LiveDubbingUiState(),
     val triviaState: LiveTriviaUiState = LiveTriviaUiState()
@@ -57,15 +59,20 @@ data class AIFeaturesPanelState(
  * Configuration and URL builders for live AI features
  */
 object LiveAIConfig {
-    // Auto-dismiss timers
+    // TODO: Move these to remote config for runtime adjustability
     const val SUBTITLE_DISMISS_DURATION_MS = 5000L
     const val DUBBING_OVERLAY_DISMISS_DURATION_MS = 4000L
     const val TRIVIA_DEFAULT_DISPLAY_DURATION_SEC = 15
-
-    // Progress tracking
     const val PROGRESS_UPDATE_INTERVAL_MS = 100L
 
-    // Supported languages
+    // Whitelist of supported language codes for validation
+    private val SUPPORTED_LANGUAGE_CODES = setOf(
+        "en", "he", "es", "fr", "de", "ru", "ar", "pt"
+    )
+
+    /**
+     * Supported languages with display names
+     */
     val SUPPORTED_LANGUAGES = listOf(
         "en" to "English",
         "he" to "עברית",
@@ -78,60 +85,95 @@ object LiveAIConfig {
     )
 
     /**
-     * Build WebSocket URL for live subtitles
+     * Validate and sanitize language code against whitelist
+     * @throws IllegalArgumentException if language code is invalid
+     */
+    fun validateLanguageCode(languageCode: String): String {
+        val sanitized = languageCode.trim().lowercase()
+        require(sanitized in SUPPORTED_LANGUAGE_CODES) {
+            "Invalid language code: $languageCode. Supported: $SUPPORTED_LANGUAGE_CODES"
+        }
+        return sanitized
+    }
+
+    /**
+     * Validate WebSocket URL to ensure it uses secure wss:// protocol
+     * @throws IllegalArgumentException if URL doesn't use wss://
+     */
+    private fun validateSecureWebSocketUrl(url: String) {
+        require(url.startsWith("wss://")) {
+            "WebSocket URL must use secure wss:// protocol, got: ${url.substringBefore("://")}"
+        }
+    }
+
+    /**
+     * Build WebSocket URL for live subtitles with validation and encoding
      */
     fun buildSubtitlesWebSocketUrl(
         baseWsUrl: String,
         channelId: String,
-        sourceLang: String = "he",
+        sourceLang: String,
         targetLang: String
     ): String {
-        return "$baseWsUrl/api/v1/ws/live/$channelId/subtitles?source_lang=$sourceLang&target_lang=$targetLang"
+        validateSecureWebSocketUrl(baseWsUrl)
+        val validatedSource = validateLanguageCode(sourceLang)
+        val validatedTarget = validateLanguageCode(targetLang)
+
+        val encodedChannelId = Uri.encode(channelId)
+        val url = "$baseWsUrl/api/v1/ws/live/$encodedChannelId/subtitles?" +
+                "source_lang=$validatedSource&target_lang=$validatedTarget"
+
+        return url
     }
 
     /**
-     * Build WebSocket URL for live dubbing
+     * Build WebSocket URL for live dubbing with validation and encoding
      */
     fun buildDubbingWebSocketUrl(
         baseWsUrl: String,
         channelId: String,
         targetLang: String
     ): String {
-        return "$baseWsUrl/live-dubbing/stream?channel_id=$channelId&target_language=$targetLang&platform=android"
+        validateSecureWebSocketUrl(baseWsUrl)
+        val validatedTarget = validateLanguageCode(targetLang)
+
+        val encodedChannelId = Uri.encode(channelId)
+        val url = "$baseWsUrl/live-dubbing/stream?" +
+                "channel_id=$encodedChannelId&target_language=$validatedTarget&platform=android"
+
+        return url
     }
 
     /**
-     * Build WebSocket URL for live trivia
+     * Build WebSocket URL for live trivia with validation and encoding
      */
     fun buildTriviaWebSocketUrl(
         baseWsUrl: String,
         channelId: String,
         targetLang: String
     ): String {
-        return "$baseWsUrl/ws/live/$channelId/trivia?target_language=$targetLang"
+        validateSecureWebSocketUrl(baseWsUrl)
+        val validatedTarget = validateLanguageCode(targetLang)
+
+        val encodedChannelId = Uri.encode(channelId)
+        val url = "$baseWsUrl/ws/live/$encodedChannelId/trivia?" +
+                "target_language=$validatedTarget"
+
+        return url
     }
 
     /**
-     * Get language flag emoji for display
+     * Get language code abbreviation for display (removed emoji flags per Bayit+ rules)
      */
-    fun getLanguageFlag(languageCode: String): String {
-        return when (languageCode) {
-            "en" -> "🇺🇸"
-            "he" -> "🇮🇱"
-            "es" -> "🇪🇸"
-            "fr" -> "🇫🇷"
-            "de" -> "🇩🇪"
-            "ru" -> "🇷🇺"
-            "ar" -> "🇸🇦"
-            "pt" -> "🇵🇹"
-            else -> "🌐"
-        }
+    fun getLanguageCode(languageCode: String): String {
+        return languageCode.uppercase()
     }
 
     /**
      * Get language display name
      */
     fun getLanguageName(languageCode: String): String {
-        return SUPPORTED_LANGUAGES.find { it.first == languageCode }?.second ?: languageCode.uppercase()
+        return SUPPORTED_LANGUAGES.find { it.first == languageCode }?.second
+            ?: languageCode.uppercase()
     }
 }

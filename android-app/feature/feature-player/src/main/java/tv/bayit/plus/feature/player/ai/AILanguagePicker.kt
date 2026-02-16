@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.SubtitleLanguages
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -42,7 +43,7 @@ fun AILanguagePicker(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "AI Language",
+            text = bayitString("player.ai.languageTitle"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -51,7 +52,7 @@ fun AILanguagePicker(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
         Text(
-            text = "Primary",
+            text = bayitString("player.ai.languagePrimary"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
             fontWeight = FontWeight.SemiBold,
@@ -71,7 +72,7 @@ fun AILanguagePicker(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = "Secondary (Optional)",
+            text = bayitString("player.ai.languageSecondary"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
             fontWeight = FontWeight.SemiBold,
@@ -124,7 +125,7 @@ private fun AILanguageRow(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Selected",
+                    contentDescription = bayitString("player.controls.selected"),
                     tint = DesignTokens.Colors.Semantic.success,
                     modifier = Modifier.height(20.dp),
                 )

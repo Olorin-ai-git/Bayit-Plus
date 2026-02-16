@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -54,7 +55,7 @@ fun RecordingControls(
         ) {
             Icon(
                 imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.FiberManualRecord,
-                contentDescription = if (isRecording) "Stop Recording" else "Start Recording",
+                contentDescription = if (isRecording) bayitString("recording.stop") else bayitString("recording.start"),
                 tint = indicatorColor,
                 modifier = Modifier.size(20.dp),
             )

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -40,7 +41,7 @@ fun LanguageRatio(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Language Learning Ratio",
+            text = bayitString("player.language_ratio"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.base,
             fontWeight = FontWeight.SemiBold,

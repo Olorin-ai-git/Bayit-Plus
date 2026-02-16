@@ -13,19 +13,16 @@ import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.TriviaRepository
 import tv.bayit.plus.core.model.QuizResponse
 import tv.bayit.plus.core.model.QuizResult
+import tv.bayit.plus.core.model.TriviaAnswerResult
 import tv.bayit.plus.core.model.TriviaFactsResponse
+import tv.bayit.plus.core.model.TriviaJoinResult
+import tv.bayit.plus.core.model.TriviaLeaderboardEntry
 import tv.bayit.plus.core.model.TriviaPreferences
 import tv.bayit.plus.core.model.TriviaSession
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Production implementation of [TriviaRepository] backed by Retrofit.
- *
- * Supports both session-based trivia (interactive quiz) and facts-based
- * trivia (player overlay facts with timed triggers).
- */
 @Singleton
 class ApiTriviaRepository @Inject constructor(
     private val client: BayitApiClient,
@@ -33,31 +30,35 @@ class ApiTriviaRepository @Inject constructor(
 
     private val service: TriviaApiService = client.createService()
 
-    override suspend fun getActiveSessions(): BayitResult<List<Any>> =
+    override suspend fun getActiveSessions(): BayitResult<List<TriviaSession>> =
         runCatchingResult {
             val response = client.safeApiCall { service.getActiveSessions() }
             response.sessions
         }
 
-    override suspend fun joinSession(sessionId: String): BayitResult<Any> =
-        runCatchingResult { client.safeApiCall { service.joinSession(sessionId) } }
+    override suspend fun joinSession(sessionId: String): BayitResult<TriviaJoinResult> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.joinSession(sessionId) }
+            TriviaJoinResult(sessionId = response.sessionId, status = response.status)
+        }
 
     override suspend fun submitAnswer(
         sessionId: String,
         questionId: String,
         answerId: String,
-    ): BayitResult<Any> = runCatchingResult {
+    ): BayitResult<TriviaAnswerResult> = runCatchingResult {
         val body = TriviaAnswerBody(questionId = questionId, answerId = answerId)
-        client.safeApiCall { service.submitAnswer(sessionId, body) }
+        val response = client.safeApiCall { service.submitAnswer(sessionId, body) }
+        TriviaAnswerResult(isCorrect = response.isCorrect, score = response.score)
     }
 
-    override suspend fun getLeaderboard(sessionId: String): BayitResult<List<Any>> =
+    override suspend fun getLeaderboard(sessionId: String): BayitResult<List<TriviaLeaderboardEntry>> =
         runCatchingResult {
             val response = client.safeApiCall { service.getLeaderboard(sessionId) }
-            response.entries
+            response.entries.map { TriviaLeaderboardEntry(userId = it.userId, score = it.score, rank = it.rank) }
         }
 
-    override suspend fun getHistory(): BayitResult<List<Any>> = runCatchingResult {
+    override suspend fun getHistory(): BayitResult<List<TriviaSession>> = runCatchingResult {
         val response = client.safeApiCall { service.getActiveSessions() }
         response.sessions
     }
@@ -102,10 +103,10 @@ private interface TriviaApiService {
     suspend fun getActiveSessions(): TriviaSessionsResponse
 
     @POST("api/v1/trivia/session/{id}/join")
-    suspend fun joinSession(@Path("id") sessionId: String): TriviaJoinResponse
+    suspend fun joinSession(@Path("id") sessionId: String): TriviaJoinApiResponse
 
     @POST("api/v1/trivia/session/{id}/answer")
-    suspend fun submitAnswer(@Path("id") sessionId: String, @Body body: TriviaAnswerBody): TriviaAnswerResponse
+    suspend fun submitAnswer(@Path("id") sessionId: String, @Body body: TriviaAnswerBody): TriviaAnswerApiResponse
 
     @GET("api/v1/trivia/leaderboard")
     suspend fun getLeaderboard(@Query("session_id") sessionId: String): TriviaLeaderboardResponse
@@ -131,11 +132,11 @@ private interface TriviaApiService {
 }
 
 @Serializable private data class TriviaSessionsResponse(val sessions: List<TriviaSession> = emptyList())
-@Serializable private data class TriviaJoinResponse(@SerialName("session_id") val sessionId: String, val status: String? = null)
+@Serializable private data class TriviaJoinApiResponse(@SerialName("session_id") val sessionId: String, val status: String? = null)
 @Serializable private data class TriviaAnswerBody(@SerialName("question_id") val questionId: String, @SerialName("answer_id") val answerId: String)
-@Serializable private data class TriviaAnswerResponse(@SerialName("is_correct") val isCorrect: Boolean, val score: Int? = null)
-@Serializable private data class TriviaLeaderboardResponse(val entries: List<TriviaLeaderboardEntry> = emptyList())
-@Serializable private data class TriviaLeaderboardEntry(@SerialName("user_id") val userId: String, val score: Int, val rank: Int)
+@Serializable private data class TriviaAnswerApiResponse(@SerialName("is_correct") val isCorrect: Boolean, val score: Int? = null)
+@Serializable private data class TriviaLeaderboardResponse(val entries: List<LeaderboardApiEntry> = emptyList())
+@Serializable private data class LeaderboardApiEntry(@SerialName("user_id") val userId: String, val score: Int, val rank: Int)
 @Serializable private data class QuizSubmitBody(
     @SerialName("content_id") val contentId: String,
     @SerialName("profile_id") val profileId: String,

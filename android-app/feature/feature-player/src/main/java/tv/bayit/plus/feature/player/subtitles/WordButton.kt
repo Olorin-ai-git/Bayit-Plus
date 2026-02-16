@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -29,6 +30,8 @@ fun WordButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val translateLabel = bayitString("player.subtitles.translateWord", mapOf("word" to text))
+
     Box(
         modifier = modifier
             .defaultMinSize(
@@ -37,7 +40,7 @@ fun WordButton(
             )
             .semantics {
                 role = Role.Button
-                contentDescription = "Translate word: $text"
+                contentDescription = translateLabel
             }
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,

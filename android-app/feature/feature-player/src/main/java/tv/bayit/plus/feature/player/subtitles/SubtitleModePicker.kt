@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.core.model.SubtitleEnglishMode
 import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -34,7 +35,7 @@ fun HebrewModePicker(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Hebrew Mode",
+            text = bayitString("subtitles.hebrewMode.title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.sm,
             fontWeight = FontWeight.SemiBold,
@@ -76,7 +77,7 @@ fun EnglishModePicker(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "English Mode",
+            text = bayitString("subtitles.englishMode.title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.sm,
             fontWeight = FontWeight.SemiBold,
@@ -99,14 +100,16 @@ fun EnglishModePicker(
     }
 }
 
+@Composable
 private fun hebrewModeLabel(mode: SubtitleHebrewMode): String = when (mode) {
-    SubtitleHebrewMode.STANDARD -> "Standard"
-    SubtitleHebrewMode.NIKUD -> "Nikud"
-    SubtitleHebrewMode.SHORESH -> "Shoresh"
-    SubtitleHebrewMode.HEBLISH -> "Heblish"
+    SubtitleHebrewMode.STANDARD -> bayitString("subtitles.mode.standard")
+    SubtitleHebrewMode.NIKUD -> bayitString("subtitles.nikud")
+    SubtitleHebrewMode.SHORESH -> bayitString("subtitles.mode.shoresh")
+    SubtitleHebrewMode.HEBLISH -> bayitString("subtitles.mode.heblish")
 }
 
+@Composable
 private fun englishModeLabel(mode: SubtitleEnglishMode): String = when (mode) {
-    SubtitleEnglishMode.STANDARD -> "Standard"
-    SubtitleEnglishMode.ENGREW -> "Engrew"
+    SubtitleEnglishMode.STANDARD -> bayitString("subtitles.mode.standard")
+    SubtitleEnglishMode.ENGREW -> bayitString("subtitles.mode.engrew")
 }

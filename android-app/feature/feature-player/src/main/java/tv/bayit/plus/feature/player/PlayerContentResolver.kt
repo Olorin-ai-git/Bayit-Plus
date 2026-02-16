@@ -52,7 +52,7 @@ class PlayerContentResolver @Inject constructor(
             is BayitResult.Success -> {
                 val url = (result.data as? PodcastEpisodeItem)?.audioUrl
                 if (url.isNullOrEmpty()) {
-                    BayitResult.Error(IllegalStateException("No audio URL for episode $episodeId"))
+                    BayitResult.Error(IllegalStateException("errors.no_audio_url: $episodeId"))
                 } else {
                     BayitResult.Success(url)
                 }

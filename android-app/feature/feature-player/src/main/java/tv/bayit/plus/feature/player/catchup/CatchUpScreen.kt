@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -64,21 +65,21 @@ fun CatchUpAutoPrompt(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Catch Up",
+            text = bayitString("player.catchup.title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
         Text(
-            text = "Missed the beginning? Get an AI-powered summary of what happened so far.",
+            text = bayitString("player.catchup.description"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.base,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Generate Summary", onClick = onAccept)
+        GlassButton(text = bayitString("player.catchup.generateSummary"), onClick = onAccept)
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-        GlassButton(text = "Skip", onClick = onDismiss)
+        GlassButton(text = bayitString("player.controls.skip"), onClick = onDismiss)
     }
 }
 
@@ -98,7 +99,7 @@ fun CatchUpSummary(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Summary",
+            text = bayitString("player.catchup.summaryTitle"),
             color = DesignTokens.Colors.Primary.light,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -110,7 +111,7 @@ fun CatchUpSummary(
             fontSize = DesignTokens.FontSize.base,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Continue Watching", onClick = onDismiss)
+        GlassButton(text = bayitString("player.controls.continueWatching"), onClick = onDismiss)
     }
 }
 
@@ -136,6 +137,6 @@ private fun CatchUpError(
             fontSize = DesignTokens.FontSize.base,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Dismiss", onClick = onDismiss)
+        GlassButton(text = bayitString("player.controls.dismiss"), onClick = onDismiss)
     }
 }

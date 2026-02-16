@@ -1,0 +1,1361 @@
+
+ ▐▛███▜▌   Claude Code v2.1.42
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+
+❯ /clear 
+  ⎿  (no content)
+
+❯ Conversation exported to:                                                 
+  2026-02-16-084921-implement-the-following-plan.txt read and continue      
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I've read the full exported conversation. Here's the state:
+
+  Context: Android Player Full Parity (9 phases) was complete. Panel signoff
+  returned CONDITIONAL PASS with 15 blockers. You started fixing them and got
+  through most before hitting context limits.
+
+  Fixes already applied:
+  - Security HIGH #8: HTTP logging gated by isDebug flag
+  - Security HIGH #9: WebSocket auth moved to upgrade handshake header
+  - Companion tabs (#1-3): Rewritten with CompanionViewModel
+  - Time injection (#7): TimeProvider created and injected
+  - URL encoding (#10): WebSocket URLs URL-encoded
+  - Chat limits (#11): 500-char max on chat input
+  - DubbingMixer URL validation (#12): HTTPS-only check
+  - WordButton touch targets & a11y (#13-14): 48dp min, semantics
+  - RTL support (#15): TextDirection in WordButton
+
+  Remaining when context was lost: PlayerViewModel.kt was being compacted to
+  stay under 200 lines - it hit the context limit mid-edit.
+
+  Let me check the current state of the files to see what still needs attention.
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && wc -l
+      feature/feature-player/src/main/java/tv/bayit/plus/feature/player/Player…)
+  ⎿       191 feature/feature-player/src/main/java/tv/bayit/plus/feature/pl
+     ayer/PlayerViewModel.kt
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && find feature/feature-player/src/main/java -name "*.kt" -exec wc
+      -l {} + | sort…)
+  ⎿      7542 total
+          214 feature/feature-player/src/main/java/tv/bayit/plus/feature/pl
+     ayer/live/LiveTriviaManager.kt
+     … +15 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ PlayerViewModel.kt is 191 lines (under 200). But LiveTriviaManager.kt is 214
+  lines - over the limit. Let me check the remaining blockers and fix that file.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ PlayerViewModel.kt is 191 lines - good. But LiveTriviaManager.kt is 214 lines,
+   over the 200-line limit. Let me also check if there are any other remaining
+  issues from the blocker list.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Good - no forbidden terms or console output. All the P0 blocker fixes from the
+   panel are applied. The only remaining issue is the 200-line limit violation
+  on LiveTriviaManager.kt. Let me fix that by extracting the serialization
+  models.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Good - TriviaFact and models already exist in core-model. The private
+  TriviaTopic and TriviaMessageWrapper in LiveTriviaManager.kt are
+  WebSocket-specific message wrappers. I'll extract those to a separate file and
+   tighten the code to get under 200 lines.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/
+       feature-player/src/main/java/tv/bayit/plus/feature/player/live/LiveTrivia
+       Messages.kt)
+  ⎿  Wrote 21 lines to ../android-app/feature/feature-player/src/main/java/
+     tv/bayit/plus/feature/player/live/LiveTriviaMessages.kt
+       1 package tv.bayit.plus.feature.player.live
+       2 
+       3 import kotlinx.serialization.Serializable
+       4 import tv.bayit.plus.core.model.TriviaFact
+       5 
+       6 /** WebSocket topic detection payload for live trivia. */
+       7 @Serializable
+       8 internal data class TriviaTopic(
+       9     val topic: String? = null,
+      10     val category: String? = null,
+     … +11 lines (ctrl+o to expand)
+
+⏺ Now rewrite LiveTriviaManager.kt to use the extracted models and compact the
+  code:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/
+       feature-player/src/main/java/tv/bayit/plus/feature/player/live/LiveTrivia
+       Manager.kt)
+  ⎿  Added 32 lines, removed 91 lines
+       9  import kotlinx.coroutines.flow.launchIn
+      10  import kotlinx.coroutines.flow.onEach
+      11  import kotlinx.coroutines.launch
+      12 -import kotlinx.serialization.Serializable                      
+      12  import kotlinx.serialization.json.Json
+      13  import tv.bayit.plus.core.model.TriviaFact
+      14  import tv.bayit.plus.core.network.NetworkConfig
+     ...
+      19  import javax.inject.Inject
+      20  import javax.inject.Singleton
+      21  
+      23 -@Serializable                                                  
+      24 -private data class TriviaTopic(                                
+      25 -    val topic: String? = null,                                 
+      26 -    val category: String? = null                               
+      27 -)                                                              
+      28 -                                                               
+      29 -@Serializable                                                  
+      30 -private data class TriviaMessageWrapper(                       
+      31 -    val type: String,                                          
+      32 -    val fact: TriviaFact? = null,                              
+      33 -    val detectedTopic: TriviaTopic? = null,                    
+      34 -    val message: String? = null                                
+      35 -)                                                              
+      36 -                                                               
+      37 -/**                                                            
+      38 - * Manages live trivia WebSocket connection and state          
+      39 - */                                                            
+      22 +/** Manages live trivia WebSocket connection and state. */     
+      23  @Singleton
+      24  class LiveTriviaManager @Inject constructor(
+      25      private val webSocketManager: WebSocketManager,
+      43 -    private val networkConfig: NetworkConfig                   
+      26 +    private val networkConfig: NetworkConfig,                  
+      27  ) {
+      28      private val _state = MutableStateFlow(LiveTriviaUiState())
+      29      val state: StateFlow<LiveTriviaUiState> = _state.asStateFlo
+          w()
+     ...
+      36      private var messageJob: Job? = null
+      37      private var autoDismissJob: Job? = null
+      38      private var progressJob: Job? = null
+      56 -                                                               
+      39      private val shownFactIds = mutableSetOf<String>()
+      40  
+      59 -    private val json = Json {                                  
+      60 -        ignoreUnknownKeys = true                               
+      61 -        isLenient = true                                       
+      62 -    }                                                          
+      41 +    private val json = Json { ignoreUnknownKeys = true; isLenie
+         +nt = true }                                                    
+      42  
+      64 -    /**                                                        
+      65 -     * Start live trivia for a channel                         
+      66 -     */                                                        
+      43 +    /** Start live trivia for a channel. */                    
+      44      suspend fun start(channelId: String, targetLanguage: String
+          , scope: CoroutineScope) {
+      68 -        if (_state.value.isEnabled || _state.value.isConnecting
+         -) {                                                            
+      69 -            return                                             
+      70 -        }                                                      
+      45 +        if (_state.value.isEnabled || _state.value.isConnecting
+         +) return                                                       
+      46  
+      47          _state.value = LiveTriviaUiState(isConnecting = true)
+      73 -                                                               
+      48          val wsUrl = LiveAIConfig.buildTriviaWebSocketUrl(
+      49              baseWsUrl = networkConfig.webSocketBaseUrl,
+      50              channelId = channelId,
+      77 -            targetLang = targetLanguage                        
+      51 +            targetLang = targetLanguage,                       
+      52          )
+      53  
+      54          try {
+     ...
+      57              observeMessages(scope)
+      58          } catch (e: Exception) {
+      59              _state.value = LiveTriviaUiState(
+      86 -                errorMessage = e.message ?: "Failed to connect 
+         -to trivia service"                                             
+      60 +                errorMessage = e.message ?: "Failed to connect 
+         +to trivia service",                                            
+      61              )
+      62          }
+      63      }
+      64  
+      91 -    /**                                                        
+      92 -     * Stop live trivia and disconnect                         
+      93 -     */                                                        
+      65 +    /** Stop live trivia and disconnect. */                    
+      66      fun stop() {
+      67          connectionJob?.cancel()
+      68          messageJob?.cancel()
+     ...
+       75          _progressFraction.value = 0f
+       76      }
+       77  
+      106 -    /**                                                       
+      107 -     * Dismiss the current trivia fact                        
+      108 -     */                                                       
+       78 +    /** Dismiss the current trivia fact. */                   
+       79      fun dismissFact() {
+       80          autoDismissJob?.cancel()
+       81          progressJob?.cancel()
+     ...
+       83          _progressFraction.value = 0f
+       84      }
+       85  
+      116 -    /**                                                       
+      117 -     * Request a follow-up fact for the current topic         
+      118 -     */                                                       
+       86 +    /** Request a follow-up fact for the current topic. */    
+       87      fun requestFollowUp() {
+       88          val currentFact = _state.value.activeFact ?: return
+       89          connection?.send("{\"type\":\"request_followup\",\"fac
+           tId\":\"${currentFact.id}\"}")
+     ...
+       91  
+       92      private fun observeConnection(scope: CoroutineScope) {
+       93          val conn = connection ?: return
+      126 -                                                              
+      127 -        connectionJob = conn.state                            
+      128 -            .onEach { state ->                                
+      129 -                when (state) {                                
+      130 -                    ConnectionState.CONNECTED -> {            
+      131 -                        _state.value = _state.value.copy(     
+      132 -                            isEnabled = true,                 
+      133 -                            isConnecting = false,             
+      134 -                            errorMessage = null               
+      135 -                        )                                     
+      136 -                    }                                         
+      137 -                    ConnectionState.FAILED -> {               
+      138 -                        _state.value = _state.value.copy(     
+      139 -                            isEnabled = false,                
+      140 -                            isConnecting = false,             
+      141 -                            errorMessage = "Connection failed"
+      142 -                        )                                     
+      143 -                    }                                         
+      144 -                    else -> {}                                
+      145 -                }                                             
+       94 +        connectionJob = conn.state.onEach { state ->          
+       95 +            when (state) {                                    
+       96 +                ConnectionState.CONNECTED -> _state.value = _s
+          +tate.value.copy(                                              
+       97 +                    isEnabled = true, isConnecting = false, er
+          +rorMessage = null,                                            
+       98 +                )                                             
+       99 +                ConnectionState.FAILED -> _state.value = _stat
+          +e.value.copy(                                                 
+      100 +                    isEnabled = false, isConnecting = false, e
+          +rrorMessage = "Connection failed",                            
+      101 +                )                                             
+      102 +                else -> {}                                    
+      103              }
+      147 -            .launchIn(scope)                                  
+      104 +        }.launchIn(scope)                                     
+      105      }
+      106  
+      107      private fun observeMessages(scope: CoroutineScope) {
+      108          val conn = connection ?: return
+      152 -                                                              
+      153 -        messageJob = conn.messages                            
+      154 -            .onEach { text ->                                 
+      155 -                handleMessage(text, scope)                    
+      156 -            }                                                 
+      157 -            .launchIn(scope)                                  
+      109 +        messageJob = conn.messages.onEach { handleMessage(it, 
+          +scope) }.launchIn(scope)                                      
+      110      }
+      111  
+      112      private fun handleMessage(text: String, scope: CoroutineSc
+           ope) {
+     ...
+      116                  "trivia_fact" -> {
+      117                      val fact = msg.fact ?: return
+      118                      if (fact.id in shownFactIds) return
+      167 -                                                              
+      119                      shownFactIds.add(fact.id)
+      120                      showFact(fact, scope)
+      121                  }
+      171 -                "connected" -> {                              
+      172 -                    // Connection acknowledged                
+      173 -                }                                             
+      174 -                "error" -> {                                  
+      175 -                    _state.value = _state.value.copy(         
+      176 -                        errorMessage = msg.message ?: "Trivia 
+          -service error"                                                
+      177 -                    )                                         
+      178 -                }                                             
+      122 +                "error" -> _state.value = _state.value.copy(  
+      123 +                    errorMessage = msg.message ?: "Trivia serv
+          +ice error",                                                   
+      124 +                )                                             
+      125 +                else -> {} // "connected" acknowledgment and o
+          +ther types                                                    
+      126              }
+      180 -        } catch (e: Exception) {                              
+      181 -            _state.value = _state.value.copy(                 
+      182 -                errorMessage = "Failed to parse trivia message
+          -"                                                             
+      183 -            )                                                 
+      127 +        } catch (_: Exception) {                              
+      128 +            _state.value = _state.value.copy(errorMessage = "F
+          +ailed to parse trivia message")                               
+      129          }
+      130      }
+      131  
+      132      private fun showFact(fact: TriviaFact, scope: CoroutineSco
+           pe) {
+      133          _state.value = _state.value.copy(activeFact = fact)
+      134          _progressFraction.value = 0f
+      190 -                                                              
+      191 -        val displayDuration = fact.displayDuration ?: LiveAICo
+          -nfig.TRIVIA_DEFAULT_DISPLAY_DURATION_SEC                      
+      192 -        startProgressAnimation(displayDuration, scope)        
+      193 -        scheduleAutoDismiss(displayDuration * 1000L, scope)   
+      135 +        val durationSec = fact.displayDuration ?: LiveAIConfig
+          +.TRIVIA_DEFAULT_DISPLAY_DURATION_SEC                          
+      136 +        startProgressAnimation(durationSec, scope)            
+      137 +        scheduleAutoDismiss(durationSec * 1000L, scope)       
+      138      }
+      139  
+      140      private fun startProgressAnimation(durationSec: Int, scope
+           : CoroutineScope) {
+      141          progressJob?.cancel()
+      142          progressJob = scope.launch {
+      199 -            val steps = (durationSec * 10)                    
+      143 +            val steps = durationSec * 10                      
+      144              repeat(steps) { step ->
+      145                  _progressFraction.value = (step + 1) / steps.t
+           oFloat()
+      146                  delay(LiveAIConfig.PROGRESS_UPDATE_INTERVAL_MS
+           )
+     ...
+      150  
+      151      private fun scheduleAutoDismiss(durationMs: Long, scope: C
+           oroutineScope) {
+      152          autoDismissJob?.cancel()
+      209 -        autoDismissJob = scope.launch {                       
+      210 -            delay(durationMs)                                 
+      211 -            dismissFact()                                     
+      212 -        }                                                     
+      153 +        autoDismissJob = scope.launch { delay(durationMs); dis
+          +missFact() }                                                  
+      154      }
+      155  }
+
+⏺ 155 lines. Now let me verify all files are under 200 lines:
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && find feature/feature-player/src/main/java -name "*.kt" -exec wc
+      -l {} + | sort…)
+  ⎿      7503 total
+          191 feature/feature-player/src/main/java/tv/bayit/plus/feature/pl
+     ayer/PlayerViewModel.kt
+     … +6 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && find feature/feature-player/src/main/java -name "*.kt" -exec wc
+      -l {} + | awk…)
+  ⎿      7503 total
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ All files are under 200 lines. Let me also verify the core-media and
+  core-network files that were modified:
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && wc -l
+      core/core-media/src/main/java/tv/bayit/plus/core/media/BayitMediaPlayer.…)
+  ⎿       164 core/core-media/src/main/java/tv/bayit/plus/core/media/BayitM
+     ediaPlayer.kt
+          108 core/core-media/src/main/java/tv/bayit/plus/core/media/Dubbin
+     … +8 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ All under 200. Here's the final status of all 15 panel blockers:
+
+  All P0 Blockers - FIXED:
+
+  #: 1
+  Issue: CompanionContextTab placeholder data
+  Status: Fixed - connected to CompanionViewModel
+  ────────────────────────────────────────
+  #: 2
+  Issue: CompanionQuizTab not using TriviaRepository
+  Status: Fixed - wired to CompanionViewModel.quizState
+  ────────────────────────────────────────
+  #: 3
+  Issue: CompanionVocabularyTab static data
+  Status: Fixed - connected to CompanionViewModel
+  ────────────────────────────────────────
+  #: 4
+  Issue: Dual BayitResult definitions
+  Status: P2 advisory - deferred
+  ────────────────────────────────────────
+  #: 5
+  Issue: Untyped repository returns
+  Status: P1 - deferred
+  ────────────────────────────────────────
+  #: 6
+  Issue: Hardcoded UI strings (i18n)
+  Status: P1 - deferred (large effort)
+  ────────────────────────────────────────
+  #: 7
+  Issue: System.currentTimeMillis() direct call
+  Status: Fixed - TimeProvider injected
+  ────────────────────────────────────────
+  #: 8
+  Issue: HTTP body logging in release
+  Status: Fixed - gated by isDebug flag
+  ────────────────────────────────────────
+  #: 9
+  Issue: WebSocket auth as post-connect message
+  Status: Fixed - moved to Authorization header
+  ────────────────────────────────────────
+  #: 10
+  Issue: WebSocket URL params not encoded
+  Status: Fixed - URLEncoder applied
+  ────────────────────────────────────────
+  #: 11
+  Issue: Chat input no length limit
+  Status: Fixed - 500-char max
+  ────────────────────────────────────────
+  #: 12
+  Issue: DubbingMixer arbitrary audio URLs
+  Status: Fixed - HTTPS-only validation
+  ────────────────────────────────────────
+  #: 13
+  Issue: WordButton no minimum touch target
+  Status: Fixed - 48dp min via defaultMinSize
+  ────────────────────────────────────────
+  #: 14
+  Issue: Missing accessibility descriptions
+  Status: Fixed - semantics block with Role.Button
+  ────────────────────────────────────────
+  #: 15
+  Issue: RTL layout incomplete
+  Status: Fixed - TextDirection in WordButton
+
+  Additional fix: LiveTriviaManager.kt was 214 lines, extracted
+  LiveTriviaMessages.kt to get it to 155 lines.
+
+  All files in feature-player are under the 200-line limit. The remaining P1/P2
+  items (dual BayitResult, untyped returns, i18n strings) are non-blocking
+  improvements. Want me to tackle those next, or is there something else you'd
+  like to prioritize?
+
+✻ Worked for 2m 25s
+
+❯ tackle the remaining P1 items 
+
+⏺ Let me check the current state of the two remaining P1 items: untyped
+  repository returns (#5) and hardcoded UI strings (#6).
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Now let me check what models already exist and what the Subtitle service API
+  looks like.
+
+⏺ Searched for 4 patterns, read 2 files (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ use bayit plus i18n package 
+
+⏺ Let me find the Bayit+ i18n package and understand how it works.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Explore(Find Bayit+ i18n package)
+  ⎿  Done (54 tool uses · 72.4k tokens · 1m 32s)
+  (ctrl+o to expand)
+
+⏺ Good. The Android app is native Kotlin/Compose and doesn't yet integrate with
+  @olorin/shared-i18n. I need to create an Android bridge to the shared JSON
+  locale files and then replace all hardcoded strings. Let me also check what
+  player keys already exist in the locale files.
+
+⏺ Let me start with P1 #5 (typed returns) and the i18n exploration in parallel.
+
+⏺ First, I need to promote the internal API models to public core-model types so
+   the repository interfaces can reference them. Let me check what already
+  exists.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && grep -rn
+      "getAvailableSubtitles\|getSubtitleTrack\|getSubtitlePreferences\|fet…)
+  ⎿  feature/feature-player/src/main/java/tv/bayit/plus/feature/player/subt
+     itles/InteractiveSubtitlesViewModel.kt:49:            when (val result
+      = subtitleRepository.getSubtitleTrack(contentId, _selectedLanguage.va
+     lue)) {
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me check the en.json locale file for existing player keys while I plan
+   the typed returns fix.
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-i1
+      8n/locales && python3 -c "
+      import json…)
+  ⎿  account
+     admin
+     auth
+     … +68 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-i1
+      8n/locales && python3 -c "
+      import json…)
+  ⎿  === player ===
+       loading: Loading...
+       retry: Try Again
+     … +72 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Excellent - there are already comprehensive
+  player/subtitles/trivia/chat/recordings/chapters/voice keys in the locale
+  files. Now let me check what additional keys are needed for the Android player
+   features.
+
+⏺ Explore(Find all hardcoded strings)
+  ⎿  Done (31 tool uses · 68.4k tokens · 57s)
+  (ctrl+o to expand)
+
+⏺ I have the full picture. Let me work on both P1 items. Starting with the typed
+   returns (quick) and the i18n bridge in parallel.
+
+  Task #1: Typed Repository Returns
+
+  First, create the public domain models in core-model.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Good. Now I have the full picture. Let me create the public domain models for
+  subtitle tracks/preferences and trivia session results, then update both
+  repository interfaces and implementations.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I'll create the public subtitle domain models and the trivia session
+  models, then update all interfaces and impls. Let me do this efficiently.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-model/src/main/java/tv/bayit/plus/core/model/SubtitleTrackModels.kt)
+  ⎿  Wrote 43 lines to ../android-app/core/core-model/src/main/java/tv/bayi
+     t/plus/core/model/SubtitleTrackModels.kt
+       1 package tv.bayit.plus.core.model
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 
+       6 /** A subtitle track available for a piece of content. */
+       7 @Serializable
+       8 data class SubtitleTrack(
+       9     val id: String,
+      10     @SerialName("content_id") val contentId: String,
+     … +33 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-model/src/main/java/tv/bayit/plus/core/model/TriviaSessionModels.kt)
+  ⎿  Wrote 27 lines to ../android-app/core/core-model/src/main/java/tv/bayi
+     t/plus/core/model/TriviaSessionModels.kt
+       1 package tv.bayit.plus.core.model
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 
+       6 /** Result of joining a live trivia session. */
+       7 @Serializable
+       8 data class TriviaJoinResult(
+       9     @SerialName("session_id") val sessionId: String,
+      10     val status: String? = null,
+     … +17 lines (ctrl+o to expand)
+
+⏺ Now update the repository interfaces to use the typed models.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-data/src/main/java/tv/bayit/plus/core/data/repository/SubtitleRepositor
+       y.kt)
+  ⎿  Added 9 lines, removed 10 lines
+       5  import tv.bayit.plus.core.model.SubtitleCuesResponse
+       6  import tv.bayit.plus.core.model.SubtitleEnglishMode
+       7  import tv.bayit.plus.core.model.SubtitleHebrewMode
+       8 +import tv.bayit.plus.core.model.SubtitlePreferencesInfo        
+       9 +import tv.bayit.plus.core.model.SubtitlePreferencesUpdate      
+      10 +import tv.bayit.plus.core.model.SubtitleTrack                  
+      11  import tv.bayit.plus.core.model.TranslationResult
+      12  
+      13  interface SubtitleRepository {
+      14  
+      12 -    suspend fun getAvailableSubtitles(mediaId: String): BayitRe
+         -sult<List<Any>>                                                
+      15 +    suspend fun getAvailableSubtitles(mediaId: String): BayitRe
+         +sult<List<SubtitleTrack>>                                      
+      16  
+      14 -    suspend fun getSubtitleTrack(mediaId: String, languageCode:
+         - String): BayitResult<Any>                                     
+      17 +    suspend fun getSubtitleTrack(mediaId: String, languageCode:
+         + String): BayitResult<List<SubtitleTrack>>                     
+      18  
+      16 -    suspend fun getSubtitlePreferences(): BayitResult<Any>     
+      19 +    suspend fun getSubtitlePreferences(): BayitResult<List<Subt
+         +itlePreferencesInfo>>                                          
+      20  
+      18 -    suspend fun updateSubtitlePreferences(preferences: Map<Stri
+         -ng, Any>): BayitResult<Unit>                                   
+      21 +    suspend fun updateSubtitlePreferences(preferences: Subtitle
+         +PreferencesUpdate): BayitResult<Unit>                          
+      22  
+      23      suspend fun requestSubtitle(mediaId: String, languageCode: 
+          String): BayitResult<Unit>
+      24  
+     ...
+      29          englishMode: SubtitleEnglishMode? = null,
+      30      ): BayitResult<SubtitleCuesResponse>
+      31  
+      29 -    suspend fun fetchExternalSubtitles(                        
+      30 -        contentId: String,                                     
+      31 -    ): BayitResult<ExternalSubtitleImportResponse>             
+      32 +    suspend fun fetchExternalSubtitles(contentId: String): Bayi
+         +tResult<ExternalSubtitleImportResponse>                        
+      33  
+      34      suspend fun translateWord(
+      35          word: String,
+     ...
+      43          targetLanguage: String,
+      44      ): BayitResult<TranslationResult>
+      45  
+      45 -    suspend fun fetchContentPreferences(                       
+      46 -        contentId: String,                                     
+      47 -    ): BayitResult<Any>                                        
+      46 +    suspend fun fetchContentPreferences(contentId: String): Bay
+         +itResult<List<SubtitlePreferencesInfo>>                        
+      47  
+      48      suspend fun updateContentPreferences(
+      49          contentId: String,
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-data/src/main/java/tv/bayit/plus/core/data/repository/TriviaRepository.
+       kt)
+  ⎿  Added 9 lines, removed 5 lines
+       3  import tv.bayit.plus.core.common.BayitResult
+       4  import tv.bayit.plus.core.model.QuizResponse
+       5  import tv.bayit.plus.core.model.QuizResult
+       6 +import tv.bayit.plus.core.model.TriviaAnswerResult             
+       7  import tv.bayit.plus.core.model.TriviaFactsResponse
+       8 +import tv.bayit.plus.core.model.TriviaJoinResult               
+       9 +import tv.bayit.plus.core.model.TriviaLeaderboardEntry         
+      10  import tv.bayit.plus.core.model.TriviaPreferences
+      11 +import tv.bayit.plus.core.model.TriviaSession                  
+      12  
+      13  interface TriviaRepository {
+      14  
+      11 -    suspend fun getActiveSessions(): BayitResult<List<Any>>    
+      15 +    suspend fun getActiveSessions(): BayitResult<List<TriviaSes
+         +sion>>                                                         
+      16  
+      13 -    suspend fun joinSession(sessionId: String): BayitResult<Any
+         ->                                                              
+      17 +    suspend fun joinSession(sessionId: String): BayitResult<Tri
+         +viaJoinResult>                                                 
+      18  
+      19      suspend fun submitAnswer(
+      20          sessionId: String,
+      21          questionId: String,
+      22          answerId: String,
+      19 -    ): BayitResult<Any>                                        
+      23 +    ): BayitResult<TriviaAnswerResult>                         
+      24  
+      21 -    suspend fun getLeaderboard(sessionId: String): BayitResult<
+         -List<Any>>                                                     
+      25 +    suspend fun getLeaderboard(sessionId: String): BayitResult<
+         +List<TriviaLeaderboardEntry>>                                  
+      26  
+      23 -    suspend fun getHistory(): BayitResult<List<Any>>           
+      27 +    suspend fun getHistory(): BayitResult<List<TriviaSession>> 
+      28  
+      29      suspend fun fetchTrivia(
+      30          contentId: String,
+
+⏺ Now update the implementations to map internal API models to public domain
+  models.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiSubtitleR
+       epository.kt)
+  ⎿  Added 35 lines, removed 29 lines
+       7  import tv.bayit.plus.core.model.SubtitleCuesResponse
+       8  import tv.bayit.plus.core.model.SubtitleEnglishMode
+       9  import tv.bayit.plus.core.model.SubtitleHebrewMode
+      10 +import tv.bayit.plus.core.model.SubtitlePreferencesInfo        
+      11 +import tv.bayit.plus.core.model.SubtitlePreferencesUpdate      
+      12 +import tv.bayit.plus.core.model.SubtitleTrack                  
+      13  import tv.bayit.plus.core.model.TranslationResult
+      14  import tv.bayit.plus.core.network.api.BayitApiClient
+      15  import javax.inject.Inject
+      16  import javax.inject.Singleton
+      17  
+      15 -/**                                                            
+      16 - * Production implementation of [SubtitleRepository] backed by 
+         -Retrofit.                                                      
+      17 - *                                                             
+      18 - * Delegates HTTP communication to [BayitApiClient], which hand
+         -les auth headers,                                              
+      19 - * correlation IDs, retry, rate limiting, and structured error 
+         -mapping.                                                       
+      20 - */                                                            
+      18  @Singleton
+      19  class ApiSubtitleRepository @Inject constructor(
+      20      private val client: BayitApiClient,
+     ...
+      24  
+      25      override suspend fun getAvailableSubtitles(
+      26          mediaId: String,
+      30 -    ): BayitResult<List<Any>> = runCatchingResult {            
+      27 +    ): BayitResult<List<SubtitleTrack>> = runCatchingResult {  
+      28          val response = client.safeApiCall { service.getAvailabl
+          eTracks(mediaId) }
+      32 -        response.tracks                                        
+      29 +        response.tracks.map { it.toPublic() }                  
+      30      }
+      31  
+      32      override suspend fun getSubtitleTrack(
+      33          mediaId: String,
+      34          languageCode: String,
+      38 -    ): BayitResult<Any> = runCatchingResult {                  
+      39 -        client.safeApiCall { service.getSubtitleTrack(mediaId, 
+         -languageCode) }                                                
+      35 +    ): BayitResult<List<SubtitleTrack>> = runCatchingResult {  
+      36 +        val response = client.safeApiCall { service.getSubtitle
+         +Track(mediaId, languageCode) }                                 
+      37 +        response.tracks.map { it.toPublic() }                  
+      38      }
+      39  
+      42 -    override suspend fun getSubtitlePreferences(): BayitResult<
+         -Any> =                                                         
+      40 +    override suspend fun getSubtitlePreferences(): BayitResult<
+         +List<SubtitlePreferencesInfo>> =                               
+      41          runCatchingResult {
+      44 -            client.safeApiCall { service.getSubtitlePreferences
+         -() }                                                           
+      42 +            val response = client.safeApiCall { service.getSubt
+         +itlePreferences() }                                            
+      43 +            response.preferences.map { it.toPublic() }         
+      44          }
+      45  
+      46      override suspend fun updateSubtitlePreferences(
+      48 -        preferences: Map<String, Any>,                         
+      47 +        preferences: SubtitlePreferencesUpdate,                
+      48      ): BayitResult<Unit> = runCatchingResult {
+      49          val body = SubtitlePreferencesBody(
+      51 -            language = preferences["language"] as? String,     
+      52 -            hebrewMode = preferences["hebrew_mode"] as? String,
+      53 -            fontSize = (preferences["font_size"] as? Number)?.t
+         -oFloat(),                                                      
+      54 -            showBackground = preferences["show_background"] as?
+         - Boolean,                                                      
+      50 +            language = preferences.language,                   
+      51 +            hebrewMode = preferences.hebrewMode?.name?.lowercas
+         +e(),                                                           
+      52 +            englishMode = preferences.englishMode?.name?.lowerc
+         +ase(),                                                         
+      53 +            fontSize = preferences.fontSize,                   
+      54 +            showBackground = preferences.showBackground,       
+      55          )
+      56          client.safeApiCall { service.updateSubtitlePreferences(
+          body) }
+      57          Unit
+     ...
+       93          sourceLanguage: String,
+       94          targetLanguage: String,
+       95      ): BayitResult<TranslationResult> = runCatchingResult {
+       96 -        val body = TranslateBody(                             
+       97 -            text = word,                                      
+       98 -            sourceLanguage = sourceLanguage,                  
+       99 -            targetLanguage = targetLanguage,                  
+      100 -        )                                                     
+       96 +        val body = TranslateBody(text = word, sourceLanguage =
+          + sourceLanguage, targetLanguage = targetLanguage)             
+       97          client.safeApiCall { service.translateWord(body) }
+       98      }
+       99  
+     ...
+      102          sourceLanguage: String,
+      103          targetLanguage: String,
+      104      ): BayitResult<TranslationResult> = runCatchingResult {
+      109 -        val body = TranslateBody(                             
+      110 -            text = phrase,                                    
+      111 -            sourceLanguage = sourceLanguage,                  
+      112 -            targetLanguage = targetLanguage,                  
+      113 -        )                                                     
+      105 +        val body = TranslateBody(text = phrase, sourceLanguage
+          + = sourceLanguage, targetLanguage = targetLanguage)           
+      106          client.safeApiCall { service.translatePhrase(body) }
+      107      }
+      108  
+      109      override suspend fun fetchContentPreferences(
+      110          contentId: String,
+      119 -    ): BayitResult<Any> = runCatchingResult {                 
+      120 -        client.safeApiCall { service.getContentPreferences(con
+          -tentId) }                                                     
+      111 +    ): BayitResult<List<SubtitlePreferencesInfo>> = runCatchin
+          +gResult {                                                     
+      112 +        val response = client.safeApiCall { service.getContent
+          +Preferences(contentId) }                                      
+      113 +        response.preferences.map { it.toPublic() }            
+      114      }
+      115  
+      116      override suspend fun updateContentPreferences(
+     ...
+      132          Unit
+      133      }
+      134  }
+      135 +                                                              
+      136 +private fun SubtitleTrackItem.toPublic() = SubtitleTrack(     
+      137 +    id = id, contentId = contentId, language = language, langu
+          +ageName = languageName,                                       
+      138 +    format = format, hasNikudVersion = hasNikudVersion ?: fals
+          +e,                                                            
+      139 +    hasShoreshVersion = hasShoreshVersion ?: false, hasHeblish
+          +Version = hasHeblishVersion ?: false,                         
+      140 +    hasEngrewVersion = hasEngrewVersion ?: false, isDefault = 
+          +isDefault ?: false,                                           
+      141 +    isAutoGenerated = isAutoGenerated ?: false, cueCount = cue
+          +Count,                                                        
+      142 +)                                                             
+      143 +                                                              
+      144 +private fun SubtitlePreferenceItem.toPublic() = SubtitlePrefer
+          +encesInfo(                                                    
+      145 +    contentId = contentId, preferredLanguage = preferredLangua
+          +ge,                                                           
+      146 +    hebrewMode = hebrewMode, lastUsedAt = lastUsedAt,         
+      147 +)                                                             
+
+⏺ Now update ApiTriviaRepository to use the public models.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiTriviaRep
+       ository.kt)
+  ⎿  Added 21 lines, removed 20 lines
+      13  import tv.bayit.plus.core.data.repository.TriviaRepository
+      14  import tv.bayit.plus.core.model.QuizResponse
+      15  import tv.bayit.plus.core.model.QuizResult
+      16 +import tv.bayit.plus.core.model.TriviaAnswerResult             
+      17  import tv.bayit.plus.core.model.TriviaFactsResponse
+      18 +import tv.bayit.plus.core.model.TriviaJoinResult               
+      19 +import tv.bayit.plus.core.model.TriviaLeaderboardEntry         
+      20  import tv.bayit.plus.core.model.TriviaPreferences
+      21  import tv.bayit.plus.core.model.TriviaSession
+      22  import tv.bayit.plus.core.network.api.BayitApiClient
+      23  import javax.inject.Inject
+      24  import javax.inject.Singleton
+      25  
+      23 -/**                                                            
+      24 - * Production implementation of [TriviaRepository] backed by Re
+         -trofit.                                                        
+      25 - *                                                             
+      26 - * Supports both session-based trivia (interactive quiz) and fa
+         -cts-based                                                      
+      27 - * trivia (player overlay facts with timed triggers).          
+      28 - */                                                            
+      26  @Singleton
+      27  class ApiTriviaRepository @Inject constructor(
+      28      private val client: BayitApiClient,
+     ...
+      30  
+      31      private val service: TriviaApiService = client.createServic
+          e()
+      32  
+      36 -    override suspend fun getActiveSessions(): BayitResult<List<
+         -Any>> =                                                        
+      33 +    override suspend fun getActiveSessions(): BayitResult<List<
+         +TriviaSession>> =                                              
+      34          runCatchingResult {
+      35              val response = client.safeApiCall { service.getActi
+          veSessions() }
+      36              response.sessions
+      37          }
+      38  
+      42 -    override suspend fun joinSession(sessionId: String): BayitR
+         -esult<Any> =                                                   
+      43 -        runCatchingResult { client.safeApiCall { service.joinSe
+         -ssion(sessionId) } }                                           
+      39 +    override suspend fun joinSession(sessionId: String): BayitR
+         +esult<TriviaJoinResult> =                                      
+      40 +        runCatchingResult {                                    
+      41 +            val response = client.safeApiCall { service.joinSes
+         +sion(sessionId) }                                              
+      42 +            TriviaJoinResult(sessionId = response.sessionId, st
+         +atus = response.status)                                        
+      43 +        }                                                      
+      44  
+      45      override suspend fun submitAnswer(
+      46          sessionId: String,
+      47          questionId: String,
+      48          answerId: String,
+      49 -    ): BayitResult<Any> = runCatchingResult {                  
+      49 +    ): BayitResult<TriviaAnswerResult> = runCatchingResult {   
+      50          val body = TriviaAnswerBody(questionId = questionId, an
+          swerId = answerId)
+      51 -        client.safeApiCall { service.submitAnswer(sessionId, bo
+         -dy) }                                                          
+      51 +        val response = client.safeApiCall { service.submitAnswe
+         +r(sessionId, body) }                                           
+      52 +        TriviaAnswerResult(isCorrect = response.isCorrect, scor
+         +e = response.score)                                            
+      53      }
+      54  
+      54 -    override suspend fun getLeaderboard(sessionId: String): Bay
+         -itResult<List<Any>> =                                          
+      55 +    override suspend fun getLeaderboard(sessionId: String): Bay
+         +itResult<List<TriviaLeaderboardEntry>> =                       
+      56          runCatchingResult {
+      57              val response = client.safeApiCall { service.getLead
+          erboard(sessionId) }
+      57 -            response.entries                                   
+      58 +            response.entries.map { TriviaLeaderboardEntry(userI
+         +d = it.userId, score = it.score, rank = it.rank) }             
+      59          }
+      60  
+      60 -    override suspend fun getHistory(): BayitResult<List<Any>> =
+         - runCatchingResult {                                           
+      61 +    override suspend fun getHistory(): BayitResult<List<TriviaS
+         +ession>> = runCatchingResult {                                 
+      62          val response = client.safeApiCall { service.getActiveSe
+          ssions() }
+      63          response.sessions
+      64      }
+     ...
+      103      suspend fun getActiveSessions(): TriviaSessionsResponse
+      104  
+      105      @POST("api/v1/trivia/session/{id}/join")
+      105 -    suspend fun joinSession(@Path("id") sessionId: String): Tr
+          -iviaJoinResponse                                              
+      106 +    suspend fun joinSession(@Path("id") sessionId: String): Tr
+          +iviaJoinApiResponse                                           
+      107  
+      108      @POST("api/v1/trivia/session/{id}/answer")
+      108 -    suspend fun submitAnswer(@Path("id") sessionId: String, @B
+          -ody body: TriviaAnswerBody): TriviaAnswerResponse             
+      109 +    suspend fun submitAnswer(@Path("id") sessionId: String, @B
+          +ody body: TriviaAnswerBody): TriviaAnswerApiResponse          
+      110  
+      111      @GET("api/v1/trivia/leaderboard")
+      112      suspend fun getLeaderboard(@Query("session_id") sessionId:
+            String): TriviaLeaderboardResponse
+     ...
+      132  }
+      133  
+      134  @Serializable private data class TriviaSessionsResponse(val se
+           ssions: List<TriviaSession> = emptyList())
+      134 -@Serializable private data class TriviaJoinResponse(@SerialNam
+          -e("session_id") val sessionId: String, val status: String? = n
+          -ull)                                                          
+      135 +@Serializable private data class TriviaJoinApiResponse(@Serial
+          +Name("session_id") val sessionId: String, val status: String? 
+          += null)                                                       
+      136  @Serializable private data class TriviaAnswerBody(@SerialName(
+           "question_id") val questionId: String, @SerialName("answer_id"
+           ) val answerId: String)
+      136 -@Serializable private data class TriviaAnswerResponse(@SerialN
+          -ame("is_correct") val isCorrect: Boolean, val score: Int? = nu
+          -ll)                                                           
+      137 -@Serializable private data class TriviaLeaderboardResponse(val
+          - entries: List<TriviaLeaderboardEntry> = emptyList())         
+      138 -@Serializable private data class TriviaLeaderboardEntry(@Seria
+          -lName("user_id") val userId: String, val score: Int, val rank:
+          - Int)                                                         
+      137 +@Serializable private data class TriviaAnswerApiResponse(@Seri
+          +alName("is_correct") val isCorrect: Boolean, val score: Int? =
+          + null)                                                        
+      138 +@Serializable private data class TriviaLeaderboardResponse(val
+          + entries: List<LeaderboardApiEntry> = emptyList())            
+      139 +@Serializable private data class LeaderboardApiEntry(@SerialNa
+          +me("user_id") val userId: String, val score: Int, val rank: In
+          +t)                                                            
+      140  @Serializable private data class QuizSubmitBody(
+      141      @SerialName("content_id") val contentId: String,
+      142      @SerialName("profile_id") val profileId: String,
+
+⏺ Now update InteractiveSubtitlesViewModel to use the typed SubtitleTrack
+  instead of Any.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/subtitles/Int
+        eractiveSubtitlesViewModel.kt)
+  ⎿  Added 1 line
+      11  import tv.bayit.plus.core.common.BayitResult
+      12  import tv.bayit.plus.core.common.logging.BayitLogger
+      13  import tv.bayit.plus.core.data.repository.SubtitleRepository
+      14 +import tv.bayit.plus.core.model.SubtitleTrack                  
+      15  import javax.inject.Inject
+      16  
+      17  @HiltViewModel
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/subtitles/Int
+        eractiveSubtitlesViewModel.kt)
+  ⎿  Added 4 lines, removed 4 lines
+      49              logger.debug("Loading interactive subtitles", mapOf
+          ("contentId" to contentId, "language" to _selectedLanguage.valu
+          e))
+      50              when (val result = subtitleRepository.getSubtitleTr
+          ack(contentId, _selectedLanguage.value)) {
+      51                  is BayitResult.Success -> {
+      52 -                    val subtitles = listOf(result.data) // Wrap
+         - single track in list                                          
+      53 -                    logger.info("Interactive subtitles loaded",
+         - mapOf("count" to subtitles.size.toString()))                  
+      52 +                    val tracks = result.data                   
+      53 +                    logger.info("Interactive subtitles loaded",
+         + mapOf("count" to tracks.size.toString()))                     
+      54                      _uiState.value = InteractiveSubtitlesUiStat
+          e.Success(
+      55 -                        subtitles = subtitles,                 
+      56 -                        availableLanguages = listOf("en", "he",
+         - "es", "fr", "ar"),                                            
+      55 +                        subtitles = tracks,                    
+      56 +                        availableLanguages = tracks.map { it.la
+         +nguage }.distinct(),                                           
+      57                      )
+      58                  }
+      59                  is BayitResult.Error -> {
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/subtitles/Int
+        eractiveSubtitlesViewModel.kt)
+  ⎿  Added 1 line, removed 1 line
+      70  
+      71  sealed interface InteractiveSubtitlesUiState {
+      72      data object Loading : InteractiveSubtitlesUiState
+      73 -    data class Success(val subtitles: List<Any>, val availableL
+         -anguages: List<String>) : InteractiveSubtitlesUiState          
+      73 +    data class Success(val subtitles: List<SubtitleTrack>, val 
+         +availableLanguages: List<String>) : InteractiveSubtitlesUiState
+      74      data class Error(val message: String) : InteractiveSubtitle
+          sUiState
+      75  }
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && wc -l
+      core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Api…)
+  ⎿       147 core/core-data/src/main/java/tv/bayit/plus/core/data/reposito
+     ry/impl/ApiSubtitleRepository.kt
+          144 core/core-data/src/main/java/tv/bayit/plus/core/data/reposito
+     … +6 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ All under 200. Task #1 is done.
+
+⏺ Now for Task #2 - the Android i18n bridge. Let me check the core-common module
+   structure.
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ Good - core-common is an Android library with kotlinx.serialization. It has
+  access to Android Context via Hilt. I'll create the i18n bridge here.
+
+  The approach:
+  1. JSON locale files get copied to app/src/main/assets/locales/
+  2. BayitStringProvider interface in core-common
+  3. JsonBayitStringProvider implementation that loads from assets
+  4. LocalBayitStrings CompositionLocal for Compose access
+  5. DI binding in CommonModule
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-common/src/main/java/tv/bayit/plus/core/common/i18n/BayitStringProvider
+       .kt)
+  ⎿  Wrote 21 lines to ../android-app/core/core-common/src/main/java/tv/bay
+     it/plus/core/common/i18n/BayitStringProvider.kt
+       1 package tv.bayit.plus.core.common.i18n
+       2 
+       3 /** Provides localized strings from the @olorin/shared-i18n JSON
+          locale files. */
+       4 interface BayitStringProvider {
+       5 
+       6     /** Returns the localized string for [key] (dot-separated, e
+         .g. "player.loading"). */
+       7     fun string(key: String): String
+       8 
+       9     /** Returns the localized string with parameter interpolatio
+         n ({{param}} syntax). */
+      10     fun string(key: String, params: Map<String, String>): String
+     … +11 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-common/src/main/java/tv/bayit/plus/core/common/i18n/JsonBayitStringProv
+       ider.kt)
+  ⎿  Wrote 102 lines to ../android-app/core/core-common/src/main/java/tv/ba
+     yit/plus/core/common/i18n/JsonBayitStringProvider.kt
+       1 package tv.bayit.plus.core.common.i18n
+       2 
+       3 import android.content.Context
+       4 import android.content.SharedPreferences
+       5 import kotlinx.serialization.json.Json
+       6 import kotlinx.serialization.json.JsonElement
+       7 import kotlinx.serialization.json.JsonObject
+       8 import kotlinx.serialization.json.JsonPrimitive
+       9 import kotlinx.serialization.json.jsonObject
+      10 import kotlinx.serialization.json.jsonPrimitive
+     … +92 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/cor
+       e-common/src/main/java/tv/bayit/plus/core/common/i18n/LocalBayitStrings.k
+       t)
+  ⎿  Wrote 31 lines to ../android-app/core/core-common/src/main/java/tv/bay
+     it/plus/core/common/i18n/LocalBayitStrings.kt
+       1 package tv.bayit.plus.core.common.i18n
+       2 
+       3 import androidx.compose.runtime.Composable
+       4 import androidx.compose.runtime.CompositionLocalProvider
+       5 import androidx.compose.runtime.staticCompositionLocalOf
+       6 
+       7 /** CompositionLocal for accessing the [BayitStringProvider] in 
+         Compose. */
+       8 val LocalBayitStrings = staticCompositionLocalOf<BayitStringProv
+         ider> {
+       9     error("No BayitStringProvider provided. Wrap your composable
+          tree with ProvideBayitStrings.")
+      10 }
+     … +21 lines (ctrl+o to expand)
+
+⏺ Now check if core-common has compose dependencies (for the CompositionLocal).
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ core-common doesn't have Compose dependencies. I need to either add them or
+  split the Compose part. Better approach: keep the BayitStringProvider
+  interface and JsonBayitStringProvider in core-common (no Compose needed), and
+  move the Compose LocalBayitStrings to a place that already has Compose. Let me
+   check the design system module.
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ The designsystem module has Compose. But it depends on core-common. I should
+  move LocalBayitStrings.kt to the designsystem module since that's where
+  Compose UI infrastructure lives. Let me also check if designsystem depends on
+  core-common.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The designsystem already depends on core-common. Move the Compose file there.
+
+⏺ Bash(rm /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app/core/core-common/src/main/java/tv/bayit/plus/core/common/i18n/LocalB
+      ayitStrings.k…)
+  ⎿  Done
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/designsy
+       stem/src/main/java/tv/bayit/plus/designsystem/i18n/LocalBayitStrings.kt)
+  ⎿  Wrote 32 lines to ../android-app/designsystem/src/main/java/tv/bayit/p
+     lus/designsystem/i18n/LocalBayitStrings.kt
+       1 package tv.bayit.plus.designsystem.i18n
+       2 
+       3 import androidx.compose.runtime.Composable
+       4 import androidx.compose.runtime.CompositionLocalProvider
+       5 import androidx.compose.runtime.staticCompositionLocalOf
+       6 import tv.bayit.plus.core.common.i18n.BayitStringProvider
+       7 
+       8 /** CompositionLocal for accessing the [BayitStringProvider] in 
+         Compose. */
+       9 val LocalBayitStrings = staticCompositionLocalOf<BayitStringProv
+         ider> {
+      10     error("No BayitStringProvider provided. Wrap your composable
+          tree with ProvideBayitStrings.")
+     … +22 lines (ctrl+o to expand)
+
+⏺ Now add the i18n provider binding in CommonModule and copy the locale JSON
+  files to Android assets. Let me also add the DI binding.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The JsonBayitStringProvider needs a Context and SharedPreferences. For Hilt,
+  Context is available via @ApplicationContext. But CommonModule is in
+  core-common which doesn't have direct access to SharedPreferences creation.
+  Better to bind the provider in the app module's AppModule where we have full
+  access.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/app/src/
+       main/java/tv/bayit/plus/di/AppModule.kt)
+  ⎿  Added 16 lines, removed 3 lines
+       1  package tv.bayit.plus.di
+       2  
+       3 +import android.content.Context                                 
+       4  import dagger.Module
+       5  import dagger.Provides
+       6  import dagger.hilt.InstallIn
+       7 +import dagger.hilt.android.qualifiers.ApplicationContext       
+       8  import dagger.hilt.components.SingletonComponent
+       9  import tv.bayit.plus.BuildConfig
+      10 +import tv.bayit.plus.core.common.i18n.BayitStringProvider      
+      11 +import tv.bayit.plus.core.common.i18n.JsonBayitStringProvider  
+      12 +import tv.bayit.plus.core.common.logging.BayitLogger           
+      13  import tv.bayit.plus.core.network.NetworkConfiguration
+      14  import javax.inject.Singleton
+      15  import kotlin.time.Duration.Companion.seconds
+      16  
+      12 -/**                                                            
+      13 - * Application-level Hilt module providing app-wide dependencie
+         -s.                                                             
+      14 - */                                                            
+      17  @Module
+      18  @InstallIn(SingletonComponent::class)
+      19  object AppModule {
+     ...
+      33          webSocketReconnectBaseDelay = 1.seconds,
+      34          isDebug = BuildConfig.DEBUG,
+      35      )
+      36 +                                                               
+      37 +    @Provides                                                  
+      38 +    @Singleton                                                 
+      39 +    fun provideBayitStringProvider(                            
+      40 +        @ApplicationContext context: Context,                  
+      41 +        logger: BayitLogger,                                   
+      42 +    ): BayitStringProvider = JsonBayitStringProvider(          
+      43 +        context = context,                                     
+      44 +        logger = logger,                                       
+      45 +        prefs = context.getSharedPreferences("bayit_i18n", Cont
+         +ext.MODE_PRIVATE),                                             
+      46 +    )                                                          
+      47  }
+
+⏺ Now copy the locale JSON files to Android assets. Let me create a symlink or
+  copy script.
+
+⏺ Bash(mkdir -p /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/
+      android-app/app/src/main/assets/locales)
+  ⎿  Done
+
+⏺ Bash(for lang in en he es zh fr it hi ta bn ja; do
+        cp "/Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-
+      i18n/locales/${lang}.json" "/Users/olori…)
+  ⎿  total 2528
+     drwxr-xr-x@ 12 olorin  staff     384 Feb 16 09:11 .
+     drwxr-xr-x@  3 olorin  staff      96 Feb 16 09:11 ..
+     … +10 lines (ctrl+o to expand)
+
+⏺ Task #2 complete. Now let me verify and move to Task #3 - adding
+  player-specific keys that are missing from the locale files.
+
+⏺ Let me check which keys from the hardcoded strings already exist in the locale
+   files and which need to be added.
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-i1
+      8n/locales && python3 -c "
+      import json…)
+  ⎿  === EXISTING (no action needed) ===
+       chapters.title = "Chapters"
+       chat.title = "Bayit+ Assistant"
+     … +21 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Many keys already exist. Now let me check the player-specific keys that are
+  needed but don't exist yet (companion tabs, AI features, dubbing, catch-up,
+  stream limit, etc.).
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-core/packages/shared-i1
+      8n/locales && python3 -c "
+      import json…)
+  ⎿  Existing: 2, Missing: 67
+
+     === MISSING KEYS ===
+     … +40 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ 67 keys to add across 10 locale files. Let me launch a subagent to add these
+  to all locale files while I prepare the string replacement work.
+
+⏺ Bash(Add i18n keys to locale files)
+  ⎿  Backgrounded agent (shift+↑ to manage · ctrl+o to expand)
+
+⏺ While locale files are being updated in the background, let me start preparing
+   Task #4 - replacing hardcoded strings. I'll read the files that need changes
+  and start replacing.
+
+⏺ Let me read the feature-player files that need string replacements and start
+  editing. I'll do the most impactful files first.
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Now I have all the context. Let me do bulk string replacements using a
+  subagent to handle all feature-player files efficiently.
+
+⏺ Task(Replace hardcoded strings with i18n)
+  ⎿  Backgrounded agent (shift+↑ to manage · ctrl+o to expand)
+
+⏺ Both agents are running in the background. Let me check on the locale file
+  updates first.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Both agents are making progress. Let me wait for them to complete.
+
+⏺ Task Output a728eef
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Locale files are done - all 67 keys added and verified across all 10 files,
+  Android assets synced. Let me mark Task #3 complete and check on the string
+  replacement agent.
+
+⏺ The string replacement agent is still working (91 tool calls so far,
+  processing all 26 files). Let me wait for it.
+
+⏺ Task Output aa7e7e1
+  ⎿  Interrupted · What should Claude do instead?
+
+⏺ Agent "Add i18n keys to locale files" completed
+
+⏺ Agent "Replace hardcoded strings with i18n" was stopped
+  ⎿  Interrupted · What should Claude do instead?
+
+⏺ Locale files done. Let me check on the string replacement agent.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The agent is still processing. Let me wait for it to complete.
+
+⏺ Task Output aa7e7e1
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ The string replacement agent was killed. Let me check what it completed and
+  what remains.
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && grep -rn "import tv.bayit.plus.designsystem.i18n.bayitString"
+      feature/feature-…)
+  ⎿  26
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app && grep -rn "import tv.bayit.plus.designsystem.i18n.bayitString"
+      feature/feature-…)
+  ⎿  feature/feature-player/src/main/java/tv/bayit/plus/feature/player/ui/P
+     layerControlsOverlay.kt:24:import tv.bayit.plus.designsystem.i18n.bayi
+     tString
+     … +53 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+  ⎿  Context limit reached · /compact or /clear to continue
+
+❯ /compact 
+  ⎿  Error: Error during compaction: Error: Conversation too long. Press esc
+     twice to go up a few messages and try again.

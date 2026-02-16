@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassTextField
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -47,7 +48,7 @@ fun ChannelChatScreen(
             .padding(DesignTokens.Spacing.sm),
     ) {
         Text(
-            text = "Live Chat",
+            text = bayitString("player.chat.title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -79,7 +80,7 @@ fun ChannelChatScreen(
                         messageText = newValue
                     }
                 },
-                placeholder = "Type a message...",
+                placeholder = bayitString("player.chat.messagePlaceholder"),
                 modifier = Modifier.weight(1f),
             )
             IconButton(
@@ -92,7 +93,7 @@ fun ChannelChatScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "Send",
+                    contentDescription = bayitString("player.controls.send"),
                     tint = DesignTokens.Colors.Primary.light,
                     modifier = Modifier.height(24.dp),
                 )

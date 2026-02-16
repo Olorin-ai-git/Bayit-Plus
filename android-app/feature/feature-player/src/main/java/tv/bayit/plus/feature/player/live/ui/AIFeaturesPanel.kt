@@ -27,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.theme.glassMorphism
 import tv.bayit.plus.feature.player.live.AIFeaturesPanelState
 import tv.bayit.plus.feature.player.live.LiveAIConfig
 
@@ -45,11 +48,12 @@ fun AIFeaturesPanel(
 ) {
     Box(
         modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            .glassMorphism(
+                cornerRadius = DesignTokens.Radius.lg,
+                alpha = 0.9f,
+                borderAlpha = 0.25f
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -58,23 +62,24 @@ fun AIFeaturesPanel(
             IconButton(
                 onClick = onLanguageTap,
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(DesignTokens.TouchTarget.minimum)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Text(
-                    text = LiveAIConfig.getLanguageFlag(state.selectedLanguage),
-                    style = MaterialTheme.typography.bodyMedium
+                    text = LiveAIConfig.getLanguageCode(state.selectedLanguage),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
 
             IconButton(
                 onClick = onToggleExpand,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(DesignTokens.TouchTarget.minimum)
             ) {
                 Icon(
                     imageVector = Icons.Default.AutoAwesome,
-                    contentDescription = "Toggle AI Panel",
+                    contentDescription = bayitString("player.ai.togglePanel"),
                     tint = if (state.hasAnyActiveFeature) {
                         MaterialTheme.colorScheme.primary
                     } else {
@@ -93,7 +98,7 @@ fun AIFeaturesPanel(
                 ) {
                     FeatureToggleButton(
                         icon = Icons.Default.ClosedCaption,
-                        label = "Live Translate",
+                        label = bayitString("player.ai.liveTranslate"),
                         isEnabled = state.subtitlesState.isEnabled,
                         isConnecting = state.subtitlesState.isConnecting,
                         onClick = onSubtitlesTap
@@ -101,7 +106,7 @@ fun AIFeaturesPanel(
 
                     FeatureToggleButton(
                         icon = Icons.Default.GraphicEq,
-                        label = "Dubbing",
+                        label = bayitString("player.ai.dubbing"),
                         isEnabled = state.dubbingState.isEnabled,
                         isConnecting = state.dubbingState.isConnecting,
                         onClick = onDubbingTap
@@ -109,7 +114,7 @@ fun AIFeaturesPanel(
 
                     FeatureToggleButton(
                         icon = Icons.Default.Lightbulb,
-                        label = "Trivia",
+                        label = bayitString("player.ai.trivia"),
                         isEnabled = state.triviaState.isEnabled,
                         isConnecting = state.triviaState.isConnecting,
                         onClick = onTriviaTap
@@ -132,11 +137,15 @@ private fun FeatureToggleButton(
     IconToggleButton(
         checked = isEnabled,
         onCheckedChange = { onClick() },
-        modifier = modifier.size(36.dp)
+        modifier = modifier.size(DesignTokens.TouchTarget.minimum)
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = label,
+            contentDescription = when {
+                isConnecting -> bayitString("player.ai.connecting", mapOf("feature" to label))
+                isEnabled -> bayitString("player.ai.disable", mapOf("feature" to label))
+                else -> bayitString("player.ai.enable", mapOf("feature" to label))
+            },
             tint = when {
                 isConnecting -> MaterialTheme.colorScheme.tertiary
                 isEnabled -> MaterialTheme.colorScheme.primary

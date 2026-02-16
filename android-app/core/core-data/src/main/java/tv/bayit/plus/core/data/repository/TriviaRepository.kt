@@ -3,24 +3,28 @@ package tv.bayit.plus.core.data.repository
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.model.QuizResponse
 import tv.bayit.plus.core.model.QuizResult
+import tv.bayit.plus.core.model.TriviaAnswerResult
 import tv.bayit.plus.core.model.TriviaFactsResponse
+import tv.bayit.plus.core.model.TriviaJoinResult
+import tv.bayit.plus.core.model.TriviaLeaderboardEntry
 import tv.bayit.plus.core.model.TriviaPreferences
+import tv.bayit.plus.core.model.TriviaSession
 
 interface TriviaRepository {
 
-    suspend fun getActiveSessions(): BayitResult<List<Any>>
+    suspend fun getActiveSessions(): BayitResult<List<TriviaSession>>
 
-    suspend fun joinSession(sessionId: String): BayitResult<Any>
+    suspend fun joinSession(sessionId: String): BayitResult<TriviaJoinResult>
 
     suspend fun submitAnswer(
         sessionId: String,
         questionId: String,
         answerId: String,
-    ): BayitResult<Any>
+    ): BayitResult<TriviaAnswerResult>
 
-    suspend fun getLeaderboard(sessionId: String): BayitResult<List<Any>>
+    suspend fun getLeaderboard(sessionId: String): BayitResult<List<TriviaLeaderboardEntry>>
 
-    suspend fun getHistory(): BayitResult<List<Any>>
+    suspend fun getHistory(): BayitResult<List<TriviaSession>>
 
     suspend fun fetchTrivia(
         contentId: String,

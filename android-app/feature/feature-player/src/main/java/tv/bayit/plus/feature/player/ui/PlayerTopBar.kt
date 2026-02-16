@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -54,7 +55,7 @@ fun PlayerTopBar(
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
+                contentDescription = bayitString("player.controls.navigateBack"),
                 tint = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.size(24.dp),
             )
@@ -75,7 +76,7 @@ fun PlayerTopBar(
                 IconButton(onClick = onClick) {
                     Icon(
                         imageVector = Icons.Default.ClosedCaption,
-                        contentDescription = "Subtitles",
+                        contentDescription = bayitString("player.subtitles"),
                         tint = DesignTokens.Colors.Text.primary,
                         modifier = Modifier.size(24.dp),
                     )
@@ -88,7 +89,7 @@ fun PlayerTopBar(
                     IconButton(onClick = onClick) {
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = "AI Features",
+                            contentDescription = bayitString("player.ai.featuresTitle"),
                             tint = DesignTokens.Colors.Primary.light,
                             modifier = Modifier.size(24.dp),
                         )

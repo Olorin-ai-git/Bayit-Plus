@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -60,10 +61,10 @@ internal fun ChaptersScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Chapters",
+            title = bayitString("chapters.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("player.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -114,13 +115,13 @@ private fun ChapterRow(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             CachedAsyncImage(
                 url = thumbnailUrl,
-                contentDescription = "Chapter ${index + 1}",
+                contentDescription = bayitString("chapters.chapter_number", mapOf("number" to (index + 1).toString())),
                 modifier = Modifier.width(DesignTokens.Spacing.xxxl * 2).height(DesignTokens.Spacing.xxxl),
             )
             Spacer(Modifier.width(DesignTokens.Spacing.md))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Chapter ${index + 1}",
+                    text = bayitString("chapters.chapter_number", mapOf("number" to (index + 1).toString())),
                     style = MaterialTheme.typography.labelSmall,
                     color = DesignTokens.Colors.Primary.light,
                 )
@@ -142,7 +143,7 @@ private fun ChaptersErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("player.retry"), onClick = onRetry)
         }
     }
 }

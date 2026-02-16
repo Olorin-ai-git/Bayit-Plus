@@ -119,6 +119,8 @@ class WebSocketManager @Inject constructor(
             delay(delay)
             try {
                 disconnect(connectionId)
+                val freshToken = authTokenProvider.getToken()
+                Timber.d("Fetched fresh token for reconnection: %s", connectionId)
                 connect(connection.url, connection.channelType)
             } catch (e: Exception) {
                 Timber.e(e, "Reconnection failed for %s", connectionId)

@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +19,7 @@ export const LoginScreen: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigation = useNavigation<any>();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, loginWithApple, isLoading, error, clearError } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +35,16 @@ export const LoginScreen: React.FC = () => {
 
     try {
       await login(email, password);
+      navigation.replace('Home');
+    } catch (err) {
+      // Error is handled by store
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      clearError();
+      await loginWithApple();
       navigation.replace('Home');
     } catch (err) {
       // Error is handled by store

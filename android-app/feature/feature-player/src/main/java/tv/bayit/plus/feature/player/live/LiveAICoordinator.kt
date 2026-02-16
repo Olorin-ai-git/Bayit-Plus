@@ -1,13 +1,13 @@
 package tv.bayit.plus.feature.player.live
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import tv.bayit.plus.feature.player.di.ApplicationScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,15 +17,22 @@ import javax.inject.Singleton
  */
 @Singleton
 class LiveAICoordinator @Inject constructor(
-    val subtitlesManager: LiveSubtitlesManager,
-    val dubbingManager: LiveDubbingManager,
-    val triviaManager: LiveTriviaManager
+    private val subtitlesManager: LiveSubtitlesManager,
+    private val dubbingManager: LiveDubbingManager,
+    private val triviaManager: LiveTriviaManager,
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) {
     private val _selectedLanguage = MutableStateFlow("en")
     val selectedLanguage: StateFlow<String> = _selectedLanguage.asStateFlow()
 
     private val _isPanelExpanded = MutableStateFlow(false)
     val isPanelExpanded: StateFlow<Boolean> = _isPanelExpanded.asStateFlow()
+
+    // Expose state flows directly from coordinator (not through managers)
+    val subtitleState: StateFlow<LiveSubtitleUiState> = subtitlesManager.state
+    val dubbingState: StateFlow<LiveDubbingUiState> = dubbingManager.state
+    val triviaState: StateFlow<LiveTriviaUiState> = triviaManager.state
+    val triviaProgress: StateFlow<Float> = triviaManager.progressFraction
 
     /**
      * Aggregated panel state combining all feature states
@@ -45,10 +52,17 @@ class LiveAICoordinator @Inject constructor(
             triviaState = trivia
         )
     }.stateIn(
-        scope = GlobalScope,
+        scope = applicationScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = AIFeaturesPanelState()
+        initialValue = AIFeaturesPanelState(selectedLanguage = _selectedLanguage.value)
     )
+
+    /**
+     * Initialize with user's preferred language
+     */
+    fun setInitialLanguage(language: String) {
+        _selectedLanguage.value = language
+    }
 
     /**
      * Toggle AI features panel expanded/collapsed
@@ -135,9 +149,23 @@ class LiveAICoordinator @Inject constructor(
     }
 
     /**
+     * Dismiss the current trivia fact
+     */
+    suspend fun dismissTrivia() {
+        triviaManager.dismissFact()
+    }
+
+    /**
+     * Request a follow-up trivia fact
+     */
+    fun requestTriviaFollowUp() {
+        triviaManager.requestFollowUp()
+    }
+
+    /**
      * Clean up all connections (call on player exit)
      */
-    fun cleanupAll() {
+    suspend fun cleanupAll() {
         subtitlesManager.stop()
         dubbingManager.stop()
         triviaManager.stop()

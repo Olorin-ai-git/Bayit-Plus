@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -41,7 +42,7 @@ fun VoiceSelector(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "Dubbing Voice",
+            text = bayitString("player.dubbing.voiceTitle"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -93,7 +94,7 @@ private fun VoiceRow(
             IconButton(onClick = onPreview) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Preview",
+                    contentDescription = bayitString("player.controls.preview"),
                     tint = DesignTokens.Colors.Text.secondary,
                     modifier = Modifier.height(20.dp),
                 )
@@ -101,7 +102,7 @@ private fun VoiceRow(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Selected",
+                    contentDescription = bayitString("player.controls.selected"),
                     tint = DesignTokens.Colors.Semantic.success,
                     modifier = Modifier.height(20.dp),
                 )

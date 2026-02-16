@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.QualityVariant
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -40,7 +41,7 @@ fun QualitySelector(
             .padding(DesignTokens.Spacing.md),
     ) {
         Text(
-            text = "Video Quality",
+            text = bayitString("player.quality"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.base,
             fontWeight = FontWeight.SemiBold,
@@ -91,7 +92,7 @@ private fun QualityRow(
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Selected",
+                    contentDescription = bayitString("player.controls.selected"),
                     tint = DesignTokens.Colors.Semantic.success,
                     modifier = Modifier.padding(end = DesignTokens.Spacing.xs),
                 )

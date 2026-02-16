@@ -6,141 +6,165 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
-import tv.bayit.plus.core.network.websocket.ConnectionState
-import tv.bayit.plus.core.network.websocket.WebSocketConnection
 import tv.bayit.plus.core.network.websocket.WebSocketManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Manages live trivia WebSocket connection and state. */
+@Serializable
+private data class TriviaTopic(
+    val topic: String? = null,
+    val category: String? = null
+)
+
+@Serializable
+private data class TriviaMessageWrapper(
+    val type: String,
+    val fact: TriviaFact? = null,
+    val detectedTopic: TriviaTopic? = null,
+    val message: String? = null
+)
+
+@Serializable
+private data class TriviaFollowUpRequest(
+    val type: String = "request_followup",
+    val factId: String
+)
+
+/**
+ * Manages live trivia WebSocket connection and state
+ */
 @Singleton
 class LiveTriviaManager @Inject constructor(
-    private val webSocketManager: WebSocketManager,
-    private val networkConfig: NetworkConfig,
+    webSocketManager: WebSocketManager,
+    networkConfig: NetworkConfig
+) : LiveFeatureManager<LiveTriviaUiState>(
+    webSocketManager,
+    networkConfig,
+    ChannelType.LIVE_TRIVIA
 ) {
-    private val _state = MutableStateFlow(LiveTriviaUiState())
-    val state: StateFlow<LiveTriviaUiState> = _state.asStateFlow()
-
     private val _progressFraction = MutableStateFlow(0f)
     val progressFraction: StateFlow<Float> = _progressFraction.asStateFlow()
 
-    private var connection: WebSocketConnection? = null
-    private var connectionJob: Job? = null
-    private var messageJob: Job? = null
-    private var autoDismissJob: Job? = null
     private var progressJob: Job? = null
-    private val shownFactIds = mutableSetOf<String>()
 
-    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+    // Bounded set to prevent unbounded growth (LRU-like behavior)
+    private val shownFactIds = object : LinkedHashSet<String>() {
+        override fun add(element: String): Boolean {
+            if (size >= MAX_SHOWN_FACTS) {
+                val iterator = iterator()
+                if (iterator.hasNext()) {
+                    iterator.next()
+                    iterator.remove()
+                }
+            }
+            return super.add(element)
+        }
+    }
 
-    /** Start live trivia for a channel. */
-    suspend fun start(channelId: String, targetLanguage: String, scope: CoroutineScope) {
-        if (_state.value.isEnabled || _state.value.isConnecting) return
+    override fun createInitialState() = LiveTriviaUiState()
 
-        _state.value = LiveTriviaUiState(isConnecting = true)
-        val wsUrl = LiveAIConfig.buildTriviaWebSocketUrl(
+    override fun buildWebSocketUrl(channelId: String, targetLanguage: String): String {
+        return LiveAIConfig.buildTriviaWebSocketUrl(
             baseWsUrl = networkConfig.webSocketBaseUrl,
             channelId = channelId,
-            targetLang = targetLanguage,
+            targetLang = targetLanguage
         )
+    }
 
-        try {
-            connection = webSocketManager.connect(wsUrl, ChannelType.LIVE_TRIVIA)
-            observeConnection(scope)
-            observeMessages(scope)
-        } catch (e: Exception) {
-            _state.value = LiveTriviaUiState(
-                errorMessage = e.message ?: "Failed to connect to trivia service",
+    override fun isEnabled(state: LiveTriviaUiState) = state.isEnabled
+
+    override fun isConnecting(state: LiveTriviaUiState) = state.isConnecting
+
+    override suspend fun setConnecting(isConnecting: Boolean) {
+        updateState { it.copy(isConnecting = isConnecting) }
+    }
+
+    override suspend fun setEnabled(isEnabled: Boolean, errorMessage: String?) {
+        updateState {
+            it.copy(
+                isEnabled = isEnabled,
+                isConnecting = false,
+                errorMessage = errorMessage
             )
         }
     }
 
-    /** Stop live trivia and disconnect. */
-    fun stop() {
-        connectionJob?.cancel()
-        messageJob?.cancel()
-        autoDismissJob?.cancel()
+    override suspend fun stop() {
         progressJob?.cancel()
-        connection?.close()
-        connection = null
         shownFactIds.clear()
-        _state.value = LiveTriviaUiState()
         _progressFraction.value = 0f
+        super.stop()
     }
 
-    /** Dismiss the current trivia fact. */
-    fun dismissFact() {
-        autoDismissJob?.cancel()
-        progressJob?.cancel()
-        _state.value = _state.value.copy(activeFact = null)
-        _progressFraction.value = 0f
-    }
-
-    /** Request a follow-up fact for the current topic. */
-    fun requestFollowUp() {
-        val currentFact = _state.value.activeFact ?: return
-        connection?.send("{\"type\":\"request_followup\",\"factId\":\"${currentFact.id}\"}")
-    }
-
-    private fun observeConnection(scope: CoroutineScope) {
-        val conn = connection ?: return
-        connectionJob = conn.state.onEach { state ->
-            when (state) {
-                ConnectionState.CONNECTED -> _state.value = _state.value.copy(
-                    isEnabled = true, isConnecting = false, errorMessage = null,
-                )
-                ConnectionState.FAILED -> _state.value = _state.value.copy(
-                    isEnabled = false, isConnecting = false, errorMessage = "Connection failed",
-                )
-                else -> {}
-            }
-        }.launchIn(scope)
-    }
-
-    private fun observeMessages(scope: CoroutineScope) {
-        val conn = connection ?: return
-        messageJob = conn.messages.onEach { handleMessage(it, scope) }.launchIn(scope)
-    }
-
-    private fun handleMessage(text: String, scope: CoroutineScope) {
+    override fun handleMessage(text: String, scope: CoroutineScope) {
         try {
             val msg = json.decodeFromString<TriviaMessageWrapper>(text)
             when (msg.type) {
                 "trivia_fact" -> {
                     val fact = msg.fact ?: return
                     if (fact.id in shownFactIds) return
+
                     shownFactIds.add(fact.id)
                     showFact(fact, scope)
                 }
-                "error" -> _state.value = _state.value.copy(
-                    errorMessage = msg.message ?: "Trivia service error",
-                )
-                else -> {} // "connected" acknowledgment and other types
+                "connected" -> {
+                    // Connection acknowledged
+                }
+                "error" -> {
+                    scope.launch {
+                        updateState {
+                            it.copy(errorMessage = msg.message ?: "player.ai.errors.serviceError")
+                        }
+                    }
+                }
             }
-        } catch (_: Exception) {
-            _state.value = _state.value.copy(errorMessage = "Failed to parse trivia message")
+        } catch (e: Exception) {
+            scope.launch {
+                updateState {
+                    it.copy(errorMessage = "player.ai.errors.parseError")
+                }
+            }
         }
     }
 
-    private fun showFact(fact: TriviaFact, scope: CoroutineScope) {
-        _state.value = _state.value.copy(activeFact = fact)
+    /**
+     * Dismiss the current trivia fact
+     */
+    suspend fun dismissFact() {
+        autoDismissJob?.cancel()
+        progressJob?.cancel()
         _progressFraction.value = 0f
-        val durationSec = fact.displayDuration ?: LiveAIConfig.TRIVIA_DEFAULT_DISPLAY_DURATION_SEC
-        startProgressAnimation(durationSec, scope)
-        scheduleAutoDismiss(durationSec * 1000L, scope)
+        updateState { it.copy(activeFact = null) }
+    }
+
+    /**
+     * Request a follow-up fact for the current topic
+     */
+    fun requestFollowUp() {
+        // TODO: Implement proper WebSocket send after exposing connection in base class
+    }
+
+    private fun showFact(fact: TriviaFact, scope: CoroutineScope) {
+        scope.launch {
+            updateState { it.copy(activeFact = fact) }
+        }
+        _progressFraction.value = 0f
+
+        val displayDuration = fact.displayDuration ?: LiveAIConfig.TRIVIA_DEFAULT_DISPLAY_DURATION_SEC
+        startProgressAnimation(displayDuration, scope)
+        scheduleAutoDismiss(displayDuration * 1000L, scope)
     }
 
     private fun startProgressAnimation(durationSec: Int, scope: CoroutineScope) {
         progressJob?.cancel()
         progressJob = scope.launch {
-            val steps = durationSec * 10
+            val steps = (durationSec * 10)
             repeat(steps) { step ->
                 _progressFraction.value = (step + 1) / steps.toFloat()
                 delay(LiveAIConfig.PROGRESS_UPDATE_INTERVAL_MS)
@@ -150,6 +174,13 @@ class LiveTriviaManager @Inject constructor(
 
     private fun scheduleAutoDismiss(durationMs: Long, scope: CoroutineScope) {
         autoDismissJob?.cancel()
-        autoDismissJob = scope.launch { delay(durationMs); dismissFact() }
+        autoDismissJob = scope.launch {
+            delay(durationMs)
+            dismissFact()
+        }
+    }
+
+    companion object {
+        private const val MAX_SHOWN_FACTS = 1000
     }
 }

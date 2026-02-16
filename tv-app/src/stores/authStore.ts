@@ -36,6 +36,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
@@ -109,6 +110,43 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: any) {
           set({
             error: error.detail || 'Google login failed',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      loginWithApple: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const { NativeModules, Platform } = require('react-native');
+
+          if (Platform.OS !== 'ios' && Platform.OS !== 'tvos') {
+            throw new Error('Apple Sign In is only available on iOS and tvOS');
+          }
+
+          const AppleAuth = NativeModules.AppleAuthModule;
+          if (!AppleAuth) {
+            throw new Error('Apple Sign In module not available');
+          }
+
+          const { identityToken } = await AppleAuth.signIn();
+
+          if (!identityToken) {
+            throw new Error('Failed to get identity token from Apple');
+          }
+
+          const response: any = await authService.loginWithApple(identityToken);
+
+          set({
+            user: response.user,
+            token: response.access_token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error: any) {
+          set({
+            error: error.detail || error.message || 'Apple login failed',
             isLoading: false,
           });
           throw error;

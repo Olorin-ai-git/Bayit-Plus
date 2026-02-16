@@ -20,6 +20,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -79,19 +80,19 @@ private fun QuizIntro(onStart: () -> Unit) {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Content Quiz",
+            text = bayitString("player.companion.tabQuiz"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
         Text(
-            text = "Test your understanding of the content",
+            text = bayitString("player.companion.quizTitle"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.base,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
-        GlassButton(text = "Start Quiz", onClick = onStart)
+        GlassButton(text = bayitString("player.companion.quizStart"), onClick = onStart)
     }
 }
 
@@ -113,20 +114,20 @@ private fun QuizComplete(score: Int, total: Int, onRestart: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Quiz Complete",
+            text = bayitString("player.companion.quizComplete"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
         Text(
-            text = "$score / $total correct",
+            text = bayitString("player.companion.quizScore", mapOf("score" to score.toString(), "total" to total.toString())),
             color = DesignTokens.Colors.Primary.light,
             fontSize = DesignTokens.FontSize.xl,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
-        GlassButton(text = "Try Again", onClick = onRestart)
+        GlassButton(text = bayitString("player.companion.quizTryAgain"), onClick = onRestart)
     }
 }
 
@@ -138,6 +139,6 @@ private fun QuizError(message: String, onRetry: () -> Unit) {
     ) {
         Text(text = message, color = DesignTokens.Colors.Semantic.error, fontSize = DesignTokens.FontSize.sm)
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Retry", onClick = onRetry)
+        GlassButton(text = bayitString("player.companion.quizRetry"), onClick = onRetry)
     }
 }
