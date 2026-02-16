@@ -8,6 +8,8 @@ import tv.bayit.plus.core.common.correlation.CorrelationIdGenerator
 import tv.bayit.plus.core.common.correlation.UuidCorrelationIdGenerator
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.logging.TimberBayitLogger
+import tv.bayit.plus.core.common.time.SystemTimeProvider
+import tv.bayit.plus.core.common.time.TimeProvider
 import javax.inject.Singleton
 
 @Module
@@ -21,4 +23,8 @@ object CommonModule {
     @Provides
     @Singleton
     fun provideCorrelationIdGenerator(): CorrelationIdGenerator = UuidCorrelationIdGenerator()
+
+    @Provides
+    @Singleton
+    fun provideTimeProvider(): TimeProvider = SystemTimeProvider()
 }

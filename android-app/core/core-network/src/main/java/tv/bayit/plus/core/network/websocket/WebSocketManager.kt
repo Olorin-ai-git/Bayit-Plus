@@ -8,8 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -48,17 +46,12 @@ class WebSocketManager @Inject constructor(
         val token = authTokenProvider.getToken()
         val connection = WebSocketConnection(connectionId, url, channelType)
 
-        val request = Request.Builder().url(url).build()
-        val webSocket = okHttpClient.newWebSocket(request, connection.listener)
-        connection.webSocket = webSocket
-
+        val requestBuilder = Request.Builder().url(url)
         if (token != null) {
-            val authMessage = buildJsonObject {
-                put("type", "auth")
-                put("token", token)
-            }.toString()
-            webSocket.send(authMessage)
+            requestBuilder.header("Authorization", "Bearer $token")
         }
+        val webSocket = okHttpClient.newWebSocket(requestBuilder.build(), connection.listener)
+        connection.webSocket = webSocket
 
         connections[connectionId] = connection
         startPingIfNeeded()

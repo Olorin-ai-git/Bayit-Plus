@@ -1,9 +1,12 @@
 package tv.bayit.plus.core.media
 
+import android.app.Activity
+import android.app.PictureInPictureParams
 import android.content.Context
+import android.os.Build
+import android.util.Rational
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -13,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.model.MediaPlayback
+import tv.bayit.plus.core.model.QualityVariant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,9 +44,12 @@ class BayitMediaPlayer @Inject constructor(
     /** Builds the underlying [ExoPlayer] if not already initialised. */
     fun initialize() {
         if (exoPlayer != null) return
-
         exoPlayer = ExoPlayer.Builder(context).build().apply {
-            addListener(createPlayerListener())
+            addListener(createPlayerStateListener(
+                stateFlow = _playerState,
+                getPlayWhenReady = { exoPlayer?.playWhenReady == true },
+                logger = logger,
+            ))
         }
         logger.info("ExoPlayer initialised", mapOf("component" to "BayitMediaPlayer"))
     }
@@ -62,42 +69,79 @@ class BayitMediaPlayer @Inject constructor(
             return
         }
 
-        val mediaItem = MediaItem.Builder()
-            .setUri(mediaPlayback.streamUrl)
-            .build()
-
+        val mediaItem = MediaItem.Builder().setUri(mediaPlayback.streamUrl).build()
         val dataSourceFactory = DefaultHttpDataSource.Factory()
         val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .createMediaSource(mediaItem)
 
         player.setMediaSource(mediaSource)
         player.prepare()
+        mediaPlayback.startPosition?.let { player.seekTo(it) }
 
-        mediaPlayback.startPosition?.let { position ->
-            player.seekTo(position)
+        logger.info("Media loaded", buildMap {
+            put("component", "BayitMediaPlayer")
+            put("contentId", mediaPlayback.contentId.orEmpty())
+            put("isLive", mediaPlayback.isLive.toString())
+            mediaPlayback.startPosition?.let { put("startPosition", it.toString()) }
+        })
+    }
+
+    fun play() { exoPlayer?.play() }
+    fun pause() { exoPlayer?.pause() }
+    fun seekTo(positionMs: Long) { exoPlayer?.seekTo(positionMs) }
+
+    /** Sets playback speed (e.g. 0.5f, 1.0f, 1.5f, 2.0f). */
+    fun setPlaybackSpeed(speed: Float) {
+        val clamped = speed.coerceIn(SPEED_MIN, SPEED_MAX)
+        exoPlayer?.setPlaybackSpeed(clamped)
+        logger.debug("Playback speed changed", mapOf("speed" to clamped.toString()))
+    }
+
+    /** Returns the current playback speed. */
+    fun getPlaybackSpeed(): Float = exoPlayer?.playbackParameters?.speed ?: 1.0f
+
+    /** Returns available video quality variants from the current HLS manifest. */
+    fun getAvailableQualities(): List<QualityVariant> {
+        val player = exoPlayer ?: return emptyList()
+        return player.currentTracks.groups
+            .filter { it.type == C.TRACK_TYPE_VIDEO }
+            .flatMap { group ->
+                (0 until group.length).mapNotNull { index ->
+                    val height = group.getTrackFormat(index).height.takeIf { it > 0 }
+                        ?: return@mapNotNull null
+                    QualityVariant(quality = "${height}p", resolutionHeight = height)
+                }
+            }
+            .distinctBy { it.resolutionHeight }
+            .sortedByDescending { it.resolutionHeight ?: 0 }
+    }
+
+    /** Constrains video to [maxHeight] resolution. Pass `null` for auto. */
+    fun setQuality(maxHeight: Int?) {
+        val player = exoPlayer ?: return
+        player.trackSelectionParameters = if (maxHeight != null) {
+            player.trackSelectionParameters.buildUpon()
+                .setMaxVideoSize(Int.MAX_VALUE, maxHeight).build()
+        } else {
+            player.trackSelectionParameters.buildUpon()
+                .clearVideoSizeConstraints().build()
         }
-
-        logger.info(
-            "Media loaded",
-            buildMap {
-                put("component", "BayitMediaPlayer")
-                put("contentId", mediaPlayback.contentId.orEmpty())
-                put("isLive", mediaPlayback.isLive.toString())
-                mediaPlayback.startPosition?.let { put("startPosition", it.toString()) }
-            },
-        )
+        logger.debug("Quality changed", mapOf("maxHeight" to (maxHeight?.toString() ?: "auto")))
     }
 
-    fun play() {
-        exoPlayer?.play()
-    }
-
-    fun pause() {
-        exoPlayer?.pause()
-    }
-
-    fun seekTo(positionMs: Long) {
-        exoPlayer?.seekTo(positionMs)
+    /** Enters Picture-in-Picture mode. Returns `true` on success. */
+    fun enterPictureInPicture(activity: Activity): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+        return try {
+            val params = PictureInPictureParams.Builder()
+                .setAspectRatio(Rational(PIP_ASPECT_W, PIP_ASPECT_H)).build()
+            activity.enterPictureInPictureMode(params)
+            logger.info("Entered PiP mode", mapOf("component" to "BayitMediaPlayer"))
+            true
+        } catch (e: Exception) {
+            logger.error("PiP entry failed", e, mapOf("component" to "BayitMediaPlayer"))
+            false
+        }
     }
 
     /** Releases the player and resets state to [PlayerState.Idle]. */
@@ -110,57 +154,11 @@ class BayitMediaPlayer @Inject constructor(
 
     /** Returns the underlying [ExoPlayer] for attaching to a PlayerView. */
     fun getPlayer(): ExoPlayer? = exoPlayer
-
     fun getCurrentPosition(): Long = exoPlayer?.currentPosition ?: 0L
-
     fun getDuration(): Long = exoPlayer?.duration ?: 0L
-
-    // ------------------------------------------------------------------
-    // Internal
-    // ------------------------------------------------------------------
-
-    private fun createPlayerListener(): Player.Listener = object : Player.Listener {
-
-        override fun onPlaybackStateChanged(state: Int) {
-            _playerState.value = when (state) {
-                Player.STATE_IDLE -> PlayerState.Idle
-                Player.STATE_BUFFERING -> PlayerState.Buffering
-                Player.STATE_READY -> {
-                    if (exoPlayer?.playWhenReady == true) PlayerState.Playing
-                    else PlayerState.Paused
-                }
-                Player.STATE_ENDED -> PlayerState.Ended
-                else -> PlayerState.Idle
-            }
-        }
-
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            if (isPlaying) {
-                _playerState.value = PlayerState.Playing
-            }
-        }
-
-        override fun onPlayerError(error: PlaybackException) {
-            val message = error.message ?: "Unknown playback error"
-            _playerState.value = PlayerState.Error(message)
-            logger.error(
-                "Playback error",
-                error,
-                mapOf(
-                    "component" to "BayitMediaPlayer",
-                    "errorCode" to error.errorCode.toString(),
-                ),
-            )
-        }
-    }
 }
 
-/** Observable playback state emitted by [BayitMediaPlayer.playerState]. */
-sealed interface PlayerState {
-    data object Idle : PlayerState
-    data object Buffering : PlayerState
-    data object Playing : PlayerState
-    data object Paused : PlayerState
-    data object Ended : PlayerState
-    data class Error(val message: String) : PlayerState
-}
+private const val SPEED_MIN = 0.25f
+private const val SPEED_MAX = 3.0f
+private const val PIP_ASPECT_W = 16
+private const val PIP_ASPECT_H = 9

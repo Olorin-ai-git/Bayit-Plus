@@ -185,6 +185,32 @@ struct TVCredentialPanel: View {
             }
             .focused($focusedField, equals: .submit)
 
+            // Divider
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                Rectangle()
+                    .fill(DesignTokens.Glass.border)
+                    .frame(height: 1)
+                Text(localization.t("login.or"))
+                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                Rectangle()
+                    .fill(DesignTokens.Glass.border)
+                    .frame(height: 1)
+            }
+
+            // Apple Sign In
+            GlassButton(
+                localization.t("login.continueWithApple"),
+                variant: .secondary,
+                size: .large,
+                isDisabled: isLoading,
+                isLoading: isLoading,
+                icon: Image(systemName: "apple.logo")
+            ) {
+                signInWithApple()
+            }
+            .focused($focusedField, equals: .apple)
+
             Spacer(minLength: 0)
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxxl)

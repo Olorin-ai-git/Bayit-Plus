@@ -1,16 +1,13 @@
 package tv.bayit.plus.core.data.repository.impl
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.PUT
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.SubtitleRepository
+import tv.bayit.plus.core.model.ExternalSubtitleImportResponse
+import tv.bayit.plus.core.model.SubtitleCuesResponse
+import tv.bayit.plus.core.model.SubtitleEnglishMode
+import tv.bayit.plus.core.model.SubtitleHebrewMode
+import tv.bayit.plus.core.model.TranslationResult
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,11 +16,7 @@ import javax.inject.Singleton
  * Production implementation of [SubtitleRepository] backed by Retrofit.
  *
  * Delegates HTTP communication to [BayitApiClient], which handles auth headers,
- * correlation IDs, retry, rate limiting, and structured error mapping. Every
- * public method wraps the network call in [runCatchingResult] so callers receive
- * a [BayitResult] instead of raw exceptions.
- *
- * Endpoint paths mirror the iOS APISubtitleRepository and web api.js.
+ * correlation IDs, retry, rate limiting, and structured error mapping.
  */
 @Singleton
 class ApiSubtitleRepository @Inject constructor(
@@ -35,9 +28,7 @@ class ApiSubtitleRepository @Inject constructor(
     override suspend fun getAvailableSubtitles(
         mediaId: String,
     ): BayitResult<List<Any>> = runCatchingResult {
-        val response = client.safeApiCall {
-            service.getAvailableTracks(mediaId)
-        }
+        val response = client.safeApiCall { service.getAvailableTracks(mediaId) }
         response.tracks
     }
 
@@ -45,9 +36,7 @@ class ApiSubtitleRepository @Inject constructor(
         mediaId: String,
         languageCode: String,
     ): BayitResult<Any> = runCatchingResult {
-        client.safeApiCall {
-            service.getSubtitleTrack(mediaId, languageCode)
-        }
+        client.safeApiCall { service.getSubtitleTrack(mediaId, languageCode) }
     }
 
     override suspend fun getSubtitlePreferences(): BayitResult<Any> =
@@ -72,106 +61,81 @@ class ApiSubtitleRepository @Inject constructor(
         mediaId: String,
         languageCode: String,
     ): BayitResult<Unit> = runCatchingResult {
-        val body = SubtitleRequestBody(
-            contentId = mediaId,
-            language = languageCode,
-        )
+        val body = SubtitleRequestBody(contentId = mediaId, language = languageCode)
         client.safeApiCall { service.requestSubtitle(body) }
         Unit
     }
+
+    override suspend fun fetchCues(
+        contentId: String,
+        language: String,
+        hebrewMode: SubtitleHebrewMode?,
+        englishMode: SubtitleEnglishMode?,
+    ): BayitResult<SubtitleCuesResponse> = runCatchingResult {
+        client.safeApiCall {
+            service.getCues(
+                contentId = contentId,
+                language = language,
+                hebrewMode = hebrewMode?.name?.lowercase(),
+                englishMode = englishMode?.name?.lowercase(),
+            )
+        }
+    }
+
+    override suspend fun fetchExternalSubtitles(
+        contentId: String,
+    ): BayitResult<ExternalSubtitleImportResponse> = runCatchingResult {
+        client.safeApiCall { service.fetchExternalSubtitles(contentId) }
+    }
+
+    override suspend fun translateWord(
+        word: String,
+        sourceLanguage: String,
+        targetLanguage: String,
+    ): BayitResult<TranslationResult> = runCatchingResult {
+        val body = TranslateBody(
+            text = word,
+            sourceLanguage = sourceLanguage,
+            targetLanguage = targetLanguage,
+        )
+        client.safeApiCall { service.translateWord(body) }
+    }
+
+    override suspend fun translatePhrase(
+        phrase: String,
+        sourceLanguage: String,
+        targetLanguage: String,
+    ): BayitResult<TranslationResult> = runCatchingResult {
+        val body = TranslateBody(
+            text = phrase,
+            sourceLanguage = sourceLanguage,
+            targetLanguage = targetLanguage,
+        )
+        client.safeApiCall { service.translatePhrase(body) }
+    }
+
+    override suspend fun fetchContentPreferences(
+        contentId: String,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.getContentPreferences(contentId) }
+    }
+
+    override suspend fun updateContentPreferences(
+        contentId: String,
+        language: String?,
+        hebrewMode: SubtitleHebrewMode?,
+        englishMode: SubtitleEnglishMode?,
+        fontSize: Float?,
+        showBackground: Boolean?,
+    ): BayitResult<Unit> = runCatchingResult {
+        val body = SubtitlePreferencesBody(
+            language = language,
+            hebrewMode = hebrewMode?.name?.lowercase(),
+            englishMode = englishMode?.name?.lowercase(),
+            fontSize = fontSize,
+            showBackground = showBackground,
+        )
+        client.safeApiCall { service.updateContentPreferences(contentId, body) }
+        Unit
+    }
 }
-
-private interface SubtitleService {
-
-    @GET("api/v1/subtitles/{contentId}")
-    suspend fun getAvailableTracks(
-        @Path("contentId") contentId: String,
-    ): SubtitleTracksResponse
-
-    @GET("api/v1/subtitles/{contentId}")
-    suspend fun getSubtitleTrack(
-        @Path("contentId") contentId: String,
-        @Query("language") language: String,
-    ): SubtitleTrackDetail
-
-    @GET("api/v1/subtitles/preferences")
-    suspend fun getSubtitlePreferences(): SubtitlePreferencesResponse
-
-    @PUT("api/v1/subtitles/preferences")
-    suspend fun updateSubtitlePreferences(
-        @Body body: SubtitlePreferencesBody,
-    ): SubtitlePreferencesResponse
-
-    @POST("api/v1/subtitles/request")
-    suspend fun requestSubtitle(
-        @Body body: SubtitleRequestBody,
-    ): SubtitleRequestResponse
-}
-
-/** Response from the available subtitle tracks endpoint. */
-@Serializable
-private data class SubtitleTracksResponse(
-    val tracks: List<SubtitleTrackItem> = emptyList(),
-)
-
-/** A single subtitle track in the available tracks list. */
-@Serializable
-private data class SubtitleTrackItem(
-    val id: String,
-    @SerialName("content_id") val contentId: String,
-    val language: String,
-    @SerialName("language_name") val languageName: String? = null,
-    val format: String? = null,
-    @SerialName("has_nikud_version") val hasNikudVersion: Boolean? = null,
-    @SerialName("has_shoresh_version") val hasShoreshVersion: Boolean? = null,
-    @SerialName("has_heblish_version") val hasHeblishVersion: Boolean? = null,
-    @SerialName("has_engrew_version") val hasEngrewVersion: Boolean? = null,
-    @SerialName("is_default") val isDefault: Boolean? = null,
-    @SerialName("is_auto_generated") val isAutoGenerated: Boolean? = null,
-    @SerialName("cue_count") val cueCount: Int? = null,
-)
-
-/** Detailed subtitle track response including cues. */
-@Serializable
-private data class SubtitleTrackDetail(
-    val tracks: List<SubtitleTrackItem> = emptyList(),
-)
-
-/** Response from the subtitle preferences endpoint. */
-@Serializable
-private data class SubtitlePreferencesResponse(
-    val preferences: List<SubtitlePreferenceItem> = emptyList(),
-    val total: Int? = null,
-)
-
-/** A single subtitle preference entry. */
-@Serializable
-private data class SubtitlePreferenceItem(
-    @SerialName("content_id") val contentId: String,
-    @SerialName("preferred_language") val preferredLanguage: String? = null,
-    @SerialName("hebrew_mode") val hebrewMode: String? = null,
-    @SerialName("last_used_at") val lastUsedAt: String? = null,
-)
-
-/** Request body for updating subtitle preferences. */
-@Serializable
-private data class SubtitlePreferencesBody(
-    val language: String? = null,
-    @SerialName("hebrew_mode") val hebrewMode: String? = null,
-    @SerialName("font_size") val fontSize: Float? = null,
-    @SerialName("show_background") val showBackground: Boolean? = null,
-)
-
-/** Request body for requesting a new subtitle track. */
-@Serializable
-private data class SubtitleRequestBody(
-    @SerialName("content_id") val contentId: String,
-    val language: String,
-)
-
-/** Response from the subtitle request endpoint. */
-@Serializable
-private data class SubtitleRequestResponse(
-    val status: String? = null,
-    val message: String? = null,
-)

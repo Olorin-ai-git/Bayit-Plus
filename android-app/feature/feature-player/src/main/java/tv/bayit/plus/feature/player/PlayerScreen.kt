@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,11 +29,10 @@ import androidx.media3.ui.PlayerView
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
-import tv.bayit.plus.designsystem.component.GlassSpinner
-import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
-
-private const val PLAYER_CONTROL_TIMEOUT_MS = 3000
+import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
+import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
+import tv.bayit.plus.feature.player.ui.PlayerOverlay
 
 /**
  * Navigation entry-point for the Player screen.
@@ -52,6 +50,16 @@ fun PlayerRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
+    val isControlsVisible by viewModel.isControlsVisible.collectAsStateWithLifecycle()
+    val positionMs by viewModel.playbackPositionMs.collectAsStateWithLifecycle()
+    val durationMs by viewModel.totalDurationMs.collectAsStateWithLifecycle()
+    val subtitleState by viewModel.subtitleState.collectAsStateWithLifecycle()
+    val dubbingState by viewModel.dubbingState.collectAsStateWithLifecycle()
+    val triviaState by viewModel.triviaState.collectAsStateWithLifecycle()
+    val triviaProgress by viewModel.triviaProgress.collectAsStateWithLifecycle()
+    val aiPanelState by viewModel.aiPanelState.collectAsStateWithLifecycle()
+
+    var showLanguagePicker by remember { mutableStateOf(false) }
 
     DisposableEffect(contentId) {
         viewModel.loadContent(contentId, contentType)
@@ -66,6 +74,27 @@ fun PlayerRoute(
     PlayerScreen(
         uiState = uiState,
         playerState = playerState,
+        isControlsVisible = isControlsVisible,
+        positionMs = positionMs,
+        durationMs = durationMs,
+        subtitleState = subtitleState,
+        dubbingState = dubbingState,
+        triviaState = triviaState,
+        triviaProgress = triviaProgress,
+        aiPanelState = aiPanelState,
+        showLanguagePicker = showLanguagePicker,
+        onShowLanguagePicker = { showLanguagePicker = true },
+        onHideLanguagePicker = { showLanguagePicker = false },
+        onToggleControls = viewModel::toggleControls,
+        onPlayPause = viewModel::togglePlayPause,
+        onSeek = viewModel::seekToFraction,
+        onToggleAIPanel = viewModel::toggleAIPanel,
+        onToggleSubtitles = viewModel::toggleLiveSubtitles,
+        onToggleDubbing = viewModel::toggleLiveDubbing,
+        onToggleTrivia = viewModel::toggleLiveTrivia,
+        onSelectLanguage = viewModel::selectAILanguage,
+        onDismissTrivia = viewModel::dismissTriviaFact,
+        onTriviaFollowUp = viewModel::requestTriviaFollowUp,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -78,6 +107,27 @@ fun PlayerRoute(
 private fun PlayerScreen(
     uiState: PlayerUiState,
     playerState: PlayerState,
+    isControlsVisible: Boolean,
+    positionMs: Long,
+    durationMs: Long,
+    subtitleState: tv.bayit.plus.feature.player.live.LiveSubtitleUiState,
+    dubbingState: tv.bayit.plus.feature.player.live.LiveDubbingUiState,
+    triviaState: tv.bayit.plus.feature.player.live.LiveTriviaUiState,
+    triviaProgress: Float,
+    aiPanelState: tv.bayit.plus.feature.player.live.AIFeaturesPanelState,
+    showLanguagePicker: Boolean,
+    onShowLanguagePicker: () -> Unit,
+    onHideLanguagePicker: () -> Unit,
+    onToggleControls: () -> Unit,
+    onPlayPause: () -> Unit,
+    onSeek: (Float) -> Unit,
+    onToggleAIPanel: () -> Unit,
+    onToggleSubtitles: () -> Unit,
+    onToggleDubbing: () -> Unit,
+    onToggleTrivia: () -> Unit,
+    onSelectLanguage: (String) -> Unit,
+    onDismissTrivia: () -> Unit,
+    onTriviaFollowUp: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -88,104 +138,44 @@ private fun PlayerScreen(
     ) {
         when (uiState) {
             is PlayerUiState.Loading -> GlassLoadingIndicator()
-            is PlayerUiState.Ready -> ReadyContent(uiState, playerState, onBack)
+            is PlayerUiState.Ready -> {
+                ReadyContent(
+                    state = uiState,
+                    playerState = playerState,
+                    isControlsVisible = isControlsVisible,
+                    positionMs = positionMs,
+                    durationMs = durationMs,
+                    subtitleState = subtitleState,
+                    dubbingState = dubbingState,
+                    triviaState = triviaState,
+                    triviaProgress = triviaProgress,
+                    aiPanelState = aiPanelState,
+                    onToggleControls = onToggleControls,
+                    onPlayPause = onPlayPause,
+                    onSeek = onSeek,
+                    onToggleAIPanel = onToggleAIPanel,
+                    onToggleSubtitles = onToggleSubtitles,
+                    onToggleDubbing = onToggleDubbing,
+                    onToggleTrivia = onToggleTrivia,
+                    onShowLanguagePicker = onShowLanguagePicker,
+                    onDismissTrivia = onDismissTrivia,
+                    onTriviaFollowUp = onTriviaFollowUp,
+                    onBack = onBack,
+                )
+
+                if (showLanguagePicker) {
+                    AILanguagePicker(
+                        selectedLanguage = aiPanelState.selectedLanguage,
+                        onLanguageSelected = { lang ->
+                            onSelectLanguage(lang)
+                            onHideLanguagePicker()
+                        },
+                        onDismiss = onHideLanguagePicker
+                    )
+                }
+            }
             is PlayerUiState.Error -> ErrorContent(uiState.message, onBack)
         }
     }
 }
 
-@Composable
-private fun ReadyContent(
-    state: PlayerUiState.Ready,
-    playerState: PlayerState,
-    onBack: () -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(Color.Black),
-        ) {
-            state.exoPlayer?.let { player ->
-                AndroidView(
-                    factory = { context ->
-                        PlayerView(context).apply {
-                            this.player = player
-                            useController = true
-                            controllerShowTimeoutMs = PLAYER_CONTROL_TIMEOUT_MS
-                        }
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-
-            if (playerState is PlayerState.Buffering) {
-                GlassSpinner(
-                    size = SpinnerSize.LARGE,
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(DesignTokens.Spacing.sm),
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Navigate back",
-                    tint = DesignTokens.Colors.Text.primary,
-                    modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
-                )
-            }
-        }
-
-        MetadataSection(title = state.title, description = state.description)
-    }
-}
-
-@Composable
-private fun MetadataSection(
-    title: String,
-    description: String?,
-) {
-    Column(modifier = Modifier.padding(DesignTokens.Spacing.base)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            color = DesignTokens.Colors.Text.primary,
-        )
-        description?.let { desc ->
-            Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            Text(
-                text = desc,
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    message: String,
-    onBack: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(DesignTokens.Spacing.xl),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = message,
-            color = DesignTokens.Colors.Semantic.error,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = "Go Back", onClick = onBack)
-    }
-}

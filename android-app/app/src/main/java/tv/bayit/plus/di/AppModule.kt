@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.BuildConfig
 import tv.bayit.plus.core.network.NetworkConfiguration
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -28,5 +29,6 @@ object AppModule {
         webSocketPingIntervalDuration = 30.seconds,
         webSocketMaxReconnectAttempts = 5,
         webSocketReconnectBaseDelay = 1.seconds,
+        isDebug = BuildConfig.DEBUG,
     )
 }

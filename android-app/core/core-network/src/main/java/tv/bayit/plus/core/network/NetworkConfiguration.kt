@@ -45,6 +45,9 @@ data class NetworkConfiguration(
 
     /** Base delay for WebSocket reconnection backoff. */
     val webSocketReconnectBaseDelay: Duration,
+
+    /** Whether the app is in debug mode. Controls HTTP logging verbosity. */
+    val isDebug: Boolean,
 ) : NetworkConfig {
 
     /** Timeout in milliseconds for OkHttp configuration. */

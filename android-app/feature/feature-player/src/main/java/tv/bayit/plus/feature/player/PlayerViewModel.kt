@@ -2,151 +2,190 @@ package tv.bayit.plus.feature.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
-import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.common.time.TimeProvider
 import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.media.BayitMediaPlayer
 import tv.bayit.plus.core.media.PlayerState
-import tv.bayit.plus.core.model.ContentDetail
 import tv.bayit.plus.core.model.MediaPlayback
+import tv.bayit.plus.feature.player.chapters.ChapterMarker
+import tv.bayit.plus.feature.player.live.LiveAICoordinator
 import javax.inject.Inject
 
-/**
- * ViewModel managing media playback state for the Player screen.
- *
- * Coordinates between [MediaRepository] (stream URL resolution),
- * [ContentRepository] (metadata), and [BayitMediaPlayer] (ExoPlayer).
- * Exposes a [PlayerUiState] for the Compose UI and a [PlayerState]
- * flow for transport-level state (playing, paused, buffering, etc.).
- */
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val mediaRepository: MediaRepository,
-    private val contentRepository: ContentRepository,
+    private val contentResolver: PlayerContentResolver,
     private val mediaPlayer: BayitMediaPlayer,
+    private val liveAICoordinator: LiveAICoordinator,
+    private val timeProvider: TimeProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState.asStateFlow()
-
     val playerState: StateFlow<PlayerState> = mediaPlayer.playerState
+    private val _isControlsVisible = MutableStateFlow(true)
+    val isControlsVisible: StateFlow<Boolean> = _isControlsVisible.asStateFlow()
+    private val _playbackPositionMs = MutableStateFlow(0L)
+    val playbackPositionMs: StateFlow<Long> = _playbackPositionMs.asStateFlow()
+    private val _totalDurationMs = MutableStateFlow(0L)
+    val totalDurationMs: StateFlow<Long> = _totalDurationMs.asStateFlow()
+    private val _extendedState = MutableStateFlow(PlayerExtendedState())
+    val extendedState: StateFlow<PlayerExtendedState> = _extendedState.asStateFlow()
+
+    val subtitleState = liveAICoordinator.subtitlesManager.state
+    val dubbingState = liveAICoordinator.dubbingManager.state
+    val triviaState = liveAICoordinator.triviaManager.state
+    val triviaProgress = liveAICoordinator.triviaManager.progressFraction
+    val aiPanelState = liveAICoordinator.panelState
 
     private var currentContentId: String? = null
     private var currentContentType: String? = null
+    private var controlsHideJob: Job? = null
+    private var positionPollingJob: Job? = null
 
-    init {
-        mediaPlayer.initialize()
-    }
+    init { mediaPlayer.initialize(); startPositionPolling() }
 
     fun loadContent(contentId: String, contentType: String) {
         if (currentContentId == contentId) return
         currentContentId = contentId
         currentContentType = contentType
-
         viewModelScope.launch {
-            logger.debug("Loading content for playback", mapOf(
-                "contentId" to contentId,
-                "contentType" to contentType,
-            ))
-
-            val metadata = resolveMetadata(contentId)
-
-            when (val urlResult = mediaRepository.getPlaybackUrl(contentId)) {
+            logger.debug("Loading content", mapOf("contentId" to contentId, "contentType" to contentType))
+            val isLive = contentResolver.isLiveContent(contentType)
+            val streamResult = contentResolver.resolveStreamUrl(contentId, contentType)
+            val metadata = contentResolver.resolveMetadata(contentId, contentType)
+            when (streamResult) {
                 is BayitResult.Success -> {
-                    val playback = MediaPlayback(
-                        streamUrl = urlResult.data,
-                        contentId = contentId,
-                        title = metadata?.title,
-                        isLive = contentType == "live",
-                    )
-                    mediaPlayer.loadMedia(playback)
+                    mediaPlayer.loadMedia(MediaPlayback(
+                        streamUrl = streamResult.data, contentId = contentId,
+                        title = metadata.first, isLive = isLive,
+                    ))
                     _uiState.value = PlayerUiState.Ready(
-                        contentId = contentId,
-                        title = metadata?.title.orEmpty(),
-                        description = metadata?.description,
-                        exoPlayer = mediaPlayer.getPlayer(),
+                        contentId = contentId, title = metadata.first,
+                        description = metadata.second, exoPlayer = mediaPlayer.getPlayer(),
+                        isLiveContent = isLive, channelId = if (isLive) contentId else null,
                     )
+                    scheduleControlsHide()
                     logger.info("Playback started", mapOf("contentId" to contentId))
                 }
                 is BayitResult.Error -> {
-                    val errorMsg = urlResult.message ?: urlResult.exception.message.orEmpty()
-                    logger.error("Playback load failed", urlResult.exception, mapOf(
-                        "contentId" to contentId,
-                    ))
-                    _uiState.value = PlayerUiState.Error(errorMsg)
+                    logger.error("Playback load failed", streamResult.exception, mapOf("contentId" to contentId))
+                    _uiState.value = PlayerUiState.Error(
+                        streamResult.message ?: streamResult.exception.message.orEmpty(),
+                    )
                 }
                 is BayitResult.Loading -> Unit
             }
         }
     }
 
-    fun togglePlayPause() {
-        when (playerState.value) {
-            is PlayerState.Playing -> mediaPlayer.pause()
-            is PlayerState.Paused -> mediaPlayer.play()
-            is PlayerState.Ended -> {
-                mediaPlayer.seekTo(0L)
-                mediaPlayer.play()
-            }
-            else -> Unit
-        }
+    fun toggleControls() {
+        _isControlsVisible.value = !_isControlsVisible.value
+        if (_isControlsVisible.value) scheduleControlsHide()
     }
 
-    fun seekTo(positionMs: Long) {
-        mediaPlayer.seekTo(positionMs)
+    fun togglePlayPause() = when (playerState.value) {
+        is PlayerState.Playing -> mediaPlayer.pause()
+        is PlayerState.Paused -> mediaPlayer.play()
+        is PlayerState.Ended -> { mediaPlayer.seekTo(0L); mediaPlayer.play() }
+        else -> Unit
+    }
+
+    fun seekToFraction(fraction: Float) {
+        val duration = mediaPlayer.getDuration()
+        if (duration > 0) mediaPlayer.seekTo((fraction * duration).toLong())
     }
 
     fun saveProgress() {
         val contentId = currentContentId ?: return
         val position = mediaPlayer.getCurrentPosition()
         if (position <= 0L) return
-
         viewModelScope.launch {
             mediaRepository.reportProgress(contentId, position)
-            logger.debug("Progress saved", mapOf(
-                "contentId" to contentId,
-                "positionMs" to position.toString(),
-            ))
+            logger.debug("Progress saved", mapOf("contentId" to contentId, "positionMs" to position.toString()))
         }
     }
 
-    fun release() {
-        saveProgress()
+    fun release() { saveProgress() }
+
+    fun toggleRecording() {
+        val current = _extendedState.value
+        val meta = mapOf("contentId" to currentContentId.orEmpty())
+        _extendedState.value = if (current.isRecording) {
+            logger.info("Recording stopped", meta)
+            current.copy(isRecording = false, recordingStartTimeMs = null)
+        } else {
+            logger.info("Recording started", meta)
+            current.copy(isRecording = true, recordingStartTimeMs = timeProvider.currentTimeMillis())
+        }
     }
 
+    fun setInPictureInPicture(inPip: Boolean) { _extendedState.value = _extendedState.value.copy(isInPictureInPicture = inPip) }
+    fun setChapters(chapters: List<ChapterMarker>) { _extendedState.value = _extendedState.value.copy(chapters = chapters) }
+
+    fun setPlaybackSpeed(speed: Float) {
+        mediaPlayer.setPlaybackSpeed(speed)
+        _extendedState.value = _extendedState.value.copy(playbackSpeed = speed)
+    }
+
+    fun setQuality(maxHeight: Int?) {
+        mediaPlayer.setQuality(maxHeight)
+        _extendedState.value = _extendedState.value.copy(selectedQualityHeight = maxHeight)
+    }
+
+    private val channelId get() = (_uiState.value as? PlayerUiState.Ready)?.channelId
+    fun toggleAIPanel() = liveAICoordinator.togglePanel()
+    fun toggleLiveSubtitles() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleSubtitles(it, viewModelScope) } }
+    fun toggleLiveDubbing() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleDubbing(it, viewModelScope) } }
+    fun toggleLiveTrivia() = channelId?.let { viewModelScope.launch { liveAICoordinator.toggleTrivia(it, viewModelScope) } }
+    fun selectAILanguage(lang: String) = channelId?.let { viewModelScope.launch { liveAICoordinator.selectLanguage(lang, it, viewModelScope) } }
+    fun dismissTriviaFact() = liveAICoordinator.triviaManager.dismissFact()
+    fun requestTriviaFollowUp() = viewModelScope.launch { liveAICoordinator.triviaManager.requestFollowUp() }
+
     override fun onCleared() {
-        saveProgress()
-        mediaPlayer.release()
+        saveProgress(); liveAICoordinator.cleanupAll(); positionPollingJob?.cancel(); mediaPlayer.release()
         super.onCleared()
     }
 
-    private suspend fun resolveMetadata(contentId: String): ContentDetail? =
-        when (val result = contentRepository.getContentById(contentId)) {
-            is BayitResult.Success -> result.data as? ContentDetail
-            else -> null
+    private fun startPositionPolling() {
+        positionPollingJob = viewModelScope.launch {
+            while (isActive) {
+                val pos = mediaPlayer.getCurrentPosition()
+                _playbackPositionMs.value = pos
+                _totalDurationMs.value = mediaPlayer.getDuration()
+                updateCurrentChapter(pos)
+                delay(POSITION_POLL_INTERVAL_MS)
+            }
         }
-}
+    }
 
-/**
- * UI state for the Player screen, pattern-matched in the Compose layer.
- */
-sealed interface PlayerUiState {
-    data object Loading : PlayerUiState
+    private fun updateCurrentChapter(positionMs: Long) {
+        val chapters = _extendedState.value.chapters
+        if (chapters.isEmpty()) return
+        val idx = chapters.indexOfLast { it.startTimeMs <= positionMs }
+        if (idx != _extendedState.value.currentChapterIndex) {
+            _extendedState.value = _extendedState.value.copy(currentChapterIndex = idx)
+        }
+    }
 
-    data class Ready(
-        val contentId: String,
-        val title: String,
-        val description: String?,
-        val exoPlayer: ExoPlayer?,
-    ) : PlayerUiState
+    private fun scheduleControlsHide() {
+        controlsHideJob?.cancel()
+        controlsHideJob = viewModelScope.launch { delay(CONTROLS_HIDE_DELAY_MS); _isControlsVisible.value = false }
+    }
 
-    data class Error(val message: String) : PlayerUiState
+    companion object {
+        private const val CONTROLS_HIDE_DELAY_MS = 4000L
+        private const val POSITION_POLL_INTERVAL_MS = 250L
+    }
 }
