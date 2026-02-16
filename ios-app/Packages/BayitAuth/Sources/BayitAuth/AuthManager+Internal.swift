@@ -135,6 +135,8 @@ extension AuthManager {
     /// Restores a cached session from Keychain on launch.
     /// Checks session expiry and clears state if the session is too old.
     func restoreCachedSession() {
+        logger.debug("Restoring cached session", metadata: [:])
+
         guard !isSessionExpired else {
             logger.info(
                 "Cached session expired, clearing credentials",
@@ -142,27 +144,89 @@ extension AuthManager {
                     "max_age_days": String(sessionMaxAgeDays)
                 ]
             )
-            clearState()
-            try? keychainService.delete(for: tokenKeychainKey)
-            try? keychainService.delete(for: backendTokenKeychainKey)
-            try? keychainService.delete(for: refreshTokenKeychainKey)
-            try? keychainService.delete(for: userKeychainKey)
-            try? keychainService.delete(for: sessionTimestampKeychainKey)
+            clearKeychainAndState()
             return
         }
 
-        if let userJSON = try? keychainService.load(for: userKeychainKey),
+        // Load backend JWT and validate it's not expired
+        if let backendJWT = try? keychainService.load(for: backendTokenKeychainKey) {
+            logger.debug("Found backend JWT in keychain", metadata: [:])
+            if isJWTExpiredOrExpiringSoon(backendJWT) {
+                logger.error(
+                    "Cached backend JWT expired or expiring soon, clearing session",
+                    metadata: [:]
+                )
+                clearKeychainAndState()
+                return
+            }
+            logger.debug("Backend JWT is valid, restoring session", metadata: [:])
+            token = backendJWT
+        } else if let cachedToken = try? keychainService.load(for: tokenKeychainKey) {
+            logger.debug("Found Firebase token in keychain", metadata: [:])
+            if isJWTExpiredOrExpiringSoon(cachedToken) {
+                logger.error(
+                    "Cached Firebase token expired or expiring soon, clearing session",
+                    metadata: [:]
+                )
+                clearKeychainAndState()
+                return
+            }
+            logger.debug("Firebase token is valid, restoring session", metadata: [:])
+            token = cachedToken
+        } else {
+            logger.debug("No cached tokens found in keychain", metadata: [:])
+        }
+
+        // Only restore user if we have a valid token
+        if token != nil,
+           let userJSON = try? keychainService.load(for: userKeychainKey),
            let userData = userJSON.data(using: .utf8),
            let cachedUser = try? JSONDecoder().decode(BayitUser.self, from: userData) {
             user = cachedUser
+            logger.debug("Session restored successfully", metadata: ["user_id": cachedUser.id])
+        }
+    }
+
+    /// Checks if a JWT token is expired or will expire within 5 minutes.
+    private func isJWTExpiredOrExpiringSoon(_ token: String) -> Bool {
+        let segments = token.split(separator: ".")
+        guard segments.count == 3 else { return true }
+
+        let payloadSegment = String(segments[1])
+
+        // Base64URL decode
+        var base64 = payloadSegment
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let remainder = base64.count % 4
+        if remainder > 0 {
+            base64 += String(repeating: "=", count: 4 - remainder)
         }
 
-        // Prefer backend JWT over Firebase ID token
-        if let backendJWT = try? keychainService.load(for: backendTokenKeychainKey) {
-            token = backendJWT
-        } else if let cachedToken = try? keychainService.load(for: tokenKeychainKey) {
-            token = cachedToken
+        guard let data = Data(base64Encoded: base64) else { return true }
+
+        struct JWTPayload: Decodable {
+            let exp: TimeInterval?
         }
+
+        guard let payload = try? JSONDecoder().decode(JWTPayload.self, from: data),
+              let expiration = payload.exp else {
+            return true
+        }
+
+        let expirationDate = Date(timeIntervalSince1970: expiration)
+        let fiveMinutes: TimeInterval = 5 * 60
+        return expirationDate.timeIntervalSinceNow < fiveMinutes
+    }
+
+    /// Clears all Keychain entries and local state.
+    private func clearKeychainAndState() {
+        clearState()
+        try? keychainService.delete(for: tokenKeychainKey)
+        try? keychainService.delete(for: backendTokenKeychainKey)
+        try? keychainService.delete(for: refreshTokenKeychainKey)
+        try? keychainService.delete(for: userKeychainKey)
+        try? keychainService.delete(for: sessionTimestampKeychainKey)
     }
 
     /// Listens for Firebase auth state changes to keep local state in sync.

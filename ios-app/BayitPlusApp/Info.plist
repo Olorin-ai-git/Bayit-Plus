@@ -37,7 +37,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf</string>
+				<string>com.googleusercontent.apps.624470113582-c65j6hhdtdbi7kjsaf27rnuo0k2nu23a</string>
 			</array>
 		</dict>
 	</array>
@@ -48,7 +48,7 @@
 	<key>FirebaseCrashlyticsCollectionEnabled</key>
 	<true/>
 	<key>GOOGLE_CLIENT_ID</key>
-	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
+	<string>624470113582-c65j6hhdtdbi7kjsaf27rnuo0k2nu23a.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
