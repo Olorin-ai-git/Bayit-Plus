@@ -110,9 +110,6 @@ struct SettingsView: View {
             navRow(icon: "link", title: localization.t("settings.devicePairing")) {
                 coordinator.pushToCurrentTab(.devicePairing)
             }
-            navRow(icon: "key", title: localization.t("settings.passkeys")) {
-                coordinator.pushToCurrentTab(.passkeyManagement)
-            }
             navRow(icon: "questionmark.circle", title: localization.t("settings.support")) {
                 coordinator.pushToCurrentTab(.support)
             }

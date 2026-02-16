@@ -8,7 +8,6 @@ public enum AuthError: LocalizedError, Sendable {
     case appleSignInFailed(underlying: String)
     case emailSignInFailed(underlying: String)
     case registrationFailed(underlying: String)
-    case passkeySignInFailed(underlying: String)
     case keychainSaveFailed(status: OSStatus)
     case keychainLoadFailed(status: OSStatus)
     case keychainDeleteFailed(status: OSStatus)
@@ -48,8 +47,6 @@ public enum AuthError: LocalizedError, Sendable {
             return "Invalid email or password"
         case .registrationFailed:
             return "Registration failed. Please try again."
-        case .passkeySignInFailed:
-            return "Passkey sign-in failed. Please try again."
         case .keychainSaveFailed, .keychainLoadFailed, .keychainDeleteFailed, .keychainItemNotFound:
             return "An unexpected error occurred"
         case .profileSelectionFailed:
@@ -103,8 +100,6 @@ public enum AuthError: LocalizedError, Sendable {
             return "Email sign-in failed: \(underlying)"
         case .registrationFailed(let underlying):
             return "Registration failed: \(underlying)"
-        case .passkeySignInFailed(let underlying):
-            return "Passkey sign-in failed: \(underlying)"
         case .keychainSaveFailed(let status):
             return "Keychain save failed with status: \(status)"
         case .keychainLoadFailed(let status):

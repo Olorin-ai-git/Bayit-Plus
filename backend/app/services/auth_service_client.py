@@ -3,6 +3,9 @@ Olorin Auth Service client for Bayit+ backend.
 
 Proxies authentication requests to auth.olorin.ai while maintaining
 Bayit+ specific features (payment flow, beta users, etc).
+
+In production (Cloud Run), uses GCP metadata server for identity tokens.
+In development (localhost), skips service-to-service auth.
 """
 
 import httpx
@@ -14,6 +17,37 @@ from app.core.config import settings
 logger = structlog.get_logger(__name__)
 
 
+def _get_identity_token(target_audience: str) -> Optional[str]:
+    """
+    Get GCP identity token for service-to-service auth.
+
+    Uses google-auth library which automatically detects the environment:
+    - Cloud Run: uses metadata server
+    - Local with gcloud: uses application default credentials
+    - Local without gcloud: returns None (no auth needed for local dev)
+
+    Args:
+        target_audience: The URL of the target service
+
+    Returns:
+        Identity token string, or None if not available
+    """
+    try:
+        import google.auth.transport.requests
+        import google.oauth2.id_token
+
+        request = google.auth.transport.requests.Request()
+        token = google.oauth2.id_token.fetch_id_token(request, target_audience)
+        return token
+    except Exception as e:
+        logger.debug(
+            "identity_token_unavailable",
+            reason=str(e),
+            target=target_audience,
+        )
+        return None
+
+
 class AuthServiceClient:
     """Client for communicating with Olorin Auth Service."""
 
@@ -21,6 +55,26 @@ class AuthServiceClient:
         self.base_url = getattr(settings, "AUTH_SERVICE_URL", "https://auth.olorin.ai")
         self.tenant_id = "bayit_plus"
         self.timeout = 30.0
+        self._is_local = self.base_url.startswith("http://localhost")
+
+    def _get_auth_headers(self) -> dict:
+        """Get authentication headers for auth service requests."""
+        if self._is_local:
+            return {}
+
+        token = _get_identity_token(self.base_url)
+        if token:
+            return {"Authorization": f"Bearer {token}"}
+
+        logger.warning("no_identity_token_for_auth_service", base_url=self.base_url)
+        return {}
+
+    def _extract_error(self, response: httpx.Response, fallback: str) -> str:
+        """Extract error detail from response, handling non-JSON bodies."""
+        try:
+            return response.json().get("detail", fallback)
+        except Exception:
+            return response.text or fallback
 
     async def register(
         self,
@@ -40,17 +94,10 @@ class AuthServiceClient:
             Dict with user_id, email, name, role, access_token, refresh_token
 
         Raises:
-            HTTPException: If registration fails
+            ValueError: If registration fails
         """
         async with httpx.AsyncClient() as client:
             try:
-                # Use service account credentials for auth service access
-                import subprocess
-                token = subprocess.check_output(
-                    ["gcloud", "auth", "print-identity-token"],
-                    text=True
-                ).strip()
-
                 response = await client.post(
                     f"{self.base_url}/api/v1/auth/register",
                     json={
@@ -59,7 +106,7 @@ class AuthServiceClient:
                         "name": name,
                         "tenant_id": self.tenant_id,
                     },
-                    headers={"Authorization": f"Bearer {token}"},
+                    headers=self._get_auth_headers(),
                     timeout=self.timeout,
                 )
 
@@ -72,7 +119,7 @@ class AuthServiceClient:
                     )
                     return data
                 else:
-                    error_detail = response.json().get("detail", "Registration failed")
+                    error_detail = self._extract_error(response, "Registration failed")
                     logger.warning(
                         "auth_service_register_failed",
                         status_code=response.status_code,
@@ -105,13 +152,6 @@ class AuthServiceClient:
         """
         async with httpx.AsyncClient() as client:
             try:
-                # Use service account credentials
-                import subprocess
-                token = subprocess.check_output(
-                    ["gcloud", "auth", "print-identity-token"],
-                    text=True
-                ).strip()
-
                 response = await client.post(
                     f"{self.base_url}/api/v1/auth/login",
                     json={
@@ -119,7 +159,7 @@ class AuthServiceClient:
                         "password": password,
                         "tenant_id": self.tenant_id,
                     },
-                    headers={"Authorization": f"Bearer {token}"},
+                    headers=self._get_auth_headers(),
                     timeout=self.timeout,
                 )
 
@@ -132,7 +172,7 @@ class AuthServiceClient:
                     )
                     return data
                 else:
-                    error_detail = response.json().get("detail", "Login failed")
+                    error_detail = self._extract_error(response, "Login failed")
                     logger.warning(
                         "auth_service_login_failed",
                         status_code=response.status_code,
@@ -165,21 +205,21 @@ class AuthServiceClient:
         """
         async with httpx.AsyncClient() as client:
             try:
-                # Use service account credentials
-                import subprocess
-                token = subprocess.check_output(
-                    ["gcloud", "auth", "print-identity-token"],
-                    text=True
-                ).strip()
+                logger.info(
+                    "auth_service_google_login_request",
+                    base_url=self.base_url,
+                    is_local=self._is_local,
+                )
 
                 response = await client.post(
                     f"{self.base_url}/api/v1/auth/login/google",
                     json={
+                        "provider": "google",
                         "id_token": id_token,
                         "tenant_id": self.tenant_id,
                         "device_id": device_id,
                     },
-                    headers={"Authorization": f"Bearer {token}"},
+                    headers=self._get_auth_headers(),
                     timeout=self.timeout,
                 )
 
@@ -192,12 +232,12 @@ class AuthServiceClient:
                     )
                     return data
                 else:
-                    error_detail = response.json().get("detail", "Google login failed")
                     logger.warning(
                         "auth_service_google_login_failed",
                         status_code=response.status_code,
-                        detail=error_detail,
+                        response_text=response.text[:500],
                     )
+                    error_detail = self._extract_error(response, "Google login failed")
                     raise ValueError(error_detail)
 
             except httpx.RequestError as e:
@@ -224,21 +264,15 @@ class AuthServiceClient:
         """
         async with httpx.AsyncClient() as client:
             try:
-                # Use service account credentials
-                import subprocess
-                token = subprocess.check_output(
-                    ["gcloud", "auth", "print-identity-token"],
-                    text=True
-                ).strip()
-
                 response = await client.post(
                     f"{self.base_url}/api/v1/auth/login/apple",
                     json={
+                        "provider": "apple",
                         "id_token": id_token,
                         "tenant_id": self.tenant_id,
                         "device_id": device_id,
                     },
-                    headers={"Authorization": f"Bearer {token}"},
+                    headers=self._get_auth_headers(),
                     timeout=self.timeout,
                 )
 
@@ -251,7 +285,7 @@ class AuthServiceClient:
                     )
                     return data
                 else:
-                    error_detail = response.json().get("detail", "Apple login failed")
+                    error_detail = self._extract_error(response, "Apple login failed")
                     logger.warning(
                         "auth_service_apple_login_failed",
                         status_code=response.status_code,

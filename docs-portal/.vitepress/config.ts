@@ -5,7 +5,7 @@ export default defineConfig({
   description: 'Complete documentation for the Bayit+ streaming platform',
   base: '/',
   srcDir: '../docs',
-  srcExclude: ['**/templates/**', '**/implementation/**'],
+  srcExclude: ['**/templates/**', '**/implementation/**', '**/reviews/**'],
   ignoreDeadLinks: true,
   outDir: '.vitepress/dist',
 

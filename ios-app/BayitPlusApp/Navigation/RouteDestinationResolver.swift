@@ -100,8 +100,6 @@ struct RouteDestinationResolver {
             WidgetsView()
         case .radio:
             RadioView()
-        case .passkeyManagement:
-            PasskeyManagementView()
         case .onboardingAI:
             OnboardingAIView()
         case .friends:

@@ -106,9 +106,6 @@ public enum Route: Hashable {
     // Widgets
     case widgets
 
-    // Passkey Management
-    case passkeyManagement
-
     // Onboarding AI
     case onboardingAI
 
@@ -197,7 +194,6 @@ extension Route {
         case .helpCenter: return "Help"
         case .rewards: return "Rewards"
         case .widgets: return "Widgets"
-        case .passkeyManagement: return "Passkeys"
         case .onboardingAI: return "Setup"
         case .friends: return "Friends"
         case .watchParty: return "Watch Party"

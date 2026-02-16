@@ -27,7 +27,6 @@ final class RepositoryProvider {
     let shabbat: any ShabbatRepository
     let familyControls: any FamilyControlsRepository
     let securitySettings: any SecurityRepository
-    let passkey: any PasskeyRepository
     let betaCredits: any BetaCreditsRepository
     let subtitle: any SubtitleRepository
     let chapter: any ChapterRepository
@@ -81,7 +80,6 @@ final class RepositoryProvider {
         self.shabbat = APIShabbatRepository(client: client)
         self.familyControls = APIFamilyControlsRepository(client: client)
         self.securitySettings = APISecurityRepository(client: client)
-        self.passkey = APIPasskeyRepository(client: client)
         self.betaCredits = APIBetaCreditsRepository(client: client)
         self.subtitle = APISubtitleRepository(client: client)
         self.chapter = APIChapterRepository(client: client)

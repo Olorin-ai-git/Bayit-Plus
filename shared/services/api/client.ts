@@ -116,7 +116,6 @@ export const api = axios.create({
   timeout: API_TIMEOUT_MS,
   headers: SECURITY_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
-  validateStatus: (status) => status >= 200 && status < 500, // Don't throw on 4xx/5xx
 });
 
 // Separate API instance for content endpoints that involve web scraping
@@ -125,7 +124,6 @@ export const contentApi = axios.create({
   timeout: CONTENT_API_TIMEOUT_MS,
   headers: SECURITY_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
-  validateStatus: (status) => status >= 200 && status < 500,
 });
 
 // Passkey session header name

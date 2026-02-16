@@ -46,7 +46,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     async function loadVoices() {
       try {
         const result = await apiClient.getVoices();
-        setVoices(result.voices);
+        setVoices(result.voices as VoiceOption[]);
         setIsLoadingVoices(false);
       } catch (error) {
         logger.error('Failed to load voices', { error: String(error) });
@@ -154,7 +154,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
               label={t('settings.targetLanguage', 'Target Language')}
               options={targetLanguageOptions}
               value={settingsStore.targetLanguage}
-              onChange={(value) =>
+              onChange={(value: string) =>
                 settingsStore.updateSettings({
                   targetLanguage: value as 'en' | 'es',
                 })
@@ -175,7 +175,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
               label={t('settings.voice', 'Voice')}
               options={voiceOptions}
               value={settingsStore.voiceId}
-              onChange={(value) =>
+              onChange={(value: string) =>
                 settingsStore.updateSettings({ voiceId: value })
               }
               disabled={isLoadingVoices || voiceOptions.length === 0}
@@ -205,7 +205,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </label>
             <GlassSlider
               value={settingsStore.originalVolume}
-              onChange={(value) =>
+              onChange={(value: number) =>
                 settingsStore.updateSettings({ originalVolume: value })
               }
               min={0}
@@ -233,7 +233,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </label>
             <GlassSlider
               value={settingsStore.dubbedVolume}
-              onChange={(value) =>
+              onChange={(value: number) =>
                 settingsStore.updateSettings({ dubbedVolume: value })
               }
               min={0}
@@ -277,7 +277,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </div>
             <GlassSwitch
               checked={settingsStore.audioDubbing}
-              onChange={(checked) =>
+              onChange={(checked: boolean) =>
                 settingsStore.updateSettings({ audioDubbing: checked })
               }
               aria-label={t('settings.audioDubbing', 'Audio Dubbing')}
@@ -299,7 +299,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </div>
             <GlassSwitch
               checked={settingsStore.liveSubtitles}
-              onChange={(checked) =>
+              onChange={(checked: boolean) =>
                 settingsStore.updateSettings({ liveSubtitles: checked })
               }
               aria-label={t('settings.liveSubtitles', 'Live Subtitles')}
@@ -321,7 +321,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </div>
             <GlassSwitch
               checked={settingsStore.showTranscript}
-              onChange={(checked) =>
+              onChange={(checked: boolean) =>
                 settingsStore.updateSettings({ showTranscript: checked })
               }
               aria-label={t('settings.showTranscript', 'Show Transcript')}
@@ -343,7 +343,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
             </div>
             <GlassSwitch
               checked={settingsStore.autoStart}
-              onChange={(checked) =>
+              onChange={(checked: boolean) =>
                 settingsStore.updateSettings({ autoStart: checked })
               }
               aria-label={t('settings.autoStart', 'Auto Start')}

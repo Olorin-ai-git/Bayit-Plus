@@ -16,7 +16,6 @@ final class FeatureFlags {
     #endif
     let isBeta500Enabled: Bool
     #if os(iOS)
-    let isPasskeyEnabled: Bool
     let isCarPlayEnabled: Bool
     #endif
     let isAvatarModeEnabled: Bool
@@ -43,7 +42,6 @@ final class FeatureFlags {
         #endif
         self.isBeta500Enabled = Self.flag("FEATURE_BETA_500", info: info, env: env)
         #if os(iOS)
-        self.isPasskeyEnabled = Self.flag("FEATURE_PASSKEY", info: info, env: env)
         self.isCarPlayEnabled = Self.flag("FEATURE_CARPLAY", info: info, env: env)
         #endif
         self.isAvatarModeEnabled = Self.flag("FEATURE_AVATAR_MODE", info: info, env: env)

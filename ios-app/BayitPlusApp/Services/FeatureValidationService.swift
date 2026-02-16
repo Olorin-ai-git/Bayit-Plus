@@ -28,7 +28,6 @@ final class FeatureValidationService {
         case liveDubbing = "live_dubbing"
         case audiobooks = "audiobooks"
         case llmSearch = "llm_search"
-        case passkey = "passkey"
         case rewards = "rewards"
         case household = "household"
         case carPlay = "carplay"

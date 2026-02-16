@@ -39,6 +39,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
         "/api/v1/auth/register",
         "/api/v1/auth/refresh",
         "/api/v1/auth/google/callback",  # OAuth callbacks use state parameter
+        "/api/v1/auth/v2",  # Auth proxy v2 endpoints (protected by JWT/OAuth state)
         "/api/v1/auth/password-reset",  # Password reset endpoints
         "/api/v1/webauthn",  # WebAuthn endpoints
         # Admin endpoints (protected by JWT authentication)

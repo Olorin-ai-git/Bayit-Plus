@@ -113,7 +113,7 @@ public final class NavigationCoordinator {
              .audiobookDetail, .trending, .interactiveSubtitles,
              .chapters, .chatbot, .avatarMode, .betaCredits,
              .subscriptionGate, .household, .devicePairing,
-             .helpCenter, .rewards, .widgets, .passkeyManagement, .onboardingAI,
+             .helpCenter, .rewards, .widgets, .onboardingAI,
              .friends, .watchParty, .watchPartyDetail,
              .chess, .directMessages, .conversation,
              .mfaSetup, .phoneVerification,

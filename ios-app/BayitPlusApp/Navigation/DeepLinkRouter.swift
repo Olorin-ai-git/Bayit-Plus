@@ -152,9 +152,6 @@ public enum DeepLink {
         case "rewards":
             return .rewards
 
-        case "passkeyManagement":
-            return .passkeyManagement
-
         case "onboardingAI":
             return .onboardingAI
 

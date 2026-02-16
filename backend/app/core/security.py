@@ -70,7 +70,12 @@ async def get_current_user(
     if user_id is None:
         raise credentials_exception
 
-    user = await User.get(user_id)
+    # RS256 tokens from auth.olorin.ai: sub is the auth service user ID,
+    # stored in auth_service_user_id field on the Bayit+ user document
+    user = await User.find_one({"auth_service_user_id": user_id})
+    if user is None:
+        # Fallback: try by Bayit+ document _id (legacy tokens)
+        user = await User.get(user_id)
     if user is None:
         raise credentials_exception
 

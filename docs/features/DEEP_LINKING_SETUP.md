@@ -113,9 +113,6 @@ Host this file at `https://bayit.tv/.well-known/apple-app-site-association` and 
         ]
       }
     ]
-  },
-  "webcredentials": {
-    "apps": ["TEAM_ID.tv.bayit.app"]
   }
 }
 ```

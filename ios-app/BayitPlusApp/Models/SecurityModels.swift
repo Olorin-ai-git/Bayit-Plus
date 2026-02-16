@@ -37,22 +37,6 @@ struct TwoFactorSetupResponse: Decodable, Sendable {
     let qrCode: String?
 }
 
-// MARK: - Passkeys
-
-/// Response from GET /api/v1/auth/passkeys/register/options
-struct PasskeyRegistrationOptions: Decodable, Sendable {
-    let options: String?
-    let challengeId: String?
-}
-
-/// A registered passkey credential.
-struct PasskeyCredential: Decodable, Sendable, Identifiable {
-    let id: String
-    let deviceName: String?
-    let createdAt: String?
-    let lastUsedAt: String?
-}
-
 /// Request body for POST /api/v1/auth/change-password (extended)
 struct PasswordChangeRequest: Encodable, Sendable {
     let currentPassword: String

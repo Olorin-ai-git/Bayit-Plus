@@ -24,7 +24,7 @@ struct TVLoginView: View {
     private let logger = BayitLogger(category: "TVLogin")
 
     var body: some View {
-        GlassScrollView {
+        ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
                 headerSection
 
@@ -121,11 +121,11 @@ struct TVLoginView: View {
                     localization.t("tvLogin.signInToTV"),
                     variant: .primary,
                     size: .large,
-                    fullWidth: true,
                     icon: Image(systemName: "arrow.right")
                 ) {
                     Task { await completeAuthentication() }
                 }
+                .frame(maxWidth: .infinity)
             } else {
                 Text(localization.t("tvLogin.pleaseSignIn"))
                     .font(.subheadline)
@@ -135,17 +135,17 @@ struct TVLoginView: View {
                     localization.t("tvLogin.signInButton"),
                     variant: .primary,
                     size: .large,
-                    fullWidth: true,
                     icon: Image(systemName: "arrow.right")
                 ) {
                     coordinator.showingAuth = true
                 }
+                .frame(maxWidth: .infinity)
             }
         }
         .padding(DesignTokens.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(DesignTokens.Glass.ultraThin)
+                .fill(DesignTokens.Glass.bgLight)
         )
     }
 
@@ -187,12 +187,12 @@ struct TVLoginView: View {
             GlassButton(
                 localization.t("common.done"),
                 variant: .primary,
-                size: .large,
-                fullWidth: true
+                size: .large
             ) {
                 coordinator.dismissTVLogin()
                 coordinator.navigate(to: .home)
             }
+            .frame(maxWidth: .infinity)
             .padding(.top, DesignTokens.Spacing.md)
         }
         .padding(DesignTokens.Spacing.xl)
@@ -220,16 +220,16 @@ struct TVLoginView: View {
                 localization.t("common.tryAgain"),
                 variant: .primary,
                 size: .large,
-                fullWidth: true,
                 icon: Image(systemName: "arrow.clockwise")
             ) {
                 Task { await verifyAndConnect() }
             }
+            .frame(maxWidth: .infinity)
         }
         .padding(DesignTokens.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(DesignTokens.Glass.ultraThin)
+                .fill(DesignTokens.Glass.bgLight)
         )
     }
 
@@ -252,17 +252,17 @@ struct TVLoginView: View {
             GlassButton(
                 localization.t("tvLogin.goToHome"),
                 variant: .primary,
-                size: .large,
-                fullWidth: true
+                size: .large
             ) {
                 coordinator.dismissTVLogin()
                 coordinator.navigate(to: .home)
             }
+            .frame(maxWidth: .infinity)
         }
         .padding(DesignTokens.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(DesignTokens.Glass.ultraThin)
+                .fill(DesignTokens.Glass.bgLight)
         )
     }
 
@@ -344,12 +344,11 @@ struct TVLoginView: View {
         deviceType = "unknown"
         #endif
 
-        let body: [String: Any] = [
+        let body: [String: String] = [
             "session_id": sessionId,
-            "device_type": deviceType,
-            "browser": nil
+            "device_type": deviceType
         ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        request.httpBody = try JSONEncoder().encode(body)
 
         let (_, response) = try await URLSession.shared.data(for: request)
 
@@ -376,7 +375,7 @@ struct TVLoginView: View {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.timeoutInterval = config.apiTimeout
 
-            if let token = try await authManager.authTokenProvider.getAuthToken() {
+            if let token = try await authManager.authTokenProvider.currentToken() {
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             }
 

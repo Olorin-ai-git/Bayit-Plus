@@ -4,7 +4,7 @@ import BayitLocalization
 import SwiftUI
 
 /// tvOS Settings screen with account info, navigation to sub-screens
-/// for language, notifications, security, billing, subscription, passkeys,
+/// for language, notifications, security, billing, subscription,
 /// device pairing, and playback preferences.
 struct TVSettingsView: View {
     @Environment(AuthManager.self) private var authManager
@@ -178,14 +178,6 @@ struct TVSettingsView: View {
                 detail: nil
             ) {
                 TVSecurityView()
-            }
-
-            settingsNavRow(
-                icon: "person.badge.key",
-                title: localization.t("settings.passkeys"),
-                detail: nil
-            ) {
-                TVPasskeyManagementView()
             }
 
             settingsNavRow(

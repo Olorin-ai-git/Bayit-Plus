@@ -11,7 +11,7 @@
  * This document stays alive during dubbing sessions (unlike service worker)
  */
 
-import { createLogger, generateCorrelationId } from '@/lib/logger';
+import { createLogger, generateCorrelationId, setCorrelationId } from '@/lib/logger';
 import { CONFIG } from '@/config/constants';
 import { AudioWorkletManager } from './audio-worklet-node';
 import { WebSocketManager } from './websocket-manager';
@@ -124,7 +124,7 @@ class OffscreenManager {
 
       // Generate correlation ID for this session
       this.correlationId = generateCorrelationId();
-      logger.setCorrelationId(this.correlationId);
+      setCorrelationId(this.correlationId);
 
       // Store session info
       this.currentSession = {
