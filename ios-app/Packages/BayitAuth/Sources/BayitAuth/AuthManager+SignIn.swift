@@ -417,19 +417,62 @@ extension AuthManager {
         }
     }
 
-    /// Restores a session using an externally-provided refresh token.
+    /// Restores a session using a refresh token via the Olorin Auth Service.
     ///
-    /// RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
-    /// Users must re-authenticate using email/password, Google, or Apple sign-in.
+    /// Called during biometric (Face ID / Touch ID) login to exchange a stored
+    /// refresh token for a fresh access token without requiring the user to
+    /// re-authenticate with Google, Apple, or email/password.
     public func restoreWithRefreshToken(_ refreshToken: String) async throws {
-        isLoading = false
-        logger.warning(
-            "Token refresh not supported for RS256 tokens, re-authentication required",
-            metadata: [:]
-        )
-        let err = AuthError.notAuthenticated
-        error = err
-        throw err
+        isLoading = true
+        error = nil
+
+        do {
+            let response = try await BackendTokenExchangeClient.refreshAccessToken(
+                refreshToken: refreshToken,
+                logger: logger
+            )
+
+            try keychainService.save(
+                token: response.accessToken,
+                for: backendTokenKeychainKey
+            )
+            if let rotatedRefresh = response.refreshToken {
+                try keychainService.save(
+                    token: rotatedRefresh,
+                    for: refreshTokenKeychainKey
+                )
+            }
+
+            let bayitUser = try await fetchUserProfile(token: response.accessToken)
+
+            if let userData = try? JSONEncoder().encode(bayitUser) {
+                try? keychainService.save(
+                    token: String(data: userData, encoding: .utf8) ?? "",
+                    for: userKeychainKey
+                )
+            }
+
+            user = bayitUser
+            token = response.accessToken
+            stampSessionTimestamp()
+            isLoading = false
+
+            logger.info(
+                "Session restored via refresh token",
+                metadata: ["user_id": bayitUser.id]
+            )
+        } catch let authError as AuthError {
+            isLoading = false
+            error = authError
+            throw authError
+        } catch {
+            let wrapped = AuthError.tokenRefreshFailed(
+                underlying: error.localizedDescription
+            )
+            isLoading = false
+            self.error = wrapped
+            throw wrapped
+        }
     }
 
     // MARK: - Helpers

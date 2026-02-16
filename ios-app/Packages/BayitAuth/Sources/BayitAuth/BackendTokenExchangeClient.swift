@@ -57,6 +57,73 @@ enum BackendTokenExchangeClient {
         }
     }
 
+    // MARK: - Auth Service URL
+
+    /// Olorin Auth Service URL resolved from environment or production default.
+    /// Same pattern as PasswordResetClient.
+    private static var authServiceURL: URL {
+        if let urlString = ProcessInfo.processInfo.environment["AUTH_SERVICE_URL"],
+           let url = URL(string: urlString) {
+            return url
+        }
+        return URL(string: "https://auth.olorin.ai")!
+    }
+
+    /// Tenant ID for Bayit+
+    private static let tenantID = "bayit_plus"
+
+    // MARK: - Token Refresh
+
+    /// Refreshes an access token using a refresh token via the Olorin Auth Service.
+    ///
+    /// Calls `POST /api/v1/token/refresh` on auth.olorin.ai directly
+    /// (same direct-call pattern as PasswordResetClient).
+    static func refreshAccessToken(
+        refreshToken: String,
+        logger: APILogger
+    ) async throws -> TokenExchangeResponse {
+        let url = authServiceURL.appendingPathComponent("api/v1/token/refresh")
+
+        let body: [String: String] = [
+            "refresh_token": refreshToken,
+            "tenant_id": tenantID,
+        ]
+
+        let bodyData = try JSONEncoder().encode(body)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.httpBody = bodyData
+
+        logger.debug("Refreshing access token via Olorin Auth", metadata: [:])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.tokenRefreshFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            logger.warning(
+                "Token refresh failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "error": errorMessage,
+                ]
+            )
+            throw AuthError.tokenRefreshFailed(
+                underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)"
+            )
+        }
+
+        logger.info("Token refresh succeeded via Olorin Auth", metadata: [:])
+
+        return try JSONDecoder().decode(TokenExchangeResponse.self, from: data)
+    }
+
     // MARK: - Google OAuth (v2)
 
     /// Authenticates with Google via the backend Olorin Auth proxy.
