@@ -7,6 +7,7 @@ import okhttp3.Response
 import okhttp3.Route
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.AuthTokenProvider
+import tv.bayit.plus.core.network.SessionEventBus
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -66,8 +67,9 @@ class TokenAuthenticator @Inject constructor(
                 .header(AUTHORIZATION_HEADER, "$BEARER_PREFIX$newToken")
                 .build()
         } else {
-            logger.warning("Token refresh returned null", mapOf("url" to url))
-            null  // Give up - triggers logout in caller
+            logger.warning("Token refresh failed, session expired", mapOf("url" to url))
+            SessionEventBus.notifySessionExpired()
+            null
         }
     }
 

@@ -68,6 +68,11 @@ struct TVContentView: View {
                 }
             }
         }
+        .onReceive(
+            NotificationCenter.default.publisher(for: APIClient.unauthorizedNotification)
+        ) { _ in
+            Task { await authManager.signOut() }
+        }
     }
 
     // MARK: - Fullscreen Routing

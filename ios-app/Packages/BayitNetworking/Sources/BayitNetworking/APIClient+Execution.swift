@@ -48,10 +48,21 @@ extension APIClient {
                 )
             }
 
-            throw buildTerminalError(
+            let terminalError = buildTerminalError(
                 statusCode: statusCode, data: data, httpResponse: httpResponse,
                 correlationID: correlationID, path: apiRequest.path
             )
+
+            if statusCode == 401 {
+                Task { @MainActor in
+                    NotificationCenter.default.post(
+                        name: APIClient.unauthorizedNotification,
+                        object: nil
+                    )
+                }
+            }
+
+            throw terminalError
 
         } catch is CancellationError {
             throw APIError.cancelled

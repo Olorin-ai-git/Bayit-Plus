@@ -16,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.network.SessionEventBus
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
 import tv.bayit.plus.navigation.Route
@@ -54,6 +55,12 @@ class MainActivity : ComponentActivity() {
                         is AuthState.Authenticated -> {
                             // User is authenticated, proceed with normal flow
                         }
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    SessionEventBus.sessionExpired.collect {
+                        authService.signOut()
                     }
                 }
 

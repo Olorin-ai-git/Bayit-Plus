@@ -1,6 +1,7 @@
 import BayitAuth
 import BayitDesignSystem
 import BayitMedia
+import BayitNetworking
 import SwiftUI
 
 /// Root content view - shows splash, then auth flow or main tab view
@@ -64,6 +65,11 @@ struct ContentView: View {
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.fullscreenRoute != nil)
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.pendingTVLogin != nil)
         .animation(.spring(duration: 0.4), value: ShabbatModeService.shared.isShabbatActive)
+        .onReceive(
+            NotificationCenter.default.publisher(for: APIClient.unauthorizedNotification)
+        ) { _ in
+            Task { await authManager.signOut() }
+        }
         .task {
             ShabbatModeService.shared.startPolling(
                 repository: repositories.shabbat

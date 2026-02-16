@@ -11,7 +11,12 @@ import Foundation
 /// - Exponential-backoff retry for transient failures
 /// - 429 rate-limit handling with `Retry-After` header support
 /// - Returns decoded model directly (like api.js returns `response.data`)
+/// - Posts `unauthorizedNotification` on 401 so the app can redirect to login
 public actor APIClient {
+
+    /// Posted on the main thread when a 401 response is received.
+    /// The app layer should observe this to trigger re-authentication.
+    public static let unauthorizedNotification = Notification.Name("BayitAPIClientUnauthorized")
 
     // MARK: - Dependencies
 
