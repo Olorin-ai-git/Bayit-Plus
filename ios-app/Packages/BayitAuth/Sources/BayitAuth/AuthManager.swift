@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import FirebaseAuth
+import FirebaseCore
 #if canImport(GoogleSignIn)
 import GoogleSignIn
 #endif
@@ -160,16 +161,19 @@ public final class AuthManager {
     // MARK: - Sign Out
 
     public func signOut() async {
-        do {
-            try Auth.auth().signOut()
-            #if canImport(GoogleSignIn)
-            GIDSignIn.sharedInstance.signOut()
-            #endif
-        } catch {
-            logger.error(
-                "Sign-out encountered an error",
-                metadata: ["error": error.localizedDescription]
-            )
+        // Only sign out of Firebase if it's configured
+        if FirebaseApp.app() != nil {
+            do {
+                try Auth.auth().signOut()
+                #if canImport(GoogleSignIn)
+                GIDSignIn.sharedInstance.signOut()
+                #endif
+            } catch {
+                logger.error(
+                    "Sign-out encountered an error",
+                    metadata: ["error": error.localizedDescription]
+                )
+            }
         }
 
         try? keychainService.delete(for: tokenKeychainKey)
@@ -194,7 +198,9 @@ public final class AuthManager {
             "Token refresh not supported for RS256 tokens, re-authentication required",
             metadata: [:]
         )
-        throw AuthError.notAuthenticated
+        // Sign out to trigger re-authentication flow
+        await signOut()
+        throw AuthError.sessionExpired
     }
 
     // MARK: - Profile Management

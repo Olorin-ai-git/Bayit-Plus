@@ -60,6 +60,14 @@ extension APIClient {
                 "Auth token attached",
                 metadata: ["correlationId": correlationID, "hasToken": "true"]
             )
+        } else {
+            // Token provider returned nil - token expired or user not authenticated
+            // Let request proceed without auth header - backend will return 401
+            // which will trigger the unauthorized notification
+            logger.warning(
+                "No auth token available, request will proceed without authorization",
+                metadata: ["correlationId": correlationID]
+            )
         }
     }
 
