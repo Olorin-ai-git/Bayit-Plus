@@ -13,6 +13,7 @@ import ContentDetailsSection from '@/components/admin/content/ContentDetailsSect
 import PublishingSection from '@/components/admin/content/PublishingSection'
 import AccessControlSection from '@/components/admin/content/AccessControlSection'
 import SubtitlesSection from '@/components/admin/content/SubtitlesSection'
+import InteractiveMomentsSection from '@/components/admin/content/InteractiveMomentsSection'
 import AdminLoadingState from '@/components/admin/shared/AdminLoadingState'
 import { ADMIN_PAGE_CONFIG } from '../../../../shared/utils/adminConstants'
 
@@ -135,6 +136,14 @@ export default function ContentEditorPage() {
         {isEditing && contentId && (
           <SubtitlesSection
             contentId={contentId}
+            disabled={isSubmitting}
+          />
+        )}
+
+        {isEditing && contentId && (
+          <InteractiveMomentsSection
+            contentId={contentId}
+            videoUrl={formData.video_url}
             disabled={isSubmitting}
           />
         )}

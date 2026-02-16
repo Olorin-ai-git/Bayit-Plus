@@ -206,34 +206,70 @@ export function useContentForm(contentId?: string) {
         detail: err?.detail,
         response: err?.response,
         responseData: err?.response?.data,
+        status: err?.status_code || err?.response?.status,
+        errorType: err?.error_type,
       })
 
       let msg = 'Failed to save content'
+      let title = 'Save Failed'
 
-      // Check if error.detail exists (axios interceptor might have unwrapped it)
-      if (err?.detail) {
-        if (Array.isArray(err.detail)) {
-          msg = err.detail.map((d: any) => `${d.loc?.join('.')}: ${d.msg}`).join(', ')
-        } else if (typeof err.detail === 'string') {
+      // Get status code
+      const statusCode = err?.status_code || err?.response?.status
+
+      // Handle specific error types
+      if (statusCode === 409) {
+        title = 'Conflict Error'
+        msg = err?.detail || 'Content was modified by another process. Please refresh the page and try again.'
+      } else if (statusCode === 422) {
+        title = 'Validation Error'
+        // Check if error.detail exists (axios interceptor might have unwrapped it)
+        if (err?.detail) {
+          if (Array.isArray(err.detail)) {
+            msg = 'Validation failed:\n' + err.detail.map((d: any) => `• ${d.loc?.join('.')}: ${d.msg}`).join('\n')
+          } else if (typeof err.detail === 'string') {
+            msg = err.detail
+          }
+        }
+        // Check traditional response structure
+        else if (err?.response?.data?.detail) {
+          if (Array.isArray(err.response.data.detail)) {
+            msg = 'Validation failed:\n' + err.response.data.detail.map((d: any) => `• ${d.loc?.join('.')}: ${d.msg}`).join('\n')
+          } else if (typeof err.response.data.detail === 'string') {
+            msg = err.response.data.detail
+          }
+        }
+      } else if (statusCode === 503) {
+        title = 'Service Unavailable'
+        msg = err?.detail || 'Database operation failed. Please try again in a moment.'
+        if (err?.error_type === 'DuplicateKeyError') {
+          msg = 'A duplicate entry was detected. Please check your data and try again.'
+        }
+      } else if (statusCode === 404) {
+        title = 'Not Found'
+        msg = err?.detail || 'Content not found. It may have been deleted.'
+      } else if (statusCode === 500) {
+        title = 'Server Error'
+        msg = err?.detail || 'An unexpected server error occurred. Please try again or contact support if the problem persists.'
+      } else if (err?.message === 'Network Error') {
+        title = 'Network Error'
+        msg = 'Unable to connect to the server. Please check your internet connection and try again.'
+      }
+      // Fallback handling
+      else if (err?.detail) {
+        if (typeof err.detail === 'string') {
           msg = err.detail
         }
-      }
-      // Check traditional response structure
-      else if (err?.response?.data?.detail) {
-        if (Array.isArray(err.response.data.detail)) {
-          msg = err.response.data.detail.map((d: any) => `${d.loc?.join('.')}: ${d.msg}`).join(', ')
-        } else if (typeof err.response.data.detail === 'string') {
+      } else if (err?.response?.data?.detail) {
+        if (typeof err.response.data.detail === 'string') {
           msg = err.response.data.detail
         }
-      }
-      // Fallback to error message
-      else if (err instanceof Error) {
+      } else if (err instanceof Error) {
         msg = err.message
       }
 
-      log.error('Final error message', { msg, contentId })
+      log.error('Final error message', { msg, title, contentId, statusCode })
       setError(msg)
-      showNotification.showError(msg, 'Error')
+      showNotification.showError(msg, title)
     } finally {
       log.debug('Submission complete, setting isSubmitting to false')
       setIsSubmitting(false)

@@ -5,8 +5,10 @@ Create, update, delete, and modify VOD content
 
 import logging
 from datetime import datetime
+from uuid import uuid4
 
 from beanie import PydanticObjectId
+from beanie.exceptions import RevisionIdWasChanged
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 
 from app.models.admin import AuditAction, Permission
@@ -108,6 +110,11 @@ async def update_content(
         raise HTTPException(status_code=404, detail="Content not found")
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
+
+    # Check if this is a legacy document without proper revision control
+    is_legacy = not hasattr(content, 'revision_id') or content.revision_id is None or not isinstance(content.revision_id, str)
+    if is_legacy:
+        logger.info(f"Legacy content detected {content_id}, will use replace() instead of save()")
 
     changes = {}
     stream_url_changed = False
@@ -213,7 +220,89 @@ async def update_content(
         content.educational_tags = data.educational_tags
 
     content.updated_at = datetime.utcnow()
-    await content.save()
+
+    # Use replace() for legacy documents, save() for documents with revision control
+    if is_legacy:
+        # Replace bypasses revision control entirely
+        await content.replace()
+    else:
+        # Handle optimistic concurrency control with retry
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                await content.save()
+                break
+            except RevisionIdWasChanged:
+                if attempt == max_retries - 1:
+                    logger.error(
+                        f"Failed to save content {content_id} after {max_retries} attempts due to concurrent modifications"
+                    )
+                    raise HTTPException(
+                        status_code=409,
+                        detail="Content was modified by another process. Please refresh and try again."
+                    )
+                # Refetch the latest version and reapply changes
+                logger.warning(
+                    f"Revision conflict on content {content_id}, retrying (attempt {attempt + 1}/{max_retries})"
+                )
+                # Store image data before refetch
+                thumbnail_data_to_preserve = content.thumbnail_data if hasattr(content, 'thumbnail_data') else None
+                backdrop_data_to_preserve = content.backdrop_data if hasattr(content, 'backdrop_data') else None
+
+                content = await Content.get(content_id)
+                if not content:
+                    raise HTTPException(status_code=404, detail="Content not found")
+
+                # Reapply all changes to the fresh document
+                if data.title is not None:
+                    content.title = data.title
+                if data.category_id is not None:
+                    content.category_id = data.category_id
+                    category = await ContentSection.get(data.category_id)
+                    if category:
+                        content.category_name = category.slug
+                if data.description is not None:
+                    content.description = data.description
+                if data.duration is not None:
+                    content.duration = data.duration
+                if data.year is not None:
+                    content.year = data.year
+                if data.rating is not None:
+                    content.rating = data.rating
+                if data.genre is not None:
+                    content.genre = data.genre
+                if data.cast is not None:
+                    content.cast = data.cast
+                if data.director is not None:
+                    content.director = data.director
+                if data.thumbnail is not None:
+                    content.thumbnail = data.thumbnail
+                    if thumbnail_data_to_preserve:
+                        content.thumbnail_data = thumbnail_data_to_preserve
+                if data.backdrop is not None:
+                    content.backdrop = data.backdrop
+                    if backdrop_data_to_preserve:
+                        content.backdrop_data = backdrop_data_to_preserve
+                if data.stream_url is not None:
+                    content.stream_url = data.stream_url
+                if data.stream_type is not None:
+                    content.stream_type = data.stream_type
+                if data.is_published is not None:
+                    content.is_published = data.is_published
+                    if data.is_published and not content.published_at:
+                        content.published_at = datetime.utcnow()
+                if data.is_featured is not None:
+                    content.is_featured = data.is_featured
+                if data.requires_subscription is not None:
+                    content.requires_subscription = data.requires_subscription
+                if data.is_kids_content is not None:
+                    content.is_kids_content = data.is_kids_content
+                if data.age_rating is not None:
+                    content.age_rating = data.age_rating
+                if data.educational_tags is not None:
+                    content.educational_tags = data.educational_tags
+                content.updated_at = datetime.utcnow()
+
     await log_audit(
         str(current_user.id),
         AuditAction.CONTENT_UPDATED,

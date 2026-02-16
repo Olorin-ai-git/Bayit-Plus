@@ -128,5 +128,15 @@
     "online": "Online",
     "offline": "Offline",
     "latency": "Latency: {{ms}}ms"
+  },
+  "interactiveMoments": {
+    "title": "Interactive Moments",
+    "description": "Mark moments where avatars can interact with characters during playback",
+    "add": "Add Moments",
+    "edit": "Edit Moments",
+    "count": "{{count}} interactive moment(s)",
+    "more": "+{{count}} more",
+    "empty": "No interactive moments added yet",
+    "noVideoUrl": "Please save the content with a video URL first"
   }
 }
