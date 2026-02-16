@@ -973,7 +973,9 @@
       "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
       "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
-      "voiceTitle": "Dubbing Voice"
+      "voiceTitle": "Dubbing Voice",
+      "settings_title": "实时配音设置",
+      "target_language": "目标语言"
     },
     "errors": {
       "streamLimitMessage": "You have reached the maximum of {{maxStreams}} concurrent streams. Please stop another stream or upgrade your plan.",
@@ -1766,7 +1768,10 @@
     "settingsTitle": "Subtitle Settings",
     "showBackground": "Show Background",
     "singleMode": "Single Mode",
-    "splitMode": "Split Mode"
+    "splitMode": "Split Mode",
+    "primary_language": "主要语言",
+    "secondary_language": "次要语言",
+    "interactive_title": "交互式字幕"
   },
   "video": {
     "watchTrailer": "观看预告片",

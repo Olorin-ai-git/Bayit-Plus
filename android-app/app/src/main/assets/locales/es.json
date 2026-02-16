@@ -955,7 +955,9 @@
       "premiumMessage": "El doblaje en vivo requiere una suscripcion Premium o Beta 500",
       "premiumTitle": "Funcion Premium",
       "upgrade": "Mejorar",
-      "voiceTitle": "Voz de doblaje"
+      "voiceTitle": "Voz de doblaje",
+      "settings_title": "Configuración de Doblaje en Vivo",
+      "target_language": "Idioma de Destino"
     },
     "errors": {
       "streamLimitMessage": "Has alcanzado el maximo de {{maxStreams}} transmisiones simultaneas. Por favor detiene otra transmision o mejora tu plan.",
@@ -3087,7 +3089,10 @@
     "settingsTitle": "Configuracion de subtitulos",
     "showBackground": "Mostrar fondo",
     "singleMode": "Modo unico",
-    "splitMode": "Modo dividido"
+    "splitMode": "Modo dividido",
+    "primary_language": "Idioma Principal",
+    "secondary_language": "Idioma Secundario",
+    "interactive_title": "Subtítulos Interactivos"
   },
   "video": {
     "watchTrailer": "Ver Tráiler",

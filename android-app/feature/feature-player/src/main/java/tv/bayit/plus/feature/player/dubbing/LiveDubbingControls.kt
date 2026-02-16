@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.SubtitleLanguages
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -51,7 +52,7 @@ fun LiveDubbingControls(
             .padding(DesignTokens.Spacing.base),
     ) {
         Text(
-            text = "Live Dubbing Settings",
+            text = bayitString("dubbing.settings_title"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
@@ -89,7 +90,7 @@ fun LiveDubbingControls(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = "Target Language",
+            text = bayitString("dubbing.target_language"),
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
             fontWeight = FontWeight.SemiBold,

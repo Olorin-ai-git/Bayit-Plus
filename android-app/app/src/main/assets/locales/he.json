@@ -1042,7 +1042,9 @@
       "premiumMessage": "דיבוב חי דורש מנוי פרימיום או בטא 500",
       "premiumTitle": "תכונת פרימיום",
       "upgrade": "שדרג",
-      "voiceTitle": "קול דיבוב"
+      "voiceTitle": "קול דיבוב",
+      "settings_title": "הגדרות דיבוב חי",
+      "target_language": "שפת יעד"
     },
     "errors": {
       "streamLimitMessage": "הגעת למקסימום {{maxStreams}} שידורים בו-זמנית. אנא הפסק שידור אחר או שדרג את התוכנית שלך.",
@@ -3257,7 +3259,10 @@
     "settingsTitle": "הגדרות כתוביות",
     "showBackground": "הצג רקע",
     "singleMode": "מצב יחיד",
-    "splitMode": "מצב מפוצל"
+    "splitMode": "מצב מפוצל",
+    "primary_language": "שפה ראשית",
+    "secondary_language": "שפה משנית",
+    "interactive_title": "כתוביות אינטראקטיביות"
   },
   "video": {
     "watchTrailer": "צפה בטריילר",

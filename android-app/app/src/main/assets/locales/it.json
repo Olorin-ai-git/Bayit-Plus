@@ -491,7 +491,9 @@
       "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
       "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
-      "voiceTitle": "Dubbing Voice"
+      "voiceTitle": "Dubbing Voice",
+      "settings_title": "Impostazioni Doppiaggio in Diretta",
+      "target_language": "Lingua di Destinazione"
     },
     "errors": {
       "streamLimitMessage": "You have reached the maximum of {{maxStreams}} concurrent streams. Please stop another stream or upgrade your plan.",
@@ -2573,7 +2575,10 @@
     "settingsTitle": "Subtitle Settings",
     "showBackground": "Show Background",
     "singleMode": "Single Mode",
-    "splitMode": "Split Mode"
+    "splitMode": "Split Mode",
+    "primary_language": "Lingua Principale",
+    "secondary_language": "Lingua Secondaria",
+    "interactive_title": "Sottotitoli Interattivi"
   },
   "chapters": {
     "chapterLabel": "Chapter {{number}}",

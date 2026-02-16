@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.*
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -31,7 +32,7 @@ internal fun InteractiveSubtitlesScreen(
     onNavigateBack: () -> Unit, onRetry: () -> Unit, modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Interactive Subtitles")
+        GlassTopBar(title = bayitString("subtitles.interactive_title"))
         when (uiState) {
             is InteractiveSubtitlesUiState.Loading -> GlassLoadingIndicator()
             is InteractiveSubtitlesUiState.Error -> Box(

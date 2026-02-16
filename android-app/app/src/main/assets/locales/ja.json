@@ -1163,7 +1163,9 @@
       "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
       "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
-      "voiceTitle": "Dubbing Voice"
+      "voiceTitle": "Dubbing Voice",
+      "settings_title": "ライブ吹き替え設定",
+      "target_language": "ターゲット言語"
     },
     "errors": {
       "streamLimitMessage": "You have reached the maximum of {{maxStreams}} concurrent streams. Please stop another stream or upgrade your plan.",
@@ -3466,7 +3468,10 @@
     "settingsTitle": "Subtitle Settings",
     "showBackground": "Show Background",
     "singleMode": "Single Mode",
-    "splitMode": "Split Mode"
+    "splitMode": "Split Mode",
+    "primary_language": "主要言語",
+    "secondary_language": "副次言語",
+    "interactive_title": "インタラクティブ字幕"
   },
   "chapters": {
     "chapterLabel": "Chapter {{number}}",
