@@ -73,11 +73,11 @@ struct ContinueWatchingRow: View {
     }
 
     private func navigateToItem(_ item: WatchHistoryItem) {
-        // Determine navigation based on type
         if let type = item.type, type.contains("series") {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
         } else {
-            coordinator.navigate(to: .movieDetail(movieId: item.id))
+            let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
+            coordinator.presentFullscreen(.player(contentId: item.id, contentType: contentType))
         }
     }
 }

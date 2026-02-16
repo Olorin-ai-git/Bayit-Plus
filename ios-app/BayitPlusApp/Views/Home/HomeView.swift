@@ -202,7 +202,10 @@ struct HomeView: View {
                     aspectRatio: 2.0 / 3.0,
                     width: 160,
                     onTap: {
-                        coordinator.navigate(to: .movieDetail(movieId: item.id))
+                        coordinator.presentFullscreen(.player(
+                            contentId: item.id,
+                            contentType: .movie
+                        ))
                     }
                 )
             }

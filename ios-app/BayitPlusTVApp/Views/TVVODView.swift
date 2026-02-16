@@ -113,7 +113,10 @@ struct TVVODView: View {
                             } else if item.isSeries == true {
                                 coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
                             } else {
-                                coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
+                                coordinator.presentPlayer(
+                                    contentId: item.id,
+                                    contentType: TVContentTypeMapper.map(item.type)
+                                )
                             }
                         }
                     )

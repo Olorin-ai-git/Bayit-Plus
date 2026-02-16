@@ -162,7 +162,10 @@ struct TVCollectionDetailView: View {
                         aspectRatio: 16 / 9,
                         placeholderIcon: "film"
                     ) {
-                        coordinator.fullscreenRoute = .movieDetail(movieId: movie.id)
+                        coordinator.presentPlayer(
+                            contentId: movie.id,
+                            contentType: .vod
+                        )
                     }
                 }
             }
