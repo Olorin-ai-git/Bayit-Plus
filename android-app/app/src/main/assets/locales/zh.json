@@ -1771,6 +1771,7 @@
     "splitMode": "Split Mode",
     "primary_language": "主要语言",
     "secondary_language": "次要语言",
+    "layout_mode": "Layout Mode",
     "interactive_title": "交互式字幕"
   },
   "video": {

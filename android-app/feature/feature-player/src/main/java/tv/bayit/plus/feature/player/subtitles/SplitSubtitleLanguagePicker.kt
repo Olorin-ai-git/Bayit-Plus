@@ -33,8 +33,10 @@ fun SplitSubtitleLanguagePicker(
     primaryLanguage: String,
     secondaryLanguage: String,
     availableLanguages: List<String>,
+    layout: tv.bayit.plus.core.model.SplitSubtitleLayout,
     onPrimarySelected: (String) -> Unit,
     onSecondarySelected: (String) -> Unit,
+    onLayoutSelected: (tv.bayit.plus.core.model.SplitSubtitleLayout) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -42,6 +44,30 @@ fun SplitSubtitleLanguagePicker(
             .fillMaxWidth()
             .padding(DesignTokens.Spacing.base),
     ) {
+        // Layout mode toggle
+        Text(
+            text = bayitString("subtitles.layout_mode"),
+            color = DesignTokens.Colors.Text.secondary,
+            fontSize = DesignTokens.FontSize.sm,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = DesignTokens.Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+        ) {
+            tv.bayit.plus.core.model.SplitSubtitleLayout.values().forEach { layoutMode ->
+                tv.bayit.plus.designsystem.component.GlassChip(
+                    label = layoutMode.label,
+                    isSelected = layout == layoutMode,
+                    onClick = { onLayoutSelected(layoutMode) },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
+
         LanguageSection(
             title = bayitString("subtitles.primary_language"),
             selectedLanguage = primaryLanguage,

@@ -20,6 +20,7 @@ data class PlayerExtendedState(
     val selectedSubtitleLanguage: String? = null,
     val isSubtitlesEnabled: Boolean = false,
     val isSplitSubtitleMode: Boolean = false,
+    val splitSubtitleLayout: tv.bayit.plus.core.model.SplitSubtitleLayout = tv.bayit.plus.core.model.SplitSubtitleLayout.STACKED,
     val primarySubtitleLanguage: String? = null,
     val secondarySubtitleLanguage: String? = null,
     val externalSubtitleTracks: List<tv.bayit.plus.core.model.ImportedTrack> = emptyList(),

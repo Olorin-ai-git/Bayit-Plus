@@ -2578,6 +2578,7 @@
     "splitMode": "Split Mode",
     "primary_language": "Lingua Principale",
     "secondary_language": "Lingua Secondaria",
+    "layout_mode": "Layout Mode",
     "interactive_title": "Sottotitoli Interattivi"
   },
   "chapters": {

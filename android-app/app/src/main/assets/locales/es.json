@@ -3092,6 +3092,7 @@
     "splitMode": "Modo dividido",
     "primary_language": "Idioma Principal",
     "secondary_language": "Idioma Secundario",
+    "layout_mode": "Layout Mode",
     "interactive_title": "Subtítulos Interactivos"
   },
   "video": {

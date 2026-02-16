@@ -1799,6 +1799,7 @@
     "splitMode": "Split Mode",
     "primary_language": "முதன்மை மொழி",
     "secondary_language": "இரண்டாம் நிலை மொழி",
+    "layout_mode": "Layout Mode",
     "interactive_title": "ஊடாடும் துணைப்பாடல்கள்"
   },
   "chapters": {

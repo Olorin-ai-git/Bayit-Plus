@@ -2737,6 +2737,7 @@
     "splitMode": "Split Mode",
     "primary_language": "Langue Principale",
     "secondary_language": "Langue Secondaire",
+    "layout_mode": "Layout Mode",
     "interactive_title": "Sous-titres Interactifs"
   },
   "trivia": {

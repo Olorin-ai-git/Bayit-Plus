@@ -20,27 +20,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
-# Get current build number from Info.plist
-CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusTVApp/Info.plist)
+# Get current build number from Info.plist (shared with iOS - same bundle)
+CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))
 
-echo -e "${BLUE}📦 Bumping build number: $CURRENT_BUILD → $NEW_BUILD${NC}"
+echo -e "${BLUE}Bumping build number: $CURRENT_BUILD -> $NEW_BUILD${NC}"
 
-# Update Info.plist
-plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusTVApp/Info.plist
+# Update Info.plist files (shared bundle with iOS)
+plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusApp/Info.plist
+plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/Info.plist
 
-echo -e "${BLUE}🏗️  Archiving tvOS app (without signing)...${NC}"
+echo -e "${GREEN}Updated BayitPlusApp/Info.plist${NC}"
+echo -e "${GREEN}Updated Extensions/WidgetExtension/Info.plist${NC}"
 
-# Archive without signing (sign during export) + relax strict concurrency
+# Update project.pbxproj (all configurations)
+sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
+
+echo -e "${BLUE}Archiving tvOS app...${NC}"
+
+# Archive (temporarily relax strict concurrency for archiving)
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusTVApp \
   -configuration Release \
   -destination 'generic/platform=tvOS' \
   -archivePath /tmp/BayitPlusTVApp.xcarchive \
   archive \
-  CODE_SIGNING_REQUIRED=NO \
-  CODE_SIGNING_ALLOWED=NO \
-  DEVELOPMENT_TEAM=963B7732N5 \
+  -allowProvisioningUpdates \
   SWIFT_STRICT_CONCURRENCY=minimal \
   -quiet
 

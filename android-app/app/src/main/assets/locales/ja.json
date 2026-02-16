@@ -3471,6 +3471,7 @@
     "splitMode": "Split Mode",
     "primary_language": "主要言語",
     "secondary_language": "副次言語",
+    "layout_mode": "Layout Mode",
     "interactive_title": "インタラクティブ字幕"
   },
   "chapters": {

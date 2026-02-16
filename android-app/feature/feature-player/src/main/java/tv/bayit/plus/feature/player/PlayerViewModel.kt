@@ -198,6 +198,11 @@ class PlayerViewModel @Inject constructor(
         logger.debug("Selected secondary subtitle language", mapOf("language" to languageCode))
     }
 
+    fun selectSplitSubtitleLayout(layout: tv.bayit.plus.core.model.SplitSubtitleLayout) {
+        _extendedState.value = _extendedState.value.copy(splitSubtitleLayout = layout)
+        logger.debug("Selected split subtitle layout", mapOf("layout" to layout.name))
+    }
+
     fun fetchExternalSubtitles() {
         val contentId = currentContentId ?: return
         viewModelScope.launch {

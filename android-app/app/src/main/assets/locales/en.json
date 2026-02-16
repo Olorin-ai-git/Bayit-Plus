@@ -3263,6 +3263,7 @@
     "splitMode": "Split Mode",
     "primary_language": "Primary Language",
     "secondary_language": "Secondary Language",
+    "layout_mode": "Layout Mode",
     "interactive_title": "Interactive Subtitles"
   },
   "video": {

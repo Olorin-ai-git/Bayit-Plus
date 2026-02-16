@@ -3262,6 +3262,7 @@
     "splitMode": "מצב מפוצל",
     "primary_language": "שפה ראשית",
     "secondary_language": "שפה משנית",
+    "layout_mode": "Layout Mode",
     "interactive_title": "כתוביות אינטראקטיביות"
   },
   "video": {

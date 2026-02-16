@@ -88,6 +88,8 @@ fun PlayerRoute(
         extendedState = extendedState,
         showLanguagePicker = showLanguagePicker,
         showSubtitlePicker = showSubtitlePicker,
+        showSplitSubtitlePicker = showSplitSubtitlePicker,
+        showOpenSubtitles = showOpenSubtitles,
         onShowLanguagePicker = { showLanguagePicker = true },
         onHideLanguagePicker = { showLanguagePicker = false },
         onShowSubtitlePicker = { showSubtitlePicker = true },
@@ -104,17 +106,20 @@ fun PlayerRoute(
         onToggleSplitMode = {
             if (!extendedState.isSplitSubtitleMode) {
                 showSplitSubtitlePicker = true
+                showSubtitlePicker = false
             } else {
                 viewModel.toggleSplitSubtitleMode()
             }
-            showSubtitlePicker = false
         },
         onShowOpenSubtitles = {
             showOpenSubtitles = true
             showSubtitlePicker = false
         },
+        onHideSplitSubtitlePicker = { showSplitSubtitlePicker = false },
+        onHideOpenSubtitles = { showOpenSubtitles = false },
         onSelectPrimaryLanguage = viewModel::selectPrimarySubtitleLanguage,
         onSelectSecondaryLanguage = viewModel::selectSecondarySubtitleLanguage,
+        onSelectSplitLayout = viewModel::selectSplitSubtitleLayout,
         onFetchExternalSubtitles = viewModel::fetchExternalSubtitles,
         onSelectExternalSubtitle = viewModel::selectExternalSubtitle,
         onDismissTrivia = viewModel::dismissTriviaFact,
@@ -142,6 +147,8 @@ private fun PlayerScreen(
     extendedState: PlayerExtendedState,
     showLanguagePicker: Boolean,
     showSubtitlePicker: Boolean,
+    showSplitSubtitlePicker: Boolean,
+    showOpenSubtitles: Boolean,
     onShowLanguagePicker: () -> Unit,
     onHideLanguagePicker: () -> Unit,
     onShowSubtitlePicker: () -> Unit,
@@ -157,8 +164,11 @@ private fun PlayerScreen(
     onSelectSubtitleLanguage: (String) -> Unit,
     onToggleSplitMode: () -> Unit,
     onShowOpenSubtitles: () -> Unit,
+    onHideSplitSubtitlePicker: () -> Unit,
+    onHideOpenSubtitles: () -> Unit,
     onSelectPrimaryLanguage: (String) -> Unit,
     onSelectSecondaryLanguage: (String) -> Unit,
+    onSelectSplitLayout: (tv.bayit.plus.core.model.SplitSubtitleLayout) -> Unit,
     onFetchExternalSubtitles: () -> Unit,
     onSelectExternalSubtitle: (tv.bayit.plus.core.model.ImportedTrack) -> Unit,
     onDismissTrivia: () -> Unit,
@@ -194,8 +204,6 @@ private fun PlayerScreen(
                     onToggleTrivia = onToggleTrivia,
                     onShowLanguagePicker = onShowLanguagePicker,
                     onShowSubtitlePicker = onShowSubtitlePicker,
-                    onToggleSplitMode = onToggleSplitMode,
-                    onShowOpenSubtitles = onShowOpenSubtitles,
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp,
                     onBack = onBack,
@@ -232,14 +240,16 @@ private fun PlayerScreen(
                         primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
                         secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
                         availableLanguages = extendedState.availableSubtitleLanguages,
+                        layout = extendedState.splitSubtitleLayout,
                         onPrimarySelected = { lang ->
                             onSelectPrimaryLanguage(lang)
-                            showSplitSubtitlePicker = false
+                            onHideSplitSubtitlePicker()
                         },
                         onSecondarySelected = { lang ->
                             onSelectSecondaryLanguage(lang)
-                            showSplitSubtitlePicker = false
+                            onHideSplitSubtitlePicker()
                         },
+                        onLayoutSelected = onSelectSplitLayout,
                     )
                 }
 
@@ -250,9 +260,9 @@ private fun PlayerScreen(
                         onFetchExternal = onFetchExternalSubtitles,
                         onTrackSelected = { track ->
                             onSelectExternalSubtitle(track)
-                            showOpenSubtitles = false
+                            onHideOpenSubtitles()
                         },
-                        onDismiss = { showOpenSubtitles = false },
+                        onDismiss = onHideOpenSubtitles,
                     )
                 }
             }
