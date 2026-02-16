@@ -8,6 +8,7 @@ import SwiftUI
 struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(TVAudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastsViewModel?
     @State private var audiobooksViewModel: AudiobooksViewModel?
@@ -192,7 +193,7 @@ struct TVPodcastsView: View {
                         metadata: show.latestEpisode,
                         aspectRatio: 1.0,
                         onSelect: {
-                            coordinator.presentPlayer(
+                            audioManager.play(
                                 contentId: show.id,
                                 contentType: .podcast
                             )
@@ -200,6 +201,11 @@ struct TVPodcastsView: View {
                     )
                     .tvFocusStyle()
                     .contextMenu {
+                        Button {
+                            coordinator.fullscreenRoute = .podcastDetail(showId: show.id)
+                        } label: {
+                            Label(localization.t("podcasts.episodes"), systemImage: "list.bullet")
+                        }
                         if show.isUserAdded == true {
                             Button(role: .destructive) {
                                 Task { await vm.removePodcast(id: show.id) }
@@ -237,7 +243,7 @@ struct TVPodcastsView: View {
                             width: radioCardWidth,
                             aspectRatio: 1.0,
                             onSelect: {
-                                coordinator.presentPlayer(
+                                audioManager.play(
                                     contentId: station.id,
                                     contentType: .radio
                                 )

@@ -8,6 +8,7 @@ import SwiftUI
 struct TVRadioView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(TVAudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: RadioViewModel?
 
@@ -52,8 +53,12 @@ struct TVRadioView: View {
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(stations) { station in
-                    TVRadioStationItemCard(station: station) {
-                        coordinator.presentPlayer(
+                    TVRadioStationItemCard(
+                        station: station,
+                        isActive: audioManager.activeContentId == station.id
+                            && audioManager.isActive
+                    ) {
+                        audioManager.play(
                             contentId: station.id,
                             contentType: .radio
                         )
@@ -82,15 +87,25 @@ struct TVRadioView: View {
 
 private struct TVRadioStationItemCard: View {
     let station: RadioStationItem
+    let isActive: Bool
     let onSelect: () -> Void
     @Environment(\.isFocused) private var isFocused
 
     var body: some View {
         Button(action: onSelect) {
             VStack(spacing: TVDesignTokens.Spacing.md) {
-                stationLogo
-                    .frame(width: 120, height: 120)
-                    .clipShape(Circle())
+                ZStack(alignment: .bottomTrailing) {
+                    stationLogo
+                        .frame(width: 120, height: 120)
+                        .clipShape(Circle())
+
+                    if isActive {
+                        Image(systemName: "waveform")
+                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                            .foregroundStyle(DesignTokens.Primary.default)
+                            .symbolEffect(.variableColor.iterative, isActive: isActive)
+                    }
+                }
 
                 Text(station.name ?? "Station")
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
@@ -111,8 +126,10 @@ private struct TVRadioStationItemCard: View {
             .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                     .stroke(
-                        isFocused ? DesignTokens.Glass.borderFocus : DesignTokens.Glass.border,
-                        lineWidth: isFocused ? TVDesignTokens.Focus.ringWidth : 1
+                        isActive
+                            ? DesignTokens.Primary.default
+                            : (isFocused ? DesignTokens.Glass.borderFocus : DesignTokens.Glass.border),
+                        lineWidth: (isActive || isFocused) ? TVDesignTokens.Focus.ringWidth : 1
                     )
             )
         }

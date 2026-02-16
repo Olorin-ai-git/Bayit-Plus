@@ -60,6 +60,10 @@ struct TVMainTabView: View {
                     .padding(.top, TVDesignTokens.Spacing.md)
                     .padding(.trailing, TVDesignTokens.Spacing.xl)
             }
+            // Mini audio player bar overlays at bottom when inline audio is active
+            .overlay(alignment: .bottom) {
+                TVMiniAudioPlayerBar()
+            }
             // Widget dock floats above content (overlay avoids focus trapping)
             .overlay(alignment: .bottom) {
                 if let vm = dockViewModel, vm.isDockVisible, !vm.minimizedWidgets.isEmpty {

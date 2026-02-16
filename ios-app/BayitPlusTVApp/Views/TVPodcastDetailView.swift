@@ -6,6 +6,7 @@ import SwiftUI
 struct TVPodcastDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(TVAudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastDetailViewModel?
 
@@ -185,18 +186,15 @@ struct TVPodcastDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 GlassButton(
-                    "Play",
+                    episodeButtonLabel(for: episode),
                     variant: .secondary,
                     size: .medium,
                     action: {
                         logger.info("Playing podcast episode", context: [
                             "showId": showId,
-                            "episodeId": episode.id
+                            "episodeId": episode.id,
                         ])
-                        coordinator.presentPlayer(
-                            contentId: episode.id,
-                            contentType: .podcast
-                        )
+                        playEpisode(episode)
                     }
                 )
                 .frame(width: 200)
@@ -205,6 +203,26 @@ struct TVPodcastDetailView: View {
         }
         .buttonStyle(.card)
         .tvFocusStyle()
+    }
+
+    private func episodeButtonLabel(for episode: PodcastEpisodeItem) -> String {
+        let isEpisodeActive = audioManager.activeContentId == episode.id && audioManager.isActive
+        return isEpisodeActive && audioManager.isPlaying ? "Pause" : "Play"
+    }
+
+    private func playEpisode(_ episode: PodcastEpisodeItem) {
+        if let audioUrlStr = episode.audioUrl, let audioURL = URL(string: audioUrlStr) {
+            audioManager.playDirectURL(
+                url: audioURL,
+                title: episode.title ?? "Episode",
+                subtitle: viewModel?.detail?.author,
+                artworkURL: (episode.thumbnail ?? viewModel?.detail?.cover).flatMap { URL(string: $0) },
+                contentId: episode.id,
+                contentType: .podcast
+            )
+        } else {
+            audioManager.play(contentId: episode.id, contentType: .podcast)
+        }
     }
 
     private var loadingState: some View {

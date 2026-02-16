@@ -19,6 +19,7 @@ struct BayitPlusTVApp: App {
     @State private var apiClient: APIClient
     @State private var repositories: TVRepositoryProvider
     @State private var mediaPlayer = MediaPlayer()
+    @State private var audioPlaybackManager: TVAudioPlaybackManager?
     @State private var featureFlags = FeatureFlags()
 
     init() {
@@ -122,6 +123,7 @@ struct BayitPlusTVApp: App {
                 .environment(repositories)
                 .environment(mediaPlayer)
                 .environment(featureFlags)
+                .environment(resolvedAudioPlaybackManager)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .task {
@@ -132,6 +134,24 @@ struct BayitPlusTVApp: App {
                     coordinator.showingAuth = !authManager.isAuthenticated
                 }
         }
+    }
+
+    /// Lazily creates and caches the audio playback manager on first access.
+    private var resolvedAudioPlaybackManager: TVAudioPlaybackManager {
+        if let existing = audioPlaybackManager {
+            return existing
+        }
+        let manager = TVAudioPlaybackManager(
+            mediaPlayer: mediaPlayer,
+            mediaRepository: repositories.media,
+            radioRepository: repositories.radio,
+            podcastRepository: repositories.podcasts
+        )
+        // Deferred mutation to avoid modifying state during view update
+        DispatchQueue.main.async { [self] in
+            audioPlaybackManager = manager
+        }
+        return manager
     }
 
     /// Authenticate via backend /auth/login using credentials from launch environment.
