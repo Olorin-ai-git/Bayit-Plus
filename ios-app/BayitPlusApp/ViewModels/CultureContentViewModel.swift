@@ -14,7 +14,10 @@ final class CultureContentViewModel {
     var selectedCategory: String?
 
     private let repository: any CultureRepository
+
+    @ObservationIgnored
     nonisolated(unsafe) private var autoRefreshTask: Task<Void, Never>?
+
     private let autoRefreshIntervalSeconds: TimeInterval = 900
 
     init(repository: any CultureRepository) {

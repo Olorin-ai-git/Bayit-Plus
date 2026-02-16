@@ -43,6 +43,8 @@ fun PlayerOverlay(
     secondarySubtitleLanguage: String? = null,
     onSubtitlePickerClick: (() -> Unit)? = null,
     onAIFeaturesClick: (() -> Unit)? = null,
+    isVodTriviaEnabled: Boolean = false,
+    onVodTriviaToggle: (() -> Unit)? = null,
     subtitleOverlay: @Composable (() -> Unit)? = null,
     triviaOverlay: @Composable (() -> Unit)? = null,
     aiFeaturesPanel: @Composable (() -> Unit)? = null,
@@ -85,6 +87,8 @@ fun PlayerOverlay(
                     secondarySubtitleLanguage = secondarySubtitleLanguage,
                     onSubtitlePickerClick = onSubtitlePickerClick,
                     onAIFeaturesClick = onAIFeaturesClick,
+                    isVodTriviaEnabled = isVodTriviaEnabled,
+                    onVodTriviaToggle = onVodTriviaToggle,
                     modifier = Modifier.align(Alignment.TopCenter),
                 )
 

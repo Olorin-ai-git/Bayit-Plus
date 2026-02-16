@@ -92,10 +92,10 @@ final class LiveDubbingWebSocketService {
             return
         }
 
-        webSocketTask?.send(.string(jsonString)) { error in
+        webSocketTask?.send(.string(jsonString)) { [weak self] error in
             if let error = error {
                 Task { @MainActor in
-                    self.logger.error("Failed to send sync status", error: error)
+                    self?.logger.error("Failed to send sync status", error: error)
                 }
             }
         }
@@ -116,16 +116,16 @@ final class LiveDubbingWebSocketService {
             return
         }
 
-        webSocketTask?.send(.string(jsonString)) { error in
+        webSocketTask?.send(.string(jsonString)) { [weak self] error in
             if let error = error {
                 Task { @MainActor in
-                    self.error = "Authentication failed: \(error.localizedDescription)"
-                    self.isConnected = false
-                    self.logger.error("Auth message send failed", error: error)
+                    self?.error = "Authentication failed: \(error.localizedDescription)"
+                    self?.isConnected = false
+                    self?.logger.error("Auth message send failed", error: error)
                 }
             } else {
                 Task { @MainActor in
-                    self.logger.info("Auth message sent")
+                    self?.logger.info("Auth message sent")
                 }
             }
         }

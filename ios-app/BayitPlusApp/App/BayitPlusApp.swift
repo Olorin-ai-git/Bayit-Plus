@@ -143,22 +143,26 @@ struct BayitPlusApp: App {
 
             // Handle notification taps
             service.onNotificationTapped = { notification in
-                if let deepLink = notification.deepLink,
-                   let url = URL(string: deepLink) {
-                    nav.handleDeepLink(url)
+                Task { @MainActor [weak nav] in
+                    if let deepLink = notification.deepLink,
+                       let url = URL(string: deepLink) {
+                        nav?.handleDeepLink(url)
+                    }
                 }
             }
 
             // Handle notification actions
             service.onNotificationAction = { notification, action in
-                appLogger.info("Notification action performed", context: [
-                    "action": action.rawValue,
-                    "notificationType": notification.type.rawValue
-                ])
-                if [.play, .view, .join].contains(action),
-                   let deepLink = notification.deepLink,
-                   let url = URL(string: deepLink) {
-                    nav.handleDeepLink(url)
+                Task { @MainActor [weak nav] in
+                    appLogger.info("Notification action performed", context: [
+                        "action": action.rawValue,
+                        "notificationType": notification.type.rawValue
+                    ])
+                    if [.play, .view, .join].contains(action),
+                       let deepLink = notification.deepLink,
+                       let url = URL(string: deepLink) {
+                        nav?.handleDeepLink(url)
+                    }
                 }
             }
 
@@ -223,7 +227,7 @@ struct BayitPlusApp: App {
                     // Process pending intents from widgets
                     await pendingIntentHandler?.processPendingIntents()
 
-                    if let bridge = mediaPlayerWidgetBridge {
+                    if mediaPlayerWidgetBridge != nil {
                         // Inject bridge into environment if needed
                         // await bridge.syncNow(...) will be called by ViewModels
                     }

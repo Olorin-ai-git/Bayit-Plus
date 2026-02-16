@@ -1,5 +1,8 @@
 package tv.bayit.plus.core.data.repository.impl
 
+import android.content.Context
+import android.content.SharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import okhttp3.MediaType.Companion.toMediaType
@@ -10,6 +13,7 @@ import retrofit2.http.PUT
 import retrofit2.http.POST
 import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.VoiceRepository
 import tv.bayit.plus.core.model.MessageResponse
@@ -30,9 +34,15 @@ import javax.inject.Singleton
 @Singleton
 class ApiVoiceRepository @Inject constructor(
     private val client: BayitApiClient,
+    @ApplicationContext private val context: Context,
+    private val logger: BayitLogger,
 ) : VoiceRepository {
 
     private val service: VoiceService = client.createService()
+
+    private val prefs: SharedPreferences by lazy {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
 
     override suspend fun getAvailableVoices(
         languageCode: String,
@@ -63,7 +73,23 @@ class ApiVoiceRepository @Inject constructor(
         }
 
     override suspend fun getVoiceSettings(): BayitResult<Any> = runCatchingResult {
-        client.safeApiCall { service.getVoiceSettings() }
+        try {
+            val response = client.safeApiCall { service.getVoiceSettings() }
+            mapOf(
+                "voice_id" to response.voiceId,
+                "speed" to response.speed,
+                "pitch" to response.pitch,
+                "language" to response.language,
+                "ai_onboarding_complete" to (response.aiOnboardingComplete ?: getLocalOnboardingStatus()),
+                "voice_setup_complete" to (response.voiceSetupComplete ?: getLocalVoiceSetupStatus()),
+            )
+        } catch (e: Exception) {
+            logger.warning("API unavailable, using local settings", mapOf("error" to e.message.orEmpty()))
+            mapOf(
+                "ai_onboarding_complete" to getLocalOnboardingStatus(),
+                "voice_setup_complete" to getLocalVoiceSetupStatus(),
+            )
+        }
     }
 
     override suspend fun updateVoiceSettings(
@@ -81,15 +107,49 @@ class ApiVoiceRepository @Inject constructor(
 
     override suspend fun completeAIOnboarding(): BayitResult<Unit> =
         runCatchingResult {
-            client.safeApiCall { service.completeAIOnboarding() }
+            try {
+                client.safeApiCall { service.completeAIOnboarding() }
+                setLocalOnboardingStatus(true)
+                logger.info("AI onboarding completed via API and persisted locally")
+            } catch (e: Exception) {
+                logger.warning("API unavailable, saving onboarding status locally", mapOf("error" to e.message.orEmpty()))
+                setLocalOnboardingStatus(true)
+            }
             Unit
         }
 
     override suspend fun completeVoiceSetup(): BayitResult<Unit> =
         runCatchingResult {
-            client.safeApiCall { service.completeVoiceSetup() }
+            try {
+                client.safeApiCall { service.completeVoiceSetup() }
+                setLocalVoiceSetupStatus(true)
+                logger.info("Voice setup completed via API and persisted locally")
+            } catch (e: Exception) {
+                logger.warning("API unavailable, saving voice setup status locally", mapOf("error" to e.message.orEmpty()))
+                setLocalVoiceSetupStatus(true)
+            }
             Unit
         }
+
+    private fun getLocalOnboardingStatus(): Boolean =
+        prefs.getBoolean(KEY_AI_ONBOARDING_COMPLETE, false)
+
+    private fun setLocalOnboardingStatus(complete: Boolean) {
+        prefs.edit().putBoolean(KEY_AI_ONBOARDING_COMPLETE, complete).apply()
+    }
+
+    private fun getLocalVoiceSetupStatus(): Boolean =
+        prefs.getBoolean(KEY_VOICE_SETUP_COMPLETE, false)
+
+    private fun setLocalVoiceSetupStatus(complete: Boolean) {
+        prefs.edit().putBoolean(KEY_VOICE_SETUP_COMPLETE, complete).apply()
+    }
+
+    companion object {
+        private const val PREFS_NAME = "voice_repository_cache"
+        private const val KEY_AI_ONBOARDING_COMPLETE = "ai_onboarding_complete"
+        private const val KEY_VOICE_SETUP_COMPLETE = "voice_setup_complete"
+    }
 
     override suspend fun trainVoiceModel(audioData: ByteArray): BayitResult<Unit> =
         runCatchingResult {
@@ -160,6 +220,8 @@ private data class VoiceSettingsResponse(
     val speed: Float? = null,
     val pitch: Float? = null,
     val language: String? = null,
+    @SerialName("ai_onboarding_complete") val aiOnboardingComplete: Boolean? = null,
+    @SerialName("voice_setup_complete") val voiceSetupComplete: Boolean? = null,
 )
 
 /** Request body for selecting a voice. */

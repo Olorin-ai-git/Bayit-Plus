@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>APP_ENVIRONMENT</key>
-	<string>development</string>
+	<string>production</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

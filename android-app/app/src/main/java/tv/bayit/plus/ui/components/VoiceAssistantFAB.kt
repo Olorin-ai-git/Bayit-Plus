@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -67,7 +68,7 @@ fun VoiceAssistantFAB(
     ) {
         Icon(
             imageVector = Icons.Default.Mic,
-            contentDescription = "Voice Assistant",
+            contentDescription = bayitString("voiceAssistant.fabLabel"),
             tint = DesignTokens.Colors.Text.primary,
             modifier = Modifier.size(32.dp),
         )

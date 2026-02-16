@@ -309,7 +309,7 @@ async def get_session_status(session_id: str):
     """
     Get current status of a pairing session.
     """
-    status_info = pairing_manager.get_session_status(session_id)
+    status_info = await pairing_manager.get_session_status(session_id)
 
     if not status_info:
         raise HTTPException(

@@ -411,7 +411,7 @@ struct TVHighlightsView: View {
     private func shareReel(_ reel: HighlightReelItem) {
         guard let shareToken = reel.shareToken else { return }
         let webHost = repos.configuration.environment == .production ? "bayit.tv" : "staging.bayit.tv"
-        let shareUrl = "https://\(webHost)/zeh-ani/reels/\(shareToken)"
+        _ = "https://\(webHost)/zeh-ani/reels/\(shareToken)"
     }
 
     private func statusText(_ status: String) -> String {

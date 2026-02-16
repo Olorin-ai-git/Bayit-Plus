@@ -69,7 +69,9 @@ struct TVCouponCardView: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 200, height: 150)
                             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
-                    case .failure, .empty:
+                    case .failure:
+                        placeholderImage
+                    case .empty:
                         placeholderImage
                     @unknown default:
                         placeholderImage

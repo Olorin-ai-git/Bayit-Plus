@@ -98,6 +98,7 @@ from app.models.user_system_widget import UserSystemWidget
 from app.models.playback_session import PlaybackSession
 from app.models.notification_event import NotificationEvent, NotificationMetrics
 from app.models.passkey_credential import PasskeyCredential, PasskeySession, PasskeyChallenge
+from app.models.device_pairing import DevicePairingSession
 from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.models.verification import VerificationToken
 from app.models.watchlist import Conversation, WatchHistory
@@ -247,6 +248,7 @@ async def connect_to_mongo():
         PasskeyCredential,
         PasskeySession,
         PasskeyChallenge,
+        DevicePairingSession,
         VoiceConfiguration,
         VoiceProviderHealth,
         VerificationToken,

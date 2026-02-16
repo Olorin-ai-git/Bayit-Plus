@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
@@ -80,7 +81,7 @@ internal fun VoiceOnboardingScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Voice Training")
+        GlassTopBar(title = bayitString("voiceOnboarding.title"))
 
         Column(
             modifier = Modifier
@@ -95,7 +96,10 @@ internal fun VoiceOnboardingScreen(
             )
 
             Text(
-                text = "Step ${currentStep + 1} of $totalSteps",
+                text = bayitString("voiceOnboarding.stepProgress", mapOf(
+                    "step" to (currentStep + 1).toString(),
+                    "total" to totalSteps.toString()
+                )),
                 style = MaterialTheme.typography.labelMedium,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -124,13 +128,16 @@ internal fun VoiceOnboardingScreen(
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                 ) {
                     GlassButton(
-                        text = "Back",
+                        text = bayitString("voiceOnboarding.buttons.back"),
                         onClick = onPreviousStep,
                         isPrimary = false,
                         modifier = Modifier.weight(1f),
                     )
                     GlassButton(
-                        text = if (currentStep == totalSteps - 1) "Finish" else "Next",
+                        text = bayitString(
+                            if (currentStep == totalSteps - 1) "voiceOnboarding.buttons.finish"
+                            else "voiceOnboarding.buttons.next"
+                        ),
                         onClick = if (currentStep == totalSteps - 1) onComplete else onNextStep,
                         modifier = Modifier.weight(1f),
                     )
@@ -157,14 +164,14 @@ private fun WelcomeVoiceStep(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
                 Text(
-                    text = "Voice Training",
+                    text = bayitString("voiceOnboarding.welcome.title"),
                     style = MaterialTheme.typography.titleLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Train your voice profile for personalized speech recognition and voice commands.",
+                    text = bayitString("voiceOnboarding.welcome.description"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                     textAlign = TextAlign.Center,
@@ -190,18 +197,27 @@ private fun WelcomeVoiceStep(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = if (isRecording) "REC" else "MIC",
+                        text = bayitString(
+                            if (isRecording) "voiceOnboarding.recording.recButton"
+                            else "voiceOnboarding.recording.micButton"
+                        ),
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.Bold,
                     )
                 }
                 Text(
-                    text = if (isRecording) "Recording... Tap to stop" else "Tap to start recording",
+                    text = bayitString(
+                        if (isRecording) "voiceOnboarding.recording.tapToStop"
+                        else "voiceOnboarding.recording.tapToStart"
+                    ),
                     color = DesignTokens.Colors.Text.secondary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 GlassButton(
-                    text = if (isRecording) "Stop" else "Record",
+                    text = bayitString(
+                        if (isRecording) "voiceOnboarding.recording.stopButton"
+                        else "voiceOnboarding.recording.recordButton"
+                    ),
                     onClick = if (isRecording) onStopRecording else onStartRecording,
                 )
             }
@@ -217,13 +233,13 @@ private fun TrainingVoiceStep() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "Training in Progress",
+                text = bayitString("voiceOnboarding.training.title"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "Your voice profile is being trained. This may take a moment.",
+                text = bayitString("voiceOnboarding.training.message"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
                 textAlign = TextAlign.Center,
@@ -242,14 +258,14 @@ private fun CompletionVoiceStep() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "Voice Profile Ready!",
+                text = bayitString("voiceOnboarding.completion.title"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Your voice profile has been created. You can now use voice commands and personalized speech features.",
+                text = bayitString("voiceOnboarding.completion.message"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
                 textAlign = TextAlign.Center,

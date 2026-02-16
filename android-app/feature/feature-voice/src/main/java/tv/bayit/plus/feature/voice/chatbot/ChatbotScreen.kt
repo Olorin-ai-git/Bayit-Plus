@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
@@ -65,7 +66,7 @@ internal fun ChatbotScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "AI Chat")
+        GlassTopBar(title = bayitString("aiChat.title"))
 
         when (uiState) {
             is ChatbotUiState.Loading -> GlassLoadingIndicator(modifier = Modifier.weight(1f))
@@ -172,12 +173,12 @@ private fun ChatInputBar(
             value = text,
             onValueChange = onTextChanged,
             modifier = Modifier.weight(1f),
-            placeholder = "Ask the AI anything...",
+            placeholder = bayitString("aiChat.inputPlaceholder"),
             singleLine = true,
             enabled = !isSending,
         )
         GlassButton(
-            text = "Send",
+            text = bayitString("aiChat.sendButton"),
             onClick = onSend,
             enabled = text.isNotBlank() && !isSending,
         )
@@ -198,7 +199,7 @@ private fun ChatbotErrorContent(
                 style = MaterialTheme.typography.bodyLarge,
             )
             GlassButton(
-                text = "Retry",
+                text = bayitString("aiChat.retryButton"),
                 onClick = onRetry,
                 modifier = Modifier.padding(top = DesignTokens.Spacing.base),
             )

@@ -45,7 +45,7 @@ struct TVSettingsView: View {
                     Text(localization.t("settings.account"))
                         .foregroundStyle(DesignTokens.Text.secondary)
                     Spacer()
-                    Text(user.email ?? user.displayName ?? "")
+                    Text(user.email)
                         .foregroundStyle(DesignTokens.Text.primary)
                 }
             }

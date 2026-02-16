@@ -6,8 +6,8 @@ import BayitCore
 /// This intent is presented when the user adds a Playlist widget to their home screen.
 @available(iOS 17.0, *)
 struct SelectPlaylistIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Select Playlist"
-    static var description = IntentDescription("Choose which playlist to display in the widget.")
+    nonisolated(unsafe) static var title: LocalizedStringResource = "Select Playlist"
+    nonisolated(unsafe) static var description = IntentDescription("Choose which playlist to display in the widget.")
 
     /// The selected playlist entity. This provides rich display in the configuration UI.
     @Parameter(title: "Playlist")
@@ -33,8 +33,8 @@ struct PlaylistEntity: AppEntity {
     let name: String
     let itemCount: Int
 
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Playlist"
-    static var defaultQuery = PlaylistEntityQuery()
+    nonisolated(unsafe) static var typeDisplayRepresentation: TypeDisplayRepresentation = "Playlist"
+    nonisolated(unsafe) static var defaultQuery = PlaylistEntityQuery()
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(

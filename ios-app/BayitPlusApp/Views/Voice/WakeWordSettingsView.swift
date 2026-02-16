@@ -211,32 +211,37 @@ struct WakeWordSettingsView: View {
     }
 
     private func testMicrophone() {
-        let session = AVAudioSession.sharedInstance()
-        switch session.recordPermission {
-        case .granted:
-            testResult = TestResult(
-                icon: "checkmark.circle.fill",
-                message: "Microphone access granted",
-                color: DesignTokens.Success.default
-            )
-        case .denied:
-            testResult = TestResult(
-                icon: "xmark.circle.fill",
-                message: "Microphone access denied. Check Settings.",
-                color: DesignTokens.ErrorColor.default
-            )
-        case .undetermined:
-            session.requestRecordPermission { granted in
-                Task { @MainActor in
+        Task {
+            let status = await AVAudioApplication.shared.recordPermission
+            await MainActor.run {
+                switch status {
+                case .granted:
                     testResult = TestResult(
-                        icon: granted ? "checkmark.circle.fill" : "xmark.circle.fill",
-                        message: granted ? "Microphone access granted" : "Microphone access denied",
-                        color: granted ? DesignTokens.Success.default : DesignTokens.ErrorColor.default
+                        icon: "checkmark.circle.fill",
+                        message: "Microphone access granted",
+                        color: DesignTokens.Success.default
                     )
+                case .denied:
+                    testResult = TestResult(
+                        icon: "xmark.circle.fill",
+                        message: "Microphone access denied. Check Settings.",
+                        color: DesignTokens.ErrorColor.default
+                    )
+                case .undetermined:
+                    Task {
+                        let granted = await AVAudioApplication.requestRecordPermission()
+                        await MainActor.run {
+                            testResult = TestResult(
+                                icon: granted ? "checkmark.circle.fill" : "xmark.circle.fill",
+                                message: granted ? "Microphone access granted" : "Microphone access denied",
+                                color: granted ? DesignTokens.Success.default : DesignTokens.ErrorColor.default
+                            )
+                        }
+                    }
+                @unknown default:
+                    break
                 }
             }
-        @unknown default:
-            break
         }
     }
 }

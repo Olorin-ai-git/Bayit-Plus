@@ -122,8 +122,15 @@ fun PlayerRoute(
         onSelectSplitLayout = viewModel::selectSplitSubtitleLayout,
         onFetchExternalSubtitles = viewModel::fetchExternalSubtitles,
         onSelectExternalSubtitle = viewModel::selectExternalSubtitle,
-        onDismissTrivia = viewModel::dismissTriviaFact,
-        onTriviaFollowUp = viewModel::requestTriviaFollowUp,
+        onDismissTrivia = {
+            viewModel.dismissTriviaFact()
+            viewModel.dismissVodTrivia()
+        },
+        onTriviaFollowUp = {
+            viewModel.requestTriviaFollowUp()
+            viewModel.requestVodTriviaFollowUp()
+        },
+        onToggleVodTrivia = viewModel::toggleVodTrivia,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -173,6 +180,7 @@ private fun PlayerScreen(
     onSelectExternalSubtitle: (tv.bayit.plus.core.model.ImportedTrack) -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
+    onToggleVodTrivia: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -207,6 +215,7 @@ private fun PlayerScreen(
                     onShowSubtitlePicker = onShowSubtitlePicker,
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp,
+                    onToggleVodTrivia = onToggleVodTrivia,
                     onBack = onBack,
                 )
 

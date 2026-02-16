@@ -22,7 +22,7 @@ extension DirectMessagesViewModel {
         receiveTask = Task { [weak self] in
             let stream = await conn.receive()
             for await text in stream {
-                await self?.handleWSMessage(text)
+                self?.handleWSMessage(text)
             }
         }
     }

@@ -212,14 +212,14 @@ public final class PushNotificationService: NSObject, ObservableObject {
 extension PushNotificationService: MessagingDelegate {
 
     /// Called when FCM token is refreshed.
-    public func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+    public nonisolated func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
 
-        logger.info("FCM token refreshed", context: ["tokenPrefix": String(token.prefix(10))])
+        Task { @MainActor [weak self] in
+            self?.logger.info("FCM token refreshed", context: ["tokenPrefix": String(token.prefix(10))])
 
-        // Handle token refresh
-        Task {
-            await tokenManager.handleTokenRefresh(token)
+            // Handle token refresh
+            await self?.tokenManager.handleTokenRefresh(token)
         }
     }
 }
@@ -229,7 +229,7 @@ extension PushNotificationService: MessagingDelegate {
 extension PushNotificationService: UNUserNotificationCenterDelegate {
 
     /// Called when notification is received in foreground.
-    public func userNotificationCenter(
+    public nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
@@ -237,20 +237,22 @@ extension PushNotificationService: UNUserNotificationCenterDelegate {
         let userInfo = notification.request.content.userInfo
         let pushNotification = PushNotification(userInfo: userInfo)
 
-        logger.info("Received foreground notification", context: [
-            "type": pushNotification.type.rawValue,
-            "title": pushNotification.title
-        ])
+        Task { @MainActor [weak self] in
+            self?.logger.info("Received foreground notification", context: [
+                "type": pushNotification.type.rawValue,
+                "title": pushNotification.title
+            ])
 
-        // Notify observers
-        onForegroundNotification?(pushNotification)
+            // Notify observers
+            self?.onForegroundNotification?(pushNotification)
+        }
 
         // Show notification banner, play sound, and update badge
         completionHandler([.banner, .sound, .badge])
     }
 
     /// Called when user taps notification.
-    public func userNotificationCenter(
+    public nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
@@ -258,19 +260,21 @@ extension PushNotificationService: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         let pushNotification = PushNotification(userInfo: userInfo)
 
-        logger.info("Notification tapped", context: [
-            "type": pushNotification.type.rawValue,
-            "actionIdentifier": response.actionIdentifier
-        ])
+        Task { @MainActor [weak self] in
+            self?.logger.info("Notification tapped", context: [
+                "type": pushNotification.type.rawValue,
+                "actionIdentifier": response.actionIdentifier
+            ])
 
-        // Handle default action (tap on notification body)
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            onNotificationTapped?(pushNotification)
-        }
-        // Handle custom actions
-        else if response.actionIdentifier != UNNotificationDismissActionIdentifier {
-            if let action = NotificationAction(rawValue: response.actionIdentifier) {
-                onNotificationAction?(pushNotification, action)
+            // Handle default action (tap on notification body)
+            if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+                self?.onNotificationTapped?(pushNotification)
+            }
+            // Handle custom actions
+            else if response.actionIdentifier != UNNotificationDismissActionIdentifier {
+                if let action = NotificationAction(rawValue: response.actionIdentifier) {
+                    self?.onNotificationAction?(pushNotification, action)
+                }
             }
         }
 

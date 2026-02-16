@@ -20,6 +20,7 @@ import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 import tv.bayit.plus.feature.player.live.LiveAICoordinator
+import tv.bayit.plus.feature.player.trivia.VodTriviaManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +30,7 @@ class PlayerViewModel @Inject constructor(
     private val contentResolver: PlayerContentResolver,
     private val mediaPlayer: BayitMediaPlayer,
     private val liveAICoordinator: LiveAICoordinator,
+    private val vodTriviaManager: VodTriviaManager,
     private val timeProvider: TimeProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
@@ -56,7 +58,11 @@ class PlayerViewModel @Inject constructor(
     private var controlsHideJob: Job? = null
     private var positionPollingJob: Job? = null
 
-    init { mediaPlayer.initialize(); startPositionPolling() }
+    init {
+        mediaPlayer.initialize()
+        startPositionPolling()
+        observeVodTriviaState()
+    }
 
     fun loadContent(contentId: String, contentType: String) {
         if (currentContentId == contentId) return
@@ -79,7 +85,10 @@ class PlayerViewModel @Inject constructor(
                         isLiveContent = isLive, channelId = if (isLive) contentId else null,
                     )
                     scheduleControlsHide()
-                    if (!isLive) loadAvailableSubtitles(contentId)
+                    if (!isLive) {
+                        loadAvailableSubtitles(contentId)
+                        vodTriviaManager.loadFacts(contentId, _extendedState.value.vodTriviaLanguage, viewModelScope)
+                    }
                     logger.info("Playback started", mapOf("contentId" to contentId))
                 }
                 is BayitResult.Error -> {
@@ -325,12 +334,35 @@ class PlayerViewModel @Inject constructor(
     fun dismissTriviaFact() = viewModelScope.launch { liveAICoordinator.dismissTrivia() }
     fun requestTriviaFollowUp() = liveAICoordinator.requestTriviaFollowUp()
 
+    fun toggleVodTrivia() = vodTriviaManager.toggleEnabled()
+    fun dismissVodTrivia() = vodTriviaManager.dismissFact()
+    fun requestVodTriviaFollowUp() = vodTriviaManager.requestFollowUp(viewModelScope)
+
     override fun onCleared() {
         saveProgress()
         viewModelScope.launch { liveAICoordinator.cleanupAll() }
+        vodTriviaManager.cleanup()
         positionPollingJob?.cancel()
         mediaPlayer.release()
         super.onCleared()
+    }
+
+    private fun observeVodTriviaState() {
+        viewModelScope.launch {
+            vodTriviaManager.activeFact.collect { fact ->
+                _extendedState.value = _extendedState.value.copy(vodTriviaFact = fact)
+            }
+        }
+        viewModelScope.launch {
+            vodTriviaManager.isEnabled.collect { enabled ->
+                _extendedState.value = _extendedState.value.copy(isVodTriviaEnabled = enabled)
+            }
+        }
+        viewModelScope.launch {
+            vodTriviaManager.language.collect { lang ->
+                _extendedState.value = _extendedState.value.copy(vodTriviaLanguage = lang)
+            }
+        }
     }
 
     private fun startPositionPolling() {
@@ -341,6 +373,10 @@ class PlayerViewModel @Inject constructor(
                 _totalDurationMs.value = mediaPlayer.getDuration()
                 updateCurrentChapter(pos)
                 updateActiveCue(pos)
+                val isLive = (_uiState.value as? PlayerUiState.Ready)?.isLiveContent == true
+                if (!isLive) {
+                    vodTriviaManager.updatePlaybackPosition(pos, this)
+                }
                 delay(POSITION_POLL_INTERVAL_MS)
             }
         }

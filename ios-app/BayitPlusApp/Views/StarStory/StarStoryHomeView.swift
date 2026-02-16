@@ -179,7 +179,7 @@ struct StarStoryHomeView: View {
             subtitle: "\(episode.theme) - \(episode.formattedDuration)",
             width: .infinity,
             onTap: {
-                if let url = episode.hlsUrl {
+                if episode.hlsUrl != nil {
                     coordinator.pushToCurrentTab(
                         .player(contentId: episode.episodeId, contentType: .movie)
                     )

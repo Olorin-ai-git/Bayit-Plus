@@ -57,7 +57,7 @@ struct TVLocationContentRow: View {
                 .foregroundColor(DesignTokens.Text.primary)
 
             if let coverage = coverage {
-                if let nearestCity = coverage.nearestMajorCity, let distance = coverage.distanceMiles {
+                if coverage.nearestMajorCity != nil && coverage.distanceMiles != nil {
                     Text(localization.t("home.nearYou"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)

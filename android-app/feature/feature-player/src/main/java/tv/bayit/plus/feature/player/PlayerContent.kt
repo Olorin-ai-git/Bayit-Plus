@@ -26,6 +26,7 @@ import tv.bayit.plus.feature.player.live.LiveDubbingUiState
 import tv.bayit.plus.feature.player.live.LiveSubtitleUiState
 import tv.bayit.plus.feature.player.live.LiveTriviaUiState
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
+import tv.bayit.plus.feature.player.trivia.TriviaFactsOverlay
 import tv.bayit.plus.feature.player.ui.PlayerOverlay
 
 @Composable
@@ -52,6 +53,7 @@ internal fun ReadyContent(
     onShowSubtitlePicker: () -> Unit,
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
+    onToggleVodTrivia: () -> Unit,
     onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -91,6 +93,8 @@ internal fun ReadyContent(
                 onSeek = onSeek,
                 onSubtitlePickerClick = onShowSubtitlePicker,
                 onAIFeaturesClick = if (state.isLiveContent) onToggleAIPanel else null,
+                isVodTriviaEnabled = extendedState.isVodTriviaEnabled,
+                onVodTriviaToggle = if (!state.isLiveContent) onToggleVodTrivia else null,
                 subtitleOverlay = {
                     if (!state.isLiveContent && extendedState.isSubtitlesEnabled) {
                         if (extendedState.isSplitSubtitleMode) {
@@ -114,6 +118,18 @@ internal fun ReadyContent(
                             )
                         }
                     }
+                },
+                triviaOverlay = if (!state.isLiveContent && extendedState.isVodTriviaEnabled) {
+                    {
+                        TriviaFactsOverlay(
+                            activeFact = extendedState.vodTriviaFact,
+                            language = extendedState.vodTriviaLanguage,
+                            onDismiss = onDismissTrivia,
+                            onFollowUp = onTriviaFollowUp,
+                        )
+                    }
+                } else {
+                    null
                 },
             )
 

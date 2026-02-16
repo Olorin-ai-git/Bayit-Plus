@@ -169,10 +169,16 @@ struct TVLoginView: View {
 
     private var successSection: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(DesignTokens.Colors.Semantic.success)
-                .symbolEffect(.bounce)
+            if #available(iOS 18.0, *) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 80))
+                    .foregroundStyle(DesignTokens.Colors.Semantic.success)
+                    .symbolEffect(.bounce)
+            } else {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 80))
+                    .foregroundStyle(DesignTokens.Colors.Semantic.success)
+            }
 
             Text(localization.t("tvLogin.success"))
                 .font(.title)

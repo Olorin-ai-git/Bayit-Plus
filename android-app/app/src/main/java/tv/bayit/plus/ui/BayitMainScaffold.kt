@@ -24,6 +24,7 @@ import tv.bayit.plus.ui.components.GlassBottomNavBar
 import tv.bayit.plus.ui.components.PiPWidgetContainer
 import tv.bayit.plus.ui.components.TopAppBar
 import tv.bayit.plus.ui.components.VoiceAssistantFAB
+import tv.bayit.plus.ui.components.VoiceAssistantModal
 import tv.bayit.plus.ui.components.WidgetDock
 import tv.bayit.plus.ui.components.rememberBreadcrumbTrail
 import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
@@ -99,7 +100,7 @@ fun BayitMainScaffold(
             }
         },
         floatingActionButton = {
-            if (isRootTab) {
+            if (isAuthenticated) {
                 VoiceAssistantFAB(onClick = { showVoiceModal = true })
             }
         },
@@ -132,7 +133,12 @@ fun BayitMainScaffold(
     }
 
     if (showVoiceModal) {
-        // TODO: Implement VoiceAssistantModal when available
-        // VoiceAssistantModal(onDismiss = { showVoiceModal = false })
+        VoiceAssistantModal(
+            onDismiss = { showVoiceModal = false },
+            onNavigateToOnboarding = {
+                showVoiceModal = false
+                navController.navigate(Route.OnboardingAI)
+            }
+        )
     }
 }

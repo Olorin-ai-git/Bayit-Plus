@@ -12,6 +12,8 @@ final class BetaCreditsViewModel {
     private(set) var isDeducting = false
 
     private let repository: any BetaCreditsRepository
+
+    @ObservationIgnored
     nonisolated(unsafe) private var refreshTimer: Timer?
 
     private static let refreshIntervalSeconds: TimeInterval = 30

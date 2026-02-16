@@ -168,7 +168,7 @@ final class TriviaFactsViewModel {
         autoDismissTask = Task {
             try? await Task.sleep(for: .seconds(duration))
             if !Task.isCancelled {
-                await self.dismissFact()
+                self.dismissFact()
             }
         }
     }

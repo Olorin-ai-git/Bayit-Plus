@@ -1,9 +1,12 @@
 package tv.bayit.plus.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.AudiobookRepository
 import tv.bayit.plus.core.data.repository.AvatarMeshRepository
 import tv.bayit.plus.core.data.repository.AvatarOutfitRepository
@@ -169,8 +172,12 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideVoiceRepository(client: BayitApiClient): VoiceRepository =
-        ApiVoiceRepository(client)
+    fun provideVoiceRepository(
+        client: BayitApiClient,
+        @ApplicationContext context: Context,
+        logger: BayitLogger,
+    ): VoiceRepository =
+        ApiVoiceRepository(client, context, logger)
 
     @Provides
     @Singleton

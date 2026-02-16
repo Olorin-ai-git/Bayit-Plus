@@ -127,7 +127,7 @@ class PhoneticMirrorViewModel {
         audioRecorder = nil
         recognitionTask?.cancel()
         recognitionTask = nil
-        try? audioEngine?.stop()
+        audioEngine?.stop()
         audioEngine = nil
     }
 }

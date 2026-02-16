@@ -1,17 +1,18 @@
 """
 Device Pairing Manager for QR-based TV authentication.
-Manages pairing sessions and WebSocket connections for device pairing.
+Manages pairing sessions (MongoDB) and WebSocket connections (in-memory).
 """
 
 import asyncio
 import base64
 import io
 import secrets
-from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
 from fastapi import WebSocket
+
+from app.models.device_pairing import DevicePairingSession
 
 try:
     import qrcode
@@ -21,45 +22,19 @@ except ImportError:
     HAS_QRCODE = False
 
 
-@dataclass
-class PairingSession:
-    """Represents a device pairing session"""
-
-    session_id: str
-    session_token: str
-    qr_code_data: str  # Base64 PNG
-    pairing_code: str  # URL string for client-side QR generation
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    expires_at: datetime = None
-    tv_websocket: Optional[WebSocket] = None
-    companion_websocket: Optional[WebSocket] = None
-    status: str = (
-        "waiting"  # waiting, scanning, authenticating, success, failed, expired
-    )
-    companion_device_info: Optional[dict] = None
-    authenticated_user_id: Optional[str] = None
-    authenticated_token: Optional[str] = None
-
-    def __post_init__(self):
-        if self.expires_at is None:
-            self.expires_at = self.created_at + timedelta(minutes=20)
-
-    def is_expired(self) -> bool:
-        return datetime.utcnow() > self.expires_at
-
-
 class PairingManager:
     """
     Manages device pairing sessions for QR-based authentication.
-    Allows TV apps to generate QR codes that companion devices can scan
-    to authenticate the TV session.
+
+    Session data is stored in MongoDB via DevicePairingSession model.
+    WebSocket connections are kept in-memory (not persistent).
     """
 
     def __init__(self):
-        self._sessions: Dict[str, PairingSession] = {}
+        # WebSocket connections (in-memory only, not persisted)
+        self._tv_websockets: Dict[str, WebSocket] = {}
+        self._companion_websockets: Dict[str, WebSocket] = {}
         self._lock = asyncio.Lock()
-        # Start cleanup task
-        self._cleanup_task: Optional[asyncio.Task] = None
 
     def _generate_session_id(self) -> str:
         """Generate a unique session ID"""
@@ -104,46 +79,49 @@ class PairingManager:
 
     async def create_session(
         self, base_url: str = "https://bayit.plus"
-    ) -> PairingSession:
-        """Create a new pairing session"""
-        async with self._lock:
-            session_id = self._generate_session_id()
-            session_token = self._generate_session_token()
-            created_at = datetime.utcnow()
-            expires_at = created_at + timedelta(minutes=20)
+    ) -> DevicePairingSession:
+        """Create a new pairing session in MongoDB"""
+        session_id = self._generate_session_id()
+        session_token = self._generate_session_token()
+        created_at = datetime.utcnow()
+        expires_at = created_at + timedelta(minutes=20)
 
-            qr_data = {
-                "session_id": session_id,
-                "token": session_token,
-                "expires_at": expires_at.isoformat(),
-            }
+        qr_data = {
+            "session_id": session_id,
+            "token": session_token,
+            "expires_at": expires_at.isoformat(),
+        }
 
-            pairing_url = self._build_pairing_url(qr_data, base_url)
-            qr_code = self._generate_qr_code(pairing_url)
+        pairing_url = self._build_pairing_url(qr_data, base_url)
+        qr_code = self._generate_qr_code(pairing_url)
 
-            session = PairingSession(
-                session_id=session_id,
-                session_token=session_token,
-                qr_code_data=qr_code,
-                pairing_code=pairing_url,
-                created_at=created_at,
-                expires_at=expires_at,
-            )
+        # Create and save to MongoDB
+        session = DevicePairingSession.create_new(
+            session_id=session_id,
+            session_token=session_token,
+            qr_code_data=qr_code,
+            pairing_code=pairing_url,
+            ttl_minutes=20,
+        )
+        await session.insert()
 
-            self._sessions[session_id] = session
-            return session
+        return session
 
-    async def get_session(self, session_id: str) -> Optional[PairingSession]:
-        """Get a pairing session by ID"""
-        session = self._sessions.get(session_id)
+    async def get_session(self, session_id: str) -> Optional[DevicePairingSession]:
+        """Get a pairing session from MongoDB by ID"""
+        session = await DevicePairingSession.find_one(
+            DevicePairingSession.session_id == session_id
+        )
+
         if session and session.is_expired():
             await self._expire_session(session_id)
             return None
+
         return session
 
     async def verify_session_token(
         self, session_id: str, token: str
-    ) -> Optional[PairingSession]:
+    ) -> Optional[DevicePairingSession]:
         """Verify a session token from QR scan"""
         session = await self.get_session(session_id)
         if not session:
@@ -156,21 +134,21 @@ class PairingManager:
 
     async def connect_tv(
         self, session_id: str, websocket: WebSocket
-    ) -> Optional[PairingSession]:
+    ) -> Optional[DevicePairingSession]:
         """Connect TV WebSocket to session"""
         async with self._lock:
-            session = self._sessions.get(session_id)
+            session = await self.get_session(session_id)
             if not session or session.is_expired():
                 return None
 
             # Close existing TV websocket if any
-            if session.tv_websocket:
+            if session_id in self._tv_websockets:
                 try:
-                    await session.tv_websocket.close()
+                    await self._tv_websockets[session_id].close()
                 except Exception:
                     pass
 
-            session.tv_websocket = websocket
+            self._tv_websockets[session_id] = websocket
             return session
 
     async def connect_companion(
@@ -179,49 +157,51 @@ class PairingManager:
         device_info: dict,
     ) -> bool:
         """Register companion device connection"""
-        async with self._lock:
-            session = self._sessions.get(session_id)
-            if not session or session.is_expired():
-                return False
+        session = await self.get_session(session_id)
+        if not session or session.is_expired():
+            return False
 
-            session.companion_device_info = device_info
-            session.status = "scanning"
+        # Update session in MongoDB
+        session.companion_device_info = device_info
+        session.status = "scanning"
+        await session.save()
 
-            # Notify TV that companion connected
-            if session.tv_websocket:
-                try:
-                    await session.tv_websocket.send_json(
-                        {
-                            "type": "companion_connected",
-                            "device_info": device_info,
-                        }
-                    )
-                except Exception:
-                    pass
+        # Notify TV via WebSocket
+        if session_id in self._tv_websockets:
+            try:
+                await self._tv_websockets[session_id].send_json(
+                    {
+                        "type": "companion_connected",
+                        "device_info": device_info,
+                    }
+                )
+            except Exception:
+                pass
 
-            return True
+        return True
 
     async def start_authentication(self, session_id: str) -> bool:
         """Mark session as authenticating"""
-        async with self._lock:
-            session = self._sessions.get(session_id)
-            if not session or session.is_expired():
-                return False
+        session = await self.get_session(session_id)
+        if not session or session.is_expired():
+            return False
 
-            session.status = "authenticating"
+        # Update in MongoDB
+        session.status = "authenticating"
+        await session.save()
 
-            # Notify TV
-            if session.tv_websocket:
-                try:
-                    await session.tv_websocket.send_json(
-                        {
-                            "type": "authenticating",
-                        }
-                    )
-                except Exception:
-                    pass
+        # Notify TV via WebSocket
+        if session_id in self._tv_websockets:
+            try:
+                await self._tv_websockets[session_id].send_json(
+                    {
+                        "type": "authenticating",
+                    }
+                )
+            except Exception:
+                pass
 
-            return True
+        return True
 
     async def complete_pairing(
         self,
@@ -231,123 +211,138 @@ class PairingManager:
         user_data: dict,
     ) -> bool:
         """Complete the pairing process with authentication"""
-        async with self._lock:
-            session = self._sessions.get(session_id)
-            if not session or session.is_expired():
-                return False
+        session = await self.get_session(session_id)
+        if not session or session.is_expired():
+            return False
 
-            session.status = "success"
-            session.authenticated_user_id = user_id
-            session.authenticated_token = access_token
+        # Update in MongoDB
+        session.status = "success"
+        session.authenticated_user_id = user_id
+        session.authenticated_token = access_token
+        await session.save()
 
-            # Notify TV with auth credentials
-            if session.tv_websocket:
-                try:
-                    await session.tv_websocket.send_json(
-                        {
-                            "type": "pairing_success",
-                            "user": user_data,
-                            "access_token": access_token,
-                        }
-                    )
-                except Exception:
-                    pass
+        # Notify TV with auth credentials via WebSocket
+        if session_id in self._tv_websockets:
+            try:
+                await self._tv_websockets[session_id].send_json(
+                    {
+                        "type": "pairing_success",
+                        "user": user_data,
+                        "access_token": access_token,
+                    }
+                )
+            except Exception:
+                pass
 
-            return True
+        return True
 
     async def fail_pairing(self, session_id: str, reason: str) -> bool:
         """Mark pairing as failed"""
-        async with self._lock:
-            session = self._sessions.get(session_id)
-            if not session:
-                return False
+        session = await self.get_session(session_id)
+        if not session:
+            return False
 
-            session.status = "failed"
+        # Update in MongoDB
+        session.status = "failed"
+        await session.save()
 
-            # Notify TV
-            if session.tv_websocket:
-                try:
-                    await session.tv_websocket.send_json(
-                        {
-                            "type": "pairing_failed",
-                            "reason": reason,
-                        }
-                    )
-                except Exception:
-                    pass
+        # Notify TV via WebSocket
+        if session_id in self._tv_websockets:
+            try:
+                await self._tv_websockets[session_id].send_json(
+                    {
+                        "type": "pairing_failed",
+                        "reason": reason,
+                    }
+                )
+            except Exception:
+                pass
 
-            return True
+        return True
 
     async def _expire_session(self, session_id: str) -> None:
         """Handle session expiration"""
-        session = self._sessions.get(session_id)
+        session = await self.get_session(session_id)
         if not session:
             return
 
+        # Update in MongoDB
         session.status = "expired"
+        await session.save()
 
-        # Notify TV
-        if session.tv_websocket:
+        # Notify TV via WebSocket
+        if session_id in self._tv_websockets:
             try:
-                await session.tv_websocket.send_json(
+                await self._tv_websockets[session_id].send_json(
                     {
                         "type": "session_expired",
                     }
                 )
-                await session.tv_websocket.close()
+                await self._tv_websockets[session_id].close()
             except Exception:
                 pass
 
-        # Remove session
-        del self._sessions[session_id]
+        # Clean up WebSocket connections
+        self._tv_websockets.pop(session_id, None)
+        self._companion_websockets.pop(session_id, None)
 
     async def disconnect_tv(self, session_id: str) -> None:
         """Handle TV WebSocket disconnection"""
         async with self._lock:
-            session = self._sessions.get(session_id)
-            if session:
-                session.tv_websocket = None
-                # Keep session alive for a short time in case of reconnection
-                # After that, cleanup task will remove it
+            self._tv_websockets.pop(session_id, None)
+            # Session persists in MongoDB for potential reconnection
 
     async def remove_session(self, session_id: str) -> None:
-        """Remove a session"""
+        """Remove a session from MongoDB and close WebSockets"""
         async with self._lock:
-            if session_id in self._sessions:
-                session = self._sessions[session_id]
-                if session.tv_websocket:
-                    try:
-                        await session.tv_websocket.close()
-                    except Exception:
-                        pass
-                del self._sessions[session_id]
+            # Close WebSocket if exists
+            if session_id in self._tv_websockets:
+                try:
+                    await self._tv_websockets[session_id].close()
+                except Exception:
+                    pass
+
+            # Remove from in-memory WebSocket tracking
+            self._tv_websockets.pop(session_id, None)
+            self._companion_websockets.pop(session_id, None)
+
+            # Delete from MongoDB
+            session = await self.get_session(session_id)
+            if session:
+                await session.delete()
 
     async def cleanup_expired_sessions(self) -> int:
-        """Remove all expired sessions. Returns count of removed sessions."""
-        async with self._lock:
-            expired = [
-                sid for sid, session in self._sessions.items() if session.is_expired()
-            ]
+        """Remove all expired sessions from MongoDB. Returns count of removed sessions."""
+        expired_sessions = await DevicePairingSession.find(
+            DevicePairingSession.expires_at < datetime.utcnow()
+        ).to_list()
 
-            for sid in expired:
-                session = self._sessions[sid]
-                if session.tv_websocket:
-                    try:
-                        await session.tv_websocket.send_json(
-                            {
-                                "type": "session_expired",
-                            }
-                        )
-                        await session.tv_websocket.close()
-                    except Exception:
-                        pass
-                del self._sessions[sid]
+        count = 0
+        for session in expired_sessions:
+            # Notify TV if WebSocket connected
+            if session.session_id in self._tv_websockets:
+                try:
+                    await self._tv_websockets[session.session_id].send_json(
+                        {
+                            "type": "session_expired",
+                        }
+                    )
+                    await self._tv_websockets[session.session_id].close()
+                except Exception:
+                    pass
 
-            return len(expired)
+            # Clean up
+            self._tv_websockets.pop(session.session_id, None)
+            self._companion_websockets.pop(session.session_id, None)
+            await session.delete()
+            count += 1
 
-    def get_session_status(self, session_id: str) -> Optional[dict]:
+        return count
+
+    async def get_session_status(self, session_id: str) -> Optional[dict]:
         """Get current session status"""
-        session = self._sessions.get(session_id)
+        session = await self.get_session(session_id)
+
         if not session:
             return None
 
@@ -360,10 +355,13 @@ class PairingManager:
             "companion_device": session.companion_device_info,
         }
 
-    @property
-    def active_sessions(self) -> int:
+    async def get_active_sessions_count(self) -> int:
         """Number of active (non-expired) sessions"""
-        return sum(1 for s in self._sessions.values() if not s.is_expired())
+        count = await DevicePairingSession.find(
+            DevicePairingSession.expires_at > datetime.utcnow()
+        ).count()
+
+        return count
 
 
 # Global pairing manager instance

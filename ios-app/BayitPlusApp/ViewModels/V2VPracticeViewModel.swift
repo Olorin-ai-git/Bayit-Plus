@@ -170,7 +170,9 @@ class V2VPracticeViewModel {
             for await text in stream {
                 await self?.handleWSMessage(text)
             }
-            await MainActor.run { self?.isConnected = false }
+            await MainActor.run { [weak self] in
+                self?.isConnected = false
+            }
         }
     }
 

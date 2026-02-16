@@ -66,7 +66,9 @@ struct CultureClock: View {
 
     private func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            currentTime = Date()
+            Task { @MainActor in
+                self.currentTime = Date()
+            }
         }
     }
 

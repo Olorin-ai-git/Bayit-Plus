@@ -134,8 +134,13 @@ public actor NotificationPermissionManager {
     @MainActor
     public func setBadgeCount(_ count: Int) {
         #if canImport(UIKit)
-        UIApplication.shared.applicationIconBadgeNumber = count
-        logger.info("Set badge count", context: ["count": "\(count)"])
+        UNUserNotificationCenter.current().setBadgeCount(count) { error in
+            if let error = error {
+                self.logger.error("Failed to set badge count", error: error)
+            } else {
+                self.logger.info("Set badge count", context: ["count": "\(count)"])
+            }
+        }
         #endif
     }
 

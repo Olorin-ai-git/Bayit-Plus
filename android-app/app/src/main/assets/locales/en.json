@@ -3562,49 +3562,33 @@
     }
   },
   "voiceOnboarding": {
+    "title": "Voice Training",
+    "stepProgress": "Step {{step}} of {{total}}",
     "welcome": {
-      "title": "Welcome to Voice Control",
-      "description": "Control Bayit+ with your voice for a hands-free experience"
+      "title": "Voice Training",
+      "description": "Train your voice profile for personalized speech recognition and voice commands."
     },
-    "features": {
-      "voiceCommands": "Voice Commands",
-      "voiceCommandsDesc": "Navigate, search, and control playback with natural speech",
-      "tts": "Text-to-Speech",
-      "ttsDesc": "Hear responses and content descriptions read aloud",
-      "wakeWord": "Wake Word",
-      "wakeWordDesc": "Say 'Bayit' to activate voice control anytime"
+    "recording": {
+      "micButton": "MIC",
+      "recButton": "REC",
+      "tapToStart": "Tap to start recording",
+      "tapToStop": "Recording... Tap to stop",
+      "recordButton": "Record",
+      "stopButton": "Stop"
     },
-    "getStarted": "Get Started",
-    "permissions": {
-      "title": "Microphone Access",
-      "description": "Voice control requires microphone access to hear your commands",
-      "privacy": "Your voice data is processed securely and never stored"
+    "training": {
+      "title": "Training in Progress",
+      "message": "Your voice profile is being trained. This may take a moment."
     },
-    "permissionsGranted": "Microphone access granted",
-    "permissionRequired": {
-      "title": "Permission Required",
-      "message": "Please enable microphone access in your device settings to use voice control"
+    "completion": {
+      "title": "Voice Profile Ready!",
+      "message": "Your voice profile has been created. You can now use voice commands and personalized speech features."
     },
-    "grantPermissions": "Grant Permissions",
-    "testWakeWord": {
-      "title": "Test Wake Word",
-      "description": "Say 'Bayit' to test voice activation",
-      "success": "Great! Voice activation is working"
-    },
-    "startTest": "Start Test",
-    "complete": {
-      "title": "You're All Set!",
-      "description": "Voice control is now enabled. Try these commands:",
-      "tryCommands": "Try These Commands",
-      "examples": {
-        "search": "\"Search for Fauda\"",
-        "play": "\"Play the news\"",
-        "navigate": "\"Go to Live TV\"",
-        "control": "\"Pause\" or \"Volume up\""
-      },
-      "startUsing": "Start Using Voice Control"
-    },
-    "skip": "Skip for now"
+    "buttons": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "Finish"
+    }
   },
   "taxonomy": {
     "sections": {
@@ -3919,5 +3903,45 @@
   "recording": {
     "stop": "Stop Recording",
     "start": "Start Recording"
+  },
+  "aiOnboarding": {
+    "title": "AI Assistant Setup",
+    "stepProgress": "Step {{step}} of {{total}}",
+    "welcome": {
+      "title": "Welcome to AI Assistant",
+      "description": "Your AI companion for semantic search, chatbot assistance, and intelligent recommendations."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "description": "The AI Assistant needs access to:\n\n• Your viewing history (for personalized recommendations)\n• Search queries (to improve results)\n• Preferences (to tailor responses)"
+    },
+    "personalization": {
+      "title": "Personalization",
+      "description": "The AI will learn from your interactions to provide:\n\n• Better content recommendations\n• More accurate search results\n• Contextual chatbot responses"
+    },
+    "completion": {
+      "title": "All Set!",
+      "message": "Your AI Assistant is ready to help you discover and enjoy content."
+    },
+    "buttons": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "Finish"
+    }
+  },
+  "voiceAssistant": {
+    "fabLabel": "Voice Assistant",
+    "modal": {
+      "setupRequired": "Voice Assistant Setup Required",
+      "setupMessage": "Complete the AI Assistant setup to use voice features.",
+      "startSetup": "Start Setup",
+      "cancel": "Cancel"
+    }
+  },
+  "aiChat": {
+    "title": "AI Chat",
+    "inputPlaceholder": "Ask the AI anything...",
+    "sendButton": "Send",
+    "retryButton": "Retry"
   }
 }

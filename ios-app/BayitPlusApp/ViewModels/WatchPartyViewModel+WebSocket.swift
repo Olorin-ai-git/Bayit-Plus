@@ -46,7 +46,7 @@ extension WatchPartyViewModel {
         receiveTask = Task { [weak self] in
             let stream = await connection.receive()
             for await text in stream {
-                await self?.handleWSMessage(text)
+                self?.handleWSMessage(text)
             }
             await MainActor.run { self?.isConnected = false }
         }

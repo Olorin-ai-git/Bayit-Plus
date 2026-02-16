@@ -3165,49 +3165,33 @@
     "weekend": "週末"
   },
   "voiceOnboarding": {
+    "title": "音声トレーニング",
+    "stepProgress": "ステップ {{step}} / {{total}}",
     "welcome": {
-      "title": "音声コントロールへようこそ",
-      "description": "音声でBayit+を操作してハンズフリー体験を"
+      "title": "音声トレーニング",
+      "description": "パーソナライズされた音声認識と音声コマンドのために音声プロファイルをトレーニングします。"
     },
-    "features": {
-      "voiceCommands": "音声コマンド",
-      "voiceCommandsDesc": "自然な言葉でナビゲート、検索、再生をコントロール",
-      "tts": "テキスト読み上げ",
-      "ttsDesc": "応答とコンテンツの説明を音声で聞く",
-      "wakeWord": "ウェイクワード",
-      "wakeWordDesc": "'Bayit'と言っていつでも音声コントロールを起動"
+    "recording": {
+      "micButton": "マイク",
+      "recButton": "録音",
+      "tapToStart": "タップして録音を開始",
+      "tapToStop": "録音中... タップして停止",
+      "recordButton": "録音",
+      "stopButton": "停止"
     },
-    "getStarted": "始める",
-    "permissions": {
-      "title": "マイクへのアクセス",
-      "description": "音声コントロールにはコマンドを聞くためのマイクアクセスが必要です",
-      "privacy": "音声データは安全に処理され、保存されることはありません"
+    "training": {
+      "title": "トレーニング中",
+      "message": "音声プロファイルをトレーニング中です。しばらくお待ちください。"
     },
-    "permissionsGranted": "マイクアクセスが許可されました",
-    "permissionRequired": {
-      "title": "許可が必要です",
-      "message": "音声コントロールを使用するには、デバイス設定でマイクアクセスを有効にしてください"
+    "completion": {
+      "title": "音声プロファイル準備完了！",
+      "message": "音声プロファイルが作成されました。音声コマンドとパーソナライズされた音声機能を使用できます。"
     },
-    "grantPermissions": "許可を与える",
-    "testWakeWord": {
-      "title": "ウェイクワードをテスト",
-      "description": "'Bayit'と言って音声起動をテスト",
-      "success": "素晴らしい！音声起動が機能しています"
-    },
-    "startTest": "テスト開始",
-    "complete": {
-      "title": "準備完了！",
-      "description": "音声コントロールが有効になりました。これらのコマンドを試してください：",
-      "tryCommands": "これらのコマンドを試してください",
-      "examples": {
-        "search": "\"Faudaを検索\"",
-        "play": "\"ニュースを再生\"",
-        "navigate": "\"ライブTVに移動\"",
-        "control": "\"一時停止\" または \"音量を上げて\""
-      },
-      "startUsing": "音声コントロールを使い始める"
-    },
-    "skip": "今はスキップ"
+    "buttons": {
+      "back": "戻る",
+      "next": "次へ",
+      "finish": "完了"
+    }
   },
   "portal": {
     "nav": {
@@ -3481,5 +3465,45 @@
   "recording": {
     "stop": "録音を停止",
     "start": "録音を開始"
+  },
+  "aiOnboarding": {
+    "title": "AIアシスタントセットアップ",
+    "stepProgress": "ステップ {{step}} / {{total}}",
+    "welcome": {
+      "title": "AIアシスタントへようこそ",
+      "description": "セマンティック検索、チャットボット支援、インテリジェントな推奨事項のためのAIコンパニオン。"
+    },
+    "permissions": {
+      "title": "権限",
+      "description": "AIアシスタントには以下へのアクセスが必要です：\n\n• 視聴履歴（パーソナライズされた推奨事項のため）\n• 検索クエリ（結果を改善するため）\n• 設定（応答をカスタマイズするため）"
+    },
+    "personalization": {
+      "title": "パーソナライゼーション",
+      "description": "AIはあなたのインタラクションから学習し、以下を提供します：\n\n• より良いコンテンツ推奨\n• より正確な検索結果\n• 文脈に応じたチャットボット応答"
+    },
+    "completion": {
+      "title": "準備完了！",
+      "message": "AIアシスタントがコンテンツの発見と楽しみをサポートする準備ができました。"
+    },
+    "buttons": {
+      "back": "戻る",
+      "next": "次へ",
+      "finish": "完了"
+    }
+  },
+  "voiceAssistant": {
+    "fabLabel": "音声アシスタント",
+    "modal": {
+      "setupRequired": "音声アシスタントのセットアップが必要",
+      "setupMessage": "音声機能を使用するにはAIアシスタントのセットアップを完了してください。",
+      "startSetup": "セットアップを開始",
+      "cancel": "キャンセル"
+    }
+  },
+  "aiChat": {
+    "title": "AIチャット",
+    "inputPlaceholder": "AIに何でも聞いてください...",
+    "sendButton": "送信",
+    "retryButton": "再試行"
   }
 }

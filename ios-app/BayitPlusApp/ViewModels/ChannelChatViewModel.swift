@@ -99,7 +99,7 @@ final class ChannelChatViewModel {
         receiveTask = Task { [weak self] in
             let stream = await connection.receive()
             for await message in stream {
-                await self?.handleMessage(message)
+                self?.handleMessage(message)
             }
             await MainActor.run { self?.isConnected = false }
         }

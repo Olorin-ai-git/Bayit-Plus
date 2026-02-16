@@ -68,7 +68,7 @@ final class MissionsViewModel {
             let response = try await repository.claimMission(missionId: id)
             if response.success {
                 if let index = missions.firstIndex(where: { $0.id == id }) {
-                    var updatedMission = missions[index]
+                    let updatedMission = missions[index]
                     missions[index] = DailyMission(
                         id: updatedMission.id,
                         type: updatedMission.type,

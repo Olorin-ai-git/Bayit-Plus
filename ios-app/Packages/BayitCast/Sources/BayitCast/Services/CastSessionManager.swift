@@ -144,7 +144,7 @@ public final class CastSessionManager: CastSessionProtocol {
     }
 
     private func setupGoogleCastFramework(receiverAppId: String) async throws {
-        try await Task { @MainActor in
+        await Task { @MainActor in
             logger.info("Setting up Google Cast framework", context: [
                 "receiverAppId": receiverAppId
             ])

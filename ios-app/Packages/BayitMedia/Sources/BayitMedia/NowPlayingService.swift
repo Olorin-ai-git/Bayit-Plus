@@ -37,7 +37,7 @@ public final class NowPlayingService: Sendable {
         }
 
         if let artworkURL = metadata.artworkURL {
-            loadArtwork(from: artworkURL) { [weak self] artwork in
+            loadArtwork(from: artworkURL) { [weak self, info] artwork in
                 guard self != nil else { return }
                 var updatedInfo = info
                 if let artwork {

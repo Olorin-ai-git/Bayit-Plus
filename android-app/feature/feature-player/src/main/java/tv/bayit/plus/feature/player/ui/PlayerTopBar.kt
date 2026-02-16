@@ -42,6 +42,8 @@ fun PlayerTopBar(
     secondarySubtitleLanguage: String? = null,
     onSubtitlePickerClick: (() -> Unit)? = null,
     onAIFeaturesClick: (() -> Unit)? = null,
+    isVodTriviaEnabled: Boolean = false,
+    onVodTriviaToggle: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -106,6 +108,24 @@ fun PlayerTopBar(
                         fontSize = DesignTokens.FontSize.md,
                         modifier = Modifier.padding(start = 4.dp),
                     )
+                }
+            }
+
+            if (!isLiveContent) {
+                onVodTriviaToggle?.let { onClick ->
+                    Spacer(modifier = Modifier.width(DesignTokens.Spacing.xs))
+                    IconButton(onClick = onClick) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = bayitString("player.ai.triviaToggle"),
+                            tint = if (isVodTriviaEnabled) {
+                                DesignTokens.Colors.Primary.light
+                            } else {
+                                DesignTokens.Colors.Text.muted
+                            },
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
                 }
             }
 

@@ -70,10 +70,11 @@ struct ChildrenView: View {
             title: item.title,
             subtitle: item.category,
             aspectRatio: 21/9,
-            width: .infinity
-        ) {
-            coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
-        }
+            width: .infinity,
+            onTap: {
+                coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
+            }
+        )
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
@@ -128,10 +129,11 @@ struct ChildrenView: View {
                 GlassContentCard(
                     thumbnailURL: cat.thumbnail,
                     title: cat.name,
-                    width: .infinity
-                ) {
-                    Task { await vm.loadContent(category: cat.id) }
-                }
+                    width: .infinity,
+                    onTap: {
+                        Task { await vm.loadContent(category: cat.id) }
+                    }
+                )
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -144,10 +146,11 @@ struct ChildrenView: View {
                     thumbnailURL: item.thumbnail,
                     title: item.title,
                     subtitle: item.duration,
-                    width: .infinity
-                ) {
-                    coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
-                }
+                    width: .infinity,
+                    onTap: {
+                        coordinator.pushToCurrentTab(.movieDetail(movieId: item.id))
+                    }
+                )
             }
 
             if vm.items.count < vm.total {

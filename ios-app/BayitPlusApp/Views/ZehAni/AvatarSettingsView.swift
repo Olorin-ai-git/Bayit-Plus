@@ -152,20 +152,29 @@ struct AvatarSettingsView: View {
 
     private func loadData() {
         isLoading = true
-        Task {
+        Task { [repos] in
             do {
                 async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
                 async let meshTask = repos.avatarMeshRepository.fetchMeshStatus(avatarId: avatarId)
 
                 let avatarsResponse = try await avatarsTask
-                avatar = avatarsResponse.avatars.first { $0.avatarId == avatarId }
+                await MainActor.run {
+                    avatar = avatarsResponse.avatars.first { $0.avatarId == avatarId }
+                }
 
-                meshStatus = try? await meshTask
+                let mesh = try? await meshTask
+                await MainActor.run {
+                    meshStatus = mesh
+                }
             } catch {
                 logger.error("Failed to load avatar settings", error: error)
-                self.error = error.localizedDescription
+                await MainActor.run {
+                    self.error = error.localizedDescription
+                }
             }
-            isLoading = false
+            await MainActor.run {
+                isLoading = false
+            }
         }
     }
 

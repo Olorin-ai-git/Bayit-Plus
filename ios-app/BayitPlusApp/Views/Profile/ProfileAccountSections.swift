@@ -197,7 +197,7 @@ extension ProfileView {
             }
             GlassCard {
                 Button {
-                    Task { try? await authManager.signOut() }
+                    Task { await authManager.signOut() }
                 } label: {
                     HStack(spacing: DesignTokens.Spacing.md) {
                         Image(systemName: "rectangle.portrait.and.arrow.right")

@@ -55,7 +55,6 @@ final class RewardsViewModel {
     /// Each level requires levelThreshold points.
     var levelProgress: Double {
         let levelThreshold = 100
-        guard levelThreshold > 0 else { return 0 }
         let pointsInLevel = points % levelThreshold
         return Double(pointsInLevel) / Double(levelThreshold)
     }

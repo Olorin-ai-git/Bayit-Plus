@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player
 
+import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 
 /**
@@ -31,4 +32,7 @@ data class PlayerExtendedState(
     val secondarySubtitleCues: List<tv.bayit.plus.core.model.SubtitleCue> = emptyList(),
     val activePrimaryCue: tv.bayit.plus.core.model.SubtitleCue? = null,
     val activeSecondaryCue: tv.bayit.plus.core.model.SubtitleCue? = null,
+    val vodTriviaFact: TriviaFact? = null,
+    val isVodTriviaEnabled: Boolean = true,
+    val vodTriviaLanguage: String = "en",
 )

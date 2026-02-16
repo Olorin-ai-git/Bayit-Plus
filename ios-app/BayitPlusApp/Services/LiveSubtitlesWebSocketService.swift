@@ -110,16 +110,16 @@ final class LiveSubtitlesWebSocketService {
             return
         }
 
-        webSocketTask?.send(.string(jsonString)) { error in
+        webSocketTask?.send(.string(jsonString)) { [weak self] error in
             if let error = error {
                 Task { @MainActor in
-                    self.error = "Authentication failed: \(error.localizedDescription)"
-                    self.isConnected = false
-                    self.logger.error("Auth message send failed", error: error)
+                    self?.error = "Authentication failed: \(error.localizedDescription)"
+                    self?.isConnected = false
+                    self?.logger.error("Auth message send failed", error: error)
                 }
             } else {
                 Task { @MainActor in
-                    self.logger.info("Subtitle auth message sent")
+                    self?.logger.info("Subtitle auth message sent")
                 }
             }
         }

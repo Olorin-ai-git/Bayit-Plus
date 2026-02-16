@@ -2446,49 +2446,33 @@
     "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives"
   },
   "voiceOnboarding": {
+    "title": "Entraînement Vocal",
+    "stepProgress": "Étape {{step}} sur {{total}}",
     "welcome": {
-      "title": "Bienvenue au Contrôle Vocal",
-      "description": "Contrôlez Bayit+ avec votre voix pour une expérience mains libres"
+      "title": "Entraînement Vocal",
+      "description": "Entraînez votre profil vocal pour la reconnaissance vocale personnalisée et les commandes vocales."
     },
-    "features": {
-      "voiceCommands": "Commandes Vocales",
-      "voiceCommandsDesc": "Naviguez, recherchez et contrôlez la lecture avec la parole naturelle",
-      "tts": "Synthèse Vocale",
-      "ttsDesc": "Écoutez les réponses et descriptions de contenu à haute voix",
-      "wakeWord": "Mot d'Activation",
-      "wakeWordDesc": "Dites 'Bayit' pour activer le contrôle vocal à tout moment"
+    "recording": {
+      "micButton": "MIC",
+      "recButton": "ENR",
+      "tapToStart": "Appuyez pour commencer l'enregistrement",
+      "tapToStop": "Enregistrement... Appuyez pour arrêter",
+      "recordButton": "Enregistrer",
+      "stopButton": "Arrêter"
     },
-    "getStarted": "Commencer",
-    "permissions": {
-      "title": "Accès au Microphone",
-      "description": "Le contrôle vocal nécessite l'accès au microphone pour entendre vos commandes",
-      "privacy": "Vos données vocales sont traitées de manière sécurisée et ne sont jamais stockées"
+    "training": {
+      "title": "Entraînement en Cours",
+      "message": "Votre profil vocal est en cours d'entraînement. Cela peut prendre un instant."
     },
-    "permissionsGranted": "Accès au microphone accordé",
-    "permissionRequired": {
-      "title": "Permission Requise",
-      "message": "Veuillez activer l'accès au microphone dans les paramètres de votre appareil pour utiliser le contrôle vocal"
+    "completion": {
+      "title": "Profil Vocal Prêt !",
+      "message": "Votre profil vocal a été créé. Vous pouvez maintenant utiliser les commandes vocales et les fonctionnalités de parole personnalisées."
     },
-    "grantPermissions": "Accorder les Permissions",
-    "testWakeWord": {
-      "title": "Tester le Mot d'Activation",
-      "description": "Dites 'Bayit' pour tester l'activation vocale",
-      "success": "Parfait ! L'activation vocale fonctionne"
-    },
-    "startTest": "Démarrer le Test",
-    "complete": {
-      "title": "Tout est Prêt !",
-      "description": "Le contrôle vocal est maintenant activé. Essayez ces commandes :",
-      "tryCommands": "Essayez Ces Commandes",
-      "examples": {
-        "search": "\"Rechercher Fauda\"",
-        "play": "\"Lire les actualités\"",
-        "navigate": "\"Aller à la TV en Direct\"",
-        "control": "\"Pause\" ou \"Augmenter le volume\""
-      },
-      "startUsing": "Commencer à Utiliser le Contrôle Vocal"
-    },
-    "skip": "Passer pour l'instant"
+    "buttons": {
+      "back": "Retour",
+      "next": "Suivant",
+      "finish": "Terminer"
+    }
   },
   "portal": {
     "nav": {
@@ -2762,5 +2746,45 @@
   "recording": {
     "stop": "Arrêter l'Enregistrement",
     "start": "Démarrer l'Enregistrement"
+  },
+  "aiOnboarding": {
+    "title": "Configuration de l'Assistant IA",
+    "stepProgress": "Étape {{step}} sur {{total}}",
+    "welcome": {
+      "title": "Bienvenue dans l'Assistant IA",
+      "description": "Votre compagnon IA pour la recherche sémantique, l'assistance par chatbot et les recommandations intelligentes."
+    },
+    "permissions": {
+      "title": "Autorisations",
+      "description": "L'Assistant IA a besoin d'accéder à :\n\n• Votre historique de visionnage (pour des recommandations personnalisées)\n• Requêtes de recherche (pour améliorer les résultats)\n• Préférences (pour adapter les réponses)"
+    },
+    "personalization": {
+      "title": "Personnalisation",
+      "description": "L'IA apprendra de vos interactions pour fournir :\n\n• De meilleures recommandations de contenu\n• Des résultats de recherche plus précis\n• Des réponses contextuelles du chatbot"
+    },
+    "completion": {
+      "title": "Tout est Prêt !",
+      "message": "Votre Assistant IA est prêt à vous aider à découvrir et profiter du contenu."
+    },
+    "buttons": {
+      "back": "Retour",
+      "next": "Suivant",
+      "finish": "Terminer"
+    }
+  },
+  "voiceAssistant": {
+    "fabLabel": "Assistant Vocal",
+    "modal": {
+      "setupRequired": "Configuration de l'Assistant Vocal Requise",
+      "setupMessage": "Complétez la configuration de l'Assistant IA pour utiliser les fonctionnalités vocales.",
+      "startSetup": "Démarrer la Configuration",
+      "cancel": "Annuler"
+    }
+  },
+  "aiChat": {
+    "title": "Chat IA",
+    "inputPlaceholder": "Demandez n'importe quoi à l'IA...",
+    "sendButton": "Envoyer",
+    "retryButton": "Réessayer"
   }
 }

@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
@@ -68,7 +69,7 @@ internal fun AIOnboardingScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "AI Assistant Setup")
+        GlassTopBar(title = bayitString("aiOnboarding.title"))
 
         Column(
             modifier = Modifier
@@ -83,7 +84,10 @@ internal fun AIOnboardingScreen(
             )
 
             Text(
-                text = "Step ${currentStep + 1} of $totalSteps",
+                text = bayitString("aiOnboarding.stepProgress", mapOf(
+                    "step" to (currentStep + 1).toString(),
+                    "total" to totalSteps.toString()
+                )),
                 style = MaterialTheme.typography.labelMedium,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -116,14 +120,17 @@ internal fun AIOnboardingScreen(
                 ) {
                     if (currentStep > 0) {
                         GlassButton(
-                            text = "Back",
+                            text = bayitString("aiOnboarding.buttons.back"),
                             onClick = onPreviousStep,
                             isPrimary = false,
                             modifier = Modifier.weight(1f),
                         )
                     }
                     GlassButton(
-                        text = if (currentStep == totalSteps - 1) "Finish" else "Next",
+                        text = bayitString(
+                            if (currentStep == totalSteps - 1) "aiOnboarding.buttons.finish"
+                            else "aiOnboarding.buttons.next"
+                        ),
                         onClick = if (currentStep == totalSteps - 1) onComplete else onNextStep,
                         modifier = Modifier.weight(1f),
                     )
@@ -141,14 +148,14 @@ private fun WelcomeStep() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "Welcome to AI Assistant",
+                text = bayitString("aiOnboarding.welcome.title"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Your AI companion for semantic search, chatbot assistance, and intelligent recommendations.",
+                text = bayitString("aiOnboarding.welcome.description"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
                 textAlign = TextAlign.Center,
@@ -162,13 +169,13 @@ private fun PermissionsStep() {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(
-                text = "Permissions",
+                text = bayitString("aiOnboarding.permissions.title"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "The AI Assistant needs access to:\n\n• Your viewing history (for personalized recommendations)\n• Search queries (to improve results)\n• Preferences (to tailor responses)",
+                text = bayitString("aiOnboarding.permissions.description"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -181,13 +188,13 @@ private fun PersonalizationStep() {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(
-                text = "Personalization",
+                text = bayitString("aiOnboarding.personalization.title"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "The AI will learn from your interactions to provide:\n\n• Better content recommendations\n• More accurate search results\n• Contextual chatbot responses",
+                text = bayitString("aiOnboarding.personalization.description"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -203,14 +210,14 @@ private fun CompletionStep() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "All Set!",
+                text = bayitString("aiOnboarding.completion.title"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Your AI Assistant is ready to help you discover and enjoy content.",
+                text = bayitString("aiOnboarding.completion.message"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
                 textAlign = TextAlign.Center,
