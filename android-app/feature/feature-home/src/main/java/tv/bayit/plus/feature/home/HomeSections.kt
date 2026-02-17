@@ -174,10 +174,15 @@ internal fun CategoryRow(
                 items = category.items,
                 key = { it.id },
             ) { item ->
+                val cardAspectRatio = when (item.type) {
+                    "podcast", "radio" -> 1f
+                    else -> 2f / 3f
+                }
                 GlassContentCard(
                     imageUrl = item.thumbnail ?: item.backdrop,
                     title = item.title,
                     onClick = { onItemClick(item) },
+                    aspectRatio = cardAspectRatio,
                 )
             }
         }

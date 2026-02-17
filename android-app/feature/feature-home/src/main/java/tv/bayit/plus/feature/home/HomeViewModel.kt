@@ -15,6 +15,7 @@ import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
 import tv.bayit.plus.core.model.CityContentResponse
+import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.CultureTrendingItem
 import tv.bayit.plus.core.model.FeaturedResponse
 import tv.bayit.plus.core.model.IsraeliBusinessesResponse
@@ -87,6 +88,7 @@ class HomeViewModel @Inject constructor(
         val liveChannelsDeferred = viewModelScope.async { loadLiveChannels() }
         val radioStationsDeferred = viewModelScope.async { loadRadioStations() }
         val continueWatchingDeferred = viewModelScope.async { loadContinueWatching() }
+        val collectionsDeferred = viewModelScope.async { loadFeaturedCollections() }
         val trendingDeferred = viewModelScope.async { loadTrending() }
         val youngstersDeferred = viewModelScope.async { loadYoungsters() }
         val telAvivDeferred = viewModelScope.async { loadTelAvivContent() }
@@ -97,6 +99,7 @@ class HomeViewModel @Inject constructor(
         val liveChannels = liveChannelsDeferred.await()
         val radioStations = radioStationsDeferred.await()
         val continueWatching = continueWatchingDeferred.await()
+        val featuredCollections = collectionsDeferred.await()
         val trending = trendingDeferred.await()
         val youngsters = youngstersDeferred.await()
         val telAviv = telAvivDeferred.await()
@@ -121,6 +124,7 @@ class HomeViewModel @Inject constructor(
             liveChannels = liveChannels,
             radioStations = radioStations,
             continueWatching = continueWatching,
+            featuredCollections = featuredCollections,
             trendingContent = trending,
             youngstersTrending = youngsters,
             telAvivContent = telAviv,
@@ -129,6 +133,18 @@ class HomeViewModel @Inject constructor(
             israeliBusinesses = israeliBusinesses,
             isRefreshing = false,
         )
+    }
+
+    private suspend fun loadFeaturedCollections(): List<CollectionDetail> {
+        return try {
+            when (val result = contentRepository.getCollectionRecommendations()) {
+                is BayitResult.Success -> result.data
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load collection recommendations (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
     }
 
     private suspend fun loadLiveChannels(): List<LiveChannelItem> {
@@ -217,6 +233,7 @@ sealed interface HomeUiState {
         val liveChannels: List<LiveChannelItem> = emptyList(),
         val radioStations: List<RadioStationItem> = emptyList(),
         val continueWatching: List<WatchHistoryItem> = emptyList(),
+        val featuredCollections: List<CollectionDetail> = emptyList(),
         val trendingContent: List<CultureTrendingItem> = emptyList(),
         val youngstersTrending: List<SectionContentItem> = emptyList(),
         val telAvivContent: CityContentResponse? = null,

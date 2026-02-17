@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.vod.components.CollectionBanner
+import java.util.Locale
 
 @Composable
 internal fun HomeSuccessContent(
@@ -23,6 +25,7 @@ internal fun HomeSuccessContent(
     onContentClick: (ContentItem) -> Unit,
     onChannelClick: (String) -> Unit,
     onRadioClick: (String) -> Unit,
+    onCollectionClick: (String) -> Unit = {},
     onYoungstersClick: () -> Unit,
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
@@ -80,6 +83,16 @@ internal fun HomeSuccessContent(
                     ContinueWatchingRow(
                         items = uiState.continueWatching,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                    )
+                }
+            }
+
+            if (uiState.featuredCollections.isNotEmpty()) {
+                item(key = "collections_banner") {
+                    CollectionBanner(
+                        collections = uiState.featuredCollections,
+                        onCollectionClick = onCollectionClick,
+                        currentLanguage = Locale.getDefault().language,
                     )
                 }
             }

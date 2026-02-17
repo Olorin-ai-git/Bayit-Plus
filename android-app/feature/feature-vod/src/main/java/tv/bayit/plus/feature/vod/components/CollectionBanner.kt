@@ -23,31 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.theme.DesignTokens
-
-/**
- * Collection data model matching backend API response
- */
-data class Collection(
-    val id: String,
-    val title: String,
-    val titleEn: String? = null,
-    val thumbnail: String? = null,
-    val backdrop: String? = null,
-    val promoText: String? = null,
-    val promoTextEn: String? = null,
-    val promoTextEs: String? = null,
-    val promoTextFr: String? = null,
-    val promoTextIt: String? = null,
-    val promoTextHi: String? = null,
-    val promoTextTa: String? = null,
-    val promoTextBn: String? = null,
-    val promoTextJa: String? = null,
-    val promoTextZh: String? = null,
-    val availableMovies: Int,
-    val totalMovies: Int,
-)
 
 /**
  * CollectionBanner - Rotating collection promotional banner for Android
@@ -68,7 +46,7 @@ data class Collection(
  */
 @Composable
 fun CollectionBanner(
-    collections: List<Collection>,
+    collections: List<CollectionDetail>,
     onCollectionClick: (String) -> Unit,
     currentLanguage: String,
     modifier: Modifier = Modifier,
@@ -84,19 +62,15 @@ fun CollectionBanner(
     val currentCollection = collections[currentIndex]
 
     // Auto-rotation effect
-    LaunchedEffect(autoRotate, collections.size, currentIndex) {
+    LaunchedEffect(autoRotate, collections.size) {
         if (!autoRotate || collections.size <= 1) return@LaunchedEffect
 
-        delay(rotationIntervalMs)
-
-        // Fade out
-        alpha.animateTo(0f, animationSpec = tween(durationMillis = 300))
-
-        // Change content
-        currentIndex = (currentIndex + 1) % collections.size
-
-        // Fade in
-        alpha.animateTo(1f, animationSpec = tween(durationMillis = 300))
+        while (true) {
+            delay(rotationIntervalMs)
+            alpha.animateTo(0f, animationSpec = tween(durationMillis = 300))
+            currentIndex = (currentIndex + 1) % collections.size
+            alpha.animateTo(1f, animationSpec = tween(durationMillis = 300))
+        }
     }
 
     Box(
@@ -116,11 +90,19 @@ fun CollectionBanner(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(DesignTokens.Spacing.md),
+                .padding(
+                    start = DesignTokens.Spacing.md,
+                    end = DesignTokens.Spacing.md,
+                    top = DesignTokens.Spacing.md,
+                    bottom = if (collections.size > 1) DesignTokens.Spacing.xl else DesignTokens.Spacing.md,
+                )
+                .align(Alignment.TopStart),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
         ) {
             // Poster Image
-            val posterUrl = currentCollection.thumbnail ?: currentCollection.backdrop
+            val posterUrl = currentCollection.thumbnail
+                ?: currentCollection.backdrop
+                ?: currentCollection.movies.firstOrNull()?.thumbnail
             if (posterUrl != null) {
                 CachedAsyncImage(
                     url = posterUrl,
@@ -140,41 +122,16 @@ fun CollectionBanner(
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center
             ) {
-                // Header with pagination
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "AI RECOMMENDATION",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 0.5.sp
-                        ),
-                        color = DesignTokens.Colors.Text.muted
-                    )
-
-                    // Pagination dots
-                    if (collections.size > 1) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            collections.indices.forEach { index ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(
-                                            if (index == currentIndex)
-                                                DesignTokens.Colors.Text.primary
-                                            else
-                                                DesignTokens.Colors.Text.muted.copy(alpha = 0.3f)
-                                        )
-                                )
-                            }
-                        }
-                    }
-                }
+                // Header
+                Text(
+                    text = "AI RECOMMENDATION",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = DesignTokens.Colors.Text.muted
+                )
 
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
@@ -208,7 +165,7 @@ fun CollectionBanner(
 
                 // Movie Count
                 Text(
-                    text = "${currentCollection.availableMovies} Movies",
+                    text = "${currentCollection.availableMovies ?: 0} Movies",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
                     color = DesignTokens.Colors.Text.muted
                 )
@@ -233,34 +190,35 @@ fun CollectionBanner(
                 }
             }
         }
+
+        // Pagination dots at bottom center
+        if (collections.size > 1) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = DesignTokens.Spacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                collections.indices.forEach { index ->
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (index == currentIndex)
+                                    DesignTokens.Colors.Text.primary
+                                else
+                                    DesignTokens.Colors.Text.muted.copy(alpha = 0.3f)
+                            )
+                    )
+                }
+            }
+        }
     }
 }
 
-/**
- * Get localized title for collection
- */
-private fun getLocalizedTitle(collection: Collection, language: String): String {
-    return when (language) {
-        "en" -> collection.titleEn ?: collection.title
-        else -> collection.title
-    }
-}
+private fun getLocalizedTitle(collection: CollectionDetail, language: String): String =
+    collection.title ?: ""
 
-/**
- * Get localized promo text for collection
- */
-private fun getLocalizedPromoText(collection: Collection, language: String): String {
-    return when (language) {
-        "he" -> collection.promoText ?: collection.promoTextEn ?: ""
-        "en" -> collection.promoTextEn ?: collection.promoText ?: ""
-        "es" -> collection.promoTextEs ?: collection.promoTextEn ?: ""
-        "fr" -> collection.promoTextFr ?: collection.promoTextEn ?: ""
-        "it" -> collection.promoTextIt ?: collection.promoTextEn ?: ""
-        "hi" -> collection.promoTextHi ?: collection.promoTextEn ?: ""
-        "ta" -> collection.promoTextTa ?: collection.promoTextEn ?: ""
-        "bn" -> collection.promoTextBn ?: collection.promoTextEn ?: ""
-        "ja" -> collection.promoTextJa ?: collection.promoTextEn ?: ""
-        "zh" -> collection.promoTextZh ?: collection.promoTextEn ?: ""
-        else -> collection.promoTextEn ?: collection.promoText ?: ""
-    }
-}
+private fun getLocalizedPromoText(collection: CollectionDetail, language: String): String =
+    collection.localizedPromoText() ?: ""

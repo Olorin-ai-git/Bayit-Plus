@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core:core-data"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
+    implementation(project(":feature:feature-vod"))
 
     implementation(libs.core.ktx)
 

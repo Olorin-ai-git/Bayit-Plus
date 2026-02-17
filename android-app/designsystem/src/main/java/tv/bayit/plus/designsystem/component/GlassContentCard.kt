@@ -32,13 +32,14 @@ fun GlassContentCard(
     progress: Float? = null,
     cardWidth: Dp = DesignTokens.Spacing.xxxxl * 3,
     contentDescription: String? = title,
+    aspectRatio: Float = 2f / 3f,
 ) {
     val shape = RoundedCornerShape(DesignTokens.Radius.md)
 
     Box(
         modifier = modifier
             .width(cardWidth)
-            .aspectRatio(2f / 3f)
+            .aspectRatio(aspectRatio)
             .glassMorphism(
                 cornerRadius = DesignTokens.Radius.md,
                 backgroundColor = DesignTokens.Colors.Glass.bgLight,

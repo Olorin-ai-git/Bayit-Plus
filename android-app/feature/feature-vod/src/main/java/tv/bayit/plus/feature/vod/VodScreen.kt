@@ -20,6 +20,8 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.vod.components.CollectionBanner
+import java.util.Locale
 
 @Composable
 fun VodRoute(
@@ -35,6 +37,7 @@ fun VodRoute(
             val type = item.type ?: if (item.isSeries == true) "series" else "movie"
             onNavigateToContent(item.id, type)
         },
+        onCollectionClick = { collectionId -> onNavigateToContent(collectionId, "collection") },
         onCategorySelected = viewModel::selectCategory,
         onRefresh = viewModel::refresh,
         modifier = modifier,
@@ -45,6 +48,7 @@ fun VodRoute(
 internal fun VodScreen(
     uiState: VodUiState,
     onContentClick: (ContentItem) -> Unit,
+    onCollectionClick: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
@@ -63,6 +67,13 @@ internal fun VodScreen(
                             categories = uiState.categories,
                             selectedCategoryId = uiState.selectedCategoryId,
                             onCategorySelected = onCategorySelected,
+                        )
+                    }
+                    if (uiState.featuredCollections.isNotEmpty() && uiState.selectedCategoryId == null) {
+                        CollectionBanner(
+                            collections = uiState.featuredCollections,
+                            onCollectionClick = onCollectionClick,
+                            currentLanguage = Locale.getDefault().language,
                         )
                     }
                     if (uiState.isLoadingContent) {

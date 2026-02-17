@@ -47,6 +47,11 @@ class ApiContentRepository(
             client.safeApiCall { service.getCollectionDetail(collectionId) }
         }
 
+    override suspend fun getCollectionRecommendations(): BayitResult<List<CollectionDetail>> =
+        runCatchingResult {
+            client.safeApiCall { service.getCollectionRecommendations() }
+        }
+
     override suspend fun getFeatured(): BayitResult<Any> = runCatchingResult {
         client.safeApiCall { service.getFeatured() }
     }
@@ -86,6 +91,9 @@ private interface ContentService {
     suspend fun getCollectionDetail(
         @Path("collectionId") collectionId: String,
     ): CollectionDetail
+
+    @GET("api/v1/content/collections/recommendations")
+    suspend fun getCollectionRecommendations(): List<CollectionDetail>
 
     @GET("api/v1/content/all")
     suspend fun getAllContent(

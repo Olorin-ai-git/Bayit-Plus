@@ -11,6 +11,7 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.ContentCategory
 import tv.bayit.plus.core.model.ContentItem
 import javax.inject.Inject
@@ -30,6 +31,7 @@ class VodViewModel @Inject constructor(
     init {
         loadAllContent()
         loadCategories()
+        loadCollectionRecommendations()
     }
 
     fun refresh() {
@@ -39,6 +41,7 @@ class VodViewModel @Inject constructor(
         }
         loadAllContent()
         loadCategories()
+        loadCollectionRecommendations()
     }
 
     fun selectCategory(categoryId: String) {
@@ -130,6 +133,24 @@ class VodViewModel @Inject constructor(
         }
     }
 
+    private fun loadCollectionRecommendations() {
+        viewModelScope.launch {
+            when (val result = contentRepository.getCollectionRecommendations()) {
+                is BayitResult.Success -> {
+                    val currentState = _uiState.value as? VodUiState.Success ?: return@launch
+                    _uiState.value = currentState.copy(featuredCollections = result.data)
+                }
+                is BayitResult.Error -> {
+                    logger.debug(
+                        "Collection recommendations unavailable, hiding banner",
+                        mapOf("errorMessage" to result.message.orEmpty()),
+                    )
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
     private fun filterByCategory(
         items: List<ContentItem>,
         categoryId: String?,
@@ -148,6 +169,7 @@ sealed interface VodUiState {
         val categories: List<ContentCategory>,
         val selectedCategoryId: String?,
         val contentItems: List<ContentItem>,
+        val featuredCollections: List<CollectionDetail> = emptyList(),
         val isRefreshing: Boolean = false,
         val isLoadingContent: Boolean = false,
     ) : VodUiState

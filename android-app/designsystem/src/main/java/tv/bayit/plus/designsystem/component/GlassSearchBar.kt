@@ -1,7 +1,7 @@
 package tv.bayit.plus.designsystem.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -11,6 +11,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -18,15 +19,16 @@ fun GlassSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Search",
+    placeholder: String? = null,
 ) {
+    val placeholderText = placeholder ?: bayitString("search.placeholder")
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(DesignTokens.TouchTarget.minimum),
-        placeholder = { Text(placeholder) },
+            .heightIn(min = DesignTokens.TouchTarget.minimum),
+        placeholder = { Text(placeholderText) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
