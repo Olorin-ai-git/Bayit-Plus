@@ -2,6 +2,7 @@ package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.FeaturedResponse
 import tv.bayit.plus.core.model.ContentDetail
 import tv.bayit.plus.core.model.ContentItem
@@ -71,6 +72,14 @@ class FakeContentRepository : ContentRepository {
     }
 
     override suspend fun getByCategory(categoryId: String): BayitResult<List<Any>> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success(emptyList())
+        }
+    }
+
+    override suspend fun getCollectionRecommendations(): BayitResult<List<CollectionDetail>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
