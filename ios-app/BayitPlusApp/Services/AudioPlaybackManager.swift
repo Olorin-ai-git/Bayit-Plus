@@ -127,6 +127,30 @@ final class AudioPlaybackManager {
         logger.info("Audio playback stopped")
     }
 
+    /// Restart playback from the beginning.
+    func restart() {
+        Task {
+            await mediaPlayer.seek(to: 0)
+            updateNowPlayingPosition()
+        }
+    }
+
+    /// Skip forward by specified seconds (default 30s).
+    func skipForward(seconds: TimeInterval = 30) {
+        Task {
+            await mediaPlayer.skipForward(seconds: seconds)
+            updateNowPlayingPosition()
+        }
+    }
+
+    /// Skip backward by specified seconds (default 30s).
+    func skipBackward(seconds: TimeInterval = 30) {
+        Task {
+            await mediaPlayer.skipBackward(seconds: seconds)
+            updateNowPlayingPosition()
+        }
+    }
+
     // MARK: - Private
 
     private func startPlayback(
