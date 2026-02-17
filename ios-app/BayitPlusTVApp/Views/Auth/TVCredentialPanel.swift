@@ -185,27 +185,39 @@ struct TVCredentialPanel: View {
             }
             .focused($focusedField, equals: .submit)
 
-            // Divider
+            // Divider - Improved gradient style
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Rectangle()
-                    .fill(DesignTokens.Glass.border)
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, DesignTokens.Glass.border, .clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .frame(height: 1)
                 Text(localization.t("login.or"))
                     .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.muted)
+                    .opacity(0.6)
                 Rectangle()
-                    .fill(DesignTokens.Glass.border)
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, DesignTokens.Glass.border, .clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                     .frame(height: 1)
             }
-            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
 
-            // Apple Sign In
+            // Apple Sign-In Button - Medium size, less prominent than email
             GlassButton(
                 localization.t("login.continueWithApple"),
                 variant: .secondary,
-                size: .large,
+                size: .medium,
                 isDisabled: isLoading,
-                isLoading: isLoading,
                 icon: Image(systemName: "apple.logo")
             ) {
                 signInWithApple()

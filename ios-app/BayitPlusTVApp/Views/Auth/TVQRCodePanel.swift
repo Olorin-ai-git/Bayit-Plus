@@ -57,7 +57,7 @@ struct TVQRCodePanel: View {
     // MARK: - Header
 
     private var headerSection: some View {
-        VStack(spacing: TVDesignTokens.Spacing.sm) {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
             Text(localization.t("tvLogin.qrTitle"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.xxl,
@@ -70,16 +70,26 @@ struct TVQRCodePanel: View {
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
 
+            // Value proposition badge
             HStack(spacing: TVDesignTokens.Spacing.xs) {
-                Image(systemName: "sparkles")
+                Image(systemName: "bolt.fill")
                     .font(.system(size: TVDesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Colors.Primary.base)
-
-                Text("Google • Apple • Email")
-                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Colors.Primary.light)
+                Text("Fastest way to sign in")
+                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Text.primary)
             }
-            .padding(.top, TVDesignTokens.Spacing.xs)
+            .padding(.horizontal, TVDesignTokens.Spacing.md)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
+            .background(
+                Capsule()
+                    .fill(DesignTokens.Colors.Primary.base.opacity(0.15))
+                    .overlay(
+                        Capsule()
+                            .stroke(DesignTokens.Colors.Primary.base.opacity(0.3), lineWidth: 1)
+                    )
+            )
+            .padding(.top, TVDesignTokens.Spacing.sm)
         }
     }
 
@@ -118,68 +128,55 @@ struct TVQRCodePanel: View {
     private func qrCodeSection(_ vm: TVQRAuthViewModel) -> some View {
         GlassCard(
             radius: TVDesignTokens.Radius.lg,
-            padding: TVDesignTokens.Spacing.xl
+            padding: TVDesignTokens.Spacing.xxl
         ) {
-            VStack(spacing: TVDesignTokens.Spacing.lg) {
+            VStack(spacing: TVDesignTokens.Spacing.xl) {
                 if let code = vm.qrCodeData {
                     qrCodeImage(for: code)
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(
-                            width: TVDesignTokens.QRCode.size,
-                            height: TVDesignTokens.QRCode.size
+                            width: TVDesignTokens.QRCode.size * 1.3,
+                            height: TVDesignTokens.QRCode.size * 1.3
                         )
                         .clipShape(RoundedRectangle(
-                            cornerRadius: TVDesignTokens.Radius.md
+                            cornerRadius: TVDesignTokens.Radius.lg
                         ))
                         .background(
                             RoundedRectangle(
-                                cornerRadius: TVDesignTokens.Radius.md
+                                cornerRadius: TVDesignTokens.Radius.lg
                             )
                             .fill(.white)
-                            .padding(-TVDesignTokens.Spacing.sm)
+                            .padding(-TVDesignTokens.Spacing.md)
+                        )
+                        .shadow(
+                            color: DesignTokens.Colors.Primary.base.opacity(0.3),
+                            radius: 20,
+                            x: 0,
+                            y: 10
                         )
                         .accessibilityLabel(
-                            "QR code for device pairing. Scan with your phone to sign in with Google, Apple, or Email."
+                            "QR code for device pairing. Scan with your phone to sign in."
                         )
                 }
 
-                Text(localization.t("tvLogin.scanWithPhone"))
-                    .font(.system(
-                        size: TVDesignTokens.FontSize.base,
-                        weight: .medium
-                    ))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .multilineTextAlignment(.center)
+                VStack(spacing: TVDesignTokens.Spacing.sm) {
+                    Text("Scan to continue")
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.lg,
+                            weight: .semibold
+                        ))
+                        .foregroundStyle(DesignTokens.Text.primary)
 
-                // Provider logos
-                HStack(spacing: TVDesignTokens.Spacing.md) {
-                    Image(systemName: "g.circle.fill")
-                        .font(.system(size: TVDesignTokens.FontSize.xxl))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                        .accessibilityLabel("Google")
-
-                    Image(systemName: "apple.logo")
-                        .font(.system(size: TVDesignTokens.FontSize.xxl))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                        .accessibilityLabel("Apple")
-
-                    Image(systemName: "envelope.fill")
-                        .font(.system(size: TVDesignTokens.FontSize.xxl))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                        .accessibilityLabel("Email")
+                    Text("All sign-in methods supported")
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.base,
+                            weight: .medium
+                        ))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                        .multilineTextAlignment(.center)
                 }
-                .padding(.top, TVDesignTokens.Spacing.xs)
-
-                Text("Sign in with any method")
-                    .font(.system(
-                        size: TVDesignTokens.FontSize.sm,
-                        weight: .medium
-                    ))
-                    .foregroundStyle(DesignTokens.Text.muted)
-                    .textCase(.uppercase)
-                    .kerning(1.5)
             }
         }
     }
