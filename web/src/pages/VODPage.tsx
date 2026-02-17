@@ -68,7 +68,7 @@ export default function VODPage() {
   const [allContent, setAllContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [featuredCollection, setFeaturedCollection] = useState<any>(null);
+  const [featuredCollections, setFeaturedCollections] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('category') || 'all'
   );
@@ -127,20 +127,20 @@ export default function VODPage() {
     loadContent();
   }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
 
-  // Load featured collection for banner
+  // Load featured collections for rotating banner
   useEffect(() => {
-    const loadFeaturedCollection = async () => {
+    const loadFeaturedCollections = async () => {
       try {
-        const response = await api.get('/content/collections', { page: 1, limit: 1 });
-        if (response.items && response.items.length > 0) {
-          const collectionDetail = await api.get(`/content/collections/${response.items[0].id}`);
-          setFeaturedCollection(collectionDetail);
+        const collections = await api.get('/content/collections/recommendations');
+        if (collections && collections.length > 0) {
+          setFeaturedCollections(collections);
         }
       } catch (error) {
+        logger.error('Failed to load collection recommendations', 'VODPage', error);
         // Silently fail - banner is optional
       }
     };
-    loadFeaturedCollection();
+    loadFeaturedCollections();
   }, []);
 
   const loadCategories = async () => {
@@ -472,15 +472,13 @@ export default function VODPage() {
           />
         </ScrollView>
 
-        {/* Featured Collection Banner */}
-        {featuredCollection && contentTypeFilter === 'all' && (
+        {/* Featured Collection Banner - Auto-rotating */}
+        {featuredCollections.length > 0 && contentTypeFilter === 'all' && (
           <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
             <CollectionPromoBanner
-              collectionId={featuredCollection.id}
-              title={featuredCollection.title}
-              posterUrl={featuredCollection.thumbnail}
-              promoText={(i18n.language === 'he' ? featuredCollection.promo_text : featuredCollection[`promo_text_${i18n.language}`]) || featuredCollection.promo_text_en || featuredCollection.promo_text || 'Discover this amazing collection'}
-              movieCount={featuredCollection.availableMovies || 0}
+              collections={featuredCollections}
+              autoRotate={true}
+              rotationInterval={5000}
             />
           </View>
         )}

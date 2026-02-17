@@ -114,6 +114,15 @@ protocol ContentRepository: Sendable {
     /// - Throws: `NetworkError` if the request fails.
     func fetchCollectionDetail(id: String) async throws -> CollectionDetail
 
+    /// Fetch all published collections with weighted random ordering for rotating banner.
+    ///
+    /// Collections are ordered using weighted random selection based on available_movies count.
+    /// Results are cached server-side for 30 minutes.
+    ///
+    /// - Returns: Array of all published collections with all language promo texts.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchCollectionRecommendations() async throws -> [CollectionDetail]
+
     /// Fetch content categories for filtering.
     func fetchCategories() async throws -> CategoriesResponse
 }
@@ -274,6 +283,13 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/content/collections/\(id)",
             as: CollectionDetail.self
+        )
+    }
+
+    func fetchCollectionRecommendations() async throws -> [CollectionDetail] {
+        return try await client.get(
+            "/api/v1/content/collections/recommendations",
+            as: [CollectionDetail].self
         )
     }
 

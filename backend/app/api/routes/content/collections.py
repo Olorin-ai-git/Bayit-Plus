@@ -3,9 +3,11 @@ Collections API Endpoints
 Handles movie collection listing, detail, and AI promo generation
 """
 
+import random
 from typing import List, Optional
 
 from app.core.logging_config import get_logger
+from app.core.redis_client import get_redis_client
 from app.models.content import Content
 from app.services.collection_detector_service import collection_detector_service
 from app.services.collection_promo_service import collection_promo_service
@@ -27,6 +29,29 @@ class CollectionResponse(BaseModel):
     backdrop: Optional[str] = None
     promo_text: Optional[str] = None
     promo_text_en: Optional[str] = None
+    available_movies: int
+    total_movies: int
+    tmdb_collection_id: Optional[int] = None
+
+
+class CollectionRecommendationResponse(BaseModel):
+    """Response model for collection recommendations with all language promo texts"""
+
+    id: str
+    title: str
+    title_en: Optional[str] = None
+    thumbnail: Optional[str] = None
+    backdrop: Optional[str] = None
+    promo_text: Optional[str] = None
+    promo_text_en: Optional[str] = None
+    promo_text_es: Optional[str] = None
+    promo_text_fr: Optional[str] = None
+    promo_text_it: Optional[str] = None
+    promo_text_hi: Optional[str] = None
+    promo_text_ta: Optional[str] = None
+    promo_text_bn: Optional[str] = None
+    promo_text_ja: Optional[str] = None
+    promo_text_zh: Optional[str] = None
     available_movies: int
     total_movies: int
     tmdb_collection_id: Optional[int] = None
@@ -141,6 +166,116 @@ async def list_collections(
         )
 
     logger.info(f"Returning {len(results)} collections")
+    return results
+
+
+@router.get(
+    "/collections/recommendations", response_model=List[CollectionRecommendationResponse]
+)
+async def get_collection_recommendations():
+    """
+    Get all published collections with weighted random ordering.
+
+    Collections are ordered using weighted random selection based on available_movies count.
+    Collections with more movies appear more frequently in rotation.
+
+    Results are cached in Redis for 30 minutes for performance.
+
+    Returns:
+        List of all published collections with all language promo texts
+    """
+    cache_key = "collection_recs:all:weighted"
+    redis_client = await get_redis_client()
+
+    # Check cache first
+    cached_data = await redis_client.get(cache_key)
+    if cached_data and isinstance(cached_data, dict) and "collections" in cached_data:
+        logger.info("Returning cached collection recommendations")
+        return [
+            CollectionRecommendationResponse(**item)
+            for item in cached_data["collections"]
+        ]
+
+    # Fetch all published collections
+    collections = await Content.find(
+        {"is_collection_parent": True, "is_published": True}
+    ).to_list()
+
+    if not collections:
+        logger.warning("No published collections found")
+        return []
+
+    # Build collection data with available_movies count
+    collection_data = []
+    max_movies = 0
+
+    for collection in collections:
+        available_movies = await Content.find(
+            {"collection_parent_id": str(collection.id)}
+        ).count()
+
+        collection_data.append(
+            {
+                "collection": collection,
+                "available_movies": available_movies,
+            }
+        )
+
+        max_movies = max(max_movies, available_movies)
+
+    # Apply weighted random ordering
+    # Weight = available_movies / max_movies (normalized between 0 and 1)
+    # Collections with more movies have higher probability of appearing first
+    if max_movies > 0:
+        # Assign random values weighted by available_movies
+        # Collections with more movies get lower random values (appear first when sorted)
+        for item in collection_data:
+            weight = item["available_movies"] / max_movies
+            # Use exponential distribution for weighted random ordering
+            # Higher weight = lower random value = appears earlier
+            item["sort_key"] = random.random() ** (1 / (weight + 0.1))
+
+        # Sort by random weighted key
+        selected_collections = sorted(collection_data, key=lambda x: x["sort_key"])
+    else:
+        # No movies, just shuffle randomly
+        random.shuffle(collection_data)
+        selected_collections = collection_data
+
+    # Build response with all language promo texts
+    results = []
+    for item in selected_collections:
+        collection = item["collection"]
+        available_movies = item["available_movies"]
+
+        results.append(
+            CollectionRecommendationResponse(
+                id=str(collection.id),
+                title=collection.title,
+                title_en=collection.title_en,
+                thumbnail=collection.thumbnail,
+                backdrop=collection.backdrop,
+                promo_text=collection.promo_text,
+                promo_text_en=collection.promo_text_en,
+                promo_text_es=collection.promo_text_es,
+                promo_text_fr=collection.promo_text_fr,
+                promo_text_it=collection.promo_text_it,
+                promo_text_hi=collection.promo_text_hi,
+                promo_text_ta=collection.promo_text_ta,
+                promo_text_bn=collection.promo_text_bn,
+                promo_text_ja=collection.promo_text_ja,
+                promo_text_zh=collection.promo_text_zh,
+                available_movies=available_movies,
+                total_movies=collection.collection_total_movies or available_movies,
+                tmdb_collection_id=collection.tmdb_collection_id,
+            )
+        )
+
+    # Cache for 30 minutes (1800 seconds)
+    cache_data = {"collections": [item.model_dump() for item in results]}
+    await redis_client.set_with_ttl(cache_key, cache_data, 1800)
+
+    logger.info(f"Returning {len(results)} weighted collection recommendations")
     return results
 
 

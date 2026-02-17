@@ -15,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@bayit/shared-services';
 import { TVHeader } from '../components/TVHeader';
 import { ContentCard } from '../components/ContentCard';
+import { CollectionBanner } from '../components/CollectionBanner';
 import { queryKeys } from '../config/queryClient';
 import { config } from '../config/appConfig';
 
@@ -54,8 +55,21 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     },
   });
 
+  const { data: collections } = useQuery({
+    queryKey: ['collection-recommendations'],
+    queryFn: async () => {
+      const response = await api.get('/content/collections/recommendations');
+      return response.data || [];
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes (matches backend cache)
+  });
+
   const handleItemSelect = (item: VODItem) => {
     navigation.navigate('Player', { vodId: item.id });
+  };
+
+  const handleCollectionPress = (collectionId: string) => {
+    navigation.navigate('CollectionDetail', { collectionId });
   };
 
   const renderCategory = ({ item }: { item: { key: string; label: string } }) => {
@@ -100,6 +114,16 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesContent}
         />
+
+        {/* Collection Banner - Auto-rotating */}
+        {collections && collections.length > 0 && selectedCategory === 'All' && (
+          <CollectionBanner
+            collections={collections}
+            onPress={handleCollectionPress}
+            autoRotate={true}
+            rotationInterval={5000}
+          />
+        )}
 
         {/* VOD Grid */}
         {isLoading ? (
