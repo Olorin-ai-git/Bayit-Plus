@@ -1,9 +1,10 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.ContentDetail
+import tv.bayit.plus.core.model.RestartResponse
 import tv.bayit.plus.core.model.StreamInfo
 import tv.bayit.plus.core.model.WatchHistoryItem
-import tv.bayit.plus.core.model.ContentDetail
 
 /**
  * Fake implementation of MediaRepository for testing.
@@ -40,7 +41,12 @@ class FakeMediaRepository {
         }
     }
 
-    suspend fun reportProgress(mediaId: String, positionMs: Long): BayitResult<Unit> {
+    suspend fun reportProgress(
+        mediaId: String,
+        contentType: String,
+        positionMs: Long,
+        durationMs: Long,
+    ): BayitResult<Unit> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -98,6 +104,35 @@ class FakeMediaRepository {
 
     fun setMediaMetadata(mediaId: String, metadata: ContentDetail) {
         mediaMetadata[mediaId] = metadata
+    }
+
+    suspend fun restartContent(contentId: String): BayitResult<RestartResponse> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            progressData.remove(contentId)
+            BayitResult.Success(RestartResponse(message = "Video restarted", position = 0.0, progress = 0.0))
+        }
+    }
+
+    suspend fun removeFromHistory(contentId: String): BayitResult<Unit> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            watchHistory.removeAll { it.id == contentId }
+            continueWatching.removeAll { it.id == contentId }
+            BayitResult.Success(Unit)
+        }
+    }
+
+    suspend fun clearHistory(): BayitResult<Unit> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            watchHistory.clear()
+            continueWatching.clear()
+            BayitResult.Success(Unit)
+        }
     }
 
     fun getProgress(mediaId: String): Long? = progressData[mediaId]

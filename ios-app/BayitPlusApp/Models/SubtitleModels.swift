@@ -62,6 +62,19 @@ struct SubtitlePreferencesUpdate: Encodable, Sendable {
     let language: String
 }
 
+/// Response from GET /api/v1/subtitles/preferences (all user preferences)
+struct AllSubtitlePreferencesResponse: Decodable, Sendable {
+    let preferences: [SubtitlePreferenceItem]?
+    let total: Int?
+}
+
+/// A single subtitle preference item within the global preferences list.
+struct SubtitlePreferenceItem: Decodable, Sendable {
+    let contentId: String?
+    let preferredLanguage: String?
+    let lastUsedAt: String?
+}
+
 // MARK: - Subtitle Modes
 
 /// Hebrew subtitle display modes

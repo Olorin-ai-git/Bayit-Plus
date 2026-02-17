@@ -41,6 +41,22 @@ export const apiSubtitlesService = {
     api.post(`/subtitles/${contentId}/fetch-external`, null, {
       params: languages ? { languages: languages.join(',') } : undefined
     }),
+  generateShoresh: (contentId: string, language: string = 'he', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/shoresh`, null, { params: { language, force } }),
+  generateHeblish: (contentId: string, language: string = 'he', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/heblish`, null, { params: { language, force } }),
+  generateEngrew: (contentId: string, language: string = 'en', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/engrew`, null, { params: { language, force } }),
+  generateGrammarFlip: (contentId: string, language: string = 'he', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/grammar-flip`, null, { params: { language, force } }),
+  generateSlangSynthesis: (contentId: string, language: string = 'he', force: boolean = false) =>
+    api.post(`/subtitles/${contentId}/slang-synthesis`, null, { params: { language, force } }),
+  getJobStatus: (jobId: string) =>
+    api.get(`/subtitles/job/${jobId}`),
+  cancelJob: (jobId: string) =>
+    api.post(`/subtitles/job/${jobId}/cancel`),
+  getActiveJobs: (contentId: string) =>
+    api.get(`/subtitles/${contentId}/job/active`),
 };
 
 // Subtitle Preferences Service (API)

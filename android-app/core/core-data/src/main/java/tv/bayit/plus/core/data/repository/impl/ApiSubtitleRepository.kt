@@ -43,29 +43,6 @@ class ApiSubtitleRepository @Inject constructor(
             response.preferences.map { it.toPublic() }
         }
 
-    override suspend fun updateSubtitlePreferences(
-        preferences: SubtitlePreferencesUpdate,
-    ): BayitResult<Unit> = runCatchingResult {
-        val body = SubtitlePreferencesBody(
-            language = preferences.language,
-            hebrewMode = preferences.hebrewMode?.name?.lowercase(),
-            englishMode = preferences.englishMode?.name?.lowercase(),
-            fontSize = preferences.fontSize,
-            showBackground = preferences.showBackground,
-        )
-        client.safeApiCall { service.updateSubtitlePreferences(body) }
-        Unit
-    }
-
-    override suspend fun requestSubtitle(
-        mediaId: String,
-        languageCode: String,
-    ): BayitResult<Unit> = runCatchingResult {
-        val body = SubtitleRequestBody(contentId = mediaId, language = languageCode)
-        client.safeApiCall { service.requestSubtitle(body) }
-        Unit
-    }
-
     override suspend fun fetchCues(
         contentId: String,
         language: String,
@@ -93,8 +70,7 @@ class ApiSubtitleRepository @Inject constructor(
         sourceLanguage: String,
         targetLanguage: String,
     ): BayitResult<TranslationResult> = runCatchingResult {
-        val body = TranslateBody(text = word, sourceLanguage = sourceLanguage, targetLanguage = targetLanguage)
-        client.safeApiCall { service.translateWord(body) }
+        client.safeApiCall { service.translateWord(word, sourceLanguage, targetLanguage) }
     }
 
     override suspend fun translatePhrase(
@@ -102,8 +78,7 @@ class ApiSubtitleRepository @Inject constructor(
         sourceLanguage: String,
         targetLanguage: String,
     ): BayitResult<TranslationResult> = runCatchingResult {
-        val body = TranslateBody(text = phrase, sourceLanguage = sourceLanguage, targetLanguage = targetLanguage)
-        client.safeApiCall { service.translatePhrase(body) }
+        client.safeApiCall { service.translatePhrase(phrase, sourceLanguage, targetLanguage) }
     }
 
     override suspend fun fetchContentPreferences(
@@ -130,6 +105,61 @@ class ApiSubtitleRepository @Inject constructor(
         )
         client.safeApiCall { service.updateContentPreferences(contentId, body) }
         Unit
+    }
+    override suspend fun deleteContentPreference(
+        contentId: String,
+    ): BayitResult<Unit> = runCatchingResult {
+        client.safeApiCall { service.deleteContentPreference(contentId) }
+        Unit
+    }
+
+    override suspend fun generateNikud(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateNikud(contentId, language, force) }
+    }
+
+    override suspend fun generateShoresh(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateShoresh(contentId, language, force) }
+    }
+
+    override suspend fun generateHeblish(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateHeblish(contentId, language, force) }
+    }
+
+    override suspend fun generateEngrew(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateEngrew(contentId, language, force) }
+    }
+
+    override suspend fun generateGrammarFlip(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateGrammarFlip(contentId, language, force) }
+    }
+
+    override suspend fun generateSlangSynthesis(
+        contentId: String, language: String, force: Boolean,
+    ): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.generateSlangSynthesis(contentId, language, force) }
+    }
+
+    override suspend fun getJobStatus(jobId: String): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.getJobStatus(jobId) }
+    }
+
+    override suspend fun cancelJob(jobId: String): BayitResult<Unit> = runCatchingResult {
+        client.safeApiCall { service.cancelJob(jobId) }
+        Unit
+    }
+
+    override suspend fun getActiveJobs(contentId: String): BayitResult<Any> = runCatchingResult {
+        client.safeApiCall { service.getActiveJobs(contentId) }
     }
 }
 

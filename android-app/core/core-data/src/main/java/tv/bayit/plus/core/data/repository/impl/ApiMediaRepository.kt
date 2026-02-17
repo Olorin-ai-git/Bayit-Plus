@@ -3,13 +3,16 @@ package tv.bayit.plus.core.data.repository.impl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.model.ContinueWatchingResponse
+import tv.bayit.plus.core.model.RestartResponse
 import tv.bayit.plus.core.model.StreamInfo
 import tv.bayit.plus.core.model.WatchHistoryResponse
 import tv.bayit.plus.core.model.WatchProgressResponse
@@ -40,11 +43,15 @@ class ApiMediaRepository(
 
     override suspend fun reportProgress(
         mediaId: String,
+        contentType: String,
         positionMs: Long,
+        durationMs: Long,
     ): BayitResult<Unit> = runCatchingResult {
         val request = ProgressReportBody(
             contentId = mediaId,
+            contentType = contentType,
             position = positionMs.toDouble() / MS_PER_SECOND,
+            duration = durationMs.toDouble() / MS_PER_SECOND,
         )
         client.safeApiCall { service.reportProgress(request) }
         Unit
@@ -64,6 +71,23 @@ class ApiMediaRepository(
         runCatchingResult {
             client.safeApiCall { service.getStream(mediaId) }
         }
+
+    override suspend fun restartContent(contentId: String): BayitResult<RestartResponse> =
+        runCatchingResult {
+            client.safeApiCall { service.restartContent(contentId) }
+        }
+
+    override suspend fun removeFromHistory(contentId: String): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.removeFromHistory(contentId) }
+            Unit
+        }
+
+    override suspend fun clearHistory(): BayitResult<Unit> =
+        runCatchingResult {
+            client.safeApiCall { service.clearHistory() }
+            Unit
+        }
 }
 
 private interface MediaService {
@@ -79,6 +103,15 @@ private interface MediaService {
 
     @GET("api/v1/history/continue")
     suspend fun getContinueWatching(): ContinueWatchingResponse
+
+    @PATCH("api/v1/history/{contentId}/restart")
+    suspend fun restartContent(@Path("contentId") contentId: String): RestartResponse
+
+    @DELETE("api/v1/history/{contentId}")
+    suspend fun removeFromHistory(@Path("contentId") contentId: String): MessageResponse
+
+    @DELETE("api/v1/history")
+    suspend fun clearHistory(): MessageResponse
 }
 
 /**
@@ -88,7 +121,14 @@ private interface MediaService {
 @Serializable
 private data class ProgressReportBody(
     @SerialName("content_id") val contentId: String,
+    @SerialName("content_type") val contentType: String,
     val position: Double,
+    val duration: Double,
+)
+
+@Serializable
+private data class MessageResponse(
+    val message: String? = null,
 )
 
 /** Conversion factor from milliseconds to seconds. */

@@ -57,6 +57,7 @@ class PlayerViewModel @Inject constructor(
     private var currentContentType: String? = null
     private var controlsHideJob: Job? = null
     private var positionPollingJob: Job? = null
+    private var progressSaveJob: Job? = null
 
     init {
         mediaPlayer.initialize()
@@ -90,6 +91,7 @@ class PlayerViewModel @Inject constructor(
                         vodTriviaManager.loadFacts(contentId, _extendedState.value.vodTriviaLanguage, viewModelScope)
                     }
                     logger.info("Playback started", mapOf("contentId" to contentId))
+                    startPeriodicProgressSave()
                 }
                 is BayitResult.Error -> {
                     logger.error("Playback load failed", streamResult.exception, mapOf("contentId" to contentId))
@@ -121,15 +123,20 @@ class PlayerViewModel @Inject constructor(
 
     fun saveProgress() {
         val contentId = currentContentId ?: return
+        val contentType = currentContentType ?: return
         val position = mediaPlayer.getCurrentPosition()
-        if (position <= 0L) return
+        val duration = mediaPlayer.getDuration()
+        if (position <= 0L || duration <= 0L) return
         viewModelScope.launch {
-            mediaRepository.reportProgress(contentId, position)
+            mediaRepository.reportProgress(contentId, contentType, position, duration)
             logger.debug("Progress saved", mapOf("contentId" to contentId, "positionMs" to position.toString()))
         }
     }
 
-    fun release() { saveProgress() }
+    fun release() {
+        progressSaveJob?.cancel()
+        saveProgress()
+    }
 
     fun toggleRecording() {
         val current = _extendedState.value
@@ -339,6 +346,7 @@ class PlayerViewModel @Inject constructor(
     fun requestVodTriviaFollowUp() = vodTriviaManager.requestFollowUp(viewModelScope)
 
     override fun onCleared() {
+        progressSaveJob?.cancel()
         saveProgress()
         viewModelScope.launch { liveAICoordinator.cleanupAll() }
         vodTriviaManager.cleanup()
@@ -439,8 +447,19 @@ class PlayerViewModel @Inject constructor(
         controlsHideJob = viewModelScope.launch { delay(CONTROLS_HIDE_DELAY_MS); _isControlsVisible.value = false }
     }
 
+    private fun startPeriodicProgressSave() {
+        progressSaveJob?.cancel()
+        progressSaveJob = viewModelScope.launch {
+            while (isActive) {
+                delay(PROGRESS_SAVE_INTERVAL_MS)
+                saveProgress()
+            }
+        }
+    }
+
     companion object {
         private const val CONTROLS_HIDE_DELAY_MS = 4000L
         private const val POSITION_POLL_INTERVAL_MS = 250L
+        private const val PROGRESS_SAVE_INTERVAL_MS = 15_000L
     }
 }

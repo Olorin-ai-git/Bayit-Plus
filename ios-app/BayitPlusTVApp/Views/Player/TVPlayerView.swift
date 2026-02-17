@@ -1103,7 +1103,7 @@ struct TVPlayerView: View {
 
         let request = WatchProgressRequest(
             contentId: contentId,
-            contentType: contentType == .vod ? "vod" : "podcast",
+            contentType: contentType.rawValue,
             position: mediaPlayer.currentTime,
             duration: mediaPlayer.duration
         )

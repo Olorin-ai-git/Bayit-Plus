@@ -18,10 +18,6 @@ interface SubtitleRepository {
 
     suspend fun getSubtitlePreferences(): BayitResult<List<SubtitlePreferencesInfo>>
 
-    suspend fun updateSubtitlePreferences(preferences: SubtitlePreferencesUpdate): BayitResult<Unit>
-
-    suspend fun requestSubtitle(mediaId: String, languageCode: String): BayitResult<Unit>
-
     suspend fun fetchCues(
         contentId: String,
         language: String,
@@ -53,4 +49,24 @@ interface SubtitleRepository {
         fontSize: Float?,
         showBackground: Boolean?,
     ): BayitResult<Unit>
+
+    suspend fun deleteContentPreference(contentId: String): BayitResult<Unit>
+
+    suspend fun generateNikud(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun generateShoresh(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun generateHeblish(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun generateEngrew(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun generateGrammarFlip(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun generateSlangSynthesis(contentId: String, language: String, force: Boolean): BayitResult<Any>
+
+    suspend fun getJobStatus(jobId: String): BayitResult<Any>
+
+    suspend fun cancelJob(jobId: String): BayitResult<Unit>
+
+    suspend fun getActiveJobs(contentId: String): BayitResult<Any>
 }
