@@ -30,34 +30,6 @@ final class VODInteractionViewModel {
         self.repository = repository
     }
 
-    // MARK: - Hardcoded Debug Moments
-
-    func loadHardcodedMoments() {
-        moments = [
-            InteractiveMoment(
-                timestamp: 30.0, duration: 120.0,
-                sceneContext: "Hill Valley. Marty meets Jennifer.",
-                characterName: "Jennifer Parker",
-                characterFrameUrl: nil,
-                interactionPrompt: "Hey Jennifer! I think Marty is really cool. Did you know he travels through time?",
-                voiceId: "1b5d9589-f5e5-4f05-b063-c82b97b46477",
-                dialogueOptions: [],
-                lipsyncVideoUrl: "https://s3.us-west-2.amazonaws.com/remotionlambda-uswest2-30tewi8y5c/renders/y8vtr380rb/output.mp4"
-            ),
-            InteractiveMoment(
-                timestamp: 1630.0, duration: 45.0,
-                sceneContext: "Twin Pines Mall. Doc unveils the DeLorean.",
-                characterName: "Doc Brown",
-                characterFrameUrl: nil,
-                interactionPrompt: "Wow Doc Brown, the time machine is amazing! Can I try it?",
-                voiceId: "1b5d9589-f5e5-4f05-b063-c82b97b46477",
-                dialogueOptions: [],
-                lipsyncVideoUrl: nil
-            ),
-        ]
-        logger.warning("Loaded \(moments.count) hardcoded moments")
-    }
-
     // MARK: - Load Moments from API
 
     func loadMoments(contentId: String) async {
@@ -98,7 +70,7 @@ final class VODInteractionViewModel {
                 activeMoment = moment
                 phase = .playing
                 logger.warning(
-                    "Triggered moment: \(moment.characterName) at \(moment.timestamp)s"
+                    "Triggered: \(moment.characterName) at \(moment.timestamp)s"
                 )
                 return true
             }

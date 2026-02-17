@@ -102,13 +102,54 @@ async def get_avatar_status(
     user: User = Depends(get_current_user),
 ):
     """Get Creatify avatar persona status."""
-    avatar = await ChildAvatar.find_one(
-        {"_id": avatar_id, "user_id": str(user.id)}
+    logger.warning(
+        "Avatar status request",
+        extra={
+            "avatar_id": avatar_id,
+            "user_id": str(user.id),
+            "user_email": user.email,
+        },
     )
-    if not avatar:
+    try:
         avatar = await ChildAvatar.find_one(
-            {"user_id": str(user.id)}
+            {"_id": avatar_id, "user_id": str(user.id)}
         )
+    except Exception as exc:
+        logger.warning(
+            "Avatar find_one by _id failed, trying user_id only",
+            extra={"error": str(exc), "avatar_id": avatar_id},
+        )
+        avatar = None
     if not avatar:
+        try:
+            avatar = await ChildAvatar.find_one(
+                {"user_id": str(user.id)}
+            )
+        except Exception as exc:
+            logger.error(
+                "Avatar find_one by user_id failed",
+                extra={
+                    "error": str(exc),
+                    "user_id": str(user.id),
+                    "user_email": user.email,
+                },
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=f"Avatar lookup failed: {exc}",
+            )
+    if not avatar:
+        logger.warning(
+            "Avatar not found for user",
+            extra={"user_id": str(user.id), "user_email": user.email},
+        )
         raise HTTPException(status_code=404, detail="Avatar not found")
+    logger.warning(
+        "Avatar found",
+        extra={
+            "avatar_id": str(avatar.id),
+            "status": avatar.creatify_avatar_status,
+            "has_image": avatar.creatify_avatar_image_url is not None,
+        },
+    )
     return _avatar_response(avatar)

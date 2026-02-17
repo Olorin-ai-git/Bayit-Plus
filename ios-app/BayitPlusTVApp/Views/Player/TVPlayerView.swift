@@ -342,7 +342,7 @@ struct TVPlayerView: View {
 
     @ViewBuilder
     private var triviaOverlay: some View {
-        if let vm = triviaVM {
+        if interactionVM?.activeMoment == nil, let vm = triviaVM {
             TVTriviaFactsOverlayView(
                 viewModel: vm,
                 contentId: contentId,
@@ -990,26 +990,53 @@ struct TVPlayerView: View {
     private func initializeInteractiveMoments() async {
         let logger = BayitLogger(category: "TVPlayerView")
 
-        // 1. Check preference (hardcoded true for debug)
-        // TODO: restore preference check
-        let interactiveMomentsEnabled = true
-        guard interactiveMomentsEnabled else {
-            logger.info("Interactive moments disabled in preferences")
+        // 1. Check user preference
+        do {
+            let prefsResponse = try await repos.settings.fetchPreferences()
+            let enabled = prefsResponse.preferences?
+                .interactiveMomentsEnabled ?? false
+            guard enabled else {
+                logger.info("Interactive moments disabled in preferences")
+                return
+            }
+        } catch {
+            logger.warning("Failed to fetch preferences: \(error)")
             return
         }
 
-        // 2. Verify persona avatar exists (hardcoded for debug)
-        let imageUrl = "https://cdn.creatify.ai/creator/4045d05f-2dc5-4661-8121-733ecd3e8aec/st.png"
+        // 2. Verify Creatify persona avatar exists
+        do {
+            let status = try await repos.avatarMeshRepository
+                .fetchAvatarStatus(avatarId: "any")
+            guard let imageUrl = status.avatarImageUrl,
+                  status.status == "ready" else {
+                logger.warning("Avatar not ready: \(status.status)")
+                await MainActor.run {
+                    withAnimation { showNoAvatarWarning = true }
+                }
+                return
+            }
+            avatarImageUrl = imageUrl
+        } catch {
+            logger.warning("Avatar fetch failed: \(error)")
+            await MainActor.run {
+                withAnimation { showNoAvatarWarning = true }
+            }
+            return
+        }
 
-        // 3. Initialize VM and load moments
+        // 3. Load interactive moments from API
         let vm = VODInteractionViewModel(
             repository: repos.avatarMeshRepository
         )
-        vm.loadHardcodedMoments()
-        avatarImageUrl = imageUrl
+        await vm.loadMoments(contentId: contentId)
+        guard !vm.moments.isEmpty else {
+            logger.warning("No interactive moments for content")
+            return
+        }
         interactionVM = vm
         logger.warning(
-            "Interactive moments enabled with \(vm.moments.count) moments"
+            "Interactive moments enabled: \(vm.moments.count) moments"
         )
     }
 
