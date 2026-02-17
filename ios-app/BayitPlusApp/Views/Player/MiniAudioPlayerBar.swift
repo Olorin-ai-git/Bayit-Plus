@@ -47,7 +47,28 @@ struct MiniAudioPlayerBar: View {
             playbackControls
         }
         .padding(DesignTokens.Spacing.lg)
-        .glassCard()
+        .background(
+            ZStack {
+                Color.black.opacity(0.3)
+                VisualEffectBlur(style: .systemUltraThinMaterialDark)
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.xl)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            DesignTokens.Primary.default.opacity(0.2),
+                            DesignTokens.Glass.border.opacity(0.3)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
         .padding(.horizontal, DesignTokens.Spacing.base)
     }
 

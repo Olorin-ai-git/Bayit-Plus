@@ -270,16 +270,22 @@ private struct PodcastShowCard: View {
                 audioManager.play(contentId: show.id, contentType: .podcast)
             }
         } label: {
-            Image(systemName: isCurrentlyPlaying && audioManager.isPlaying
-                ? "pause.circle.fill"
-                : "play.circle.fill")
-                .font(.system(size: 32))
-                .foregroundColor(DesignTokens.Primary.default)
-                .background(
-                    Circle()
-                        .fill(DesignTokens.Background.primary.opacity(0.6))
-                        .frame(width: 28, height: 28)
-                )
+            ZStack {
+                Circle()
+                    .fill(DesignTokens.Glass.bgMedium)
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Circle()
+                            .stroke(DesignTokens.Primary.default.opacity(0.3), lineWidth: 1)
+                    )
+                    .shadow(color: DesignTokens.Primary.default.opacity(0.3), radius: 8, x: 0, y: 2)
+
+                Image(systemName: isCurrentlyPlaying && audioManager.isPlaying
+                    ? "pause.fill"
+                    : "play.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(DesignTokens.Primary.default)
+            }
         }
         .accessibilityLabel(isCurrentlyPlaying ? "Pause \(show.title ?? "podcast")" : "Play \(show.title ?? "podcast")")
     }
