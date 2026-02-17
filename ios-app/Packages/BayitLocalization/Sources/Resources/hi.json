@@ -2950,15 +2950,6 @@
       "reject": "अस्वीकार करें"
     }
   },
-  "audible": {
-    "accountLinked": "आपका Audible खाता अब Bayit+ से लिंक है",
-    "connected": "कनेक्ट हो गया!",
-    "connecting": "Audible कनेक्ट हो रहा है...",
-    "connectionFailed": "कनेक्शन विफल",
-    "pleaseWait": "कृपया प्रतीक्षा करें जब तक हम आपका खाता लिंक करते हैं।",
-    "connect": "Audible कनेक्ट करें",
-    "disconnect": "Audible डिस्कनेक्ट करें"
-  },
   "audiobooks": {
     "audiobook": "ऑडियोबुक",
     "chapter": "अध्याय",

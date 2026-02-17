@@ -3038,15 +3038,6 @@
       "reject": "நிராகரி"
     }
   },
-  "audible": {
-    "accountLinked": "உங்கள் Audible கணக்கு இப்போது Bayit+ உடன் இணைக்கப்பட்டுள்ளது",
-    "connected": "இணைக்கப்பட்டது!",
-    "connecting": "Audible இணைக்கப்படுகிறது...",
-    "connectionFailed": "இணைப்பு தோல்வி",
-    "pleaseWait": "உங்கள் கணக்கை இணைக்கும் வரை காத்திருக்கவும்.",
-    "connect": "Audible இணைக்க",
-    "disconnect": "Audible துண்டிக்க"
-  },
   "audiobooks": {
     "audiobook": "ஒலிப்புத்தகம்",
     "chapter": "அத்தியாயம்",

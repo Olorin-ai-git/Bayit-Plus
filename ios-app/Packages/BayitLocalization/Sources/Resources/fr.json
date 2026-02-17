@@ -2950,15 +2950,6 @@
       "reject": "Rejeter"
     }
   },
-  "audible": {
-    "accountLinked": "Votre compte Audible est maintenant lié à Bayit+",
-    "connected": "Connecté !",
-    "connecting": "Connexion à Audible...",
-    "connectionFailed": "Échec de connexion",
-    "pleaseWait": "Veuillez patienter pendant que nous lions votre compte.",
-    "connect": "Connecter Audible",
-    "disconnect": "Déconnecter Audible"
-  },
   "audiobooks": {
     "audiobook": "Livre audio",
     "chapter": "Chapitre",

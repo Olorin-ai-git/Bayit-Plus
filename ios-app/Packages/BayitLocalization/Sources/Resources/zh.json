@@ -2956,15 +2956,6 @@
       "reject": "拒绝"
     }
   },
-  "audible": {
-    "accountLinked": "您的 Audible 帐户已成功关联到 Bayit+",
-    "connected": "已连接！",
-    "connecting": "正在连接 Audible...",
-    "connectionFailed": "连接失败",
-    "pleaseWait": "请稍候，正在关联您的帐户。",
-    "connect": "连接 Audible",
-    "disconnect": "断开 Audible"
-  },
   "audiobooks": {
     "audiobook": "有声书",
     "chapter": "章节",

@@ -2972,15 +2972,6 @@
     "quizLabel": "Quick Quiz",
     "vocabularyLabel": "Vocabulary"
   },
-  "audible": {
-    "accountLinked": "חשבון ה-Audible שלך מקושר כעת ל-Bayit+",
-    "connected": "מחובר!",
-    "connecting": "מתחבר ל-Audible...",
-    "connectionFailed": "החיבור נכשל",
-    "pleaseWait": "אנא המתן בזמן שאנו מקשרים את החשבון שלך.",
-    "connect": "חיבור Audible",
-    "disconnect": "ניתוק Audible"
-  },
   "audiobooks": {
     "audiobook": "ספר שמע",
     "chapter": "פרק",

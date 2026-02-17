@@ -2982,15 +2982,6 @@
     "quizLabel": "Quick Quiz",
     "vocabularyLabel": "Vocabulary"
   },
-  "audible": {
-    "accountLinked": "Su cuenta de Audible ahora está vinculada a Bayit+",
-    "connected": "¡Conectado!",
-    "connecting": "Conectando Audible...",
-    "connectionFailed": "Conexión fallida",
-    "pleaseWait": "Por favor espere mientras vinculamos su cuenta.",
-    "connect": "Conectar Audible",
-    "disconnect": "Desconectar Audible"
-  },
   "audiobooks": {
     "narrator": "Narrador",
     "audiobook": "Audiolibro",

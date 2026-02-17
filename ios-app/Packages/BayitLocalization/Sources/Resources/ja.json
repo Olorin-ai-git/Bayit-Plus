@@ -2713,15 +2713,6 @@
       "reject": "却下"
     }
   },
-  "audible": {
-    "accountLinked": "AudibleアカウントがBayit+にリンクされました",
-    "connected": "接続完了！",
-    "connecting": "Audibleに接続中...",
-    "connectionFailed": "接続に失敗しました",
-    "pleaseWait": "アカウントをリンクしています。しばらくお待ちください。",
-    "connect": "Audible に接続",
-    "disconnect": "Audible を切断"
-  },
   "audiobooks": {
     "audiobook": "オーディオブック",
     "chapter": "チャプター",
