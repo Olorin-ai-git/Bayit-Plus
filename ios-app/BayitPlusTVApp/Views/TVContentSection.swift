@@ -50,7 +50,7 @@ struct TVContentSection<Item, CardContent: View>: View {
 
                 Spacer()
 
-                if let maxItems = maxItems, items.count > maxItems, let action = seeAllAction {
+                if let action = seeAllAction {
                     Button(action: action) {
                         HStack(spacing: TVDesignTokens.Spacing.sm) {
                             Text(localization.t("tvos.common.seeAll"))
