@@ -56,6 +56,45 @@ enum KeychainHelper {
         delete(forKey: passwordKey)
     }
 
+    /// Delete stored biometric refresh token from Keychain
+    static func deleteBiometricRefreshToken() {
+        delete(forKey: refreshTokenKey)
+    }
+
+    // MARK: - Validation
+
+    /// Check if a JWT token is expired or will expire soon (within 5 minutes)
+    static func isJWTExpired(_ token: String) -> Bool {
+        let segments = token.split(separator: ".")
+        guard segments.count == 3 else { return true }
+
+        let payloadSegment = String(segments[1])
+
+        // Base64URL decode
+        var base64 = payloadSegment
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let remainder = base64.count % 4
+        if remainder > 0 {
+            base64 += String(repeating: "=", count: 4 - remainder)
+        }
+
+        guard let data = Data(base64Encoded: base64) else { return true }
+
+        struct JWTPayload: Decodable {
+            let exp: TimeInterval?
+        }
+
+        guard let payload = try? JSONDecoder().decode(JWTPayload.self, from: data),
+              let expiration = payload.exp else {
+            return true
+        }
+
+        let expirationDate = Date(timeIntervalSince1970: expiration)
+        let fiveMinutes: TimeInterval = 5 * 60
+        return expirationDate.timeIntervalSinceNow < fiveMinutes
+    }
+
     // MARK: - Private Helpers
 
     private static func store(value: String, forKey key: String) {

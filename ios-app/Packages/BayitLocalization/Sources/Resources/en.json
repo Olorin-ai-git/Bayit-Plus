@@ -4097,7 +4097,8 @@
     "password_placeholder": "Enter your password",
     "new_password": "New Password",
     "confirm_password": "Confirm Password",
-    "confirm_password_placeholder": "Re-enter your password"
+    "confirm_password_placeholder": "Re-enter your password",
+    "tryAgain": "Try Again"
   },
   "components": {
     "select": {
@@ -9271,7 +9272,8 @@
       "noContent": "No content available",
       "seeAll": "See All",
       "retry": "Retry",
-      "back": "Back"
+      "back": "Back",
+      "tryAgain": "Try Again"
     },
     "auth": {
       "welcomeBack": "Welcome Back",

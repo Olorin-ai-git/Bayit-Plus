@@ -4154,7 +4154,8 @@
     "password_placeholder": "உங்கள் கடவுச்சொல்லை உள்ளிடவும்",
     "new_password": "புதிய கடவுச்சொல்",
     "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
-    "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்"
+    "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
   },
   "components": {
     "select": {

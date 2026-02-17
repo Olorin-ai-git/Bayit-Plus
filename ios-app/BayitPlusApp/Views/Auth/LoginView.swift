@@ -267,6 +267,14 @@ struct LoginView: View {
 
             // Strategy 2: Stored refresh token (from prior Google/Apple sign-in)
             if let refreshToken = KeychainHelper.retrieveBiometricRefreshToken() {
+                // Validate token before using it
+                if KeychainHelper.isJWTExpired(refreshToken) {
+                    // Token expired, clear it
+                    KeychainHelper.deleteBiometricRefreshToken()
+                    // TODO: Show error to user about expired biometric credentials
+                    return
+                }
+
                 try await authManager.restoreWithRefreshToken(refreshToken)
                 persistRefreshTokenForBiometric()
                 onLoginSuccess()

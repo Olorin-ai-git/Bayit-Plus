@@ -3971,7 +3971,7 @@
       "unexpected": "एक अप्रत्याशित त्रुटि हुई"
     },
     "send": "भेजें",
-    "done": "हो गया",
+    "done": "पूर्ण",
     "all": "सभी",
     "reset": "रीसेट करें",
     "deleting": "हटा रहे हैं...",
@@ -4077,7 +4077,8 @@
     "password_placeholder": "अपना पासवर्ड दर्ज करें",
     "new_password": "नया पासवर्ड",
     "confirm_password": "पासवर्ड की पुष्टि करें",
-    "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें"
+    "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें",
+    "tryAgain": "पुनः प्रयास करें"
   },
   "components": {
     "select": {

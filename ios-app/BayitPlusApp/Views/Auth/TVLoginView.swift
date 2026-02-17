@@ -121,9 +121,13 @@ struct TVLoginView: View {
                     localization.t("tvLogin.signInToTV"),
                     variant: .primary,
                     size: .large,
+                    isLoading: status == .authenticating,
                     icon: Image(systemName: "arrow.right")
                 ) {
-                    Task { await completeAuthentication() }
+                    logger.info("Sign In to TV button tapped")
+                    Task {
+                        await completeAuthentication()
+                    }
                 }
                 .frame(maxWidth: .infinity)
             } else {
@@ -365,16 +369,22 @@ struct TVLoginView: View {
     }
 
     private func completeAuthentication() async {
+        logger.info("completeAuthentication() called")
+
         guard authManager.isAuthenticated else {
+            logger.warning("User not authenticated, cannot complete TV login")
             return
         }
 
+        logger.info("Setting status to authenticating")
         status = .authenticating
 
         do {
             let config = AppConfiguration()
             let url = config.apiBaseURL
                 .appendingPathComponent("auth/device-pairing/v2/complete-token")
+
+            logger.info("Calling API: \(url.absoluteString)")
 
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
@@ -383,18 +393,31 @@ struct TVLoginView: View {
 
             if let token = try await authManager.authTokenProvider.currentToken() {
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                logger.info("Auth token added to request")
+            } else {
+                logger.warning("No auth token available")
             }
 
             let body = ["session_id": sessionId]
             request.httpBody = try JSONEncoder().encode(body)
+            logger.info("Request body: session_id=\(sessionId)")
 
-            let (_, response) = try await URLSession.shared.data(for: request)
+            let (data, response) = try await URLSession.shared.data(for: request)
 
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
-                throw AuthError.devicePairingFailed(underlying: "Authentication failed")
+            guard let httpResponse = response as? HTTPURLResponse else {
+                logger.error("Invalid response type")
+                throw AuthError.devicePairingFailed(underlying: "Invalid response")
             }
 
+            logger.info("Response status: \(httpResponse.statusCode)")
+
+            if httpResponse.statusCode != 200 {
+                let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode"
+                logger.error("API error: \(httpResponse.statusCode), body: \(responseBody)")
+                throw AuthError.devicePairingFailed(underlying: "Authentication failed with status \(httpResponse.statusCode)")
+            }
+
+            logger.info("✅ TV login completed successfully")
             status = .authenticated
 
         } catch {

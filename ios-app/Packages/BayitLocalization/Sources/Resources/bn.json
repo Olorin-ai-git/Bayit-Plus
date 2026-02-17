@@ -4067,7 +4067,8 @@
     "password_placeholder": "আপনার পাসওয়ার্ড লিখুন",
     "new_password": "নতুন পাসওয়ার্ড",
     "confirm_password": "পাসওয়ার্ড নিশ্চিত করুন",
-    "confirm_password_placeholder": "আপনার পাসওয়ার্ড পুনরায় লিখুন"
+    "confirm_password_placeholder": "আপনার পাসওয়ার্ড পুনরায় লিখুন",
+    "tryAgain": "আবার চেষ্টা করুন"
   },
   "components": {
     "select": {

@@ -4318,7 +4318,8 @@
     "password_placeholder": "Inserisci la tua password",
     "new_password": "Nuova Password",
     "confirm_password": "Conferma Password",
-    "confirm_password_placeholder": "Reinserisci la tua password"
+    "confirm_password_placeholder": "Reinserisci la tua password",
+    "tryAgain": "Riprova"
   },
   "components": {
     "select": {

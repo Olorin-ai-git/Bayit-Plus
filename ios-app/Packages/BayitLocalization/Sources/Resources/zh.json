@@ -4071,7 +4071,8 @@
     "password_placeholder": "输入您的密码",
     "new_password": "新密码",
     "confirm_password": "确认密码",
-    "confirm_password_placeholder": "重新输入您的密码"
+    "confirm_password_placeholder": "重新输入您的密码",
+    "tryAgain": "重试"
   },
   "components": {
     "select": {

@@ -236,6 +236,7 @@
       "save": "שמור",
       "active": "פעיל",
       "back": "חזרה",
+      "tryAgain": "נסה שוב",
       "backToPodcasts": "חזרה לפודקאסטים",
       "savePodcast": "שמור פודקאסט",
       "saveEpisode": "שמור פרק",
@@ -248,8 +249,7 @@
       "deleteConfirmTitle": "אישור מחיקה",
       "deleteEpisodeMessage": "האם אתה בטוח שברצונך למחוק פרק זה?",
       "edit": "עריכה",
-      "featured": "מומלץ",
-      "tryAgain": "נסה שוב"
+      "featured": "מומלץ"
     },
     "stats": {
       "totalUsers": "סה״כ משתמשים",
@@ -3962,6 +3962,7 @@
     "saving": "שומר...",
     "close": "סגור",
     "back": "חזרה",
+    "tryAgain": "נסה שוב",
     "next": "הבא",
     "search": "חיפוש",
     "watchNow": "צפה עכשיו",
