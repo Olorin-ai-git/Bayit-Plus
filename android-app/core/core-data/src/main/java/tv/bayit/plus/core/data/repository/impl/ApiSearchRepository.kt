@@ -8,6 +8,7 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.SearchRepository
+import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.MessageResponse
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
@@ -101,26 +102,12 @@ private interface SearchService {
 /** Response from the unified search endpoint. */
 @Serializable
 private data class SearchResultsResponse(
-    val results: List<SearchResultItem> = emptyList(),
+    val results: List<ContentItem> = emptyList(),
     val total: Int? = null,
     val page: Int? = null,
     val limit: Int? = null,
     @SerialName("execution_time_ms") val executionTimeMs: Int? = null,
     @SerialName("cache_hit") val cacheHit: Boolean? = null,
-)
-
-/** A single search result item. */
-@Serializable
-private data class SearchResultItem(
-    val id: String,
-    val title: String? = null,
-    val description: String? = null,
-    val thumbnail: String? = null,
-    val type: String? = null,
-    val category: String? = null,
-    val year: Int? = null,
-    val duration: String? = null,
-    val score: Float? = null,
 )
 
 /** Response from the search suggestions endpoint. */

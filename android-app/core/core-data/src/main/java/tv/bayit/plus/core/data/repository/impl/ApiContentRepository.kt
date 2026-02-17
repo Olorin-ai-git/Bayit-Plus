@@ -30,7 +30,7 @@ class ApiContentRepository(
 
     override suspend fun getAllContent(page: Int, limit: Int): BayitResult<List<Any>> =
         runCatchingResult {
-            client.safeApiCall { service.getAllContent(page, limit) }
+            client.safeApiCall { service.getAllContent(page, limit) }.items
         }
 
     override suspend fun getHomeFeed(): BayitResult<List<Any>> = runCatchingResult {
@@ -91,7 +91,7 @@ private interface ContentService {
     suspend fun getAllContent(
         @Query("page") page: Int,
         @Query("limit") limit: Int,
-    ): List<ContentItem>
+    ): ContentAllResponse
 
     @GET("api/v1/content/category/{categoryId}")
     suspend fun getContentByCategory(
@@ -111,6 +111,12 @@ private interface ContentService {
 @kotlinx.serialization.Serializable
 private data class ContentRemoveResponse(
     val status: String? = null,
+)
+
+/** Wrapper for GET api/v1/content/all — backend returns {"items":[...]}. */
+@kotlinx.serialization.Serializable
+private data class ContentAllResponse(
+    val items: List<ContentItem> = emptyList(),
 )
 
 /**

@@ -101,7 +101,7 @@ internal fun SearchResultItem(
                 contentDescription = item.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(16f / 9f),
+                    .aspectRatio(2f / 3f),
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             item.title?.let { title ->
