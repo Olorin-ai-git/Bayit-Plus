@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -11,11 +12,21 @@ from app.models.user import User
 
 router = APIRouter()
 
+_CHANNEL_SORT_MAP = {
+    "order": "order",
+    "name": "name",
+    "newest": "-created_at",
+    "oldest": "created_at",
+}
+
 
 @router.get("/channels")
 async def get_channels(
     culture_id: Optional[str] = Query(None, description="Filter by culture ID"),
     category: Optional[str] = Query(None, description="Filter by category"),
+    q: Optional[str] = Query(None, description="Search by channel name"),
+    language: Optional[str] = Query(None, description="Filter by language"),
+    sort: str = Query("order", description="Sort: order, name, newest, oldest"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get live TV channels, optionally filtered by culture and category."""
@@ -31,9 +42,21 @@ async def get_channels(
     if category:
         query_conditions["category"] = category
 
+    if language:
+        query_conditions["primary_language"] = language
+
+    if q and q.strip():
+        escaped_q = re.escape(q.strip())
+        query_conditions["$or"] = [
+            {"name": {"$regex": escaped_q, "$options": "i"}},
+            {"description": {"$regex": escaped_q, "$options": "i"}},
+        ]
+
+    sort_field = _CHANNEL_SORT_MAP.get(sort, "order")
+
     # Limit to 50 channels per request for memory safety
     channels = (
-        await LiveChannel.find(query_conditions).sort("order").limit(50).to_list()
+        await LiveChannel.find(query_conditions).sort(sort_field).limit(50).to_list()
     )
 
     return {

@@ -7215,7 +7215,8 @@
     "friendsDesc": "Connect with other viewers",
     "messagesDesc": "Direct messages",
     "settingsDesc": "App settings and preferences",
-    "widgetsDesc": "Manage your widgets",
+    "widgets": "Widget",
+    "widgetsDesc": "Gestisci i tuoi widget",
     "socialSettings": "Social & Settings"
   },
   "mfa": {

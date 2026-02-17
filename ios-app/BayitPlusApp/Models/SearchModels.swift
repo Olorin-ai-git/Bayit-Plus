@@ -88,3 +88,88 @@ struct TrendingSearchesResponse: Decodable, Sendable {
 struct SearchSuggestionsResponse: Decodable, Sendable {
     let suggestions: [String]
 }
+
+// MARK: - Search History
+
+/// Response from GET /api/v1/search/history
+struct SearchHistoryResponse: Decodable, Sendable {
+    let history: [String]
+}
+
+/// Request body for POST /api/v1/search/history
+struct SaveSearchHistoryRequest: Encodable, Sendable {
+    let query: String
+}
+
+/// Generic success response for endpoints returning {"success": true}
+struct EmptySuccessResponse: Decodable, Sendable {
+    let success: Bool?
+    let removed: Int?
+}
+
+// MARK: - Search Sort Option
+
+enum SearchSortOption: String, CaseIterable, Sendable {
+    case relevance
+    case newest
+    case oldest
+    case titleAsc = "title_asc"
+    case titleDesc = "title_desc"
+    case popularity
+
+    var localizationKey: String {
+        switch self {
+        case .relevance: return "search.sort.relevance"
+        case .newest: return "search.sort.newest"
+        case .oldest: return "search.sort.oldest"
+        case .titleAsc: return "search.sort.titleAsc"
+        case .titleDesc: return "search.sort.titleDesc"
+        case .popularity: return "search.sort.popularity"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .relevance: return "star"
+        case .newest: return "calendar.badge.clock"
+        case .oldest: return "calendar"
+        case .titleAsc: return "textformat.abc"
+        case .titleDesc: return "textformat.abc"
+        case .popularity: return "flame"
+        }
+    }
+}
+
+// MARK: - Search Advanced Filters
+
+struct SearchAdvancedFilters: Sendable, Equatable {
+    var language: String?
+    var yearFrom: Int?
+    var yearTo: Int?
+    var durationMin: Int?
+    var durationMax: Int?
+    var hasSubtitles: Bool?
+    var hasDubbing: Bool?
+
+    var activeCount: Int {
+        var count = 0
+        if language != nil { count += 1 }
+        if yearFrom != nil || yearTo != nil { count += 1 }
+        if durationMin != nil || durationMax != nil { count += 1 }
+        if hasSubtitles == true { count += 1 }
+        if hasDubbing == true { count += 1 }
+        return count
+    }
+
+    var isEmpty: Bool { activeCount == 0 }
+
+    mutating func reset() {
+        language = nil
+        yearFrom = nil
+        yearTo = nil
+        durationMin = nil
+        durationMax = nil
+        hasSubtitles = nil
+        hasDubbing = nil
+    }
+}

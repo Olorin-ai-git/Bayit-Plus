@@ -111,7 +111,7 @@ steps:
       - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
 
       # i18n Configuration (locales path in container)
-      - '--set-env-vars=I18N_LOCALES_PATH=/app/packages/ui/shared-i18n/locales'
+      - '--set-env-vars=I18N_LOCALES_PATH=/app/shared/i18n/locales'
 
 images:
   - 'gcr.io/$PROJECT_ID/bayit-backend:${_BUILD_ID}'

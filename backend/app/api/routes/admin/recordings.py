@@ -3,6 +3,7 @@ Admin Recordings API Routes
 Manage all recordings across the platform
 """
 
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -72,6 +73,7 @@ async def list_all_recordings(
     query = {}
     if search:
         # Search across multiple fields
+        search = re.escape(search)
         query = {
             "$or": [
                 {"title": {"$regex": search, "$options": "i"}},

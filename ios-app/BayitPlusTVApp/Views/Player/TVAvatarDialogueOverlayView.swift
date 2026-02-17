@@ -117,7 +117,7 @@ struct TVAvatarDialogueOverlayView: View {
 
             if isCharacterVideoReady, let player = characterPlayer {
                 VideoPlayer(player: player)
-                    .scaleEffect(2)
+                    .scaledToFill()
             }
         }
         .frame(width: circleSize, height: circleSize)

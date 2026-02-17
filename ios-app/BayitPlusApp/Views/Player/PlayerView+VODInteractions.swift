@@ -105,17 +105,8 @@ extension PlayerView {
     }
 
     func startDialogue(with character: ContentCharacter) async {
-        guard let profileId = authManager.activeProfile?.id else { return }
-
-        // Resolve avatar ID from existing avatar status
-        let avatarId: String
-        do {
-            let status = try await repositories.avatarMeshRepository
-                .fetchAvatarStatus(avatarId: "any")
-            avatarId = status.avatarId
-        } catch {
-            return
-        }
+        guard let profileId = authManager.activeProfile?.id,
+              let avatarId = resolvedAvatarId else { return }
 
         await dialogueVM?.startSession(
             contentId: contentId,
@@ -169,6 +160,7 @@ extension PlayerView {
                 return
             }
             avatarImageUrl = imageUrl
+            resolvedAvatarId = status.avatarId
         } catch {
             logger.info("Avatar fetch failed: \(error)")
             await MainActor.run {

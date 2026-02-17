@@ -3,6 +3,7 @@ Admin user management endpoints.
 Provides CRUD operations and user administration.
 """
 
+import re
 from datetime import datetime
 from typing import Optional
 
@@ -42,6 +43,7 @@ async def get_users(
     query = User.find()
 
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [

@@ -9,6 +9,7 @@ Provides:
 """
 
 import logging
+import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
@@ -98,7 +99,7 @@ class CommunityDirectoryService:
             query["denomination"] = denomination.value
 
         if city:
-            query["city"] = {"$regex": city, "$options": "i"}
+            query["city"] = {"$regex": re.escape(city), "$options": "i"}
 
         if state:
             query["state"] = state.upper()

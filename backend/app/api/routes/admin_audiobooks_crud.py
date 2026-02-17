@@ -5,6 +5,7 @@ Create, Read, Update, Delete endpoints for audiobooks.
 All operations require appropriate admin permissions.
 """
 
+import re
 from datetime import datetime
 from typing import Optional
 
@@ -95,9 +96,9 @@ async def list_audiobooks(
     if is_published is not None:
         filters["is_published"] = is_published
     if author:
-        filters["author"] = {"$regex": author, "$options": "i"}
+        filters["author"] = {"$regex": re.escape(author), "$options": "i"}
     if narrator:
-        filters["narrator"] = {"$regex": narrator, "$options": "i"}
+        filters["narrator"] = {"$regex": re.escape(narrator), "$options": "i"}
     if audio_quality:
         filters["audio_quality"] = audio_quality
 

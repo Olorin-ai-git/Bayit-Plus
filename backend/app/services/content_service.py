@@ -4,6 +4,7 @@ Content Service - Core service for managing VOD content.
 Provides CRUD operations and query methods for Content model.
 """
 import logging
+import re
 from typing import List, Optional, Dict, Any
 from beanie import PydanticObjectId
 from app.models.content import Content
@@ -54,6 +55,7 @@ class ContentService:
             query["content_type"] = content_type
 
         if search:
+            search = re.escape(search)
             query["$or"] = [
                 {"title": {"$regex": search, "$options": "i"}},
                 {"description": {"$regex": search, "$options": "i"}},

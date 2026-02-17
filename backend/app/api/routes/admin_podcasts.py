@@ -2,6 +2,7 @@
 Admin Podcast Management Routes - CRUD operations for podcasts
 """
 
+import re
 from datetime import datetime
 from typing import Optional
 
@@ -146,6 +147,7 @@ async def get_podcasts(
     """Get all podcasts with filters."""
     query = Podcast.find()
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [

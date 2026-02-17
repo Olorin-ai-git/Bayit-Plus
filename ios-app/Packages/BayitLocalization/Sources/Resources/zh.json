@@ -6962,7 +6962,8 @@
     "friendsDesc": "Connect with other viewers",
     "messagesDesc": "Direct messages",
     "settingsDesc": "App settings and preferences",
-    "widgetsDesc": "Manage your widgets",
+    "widgets": "小组件",
+    "widgetsDesc": "管理您的小组件",
     "socialSettings": "Social & Settings"
   },
   "mfa": {

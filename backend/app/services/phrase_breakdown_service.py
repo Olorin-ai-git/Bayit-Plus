@@ -103,6 +103,7 @@ class PhraseBreakdownService:
             filters["tags"] = {"$in": tags}
 
         if query:
+            query = re.escape(query)
             filters["$or"] = [
                 {"phrase": {"$regex": query, "$options": "i"}},
                 {"meaning": {"$regex": query, "$options": "i"}},

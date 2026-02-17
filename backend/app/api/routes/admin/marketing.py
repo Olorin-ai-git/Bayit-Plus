@@ -1,5 +1,6 @@
 """Admin Marketing Management - Email campaigns, push notifications, and audience segments"""
 
+import re
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -197,6 +198,7 @@ async def get_email_campaigns(
         query = query.find({"status": MarketingStatus(status)})
 
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [
@@ -320,6 +322,7 @@ async def get_push_notifications(
         query = query.find({"status": MarketingStatus(status)})
 
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [

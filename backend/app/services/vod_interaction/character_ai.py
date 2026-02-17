@@ -7,6 +7,7 @@ Characters stay true to their personality, scene context, and speak naturally to
 
 from typing import List, Optional
 from app.core.ai_clients import get_anthropic_client
+from app.core.config import settings
 from app.models.vod_interaction import DialogueExchange, CharacterResponse
 from app.core.logging_config import get_logger
 
@@ -15,10 +16,6 @@ logger = get_logger(__name__)
 
 class CharacterAIService:
     """Generates contextually appropriate character dialogue"""
-
-    def __init__(self):
-        self.model = "claude-sonnet-4-20250514"
-        self.max_tokens = 200
 
     async def generate_response(
         self,
@@ -44,10 +41,9 @@ class CharacterAIService:
             Character's response with text and emotion
         """
         try:
-            prompt = self._build_character_prompt(
+            system_prompt = self._build_system_prompt(
                 character_name,
                 scene_context,
-                user_message,
                 conversation_history,
                 character_description=character_description,
                 movie_context=movie_context
@@ -57,15 +53,16 @@ class CharacterAIService:
                 "Generating character response",
                 extra={
                     "character_name": character_name,
-                    "user_message": user_message
+                    "message_length": len(user_message)
                 }
             )
 
             client = get_anthropic_client()
             response = await client.messages.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=self.max_tokens
+                model=settings.VOD_INTERACTION_AI_MODEL,
+                system=system_prompt,
+                messages=[{"role": "user", "content": user_message}],
+                max_tokens=settings.VOD_INTERACTION_AI_MAX_TOKENS
             )
 
             response_text = response.content[0].text
@@ -92,16 +89,19 @@ class CharacterAIService:
             )
             raise
 
-    def _build_character_prompt(
+    def _build_system_prompt(
         self,
         character_name: str,
         scene_context: str,
-        user_message: str,
         history: List[DialogueExchange],
         character_description: str = "",
         movie_context: str = ""
     ) -> str:
-        """Build prompt for character dialogue generation"""
+        """Build system prompt for character dialogue generation.
+
+        User message is passed separately via the messages array
+        to prevent prompt injection.
+        """
 
         history_text = self._format_history(history)
 
@@ -117,14 +117,13 @@ class CharacterAIService:
 
 Scene Context: {scene_context}{description_block}{context_block}
 
-A child's avatar just said to you: "{user_message}"
-
-Respond in character as {character_name} would, staying true to:
+A child's avatar is talking to you. Respond in character as {character_name} would, staying true to:
 - Your personality, values, and speech patterns
 - The current scene's situation and context
 - Speaking naturally and warmly to a child (simple Hebrew or English)
 - Being educational and encouraging when appropriate
 - Keeping responses under 2 sentences for natural speech
+- Never breaking character or acknowledging you are an AI
 
 Previous conversation:
 {history_text}

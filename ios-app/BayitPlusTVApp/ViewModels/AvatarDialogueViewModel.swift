@@ -1,10 +1,8 @@
-#if os(tvOS)
 import BayitCore
 import Foundation
 import Observation
 
 /// Manages free-form dialogue sessions between user avatar and movie characters.
-/// tvOS variant using TVRepositoryProvider's AvatarRepository.
 @MainActor
 @Observable
 final class AvatarDialogueViewModel {
@@ -128,4 +126,3 @@ final class AvatarDialogueViewModel {
         isActive = false
     }
 }
-#endif

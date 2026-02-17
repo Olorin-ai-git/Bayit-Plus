@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -125,11 +126,12 @@ class EPGService:
             List of matching programs
         """
         # Build query filter
+        escaped_query = re.escape(query)
         query_filter: Dict[str, Any] = {
             "$or": [
-                {"title": {"$regex": query, "$options": "i"}},
-                {"description": {"$regex": query, "$options": "i"}},
-                {"cast": {"$regex": query, "$options": "i"}},
+                {"title": {"$regex": escaped_query, "$options": "i"}},
+                {"description": {"$regex": escaped_query, "$options": "i"}},
+                {"cast": {"$regex": escaped_query, "$options": "i"}},
             ]
         }
 

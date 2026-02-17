@@ -3,6 +3,7 @@ Admin VOD Content Read Endpoints
 GET operations for VOD content
 """
 
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -62,6 +63,7 @@ async def get_content_hierarchical(
 
     # Apply filters
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [

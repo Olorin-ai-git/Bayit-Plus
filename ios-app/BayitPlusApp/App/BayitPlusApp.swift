@@ -227,10 +227,21 @@ struct BayitPlusApp: App {
                     // Process pending intents from widgets
                     await pendingIntentHandler?.processPendingIntents()
 
-                    if mediaPlayerWidgetBridge != nil {
-                        // Inject bridge into environment if needed
-                        // await bridge.syncNow(...) will be called by ViewModels
+                    // Sync auth token for widgets on launch (covers session restore)
+                    let helper = SharedKeychainHelper()
+                    if let token = authManager.token {
+                        helper.writeAuthToken(token)
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
+                }
+                .onChange(of: authManager.token) { _, newToken in
+                    let helper = SharedKeychainHelper()
+                    if let token = newToken {
+                        helper.writeAuthToken(token)
+                    } else {
+                        helper.deleteAuthToken()
+                    }
+                    WidgetCenter.shared.reloadAllTimelines()
                 }
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)

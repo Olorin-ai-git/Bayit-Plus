@@ -7627,7 +7627,8 @@
     "friendsDesc": "Connect with other viewers",
     "messagesDesc": "Direct messages",
     "settingsDesc": "App settings and preferences",
-    "widgetsDesc": "Manage your widgets",
+    "widgets": "ウィジェット",
+    "widgetsDesc": "ウィジェットを管理する",
     "socialSettings": "Social & Settings"
   },
   "mfa": {

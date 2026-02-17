@@ -49,6 +49,7 @@ struct PlayerView: View {
     // VOD interaction state
     @State var interactionVM: VODInteractionViewModel?
     @State var avatarImageUrl: String?
+    @State var resolvedAvatarId: String?
     @State var showNoAvatarWarning = false
     @State var volumeBeforeDuck: Float?
 

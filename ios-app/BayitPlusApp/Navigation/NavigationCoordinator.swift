@@ -28,7 +28,7 @@ public final class NavigationCoordinator {
     var pendingTVLogin: Route?
 
     /// Breadcrumb trail per tab (parallel to NavigationPath which is opaque)
-    var breadcrumbTrails: [AppTab: [String]] = [:]
+    var breadcrumbTrails: [AppTab: [Route]] = [:]
 
     /// Current breadcrumb entries for the active tab
     var currentBreadcrumbs: [BreadcrumbEntry] {
@@ -43,10 +43,10 @@ public final class NavigationCoordinator {
         ))
 
         // Add each route in the trail
-        for (index, label) in trail.enumerated() {
+        for (index, route) in trail.enumerated() {
             let popsNeeded = trail.count - index - 1
             entries.append(BreadcrumbEntry(
-                label: label,
+                label: route.breadcrumbLabel,
                 icon: nil,
                 popCount: popsNeeded
             ))
@@ -129,8 +129,12 @@ public final class NavigationCoordinator {
 
     /// Push a route onto the current tab's navigation stack
     func pushToCurrentTab(_ route: Route) {
+        // Do not push if already at this route (prevents duplicate breadcrumbs on refresh)
+        if let current = breadcrumbTrails[selectedTab, default: []].last, current == route {
+            return
+        }
         paths[selectedTab, default: NavigationPath()].append(route)
-        breadcrumbTrails[selectedTab, default: []].append(route.breadcrumbLabel)
+        breadcrumbTrails[selectedTab, default: []].append(route)
     }
 
     /// Pop the current tab's navigation stack

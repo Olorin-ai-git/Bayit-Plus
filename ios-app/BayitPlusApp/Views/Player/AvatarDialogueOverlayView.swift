@@ -31,7 +31,7 @@ struct AvatarDialogueOverlayView: View {
                 overlayContent
                     .frame(maxWidth: 380)
                     .padding(.trailing, DesignTokens.Spacing.base)
-                    .padding(.bottom, 100)
+                    .padding(.bottom, DesignTokens.Spacing.xxl)
             }
         }
         .allowsHitTesting(true)
@@ -116,7 +116,7 @@ struct AvatarDialogueOverlayView: View {
 
             if isCharacterVideoReady, let player = characterPlayer {
                 VideoPlayer(player: player)
-                    .scaleEffect(2)
+                    .scaledToFill()
             }
         }
         .frame(width: circleSize, height: circleSize)

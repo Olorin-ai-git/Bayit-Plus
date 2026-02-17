@@ -1,5 +1,6 @@
 """Chess game REST API routes."""
 
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -199,10 +200,11 @@ async def invite_player(
     from datetime import datetime
 
     # Search for the friend by name
+    escaped_name = re.escape(request.friend_name)
     friend = await User.find_one(
         {
             "is_active": True,
-            "name": {"$regex": request.friend_name, "$options": "i"},
+            "name": {"$regex": escaped_name, "$options": "i"},
         }
     )
 

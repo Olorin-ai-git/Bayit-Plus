@@ -1,4 +1,3 @@
-#if os(iOS)
 import BayitCore
 import Foundation
 import Observation
@@ -128,4 +127,3 @@ final class AvatarDialogueViewModel {
         isActive = false
     }
 }
-#endif

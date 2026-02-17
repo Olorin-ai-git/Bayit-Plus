@@ -3,6 +3,7 @@ Avatar Movie Studio API Routes
 
 Provides endpoints for managing interactive moments across VOD content library.
 """
+import re
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from beanie import PydanticObjectId
@@ -34,6 +35,7 @@ async def get_movies_with_moments(
     query = {"content_type": {"$in": ["movie", "series", "documentary"]}}
 
     if search:
+        search = re.escape(search)
         query["$or"] = [
             {"title": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},

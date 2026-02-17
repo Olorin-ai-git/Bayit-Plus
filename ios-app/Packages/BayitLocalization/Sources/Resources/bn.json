@@ -6950,7 +6950,8 @@
     "friendsDesc": "Connect with other viewers",
     "messagesDesc": "Direct messages",
     "settingsDesc": "App settings and preferences",
-    "widgetsDesc": "Manage your widgets",
+    "widgets": "উইজেট",
+    "widgetsDesc": "আপনার উইজেট পরিচালনা করুন",
     "socialSettings": "Social & Settings"
   },
   "mfa": {

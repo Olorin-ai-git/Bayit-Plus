@@ -3,6 +3,7 @@ Admin Radio Station Management Routes
 CRUD operations for radio stations
 """
 
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -31,6 +32,7 @@ async def get_radio_stations(
     query = RadioStation.find()
 
     if search:
+        search = re.escape(search)
         query = query.find(
             {
                 "$or": [

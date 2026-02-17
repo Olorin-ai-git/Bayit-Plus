@@ -6,6 +6,7 @@ Non-admin user-facing endpoints for:
 - User profile lookup (limited public info)
 """
 
+import re
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -63,6 +64,7 @@ async def search_users(
     Requires authentication to prevent abuse.
     """
     # Fuzzy search by name (case insensitive)
+    name = re.escape(name)
     users = (
         await User.find(
             {

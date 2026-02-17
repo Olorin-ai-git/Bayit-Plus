@@ -1202,6 +1202,9 @@ class Settings(BaseSettings):
     SEARCH_MAX_PAGE_SIZE: int = 50  # Maximum results per page
     SEARCH_MIN_TEXT_SCORE: float = 5.0  # Minimum text relevance score to include in results
     SEARCH_TITLE_BOOST_THRESHOLD: float = 8.0  # Score threshold for title-quality matches
+    SEARCH_HISTORY_MAX_ENTRIES: int = 20  # Max search history entries per user
+    SEARCH_TRENDING_LIMIT: int = 10  # Default trending searches count
+    SEARCH_TRENDING_DAYS: int = 7  # Days window for trending computation
 
     # Chat Translation Configuration
     CHAT_TRANSLATION_ENABLED: bool = True
@@ -2815,6 +2818,16 @@ class Settings(BaseSettings):
         default=5, ge=1, le=20,
         env="VOD_INTERACTION_MAX_EXCHANGES",
         description="Maximum dialogue exchanges per session",
+    )
+    VOD_INTERACTION_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="VOD_INTERACTION_AI_MODEL",
+        description="Claude model for character dialogue generation",
+    )
+    VOD_INTERACTION_AI_MAX_TOKENS: int = Field(
+        default=200, ge=50, le=1000,
+        env="VOD_INTERACTION_AI_MAX_TOKENS",
+        description="Max tokens for character dialogue response",
     )
 
     # ============================================

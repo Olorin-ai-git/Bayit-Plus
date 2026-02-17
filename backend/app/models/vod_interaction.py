@@ -59,6 +59,10 @@ class VODInteractionSession(Document):
     content_id: str
     moment_timestamp: float
     character_name: str
+    scene_context: Optional[str] = Field(None, description="Denormalized scene/movie context")
+    character_description: Optional[str] = Field(None, description="Denormalized character desc")
+    character_voice_id: Optional[str] = Field(None, description="Denormalized voice ID")
+    character_frame_url: Optional[str] = Field(None, description="Denormalized frame URL")
     dialogue_exchanges: List[DialogueExchange] = Field(default_factory=list)
     status: str = Field(default="active", description="active, recording, completed")
     created_at: datetime = Field(default_factory=datetime.utcnow)

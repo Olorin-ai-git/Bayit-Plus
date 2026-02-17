@@ -6964,7 +6964,8 @@
     "friendsDesc": "Connect with other viewers",
     "messagesDesc": "Direct messages",
     "settingsDesc": "App settings and preferences",
-    "widgetsDesc": "Manage your widgets",
+    "widgets": "विजेट",
+    "widgetsDesc": "अपने विजेट प्रबंधित करें",
     "socialSettings": "Social & Settings"
   },
   "mfa": {

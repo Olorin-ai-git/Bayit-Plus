@@ -5,6 +5,7 @@ Main orchestration for VOD avatar interactions with movie characters.
 Manages sessions, processes user messages, generates character responses, and charges credits.
 """
 
+import re
 from datetime import datetime
 from typing import List, Optional
 from app.models.vod_interaction import (
@@ -35,6 +36,21 @@ CHARACTER_VOICE_MAP = {
     "Marty McFly": settings.CHARACTER_VOICE_MARTY_MCFLY,
     "Jennifer Parker": settings.CHARACTER_VOICE_JENNIFER_PARKER,
 }
+
+
+BLOCKED_RESPONSE_PATTERNS = re.compile(
+    r"\b("
+    r"violen(ce|t)|weapon|blood|death|kill|murder|"
+    r"drug|alcohol|tobacco|smoking|"
+    r"sexual|nude|naked|"
+    r"hate|racist|discriminat|"
+    r"suicide|self[- ]harm|"
+    r"damn|hell|ass|shit|fuck|crap"
+    r")\b",
+    re.IGNORECASE,
+)
+
+SAFE_FALLBACK_RESPONSE = "Hmm, let me think about that differently..."
 
 
 class VODInteractionService:
@@ -81,6 +97,9 @@ class VODInteractionService:
                 content_id=content_id,
                 moment_timestamp=moment_timestamp,
                 character_name=moment.character_name,
+                scene_context=moment.scene_context,
+                character_voice_id=moment.voice_id,
+                character_frame_url=moment.character_frame_url,
                 status="active"
             )
             await session.save()
@@ -145,10 +164,17 @@ class VODInteractionService:
                 content.interactive_characters, character_name
             )
 
-            # Build scene context from content metadata
-            scene_context = (
-                f"{content.title}: {content.description or ''}"
-            )
+            # Denormalize context at session creation
+            if character:
+                scene_context = character.movie_context
+                char_desc = character.description
+                voice_id = character.voice_id
+                frame_url = character.frame_url
+            else:
+                scene_context = f"{content.title}: {content.description or ''}"
+                char_desc = None
+                voice_id = self._get_character_voice_id(character_name)
+                frame_url = None
 
             session = VODInteractionSession(
                 user_id=user_id,
@@ -157,6 +183,10 @@ class VODInteractionService:
                 content_id=content_id,
                 moment_timestamp=current_timestamp,
                 character_name=character_name,
+                scene_context=scene_context,
+                character_description=char_desc,
+                character_voice_id=voice_id,
+                character_frame_url=frame_url,
                 status="active"
             )
             await session.save()
@@ -218,28 +248,14 @@ class VODInteractionService:
             )
             session.dialogue_exchanges.append(user_exchange)
 
-            # Resolve scene context, character metadata, and frame URL.
-            # Free-form sessions may not have a curated moment.
-            content = await Content.get(session.content_id)
-            moment = self._find_moment(
-                content.interactive_moments, session.moment_timestamp
+            # Use denormalized context from session (no Content re-fetch)
+            scene_context = session.scene_context or ""
+            character_description = session.character_description or ""
+            frame_url = session.character_frame_url
+            voice_id = (
+                session.character_voice_id
+                or self._get_character_voice_id(session.character_name)
             )
-            character = self._find_character(
-                content.interactive_characters, session.character_name
-            )
-
-            if moment:
-                scene_context = moment.scene_context
-                frame_url = moment.character_frame_url
-            elif character:
-                scene_context = character.movie_context
-                frame_url = character.frame_url
-            else:
-                scene_context = f"{content.title}: {content.description or ''}"
-                frame_url = None
-
-            character_description = character.description if character else ""
-            movie_context = character.movie_context if character else ""
 
             character_response = await character_ai_service.generate_response(
                 character_name=session.character_name,
@@ -247,13 +263,18 @@ class VODInteractionService:
                 user_message=user_message,
                 conversation_history=session.dialogue_exchanges,
                 character_description=character_description,
-                movie_context=movie_context
+                movie_context=scene_context
             )
 
-            voice_id = (
-                character.voice_id if character
-                else self._get_character_voice_id(session.character_name)
-            )
+            if BLOCKED_RESPONSE_PATTERNS.search(character_response.text):
+                logger.warning(
+                    "Character response failed content moderation",
+                    extra={
+                        "session_id": str(session.id),
+                        "character_name": session.character_name,
+                    }
+                )
+                character_response.text = SAFE_FALLBACK_RESPONSE
 
             animated = await character_animator_service.animate_character_response(
                 character_name=session.character_name,

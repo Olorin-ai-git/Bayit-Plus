@@ -38,6 +38,7 @@ struct TVPlayerView: View {
     @State private var catchUpVM: CatchUpViewModel?
     @State private var interactionVM: VODInteractionViewModel?
     @State private var avatarImageUrl: String?
+    @State private var resolvedAvatarId: String?
     @State private var showNoAvatarWarning = false
 
     // Free-form dialogue state
@@ -659,16 +660,8 @@ struct TVPlayerView: View {
     }
 
     private func startDialogue(with character: ContentCharacter) async {
-        guard let profileId = authManager.activeProfile?.id else { return }
-
-        let avatarId: String
-        do {
-            let status = try await repos.avatarMeshRepository
-                .fetchAvatarStatus(avatarId: "any")
-            avatarId = status.avatarId
-        } catch {
-            return
-        }
+        guard let profileId = authManager.activeProfile?.id,
+              let avatarId = resolvedAvatarId else { return }
 
         await dialogueVM?.startSession(
             contentId: contentId,
@@ -1129,6 +1122,7 @@ struct TVPlayerView: View {
                 return
             }
             avatarImageUrl = imageUrl
+            resolvedAvatarId = status.avatarId
         } catch {
             logger.warning("Avatar fetch failed: \(error)")
             await MainActor.run {

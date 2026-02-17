@@ -4,15 +4,6 @@ import Foundation
 /// Repository protocol for the unified search API operations.
 protocol SearchRepository: Sendable {
 
-    /// Perform a unified search across content types.
-    ///
-    /// - Parameters:
-    ///   - query: Search query string (empty for browse-all).
-    ///   - contentTypes: Content type filters (e.g. ["vod", "live"]).
-    ///   - page: Page number (1-indexed).
-    ///   - limit: Results per page.
-    /// - Returns: Unified search response with results, total, pagination.
-    /// - Throws: `NetworkError` if the request fails.
     func unifiedSearch(
         query: String,
         contentTypes: [String],
@@ -20,21 +11,15 @@ protocol SearchRepository: Sendable {
         limit: Int
     ) async throws -> UnifiedSearchResponse
 
-    /// Fetch trending search queries for the suggestions panel.
-    ///
-    /// - Parameter limit: Maximum number of trending queries.
-    /// - Returns: Array of trending search query strings.
-    /// - Throws: `NetworkError` if the request fails.
     func fetchTrendingSearches(limit: Int) async throws -> [String]
 
-    /// Fetch autocomplete suggestions for a partial query.
-    ///
-    /// - Parameters:
-    ///   - query: Partial search query string.
-    ///   - limit: Maximum number of suggestions.
-    /// - Returns: Array of suggested search query strings.
-    /// - Throws: `NetworkError` if the request fails.
     func fetchSuggestions(query: String, limit: Int) async throws -> [String]
+
+    func fetchSearchHistory(limit: Int) async throws -> [String]
+
+    func saveSearchHistory(query: String) async throws
+
+    func deleteSearchHistory(query: String?) async throws
 }
 
 /// Production implementation of `SearchRepository` using `APIClient`.
@@ -91,5 +76,37 @@ final class APISearchRepository: SearchRepository, @unchecked Sendable {
             as: SearchSuggestionsResponse.self
         )
         return response.suggestions
+    }
+
+    func fetchSearchHistory(limit: Int) async throws -> [String] {
+        let queryItems = [
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+        let response: SearchHistoryResponse = try await client.get(
+            "/api/v1/search/history",
+            queryItems: queryItems,
+            as: SearchHistoryResponse.self
+        )
+        return response.history
+    }
+
+    func saveSearchHistory(query: String) async throws {
+        try await client.post(
+            "/api/v1/search/history",
+            body: SaveSearchHistoryRequest(query: query),
+            as: EmptySuccessResponse.self
+        )
+    }
+
+    func deleteSearchHistory(query: String?) async throws {
+        var queryItems: [URLQueryItem] = []
+        if let query {
+            queryItems.append(URLQueryItem(name: "q", value: query))
+        }
+        try await client.delete(
+            "/api/v1/search/history",
+            queryItems: queryItems,
+            as: EmptySuccessResponse.self
+        )
     }
 }

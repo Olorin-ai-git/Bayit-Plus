@@ -1,5 +1,7 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
+import BayitWidgetShared
 import SwiftUI
 
 /// Playlist screen displaying the user's curated content list
@@ -7,6 +9,8 @@ struct PlaylistView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(AuthManager.self) private var authManager
+    @Environment(WidgetDataSyncService.self) private var widgetSync
     @State private var viewModel: PlaylistViewModel?
     @State private var isEditing = false
 
@@ -19,12 +23,24 @@ struct PlaylistView: View {
             contentBody
         }
         .background(DesignTokens.Background.primary)
-        .task {
-            if viewModel == nil {
-                viewModel = PlaylistViewModel(repository: repos.user)
-            }
+        .task(id: authManager.user?.id) {
+            // Reset the viewModel when the signed-in user changes so that
+            // a new user never sees a previous user's cached playlist items.
+            viewModel = PlaylistViewModel(repository: repos.user)
             await viewModel?.load()
+            await syncPlaylistWidget()
         }
+    }
+
+    private func syncPlaylistWidget() async {
+        guard let items = viewModel?.items else { return }
+        let sharedItem = SharedPlaylistItem(
+            id: "my_playlist",
+            name: localization.t("profile.playlist"),
+            itemCount: items.count,
+            thumbnailURL: items.first.flatMap { URL(string: $0.thumbnail ?? "") }
+        )
+        await widgetSync.syncPlaylists([sharedItem])
     }
 
     @ViewBuilder
@@ -72,7 +88,10 @@ struct PlaylistView: View {
                 size: .small,
                 icon: Image(systemName: "trash")
             ) {
-                Task { await vm.clearAll() }
+                Task {
+                    await vm.clearAll()
+                    await syncPlaylistWidget()
+                }
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)

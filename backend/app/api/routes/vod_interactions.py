@@ -10,10 +10,12 @@ from pydantic import BaseModel, Field
 
 from app.models.user import User
 from app.models.content import Content
+from app.models.profile import Profile
 from app.models.vod_interaction import ContentCharacter, VODInteractionSession, DialogueExchange
 from app.services.vod_interaction.interaction_service import vod_interaction_service
 from app.core.security import get_current_user
 from app.core.logging_config import get_logger
+from app.core.rate_limiter import RATE_LIMITS, limiter
 
 logger = get_logger(__name__)
 
@@ -60,6 +62,7 @@ class SessionStatusResponse(BaseModel):
 
 
 @router.get("/characters/{content_id}", response_model=List[ContentCharacter])
+@limiter.limit(RATE_LIMITS.get("vod_interaction_characters", "30/minute"))
 async def get_interactive_characters(
     content_id: str,
     current_user: User = Depends(get_current_user)
@@ -97,6 +100,7 @@ async def get_interactive_characters(
 
 
 @router.post("/sessions/start-free", response_model=VODInteractionSession)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_free_interaction_session(
     request: StartFreeInteractionRequest,
     current_user: User = Depends(get_current_user)
@@ -113,6 +117,13 @@ async def start_free_interaction_session(
         Created interaction session
     """
     try:
+        profile = await Profile.get(request.profile_id)
+        if not profile or profile.user_id != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Profile not owned by current user"
+            )
+
         session = await vod_interaction_service.start_free_interaction_session(
             user_id=str(current_user.id),
             profile_id=request.profile_id,
@@ -133,6 +144,8 @@ async def start_free_interaction_session(
 
         return session
 
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.warning(
             "Invalid free session creation request",
@@ -154,6 +167,7 @@ async def start_free_interaction_session(
 
 
 @router.post("/sessions/start", response_model=VODInteractionSession)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_interaction_session(
     request: StartInteractionRequest,
     current_user: User = Depends(get_current_user)
@@ -169,6 +183,13 @@ async def start_interaction_session(
         Created interaction session
     """
     try:
+        profile = await Profile.get(request.profile_id)
+        if not profile or profile.user_id != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Profile not owned by current user"
+            )
+
         session = await vod_interaction_service.start_interaction_session(
             user_id=str(current_user.id),
             profile_id=request.profile_id,
@@ -188,6 +209,8 @@ async def start_interaction_session(
 
         return session
 
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.warning(
             "Invalid session creation request",
@@ -209,6 +232,7 @@ async def start_interaction_session(
 
 
 @router.post("/sessions/{session_id}/message", response_model=CharacterResponseModel)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_message", "10/minute"))
 async def send_user_message(
     session_id: str,
     request: UserMessageRequest,
@@ -226,17 +250,17 @@ async def send_user_message(
         Character's animated response
     """
     try:
-        exchange = await vod_interaction_service.process_user_message(
-            session_id=session_id,
-            user_message=request.message
-        )
-
         session = await VODInteractionSession.get(session_id)
         if not session or str(session.user_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Session not found"
             )
+
+        exchange = await vod_interaction_service.process_user_message(
+            session_id=session_id,
+            user_message=request.message
+        )
 
         logger.info(
             "User message processed via API",
@@ -254,6 +278,8 @@ async def send_user_message(
             animated_video_url=exchange.animated_video_url
         )
 
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.warning(
             "Invalid message request",
@@ -275,6 +301,7 @@ async def send_user_message(
 
 
 @router.post("/sessions/{session_id}/complete", response_model=SessionStatusResponse)
+@limiter.limit(RATE_LIMITS.get("vod_interaction_complete", "20/minute"))
 async def complete_session(
     session_id: str,
     current_user: User = Depends(get_current_user)

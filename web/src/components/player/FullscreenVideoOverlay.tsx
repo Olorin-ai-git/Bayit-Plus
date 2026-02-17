@@ -8,7 +8,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { View, Pressable, Text, Image, StyleSheet } from 'react-native'
 import { GlassLoadingSpinner } from '@bayit/shared/ui'
-import { X } from 'lucide-react'
+import { X, MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
@@ -21,6 +21,9 @@ import logger from '@/utils/logger'
 import { useNotificationStore } from '@olorin/glass-ui/stores'
 import { QuizOverlay } from '@bayit/shared/components/quiz'
 import { useProfileStore } from '@/stores/profileStore'
+import { AvatarDialoguePanel, CharacterSelectBar } from '@/components/vod-interactions'
+import { useVODInteraction } from '@/hooks/useVODInteraction'
+import type { ContentCharacter } from '@/hooks/useVODInteraction'
 
 interface Chapter {
   start_time: number
@@ -73,6 +76,19 @@ export default function FullscreenVideoOverlay() {
   const containerRef = useRef<HTMLDivElement>(null)
   const lastProgressRef = useRef<number>(0)
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Free-form character dialogue (delegated to hook)
+  const [showCharacterSelect, setShowCharacterSelect] = useState(false)
+  const [showDialoguePanel, setShowDialoguePanel] = useState(false)
+  const noop = useCallback(() => {}, [])
+  const vodInteraction = useVODInteraction({
+    contentId: content?.id ?? '',
+    profileId: activeProfile?.id ?? '',
+    avatarId: '',
+    currentTime: 0,
+    onPauseRequested: noop,
+    onResumeRequested: noop,
+  })
 
   // Determine if quiz should be shown after content ends
   // Quiz shows for all kids content regardless of profile type
@@ -350,6 +366,38 @@ export default function FullscreenVideoOverlay() {
     if (!isOpen) cancelAutoPlay()
   }, [isOpen, cancelAutoPlay])
 
+  // Free-form dialogue: load characters
+  const handleTalkToCharacter = useCallback(async () => {
+    if (!content) return
+    await vodInteraction.loadCharacters()
+    setShowCharacterSelect(true)
+  }, [content?.id, vodInteraction.loadCharacters])
+
+  // Free-form dialogue: start session with selected character
+  const handleCharacterSelect = useCallback(async (character: ContentCharacter) => {
+    setShowCharacterSelect(false)
+    await vodInteraction.startFreeInteraction(character)
+    setShowDialoguePanel(true)
+  }, [vodInteraction.startFreeInteraction])
+
+  // Free-form dialogue: send message
+  const handleSendDialogueMessage = useCallback(async (messageText: string) => {
+    await vodInteraction.sendFreeMessage(messageText)
+  }, [vodInteraction.sendFreeMessage])
+
+  // Free-form dialogue: close panel
+  const handleCloseDialogue = useCallback(async () => {
+    await vodInteraction.endFreeInteraction()
+    setShowDialoguePanel(false)
+    setDialogueExchanges([])
+    setDialogueSessionId(null)
+  }, [dialogueSessionId])
+
+  // Get video element for volume ducking in dialogue panel
+  const getVideoElement = useCallback((): HTMLVideoElement | null => {
+    return containerRef.current?.querySelector('video') || null
+  }, [])
+
   // Handle video ended
   const handleEnded = useCallback(() => {
     if (!content) return
@@ -404,9 +452,12 @@ export default function FullscreenVideoOverlay() {
   // Handle manual player close (ESC key, close button, etc.)
   // Resets playlist play-all state if active
   const handleManualClose = useCallback(() => {
+    vodInteraction.endFreeInteraction()
+    setShowDialoguePanel(false)
+    setShowCharacterSelect(false)
     usePlaylistPlaybackStore.getState().stopPlayAll()
     closePlayer()
-  }, [closePlayer])
+  }, [closePlayer, vodInteraction.endFreeInteraction])
 
   // Handle close with ESC key
   useEffect(() => {
@@ -553,6 +604,47 @@ export default function FullscreenVideoOverlay() {
         </View>
       )}
 
+      {/* Talk to Character Button (VOD only, non-audio) */}
+      {!loading && !error && streamUrl && !isAudioContent && content.type !== 'live' && (
+        <Pressable
+          onPress={handleTalkToCharacter}
+          style={[
+            styles.talkButton,
+            vodInteraction.isFreeDialogueActive && styles.talkButtonActive,
+          ]}
+        >
+          <MessageCircle size={20} color={vodInteraction.isFreeDialogueActive ? '#c084fc' : colors.text} />
+          <Text style={[
+            styles.talkButtonText,
+            vodInteraction.isFreeDialogueActive && styles.talkButtonTextActive,
+          ]}>{t('player.dialogue.talkToCharacter')}</Text>
+        </Pressable>
+      )}
+
+      {/* Character Selection Bar */}
+      {showCharacterSelect && (
+        <View style={styles.characterSelectOverlay}>
+          <CharacterSelectBar
+            characters={vodInteraction.availableCharacters}
+            onSelect={handleCharacterSelect}
+            onClose={() => setShowCharacterSelect(false)}
+          />
+        </View>
+      )}
+
+      {/* Free-form Dialogue Panel */}
+      {showDialoguePanel && vodInteraction.selectedCharacter && (
+        <AvatarDialoguePanel
+          character={vodInteraction.selectedCharacter}
+          avatarImageUrl={activeProfile?.avatar_url || ''}
+          exchanges={vodInteraction.freeDialogueExchanges}
+          isSending={vodInteraction.isSending}
+          videoElement={getVideoElement()}
+          onSendMessage={handleSendDialogueMessage}
+          onClose={handleCloseDialogue}
+        />
+      )}
+
       {/* Quiz Overlay for Kids Content */}
       {showQuiz && activeProfile && (
         <QuizOverlay
@@ -690,6 +782,38 @@ const styles = StyleSheet.create({
   nextEpisodeCancelText: {
     fontSize: 12,
     color: colors.textSecondary,
+  },
+  talkButton: {
+    position: 'absolute',
+    top: spacing[4],
+    left: spacing[4],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    zIndex: 10001,
+  },
+  talkButtonActive: {
+    backgroundColor: 'rgba(107, 33, 168, 0.6)',
+  },
+  talkButtonText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  talkButtonTextActive: {
+    color: '#c084fc',
+  },
+  characterSelectOverlay: {
+    position: 'absolute',
+    bottom: spacing[8],
+    left: 0,
+    right: 0,
+    zIndex: 10003,
+    alignItems: 'center',
   },
 })
 

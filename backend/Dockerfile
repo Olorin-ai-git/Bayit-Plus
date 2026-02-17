@@ -55,6 +55,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --chown=bayit:bayit --from=builder /app/backend/app ./app
 COPY --chown=bayit:bayit --from=builder /app/packages ./packages
 
+# Copy shared i18n locales (required by olorin-i18n at the path set in I18N_LOCALES_PATH)
+COPY --chown=bayit:bayit shared/i18n/locales ./shared/i18n/locales
+
 # Switch to non-root user
 USER bayit
 

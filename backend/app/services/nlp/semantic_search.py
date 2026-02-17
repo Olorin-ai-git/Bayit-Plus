@@ -7,6 +7,7 @@ with optional re-ranking by semantic relevance.
 
 import json
 import logging
+import re
 from typing import Any, Dict, List, Optional
 
 from anthropic import Anthropic
@@ -197,11 +198,12 @@ Generate MongoDB filter:"""
         except Exception as e:
             logger.error(f"Filter generation failed: {e}")
             # Fallback to simple text search
+            escaped_query = re.escape(query)
             filter_dict = {
                 "$or": [
-                    {"title": {"$regex": query, "$options": "i"}},
-                    {"name": {"$regex": query, "$options": "i"}},
-                    {"description": {"$regex": query, "$options": "i"}}
+                    {"title": {"$regex": escaped_query, "$options": "i"}},
+                    {"name": {"$regex": escaped_query, "$options": "i"}},
+                    {"description": {"$regex": escaped_query, "$options": "i"}}
                 ]
             }
 
