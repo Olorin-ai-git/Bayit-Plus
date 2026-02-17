@@ -58,14 +58,40 @@ struct SpotlightItem: Decodable, Sendable, Identifiable {
     let hasSubtitles: Bool?
 }
 
+/// Response from GET /api/v1/content/categories
+struct CategoriesResponse: Decodable, Sendable {
+    let categories: [ContentCategory]
+}
+
 /// A content category row (movies, series, podcasts, etc.)
+///
+/// Used in two contexts:
+/// - `/content/featured` returns categories WITH `items` (home screen rows).
+/// - `/content/categories` returns categories WITHOUT `items` (filter chips).
+/// `items` defaults to empty when absent from JSON.
 struct ContentCategory: Decodable, Sendable, Identifiable {
     let id: String
     let name: String
     let nameKey: String?
     let nameEn: String?
     let nameEs: String?
+    let slug: String?
     let items: [ContentItem]
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, nameKey, nameEn, nameEs, slug, items
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        nameKey = try container.decodeIfPresent(String.self, forKey: .nameKey)
+        nameEn = try container.decodeIfPresent(String.self, forKey: .nameEn)
+        nameEs = try container.decodeIfPresent(String.self, forKey: .nameEs)
+        slug = try container.decodeIfPresent(String.self, forKey: .slug)
+        items = try container.decodeIfPresent([ContentItem].self, forKey: .items) ?? []
+    }
 }
 
 /// A content item within a category row or search results

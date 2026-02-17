@@ -151,7 +151,7 @@ final class MediaPlayerViewModel {
 
             // Apply preferred quality if different from resolved
             let savedQuality = preferences.preferredQuality
-            if savedQuality != "auto", savedQuality != currentQuality {
+            if savedQuality != PlayerPreferencesService.Defaults.quality, savedQuality != currentQuality {
                 Task { await switchQuality(savedQuality) }
             }
 

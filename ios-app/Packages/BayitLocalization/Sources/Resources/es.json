@@ -6247,6 +6247,16 @@
     "auto": "Automático",
     "subtitlesOff": "Desactivados",
     "speed": "Velocidad",
+    "qualitySettings": "Ajustes de calidad",
+    "dismiss": "Cerrar",
+    "dismissPlayer": "Cerrar reproductor",
+    "loadingMedia": "Cargando media",
+    "speedNormal": "Normal",
+    "recordingError": "Error de grabacion",
+    "startRecording": "Iniciar grabacion",
+    "stopRecording": "Detener grabacion",
+    "premiumRequired": "Se requiere suscripcion premium",
+    "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo",
     "subscription": {
       "requiredMessage": "requiere una suscripción paga",
       "requiredTitle": "Suscripción Requerida",
@@ -6367,7 +6377,17 @@
       "characterSpeaking": "El personaje esta hablando...",
       "endDialogue": "Terminar dialogo",
       "noCharactersAvailable": "No hay personajes disponibles para dialogo"
-    }
+    },
+    "speedNormal": "Normal",
+    "dismiss": "Cerrar",
+    "dismissPlayer": "Cerrar reproductor",
+    "loadingMedia": "Cargando media",
+    "qualitySettings": "Ajustes de calidad",
+    "recordingError": "Error de grabacion",
+    "startRecording": "Iniciar grabacion",
+    "stopRecording": "Detener grabacion",
+    "premiumRequiredRecording": "Se requiere suscripcion premium",
+    "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo"
   },
   "playlist": {
     "title": "Mi Lista",
@@ -9569,7 +9589,17 @@
       "unmute": "Activar sonido",
       "close": "Cerrar",
       "playbackSpeed": "Playback Speed",
-      "subtitles": "Subtitles"
+      "subtitles": "Subtitles",
+      "qualitySettings": "Ajustes de calidad",
+      "dismiss": "Cerrar",
+      "dismissPlayer": "Cerrar reproductor",
+      "loadingMedia": "Cargando media",
+      "speedNormal": "Normal",
+      "recordingError": "Error de grabacion",
+      "startRecording": "Iniciar grabacion",
+      "stopRecording": "Detener grabacion",
+      "premiumRequired": "Se requiere suscripcion premium",
+      "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo"
     },
     "aiSearch": {
       "title": "Busqueda IA",

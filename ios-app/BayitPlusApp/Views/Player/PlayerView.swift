@@ -399,14 +399,14 @@ struct PlayerView: View {
             titleVisibility: .visible
         ) {
             ForEach([0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0], id: \.self) { rate in
-                Button(rate == 1.0 ? "Normal" : "\(rate)x") {
+                Button(rate == 1.0 ? localization.t("player.speedNormal") : "\(rate)x") {
                     viewModel.player.setRate(Float(rate))
                     viewModel.preferences.preferredPlaybackRate = Float(rate)
                 }
             }
         }
-        .alert("Recording Error", isPresented: $showRecordingError) {
-            Button("OK", role: .cancel) {}
+        .alert(localization.t("player.recordingError"), isPresented: $showRecordingError) {
+            Button(localization.t("common.ok"), role: .cancel) {}
         } message: {
             if let message = recordingErrorMessage {
                 Text(message)
@@ -419,7 +419,7 @@ struct PlayerView: View {
                 set: { if !$0 { liveSubtitlesVM?.dismissQuotaExceeded() } }
             )
         ) {
-            Button("OK", role: .cancel) {}
+            Button(localization.t("common.ok"), role: .cancel) {}
         } message: {
             Text(liveSubtitlesVM?.error ?? localization.t("subtitles.quotaExceeded.message"))
         }
@@ -498,7 +498,7 @@ struct PlayerView: View {
         ProgressView()
             .scaleEffect(1.5)
             .tint(.white)
-            .accessibilityLabel("Loading media")
+            .accessibilityLabel(localization.t("player.loadingMedia"))
     }
 
     // MARK: - Error
@@ -514,7 +514,7 @@ struct PlayerView: View {
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
 
-            GlassButton("Dismiss", variant: .ghost) {
+            GlassButton(localization.t("player.dismiss"), variant: .ghost) {
                 coordinator.dismissFullscreen()
             }
         }
@@ -560,7 +560,7 @@ struct PlayerView: View {
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
             }
-            .accessibilityLabel("Dismiss player")
+            .accessibilityLabel(localization.t("player.dismissPlayer"))
 
             VStack(alignment: .leading, spacing: 2) {
                 if let title = viewModel.title {
@@ -595,7 +595,7 @@ struct PlayerView: View {
                         )
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Subtitles")
+                .accessibilityLabel(localization.t("player.subtitles"))
             }
 
             if !mediaContentType.isLive {
@@ -607,7 +607,7 @@ struct PlayerView: View {
                         .foregroundStyle(.white)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Playback speed")
+                .accessibilityLabel(localization.t("player.playbackSpeed"))
 
                 Button {
                     showQualitySelector = true
@@ -617,7 +617,7 @@ struct PlayerView: View {
                         .foregroundStyle(.white)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Quality settings")
+                .accessibilityLabel(localization.t("player.qualitySettings"))
             }
 
             // Free-form dialogue button (VOD only, when interactions enabled)
@@ -725,7 +725,7 @@ struct PlayerView: View {
                     }
                 }
         }
-        .accessibilityLabel(isRecording ? "Stop recording" : "Start recording")
+        .accessibilityLabel(isRecording ? localization.t("player.stopRecording") : localization.t("player.startRecording"))
     }
 
     // MARK: - Subtitles
@@ -893,14 +893,14 @@ struct PlayerView: View {
         // Premium check (allow premium subscribers and admin users)
         guard let user = authManager.user,
               user.subscriptionTier.isPremium || user.role.isAdmin else {
-            recordingErrorMessage = "Premium subscription required"
+            recordingErrorMessage = localization.t("player.premiumRequired")
             showRecordingError = true
             return
         }
 
         // Live content check
         guard mediaContentType.isLive else {
-            recordingErrorMessage = "Recording is only available for live channels"
+            recordingErrorMessage = localization.t("player.recordingLiveOnly")
             showRecordingError = true
             return
         }

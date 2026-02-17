@@ -71,12 +71,12 @@ struct SearchView: View {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(SearchContentTypeFilter.allCases, id: \.self) { filter in
                     GlassChip(
-                        title: filter.displayLabel,
+                        title: localization.t(filter.localizationKey),
                         isSelected: vm.selectedFilter == filter
                     ) {
                         vm.onFilterChanged(filter)
                     }
-                    .accessibilityLabel("\(filter.displayLabel) filter")
+                    .accessibilityLabel("\(localization.t(filter.localizationKey)) filter")
                     .accessibilityAddTraits(vm.selectedFilter == filter ? .isSelected : [])
                 }
             }

@@ -219,9 +219,11 @@ final class VODViewModel {
             filtered = filtered.filter { $0.isCollectionParent == true }
         }
 
-        // Filter by category
-        if let categoryId = selectedCategory {
-            filtered = filtered.filter { $0.category == categoryId }
+        // Filter by category - resolve name from ID since ContentItem.category
+        // contains the category name, not the ID
+        if let categoryId = selectedCategory,
+           let categoryName = categories.first(where: { $0.id == categoryId })?.name {
+            filtered = filtered.filter { $0.category == categoryName }
         }
 
         // Filter by genre
@@ -249,15 +251,3 @@ final class VODViewModel {
     }
 }
 
-// MARK: - ContentRepository Extension for Categories
-extension ContentRepository {
-    func fetchCategories() async throws -> CategoriesResponse {
-        // This should be implemented in the actual repository
-        // For now, return empty to avoid breaking existing code
-        return CategoriesResponse(categories: [])
-    }
-}
-
-struct CategoriesResponse: Decodable, Sendable {
-    let categories: [ContentCategory]
-}

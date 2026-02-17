@@ -6172,6 +6172,16 @@
     "restart": "Restart from beginning",
     "subtitlesOff": "Off",
     "speed": "Speed",
+    "qualitySettings": "Quality settings",
+    "dismiss": "Dismiss",
+    "dismissPlayer": "Dismiss player",
+    "loadingMedia": "Loading media",
+    "speedNormal": "Normal",
+    "recordingError": "Recording Error",
+    "startRecording": "Start recording",
+    "stopRecording": "Stop recording",
+    "premiumRequired": "Premium subscription required",
+    "recordingLiveOnly": "Recording is only available for live channels",
     "subscription": {
       "requiredTitle": "Subscription Required",
       "requiredMessage": "requires a paid subscription",
@@ -6283,7 +6293,17 @@
       "characterSpeaking": "Character is speaking...",
       "endDialogue": "End Dialogue",
       "noCharactersAvailable": "No characters available for dialogue"
-    }
+    },
+    "speedNormal": "Normal",
+    "dismiss": "Dismiss",
+    "dismissPlayer": "Dismiss player",
+    "loadingMedia": "Loading media",
+    "qualitySettings": "Quality settings",
+    "recordingError": "Recording Error",
+    "startRecording": "Start recording",
+    "stopRecording": "Stop recording",
+    "premiumRequiredRecording": "Premium subscription required",
+    "recordingLiveOnly": "Recording is only available for live channels"
   },
   "playlist": {
     "title": "My Playlist",
@@ -9234,7 +9254,17 @@
       "unmute": "Unmute",
       "close": "Close",
       "subtitles": "Subtitles",
-      "playbackSpeed": "Playback Speed"
+      "playbackSpeed": "Playback Speed",
+      "qualitySettings": "Quality settings",
+      "dismiss": "Dismiss",
+      "dismissPlayer": "Dismiss player",
+      "loadingMedia": "Loading media",
+      "speedNormal": "Normal",
+      "recordingError": "Recording Error",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "premiumRequired": "Premium subscription required",
+      "recordingLiveOnly": "Recording is only available for live channels"
     },
     "aiSearch": {
       "title": "AI Search",

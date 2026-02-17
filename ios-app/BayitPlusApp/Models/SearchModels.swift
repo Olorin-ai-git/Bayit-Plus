@@ -47,16 +47,16 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     case podcasts
     case kids
 
-    var displayLabel: String {
+    var localizationKey: String {
         switch self {
-        case .all: return "All"
-        case .movies: return "Movies"
-        case .series: return "Series"
-        case .collections: return "Collections"
-        case .live: return "Channels"
-        case .radio: return "Radio"
-        case .podcasts: return "Podcasts"
-        case .kids: return "Kids"
+        case .all: return "search.filters.all"
+        case .movies: return "vod.movies"
+        case .series: return "vod.series"
+        case .collections: return "vod.collectionsOnly"
+        case .live: return "search.filters.channels"
+        case .radio: return "search.filters.radio"
+        case .podcasts: return "search.filters.podcasts"
+        case .kids: return "vod.categories.kids"
         }
     }
 

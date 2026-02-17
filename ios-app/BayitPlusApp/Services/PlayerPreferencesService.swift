@@ -13,12 +13,17 @@ struct PlayerPreferencesService: Sendable {
         static let preferredPlaybackRate = "bayit_player_playback_rate"
     }
 
+    enum Defaults {
+        static let quality = "auto"
+        static let playbackRate: Float = 1.0
+    }
+
     private let logger = BayitLogger(category: "PlayerPreferences")
 
     // MARK: - Quality
 
     var preferredQuality: String {
-        get { UserDefaults.standard.string(forKey: Keys.preferredQuality) ?? "auto" }
+        get { UserDefaults.standard.string(forKey: Keys.preferredQuality) ?? Defaults.quality }
         nonmutating set {
             UserDefaults.standard.set(newValue, forKey: Keys.preferredQuality)
             logger.debug("Saved preferred quality", context: ["quality": newValue])
@@ -70,7 +75,7 @@ struct PlayerPreferencesService: Sendable {
     var preferredPlaybackRate: Float {
         get {
             let rate = UserDefaults.standard.float(forKey: Keys.preferredPlaybackRate)
-            return rate > 0 ? rate : 1.0
+            return rate > 0 ? rate : Defaults.playbackRate
         }
         nonmutating set {
             UserDefaults.standard.set(newValue, forKey: Keys.preferredPlaybackRate)
