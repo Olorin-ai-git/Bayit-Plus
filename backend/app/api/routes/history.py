@@ -120,9 +120,11 @@ async def get_continue_watching(
 
     items = (
         await WatchHistory.find(
-            {"user_id": str(current_user.id)}, 
-            {"completed": False}, 
-            WatchHistory.progress_percent > 5,   # At least 5% watched
+            {
+                "user_id": str(current_user.id),
+                "completed": False,
+                "progress_percent": {"$gt": 5}  # At least 5% watched
+            }
         )
         .sort("-last_watched_at")
         .limit(20)  # Fetch more to deduplicate

@@ -276,4 +276,11 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
             as: CollectionDetail.self
         )
     }
+
+    func fetchCategories() async throws -> CategoriesResponse {
+        return try await client.get(
+            "/api/v1/content/categories",
+            as: CategoriesResponse.self
+        )
+    }
 }
