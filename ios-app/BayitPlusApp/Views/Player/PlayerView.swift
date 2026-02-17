@@ -46,6 +46,12 @@ struct PlayerView: View {
     // Dubbing controls state
     @State var showDubbingControls = false
 
+    // VOD interaction state
+    @State var interactionVM: VODInteractionViewModel?
+    @State var avatarImageUrl: String?
+    @State var showNoAvatarWarning = false
+    @State var volumeBeforeDuck: Float?
+
     // Catch-up ViewModel (shared across overlays)
     @State var catchUpVM: CatchUpViewModel?
 
@@ -74,6 +80,10 @@ struct PlayerView: View {
 
     // PiP state
     @State private var isPiPActive = false
+
+    // Quality & playback rate
+    @State private var showQualitySelector = false
+    @State private var showPlaybackRateMenu = false
 
     let contentId: String
     let contentType: ContentType
@@ -121,6 +131,7 @@ struct PlayerView: View {
             )
             .ignoresSafeArea()
             .onTapGesture { toggleControls() }
+            .simultaneousGesture(doubleTapSkipGesture)
 
             // Loading overlay
             if viewModel.isLoading {
@@ -212,6 +223,9 @@ struct PlayerView: View {
             catchUpAutoPromptOverlay
             catchUpSummaryOverlay
 
+            // VOD interactive moment overlay
+            interactiveMomentOverlay
+
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
@@ -250,11 +264,17 @@ struct PlayerView: View {
             }
         }
         .statusBarHidden(true)
+        .onAppear {
+            requestLandscapeOrientation()
+        }
         .task {
+            UIApplication.shared.isIdleTimerDisabled = true
             await viewModel.load()
             initializeViewModels()
         }
         .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+            restorePortraitOrientation()
             Task {
                 await viewModel.cleanup()
                 await dubbingMixer.cleanup()
@@ -268,10 +288,14 @@ struct PlayerView: View {
             liveSubtitlesVM?.cleanup()
             catchUpVM?.reset()
             catchUpVM = nil
+            interactionVM = nil
         }
         .onChange(of: viewModel.player.currentTime) { _, newTime in
             updateNowPlaying()
             triviaVM?.updateActiveFact(currentTime: newTime)
+            if interactionVM?.checkForMoment(currentTime: newTime) == true {
+                // Overlay appears via interactiveMomentOverlay ViewBuilder
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
             // PiP auto-starts on background via AVPlayerViewController's
@@ -331,6 +355,28 @@ struct PlayerView: View {
             )
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showQualitySelector) {
+            QualitySelectorView(
+                currentQuality: StreamQuality(rawValue: viewModel.currentQuality ?? "auto") ?? .auto,
+                onSelect: { quality in
+                    Task { await viewModel.switchQuality(quality.rawValue) }
+                },
+                onDismiss: { showQualitySelector = false }
+            )
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+        }
+        .confirmationDialog(
+            localization.t("player.playbackSpeed"),
+            isPresented: $showPlaybackRateMenu,
+            titleVisibility: .visible
+        ) {
+            ForEach([0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0], id: \.self) { rate in
+                Button(rate == 1.0 ? "Normal" : "\(rate)x") {
+                    viewModel.player.setRate(Float(rate))
+                }
+            }
         }
         .alert("Recording Error", isPresented: $showRecordingError) {
             Button("OK", role: .cancel) {}
@@ -525,6 +571,28 @@ struct PlayerView: View {
                 .accessibilityLabel("Subtitles")
             }
 
+            if !mediaContentType.isLive {
+                Button {
+                    showPlaybackRateMenu = true
+                } label: {
+                    Text(playbackRateLabel)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Playback speed")
+
+                Button {
+                    showQualitySelector = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Quality settings")
+            }
+
             liveFeatureButtons
 
             recordingButton
@@ -680,6 +748,7 @@ struct PlayerView: View {
                     language: selectedAILanguage
                 )
             }
+            Task { await initializeInteractiveMoments() }
         }
 
         // Initialize catch-up for live content when user is beta
@@ -854,5 +923,46 @@ struct PlayerView: View {
         } else {
             return String(format: "%02d:%02d", minutes, seconds)
         }
+    }
+
+    // MARK: - Double-Tap Skip Gesture
+
+    private var doubleTapSkipGesture: some Gesture {
+        SpatialTapGesture(count: 2)
+            .onEnded { value in
+                let screenWidth = UIScreen.main.bounds.width
+                let tapX = value.location.x
+                if tapX < screenWidth / 2 {
+                    Task { await viewModel.player.skipBackward() }
+                } else {
+                    Task { await viewModel.player.skipForward() }
+                }
+            }
+    }
+
+    // MARK: - Playback Rate
+
+    // MARK: - Orientation
+
+    private func requestLandscapeOrientation() {
+        guard !viewModel.isLive else { return }
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
+            scene.requestGeometryUpdate(preferences) { _ in }
+        }
+    }
+
+    private func restorePortraitOrientation() {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .all)
+            scene.requestGeometryUpdate(preferences) { _ in }
+        }
+    }
+
+    private var playbackRateLabel: String {
+        let rate = viewModel.player.rate
+        if rate == 1.0 { return "1x" }
+        if rate == floor(rate) { return "\(Int(rate))x" }
+        return String(format: "%.1fx", rate)
     }
 }

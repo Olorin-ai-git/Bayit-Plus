@@ -17,6 +17,10 @@ from app.services.vod_interaction.character_animator import (
     character_animator_service,
     CharacterAnimatorService
 )
+from app.services.vod_interaction.reel_compositor import (
+    reel_compositor_service,
+    ReelCompositorService
+)
 
 __all__ = [
     "vod_interaction_service",
@@ -25,4 +29,6 @@ __all__ = [
     "CharacterAIService",
     "character_animator_service",
     "CharacterAnimatorService",
+    "reel_compositor_service",
+    "ReelCompositorService",
 ]

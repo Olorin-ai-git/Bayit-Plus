@@ -11,6 +11,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import logger from '@/utils/logger';
+
+const log = logger.scope('useVODInteraction');
 
 export interface InteractiveMoment {
   timestamp: number;
@@ -75,7 +78,7 @@ export const useVODInteraction = ({
         setMoments(content.interactive_moments);
       }
     } catch (error) {
-      console.error('Failed to load interactive moments:', error);
+      log.error('Failed to load interactive moments:', error);
     }
   };
 
@@ -119,7 +122,7 @@ export const useVODInteraction = ({
 
       setActiveSession(session);
     } catch (error) {
-      console.error('Failed to start interaction:', error);
+      log.error('Failed to start interaction:', error);
       setIsInteracting(false);
     }
   };
@@ -144,7 +147,7 @@ export const useVODInteraction = ({
 
       return response.character_response;
     } catch (error) {
-      console.error('Failed to send message:', error);
+      log.error('Failed to send message:', error);
       throw error;
     } finally {
       setIsSending(false);
@@ -163,7 +166,7 @@ export const useVODInteraction = ({
 
       onResumeRequested();
     } catch (error) {
-      console.error('Failed to complete interaction:', error);
+      log.error('Failed to complete interaction:', error);
     }
   };
 
@@ -183,7 +186,7 @@ export const useVODInteraction = ({
 
       return reel;
     } catch (error) {
-      console.error('Failed to generate reel:', error);
+      log.error('Failed to generate reel:', error);
       throw error;
     }
   };

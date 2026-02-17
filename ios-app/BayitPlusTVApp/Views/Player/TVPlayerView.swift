@@ -1028,7 +1028,7 @@ struct TVPlayerView: View {
                 .fetchAvatarStatus(avatarId: "any")
             guard let imageUrl = status.avatarImageUrl,
                   status.status == "ready" else {
-                logger.warning("Avatar not ready: \(status.status)")
+                logger.info("Avatar not ready: \(status.status)")
                 await MainActor.run {
                     withAnimation { showNoAvatarWarning = true }
                 }
@@ -1049,11 +1049,11 @@ struct TVPlayerView: View {
         )
         await vm.loadMoments(contentId: contentId)
         guard !vm.moments.isEmpty else {
-            logger.warning("No interactive moments for content")
+            logger.info("No interactive moments for content")
             return
         }
         interactionVM = vm
-        logger.warning(
+        logger.info(
             "Interactive moments enabled: \(vm.moments.count) moments"
         )
     }

@@ -11,6 +11,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GlassCard, GlassButton, GlassInput } from '@bayit/glass';
 import { InteractionSession, DialogueExchange } from '../../hooks/useVODInteraction';
+import logger from '@/utils/logger';
+
+const log = logger.scope('InteractionOverlay');
 
 interface Props {
   session: InteractionSession;
@@ -57,7 +60,7 @@ export const InteractionOverlay: React.FC<Props> = ({
         }
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      log.error('Failed to send message:', error);
     }
   };
 

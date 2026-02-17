@@ -1,0 +1,136 @@
+#if os(iOS)
+import BayitCore
+import BayitDesignSystem
+import BayitLocalization
+import SwiftUI
+
+/// Extension on PlayerView providing VOD interactive moment overlay,
+/// volume ducking, and initialization logic.
+extension PlayerView {
+
+    // MARK: - Interactive Moment Overlay
+
+    @ViewBuilder
+    var interactiveMomentOverlay: some View {
+        if let vm = interactionVM,
+           let moment = vm.activeMoment,
+           let videoUrl = moment.lipsyncVideoUrl,
+           let imgUrl = avatarImageUrl {
+            InteractiveMomentOverlayView(
+                avatarVideoUrl: videoUrl,
+                avatarImageUrl: imgUrl,
+                characterVideoUrl: moment.characterResponseVideoUrl,
+                characterImageUrl: moment.characterFrameUrl,
+                onDismiss: { restoreVolume(); vm.dismiss() }
+            )
+            .onAppear { duckVolume() }
+        }
+
+        if showNoAvatarWarning {
+            noAvatarWarningBanner
+        }
+    }
+
+    // MARK: - Volume Ducking
+
+    func duckVolume() {
+        let duckedLevel: Float = 0.15
+        volumeBeforeDuck = viewModel.player.avPlayer.volume
+        viewModel.player.avPlayer.volume = duckedLevel
+    }
+
+    func restoreVolume() {
+        let target = volumeBeforeDuck ?? 1.0
+        withAnimation {
+            viewModel.player.avPlayer.volume = target
+        }
+        volumeBeforeDuck = nil
+    }
+
+    // MARK: - No Avatar Warning
+
+    var noAvatarWarningBanner: some View {
+        VStack {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(DesignTokens.Warning.default)
+                Text(localization.t("settings.interactiveMomentsNoAvatar"))
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.primary)
+            }
+            .padding(DesignTokens.Spacing.md)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+            )
+            Spacer()
+        }
+        .padding(.top, DesignTokens.Spacing.xl)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .onAppear {
+            Task {
+                try? await Task.sleep(for: .seconds(5))
+                withAnimation { showNoAvatarWarning = false }
+            }
+        }
+    }
+
+    // MARK: - Initialization
+
+    func initializeInteractiveMoments() async {
+        let logger = BayitLogger(category: "PlayerView")
+
+        // 1. Check user preference
+        do {
+            let prefsResponse = try await repositories.settings
+                .fetchPreferences()
+            let enabled = prefsResponse.preferences?
+                .interactiveMomentsEnabled ?? false
+            guard enabled else {
+                logger.info(
+                    "Interactive moments disabled in preferences"
+                )
+                return
+            }
+        } catch {
+            logger.warning("Failed to fetch preferences: \(error)")
+            return
+        }
+
+        // 2. Verify Creatify persona avatar exists
+        do {
+            let status = try await repositories.avatarMeshRepository
+                .fetchAvatarStatus(avatarId: "any")
+            guard let imageUrl = status.avatarImageUrl,
+                  status.status == "ready" else {
+                logger.info("Avatar not ready: \(status.status)")
+                await MainActor.run {
+                    withAnimation { showNoAvatarWarning = true }
+                }
+                return
+            }
+            avatarImageUrl = imageUrl
+        } catch {
+            logger.info("Avatar fetch failed: \(error)")
+            await MainActor.run {
+                withAnimation { showNoAvatarWarning = true }
+            }
+            return
+        }
+
+        // 3. Load interactive moments from API
+        let vm = VODInteractionViewModel(
+            repository: repositories.avatarMeshRepository
+        )
+        await vm.loadMoments(contentId: contentId)
+        guard !vm.moments.isEmpty else {
+            logger.info("No interactive moments for content")
+            return
+        }
+        interactionVM = vm
+        logger.info(
+            "Interactive moments enabled: \(vm.moments.count) moments"
+        )
+    }
+}
+#endif
