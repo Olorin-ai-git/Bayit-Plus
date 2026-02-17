@@ -27,6 +27,9 @@ class AIOnboardingViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    private val _isCompleted = MutableStateFlow(false)
+    val isCompleted: StateFlow<Boolean> = _isCompleted.asStateFlow()
+
     private val totalSteps = 4
 
     fun nextStep() {
@@ -52,6 +55,7 @@ class AIOnboardingViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     logger.info("AI onboarding completed successfully")
                     _errorMessage.value = null
+                    _isCompleted.value = true
                 }
                 is BayitResult.Error -> {
                     logger.error("AI onboarding completion failed", result.exception)

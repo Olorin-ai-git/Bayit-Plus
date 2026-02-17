@@ -12,6 +12,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,13 @@ fun AIOnboardingRoute(
     val currentStep by viewModel.currentStep.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val isCompleted by viewModel.isCompleted.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isCompleted) {
+        if (isCompleted) {
+            onComplete()
+        }
+    }
 
     AIOnboardingScreen(
         currentStep = currentStep,
@@ -45,10 +53,7 @@ fun AIOnboardingRoute(
         errorMessage = errorMessage,
         onNextStep = viewModel::nextStep,
         onPreviousStep = viewModel::previousStep,
-        onComplete = {
-            viewModel.completeOnboarding()
-            onComplete()
-        },
+        onComplete = viewModel::completeOnboarding,
         onDismissError = viewModel::dismissError,
         onNavigateBack = onNavigateBack,
         modifier = modifier,

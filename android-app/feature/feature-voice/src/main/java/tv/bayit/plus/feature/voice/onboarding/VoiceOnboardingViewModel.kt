@@ -30,6 +30,9 @@ class VoiceOnboardingViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    private val _isCompleted = MutableStateFlow(false)
+    val isCompleted: StateFlow<Boolean> = _isCompleted.asStateFlow()
+
     private val totalSteps = 3
 
     fun nextStep() {
@@ -66,6 +69,7 @@ class VoiceOnboardingViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     logger.info("Voice onboarding completed successfully")
                     _errorMessage.value = null
+                    _isCompleted.value = true
                 }
                 is BayitResult.Error -> {
                     logger.error("Voice onboarding completion failed", result.exception)

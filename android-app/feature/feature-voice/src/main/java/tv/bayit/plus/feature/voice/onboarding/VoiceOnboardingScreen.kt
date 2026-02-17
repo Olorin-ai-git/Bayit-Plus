@@ -13,6 +13,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,13 @@ fun VoiceOnboardingRoute(
     val isRecording by viewModel.isRecording.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val isCompleted by viewModel.isCompleted.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isCompleted) {
+        if (isCompleted) {
+            onComplete()
+        }
+    }
 
     VoiceOnboardingScreen(
         currentStep = currentStep,
@@ -54,10 +62,7 @@ fun VoiceOnboardingRoute(
         onStopRecording = { viewModel.stopRecording(ByteArray(0)) },
         onNextStep = viewModel::nextStep,
         onPreviousStep = viewModel::previousStep,
-        onComplete = {
-            viewModel.completeOnboarding()
-            onComplete()
-        },
+        onComplete = viewModel::completeOnboarding,
         onDismissError = viewModel::dismissError,
         onNavigateBack = onNavigateBack,
         modifier = modifier,
