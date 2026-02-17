@@ -235,9 +235,12 @@ struct BayitPlusApp: App {
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
+                    BayitLogger(category: "DeepLink").info("Received deep link: \(url.absoluteString)")
                     if GIDSignIn.sharedInstance.handle(url) {
+                        BayitLogger(category: "DeepLink").info("Handled by Google Sign-In")
                         return
                     }
+                    BayitLogger(category: "DeepLink").info("Calling handleDeepLink")
                     coordinator.handleDeepLink(url)
                 }
                 .task {

@@ -34,6 +34,7 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
     ///
     /// Note: This implementation checks for backend JWT tokens directly in Keychain,
     /// supporting both Firebase-based authentication and device pairing flows.
+    /// Automatically refreshes expired tokens using the stored refresh token.
     public func currentToken() async throws -> String? {
         // Try reading the cached backend JWT from Keychain
         if let cached = try? keychainService.load(for: tokenKeychainKey) {
@@ -45,16 +46,54 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
                 return cached
             }
 
-            logger.warning(
-                "Cached backend JWT expired or expiring soon - RS256 tokens cannot be refreshed client-side",
+            logger.info(
+                "Cached backend JWT expired or expiring soon, attempting refresh",
                 metadata: ["expiring_soon": "true"]
             )
+
+            // Attempt to refresh using refresh token
+            if let refreshToken = try? keychainService.load(for: refreshTokenKeychainKey) {
+                do {
+                    let response = try await BackendTokenExchangeClient.refreshAccessToken(
+                        refreshToken: refreshToken,
+                        logger: logger
+                    )
+
+                    try keychainService.save(
+                        token: response.accessToken,
+                        for: tokenKeychainKey
+                    )
+                    if let rotatedRefresh = response.refreshToken {
+                        try keychainService.save(
+                            token: rotatedRefresh,
+                            for: refreshTokenKeychainKey
+                        )
+                    }
+
+                    logger.info(
+                        "Token refreshed successfully",
+                        metadata: [:]
+                    )
+                    return response.accessToken
+                } catch {
+                    logger.error(
+                        "Token refresh failed",
+                        metadata: ["error": error.localizedDescription]
+                    )
+                    // Fall through to return nil
+                }
+            } else {
+                logger.warning(
+                    "No refresh token available",
+                    metadata: [:]
+                )
+            }
         }
 
-        // Token missing or expiring soon -- RS256 tokens cannot be refreshed
+        // Token missing, expired, or refresh failed
         // Return nil to signal that re-authentication is required
         logger.warning(
-            "Token refresh not supported for RS256 tokens, re-authentication required",
+            "No valid token available, re-authentication required",
             metadata: [:]
         )
         return nil

@@ -44,6 +44,9 @@ struct ContentView: View {
             if let tvLoginRoute = coordinator.pendingTVLogin {
                 tvLoginView(for: tvLoginRoute)
                     .transition(.move(edge: .bottom))
+                    .onAppear {
+                        print("📱 TVLoginView appeared on screen")
+                    }
             }
 
             // Shabbat banner overlay (top)
@@ -59,6 +62,12 @@ struct ContentView: View {
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuth in
             coordinator.showingAuth = !isAuth
+        }
+        .onChange(of: coordinator.pendingTVLogin) { oldValue, newValue in
+            print("📱 ContentView: pendingTVLogin changed from \(oldValue != nil ? "set" : "nil") to \(newValue != nil ? "set" : "nil")")
+            if let route = newValue {
+                print("📱 ContentView: New TV login route detected")
+            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)

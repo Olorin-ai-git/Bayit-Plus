@@ -251,7 +251,8 @@
       "deleteConfirmTitle": "Delete Confirm Title",
       "deleteEpisodeMessage": "Delete Episode Message",
       "edit": "Edit",
-      "featured": "Featured"
+      "featured": "Featured",
+      "tryAgain": "Try Again"
     },
     "stats": {
       "totalUsers": "Total Users",

@@ -190,17 +190,51 @@ public final class AuthManager {
 
     /// Forces a backend token refresh using the stored refresh token.
     ///
-    /// RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
-    /// Users must re-authenticate to get new tokens.
+    /// Uses the stored refresh token to obtain a new access token from auth.olorin.ai.
+    /// If no refresh token exists or refresh fails, signs out the user.
     @discardableResult
     public func refreshToken() async throws -> String {
-        logger.warning(
-            "Token refresh not supported for RS256 tokens, re-authentication required",
-            metadata: [:]
-        )
-        // Sign out to trigger re-authentication flow
-        await signOut()
-        throw AuthError.sessionExpired
+        guard let refreshToken = try? keychainService.load(for: refreshTokenKeychainKey) else {
+            logger.warning(
+                "No refresh token available, signing out",
+                metadata: [:]
+            )
+            await signOut()
+            throw AuthError.sessionExpired
+        }
+
+        logger.info("Refreshing access token", metadata: [:])
+
+        do {
+            let response = try await BackendTokenExchangeClient.refreshAccessToken(
+                refreshToken: refreshToken,
+                logger: logger
+            )
+
+            try keychainService.save(
+                token: response.accessToken,
+                for: backendTokenKeychainKey
+            )
+            if let rotatedRefresh = response.refreshToken {
+                try keychainService.save(
+                    token: rotatedRefresh,
+                    for: refreshTokenKeychainKey
+                )
+            }
+
+            token = response.accessToken
+            stampSessionTimestamp()
+
+            logger.info("Token refresh succeeded", metadata: [:])
+            return response.accessToken
+        } catch {
+            logger.error(
+                "Token refresh failed, signing out",
+                metadata: ["error": error.localizedDescription]
+            )
+            await signOut()
+            throw AuthError.tokenRefreshFailed(underlying: error.localizedDescription)
+        }
     }
 
     // MARK: - Profile Management

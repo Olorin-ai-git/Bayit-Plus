@@ -40,6 +40,11 @@ struct TVQRCodePanel: View {
                 )
                 viewModel = vm
                 await vm.initSession()
+
+                // Log QR code URL for debugging
+                if let qrData = vm.qrCodeData {
+                    print("📱 QR Code URL: \(qrData)")
+                }
             }
         }
         .onChange(of: viewModel?.status) { _, newValue in
@@ -63,6 +68,18 @@ struct TVQRCodePanel: View {
             Text(localization.t("tvLogin.qrSubtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: TVDesignTokens.Spacing.xs) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Colors.Primary.base)
+
+                Text("Google • Apple • Email")
+                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Colors.Primary.light)
+            }
+            .padding(.top, TVDesignTokens.Spacing.xs)
         }
     }
 
@@ -124,7 +141,7 @@ struct TVQRCodePanel: View {
                             .padding(-TVDesignTokens.Spacing.sm)
                         )
                         .accessibilityLabel(
-                            "QR code for device pairing. Scan with your phone to sign in."
+                            "QR code for device pairing. Scan with your phone to sign in with Google, Apple, or Email."
                         )
                 }
 
@@ -135,6 +152,34 @@ struct TVQRCodePanel: View {
                     ))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
+
+                // Provider logos
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    Image(systemName: "g.circle.fill")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .accessibilityLabel("Google")
+
+                    Image(systemName: "apple.logo")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .accessibilityLabel("Apple")
+
+                    Image(systemName: "envelope.fill")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .accessibilityLabel("Email")
+                }
+                .padding(.top, TVDesignTokens.Spacing.xs)
+
+                Text("Sign in with any method")
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.sm,
+                        weight: .medium
+                    ))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                    .textCase(.uppercase)
+                    .kerning(1.5)
             }
         }
     }

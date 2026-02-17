@@ -30,6 +30,8 @@ struct TVSplitSubtitleOverlayView: View {
     let primaryLanguage: String
     let secondaryLanguage: String
     var layout: SplitSubtitleLayout = .stacked
+    var primaryModeLabel: String?
+    var secondaryModeLabel: String?
 
     var body: some View {
         VStack {
@@ -53,24 +55,30 @@ struct TVSplitSubtitleOverlayView: View {
 
     private var stackedLayout: some View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
-            if let primary = activeCue(from: primaryCues) {
-                subtitleBubble(
-                    text: primary.text ?? "",
-                    font: TVDesignTokens.FontSize.lg,
-                    weight: .medium,
-                    color: .white,
-                    bgOpacity: 0.75
-                )
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                if let primary = activeCue(from: primaryCues) {
+                    subtitleBubble(
+                        text: primary.text ?? "",
+                        font: TVDesignTokens.FontSize.lg,
+                        weight: .medium,
+                        color: .white,
+                        bgOpacity: 0.75
+                    )
+                }
+                languageLabel(primaryLanguage, modeLabel: primaryModeLabel)
             }
 
-            if let secondary = activeCue(from: secondaryCues) {
-                subtitleBubble(
-                    text: secondary.text ?? "",
-                    font: TVDesignTokens.FontSize.md,
-                    weight: .regular,
-                    color: DesignTokens.Text.secondary,
-                    bgOpacity: 0.6
-                )
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                if let secondary = activeCue(from: secondaryCues) {
+                    subtitleBubble(
+                        text: secondary.text ?? "",
+                        font: TVDesignTokens.FontSize.md,
+                        weight: .regular,
+                        color: DesignTokens.Text.secondary,
+                        bgOpacity: 0.6
+                    )
+                }
+                languageLabel(secondaryLanguage, modeLabel: secondaryModeLabel)
             }
         }
     }
@@ -91,12 +99,12 @@ struct TVSplitSubtitleOverlayView: View {
                         borderEdge: .leading,
                         borderColor: Color(hex: "#3b82f6")
                     )
-                    languageLabel(primaryLanguage)
                 }
+                languageLabel(primaryLanguage, modeLabel: primaryModeLabel)
             }
             .frame(maxWidth: .infinity)
 
-            // Divider - constrained to not stretch
+            // Divider
             Rectangle()
                 .fill(Color.white.opacity(0.25))
                 .frame(width: 2)
@@ -115,8 +123,8 @@ struct TVSplitSubtitleOverlayView: View {
                         borderEdge: .trailing,
                         borderColor: Color(hex: "#8b5cf6")
                     )
-                    languageLabel(secondaryLanguage)
                 }
+                languageLabel(secondaryLanguage, modeLabel: secondaryModeLabel)
             }
             .frame(maxWidth: .infinity)
         }
@@ -174,14 +182,17 @@ struct TVSplitSubtitleOverlayView: View {
             }
     }
 
-    private func languageLabel(_ code: String) -> some View {
+    private func languageLabel(_ code: String, modeLabel: String? = nil) -> some View {
         let info = SubtitleLanguages.info(for: code)
+        let name = info?.nativeName ?? code
+        let displayText = modeLabel.map { "\(name) (\($0))" } ?? name
+
         return HStack(spacing: 8) {
             if let emojiFlag = info?.emojiFlag {
                 Text(emojiFlag)
                     .font(.system(size: 22))
             }
-            Text(info?.nativeName ?? code)
+            Text(displayText)
                 .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(Color.white.opacity(0.7))
         }

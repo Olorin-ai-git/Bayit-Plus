@@ -138,6 +138,8 @@ extension APISubtitleRepository {
 // MARK: - Response Models
 
 /// Response from AI generation job creation/status endpoints.
+/// CodingKeys use camelCase raw values to match APIClient's convertFromSnakeCase
+/// decoder (which converts job_id -> jobId before matching against CodingKeys).
 struct AIGenerationJobResponse: Decodable, Sendable {
     let jobId: String?
     let status: JobStatus
@@ -147,14 +149,8 @@ struct AIGenerationJobResponse: Decodable, Sendable {
     let contentId: String
     let generatedAt: String?
 
-    enum CodingKeys: String, CodingKey {
-        case jobId = "job_id"
-        case status
-        case progress
-        case errorMessage = "error_message"
-        case message
-        case contentId = "content_id"
-        case generatedAt = "generated_at"
+    private enum CodingKeys: String, CodingKey {
+        case jobId, status, progress, errorMessage, message, contentId, generatedAt
     }
 
     init(from decoder: Decoder) throws {
@@ -187,20 +183,13 @@ struct CancelJobResponse: Decodable, Sendable {
 }
 
 /// Response from active jobs endpoint.
+/// Note: No explicit CodingKeys - APIClient's convertFromSnakeCase handles mapping.
 struct ActiveJobsResponse: Decodable, Sendable {
     let contentId: String
     let nikudJob: AIGenerationJobResponse?
     let shoreshJob: AIGenerationJobResponse?
     let heblishJob: AIGenerationJobResponse?
     let engrewJob: AIGenerationJobResponse?
-
-    enum CodingKeys: String, CodingKey {
-        case contentId = "content_id"
-        case nikudJob = "nikud_job"
-        case shoreshJob = "shoresh_job"
-        case heblishJob = "heblish_job"
-        case engrewJob = "engrew_job"
-    }
 }
 
 // MARK: - Helper Types

@@ -1,3 +1,4 @@
+import BayitCore
 import SwiftUI
 
 /// A single breadcrumb entry for the navigation trail
@@ -101,6 +102,7 @@ public final class NavigationCoordinator {
 
         case .tvLogin:
             // Special handling: TV login should show even when not authenticated
+            BayitLogger(category: "Navigation").info("Setting pendingTVLogin route")
             pendingTVLogin = route
 
         case .profile, .favorites, .playlist, .downloads,

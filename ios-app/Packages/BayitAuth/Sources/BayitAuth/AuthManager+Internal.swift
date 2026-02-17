@@ -136,6 +136,7 @@ extension AuthManager {
 
     /// Restores a cached session from Keychain on launch.
     /// Checks session expiry and clears state if the session is too old.
+    /// Attempts to refresh expired tokens before clearing credentials.
     func restoreCachedSession() {
         logger.debug("Restoring cached session", metadata: [:])
 
@@ -154,11 +155,11 @@ extension AuthManager {
         if let backendJWT = try? keychainService.load(for: backendTokenKeychainKey) {
             logger.debug("Found backend JWT in keychain", metadata: [:])
             if isJWTExpiredOrExpiringSoon(backendJWT) {
-                logger.error(
-                    "Cached backend JWT expired or expiring soon, clearing session",
+                logger.info(
+                    "Cached backend JWT expired or expiring soon, attempting refresh",
                     metadata: [:]
                 )
-                clearKeychainAndState()
+                attemptTokenRefreshSync()
                 return
             }
             logger.debug("Backend JWT is valid, restoring session", metadata: [:])
@@ -166,11 +167,11 @@ extension AuthManager {
         } else if let cachedToken = try? keychainService.load(for: tokenKeychainKey) {
             logger.debug("Found Firebase token in keychain", metadata: [:])
             if isJWTExpiredOrExpiringSoon(cachedToken) {
-                logger.error(
-                    "Cached Firebase token expired or expiring soon, clearing session",
+                logger.info(
+                    "Cached Firebase token expired or expiring soon, attempting refresh",
                     metadata: [:]
                 )
-                clearKeychainAndState()
+                attemptTokenRefreshSync()
                 return
             }
             logger.debug("Firebase token is valid, restoring session", metadata: [:])
@@ -186,6 +187,67 @@ extension AuthManager {
            let cachedUser = try? JSONDecoder().decode(BayitUser.self, from: userData) {
             user = cachedUser
             logger.debug("Session restored successfully", metadata: ["user_id": cachedUser.id])
+        }
+    }
+
+    /// Attempts to refresh the access token using the stored refresh token.
+    /// Clears credentials if refresh fails or no refresh token exists.
+    /// Must be called synchronously during init, spawns a Task internally.
+    private func attemptTokenRefreshSync() {
+        guard let refreshToken = try? keychainService.load(for: refreshTokenKeychainKey) else {
+            logger.warning(
+                "No refresh token available, clearing credentials",
+                metadata: [:]
+            )
+            clearKeychainAndState()
+            return
+        }
+
+        logger.info("Attempting to refresh access token", metadata: [:])
+
+        // Spawn async task to refresh token
+        Task { @MainActor in
+            do {
+                let response = try await BackendTokenExchangeClient.refreshAccessToken(
+                    refreshToken: refreshToken,
+                    logger: logger
+                )
+
+                try keychainService.save(
+                    token: response.accessToken,
+                    for: backendTokenKeychainKey
+                )
+                if let rotatedRefresh = response.refreshToken {
+                    try keychainService.save(
+                        token: rotatedRefresh,
+                        for: refreshTokenKeychainKey
+                    )
+                }
+
+                let bayitUser = try await fetchUserProfile(token: response.accessToken)
+
+                if let userData = try? JSONEncoder().encode(bayitUser) {
+                    try? keychainService.save(
+                        token: String(data: userData, encoding: .utf8) ?? "",
+                        for: userKeychainKey
+                    )
+                }
+
+                user = bayitUser
+                token = response.accessToken
+                stampSessionTimestamp()
+
+                logger.info(
+                    "Token refresh succeeded, session restored",
+                    metadata: ["user_id": bayitUser.id]
+                )
+            } catch {
+                logger.error(
+                    "Token refresh failed, clearing credentials",
+                    metadata: ["error": error.localizedDescription]
+                )
+                clearKeychainAndState()
+            }
         }
     }
 

@@ -151,6 +151,15 @@ struct TVSubtitleLanguagePickerView: View {
                                 .font(.system(size: 14))
                                 .foregroundStyle(DesignTokens.Primary.p400)
                         }
+
+                        if isSelected, let modeText = activeModeName(for: info.code) {
+                            Text("(\(modeText))")
+                                .font(.system(
+                                    size: TVDesignTokens.FontSize.sm,
+                                    weight: .medium
+                                ))
+                                .foregroundStyle(DesignTokens.Primary.p400)
+                        }
                     }
 
                     Text(info.name)
@@ -413,6 +422,17 @@ struct TVSubtitleLanguagePickerView: View {
         switch mode {
         case .standard: return true
         case .engrew: return hasEngrew
+        }
+    }
+
+    private func activeModeName(for code: String) -> String? {
+        switch code {
+        case "he" where currentHebrewMode != .standard:
+            return currentHebrewMode.displayName
+        case "en" where currentEnglishMode != .standard:
+            return currentEnglishMode.displayName
+        default:
+            return nil
         }
     }
 

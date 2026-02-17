@@ -184,11 +184,19 @@ public enum DeepLink {
             return .directMessages
 
         case "tv-login":
-            guard let sessionId = url.queryValue(for: "session"),
-                  let token = url.queryValue(for: "token"),
-                  let expires = url.queryValue(for: "expires") else {
+            guard let sessionId = url.queryValue(for: "session") else {
+                print("❌ TV Login: Missing 'session' parameter")
                 return nil
             }
+            guard let token = url.queryValue(for: "token") else {
+                print("❌ TV Login: Missing 'token' parameter")
+                return nil
+            }
+            guard let expires = url.queryValue(for: "expires") else {
+                print("❌ TV Login: Missing 'expires' parameter")
+                return nil
+            }
+            print("✅ TV Login deep link parsed: session=\(sessionId.prefix(8))...")
             return .tvLogin(sessionId: sessionId, token: token, expires: expires)
 
         default:

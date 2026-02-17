@@ -13,8 +13,6 @@ struct TVCollectionPromoBannerView: View {
     let promoText: String
     let movieCount: Int
 
-    @FocusState private var isFocused: Bool
-
     var body: some View {
         Button(action: navigateToCollection) {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
@@ -85,23 +83,10 @@ struct TVCollectionPromoBannerView: View {
             }
             .padding(TVDesignTokens.Spacing.lg)
             .background(DesignTokens.Glass.bgMedium)
-            .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                    .stroke(
-                        isFocused ? DesignTokens.Primary.default : DesignTokens.Glass.border,
-                        lineWidth: isFocused ? 4 : 2
-                    )
-            )
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
-            .scaleEffect(isFocused ? 1.05 : 1.0)
-            .shadow(
-                color: isFocused ? DesignTokens.Primary.default.opacity(0.5) : .clear,
-                radius: isFocused ? 20 : 0
-            )
-            .animation(.easeOut(duration: 0.2), value: isFocused)
         }
-        .buttonStyle(.plain)
-        .focused($isFocused)
+        .buttonStyle(.card)
+        .tvFocusStyle()
     }
 
     private func navigateToCollection() {

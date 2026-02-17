@@ -248,7 +248,8 @@
       "deleteConfirmTitle": "אישור מחיקה",
       "deleteEpisodeMessage": "האם אתה בטוח שברצונך למחוק פרק זה?",
       "edit": "עריכה",
-      "featured": "מומלץ"
+      "featured": "מומלץ",
+      "tryAgain": "נסה שוב"
     },
     "stats": {
       "totalUsers": "סה״כ משתמשים",

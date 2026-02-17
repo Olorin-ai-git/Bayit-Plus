@@ -488,7 +488,9 @@ struct TVPlayerView: View {
                 secondaryCues: secondarySubtitleCues,
                 primaryLanguage: splitLanguages[0],
                 secondaryLanguage: splitLanguages[1],
-                layout: splitLayout
+                layout: splitLayout,
+                primaryModeLabel: activeModeLabel(for: splitLanguages[0]),
+                secondaryModeLabel: activeModeLabel(for: splitLanguages[1])
             )
         }
     }
@@ -667,6 +669,18 @@ struct TVPlayerView: View {
     }
 
     // MARK: - Split Subtitles
+
+    private func activeModeLabel(for languageCode: String) -> String? {
+        guard let vm = subtitlesVM else { return nil }
+        switch languageCode {
+        case "he" where vm.hebrewMode != .standard:
+            return vm.hebrewMode.displayName
+        case "en" where vm.englishMode != .standard:
+            return vm.englishMode.displayName
+        default:
+            return nil
+        }
+    }
 
     private func loadSplitSubtitleCues() async {
         guard splitLanguages.count == 2 else { return }

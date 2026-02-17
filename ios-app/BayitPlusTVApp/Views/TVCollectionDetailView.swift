@@ -117,7 +117,6 @@ struct TVCollectionDetailView: View {
                 .padding(.top, TVDesignTokens.Spacing.sm)
             }
         }
-        .focusSection()
     }
 
     private func promoCard(_ text: String) -> some View {

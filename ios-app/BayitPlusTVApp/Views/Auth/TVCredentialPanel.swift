@@ -25,11 +25,11 @@ struct TVCredentialPanel: View {
     }
 
     var body: some View {
-        VStack(spacing: TVDesignTokens.Spacing.lg) {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
             // Header
-            VStack(spacing: TVDesignTokens.Spacing.xs) {
+            VStack(spacing: TVDesignTokens.Spacing.xxs) {
                 Text(localization.t("login.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.white, DesignTokens.Colors.Primary.light],
@@ -39,12 +39,12 @@ struct TVCredentialPanel: View {
                     )
 
                 Text(localization.t("login.subtitle"))
-                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
+                    .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
 
             // Form
-            VStack(spacing: TVDesignTokens.Spacing.lg) {
+            VStack(spacing: TVDesignTokens.Spacing.sm) {
                 // Email field
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
                     Text(localization.t("login.email"))
@@ -186,17 +186,18 @@ struct TVCredentialPanel: View {
             .focused($focusedField, equals: .submit)
 
             // Divider
-            HStack(spacing: TVDesignTokens.Spacing.md) {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Rectangle()
                     .fill(DesignTokens.Glass.border)
                     .frame(height: 1)
                 Text(localization.t("login.or"))
-                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
+                    .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.muted)
                 Rectangle()
                     .fill(DesignTokens.Glass.border)
                     .frame(height: 1)
             }
+            .padding(.vertical, TVDesignTokens.Spacing.xxs)
 
             // Apple Sign In
             GlassButton(
@@ -210,11 +211,9 @@ struct TVCredentialPanel: View {
                 signInWithApple()
             }
             .focused($focusedField, equals: .apple)
-            .padding(.bottom, TVDesignTokens.Spacing.md)
         }
-        .padding(.horizontal, TVDesignTokens.Spacing.xxxl)
-        .padding(.top, TVDesignTokens.Spacing.xl)
-        .padding(.bottom, TVDesignTokens.Spacing.md)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .padding(.vertical, TVDesignTokens.Spacing.md)
     }
 
     // MARK: - Validation
