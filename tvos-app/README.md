@@ -1,6 +1,19 @@
-# Bayit+ tvOS App
+# [DEPRECATED] Bayit+ tvOS App (React Native)
 
-This is the Apple TV (tvOS) version of Bayit+ using react-native-tvos.
+> **DEPRECATED** — This React Native tvOS app is no longer maintained.
+>
+> The canonical tvOS app is the native Swift/SwiftUI implementation at:
+> `ios-app/BayitPlusTVApp/` (target: `tv.bayit.plus.tvos`, build 115+)
+>
+> The Swift app shares 12 production Swift packages with the iOS app (`BayitCore`,
+> `BayitNetworking`, `BayitAuth`, `BayitDesignSystem`, `BayitMedia`, etc.) and is
+> the only version submitted to and maintained on the App Store.
+>
+> Do not build, run, or submit this directory. It is retained for historical reference only.
+
+---
+
+This was the Apple TV (tvOS) version of Bayit+ using react-native-tvos.
 
 ## Prerequisites
 
