@@ -10,6 +10,7 @@ import BayitWidgetShared
 import FirebaseCore
 import GoogleSignIn
 import SwiftUI
+import WidgetKit
 
 @main
 struct BayitPlusApp: App {

@@ -93,3 +93,72 @@ struct TVCollectionPromoBannerView: View {
         coordinator.fullscreenRoute = .collectionDetail(collectionId: collectionId)
     }
 }
+
+/// Auto-rotating carousel of AI-featured collection banners for tvOS.
+/// Advances every 6 seconds. Siri Remote swipe navigates between items.
+/// Shows page indicator dots when there are multiple collections.
+struct TVFeaturedCollectionsCarousel: View {
+    @Environment(LocalizationManager.self) private var localization
+
+    let collections: [CollectionDetail]
+
+    @State private var currentIndex = 0
+
+    private static let autoAdvanceSeconds: TimeInterval = 6
+
+    var body: some View {
+        if !collections.isEmpty {
+            VStack(spacing: TVDesignTokens.Spacing.md) {
+                TabView(selection: $currentIndex) {
+                    ForEach(Array(collections.enumerated()), id: \.offset) { index, collection in
+                        TVCollectionPromoBannerView(
+                            collectionId: collection.id,
+                            title: collection.localizedTitle(
+                                for: localization.currentLanguage.rawValue
+                            ) ?? "",
+                            posterUrl: collection.thumbnail,
+                            promoText: collection.localizedPromoText(
+                                for: localization.currentLanguage.rawValue
+                            ) ?? "",
+                            movieCount: collection.availableMovies ?? 0
+                        )
+                        .tag(index)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .frame(height: 360)
+
+                if collections.count > 1 {
+                    HStack(spacing: 8) {
+                        ForEach(0..<collections.count, id: \.self) { index in
+                            Circle()
+                                .fill(
+                                    index == currentIndex
+                                        ? DesignTokens.Primary.default
+                                        : DesignTokens.Glass.border
+                                )
+                                .frame(width: 8, height: 8)
+                                .animation(.easeInOut, value: currentIndex)
+                        }
+                    }
+                }
+            }
+            .task {
+                await autoAdvance()
+            }
+        }
+    }
+
+    private func autoAdvance() async {
+        guard collections.count > 1 else { return }
+        while !Task.isCancelled {
+            try? await Task.sleep(
+                nanoseconds: UInt64(Self.autoAdvanceSeconds * 1_000_000_000)
+            )
+            guard !Task.isCancelled else { break }
+            withAnimation(.easeInOut) {
+                currentIndex = (currentIndex + 1) % collections.count
+            }
+        }
+    }
+}

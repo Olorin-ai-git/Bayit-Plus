@@ -1,0 +1,780 @@
+==============================================================================
+BAYIT+ LIVE FEATURE CROSS-PLATFORM PARITY PLAN
+==============================================================================
+Date: 2026-02-17
+Scope: Live Subtitles, Dubbing, Catchup, Trivia across all 5 platforms
+Reference platform: Web App (most complete)
+==============================================================================
+
+
+##############################################################################
+SECTION 1: PLATFORM FEATURE INVENTORY (CURRENT STATE)
+##############################################################################
+
+The investigation covered every source file across all 5 platforms and the
+backend. Below is an exhaustive inventory of what exists per-platform.
+
+
+------------------------------------------------------------------------------
+1A. WEB APP (bayit-plus/web/) -- MOST COMPLETE -- REFERENCE PLATFORM
+------------------------------------------------------------------------------
+
+LIVE SUBTITLES (13+ components, 6+ hooks):
+  Hooks:
+    - useSubtitles.ts           -- VOD subtitle synchronization
+    - useSubtitleTracks.ts      -- Track discovery from HLS manifest
+    - useSubtitlePreferences.ts -- User preference persistence
+    - useSubtitleCues.ts        -- Cue-level timing and display
+    - useLiveSubtitles.ts       -- WebSocket + SSE for real-time subtitles
+    - useLiveSplitSubtitles.ts  -- Bilingual split mode for live
+    - useSplitSubtitles.ts      -- Bilingual split mode for VOD
+  Components:
+    - subtitle/SubtitlePane.tsx
+    - subtitle/SubtitleButton.tsx
+    - subtitle/SubtitleLanguageList.tsx
+    - subtitle/SubtitleLanguageMenu.tsx
+    - subtitle/SubtitleModePicker.tsx
+    - subtitle/SubtitleDownloadSection.tsx
+    - subtitle/SubtitleFlagsPreview.tsx
+    - subtitle/SplitModeToggle.tsx
+    - subtitle/SplitSubtitleOverlay.tsx
+    - subtitle/LiveSplitSubtitleOverlay.tsx
+    - subtitle/LiveSubtitlePane.tsx
+    - subtitle/InteractiveSubtitleOverlay.tsx
+    - subtitle/AISubtitlesPicker.tsx
+    - subtitle/EnglishModePickerModal.tsx
+    - SubtitleControls.tsx
+    - SubtitleOverlay.tsx
+    - LiveSubtitleControls.tsx
+    - LiveSubtitleOverlay.tsx
+    - LiveSplitSubtitleControls.tsx
+  Features:
+    [x] Real-time live subtitle display via WebSocket/SSE
+    [x] VOD subtitle synchronization with cue timing
+    [x] Language selection (he, en, ru, ar, fr, es)
+    [x] Interactive word-tap for translation
+    [x] Split/bilingual mode (original + translated side by side)
+    [x] AI-powered subtitle generation/selection
+    [x] Subtitle download (SRT/WebVTT export)
+    [x] Font size, background opacity, text color, position customization
+    [x] Live preview of subtitle styling in settings
+    [x] Subtitle mode picker (standard, interactive, bilingual)
+    [x] Flag-based language preview icons
+
+DUBBING (6+ components, 2+ hooks):
+  Hooks:
+    - useLiveDubbing.ts        -- WebSocket for binary audio streaming
+    - useAudioTracks.ts        -- HLS audio track discovery and switching
+  Components:
+    - dubbing/DubbingControls.tsx
+    - dubbing/DubbingOnboarding.tsx
+    - dubbing/DubbingOverlay.tsx
+    - dubbing/VoiceSelector.tsx
+    - dubbing/LatencyBadge.tsx
+    - dubbing/LatencyBreakdownChart.tsx
+    - dubbing/LatencyGraph.tsx
+    - BilingualDubbingControls.tsx
+  Features:
+    [x] Live dubbing via WebSocket binary audio stream
+    [x] Audio track switching from HLS manifest
+    [x] Language selection for dubbed audio
+    [x] Voice selector (multiple TTS voices per language)
+    [x] Volume mix (dubbed vs original) with dual sliders
+    [x] Latency monitoring with badge, graph, and breakdown chart
+    [x] Dubbing onboarding flow for first-time users
+    [x] Bilingual dubbing controls (mixed audio modes)
+
+CATCHUP (7+ components, 1 hook):
+  Hooks:
+    - useCatchUp.ts            -- Catch-up state, EPG, timeshift logic
+  Components:
+    - catchup/CatchUpOverlay.tsx
+    - catchup/CatchUpSummaryCard.tsx
+    - catchup/CatchUpButton.tsx
+    - catchup/TranscriptSegmentCard.tsx
+    - catchup/TranscriptTimeline.tsx
+    - catchup/TranscriptTimelineButton.tsx
+    - VideoPlayerCatchUp.tsx
+  Features:
+    [x] EPG grid with channel/time layout
+    [x] Catch-up playback of past programs
+    [x] "Back to Live" button
+    [x] Transcript timeline with seekable segments
+    [x] Catch-up summary card with program metadata
+    [x] Transcript segment navigation (click segment to seek)
+    [x] Time-shift viewing
+
+TRIVIA (9+ components, 2 hooks, 2 services):
+  Hooks:
+    - useLiveTrivia.ts         -- WebSocket for real-time trivia game
+    - useTrivia.ts             -- VOD/general trivia game logic
+  Services:
+    - liveTriviaService.ts     -- Trivia WebSocket connection management
+    - triviaAnalyticsApi.ts    -- Analytics and reporting API
+  Components:
+    - trivia/TriviaCard.tsx
+    - trivia/TriviaOverlay.tsx
+    - TriviaOverlay.tsx (top-level)
+  Settings Components:
+    - settings/trivia/TriviaCategorySelector.tsx
+    - settings/trivia/TriviaDurationSelector.tsx
+    - settings/trivia/TriviaFrequencySelector.tsx
+    - settings/trivia/TriviaLanguageSettings.tsx
+    - settings/trivia/TriviaSettingsSection.tsx
+    - settings/trivia/TriviaToggleRow.tsx
+  Admin:
+    - pages/admin/TriviaAnalyticsPage.tsx
+    - pages/admin/LiveAIDataFlowPage/TriviaFlowTab.tsx
+  Features:
+    [x] Real-time trivia via WebSocket
+    [x] Question display with multiple-choice answers
+    [x] Countdown timer with visual urgency
+    [x] Score tracking and leaderboard
+    [x] Answer result with correct/incorrect feedback
+    [x] Category selection (user preference)
+    [x] Duration selection (game length)
+    [x] Frequency selection (how often games occur)
+    [x] Language selection for trivia content
+    [x] Toggle on/off
+    [x] Analytics dashboard (admin)
+    [x] AI data flow visualization (admin)
+
+WEB-ONLY BONUS FEATURES (not in scope but noted):
+    [x] Cultural context overlay (cultural/CulturalContextOverlay.tsx)
+    [x] Channel chat (hooks/useChannelChat.ts)
+    [x] Watch party (hooks/useWatchParty.ts)
+    [x] Scene search (hooks/useSceneSearch.ts)
+    [x] Comprehension quiz (hooks/useComprehensionQuizIntegration.ts)
+    [x] Picture-in-picture (hooks/usePictureInPicture.ts)
+    [x] AirPlay (hooks/useAirPlayWeb.ts)
+    [x] Chromecast (hooks/useChromecastWeb.ts)
+    [x] Live feature quota management (hooks/useLiveFeatureQuota.ts)
+    [x] Live feature usage indicator (LiveFeatureUsageIndicator.tsx)
+    [x] Recording session (useRecordingSession.ts)
+    [x] Talk-back overlay (talk-back/TalkBackOverlay.tsx)
+
+
+------------------------------------------------------------------------------
+1B. iOS APP (bayit-plus/ios-app/BayitPlusApp/) -- SECOND MOST COMPLETE
+------------------------------------------------------------------------------
+
+LIVE SUBTITLES:
+  Files:
+    - Views/Player/InteractiveSubtitlesOverlay.swift
+    - Views/Player/PlayerView.swift (subtitle display section)
+    - Views/LiveTV/LivePlayerView.swift (subtitle picker, live subtitle display)
+    - Services/LiveTVService.swift (subtitle WebSocket in shared code)
+    - ViewModels/LiveTVViewModel.swift (subtitle state)
+    - ViewModels/MediaPlayerViewModel.swift (subtitle toggle/selection)
+  Features:
+    [x] Real-time live subtitle display via WebSocket
+    [x] VOD subtitle synchronization
+    [x] Language selection via picker sheet
+    [x] Interactive word-tap for translation (VOD only)
+    [x] HLS embedded subtitle track support via AVPlayer
+    [x] Subtitle styling (font size, background opacity) from UserSettings
+    [ ] Split/bilingual mode -- MISSING
+    [ ] AI subtitle picker -- MISSING
+    [ ] Subtitle download/export -- MISSING
+    [ ] Subtitle mode picker (standard/interactive/bilingual) -- MISSING
+    [ ] Flag-based language preview -- MISSING
+
+DUBBING:
+  Files:
+    - Services/HLSProxyService.swift (local proxy for manifest rewriting)
+    - Views/LiveTV/LivePlayerView.swift (dubbing controls, picker sheet)
+    - ViewModels/LiveTVViewModel.swift (enableDubbing, disableDubbing)
+    - Models/LiveTVModels.swift (DubbingStatus enum)
+  Features:
+    [x] Live dubbing via HLS proxy with audio track injection
+    [x] Language selection via picker sheet
+    [x] Audio track switching via AVPlayer mediaSelectionGroup
+    [x] Dubbing status tracking (unavailable/loading/active/error)
+    [ ] Voice selector (multiple voices per language) -- MISSING
+    [ ] Volume mix (dubbed vs original) -- MISSING
+    [ ] Latency monitoring (badge, graph, breakdown) -- MISSING
+    [ ] Dubbing onboarding flow -- MISSING
+    [ ] Bilingual dubbing controls -- MISSING
+
+CATCHUP:
+  Files:
+    - Views/LiveTV/EPGView.swift (7-day date navigation, program grid)
+    - Views/LiveTV/EPGGridView.swift (horizontal scrollable grid)
+    - Views/LiveTV/LivePlayerView.swift (catchup controls, back-to-live)
+    - ViewModels/LiveTVViewModel.swift (playCatchup, loadEPG, timeShift)
+    - Repositories/LiveTVRepository.swift (fetchEPG, fetchCatchupStream)
+    - Views/LiveTV/ChannelRowView.swift (catchup indicator badge)
+  Features:
+    [x] Full EPG with 7-day lookback and date navigation
+    [x] EPG grid with time-proportional program cells
+    [x] Catch-up playback of past programs
+    [x] "Back to Live" button
+    [x] Time-shift seeking
+    [x] Catchup availability indicators on channel rows
+    [ ] Transcript timeline -- MISSING
+    [ ] Transcript segment navigation -- MISSING
+    [ ] Catch-up summary card -- MISSING
+
+TRIVIA:
+  Files:
+    - Services/LiveTVService.swift (WebSocket for trivia)
+    - Services/TriviaService.swift (game engine -- shared)
+    - Models/TriviaModels.swift (comprehensive models -- shared)
+    - ViewModels/TriviaViewModel.swift (game state -- shared)
+    - Views/LiveTV/LivePlayerView.swift (TriviaOverlayView)
+  Features:
+    [x] Real-time trivia via WebSocket (URLSessionWebSocketTask)
+    [x] Question display with multiple-choice answers
+    [x] Countdown timer with visual urgency (red at 5s)
+    [x] Score tracking
+    [x] Answer result with color-coded feedback
+    [x] Leaderboard display
+    [x] Auto-reconnect on WebSocket failure
+    [ ] Category selection settings -- MISSING
+    [ ] Duration selection settings -- MISSING
+    [ ] Frequency selection settings -- MISSING
+    [ ] Language selection for trivia -- MISSING
+    [ ] Analytics dashboard -- MISSING (admin, web-only OK)
+
+
+------------------------------------------------------------------------------
+1C. tvOS APP (bayit-plus/ios-app/BayitPlusTVApp/) -- SHARES iOS + TV UI
+------------------------------------------------------------------------------
+
+LIVE SUBTITLES:
+  Files:
+    - (Shared from BayitPlusApp/) SubtitleService, LiveSubtitleService
+    - BayitPlusTVApp/Views/TVLivePlayerView.swift
+    - BayitPlusTVApp/Views/TVPlayerView.swift
+    - InteractiveSubtitlesOverlay.swift (with #if os(tvOS) conditionals)
+  Features:
+    [x] Real-time live subtitle display (shared service)
+    [x] Font size adapted for TV (#if os(tvOS))
+    [x] Language selection via focus-based UI
+    [ ] Split/bilingual mode -- MISSING
+    [ ] AI subtitle picker -- MISSING
+    [ ] Subtitle download -- MISSING (N/A for TV, skip)
+    [ ] Interactive word-tap -- MISSING (touch N/A, consider Siri Remote)
+    [ ] Subtitle settings panel -- MISSING
+
+DUBBING:
+  Files:
+    - (Shared from BayitPlusApp/) DubbingService, LiveDubbingService
+    - BayitPlusTVApp/Views/TVLivePlayerView.swift
+  Features:
+    [x] Live dubbing (shared service)
+    [x] Audio track switching
+    [ ] Voice selector -- MISSING
+    [ ] Volume mix -- MISSING
+    [ ] Latency monitoring -- MISSING (N/A for TV, skip)
+    [ ] Dubbing onboarding -- MISSING
+    [ ] Language picker with focus navigation -- PARTIAL
+
+CATCHUP:
+  Files:
+    - BayitPlusTVApp/Views/TVEPGView.swift (focus-based EPG grid)
+    - BayitPlusTVApp/Views/TVLiveView.swift
+    - (Shared from BayitPlusApp/) CatchupService, EPGService
+  Features:
+    [x] EPG grid with focus navigation
+    [x] Program cell sizing proportional to duration
+    [x] Focus animations (scale, border)
+    [x] Catch-up playback (shared)
+    [x] Pinned channel headers
+    [x] "Back to Live" button
+    [ ] Transcript timeline -- MISSING (consider simplified TV version)
+    [ ] Catch-up summary card -- MISSING
+
+TRIVIA:
+  Files:
+    - BayitPlusTVApp/Views/TVTriviaOverlay.swift
+    - (Shared from BayitPlusApp/) TriviaService, TriviaViewModel
+  Features:
+    [x] 2x2 answer grid optimized for TV
+    [x] Focus engine navigation with @FocusState
+    [x] Large typography (40pt question, 30pt answers)
+    [x] Circular timer with color transitions
+    [x] Score display with streak indicator
+    [x] Leaderboard strip (bottom, top 5)
+    [x] Semi-transparent overlay
+    [ ] Category/duration/frequency settings -- MISSING
+
+
+------------------------------------------------------------------------------
+1D. ANDROID APP (bayit-plus/android-app/) -- CRITICAL GAP -- ALL MISSING
+------------------------------------------------------------------------------
+
+LIVE SUBTITLES: ** NOT IMPLEMENTED **
+  Current state: Zero subtitle code. No SubtitleView, no track selection,
+  no WebVTT/SRT parsing. ExoPlayer PlayerView with useController=true only.
+
+DUBBING: ** NOT IMPLEMENTED **
+  Current state: No DefaultTrackSelector, no audio track override,
+  no dubbed stream URL handling. Single audio track only.
+
+CATCHUP: ** NOT IMPLEMENTED **
+  Current state: EpgProgram model has only display fields (title, time, desc).
+  No EPG grid, no catchup URL construction, no timeshift. LiveTVScreen
+  shows channel cards only.
+
+TRIVIA: ** NOT IMPLEMENTED **
+  Current state: No WebSocket dependency, no OkHttp WebSocket usage,
+  no trivia UI, no game logic, no overlays. REST-only networking.
+
+
+------------------------------------------------------------------------------
+1E. MOBILE WEB APP (m.bayit.tv)
+------------------------------------------------------------------------------
+
+The mobile web app is the SAME web codebase (bayit-plus/web/) served via
+Firebase Hosting at m.bayit.tv. It uses responsive design (useResponsive.ts
+hook). All web features are available on mobile web. No separate React Native
+or mobile-specific codebase exists.
+
+Status: COMPLETE (same as web app)
+
+
+##############################################################################
+SECTION 2: BACKEND API INVENTORY (22 endpoints + 1 WebSocket)
+##############################################################################
+
+CHANNELS (3 endpoints):
+  GET  /api/channels                              -- List all active channels
+  GET  /api/channels/{channel_id}                 -- Get channel details
+  GET  /api/channels/{channel_id}/stream          -- Get signed stream URL
+
+SUBTITLES (5 endpoints):
+  POST /api/live-subtitles/ingest                 -- Ingest subtitle segment
+  GET  /api/live-subtitles/{channel_id}/latest    -- Get latest subtitle cue
+  GET  /api/live-subtitles/{channel_id}/webvtt    -- Get WebVTT file
+  GET  /api/live-subtitles/{channel_id}/stream    -- SSE real-time stream
+  POST /api/live-subtitles/{channel_id}/end-session -- End subtitle session
+
+DUBBING (5 endpoints):
+  GET  /api/dubbing/languages                     -- List available languages
+  POST /api/dubbing/sessions                      -- Create dubbing session
+  POST /api/dubbing/sessions/{id}/segments        -- Submit audio segment
+  GET  /api/dubbing/sessions/{id}/segments        -- Get session segments
+  POST /api/dubbing/sessions/{id}/end             -- End dubbing session
+
+CATCHUP (4 endpoints):
+  GET  /api/catchup/{channel_id}/epg              -- Get EPG schedule
+  GET  /api/catchup/{channel_id}/now-playing       -- Get current program
+  GET  /api/catchup/{channel_id}/recordings        -- List catchup recordings
+  GET  /api/catchup/recordings/{id}/stream         -- Get catchup stream URL
+
+TRIVIA (4 endpoints + 1 WebSocket):
+  GET  /api/trivia/{channel_id}/round              -- Get/create active round
+  POST /api/trivia/{id}/rounds/{rid}/answer        -- Submit answer
+  GET  /api/trivia/{id}/rounds/{rid}/leaderboard   -- Round leaderboard
+  GET  /api/trivia/{channel_id}/leaderboard        -- Channel leaderboard
+  WS   /api/trivia/{channel_id}/ws                 -- Real-time game session
+
+External Services:
+  - OpenAI (gpt-4o): Subtitle translation, trivia question generation
+  - ElevenLabs: Text-to-Speech dubbing synthesis
+  - Google Cloud Storage: Dubbing audio segments, catchup recordings
+  - Firebase Auth: JWT token verification for all endpoints
+  - MongoDB Atlas: All document storage via Beanie ODM
+  - Redis: Caching and rate limiting
+
+Channel Model Feature Flags (per channel in MongoDB):
+  - dubbing_enabled: bool
+  - subtitles_enabled: bool
+  - trivia_enabled: bool
+  - catchup_enabled: bool
+  - catchup_days: int (retention period)
+
+
+##############################################################################
+SECTION 3: CROSS-PLATFORM FEATURE PARITY MATRIX
+##############################################################################
+
+Legend: [F] = Full  [P] = Partial  [X] = Missing  [N] = Not Applicable
+
++-------------------------------+-------+-------+-------+---------+-------+
+| FEATURE                       |  WEB  |  iOS  | tvOS  | ANDROID | M.WEB |
++-------------------------------+-------+-------+-------+---------+-------+
+| LIVE SUBTITLES                                                          |
++-------------------------------+-------+-------+-------+---------+-------+
+| Real-time WebSocket/SSE       |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| VOD subtitle sync             |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Language selection             |  [F]  |  [F]  |  [P]  |   [X]   |  [F]  |
+| Interactive word-tap           |  [F]  |  [F]  |  [X]  |   [X]   |  [F]  |
+| Split/bilingual mode           |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| AI subtitle picker             |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Subtitle download/export       |  [F]  |  [X]  |  [N]  |   [X]   |  [F]  |
+| Styling customization          |  [F]  |  [P]  |  [P]  |   [X]   |  [F]  |
+| Mode picker (std/int/bilingual)|  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Flag-based language preview    |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
++-------------------------------+-------+-------+-------+---------+-------+
+| DUBBING                                                                 |
++-------------------------------+-------+-------+-------+---------+-------+
+| Live dubbing audio stream      |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Audio track switching          |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Language selection              |  [F]  |  [F]  |  [P]  |   [X]   |  [F]  |
+| Voice selector                 |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Volume mix (dubbed/original)   |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Latency monitoring             |  [F]  |  [X]  |  [N]  |   [X]   |  [F]  |
+| Dubbing onboarding             |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Bilingual dubbing controls     |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
++-------------------------------+-------+-------+-------+---------+-------+
+| CATCHUP                                                                 |
++-------------------------------+-------+-------+-------+---------+-------+
+| EPG grid (time-based layout)   |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Date navigation (7-day back)   |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Catch-up playback              |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| "Back to Live" button          |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Time-shift seeking             |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Transcript timeline            |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Transcript segment nav         |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Catch-up summary card          |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Catchup availability badges    |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
++-------------------------------+-------+-------+-------+---------+-------+
+| TRIVIA                                                                  |
++-------------------------------+-------+-------+-------+---------+-------+
+| Real-time WebSocket game       |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Question + multiple choice     |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Countdown timer                |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Score + leaderboard            |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Answer result feedback         |  [F]  |  [F]  |  [F]  |   [X]   |  [F]  |
+| Category settings              |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Duration settings              |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Frequency settings             |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Language settings               |  [F]  |  [X]  |  [X]  |   [X]   |  [F]  |
+| Streak indicator               |  [F]  |  [P]  |  [F]  |   [X]   |  [F]  |
++-------------------------------+-------+-------+-------+---------+-------+
+
+PARITY SCORES (features implemented / total features):
+  Web App:     37/37 = 100%  (REFERENCE)
+  Mobile Web:  37/37 = 100%  (same codebase)
+  iOS App:     22/37 =  59%  (15 features missing)
+  tvOS App:    19/37 =  51%  (18 features missing, 3 N/A)
+  Android App:  0/37 =   0%  (ALL features missing)
+
+
+##############################################################################
+SECTION 4: PARITY IMPLEMENTATION PLAN
+##############################################################################
+
+Priority order: Android first (0% -> 100%), then iOS (59% -> 100%),
+then tvOS (51% -> 100%, leveraging shared iOS code).
+
+
+==============================================================================
+PHASE 1: ANDROID APP -- FOUNDATION (ALL 4 FEATURES FROM SCRATCH)
+==============================================================================
+
+Estimated scope: ~40 new/modified files, ~6000 lines of Kotlin
+
+STEP 1.1: Data Model & API Layer Extension
+  Files to create/modify:
+    - data/models/Channel.kt -- Add: subtitlesEnabled, dubbingEnabled,
+      catchupEnabled, catchupDays, triviaEnabled,
+      supportedSubtitleLanguages, supportedDubbingLanguages
+    - data/models/EpgProgram.kt -- Add: channelId, thumbnailUrl,
+      catchupAvailable, hasDubbing, hasSubtitles, rating,
+      startTime/endTime as Long (epoch), computed isCurrentlyLive, isPast
+    - data/models/SubtitleCue.kt -- NEW: text, startTime, endTime, language
+    - data/models/TriviaModels.kt -- NEW: TriviaQuestion, TriviaAnswer,
+      TriviaResult, TriviaLeaderboardEntry, TriviaGameState enum
+    - data/models/CatchupRecording.kt -- NEW: streamUrl, availableUntil
+    - data/models/DubbingModels.kt -- NEW: DubbingStatus enum,
+      DubbingLanguage, DubbingSession
+    - data/remote/ApiService.kt -- Add all 22 backend endpoints
+    - data/remote/WebSocketService.kt -- NEW: OkHttp WebSocket client
+      for subtitles, trivia (reusable base class)
+    - data/repository/ChannelRepository.kt -- Add EPG, catchup methods
+    - data/repository/SubtitleRepository.kt -- NEW
+    - data/repository/TriviaRepository.kt -- NEW
+    - data/repository/DubbingRepository.kt -- NEW
+
+STEP 1.2: Live Subtitles
+  Files to create/modify:
+    - data/remote/SubtitleWebSocket.kt -- NEW: WebSocket client for
+      real-time subtitle cues via wss://.../api/live-subtitles/{channelId}
+    - ui/player/SubtitleOverlay.kt -- NEW: Compose overlay rendering
+      current subtitle text with styling
+    - ui/player/InteractiveSubtitleOverlay.kt -- NEW: Word-tappable
+      subtitle overlay with translation popup
+    - ui/player/SubtitleSettingsSheet.kt -- NEW: Language selector,
+      font size, background opacity, text color, position
+    - ui/player/SplitSubtitleOverlay.kt -- NEW: Bilingual split display
+    - ui/player/PlayerScreen.kt -- Integrate subtitle overlay
+    - ui/player/PlayerViewModel.kt -- Add subtitle state management:
+      isSubtitlesEnabled, currentSubtitle, subtitleLanguage, subtitleStyle
+    - ui/settings/SubtitleSettingsScreen.kt -- NEW: Full subtitle
+      preferences (language, style, mode)
+  ExoPlayer configuration:
+    - Add SubtitleConfiguration on MediaItem.Builder
+    - Render subtitles via Compose overlay (not ExoPlayer SubtitleView)
+      for custom interactive features
+
+STEP 1.3: Dubbing
+  Files to create/modify:
+    - ui/player/DubbingSheet.kt -- NEW: Language picker with voice
+      selector, volume mix sliders
+    - ui/player/DubbingOverlay.kt -- NEW: Status indicator overlay
+    - ui/player/DubbingOnboarding.kt -- NEW: First-time dubbing explainer
+    - ui/player/PlayerViewModel.kt -- Add dubbing state: isDubbingEnabled,
+      dubbingLanguage, dubbingVolume, originalVolume, dubbingStatus
+    - ui/player/PlayerScreen.kt -- Integrate dubbing controls
+  ExoPlayer configuration:
+    - Configure DefaultTrackSelector with language preference
+    - Use TrackSelectionOverrides for audio track switching
+    - Add secondary audio player for dubbed audio mixing (if backend
+      serves dubbed audio as separate stream)
+
+STEP 1.4: Catchup / EPG
+  Files to create/modify:
+    - ui/livetv/EPGScreen.kt -- NEW: Full EPG grid with LazyRow/LazyColumn
+    - ui/livetv/EPGProgramCell.kt -- NEW: Program cell with duration-
+      proportional width, catchup badge, current-airing highlight
+    - ui/livetv/EPGDateSelector.kt -- NEW: Horizontal date picker (7 days)
+    - ui/livetv/CatchupPlaybackSheet.kt -- NEW: Program detail with
+      "Watch from Start" button
+    - ui/livetv/TranscriptTimeline.kt -- NEW: Scrollable transcript
+      segments with tap-to-seek
+    - ui/livetv/CatchupSummaryCard.kt -- NEW: Program metadata display
+    - ui/livetv/LiveTVScreen.kt -- Add EPG button, catchup indicators
+    - ui/livetv/LiveTVViewModel.kt -- Add: loadEPG(), playCatchup(),
+      exitCatchup(), timeShift(), isCatchupMode, epgData
+    - ui/player/PlayerScreen.kt -- Add "Back to Live" button when in
+      catchup mode, time-shift controls
+    - ui/player/PlayerViewModel.kt -- Add catchup playback, seekToLive()
+
+STEP 1.5: Trivia
+  Files to create/modify:
+    - data/remote/TriviaWebSocket.kt -- NEW: OkHttp WebSocket for
+      trivia (extends WebSocketService base)
+    - ui/player/TriviaOverlay.kt -- NEW: Compose overlay with question,
+      timer, answers, score, leaderboard
+    - ui/player/TriviaAnswerButton.kt -- NEW: Answer button with
+      color-coded result feedback
+    - ui/player/TriviaLeaderboard.kt -- NEW: Real-time leaderboard
+    - ui/player/TriviaViewModel.kt -- NEW: Game state machine, timer,
+      score, streak, WebSocket management
+    - ui/settings/TriviaSettingsScreen.kt -- NEW: Category, duration,
+      frequency, language preferences
+    - ui/player/PlayerScreen.kt -- Integrate trivia overlay
+    - ui/player/PlayerViewModel.kt -- Add trivia trigger/toggle
+
+STEP 1.6: Dependency Injection Setup
+  Files to create/modify:
+    - di/AppModule.kt -- NEW: Hilt module providing repositories,
+      services, WebSocket clients
+    - BayitPlusApp.kt -- Add @HiltAndroidApp
+    - MainActivity.kt -- Add @AndroidEntryPoint
+    - All ViewModels -- Add @HiltViewModel with @Inject constructor
+  Dependencies to add in build.gradle.kts:
+    - com.google.dagger:hilt-android
+    - com.google.dagger:hilt-android-compiler (kapt)
+    - androidx.hilt:hilt-navigation-compose
+    - (OkHttp WebSocket already available via existing okhttp3 dependency)
+
+
+==============================================================================
+PHASE 2: iOS APP -- UPGRADE TO WEB PARITY (15 MISSING FEATURES)
+==============================================================================
+
+Estimated scope: ~15 new/modified files, ~2500 lines of Swift
+
+STEP 2.1: Split/Bilingual Subtitles
+  Files to create/modify:
+    - Views/Player/SplitSubtitleOverlay.swift -- NEW: Side-by-side
+      original + translated subtitle display
+    - Views/Player/LiveSplitSubtitleOverlay.swift -- NEW: Live version
+    - Views/LiveTV/LivePlayerView.swift -- Add split mode toggle
+    - ViewModels/MediaPlayerViewModel.swift -- Add splitSubtitleMode,
+      secondarySubtitleLanguage state
+    - Views/Player/SubtitleModePicker.swift -- NEW: Standard/Interactive/
+      Bilingual mode selector
+
+STEP 2.2: AI Subtitle Picker
+  Files to create/modify:
+    - Views/Player/AISubtitlesPicker.swift -- NEW: AI-powered subtitle
+      recommendation based on content and user preferences
+    - Services/AISubtitleService.swift -- NEW: Backend API integration
+      for AI subtitle suggestions
+
+STEP 2.3: Subtitle Download/Export
+  Files to create/modify:
+    - Views/Player/SubtitleDownloadSheet.swift -- NEW: Export as SRT/WebVTT
+    - Services/SubtitleExportService.swift -- NEW: File generation and
+      share sheet integration
+
+STEP 2.4: Subtitle Mode Picker + Flag Preview
+  Files to create/modify:
+    - Views/Player/SubtitleModePicker.swift (from 2.1) -- Add flag icons
+    - Views/Shared/LanguageFlagView.swift -- NEW: Flag-based language icons
+    - Views/Player/SubtitleLanguageMenu.swift -- NEW: Full language menu
+      with flags (replacing simple picker sheet)
+
+STEP 2.5: Dubbing Voice Selector
+  Files to create/modify:
+    - Views/LiveTV/VoiceSelectorSheet.swift -- NEW: Voice picker with
+      preview playback per language
+    - Services/DubbingVoiceService.swift -- NEW: Fetch available voices
+      from backend, preview samples
+
+STEP 2.6: Dubbing Volume Mix
+  Files to create/modify:
+    - Views/LiveTV/DubbingMixerView.swift -- NEW: Dual slider for
+      dubbed volume vs original volume
+    - ViewModels/LiveTVViewModel.swift -- Add dubbingVolume,
+      originalVolume, volumeMixRatio
+
+STEP 2.7: Dubbing Onboarding
+  Files to create/modify:
+    - Views/LiveTV/DubbingOnboardingView.swift -- NEW: First-time
+      explainer sheet with feature highlights
+
+STEP 2.8: Catchup Transcript Timeline
+  Files to create/modify:
+    - Views/LiveTV/TranscriptTimelineView.swift -- NEW: Scrollable
+      transcript segments with tap-to-seek
+    - Views/LiveTV/TranscriptSegmentRow.swift -- NEW: Individual
+      transcript segment display
+    - Views/LiveTV/CatchupSummaryCard.swift -- NEW: Program metadata card
+
+STEP 2.9: Trivia Settings
+  Files to create/modify:
+    - Views/Settings/TriviaSettingsView.swift -- NEW: Category, duration,
+      frequency, language preferences
+    - Models/TriviaPreferences.swift -- NEW: User trivia preference model
+    - Services/TriviaService.swift -- Extend with preference integration
+
+
+==============================================================================
+PHASE 3: tvOS APP -- UPGRADE TO WEB PARITY (LEVERAGING SHARED iOS CODE)
+==============================================================================
+
+Estimated scope: ~8 new files, ~1500 lines of Swift
+Most features will share iOS code via #if os(tvOS) conditionals.
+
+STEP 3.1: Split/Bilingual Subtitles for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVSplitSubtitleOverlay.swift -- NEW: Side-by-side
+      with TV-optimized typography (larger fonts, centered)
+    - Shared SplitSubtitleOverlay.swift -- Add #if os(tvOS) conditional
+
+STEP 3.2: Subtitle Settings Panel for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVSubtitleSettingsView.swift -- NEW: Focus-based
+      settings for language, mode, styling
+
+STEP 3.3: Dubbing Voice Selector for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVVoiceSelectorView.swift -- NEW: Focus-based
+      voice picker with audio preview
+
+STEP 3.4: Dubbing Volume Mix for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVDubbingMixerView.swift -- NEW: Focus-based
+      volume sliders (Siri Remote swipe to adjust)
+
+STEP 3.5: Dubbing Onboarding for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVDubbingOnboardingView.swift -- NEW: Full-screen
+      onboarding with focus navigation
+
+STEP 3.6: Catchup Transcript for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVTranscriptTimelineView.swift -- NEW: Focus-based
+      transcript with segment navigation via Siri Remote
+
+STEP 3.7: Trivia Settings for TV
+  Files to create/modify:
+    - BayitPlusTVApp/Views/TVTriviaSettingsView.swift -- NEW: Focus-based
+      trivia preferences
+
+
+==============================================================================
+PHASE 4: VERIFICATION & INTEGRATION TESTING
+==============================================================================
+
+STEP 4.1: Backend API Verification
+  - Verify all 22 endpoints are accessible from all platforms
+  - Test WebSocket connections from Android (OkHttp), iOS/tvOS
+    (URLSessionWebSocketTask), and Web (native WebSocket)
+  - Verify SSE fallback works for subtitle streaming
+
+STEP 4.2: Cross-Platform Feature Testing
+  For each feature (subtitles, dubbing, catchup, trivia) on each platform:
+    - Verify connection to correct backend endpoint
+    - Verify real-time data flow (WebSocket message handling)
+    - Verify UI rendering matches reference (web app)
+    - Verify error handling and reconnection
+    - Verify feature flag respect (per-channel enable/disable)
+
+STEP 4.3: Platform-Specific Testing
+  Android:
+    - ExoPlayer subtitle rendering accuracy
+    - ExoPlayer audio track switching correctness
+    - OkHttp WebSocket stability under network changes
+    - Background/foreground lifecycle handling
+  iOS:
+    - AVPlayer subtitle track selection
+    - HLSProxyService stability
+    - URLSessionWebSocketTask reconnection
+    - Background audio continuation
+  tvOS:
+    - Focus engine navigation for all new UI
+    - Siri Remote interaction for volume sliders
+    - Full-screen overlay rendering
+    - Memory management for long viewing sessions
+
+
+##############################################################################
+SECTION 5: IMPLEMENTATION PRIORITY & DEPENDENCIES
+##############################################################################
+
+Dependency chain:
+  Phase 1.1 (Android data layer) -> 1.2-1.5 (features, parallel)
+  Phase 1.6 (DI) should be done FIRST in Phase 1
+  Phase 2 steps are independent (can be parallel)
+  Phase 3 depends on Phase 2 shared code
+
+Recommended order:
+  1. Phase 1.6 (Android DI setup) -- 1 day
+  2. Phase 1.1 (Android data models/API) -- 1 day
+  3. Phase 1.2 + 1.3 + 1.4 + 1.5 (Android features, parallel) -- 3 days
+  4. Phase 2.1-2.9 (iOS upgrades, parallel) -- 2 days
+  5. Phase 3.1-3.7 (tvOS upgrades, parallel) -- 1 day
+  6. Phase 4 (verification) -- 1 day
+
+CRITICAL RISK: The Android app currently has NO real-time infrastructure.
+Adding WebSocket support (Step 1.1) is the foundational prerequisite for
+subtitles and trivia. Without it, 2 of 4 features cannot function.
+
+
+##############################################################################
+SECTION 6: BACKEND ISSUES FOUND DURING INVESTIGATION
+##############################################################################
+
+1. TRIVIA WEBSOCKET AUTH GAP: /api/trivia/{channel_id}/ws has NO Firebase
+   authentication. Client-provided user_id is spoofable. All other endpoints
+   properly require get_current_user.
+
+2. SUBTITLE INGEST RATE LIMIT BUG: live_subtitles.py passes the Request
+   class instead of the request instance to the rate limiter.
+
+3. TRIVIA LEADERBOARD PERIOD BUG: _update_leaderboard updates all three
+   period types (daily/weekly/all_time) with the same aggregate data.
+   No date-range filtering distinguishes daily from weekly.
+
+4. DUBBING COST EXPOSURE: No per-user session limits for dubbing. Each
+   segment triggers both OpenAI and ElevenLabs API calls.
+
+5. CATCHUP CLEANUP MISSING: No background task deletes expired recordings
+   (available_until field is set but never enforced).
+
+6. CACHE INVALIDATION: No admin API to invalidate cached channel data
+   after updates.
+
+These should be addressed before or alongside the frontend parity work.
+
+
+##############################################################################
+END OF PLAN
+##############################################################################

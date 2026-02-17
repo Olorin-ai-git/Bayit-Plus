@@ -87,6 +87,8 @@ extension PlayerView {
                 avatarImageUrl: imgUrl,
                 character: character,
                 viewModel: vm,
+                voiceService: nil,
+                avatarPlacement: interactionVM?.activeMoment?.avatarPlacement,
                 onDismiss: {
                     Task { await dismissDialogue() }
                 }

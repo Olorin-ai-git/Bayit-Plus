@@ -22,4 +22,9 @@ object DialogueModule {
     @Singleton
     fun provideVODInteractionApi(client: BayitApiClient): VODInteractionApi =
         client.createService()
+
+    @Provides
+    @Singleton
+    fun provideSharedInteractionApi(client: BayitApiClient): SharedInteractionApi =
+        client.createService()
 }

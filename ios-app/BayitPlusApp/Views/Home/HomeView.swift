@@ -1,5 +1,6 @@
 import BayitDesignSystem
 import BayitLocalization
+import BayitWidgetShared
 import SwiftUI
 
 /// Home screen with hero, spotlight carousel, and category rows
@@ -9,6 +10,7 @@ struct HomeView: View {
     @Environment(AppLocationProvider.self) private var locationProvider
     @Environment(FeatureFlags.self) private var featureFlags
     @Environment(LocalizationManager.self) private var localization
+    @Environment(WidgetDataSyncService.self) private var widgetSync
     @State private var viewModel: HomeViewModel?
     @State private var cardActions: CardActionsViewModel?
 
@@ -50,7 +52,8 @@ struct HomeView: View {
                     radioRepository: repos.radio,
                     locationProvider: locationProvider,
                     featureFlags: featureFlags,
-                    categoryRepository: repos.category
+                    categoryRepository: repos.category,
+                    widgetSync: widgetSync
                 )
             }
             await viewModel?.loadFeatured()
@@ -92,6 +95,12 @@ struct HomeView: View {
         // Continue Watching (only if has items)
         if !vm.continueWatching.isEmpty {
             ContinueWatchingRow(items: vm.continueWatching, coordinator: coordinator)
+        }
+
+        // AI featured collections carousel
+        if !vm.featuredCollections.isEmpty {
+            FeaturedCollectionsCarousel(collections: vm.featuredCollections)
+                .padding(.horizontal, DesignTokens.Spacing.lg)
         }
 
         // Live TV row

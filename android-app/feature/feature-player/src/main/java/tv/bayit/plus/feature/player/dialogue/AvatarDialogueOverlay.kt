@@ -35,9 +35,8 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 /**
  * Glassmorphic overlay for live character-avatar dialogue during VOD playback.
  *
- * Positioned at the bottom-right of the player surface, this overlay displays
- * two circular avatars (user + character), a scrollable conversation history,
- * a text input with send button, and a close button. The main player volume
+ * Supports smart positioning via [avatarPlacement] and an optional slot for
+ * multi-character circles above the conversation area. The main player volume
  * is ducked to [DUCKED_VOLUME] while the overlay is visible.
  */
 @Composable
@@ -48,9 +47,11 @@ fun AvatarDialogueOverlay(
     exchanges: List<DialogueExchange>,
     isSending: Boolean,
     mainPlayer: Player?,
+    avatarPlacement: AvatarPlacement?,
     onSendMessage: (String) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    multiCharacterSlot: @Composable () -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = isActive && selectedCharacter != null,
@@ -60,35 +61,39 @@ fun AvatarDialogueOverlay(
     ) {
         DuckMainPlayerVolume(mainPlayer = mainPlayer, isActive = isActive)
 
-        Box(
-            modifier = Modifier
-                .widthIn(max = OVERLAY_MAX_WIDTH)
-                .glassMorphism(
-                    cornerRadius = DesignTokens.Radius.lg,
-                    backgroundColor = DesignTokens.Colors.Glass.bgStrong,
-                )
-                .padding(DesignTokens.Spacing.base),
-        ) {
-            Column {
-                OverlayHeader(
-                    character = selectedCharacter,
-                    avatarUrl = avatarUrl,
-                    onClose = onClose,
-                )
+        SmartPositionedOverlay(placement = avatarPlacement) {
+            Box(
+                modifier = Modifier
+                    .widthIn(max = OVERLAY_MAX_WIDTH)
+                    .glassMorphism(
+                        cornerRadius = DesignTokens.Radius.lg,
+                        backgroundColor = DesignTokens.Colors.Glass.bgStrong,
+                    )
+                    .padding(DesignTokens.Spacing.base),
+            ) {
+                Column {
+                    OverlayHeader(
+                        character = selectedCharacter,
+                        avatarUrl = avatarUrl,
+                        onClose = onClose,
+                    )
 
-                Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                    multiCharacterSlot()
 
-                ConversationList(
-                    exchanges = exchanges,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
-                Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
+                    ConversationList(
+                        exchanges = exchanges,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
 
-                MessageInput(
-                    isSending = isSending,
-                    onSendMessage = onSendMessage,
-                )
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
+
+                    MessageInput(
+                        isSending = isSending,
+                        onSendMessage = onSendMessage,
+                    )
+                }
             }
         }
     }

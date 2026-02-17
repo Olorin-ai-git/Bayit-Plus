@@ -59,8 +59,8 @@ struct CollectionDetailView: View {
                     promoCard(promoText)
                 }
 
-                if !collection.movies.isEmpty {
-                    moviesSection(collection.movies)
+                if let movies = collection.movies, !movies.isEmpty {
+                    moviesSection(movies)
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -107,9 +107,9 @@ struct CollectionDetailView: View {
                 }
             }
 
-            if !collection.movies.isEmpty {
+            if let movies = collection.movies, !movies.isEmpty {
                 Button {
-                    Task { await playAll(collection.movies) }
+                    Task { await playAll(movies) }
                 } label: {
                     HStack {
                         Image(systemName: "play.fill")

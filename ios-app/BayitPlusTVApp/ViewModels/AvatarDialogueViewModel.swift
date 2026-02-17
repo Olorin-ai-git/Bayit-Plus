@@ -92,13 +92,23 @@ final class AvatarDialogueViewModel {
                 speaker: "user",
                 messageText: text,
                 audioUrl: nil,
-                animatedVideoUrl: nil
+                animatedVideoUrl: nil,
+                characterName: nil,
+                addressedTo: nil,
+                reactionTo: nil,
+                participantUserId: nil,
+                participantName: nil
             )
             let characterExchange = DialogueExchange(
                 speaker: "character",
                 messageText: response.responseText,
                 audioUrl: response.audioUrl,
-                animatedVideoUrl: response.animatedVideoUrl
+                animatedVideoUrl: response.animatedVideoUrl,
+                characterName: nil,
+                addressedTo: nil,
+                reactionTo: nil,
+                participantUserId: nil,
+                participantName: nil
             )
             exchanges.append(userExchange)
             exchanges.append(characterExchange)

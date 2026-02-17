@@ -136,7 +136,7 @@ struct SeriesDetailView: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(Color.black.opacity(0.7))
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xs))
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
                 }
             }
 

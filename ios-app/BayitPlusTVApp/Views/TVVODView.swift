@@ -10,7 +10,7 @@ struct TVVODView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: VODViewModel?
-    @State private var featuredCollection: CollectionDetail?
+    @State private var featuredCollections: [CollectionDetail] = []
 
     private let columns = [
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -27,16 +27,10 @@ struct TVVODView: View {
                     if let vm = viewModel {
                         contentTypeFilters(vm)
 
-                        if let collection = featuredCollection, vm.selectedType == .all {
-                            TVCollectionPromoBannerView(
-                                collectionId: collection.id,
-                                title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
-                                posterUrl: collection.thumbnail,
-                                promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
-                                movieCount: collection.availableMovies ?? 0
-                            )
-                            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                            .padding(.vertical, TVDesignTokens.Spacing.lg)
+                        if !featuredCollections.isEmpty && vm.selectedType == .all {
+                            TVFeaturedCollectionsCarousel(collections: featuredCollections)
+                                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                                .padding(.vertical, TVDesignTokens.Spacing.lg)
                         }
 
                         if vm.isLoading && vm.items.isEmpty {
@@ -57,17 +51,14 @@ struct TVVODView: View {
                     viewModel = VODViewModel(repository: repos.content)
                 }
                 await viewModel?.loadContent()
-                await loadFeaturedCollection()
+                await loadFeaturedCollections()
             }
         }
     }
 
-    private func loadFeaturedCollection() async {
+    private func loadFeaturedCollections() async {
         do {
-            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
-            if let first = collections.first {
-                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
-            }
+            featuredCollections = try await repos.content.fetchCollectionRecommendations()
         } catch {
             // Silently fail - banner is optional
         }

@@ -8,7 +8,14 @@ protocol SearchRepository: Sendable {
         query: String,
         contentTypes: [String],
         page: Int,
-        limit: Int
+        limit: Int,
+        sortBy: String,
+        sortOrder: String,
+        yearMin: Int?,
+        yearMax: Int?,
+        language: String?,
+        hasSubtitles: Bool?,
+        hasDubbing: Bool?
     ) async throws -> UnifiedSearchResponse
 
     func fetchTrendingSearches(limit: Int) async throws -> [String]
@@ -35,16 +42,30 @@ final class APISearchRepository: SearchRepository, @unchecked Sendable {
         query: String,
         contentTypes: [String],
         page: Int,
-        limit: Int
+        limit: Int,
+        sortBy: String,
+        sortOrder: String,
+        yearMin: Int?,
+        yearMax: Int?,
+        language: String?,
+        hasSubtitles: Bool?,
+        hasDubbing: Bool?
     ) async throws -> UnifiedSearchResponse {
         var queryItems = [
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
+            URLQueryItem(name: "limit", value: String(limit)),
+            URLQueryItem(name: "sort_by", value: sortBy),
+            URLQueryItem(name: "sort_order", value: sortOrder),
         ]
         for ct in contentTypes {
             queryItems.append(URLQueryItem(name: "content_types", value: ct))
         }
+        if let yearMin { queryItems.append(URLQueryItem(name: "year_min", value: String(yearMin))) }
+        if let yearMax { queryItems.append(URLQueryItem(name: "year_max", value: String(yearMax))) }
+        if let language { queryItems.append(URLQueryItem(name: "subtitle_languages", value: language)) }
+        if hasSubtitles == true { queryItems.append(URLQueryItem(name: "has_subtitles", value: "true")) }
+        if hasDubbing == true { queryItems.append(URLQueryItem(name: "has_dubbing", value: "true")) }
 
         return try await client.get(
             "/api/v1/search/unified",

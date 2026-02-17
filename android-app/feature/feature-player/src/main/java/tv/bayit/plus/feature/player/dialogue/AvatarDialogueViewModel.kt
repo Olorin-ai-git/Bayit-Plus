@@ -11,14 +11,7 @@ import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 
-/**
- * ViewModel for the live character-avatar dialogue feature.
- *
- * Manages the lifecycle of a dialogue session: loading available characters,
- * starting a session with a selected character, exchanging messages, and
- * gracefully ending the session. All API calls are routed through the
- * centralized [BayitApiClient] for consistent auth, retry, and error handling.
- */
+/** ViewModel for single-character avatar dialogue during VOD playback. */
 @HiltViewModel
 class AvatarDialogueViewModel @Inject constructor(
     private val vodInteractionApi: VODInteractionApi,
@@ -43,6 +36,13 @@ class AvatarDialogueViewModel @Inject constructor(
 
     private val _isActive = MutableStateFlow(false)
     val isActive: StateFlow<Boolean> = _isActive.asStateFlow()
+
+    private val _avatarPlacement = MutableStateFlow<AvatarPlacement?>(null)
+    val avatarPlacement: StateFlow<AvatarPlacement?> = _avatarPlacement.asStateFlow()
+
+    fun updateAvatarPlacement(placement: AvatarPlacement?) {
+        _avatarPlacement.value = placement
+    }
 
     fun loadCharacters(contentId: String) {
         viewModelScope.launch {

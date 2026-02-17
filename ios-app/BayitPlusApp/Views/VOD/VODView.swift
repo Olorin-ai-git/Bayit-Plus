@@ -8,7 +8,6 @@ struct VODView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: VODViewModel?
-    @State private var featuredCollection: CollectionDetail?
     @State private var continueWatchingItems: [WatchHistoryItem] = []
     @State private var trendingRecommendations: [TrendingContentRecommendation] = []
     @State private var aiCollectionRecommendations: [CollectionDetail] = []
@@ -29,7 +28,7 @@ struct VODView: View {
                     ContinueWatchingSection(items: continueWatchingItems) { item in
                         coordinator.navigate(to: .player(
                             contentId: item.id,
-                            contentType: item.type ?? "vod"
+                            contentType: ContentType(rawValue: item.type ?? "movie") ?? .movie
                         ))
                     }
                 }
@@ -44,16 +43,10 @@ struct VODView: View {
                     genreFilters(vm)
                 }
 
-                if let collection = featuredCollection, vm.selectedType == .all {
-                    CollectionPromoBannerView(
-                        collectionId: collection.id,
-                        title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
-                        posterUrl: collection.thumbnail,
-                        promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
-                        movieCount: collection.availableMovies ?? 0
-                    )
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.vertical, DesignTokens.Spacing.sm)
+                if !aiCollectionRecommendations.isEmpty && vm.selectedType == .all {
+                    FeaturedCollectionsCarousel(collections: aiCollectionRecommendations)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.sm)
                 }
 
                 if !trendingRecommendations.isEmpty && vm.selectedType == .all {
@@ -86,11 +79,10 @@ struct VODView: View {
                 viewModel = VODViewModel(repository: repos.content)
             }
             await viewModel?.loadContent()
-            async let collectionTask: Void = loadFeaturedCollection()
             async let continueWatchingTask: Void = loadContinueWatching()
             async let trendingTask: Void = loadTrendingRecommendations()
             async let aiCollectionsTask: Void = loadAICollectionRecommendations()
-            _ = await (collectionTask, continueWatchingTask, trendingTask, aiCollectionsTask)
+            _ = await (continueWatchingTask, trendingTask, aiCollectionsTask)
         }
     }
 
@@ -100,17 +92,6 @@ struct VODView: View {
             continueWatchingItems = response.items
         } catch {
             // Silently fail - continue watching is optional
-        }
-    }
-
-    private func loadFeaturedCollection() async {
-        do {
-            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
-            if let first = collections.first {
-                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
-            }
-        } catch {
-            // Silently fail - banner is optional
         }
     }
 
@@ -450,7 +431,7 @@ private struct VODCard: View {
                 .padding(.vertical, 2)
                 .background(Color.black.opacity(0.7))
                 .clipShape(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                 )
                 .padding(DesignTokens.Spacing.xs)
         }
@@ -469,7 +450,7 @@ private struct VODCard: View {
                 .padding(.vertical, 2)
                 .background(DesignTokens.Primary.default.opacity(0.85))
                 .clipShape(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                 )
                 .padding(DesignTokens.Spacing.xs)
         }
@@ -544,7 +525,7 @@ private struct TrendingContentCard: View {
                                 .padding(.vertical, 2)
                                 .background(Color.orange.opacity(0.85))
                                 .clipShape(
-                                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                                 )
                                 .padding(DesignTokens.Spacing.xs)
                         }
@@ -615,7 +596,7 @@ private struct AICollectionCard: View {
                         .padding(.vertical, 2)
                         .background(DesignTokens.Primary.default.opacity(0.85))
                         .clipShape(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                         )
                         .padding(DesignTokens.Spacing.xs)
                     }

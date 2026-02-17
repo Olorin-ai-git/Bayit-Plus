@@ -33,12 +33,12 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
  * Features:
  * - Auto-rotation through collections every 5 seconds
  * - Smooth fade transitions with Compose animations
- * - Pause rotation on press
  * - Pagination indicators
  * - Multi-language promo text support
  *
  * @param collections List of collections to rotate through
- * @param onCollectionClick Callback when user clicks a collection
+ * @param onCollectionClick Callback when user taps the card body — navigates to collection detail
+ * @param onWatchNowClick Callback when user taps "Watch Now" — plays the first movie in the collection
  * @param currentLanguage Current UI language code (e.g., "en", "he", "es")
  * @param modifier Modifier for styling
  * @param autoRotate Whether to automatically rotate collections
@@ -48,6 +48,7 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 fun CollectionBanner(
     collections: List<CollectionDetail>,
     onCollectionClick: (String) -> Unit,
+    onWatchNowClick: (movieId: String) -> Unit,
     currentLanguage: String,
     modifier: Modifier = Modifier,
     autoRotate: Boolean = true,
@@ -172,11 +173,19 @@ fun CollectionBanner(
 
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
-                // CTA Button
+                // CTA Button — tapping this plays the first movie directly
+                val firstMovieId = currentCollection.movies.firstOrNull()?.id
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
                         .background(DesignTokens.Colors.Primary.base)
+                        .clickable {
+                            if (firstMovieId != null) {
+                                onWatchNowClick(firstMovieId)
+                            } else {
+                                onCollectionClick(currentCollection.id)
+                            }
+                        }
                         .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.sm)
                 ) {
                     Text(

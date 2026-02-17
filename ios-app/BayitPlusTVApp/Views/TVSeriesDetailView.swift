@@ -34,7 +34,9 @@ struct TVSeriesDetailView: View {
             if viewModel == nil {
                 viewModel = SeriesDetailViewModel(
                     seriesId: seriesId,
-                    repository: repos.series
+                    repository: repos.series,
+                    contentRepository: repos.content,
+                    userRepository: repos.user
                 )
             }
             await viewModel?.loadDetail()

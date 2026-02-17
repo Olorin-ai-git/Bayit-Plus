@@ -146,7 +146,7 @@ final class MediaPlayerViewModel {
             // Restore saved playback rate
             let savedRate = preferences.preferredPlaybackRate
             if savedRate != 1.0 {
-                player.rate = savedRate
+                player.setRate(savedRate)
             }
 
             // Apply preferred quality if different from resolved

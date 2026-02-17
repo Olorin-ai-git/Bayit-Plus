@@ -22,7 +22,8 @@ import {
   RowSkeleton,
 } from '@bayit/shared/ui';
 import MorningRitual from '@/components/ritual/MorningRitual';
-import { contentService, liveService, historyService, ritualService } from '@/services/api';
+import api, { contentService, liveService, historyService, ritualService } from '@/services/api';
+import { CollectionPromoBanner } from '@/components/banners/CollectionPromoBanner';
 import { ShabbatModeBanner, ShabbatEveSection } from '@/components/judaism';
 import IsraelisInCitySection from '@/components/home/IsraelisInCitySection';
 import IsraeliBusinessesSection from '@/components/home/IsraeliBusinessesSection';
@@ -135,6 +136,8 @@ export default function HomePage() {
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
   const [continueLoading, setContinueLoading] = useState(true);
 
+  const [featuredCollections, setFeaturedCollections] = useState<any[]>([]);
+
   const [syncing, setSyncing] = useState(false);
   const [showMorningRitual, setShowMorningRitual] = useState(false);
 
@@ -156,6 +159,7 @@ export default function HomePage() {
     loadFeaturedContent();
     loadLiveChannels();
     loadContinueWatching();
+    loadFeaturedCollections();
 
     // Fetch cultures for dynamic content
     fetchCultures();
@@ -240,6 +244,17 @@ export default function HomePage() {
     }
   };
 
+  const loadFeaturedCollections = async () => {
+    try {
+      const collections = await api.get('/content/collections/recommendations');
+      if (Array.isArray(collections) && collections.length > 0) {
+        setFeaturedCollections(collections);
+      }
+    } catch (error) {
+      logger.debug('Collection recommendations not available', 'HomePage');
+    }
+  };
+
   const syncContent = async () => {
     try {
       setSyncing(true);
@@ -250,6 +265,7 @@ export default function HomePage() {
       loadFeaturedContent();
       loadLiveChannels();
       loadContinueWatching();
+      loadFeaturedCollections();
     } catch (error) {
       logger.error('Failed to sync content', 'HomePage', error);
     } finally {
@@ -361,6 +377,17 @@ export default function HomePage() {
           items={continueWatching}
           style={styles.section}
         />
+      )}
+
+      {/* AI Featured Collections Carousel */}
+      {featuredCollections.length > 0 && (
+        <View style={[styles.section, { paddingHorizontal: IS_TV_BUILD ? spacing.xl : spacing.md }]}>
+          <CollectionPromoBanner
+            collections={featuredCollections}
+            autoRotate={true}
+            rotationInterval={5000}
+          />
+        </View>
       )}
 
       {/* Near Me - Israelis in Your City */}

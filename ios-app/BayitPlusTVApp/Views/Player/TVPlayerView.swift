@@ -642,6 +642,8 @@ struct TVPlayerView: View {
                 avatarImageUrl: imgUrl,
                 character: character,
                 viewModel: vm,
+                voiceService: nil,
+                avatarPlacement: nil,
                 onDismiss: {
                     Task { await dismissDialogue() }
                 }

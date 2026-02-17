@@ -10,7 +10,7 @@ struct TVHomeView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: HomeViewModel?
-    @State private var featuredCollection: CollectionDetail?
+    @State private var featuredCollections: [CollectionDetail] = []
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -39,7 +39,7 @@ struct TVHomeView: View {
                 )
             }
             await viewModel?.loadFeatured()
-            await loadFeaturedCollection()
+            await loadFeaturedCollections()
             ShabbatModeService.shared.startPolling(repository: repos.shabbat)
             cacheTopShelfData()
         }
@@ -73,16 +73,10 @@ struct TVHomeView: View {
                 }
             }
 
-            // Featured collection banner
-            if let collection = featuredCollection {
-                TVCollectionPromoBannerView(
-                    collectionId: collection.id,
-                    title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
-                    posterUrl: collection.thumbnail,
-                    promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
-                    movieCount: collection.availableMovies ?? 0
-                )
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            // Featured collections carousel
+            if !featuredCollections.isEmpty {
+                TVFeaturedCollectionsCarousel(collections: featuredCollections)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
 
             // Shabbat banner
@@ -269,12 +263,9 @@ struct TVHomeView: View {
         }
     }
 
-    private func loadFeaturedCollection() async {
+    private func loadFeaturedCollections() async {
         do {
-            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
-            if let first = collections.first {
-                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
-            }
+            featuredCollections = try await repos.content.fetchCollectionRecommendations()
         } catch {
             // Collection banner is optional - fail silently
         }

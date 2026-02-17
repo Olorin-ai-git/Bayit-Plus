@@ -138,4 +138,5 @@ enum class ChannelType {
     CHANNEL_CHAT,
     V2V,
     TALKBACK,
+    SHARED_INTERACTION,
 }

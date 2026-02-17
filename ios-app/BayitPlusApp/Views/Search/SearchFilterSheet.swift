@@ -37,7 +37,7 @@ struct SearchFilterSheet: View {
             .navigationTitle(localization.t("search.filter.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(localization.t("search.filter.reset")) {
                         draft.reset()
                     }

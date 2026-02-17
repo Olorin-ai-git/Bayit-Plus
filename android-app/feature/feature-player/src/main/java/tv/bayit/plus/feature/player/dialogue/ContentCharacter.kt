@@ -81,3 +81,22 @@ data class DialogueExchange(
     val characterVideoUrl: String? = null,
     val emotion: String? = null,
 )
+
+/**
+ * Unified exchange model for all dialogue types: single-character, multi-character,
+ * and shared sessions. Used by [DialogueConversation] to render bubbles consistently.
+ */
+data class DialogueExchangeItem(
+    val speaker: String,
+    val messageText: String,
+    val characterName: String? = null,
+    val audioUrl: String? = null,
+    val animatedVideoUrl: String? = null,
+    val reactionTo: String? = null,
+    val participantName: String? = null,
+) {
+    val isUser: Boolean get() = speaker == SPEAKER_USER
+    val isReaction: Boolean get() = reactionTo != null
+}
+
+internal const val SPEAKER_USER = "user"

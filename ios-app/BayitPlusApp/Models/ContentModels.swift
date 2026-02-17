@@ -235,7 +235,10 @@ struct CollectionListItem: Decodable, Sendable, Identifiable {
             narrator: nil,
             isCollectionParent: true,
             availableMovies: availableMovies,
-            totalMovies: totalMovies
+            totalMovies: totalMovies,
+            contentRating: nil,
+            genre: nil,
+            genreIds: nil
         )
     }
 }
@@ -260,7 +263,7 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
     let promoTextBn: String?
     let promoTextJa: String?
     let promoTextZh: String?
-    let movies: [CollectionMovie]
+    let movies: [CollectionMovie]?
 
     /// Returns localized title for the given language code from Bayit+ localization.
     func localizedTitle(for lang: String) -> String? {

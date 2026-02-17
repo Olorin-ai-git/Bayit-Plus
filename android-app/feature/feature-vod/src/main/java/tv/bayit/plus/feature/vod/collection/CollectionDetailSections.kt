@@ -72,7 +72,10 @@ internal fun CollectionHeroSection(state: CollectionDetailUiState.Success, onBac
 }
 
 @Composable
-internal fun CollectionMetadataSection(state: CollectionDetailUiState.Success) {
+internal fun CollectionMetadataSection(
+    state: CollectionDetailUiState.Success,
+    onPlayAll: (() -> Unit)?,
+) {
     Column(modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base)) {
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             state.availableMovies?.let { available ->
@@ -87,6 +90,10 @@ internal fun CollectionMetadataSection(state: CollectionDetailUiState.Success) {
         state.description?.let { desc ->
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             Text(desc, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
+        }
+        if (onPlayAll != null) {
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+            GlassButton(text = "Play All", onClick = onPlayAll)
         }
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     }

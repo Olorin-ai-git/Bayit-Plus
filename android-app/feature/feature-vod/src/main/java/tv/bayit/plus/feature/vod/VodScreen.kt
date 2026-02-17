@@ -26,6 +26,7 @@ import java.util.Locale
 @Composable
 fun VodRoute(
     onNavigateToContent: (String, String) -> Unit,
+    onNavigateToPlayer: (contentId: String, contentType: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: VodViewModel = hiltViewModel(),
 ) {
@@ -38,6 +39,7 @@ fun VodRoute(
             onNavigateToContent(item.id, type)
         },
         onCollectionClick = { collectionId -> onNavigateToContent(collectionId, "collection") },
+        onWatchNowClick = { movieId -> onNavigateToPlayer(movieId, "movie") },
         onCategorySelected = viewModel::selectCategory,
         onRefresh = viewModel::refresh,
         modifier = modifier,
@@ -49,6 +51,7 @@ internal fun VodScreen(
     uiState: VodUiState,
     onContentClick: (ContentItem) -> Unit,
     onCollectionClick: (String) -> Unit,
+    onWatchNowClick: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
@@ -73,6 +76,7 @@ internal fun VodScreen(
                         CollectionBanner(
                             collections = uiState.featuredCollections,
                             onCollectionClick = onCollectionClick,
+                            onWatchNowClick = onWatchNowClick,
                             currentLanguage = Locale.getDefault().language,
                         )
                     }

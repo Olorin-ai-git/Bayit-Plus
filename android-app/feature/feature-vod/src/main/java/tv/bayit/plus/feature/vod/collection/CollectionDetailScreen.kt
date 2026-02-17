@@ -25,6 +25,7 @@ private const val GRID_COLUMNS = 2
 @Composable
 fun CollectionDetailRoute(
     onNavigateToMovie: (String) -> Unit,
+    onNavigateToPlayer: (movieId: String) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CollectionDetailViewModel = hiltViewModel(),
@@ -34,6 +35,7 @@ fun CollectionDetailRoute(
     CollectionDetailScreen(
         uiState = uiState,
         onMovieClick = onNavigateToMovie,
+        onNavigateToPlayer = onNavigateToPlayer,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -44,6 +46,7 @@ fun CollectionDetailRoute(
 internal fun CollectionDetailScreen(
     uiState: CollectionDetailUiState,
     onMovieClick: (String) -> Unit,
+    onNavigateToPlayer: (movieId: String) -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -59,6 +62,7 @@ internal fun CollectionDetailScreen(
             is CollectionDetailUiState.Success -> CollectionSuccessContent(
                 state = uiState,
                 onMovieClick = onMovieClick,
+                onNavigateToPlayer = onNavigateToPlayer,
                 onBack = onBack,
             )
         }
@@ -69,8 +73,10 @@ internal fun CollectionDetailScreen(
 private fun CollectionSuccessContent(
     state: CollectionDetailUiState.Success,
     onMovieClick: (String) -> Unit,
+    onNavigateToPlayer: (movieId: String) -> Unit,
     onBack: () -> Unit,
 ) {
+    val firstMovieId = state.movies.firstOrNull()?.id
     LazyVerticalGrid(
         columns = GridCells.Fixed(GRID_COLUMNS),
         contentPadding = PaddingValues(bottom = DesignTokens.Spacing.xl),
@@ -82,7 +88,10 @@ private fun CollectionSuccessContent(
             CollectionHeroSection(state, onBack)
         }
         item(span = { GridItemSpan(GRID_COLUMNS) }) {
-            CollectionMetadataSection(state)
+            CollectionMetadataSection(
+                state = state,
+                onPlayAll = firstMovieId?.let { id -> { onNavigateToPlayer(id) } },
+            )
         }
         items(items = state.movies, key = { it.id }) { movie ->
             CollectionMovieCard(movie = movie, onClick = { onMovieClick(movie.id) })

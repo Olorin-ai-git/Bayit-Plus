@@ -1018,6 +1018,8 @@
 		AA11BB22CC33DD44EE55FF03 /* MultiCharacterCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF02 /* MultiCharacterCirclesView.swift */; };
 		AA11BB22CC33DD44EE55FF05 /* DialogueCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF04 /* DialogueCirclesView.swift */; };
 		AA11BB22CC33DD44EE55FF07 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF06 /* PlayerPreferencesService.swift */; };
+		BB11CC22DD33EE44FF550001 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF06 /* PlayerPreferencesService.swift */; };
+		BB11CC22DD33EE44FF550002 /* SharedInteractionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF10 /* SharedInteractionViewModel.swift */; };
 		AA11BB22CC33DD44EE55FF09 /* ContinueWatchingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF08 /* ContinueWatchingSection.swift */; };
 		AA11BB22CC33DD44EE55FF11 /* SharedInteractionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF10 /* SharedInteractionViewModel.swift */; };
 		AA11BB22CC33DD44EE55FF13 /* SharedInteractionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF12 /* SharedInteractionOverlayView.swift */; };
@@ -3897,6 +3899,7 @@
 				096C2F622586033DBEA255F5 /* PhoneticMirrorModels.swift in Sources */,
 				A900D4CDA2EE9FB63E8EA1CB /* PhoneticMirrorRepository.swift in Sources */,
 				261A98F88B4D55A5070BE1C4 /* PlaybackSessionService.swift in Sources */,
+				BB11CC22DD33EE44FF550001 /* PlayerPreferencesService.swift in Sources */,
 				C26097A31C4DA90AA122759C /* PlaylistRepository.swift in Sources */,
 				894967644370F3F9C3A5F74C /* PlaylistViewModel.swift in Sources */,
 				F22D8180A6BA209655039A91 /* PodcastDetailViewModel.swift in Sources */,
@@ -3973,6 +3976,7 @@
 				E9F0A1B2C3D4E5F6A7B8C9D0 /* TVAvatarDialogueOverlayView.swift in Sources */,
 				AA11BB22CC33DD44EE55FF15 /* TVVoiceInteractionService.swift in Sources */,
 				AA11BB22CC33DD44EE55FF17 /* TVMultiCharacterCirclesView.swift in Sources */,
+				BB11CC22DD33EE44FF550002 /* SharedInteractionViewModel.swift in Sources */,
 				AA11BB22CC33DD44EE55FF19 /* TVSharedInteractionView.swift in Sources */,
 				F1A2B3C4D5E6F7A8B9C0D1E2 /* TVCharacterSelectionView.swift in Sources */,
 				587BB357845E41E5B77B8A95 /* TVInteractiveMomentOverlayView.swift in Sources */,

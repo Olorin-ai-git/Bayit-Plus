@@ -149,7 +149,7 @@ fun BayitNavHost(
         }
         composable<Route.Home> {
             HomeRoute(
-                onNavigateToContent = { id, _ -> navController.navigate(Route.MovieDetail(movieId = id)) },
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
                 onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
                 onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
                 onNavigateToRadio = { radioId -> navController.navigate(Route.Player(contentId = radioId, contentType = "radio")) },
@@ -162,7 +162,10 @@ fun BayitNavHost(
             LiveTVRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
         }
         composable<Route.Vod> {
-            VodRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+            VodRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+            )
         }
         composable<Route.Radio> {
             RadioRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
@@ -194,6 +197,7 @@ fun BayitNavHost(
         composable<Route.CollectionDetail> {
             CollectionDetailRoute(
                 onNavigateToMovie = { id -> navController.navigate(Route.MovieDetail(movieId = id)) },
+                onNavigateToPlayer = { movieId -> navController.navigate(Route.Player(contentId = movieId, contentType = "movie")) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }

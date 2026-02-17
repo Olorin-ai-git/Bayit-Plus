@@ -15,8 +15,8 @@ struct PlayerView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) var repositories
-    @Environment(AuthManager.self) private var authManager
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(AuthManager.self) var authManager
+    @Environment(LocalizationManager.self) var localization
     @Environment(\.scenePhase) private var scenePhase
 
     @State var viewModel: MediaPlayerViewModel
@@ -993,7 +993,7 @@ struct PlayerView: View {
     // MARK: - Orientation
 
     private func requestLandscapeOrientation() {
-        guard !viewModel.isLive else { return }
+        guard viewModel.contentType != .live && viewModel.contentType != .liveTV else { return }
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
             scene.requestGeometryUpdate(preferences) { _ in }

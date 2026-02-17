@@ -73,6 +73,21 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
         case .kids: return ["vod", "live", "podcast"]
         }
     }
+
+    /// Applies client-side filtering for content type sub-categories the API cannot distinguish.
+    func applyClientFilter(_ results: [UnifiedSearchResult]) -> [UnifiedSearchResult] {
+        switch self {
+        case .movies:
+            return results.filter { r in
+                let ct = r.contentType?.lowercased() ?? ""
+                return (ct == "vod" || ct == "movie") && r.isSeries != true && !ct.contains("collection")
+            }
+        case .series: return results.filter { $0.isSeries == true }
+        case .collections: return results.filter { ($0.contentType?.lowercased() ?? "").contains("collection") }
+        case .kids: return results.filter { $0.isKidsContent == true }
+        default: return results
+        }
+    }
 }
 
 // MARK: - Trending Searches Response
@@ -136,6 +151,22 @@ enum SearchSortOption: String, CaseIterable, Sendable {
         case .titleAsc: return "textformat.abc"
         case .titleDesc: return "textformat.abc"
         case .popularity: return "flame"
+        }
+    }
+
+    var apiSortBy: String {
+        switch self {
+        case .relevance: return "relevance"
+        case .newest, .oldest: return "date"
+        case .titleAsc, .titleDesc: return "title"
+        case .popularity: return "popularity"
+        }
+    }
+
+    var apiSortOrder: String {
+        switch self {
+        case .relevance, .newest, .popularity, .titleDesc: return "desc"
+        case .oldest, .titleAsc: return "asc"
         }
     }
 }

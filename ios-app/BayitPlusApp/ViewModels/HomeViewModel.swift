@@ -1,4 +1,7 @@
 import BayitNetworking
+#if !os(tvOS)
+import BayitWidgetShared
+#endif
 import Foundation
 import Observation
 
@@ -14,6 +17,7 @@ final class HomeViewModel {
     private(set) var categories: [ContentCategory] = []
     private(set) var liveChannels: [LiveChannelItem] = []
     private(set) var continueWatching: [WatchHistoryItem] = []
+    private(set) var featuredCollections: [CollectionDetail] = []
     private(set) var israelisInCity: IsraelisInCityResponse?
     private(set) var israeliBusinesses: IsraeliBusinessesResponse?
     private(set) var telAvivContent: CityContentResponse?
@@ -30,7 +34,11 @@ final class HomeViewModel {
     private let locationProvider: any LocationProvider
     private let featureFlags: FeatureFlags
     private let categoryRepository: (any CategoryRepository)?
+    #if !os(tvOS)
+    private let widgetSync: WidgetDataSyncService?
+    #endif
 
+    #if os(tvOS)
     init(
         repository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
@@ -46,6 +54,25 @@ final class HomeViewModel {
         self.featureFlags = featureFlags
         self.categoryRepository = categoryRepository
     }
+    #else
+    init(
+        repository: any ContentRepository,
+        liveTVRepository: any LiveTVRepository,
+        radioRepository: any RadioRepository,
+        locationProvider: any LocationProvider,
+        featureFlags: FeatureFlags,
+        categoryRepository: (any CategoryRepository)? = nil,
+        widgetSync: WidgetDataSyncService? = nil
+    ) {
+        self.repository = repository
+        self.liveTVRepository = liveTVRepository
+        self.radioRepository = radioRepository
+        self.locationProvider = locationProvider
+        self.featureFlags = featureFlags
+        self.categoryRepository = categoryRepository
+        self.widgetSync = widgetSync
+    }
+    #endif
 
     @MainActor
     func loadFeatured() async {
@@ -104,6 +131,7 @@ final class HomeViewModel {
         async let liveTask: Void = loadLiveChannels()
         async let radioTask: Void = loadRadioStations()
         async let continueTask: Void = loadContinueWatching()
+        async let collectionsTask: Void = loadFeaturedCollections()
         async let telAvivTask: Void = loadTelAvivContent()
         async let jerusalemTask: Void = loadJerusalemContent()
         async let trendingTask: Void = loadTrending()
@@ -113,6 +141,7 @@ final class HomeViewModel {
         await liveTask
         await radioTask
         await continueTask
+        await collectionsTask
         await telAvivTask
         await jerusalemTask
         await trendingTask
@@ -154,10 +183,43 @@ final class HomeViewModel {
     }
 
     @MainActor
+    private func loadFeaturedCollections() async {
+        do {
+            featuredCollections = try await repository.fetchCollectionRecommendations()
+        } catch {
+            featuredCollections = []
+        }
+    }
+
+    @MainActor
     private func loadContinueWatching() async {
         do {
             let response = try await repository.fetchContinueWatching()
             continueWatching = response.items
+            #if !os(tvOS)
+            if let sync = widgetSync, !response.items.isEmpty {
+                let sharedItems = response.items.map { item in
+                    SharedContinueWatchingItem(
+                        id: item.id,
+                        contentID: item.id,
+                        title: item.title ?? "",
+                        thumbnailURL: item.thumbnail.flatMap { URL(string: $0) },
+                        progress: item.progress ?? 0,
+                        durationSeconds: Int(item.duration ?? 0),
+                        contentType: {
+                            switch item.type?.lowercased() {
+                            case "live_tv", "live", "channel": return SharedContentType.liveTV
+                            case "radio": return SharedContentType.radio
+                            case "podcast": return SharedContentType.podcast
+                            case "audiobook": return SharedContentType.audiobook
+                            default: return SharedContentType.vod
+                            }
+                        }()
+                    )
+                }
+                await sync.syncContinueWatching(sharedItems)
+            }
+            #endif
         } catch {
             // Non-blocking: silently fail (user may not be authenticated)
             continueWatching = []

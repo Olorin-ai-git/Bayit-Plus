@@ -113,9 +113,8 @@ struct PlaylistView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             Task {
-                                await vm.removeItem(
-                                    contentId: item.contentId
-                                )
+                                await vm.removeItem(contentId: item.contentId)
+                                await syncPlaylistWidget()
                             }
                         } label: {
                             Label(
@@ -134,6 +133,7 @@ struct PlaylistView: View {
         .environment(\.editMode, .constant(.active))
         .refreshable {
             await viewModel?.load()
+            await syncPlaylistWidget()
         }
     }
 

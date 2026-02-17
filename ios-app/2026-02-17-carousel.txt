@@ -1,0 +1,1678 @@
+
+ ▐▛███▜▌   Claude Code v2.1.44
+▝▜█████▛▘  Sonnet 4.5 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact 
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Read BayitPlusApp/Views/Playlist/PlaylistView.swift (233 lines)
+  ⎿  Read BayitPlusApp/App/BayitPlusApp.swift (309 lines)
+  ⎿  Referenced file Packages/BayitLocalization/Sources/Resources/ta.json
+  ⎿  Referenced file Packages/BayitLocalization/Sources/Resources/hi.json
+  ⎿  Referenced file Packages/BayitLocalization/Sources/Resources/bn.json
+
+❯ continue 
+
+⏺ Picking up where we left off. Two remaining tasks:
+  1. Add await syncPlaylistWidget() to the .refreshable closure in
+  PlaylistView.swift
+  2. Fix syncContinueWatching (never called — Continue Watching widget always
+  empty)
+
+  Starting with the refreshable fix:
+
+⏺ Update(BayitPlusApp/Views/Playlist/PlaylistView.swift)
+  ⎿  Added 1 line
+      133          .environment(\.editMode, .constant(.active))
+      134          .refreshable {
+      135              await viewModel?.load()
+      136 +            await syncPlaylistWidget()                        
+      137          }
+      138      }
+      139  
+
+⏺ Now let me investigate the Continue Watching widget sync:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ It's only defined, never called. Let me find where Continue Watching data is
+  loaded in the app:
+
+⏺ Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Now I need to check HomeViewModel (where continueWatching is loaded) and the
+  SharedContinueWatchingItem model:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Now I need the SharedContinueWatchingItem model and WatchHistoryItem to know
+  how to map them:
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Let me check the SharedContentType enum:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ I have everything I need. The fix is to wire WidgetDataSyncService into
+  HomeViewModel so it syncs after loading continue watching items. Changes
+  needed in both HomeViewModel.swift and HomeView.swift.
+
+  Let me make both edits now:
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 1 line
+      1  import BayitNetworking
+      2 +import BayitWidgetShared                                        
+      3  import Foundation
+      4  import Observation
+      5  
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 4 lines, removed 1 line
+      31      private let locationProvider: any LocationProvider
+      32      private let featureFlags: FeatureFlags
+      33      private let categoryRepository: (any CategoryRepository)?
+      34 +    private let widgetSync: WidgetDataSyncService?             
+      35  
+      36      init(
+      37          repository: any ContentRepository,
+     ...
+      39          radioRepository: any RadioRepository,
+      40          locationProvider: any LocationProvider,
+      41          featureFlags: FeatureFlags,
+      41 -        categoryRepository: (any CategoryRepository)? = nil    
+      42 +        categoryRepository: (any CategoryRepository)? = nil,   
+      43 +        widgetSync: WidgetDataSyncService? = nil               
+      44      ) {
+      45          self.repository = repository
+      46          self.liveTVRepository = liveTVRepository
+     ...
+      48          self.locationProvider = locationProvider
+      49          self.featureFlags = featureFlags
+      50          self.categoryRepository = categoryRepository
+      51 +        self.widgetSync = widgetSync                           
+      52      }
+      53  
+      54      @MainActor
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 22 lines
+      162          do {
+      163              let response = try await repository.fetchContinueW
+           atching()
+      164              continueWatching = response.items
+      165 +            if let sync = widgetSync, !response.items.isEmpty 
+          +{                                                             
+      166 +                let sharedItems = response.items.map { item in
+      167 +                    SharedContinueWatchingItem(               
+      168 +                        id: item.id,                          
+      169 +                        contentID: item.id,                   
+      170 +                        title: item.title ?? "",              
+      171 +                        thumbnailURL: item.thumbnail.flatMap {
+          + URL(string: $0) },                                           
+      172 +                        progress: item.progress ?? 0,         
+      173 +                        durationSeconds: Int(item.duration ?? 
+          +0),                                                           
+      174 +                        contentType: {                        
+      175 +                            switch item.type?.lowercased() {  
+      176 +                            case "live_tv", "live", "channel":
+          + return SharedContentType.liveTV                              
+      177 +                            case "radio": return SharedContent
+          +Type.radio                                                    
+      178 +                            case "podcast": return SharedConte
+          +ntType.podcast                                                
+      179 +                            case "audiobook": return SharedCon
+          +tentType.audiobook                                            
+      180 +                            default: return SharedContentType.
+          +vod                                                           
+      181 +                            }                                 
+      182 +                        }()                                   
+      183 +                    )                                         
+      184 +                }                                             
+      185 +                await sync.syncContinueWatching(sharedItems)  
+      186 +            }                                                 
+      187          } catch {
+      188              // Non-blocking: silently fail (user may not be au
+           thenticated)
+      189              continueWatching = []
+
+⏺ Now update HomeView to inject widgetSync when creating the view model:
+
+⏺ Update(BayitPlusApp/Views/Home/HomeView.swift)
+  ⎿  Added 1 line
+      1  import BayitDesignSystem
+      2  import BayitLocalization
+      3 +import BayitWidgetShared                                        
+      4  import SwiftUI
+      5  
+      6  /// Home screen with hero, spotlight carousel, and category rows
+
+⏺ Update(BayitPlusApp/Views/Home/HomeView.swift)
+  ⎿  Added 1 line
+      10      @Environment(AppLocationProvider.self) private var location
+          Provider
+      11      @Environment(FeatureFlags.self) private var featureFlags
+      12      @Environment(LocalizationManager.self) private var localiza
+          tion
+      13 +    @Environment(WidgetDataSyncService.self) private var widget
+         +Sync                                                           
+      14      @State private var viewModel: HomeViewModel?
+      15      @State private var cardActions: CardActionsViewModel?
+      16  
+
+⏺ Update(BayitPlusApp/Views/Home/HomeView.swift)
+  ⎿  Added 2 lines, removed 1 line
+      52                      radioRepository: repos.radio,
+      53                      locationProvider: locationProvider,
+      54                      featureFlags: featureFlags,
+      55 -                    categoryRepository: repos.category         
+      55 +                    categoryRepository: repos.category,        
+      56 +                    widgetSync: widgetSync                     
+      57                  )
+      58              }
+      59              await viewModel?.loadFeatured()
+
+⏺ Now let me verify the final state of the changed files to confirm correctness:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ All changes look correct. Here's a summary of everything completed this
+  session:
+
+  ---
+  Pending work completed:
+
+  1. PlaylistView.swift — .refreshable path
+  Added await syncPlaylistWidget() after pull-to-refresh so the widget updates
+  when the user swipes down to reload their playlist.
+
+  2. Continue Watching widget — syncContinueWatching never called (root fix)
+
+  HomeViewModel.swift:
+  - Added import BayitWidgetShared
+  - Added private let widgetSync: WidgetDataSyncService? property (optional,
+  default nil — backward-compatible)
+  - Updated init to accept widgetSync
+  - In loadContinueWatching(): after setting continueWatching, maps
+  [WatchHistoryItem] → [SharedContinueWatchingItem] and calls await 
+  sync.syncContinueWatching(sharedItems) — covers both initial load and
+  pull-to-refresh (which calls refresh() → loadAdditionalSections() →
+  loadContinueWatching())
+
+  HomeView.swift:
+  - Added import BayitWidgetShared
+  - Added @Environment(WidgetDataSyncService.self) private var widgetSync
+  - Passes widgetSync: widgetSync when constructing HomeViewModel
+
+  Auth token fix (completed prior session) already covers all widgets —
+  BayitPlusApp.swift now writes the token to the shared keychain on launch and
+  on every sign-in/sign-out, so widget providers that call
+  SharedKeychainHelper().readAuthToken() will now see a valid token.
+
+✻ Cooked for 2m 27s
+
+❯ ❯ ios-app: AI featured collections were implemened to show banners and    
+  rotate between collections, vod page still showing a single banner and    
+  homepage shows none                                                       
+
+⏺ Let me investigate the current state of the AI featured collections across
+  both screens.
+
+⏺ Searched for 3 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me look at the CollectionPromoBannerView, the content repository API,
+  and the Home page's hero section:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Let me check the full ContentRepository around the collection endpoints and
+  the CollectionDetail model:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Let me see the CollectionDetail localization methods and the HeroCarousel
+  component used in HomeView:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Now I have a full picture of the two bugs:
+
+  1. VOD page: Uses loadFeaturedCollection() which fetches limit: 1 and shows a
+  single static CollectionPromoBannerView. The fetchCollectionRecommendations()
+  endpoint exists specifically for a rotating banner (weighted random order,
+  server-cached 30min) — but it's only wired to the horizontal
+  aiCollectionsSection, not the main banner.
+  2. Home page: HomeViewModel never fetches collections; HomeView has no
+  collection banner at all.
+
+  Fix plan:
+  - Add FeaturedCollectionsCarousel to CollectionPromoBannerView.swift — wraps
+  multiple CollectionDetails in a timer-driven auto-rotating TabView
+  - VODView: drop featuredCollection + loadFeaturedCollection, wire the carousel
+   to the existing aiCollectionRecommendations data
+  - HomeViewModel: add featuredCollections: [CollectionDetail] +
+  loadFeaturedCollections() into loadAdditionalSections()
+  - HomeView: render the carousel using vm.featuredCollections
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good. Now I'll implement the fix. Starting with the carousel component:
+
+⏺ Update(BayitPlusApp/Views/VOD/CollectionPromoBannerView.swift)
+  ⎿  Added 1 line
+      1  import BayitDesignSystem
+      2  import BayitLocalization
+      3 +import BayitNetworking                                          
+      4  import SwiftUI
+      5  
+      6  /// Promotional banner for movie collections with AI-generated t
+         ext
+
+⏺ Update(BayitPlusApp/Views/VOD/CollectionPromoBannerView.swift)
+  ⎿  Added 70 lines
+      108          coordinator.navigate(to: .collectionDetail(collectionI
+           d: collectionId))
+      109      }
+      110  }
+      111 +                                                              
+      112 +/// Auto-rotating carousel of AI-featured collection banners. 
+      113 +/// Advances every 5 seconds using a looping Task. Swipe to na
+          +vigate manually.                                              
+      114 +/// Shows page indicator dots when there are multiple collecti
+          +ons.                                                          
+      115 +struct FeaturedCollectionsCarousel: View {                    
+      116 +    @Environment(LocalizationManager.self) private var localiz
+          +ation                                                         
+      117 +                                                              
+      118 +    let collections: [CollectionDetail]                       
+      119 +                                                              
+      120 +    @State private var currentIndex = 0                       
+      121 +                                                              
+      122 +    private static let autoAdvanceSeconds: TimeInterval = 5   
+      123 +                                                              
+      124 +    var body: some View {                                     
+      125 +        if collections.isEmpty { return AnyView(EmptyView()) }
+      126 +        return AnyView(                                       
+      127 +            VStack(spacing: DesignTokens.Spacing.sm) {        
+      128 +                TabView(selection: $currentIndex) {           
+      129 +                    ForEach(Array(collections.enumerated()), i
+          +d: \.offset) { index, collection in                           
+      130 +                        CollectionPromoBannerView(            
+      131 +                            collectionId: collection.id,      
+      132 +                            title: collection.localizedTitle( 
+      133 +                                for: localization.currentLangu
+          +age.rawValue                                                  
+      134 +                            ) ?? "",                          
+      135 +                            posterUrl: collection.thumbnail,  
+      136 +                            promoText: collection.localizedPro
+          +moText(                                                       
+      137 +                                for: localization.currentLangu
+          +age.rawValue                                                  
+      138 +                            ) ?? "",                          
+      139 +                            movieCount: collection.availableMo
+          +vies ?? 0                                                     
+      140 +                        )                                     
+      141 +                        .tag(index)                           
+      142 +                    }                                         
+      143 +                }                                             
+      144 +                .tabViewStyle(.page(indexDisplayMode: .never))
+      145 +                .frame(height: 190)                           
+      146 +                                                              
+      147 +                if collections.count > 1 {                    
+      148 +                    HStack(spacing: 6) {                      
+      149 +                        ForEach(0..<collections.count, id: \.s
+          +elf) { index in                                               
+      150 +                            Circle()                          
+      151 +                                .fill(                        
+      152 +                                    index == currentIndex     
+      153 +                                        ? DesignTokens.Primary
+          +.default                                                      
+      154 +                                        : DesignTokens.Glass.b
+          +order                                                         
+      155 +                                )                             
+      156 +                                .frame(width: 6, height: 6)   
+      157 +                                .animation(.easeInOut, value: 
+          +currentIndex)                                                 
+      158 +                        }                                     
+      159 +                    }                                         
+      160 +                }                                             
+      161 +            }                                                 
+      162 +            .task {                                           
+      163 +                await autoAdvance()                           
+      164 +            }                                                 
+      165 +        )                                                     
+      166 +    }                                                         
+      167 +                                                              
+      168 +    private func autoAdvance() async {                        
+      169 +        guard collections.count > 1 else { return }           
+      170 +        while !Task.isCancelled {                             
+      171 +            try? await Task.sleep(                            
+      172 +                nanoseconds: UInt64(Self.autoAdvanceSeconds * 
+          +1_000_000_000)                                                
+      173 +            )                                                 
+      174 +            guard !Task.isCancelled else { break }            
+      175 +            withAnimation(.easeInOut) {                       
+      176 +                currentIndex = (currentIndex + 1) % collection
+          +s.count                                                       
+      177 +            }                                                 
+      178 +        }                                                     
+      179 +    }                                                         
+      180 +}                                                             
+
+⏺ The AnyView approach is wrong for SwiftUI body. Let me fix that:
+
+⏺ Update(BayitPlusApp/Views/VOD/CollectionPromoBannerView.swift)
+  ⎿  Added 2 lines, removed 3 lines
+      122      private static let autoAdvanceSeconds: TimeInterval = 5
+      123  
+      124      var body: some View {
+      125 -        if collections.isEmpty { return AnyView(EmptyView()) }
+      126 -        return AnyView(                                       
+      125 +        if !collections.isEmpty {                             
+      126              VStack(spacing: DesignTokens.Spacing.sm) {
+      127                  TabView(selection: $currentIndex) {
+      128                      ForEach(Array(collections.enumerated()), i
+           d: \.offset) { index, collection in
+     ...
+      161              .task {
+      162                  await autoAdvance()
+      163              }
+      165 -        )                                                     
+      164 +        }                                                     
+      165      }
+      166  
+      167      private func autoAdvance() async {
+
+⏺ The import BayitNetworking isn't needed — CollectionDetail is in the main app
+  target. Remove it:
+
+⏺ Update(BayitPlusApp/Views/VOD/CollectionPromoBannerView.swift)
+  ⎿  Removed 1 line
+      1  import BayitDesignSystem
+      2  import BayitLocalization
+      3 -import BayitNetworking                                          
+      3  import SwiftUI
+      4  
+      5  /// Promotional banner for movie collections with AI-generated t
+         ext
+
+⏺ Now fix VODView.swift — replace the single featuredCollection +
+  loadFeaturedCollection with FeaturedCollectionsCarousel using the
+  already-loaded aiCollectionRecommendations:
+
+⏺ Update(BayitPlusApp/Views/VOD/VODView.swift)
+  ⎿  Removed 1 line
+       8      @Environment(NavigationCoordinator.self) private var coordi
+          nator
+       9      @Environment(LocalizationManager.self) private var localiza
+          tion
+      10      @State private var viewModel: VODViewModel?
+      11 -    @State private var featuredCollection: CollectionDetail?   
+      11      @State private var continueWatchingItems: [WatchHistoryItem
+          ] = []
+      12      @State private var trendingRecommendations: [TrendingConten
+          tRecommendation] = []
+      13      @State private var aiCollectionRecommendations: [Collection
+          Detail] = []
+
+⏺ Replace the static single-banner with the rotating carousel:
+
+⏺ Update(BayitPlusApp/Views/VOD/VODView.swift)
+  ⎿  Added 4 lines, removed 10 lines
+      43                      genreFilters(vm)
+      44                  }
+      45  
+      46 -                if let collection = featuredCollection, vm.sele
+         -ctedType == .all {                                             
+      47 -                    CollectionPromoBannerView(                 
+      48 -                        collectionId: collection.id,           
+      49 -                        title: collection.localizedTitle(for: l
+         -ocalization.currentLanguage.rawValue) ?? localization.t("home.c
+         -ollection"),                                                   
+      50 -                        posterUrl: collection.thumbnail,       
+      51 -                        promoText: collection.localizedPromoTex
+         -t(for: localization.currentLanguage.rawValue) ?? localization.t
+         -("home.discoverCollection"),                                   
+      52 -                        movieCount: collection.availableMovies 
+         -?? 0                                                           
+      53 -                    )                                          
+      54 -                    .padding(.horizontal, DesignTokens.Spacing.
+         -lg)                                                            
+      55 -                    .padding(.vertical, DesignTokens.Spacing.sm
+         -)                                                              
+      46 +                if !aiCollectionRecommendations.isEmpty && vm.s
+         +electedType == .all {                                          
+      47 +                    FeaturedCollectionsCarousel(collections: ai
+         +CollectionRecommendations)                                     
+      48 +                        .padding(.horizontal, DesignTokens.Spac
+         +ing.lg)                                                        
+      49 +                        .padding(.vertical, DesignTokens.Spacin
+         +g.sm)                                                          
+      50                  }
+      51  
+      52                  if !trendingRecommendations.isEmpty && vm.selec
+          tedType == .all {
+
+⏺ Remove the redundant loadFeaturedCollection call from .task and its method:
+
+⏺ Update(BayitPlusApp/Views/VOD/VODView.swift)
+  ⎿  Added 1 line, removed 2 lines
+      79                  viewModel = VODViewModel(repository: repos.cont
+          ent)
+      80              }
+      81              await viewModel?.loadContent()
+      82 -            async let collectionTask: Void = loadFeaturedCollec
+         -tion()                                                         
+      82              async let continueWatchingTask: Void = loadContinue
+          Watching()
+      83              async let trendingTask: Void = loadTrendingRecommen
+          dations()
+      84              async let aiCollectionsTask: Void = loadAICollectio
+          nRecommendations()
+      86 -            _ = await (collectionTask, continueWatchingTask, tr
+         -endingTask, aiCollectionsTask)                                 
+      85 +            _ = await (continueWatchingTask, trendingTask, aiCo
+         +llectionsTask)                                                 
+      86          }
+      87      }
+      88  
+
+⏺ Update(BayitPlusApp/Views/VOD/VODView.swift)
+  ⎿  Removed 11 lines
+       95          }
+       96      }
+       97  
+       98 -    private func loadFeaturedCollection() async {             
+       99 -        do {                                                  
+      100 -            let collections = try await repos.content.fetchCol
+          -lections(skip: 0, limit: 1)                                   
+      101 -            if let first = collections.first {                
+      102 -                featuredCollection = try await repos.content.f
+          -etchCollectionDetail(id: first.id)                            
+      103 -            }                                                 
+      104 -        } catch {                                             
+      105 -            // Silently fail - banner is optional             
+      106 -        }                                                     
+      107 -    }                                                         
+      108 -                                                              
+       98      private func loadTrendingRecommendations() async {
+       99          do {
+      100              let response = try await repos.content.fetchTrendi
+           ngRecommendations(limit: 10)
+
+⏺ Now the aiCollectionsSection below the carousel becomes redundant — it was
+  displaying the same data in a horizontal scroll. Let me check if it should
+  stay or go:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The carousel and the aiCollectionsSection serve different UX roles (hero vs.
+  browse strip), so I'll keep both. Now add collections to HomeViewModel and
+  HomeView:
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 1 line
+      15      private(set) var categories: [ContentCategory] = []
+      16      private(set) var liveChannels: [LiveChannelItem] = []
+      17      private(set) var continueWatching: [WatchHistoryItem] = []
+      18 +    private(set) var featuredCollections: [CollectionDetail] = 
+         +[]                                                             
+      19      private(set) var israelisInCity: IsraelisInCityResponse?
+      20      private(set) var israeliBusinesses: IsraeliBusinessesRespon
+          se?
+      21      private(set) var telAvivContent: CityContentResponse?
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 2 lines
+      109          async let liveTask: Void = loadLiveChannels()
+      110          async let radioTask: Void = loadRadioStations()
+      111          async let continueTask: Void = loadContinueWatching()
+      112 +        async let collectionsTask: Void = loadFeaturedCollecti
+          +ons()                                                         
+      113          async let telAvivTask: Void = loadTelAvivContent()
+      114          async let jerusalemTask: Void = loadJerusalemContent()
+      115          async let trendingTask: Void = loadTrending()
+     ...
+      119          await liveTask
+      120          await radioTask
+      121          await continueTask
+      122 +        await collectionsTask                                 
+      123          await telAvivTask
+      124          await jerusalemTask
+      125          await trendingTask
+
+⏺ Now add the loadFeaturedCollections() method to HomeViewModel. I'll add it
+  right after loadContinueWatching():
+
+⏺ Update(BayitPlusApp/ViewModels/HomeViewModel.swift)
+  ⎿  Added 9 lines
+      161      }
+      162  
+      163      @MainActor
+      164 +    private func loadFeaturedCollections() async {            
+      165 +        do {                                                  
+      166 +            featuredCollections = try await repository.fetchCo
+          +llectionRecommendations()                                     
+      167 +        } catch {                                             
+      168 +            featuredCollections = []                          
+      169 +        }                                                     
+      170 +    }                                                         
+      171 +                                                              
+      172 +    @MainActor                                                
+      173      private func loadContinueWatching() async {
+      174          do {
+      175              let response = try await repository.fetchContinueW
+           atching()
+
+⏺ Now wire the carousel into HomeView. It should appear after the Continue
+  Watching row and before the Live TV row:
+
+⏺ Update(BayitPlusApp/Views/Home/HomeView.swift)
+  ⎿  Added 6 lines
+       97              ContinueWatchingRow(items: vm.continueWatching, co
+           ordinator: coordinator)
+       98          }
+       99  
+      100 +        // AI featured collections carousel                   
+      101 +        if !vm.featuredCollections.isEmpty {                  
+      102 +            FeaturedCollectionsCarousel(collections: vm.featur
+          +edCollections)                                                
+      103 +                .padding(.horizontal, DesignTokens.Spacing.lg)
+      104 +        }                                                     
+      105 +                                                              
+      106          // Live TV row
+      107          if !vm.liveChannels.isEmpty {
+      108              LiveTVRow(channels: vm.liveChannels, coordinator: 
+           coordinator)
+
+⏺ Now verify the final state of all changed files:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good. Let me do a quick final check on the VOD and Home view task sections to
+  confirm cleanness:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Let me also verify the HomeView section that was changed:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Everything looks correct. Here's a summary of what was changed:
+
+  ---
+  Root causes:
+
+  1. VOD page — single static banner: loadFeaturedCollection() called
+  fetchCollections(skip: 0, limit: 1) then fetchCollectionDetail() for a single
+  item — completely bypassing fetchCollectionRecommendations() which is the
+  purpose-built endpoint for rotating banners (weighted random order,
+  server-cached 30min). The single result was rendered by a non-rotating
+  CollectionPromoBannerView.
+  2. Home page — no banner: HomeViewModel never called
+  fetchCollectionRecommendations(), and HomeView had no collection banner in its
+   layout.
+
+  Changes:
+
+  CollectionPromoBannerView.swift — Added FeaturedCollectionsCarousel:
+  - Takes [CollectionDetail], wraps each in CollectionPromoBannerView inside a
+  TabView(.page) with indexDisplayMode: .never
+  - A looping Task auto-advances every 5 seconds via Task.sleep, cancels cleanly
+   when the view disappears
+  - Page indicator dots appear when there's more than one collection
+  - Swipe gesture from TabView.page style lets users navigate manually
+
+  VODView.swift:
+  - Removed @State private var featuredCollection: CollectionDetail? and
+  loadFeaturedCollection() — these fetched only 1 collection via 2 network
+  requests
+  - The already-loaded aiCollectionRecommendations (from
+  fetchCollectionRecommendations()) now drives the top
+  FeaturedCollectionsCarousel
+  - The horizontal aiCollectionsSection below remains as a browse strip
+
+  HomeViewModel.swift:
+  - Added private(set) var featuredCollections: [CollectionDetail] = []
+  - Added loadFeaturedCollections() calling fetchCollectionRecommendations()
+  - Wired into loadAdditionalSections() in parallel with other sections
+
+  HomeView.swift:
+  - Added FeaturedCollectionsCarousel(collections: vm.featuredCollections)
+  between Continue Watching and Live TV rows
+
+✻ Worked for 4m 36s
+
+❯ check the feature in all other apps 
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ Let me search each platform specifically for collection/banner handling:
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ Now let me look at the tvOS VOD/Home views and the Android feature player,
+  plus the web VOD page:
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ The tvOS app has its own TVVODView.swift, TVHomeView.swift, and
+  TVCollectionPromoBannerView.swift. Let me read them:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now let me check TVHomeView.swift and the web VOD/Home pages:
+
+⏺ Searched for 4 patterns (ctrl+o to expand)
+
+⏺ Bash(find
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src
+      -name "*.jsx" -o -name "*.tsx" | xargs grep -l -i
+      "collection\|vod\|featured" 2>/de…)
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/sr
+     c/components/vod-interactions/InteractiveMomentPrompt.tsx
+     /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/sr
+     … +29 lines (ctrl+o to expand)
+
+⏺ Bash(find /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/andr
+      oid-app/feature -name "*.kt" | xargs grep -l -i
+      "collection\|vod\|featured" 2>/dev/null…)
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+     d-app/feature/feature-vod/src/test/java/tv/bayit/plus/feature/vod/VodV
+     iewModelTest.kt
+     … +45 lines (ctrl+o to expand)
+
+⏺ Now let me read the Android VodScreen.kt, VodViewModel.kt,
+  CollectionBanner.kt, and the web pages:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Let me check the Android CollectionBanner.kt and the web Home/VOD pages:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Bash(find
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src
+      -name "*.tsx" -o -name "*.jsx" | xargs grep -l
+      "CollectionBanner\|CollectionPromo\|…)
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/sr
+     c/components/banners/CollectionPromoBanner.tsx
+     /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/sr
+     … +3 lines (ctrl+o to expand)
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now let me read the web VOD page and Android VOD sections + home:
+
+⏺ Searched for 4 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now I have a complete cross-platform picture. Let me check what's missing in
+  the Android home:
+
+⏺ Searched for 5 patterns (ctrl+o to expand)
+
+⏺ Now I have everything I need. Here's the complete cross-platform audit:
+
+  ---
+  Status summary:
+
+  Platform: iOS
+  VOD Banner: Fixed (this session)
+  Home Banner: Fixed (this session)
+  Notes: Uses fetchCollectionRecommendations() + FeaturedCollectionsCarousel
+  ────────────────────────────────────────
+  Platform: tvOS
+  VOD Banner: BROKEN
+  Home Banner: BROKEN
+  Notes: Same original bug — limit: 1 + no rotation
+  ────────────────────────────────────────
+  Platform: Web
+  VOD Banner: WORKS
+  Home Banner: Need to check
+  Notes: VODPage.tsx correctly calls /collections/recommendations +
+    CollectionPromoBanner
+  ────────────────────────────────────────
+  Platform: Android
+  VOD Banner: BROKEN
+  Home Banner: BROKEN
+  Notes: CollectionBanner component built but never wired;
+    getCollectionRecommendations() endpoint missing from repo
+
+  Three issues to fix:
+
+  1. tvOS — TVVODView + TVHomeView: same pattern as old iOS code (limit: 1, no
+  rotation). Need to add TVFeaturedCollectionsCarousel and wire to
+  fetchCollectionRecommendations().
+
+  2. Android VOD — VodViewModel + VodScreen: endpoint missing from
+  ContentRepository interface + impl; CollectionBanner component exists but
+  never rendered.
+
+  3. Android Home — HomeViewModel + HomeScreen: same gaps.
+
+  Starting with tvOS since it shares the same codebase. Let me read TVHomeView
+  to understand its structure:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Let me find the loadFeaturedCollection method in TVHomeView and check the tvOS
+   TVRepositoryProvider:
+
+⏺ Searched for 4 patterns, read 1 file (ctrl+o to expand)
+
+⏺ TVRepositoryProvider.content is any ContentRepository — the same protocol that
+   has fetchCollectionRecommendations(). So the tvOS fix is identical to iOS:
+  replace loadFeaturedCollection() with fetchCollectionRecommendations() and add
+   a TVFeaturedCollectionsCarousel.
+
+  Now let me make all the fixes. Starting with tvOS — I'll add
+  TVFeaturedCollectionsCarousel to TVCollectionPromoBannerView.swift, then fix
+  TVVODView and TVHomeView:
+
+⏺ Update(BayitPlusTVApp/Views/TVCollectionPromoBannerView.swift)
+  ⎿  Added 69 lines
+       93          coordinator.fullscreenRoute = .collectionDetail(collec
+           tionId: collectionId)
+       94      }
+       95  }
+       96 +                                                              
+       97 +/// Auto-rotating carousel of AI-featured collection banners f
+          +or tvOS.                                                      
+       98 +/// Advances every 6 seconds. Siri Remote swipe navigates betw
+          +een items.                                                    
+       99 +/// Shows page indicator dots when there are multiple collecti
+          +ons.                                                          
+      100 +struct TVFeaturedCollectionsCarousel: View {                  
+      101 +    @Environment(LocalizationManager.self) private var localiz
+          +ation                                                         
+      102 +                                                              
+      103 +    let collections: [CollectionDetail]                       
+      104 +                                                              
+      105 +    @State private var currentIndex = 0                       
+      106 +                                                              
+      107 +    private static let autoAdvanceSeconds: TimeInterval = 6   
+      108 +                                                              
+      109 +    var body: some View {                                     
+      110 +        if !collections.isEmpty {                             
+      111 +            VStack(spacing: TVDesignTokens.Spacing.md) {      
+      112 +                TabView(selection: $currentIndex) {           
+      113 +                    ForEach(Array(collections.enumerated()), i
+          +d: \.offset) { index, collection in                           
+      114 +                        TVCollectionPromoBannerView(          
+      115 +                            collectionId: collection.id,      
+      116 +                            title: collection.localizedTitle( 
+      117 +                                for: localization.currentLangu
+          +age.rawValue                                                  
+      118 +                            ) ?? "",                          
+      119 +                            posterUrl: collection.thumbnail,  
+      120 +                            promoText: collection.localizedPro
+          +moText(                                                       
+      121 +                                for: localization.currentLangu
+          +age.rawValue                                                  
+      122 +                            ) ?? "",                          
+      123 +                            movieCount: collection.availableMo
+          +vies ?? 0                                                     
+      124 +                        )                                     
+      125 +                        .tag(index)                           
+      126 +                    }                                         
+      127 +                }                                             
+      128 +                .tabViewStyle(.page(indexDisplayMode: .never))
+      129 +                .frame(height: 360)                           
+      130 +                                                              
+      131 +                if collections.count > 1 {                    
+      132 +                    HStack(spacing: 8) {                      
+      133 +                        ForEach(0..<collections.count, id: \.s
+          +elf) { index in                                               
+      134 +                            Circle()                          
+      135 +                                .fill(                        
+      136 +                                    index == currentIndex     
+      137 +                                        ? DesignTokens.Primary
+          +.default                                                      
+      138 +                                        : DesignTokens.Glass.b
+          +order                                                         
+      139 +                                )                             
+      140 +                                .frame(width: 8, height: 8)   
+      141 +                                .animation(.easeInOut, value: 
+          +currentIndex)                                                 
+      142 +                        }                                     
+      143 +                    }                                         
+      144 +                }                                             
+      145 +            }                                                 
+      146 +            .task {                                           
+      147 +                await autoAdvance()                           
+      148 +            }                                                 
+      149 +        }                                                     
+      150 +    }                                                         
+      151 +                                                              
+      152 +    private func autoAdvance() async {                        
+      153 +        guard collections.count > 1 else { return }           
+      154 +        while !Task.isCancelled {                             
+      155 +            try? await Task.sleep(                            
+      156 +                nanoseconds: UInt64(Self.autoAdvanceSeconds * 
+          +1_000_000_000)                                                
+      157 +            )                                                 
+      158 +            guard !Task.isCancelled else { break }            
+      159 +            withAnimation(.easeInOut) {                       
+      160 +                currentIndex = (currentIndex + 1) % collection
+          +s.count                                                       
+      161 +            }                                                 
+      162 +        }                                                     
+      163 +    }                                                         
+      164 +}                                                             
+
+⏺ Now fix TVVODView — replace featuredCollection + loadFeaturedCollection with
+  TVFeaturedCollectionsCarousel:
+
+⏺ Update(BayitPlusTVApp/Views/TVVODView.swift)
+  ⎿  Added 1 line, removed 1 line
+      10      @Environment(TVNavigationCoordinator.self) private var coor
+          dinator
+      11      @Environment(LocalizationManager.self) private var localiza
+          tion
+      12      @State private var viewModel: VODViewModel?
+      13 -    @State private var featuredCollection: CollectionDetail?   
+      13 +    @State private var featuredCollections: [CollectionDetail] 
+         += []                                                           
+      14  
+      15      private let columns = [
+      16          GridItem(.flexible(), spacing: TVDesignTokens.Spacing.f
+          ocusGap),
+
+⏺ Update(BayitPlusTVApp/Views/TVVODView.swift)
+  ⎿  Added 4 lines, removed 10 lines
+      27                      if let vm = viewModel {
+      28                          contentTypeFilters(vm)
+      29  
+      30 -                        if let collection = featuredCollection,
+         - vm.selectedType == .all {                                     
+      31 -                            TVCollectionPromoBannerView(       
+      32 -                                collectionId: collection.id,   
+      33 -                                title: collection.localizedTitl
+         -e(for: localization.currentLanguage.rawValue) ?? localization.t
+         -("home.collection"),                                           
+      34 -                                posterUrl: collection.thumbnail
+         -,                                                              
+      35 -                                promoText: collection.localized
+         -PromoText(for: localization.currentLanguage.rawValue) ?? locali
+         -zation.t("home.discoverCollection"),                           
+      36 -                                movieCount: collection.availabl
+         -eMovies ?? 0                                                   
+      37 -                            )                                  
+      38 -                            .padding(.horizontal, TVDesignToken
+         -s.Spacing.xl)                                                  
+      39 -                            .padding(.vertical, TVDesignTokens.
+         -Spacing.lg)                                                    
+      30 +                        if !featuredCollections.isEmpty && vm.s
+         +electedType == .all {                                          
+      31 +                            TVFeaturedCollectionsCarousel(colle
+         +ctions: featuredCollections)                                   
+      32 +                                .padding(.horizontal, TVDesignT
+         +okens.Spacing.xl)                                              
+      33 +                                .padding(.vertical, TVDesignTok
+         +ens.Spacing.lg)                                                
+      34                          }
+      35  
+      36                          if vm.isLoading && vm.items.isEmpty {
+
+⏺ Update(BayitPlusTVApp/Views/TVVODView.swift)
+  ⎿  Added 1 line, removed 1 line
+      51                      viewModel = VODViewModel(repository: repos.
+          content)
+      52                  }
+      53                  await viewModel?.loadContent()
+      54 -                await loadFeaturedCollection()                 
+      54 +                await loadFeaturedCollections()                
+      55              }
+      56          }
+      57      }
+
+⏺ Update(BayitPlusTVApp/Views/TVVODView.swift)
+  ⎿  Added 2 lines, removed 5 lines
+      56          }
+      57      }
+      58  
+      59 -    private func loadFeaturedCollection() async {              
+      59 +    private func loadFeaturedCollections() async {             
+      60          do {
+      61 -            let collections = try await repos.content.fetchColl
+         -ections(skip: 0, limit: 1)                                     
+      62 -            if let first = collections.first {                 
+      63 -                featuredCollection = try await repos.content.fe
+         -tchCollectionDetail(id: first.id)                              
+      64 -            }                                                  
+      61 +            featuredCollections = try await repos.content.fetch
+         +CollectionRecommendations()                                    
+      62          } catch {
+      63              // Silently fail - banner is optional
+      64          }
+
+⏺ Now fix TVHomeView — same pattern:
+
+⏺ Update(BayitPlusTVApp/Views/TVHomeView.swift)
+  ⎿  Added 1 line, removed 1 line
+      10      @Environment(TVNavigationCoordinator.self) private var coor
+          dinator
+      11      @Environment(LocalizationManager.self) private var localiza
+          tion
+      12      @State private var viewModel: HomeViewModel?
+      13 -    @State private var featuredCollection: CollectionDetail?   
+      13 +    @State private var featuredCollections: [CollectionDetail] 
+         += []                                                           
+      14  
+      15      var body: some View {
+      16          ScrollView(.vertical, showsIndicators: false) {
+
+⏺ Update(BayitPlusTVApp/Views/TVHomeView.swift)
+  ⎿  Added 4 lines, removed 10 lines
+      73                  }
+      74              }
+      75  
+      76 -            // Featured collection banner                      
+      77 -            if let collection = featuredCollection {           
+      78 -                TVCollectionPromoBannerView(                   
+      79 -                    collectionId: collection.id,               
+      80 -                    title: collection.localizedTitle(for: local
+         -ization.currentLanguage.rawValue) ?? localization.t("home.colle
+         -ction"),                                                       
+      81 -                    posterUrl: collection.thumbnail,           
+      82 -                    promoText: collection.localizedPromoText(fo
+         -r: localization.currentLanguage.rawValue) ?? localization.t("ho
+         -me.discoverCollection"),                                       
+      83 -                    movieCount: collection.availableMovies ?? 0
+      84 -                )                                              
+      85 -                .padding(.horizontal, TVDesignTokens.Spacing.xl
+         -)                                                              
+      76 +            // Featured collections carousel                   
+      77 +            if !featuredCollections.isEmpty {                  
+      78 +                TVFeaturedCollectionsCarousel(collections: feat
+         +uredCollections)                                               
+      79 +                    .padding(.horizontal, TVDesignTokens.Spacin
+         +g.xl)                                                          
+      80              }
+      81  
+      82              // Shabbat banner
+
+⏺ Update(BayitPlusTVApp/Views/TVHomeView.swift)
+  ⎿  Added 1 line, removed 1 line
+      39                  )
+      40              }
+      41              await viewModel?.loadFeatured()
+      42 -            await loadFeaturedCollection()                     
+      42 +            await loadFeaturedCollections()                    
+      43              ShabbatModeService.shared.startPolling(repository: 
+          repos.shabbat)
+      44              cacheTopShelfData()
+      45          }
+
+⏺ Update(BayitPlusTVApp/Views/TVHomeView.swift)
+  ⎿  Added 2 lines, removed 5 lines
+      263          }
+      264      }
+      265  
+      266 -    private func loadFeaturedCollection() async {             
+      266 +    private func loadFeaturedCollections() async {            
+      267          do {
+      268 -            let collections = try await repos.content.fetchCol
+          -lections(skip: 0, limit: 1)                                   
+      269 -            if let first = collections.first {                
+      270 -                featuredCollection = try await repos.content.f
+          -etchCollectionDetail(id: first.id)                            
+      271 -            }                                                 
+      268 +            featuredCollections = try await repos.content.fetc
+          +hCollectionRecommendations()                                  
+      269          } catch {
+      270              // Collection banner is optional - fail silently
+      271          }
+
+⏺ tvOS done. Now fix Android — need to add getCollectionRecommendations() to the
+   ContentRepository interface and impl, then wire CollectionBanner into
+  VodScreen and VodViewModel. Let me read the impl file first:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I have everything. Adding getCollectionRecommendations() to the interface
+  and impl, then reading the Android VodScreen.kt to know where to inject the
+  banner:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Let me check the Android CollectionModels.kt to understand if Collection in
+  CollectionBanner.kt is a duplicate:
+
+⏺ Searched for 3 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Now I have everything. Making all Android changes:
+
+  Step 1: ContentRepository.kt — add the interface method:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/co
+        re-data/src/main/java/tv/bayit/plus/core/data/repository/ContentReposito
+        ry.kt)
+  ⎿  Added 2 lines
+       1  package tv.bayit.plus.core.data.repository
+       2  
+       3  import tv.bayit.plus.core.common.BayitResult
+       4 +import tv.bayit.plus.core.model.CollectionDetail               
+       5  
+       6  interface ContentRepository {
+       7      suspend fun getHomeFeed(): BayitResult<List<Any>>
+       8      suspend fun getAllContent(page: Int, limit: Int): BayitResu
+          lt<List<Any>>
+       9      suspend fun getContentById(id: String): BayitResult<Any>
+      10      suspend fun getCollectionById(collectionId: String): BayitR
+          esult<Any>
+      11 +    suspend fun getCollectionRecommendations(): BayitResult<Lis
+         +t<CollectionDetail>>                                           
+      12      suspend fun getFeatured(): BayitResult<Any>
+      13      suspend fun getByCategory(categoryId: String): BayitResult<
+          List<Any>>
+      14      suspend fun getRecommendations(): BayitResult<List<Any>>
+
+⏺ Step 2: ApiContentRepository.kt — add the service endpoint and override:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/co
+        re-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiContent
+        Repository.kt)
+  ⎿  Added 5 lines
+      47              client.safeApiCall { service.getCollectionDetail(co
+          llectionId) }
+      48          }
+      49  
+      50 +    override suspend fun getCollectionRecommendations(): BayitR
+         +esult<List<CollectionDetail>> =                                
+      51 +        runCatchingResult {                                    
+      52 +            client.safeApiCall { service.getCollectionRecommend
+         +ations() }                                                     
+      53 +        }                                                      
+      54 +                                                               
+      55      override suspend fun getFeatured(): BayitResult<Any> = runC
+          atchingResult {
+      56          client.safeApiCall { service.getFeatured() }
+      57      }
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/co
+        re-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiContent
+        Repository.kt)
+  ⎿  Added 3 lines
+       92          @Path("collectionId") collectionId: String,
+       93      ): CollectionDetail
+       94  
+       95 +    @GET("api/v1/content/collections/recommendations")        
+       96 +    suspend fun getCollectionRecommendations(): List<Collectio
+          +nDetail>                                                      
+       97 +                                                              
+       98      @GET("api/v1/content/all")
+       99      suspend fun getAllContent(
+      100          @Query("page") page: Int,
+
+⏺ Step 3: CollectionBanner.kt — replace local Collection with CollectionDetail:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/components/Collecti
+        onBanner.kt)
+  ⎿  Added 1 line, removed 23 lines
+      23  import androidx.compose.ui.unit.sp
+      24  import kotlinx.coroutines.delay
+      25  import kotlinx.coroutines.launch
+      26 +import tv.bayit.plus.core.model.CollectionDetail               
+      27  import tv.bayit.plus.designsystem.component.CachedAsyncImage
+      28  import tv.bayit.plus.designsystem.theme.DesignTokens
+      29  
+      30  /**
+      30 - * Collection data model matching backend API response         
+      31 - */                                                            
+      32 -data class Collection(                                         
+      33 -    val id: String,                                            
+      34 -    val title: String,                                         
+      35 -    val titleEn: String? = null,                               
+      36 -    val thumbnail: String? = null,                             
+      37 -    val backdrop: String? = null,                              
+      38 -    val promoText: String? = null,                             
+      39 -    val promoTextEn: String? = null,                           
+      40 -    val promoTextEs: String? = null,                           
+      41 -    val promoTextFr: String? = null,                           
+      42 -    val promoTextIt: String? = null,                           
+      43 -    val promoTextHi: String? = null,                           
+      44 -    val promoTextTa: String? = null,                           
+      45 -    val promoTextBn: String? = null,                           
+      46 -    val promoTextJa: String? = null,                           
+      47 -    val promoTextZh: String? = null,                           
+      48 -    val availableMovies: Int,                                  
+      49 -    val totalMovies: Int,                                      
+      50 -)                                                              
+      51 -                                                               
+      52 -/**                                                            
+      31   * CollectionBanner - Rotating collection promotional banner fo
+          r Android
+      32   *
+      33   * Features:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/components/Collecti
+        onBanner.kt)
+  ⎿  Added 1 line, removed 1 line
+      46   */
+      47  @Composable
+      48  fun CollectionBanner(
+      49 -    collections: List<Collection>,                             
+      49 +    collections: List<CollectionDetail>,                       
+      50      onCollectionClick: (String) -> Unit,
+      51      currentLanguage: String,
+      52      modifier: Modifier = Modifier,
+
+⏺ Now update the private helper functions to use CollectionDetail instead of
+  Collection:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/components/Collecti
+        onBanner.kt)
+  ⎿  Added 4 lines, removed 27 lines
+      214      }
+      215  }
+      216  
+      217 -/**                                                           
+      218 - * Get localized title for collection                         
+      219 - */                                                           
+      220 -private fun getLocalizedTitle(collection: Collection, language
+          -: String): String {                                           
+      221 -    return when (language) {                                  
+      222 -        "en" -> collection.titleEn ?: collection.title        
+      223 -        else -> collection.title                              
+      224 -    }                                                         
+      225 -}                                                             
+      217 +private fun getLocalizedTitle(collection: CollectionDetail, la
+          +nguage: String): String =                                     
+      218 +    collection.title ?: ""                                    
+      219  
+      227 -/**                                                           
+      228 - * Get localized promo text for collection                    
+      229 - */                                                           
+      230 -private fun getLocalizedPromoText(collection: Collection, lang
+          -uage: String): String {                                       
+      231 -    return when (language) {                                  
+      232 -        "he" -> collection.promoText ?: collection.promoTextEn
+          - ?: ""                                                        
+      233 -        "en" -> collection.promoTextEn ?: collection.promoText
+          - ?: ""                                                        
+      234 -        "es" -> collection.promoTextEs ?: collection.promoText
+          -En ?: ""                                                      
+      235 -        "fr" -> collection.promoTextFr ?: collection.promoText
+          -En ?: ""                                                      
+      236 -        "it" -> collection.promoTextIt ?: collection.promoText
+          -En ?: ""                                                      
+      237 -        "hi" -> collection.promoTextHi ?: collection.promoText
+          -En ?: ""                                                      
+      238 -        "ta" -> collection.promoTextTa ?: collection.promoText
+          -En ?: ""                                                      
+      239 -        "bn" -> collection.promoTextBn ?: collection.promoText
+          -En ?: ""                                                      
+      240 -        "ja" -> collection.promoTextJa ?: collection.promoText
+          -En ?: ""                                                      
+      241 -        "zh" -> collection.promoTextZh ?: collection.promoText
+          -En ?: ""                                                      
+      242 -        else -> collection.promoTextEn ?: collection.promoText
+          - ?: ""                                                        
+      243 -    }                                                         
+      244 -}                                                             
+      220 +private fun getLocalizedPromoText(collection: CollectionDetail
+          +, language: String): String =                                 
+      221 +    collection.localizedPromoText() ?: ""                     
+
+⏺ Also update availableMovies reference in the banner (it's now Int? in
+  CollectionDetail):
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/components/Collecti
+        onBanner.kt)
+  ⎿  Added 1 line, removed 1 line
+      186  
+      187                  // Movie Count
+      188                  Text(
+      189 -                    text = "${currentCollection.availableMovie
+          -s} Movies",                                                   
+      189 +                    text = "${currentCollection.availableMovie
+          +s ?: 0} Movies",                                              
+      190                      style = MaterialTheme.typography.bodySmall
+           .copy(fontSize = 13.sp),
+      191                      color = DesignTokens.Colors.Text.muted
+      192                  )
+
+⏺ Step 4: VodViewModel.kt — add collection recommendations loading:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodViewModel.kt)
+  ⎿  Added 1 line
+      11  import tv.bayit.plus.core.common.logging.BayitLogger
+      12  import tv.bayit.plus.core.data.repository.CategoryRepository
+      13  import tv.bayit.plus.core.data.repository.ContentRepository
+      14 +import tv.bayit.plus.core.model.CollectionDetail               
+      15  import tv.bayit.plus.core.model.ContentCategory
+      16  import tv.bayit.plus.core.model.ContentItem
+      17  import javax.inject.Inject
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodViewModel.kt)
+  ⎿  Added 2 lines
+      31      init {
+      32          loadAllContent()
+      33          loadCategories()
+      34 +        loadCollectionRecommendations()                        
+      35      }
+      36  
+      37      fun refresh() {
+     ...
+      41          }
+      42          loadAllContent()
+      43          loadCategories()
+      44 +        loadCollectionRecommendations()                        
+      45      }
+      46  
+      47      fun selectCategory(categoryId: String) {
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodViewModel.kt)
+  ⎿  Added 18 lines
+      133          }
+      134      }
+      135  
+      136 +    private fun loadCollectionRecommendations() {             
+      137 +        viewModelScope.launch {                               
+      138 +            when (val result = contentRepository.getCollection
+          +Recommendations()) {                                          
+      139 +                is BayitResult.Success -> {                   
+      140 +                    val currentState = _uiState.value as? VodU
+          +iState.Success ?: return@launch                               
+      141 +                    _uiState.value = currentState.copy(feature
+          +dCollections = result.data)                                   
+      142 +                }                                             
+      143 +                is BayitResult.Error -> {                     
+      144 +                    logger.debug(                             
+      145 +                        "Collection recommendations unavailabl
+          +e, hiding banner",                                            
+      146 +                        mapOf("errorMessage" to result.message
+          +.orEmpty()),                                                  
+      147 +                    )                                         
+      148 +                }                                             
+      149 +                is BayitResult.Loading -> Unit                
+      150 +            }                                                 
+      151 +        }                                                     
+      152 +    }                                                         
+      153 +                                                              
+      154      private fun filterByCategory(
+      155          items: List<ContentItem>,
+      156          categoryId: String?,
+
+⏺ Add featuredCollections to VodUiState.Success:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodViewModel.kt)
+  ⎿  Added 1 line
+      169          val categories: List<ContentCategory>,
+      170          val selectedCategoryId: String?,
+      171          val contentItems: List<ContentItem>,
+      172 +        val featuredCollections: List<CollectionDetail> = empt
+          +yList(),                                                      
+      173          val isRefreshing: Boolean = false,
+      174          val isLoadingContent: Boolean = false,
+      175      ) : VodUiState
+
+⏺ Step 5: VodScreen.kt — wire CollectionBanner into the screen:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodScreen.kt)
+  ⎿  Added 2 lines
+      20  import tv.bayit.plus.designsystem.component.GlassSpinner
+      21  import tv.bayit.plus.designsystem.component.SpinnerSize
+      22  import tv.bayit.plus.designsystem.theme.DesignTokens
+      23 +import tv.bayit.plus.feature.vod.components.CollectionBanner   
+      24 +import java.util.Locale                                        
+      25  
+      26  @Composable
+      27  fun VodRoute(
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodScreen.kt)
+  ⎿  Added 1 line
+      37              val type = item.type ?: if (item.isSeries == true) 
+          "series" else "movie"
+      38              onNavigateToContent(item.id, type)
+      39          },
+      40 +        onCollectionClick = { collectionId -> onNavigateToConte
+         +nt(collectionId, "collection") },                              
+      41          onCategorySelected = viewModel::selectCategory,
+      42          onRefresh = viewModel::refresh,
+      43          modifier = modifier,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-vod/src/main/java/tv/bayit/plus/feature/vod/VodScreen.kt)
+  ⎿  Added 8 lines
+      48  internal fun VodScreen(
+      49      uiState: VodUiState,
+      50      onContentClick: (ContentItem) -> Unit,
+      51 +    onCollectionClick: (String) -> Unit,                       
+      52      onCategorySelected: (String) -> Unit,
+      53      onRefresh: () -> Unit,
+      54      modifier: Modifier = Modifier,
+     ...
+      69                              onCategorySelected = onCategorySele
+          cted,
+      70                          )
+      71                      }
+      72 +                    if (uiState.featuredCollections.isNotEmpty(
+         +) && uiState.selectedCategoryId == null) {                     
+      73 +                        CollectionBanner(                      
+      74 +                            collections = uiState.featuredColle
+         +ctions,                                                        
+      75 +                            onCollectionClick = onCollectionCli
+         +ck,                                                            
+      76 +                            currentLanguage = Locale.getDefault
+         +().language,                                                   
+      77 +                        )                                      
+      78 +                    }                                          
+      79                      if (uiState.isLoadingContent) {
+      80                          Box(
+      81                              modifier = Modifier.fillMaxSize(),
+
+⏺ Now check the Android Home screen — it needs the same treatment. Let me read
+  it to understand the current state:
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Let me check the HomeSuccessContent and HomeUiState.Success:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now I'll add featuredCollections to HomeUiState.Success, add the loading
+  method to HomeViewModel, and wire it into HomeScreen. Let me find the
+  HomeSuccessContent function to know where to insert the carousel:
+
+⏺ Bash(sed -n '1,80p'
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-ap
+      p/feature/feature-home/src/main/java/tv/bayit/plus/feature/home/HomeScr…)
+  ⎿  package tv.bayit.plus.feature.home
+
+     import androidx.compose.foundation.layout.Arrangement
+     … +41 lines (ctrl+o to expand)
+
+⏺ Bash(find /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/andr
+      oid-app/feature/feature-home -name "*.kt" | xargs grep -l
+      "HomeSuccessContent" 2>/dev/n…)
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+     d-app/feature/feature-home/src/main/java/tv/bayit/plus/feature/home/Ho
+     meContent.kt
+     … +3 lines (ctrl+o to expand)
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Bash(sed -n '80,120p'
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-ap
+      p/feature/feature-home/src/main/java/tv/bayit/plus/feature/home/HomeC…)
+  ⎿                      ContinueWatchingRow(
+                             items = uiState.continueWatching,
+                             onItemClick = { id, type -> onContentClick(Con
+     … +23 lines (ctrl+o to expand)
+
+⏺ Now I have the structure. The banner goes after continueWatching and before
+  liveChannels. Let me read HomeContent.kt file details to read it before
+  editing:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now add featuredCollections to HomeUiState.Success and add loading to
+  HomeViewModel. First the state:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeViewModel.kt)
+  ⎿  Added 1 line
+      15  import tv.bayit.plus.core.data.repository.LiveTVRepository
+      16  import tv.bayit.plus.core.data.repository.RadioRepository
+      17  import tv.bayit.plus.core.model.CityContentResponse
+      18 +import tv.bayit.plus.core.model.CollectionDetail               
+      19  import tv.bayit.plus.core.model.CultureTrendingItem
+      20  import tv.bayit.plus.core.model.FeaturedResponse
+      21  import tv.bayit.plus.core.model.IsraeliBusinessesResponse
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeViewModel.kt)
+  ⎿  Added 3 lines
+      88          val liveChannelsDeferred = viewModelScope.async { loadL
+          iveChannels() }
+      89          val radioStationsDeferred = viewModelScope.async { load
+          RadioStations() }
+      90          val continueWatchingDeferred = viewModelScope.async { l
+          oadContinueWatching() }
+      91 +        val collectionsDeferred = viewModelScope.async { loadFe
+         +aturedCollections() }                                          
+      92          val trendingDeferred = viewModelScope.async { loadTrend
+          ing() }
+      93          val youngstersDeferred = viewModelScope.async { loadYou
+          ngsters() }
+      94          val telAvivDeferred = viewModelScope.async { loadTelAvi
+          vContent() }
+     ...
+       99          val liveChannels = liveChannelsDeferred.await()
+      100          val radioStations = radioStationsDeferred.await()
+      101          val continueWatching = continueWatchingDeferred.await(
+           )
+      102 +        val featuredCollections = collectionsDeferred.await() 
+      103          val trending = trendingDeferred.await()
+      104          val youngsters = youngstersDeferred.await()
+      105          val telAviv = telAvivDeferred.await()
+     ...
+      124              liveChannels = liveChannels,
+      125              radioStations = radioStations,
+      126              continueWatching = continueWatching,
+      127 +            featuredCollections = featuredCollections,        
+      128              trendingContent = trending,
+      129              youngstersTrending = youngsters,
+      130              telAvivContent = telAviv,
+
+⏺ Now add loadFeaturedCollections() helper and the field to HomeUiState.Success.
+   Let me find the right spot to insert the helper and update the state:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeViewModel.kt)
+  ⎿  Added 12 lines
+      135          )
+      136      }
+      137  
+      138 +    private suspend fun loadFeaturedCollections(): List<Collec
+          +tionDetail> {                                                 
+      139 +        return try {                                          
+      140 +            when (val result = contentRepository.getCollection
+          +Recommendations()) {                                          
+      141 +                is BayitResult.Success -> result.data         
+      142 +                else -> emptyList()                           
+      143 +            }                                                 
+      144 +        } catch (e: Exception) {                              
+      145 +            logger.debug("Failed to load collection recommenda
+          +tions (non-blocking)", mapOf("error" to e.message.orEmpty())) 
+      146 +            emptyList()                                       
+      147 +        }                                                     
+      148 +    }                                                         
+      149 +                                                              
+      150      private suspend fun loadLiveChannels(): List<LiveChannelIt
+           em> {
+      151          return try {
+      152              when (val result = liveTVRepository.getChannels())
+            {
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeViewModel.kt)
+  ⎿  Added 1 line
+      233          val liveChannels: List<LiveChannelItem> = emptyList(),
+      234          val radioStations: List<RadioStationItem> = emptyList(
+           ),
+      235          val continueWatching: List<WatchHistoryItem> = emptyLi
+           st(),
+      236 +        val featuredCollections: List<CollectionDetail> = empt
+          +yList(),                                                      
+      237          val trendingContent: List<CultureTrendingItem> = empty
+           List(),
+      238          val youngstersTrending: List<SectionContentItem> = emp
+           tyList(),
+      239          val telAvivContent: CityContentResponse? = null,
+
+⏺ Now wire the CollectionBanner into HomeContent.kt — add it after
+  continueWatching and before liveChannels:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeContent.kt)
+  ⎿  Added 2 lines
+      15  import tv.bayit.plus.core.model.ContentItem
+      16  import tv.bayit.plus.core.model.SpotlightItem
+      17  import tv.bayit.plus.designsystem.theme.DesignTokens
+      18 +import tv.bayit.plus.feature.vod.components.CollectionBanner   
+      19 +import java.util.Locale                                        
+      20  
+      21  @Composable
+      22  internal fun HomeSuccessContent(
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeContent.kt)
+  ⎿  Added 1 line
+      25      onContentClick: (ContentItem) -> Unit,
+      26      onChannelClick: (String) -> Unit,
+      27      onRadioClick: (String) -> Unit,
+      28 +    onCollectionClick: (String) -> Unit = {},                  
+      29      onYoungstersClick: () -> Unit,
+      30      onJerusalemClick: () -> Unit,
+      31      onTelAvivClick: () -> Unit,
+
+⏺ Now read the exact context around continueWatching in HomeContent.kt to add
+  the banner after it:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeContent.kt)
+  ⎿  Added 10 lines
+       87                  }
+       88              }
+       89  
+       90 +            if (uiState.featuredCollections.isNotEmpty()) {   
+       91 +                item(key = "collections_banner") {            
+       92 +                    CollectionBanner(                         
+       93 +                        collections = uiState.featuredCollecti
+          +ons,                                                          
+       94 +                        onCollectionClick = onCollectionClick,
+       95 +                        currentLanguage = Locale.getDefault().
+          +language,                                                     
+       96 +                    )                                         
+       97 +                }                                             
+       98 +            }                                                 
+       99 +                                                              
+      100              if (uiState.liveChannels.isNotEmpty()) {
+      101                  item(key = "live") {
+      102                      LiveTVRow(channels = uiState.liveChannels,
+            onChannelClick = onChannelClick)
+
+⏺ Now wire onCollectionClick up through HomeScreen and HomeRoute:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeScreen.kt)
+  ⎿  Added 1 line
+      36          uiState = uiState,
+      37          onSpotlightClick = { item -> onNavigateToPlayer(item.id
+          , item.type.orEmpty()) },
+      38          onContentClick = { item -> onNavigateToContent(item.id,
+           item.type.orEmpty()) },
+      39 +        onCollectionClick = { id -> onNavigateToContent(id, "co
+         +llection") },                                                  
+      40          onChannelClick = onNavigateToChannel,
+      41          onRadioClick = onNavigateToRadio,
+      42          onYoungstersClick = onNavigateToYoungsters,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-home/src/main/java/tv/bayit/plus/feature/home/HomeScreen.kt)
+  ⎿  Added 2 lines
+      52      uiState: HomeUiState,
+      53      onSpotlightClick: (SpotlightItem) -> Unit,
+      54      onContentClick: (ContentItem) -> Unit,
+      55 +    onCollectionClick: (String) -> Unit,                       
+      56      onChannelClick: (String) -> Unit,
+      57      onRadioClick: (String) -> Unit,
+      58      onYoungstersClick: () -> Unit,
+     ...
+      67              uiState = uiState,
+      68              onSpotlightClick = onSpotlightClick,
+      69              onContentClick = onContentClick,
+      70 +            onCollectionClick = onCollectionClick,             
+      71              onChannelClick = onChannelClick,
+      72              onRadioClick = onRadioClick,
+      73              onYoungstersClick = onYoungstersClick,
+
+⏺ All changes complete. Here's the full cross-platform audit summary and what
+  was fixed:
+
+  ---
+  Cross-platform audit results:
+
+  Platform: iOS
+  VOD banner: Rotating carousel
+  Home banner: Rotating carousel
+  Status: Fixed (prior step)
+  ────────────────────────────────────────
+  Platform: tvOS
+  VOD banner: Rotating carousel
+  Home banner: Rotating carousel
+  Status: Fixed now
+  ────────────────────────────────────────
+  Platform: Web
+  VOD banner: Rotating carousel
+  Home banner: —
+  Status: Was already correct
+  ────────────────────────────────────────
+  Platform: Android
+  VOD banner: Rotating CollectionBanner
+  Home banner: Rotating CollectionBanner
+  Status: Fixed now
+
+  ---
+  tvOS fixes (BayitPlusTVApp):
+
+  - TVCollectionPromoBannerView.swift — Added TVFeaturedCollectionsCarousel
+  (same pattern as iOS but 6s interval, 360pt height for the larger TV screen)
+  - TVVODView.swift — Replaced @State featuredCollection: CollectionDetail? +
+  loadFeaturedCollection() (2 requests, limit: 1) with @State 
+  featuredCollections: [CollectionDetail] + loadFeaturedCollections() calling
+  fetchCollectionRecommendations(). Now renders TVFeaturedCollectionsCarousel
+  - TVHomeView.swift — Same fix applied
+
+  Android fixes:
+
+  - ContentRepository.kt — Added getCollectionRecommendations(): 
+  BayitResult<List<CollectionDetail>> to interface
+  - ApiContentRepository.kt — Added
+  @GET("api/v1/content/collections/recommendations") Retrofit endpoint +
+  override implementation
+  - CollectionBanner.kt — Removed the duplicate local Collection data class; now
+   uses CollectionDetail from core-model. Updated helpers to use
+  CollectionDetail.localizedPromoText() (which already handles all 10 languages)
+  - VodViewModel.kt — Added loadCollectionRecommendations(), wired into init +
+  refresh(). Added featuredCollections: List<CollectionDetail> to
+  VodUiState.Success
+  - VodScreen.kt — Added CollectionBanner rendering (shown when
+  selectedCategoryId == null), added onCollectionClick callback routing to
+  "collection" type (which navigateToContent already handles)
+  - HomeViewModel.kt — Added loadFeaturedCollections(), wired into
+  loadAdditionalSections(). Added featuredCollections to HomeUiState.Success
+  - HomeContent.kt — Added CollectionBanner item in LazyColumn between continue
+  watching and live TV rows
+  - HomeScreen.kt / HomeRoute — Propagated onCollectionClick callback through
+  the call chain
+
+✻ Cogitated for 16m 49s
+
+❯ add Home banner to web 
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue
+
+❯ /compact 
+  ⎿  Error: Error during compaction: Error: Conversation too long. Press esc
+     twice to go up a few messages and try again.

@@ -26,6 +26,7 @@ internal fun HomeSuccessContent(
     onChannelClick: (String) -> Unit,
     onRadioClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit = {},
+    onWatchNowClick: (String) -> Unit = {},
     onYoungstersClick: () -> Unit,
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
@@ -92,6 +93,7 @@ internal fun HomeSuccessContent(
                     CollectionBanner(
                         collections = uiState.featuredCollections,
                         onCollectionClick = onCollectionClick,
+                        onWatchNowClick = onWatchNowClick,
                         currentLanguage = Locale.getDefault().language,
                     )
                 }

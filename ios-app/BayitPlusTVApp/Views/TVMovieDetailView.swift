@@ -35,7 +35,8 @@ struct TVMovieDetailView: View {
             if viewModel == nil {
                 viewModel = MovieDetailViewModel(
                     movieId: movieId,
-                    repository: repos.content
+                    repository: repos.content,
+                    userRepository: repos.user
                 )
             }
             await viewModel?.loadDetail()
