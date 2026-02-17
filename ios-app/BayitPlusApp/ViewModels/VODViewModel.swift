@@ -34,6 +34,16 @@ final class VODViewModel {
 
     var selectedType: VODFilterType = .all
     var selectedCategory: String? = nil
+    var selectedGenre: String? = nil
+
+    /// Unique genre names extracted from loaded content
+    var availableGenres: [String] {
+        let genreStrings = allItems.compactMap { $0.genre }
+        let allGenres = genreStrings
+            .flatMap { $0.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) } }
+            .filter { !$0.isEmpty }
+        return Array(Set(allGenres)).sorted()
+    }
 
     private let repository: any ContentRepository
     private let pageSize = 20
@@ -212,6 +222,14 @@ final class VODViewModel {
         // Filter by category
         if let categoryId = selectedCategory {
             filtered = filtered.filter { $0.category == categoryId }
+        }
+
+        // Filter by genre
+        if let genre = selectedGenre {
+            filtered = filtered.filter { item in
+                guard let itemGenre = item.genre else { return false }
+                return itemGenre.localizedCaseInsensitiveContains(genre)
+            }
         }
 
         return filtered

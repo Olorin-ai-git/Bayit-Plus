@@ -6,7 +6,7 @@ from beanie import Document
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pymongo import TEXT, IndexModel
 
-from app.models.vod_interaction import InteractiveMoment
+from app.models.vod_interaction import ContentCharacter, InteractiveMoment
 
 
 class ContentBase(BaseModel):
@@ -218,6 +218,9 @@ class Content(Document):
     interactive_moments: List[InteractiveMoment] = Field(
         default_factory=list
     )  # Predefined moments where avatars can interact with characters
+    interactive_characters: List[ContentCharacter] = Field(
+        default_factory=list
+    )  # Characters available for free-form dialogue
     supports_avatar_interaction: bool = False  # Quick check for interaction support
 
     # Audiobook-specific fields

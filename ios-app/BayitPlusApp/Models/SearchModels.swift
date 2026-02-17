@@ -81,3 +81,10 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
 struct TrendingSearchesResponse: Decodable, Sendable {
     let trending: [String]
 }
+
+// MARK: - Search Suggestions Response
+
+/// Response from GET /api/v1/search/suggestions
+struct SearchSuggestionsResponse: Decodable, Sendable {
+    let suggestions: [String]
+}

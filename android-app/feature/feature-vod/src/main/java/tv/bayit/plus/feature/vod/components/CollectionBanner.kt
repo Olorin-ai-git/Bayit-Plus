@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -104,10 +104,10 @@ fun CollectionBanner(
             .fillMaxWidth()
             .padding(horizontal = DesignTokens.Spacing.lg, vertical = DesignTokens.Spacing.md)
             .clip(RoundedCornerShape(DesignTokens.Radius.lg))
-            .background(DesignTokens.Glass.bgMedium)
+            .background(DesignTokens.Colors.Glass.bgMedium)
             .border(
                 width = 1.dp,
-                color = DesignTokens.Glass.border,
+                color = DesignTokens.Colors.Glass.border,
                 shape = RoundedCornerShape(DesignTokens.Radius.lg)
             )
             .clickable { onCollectionClick(currentCollection.id) }
@@ -122,8 +122,8 @@ fun CollectionBanner(
             // Poster Image
             val posterUrl = currentCollection.thumbnail ?: currentCollection.backdrop
             if (posterUrl != null) {
-                AsyncImage(
-                    model = posterUrl,
+                CachedAsyncImage(
+                    url = posterUrl,
                     contentDescription = currentCollection.title,
                     modifier = Modifier
                         .width(100.dp)
@@ -153,7 +153,7 @@ fun CollectionBanner(
                             fontWeight = FontWeight.SemiBold,
                             letterSpacing = 0.5.sp
                         ),
-                        color = DesignTokens.Text.muted
+                        color = DesignTokens.Colors.Text.muted
                     )
 
                     // Pagination dots
@@ -166,9 +166,9 @@ fun CollectionBanner(
                                         .clip(CircleShape)
                                         .background(
                                             if (index == currentIndex)
-                                                DesignTokens.Text.primary
+                                                DesignTokens.Colors.Text.primary
                                             else
-                                                DesignTokens.Text.muted.copy(alpha = 0.3f)
+                                                DesignTokens.Colors.Text.muted.copy(alpha = 0.3f)
                                         )
                                 )
                             }
@@ -185,7 +185,7 @@ fun CollectionBanner(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = DesignTokens.Text.primary,
+                    color = DesignTokens.Colors.Text.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -199,7 +199,7 @@ fun CollectionBanner(
                         fontSize = 14.sp,
                         lineHeight = 20.sp
                     ),
-                    color = DesignTokens.Text.secondary,
+                    color = DesignTokens.Colors.Text.secondary,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -210,7 +210,7 @@ fun CollectionBanner(
                 Text(
                     text = "${currentCollection.availableMovies} Movies",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
-                    color = DesignTokens.Text.muted
+                    color = DesignTokens.Colors.Text.muted
                 )
 
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
@@ -219,7 +219,7 @@ fun CollectionBanner(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
-                        .background(DesignTokens.Primary.default)
+                        .background(DesignTokens.Colors.Primary.base)
                         .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.sm)
                 ) {
                     Text(

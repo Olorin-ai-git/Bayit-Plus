@@ -4993,7 +4993,8 @@
     "empty": "אין מועדפים עדיין",
     "emptyHint": "הוסף פריטים למועדפים שלך",
     "loading": "טוען מועדפים...",
-    "remove": "הסר ממועדפים"
+    "remove": "הסר ממועדפים",
+    "add": "הוסף למועדפים"
   },
   "flows": {
     "title": "רצפים",
@@ -6337,6 +6338,15 @@
       "skip": "דלג",
       "continue": "המשך לצפות",
       "thinking": "{{character}} חושב..."
+    },
+    "dialogue": {
+      "talkToCharacter": "דבר עם דמות",
+      "selectCharacter": "בחר דמות",
+      "typeQuestion": "הקלד את השאלה שלך...",
+      "sending": "שולח...",
+      "characterSpeaking": "הדמות מדברת...",
+      "endDialogue": "סיים שיחה",
+      "noCharactersAvailable": "אין דמויות זמינות לשיחה"
     }
   },
   "playlist": {
@@ -8550,6 +8560,7 @@
       "kids": "ילדים"
     },
     "allCategories": "הכל",
+    "allGenres": "כל הז'אנרים",
     "emptyTitle": "אין תוכן זמין",
     "emptyDescription": "נסה לבחור קטגוריה אחרת",
     "allContent": "כל התוכן",
@@ -8570,7 +8581,10 @@
       "detail": "פרטי אוסף",
       "aiRecommendation": "המלצת בינה מלאכותית",
       "watchNow": "צפה עכשיו"
-    }
+    },
+    "trending": "פופולרי עכשיו",
+    "aiCollections": "אוספי AI",
+    "hebrewDub": "עברית"
   },
   "voice": {
     "listening": "מקשיב...",

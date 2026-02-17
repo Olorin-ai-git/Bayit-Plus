@@ -1,0 +1,2018 @@
+
+ ▐▛███▜▌   Claude Code v2.1.42
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Phase 2: Live Character-Avatar Dialogue - Implementation Plan                │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ Phase 1 built one-way pre-generated interactions: avatar video plays, then   │
+│ character video plays at curated timestamps. Phase 2 enables the user to     │
+│ initiate dialogue with movie characters at any time. The movie never pauses  │
+│ -- volume ducks to 15% while the character responds with a Creatify          │
+│ lip-synced video using their real ElevenLabs voice.                          │
+│                                                                              │
+│ The backend pipeline (LLM + TTS + Creatify animation) already works          │
+│ end-to-end from Phase 1. The main work is:                                   │
+│ 1. A new "free-form" session endpoint (not tied to curated moments)          │
+│ 2. A character registry per content item                                     │
+│ 3. An enhanced LLM prompt with movie/character context                       │
+│ 4. Compact floating dialogue overlays on all frontends                       │
+│                                                                              │
+│ Implementation Steps                                                         │
+│                                                                              │
+│ Step 1: Backend - ContentCharacter model + characters endpoint               │
+│                                                                              │
+│ Add to backend/app/models/vod_interaction.py (after CharacterResponse class  │
+│ ~line 113):                                                                  │
+│                                                                              │
+│ class ContentCharacter(BaseModel):                                           │
+│     """Character available for dialogue in a content item."""                │
+│     name: str                                                                │
+│     voice_id: str                                                            │
+│     frame_url: str                                                           │
+│     description: str                                                         │
+│     movie_context: str                                                       │
+│                                                                              │
+│ Add to backend/app/models/content.py (after line 221, next to existing       │
+│ interactive_moments field):                                                  │
+│                                                                              │
+│ interactive_characters: List[ContentCharacter] = Field(default_factory=list) │
+│                                                                              │
+│ Import ContentCharacter from app.models.vod_interaction.                     │
+│                                                                              │
+│ Add to backend/app/api/routes/vod_interactions.py (new endpoint):            │
+│                                                                              │
+│ @router.get("/characters/{content_id}")                                      │
+│ async def get_interactive_characters(content_id: str, current_user =         │
+│ Depends(get_current_user)):                                                  │
+│     content = await Content.get(content_id)                                  │
+│     return content.interactive_characters or []                              │
+│                                                                              │
+│ Step 2: Backend - Free-form session endpoint                                 │
+│                                                                              │
+│ Add to backend/app/api/routes/vod_interactions.py:                           │
+│                                                                              │
+│ New request model StartFreeInteractionRequest with: profile_id, avatar_id,   │
+│ content_id, character_name, current_timestamp.                               │
+│                                                                              │
+│ New endpoint POST /sessions/start-free that calls a new service method.      │
+│                                                                              │
+│ Add to backend/app/services/vod_interaction/interaction_service.py:          │
+│                                                                              │
+│ New method start_free_interaction_session() that:                            │
+│ - Loads content, finds character in interactive_characters list              │
+│ - Creates session with content title/description as scene context            │
+│ - Does NOT require an InteractiveMoment at that timestamp                    │
+│ - Falls back to CHARACTER_VOICE_MAP if character not in                      │
+│ interactive_characters                                                       │
+│                                                                              │
+│ Step 3: Backend - Enhanced character AI prompt                               │
+│                                                                              │
+│ Modify backend/app/services/vod_interaction/character_ai.py:                 │
+│                                                                              │
+│ Add character_description and movie_context params to generate_response()    │
+│ and _build_character_prompt(). The prompt becomes richer with character      │
+│ personality and movie plot info. Keep backward compatible -- existing        │
+│ callers pass empty strings for new params.                                   │
+│                                                                              │
+│ Update interaction_service.py process_user_message() to pass the new fields  │
+│ from the content character.                                                  │
+│                                                                              │
+│ Step 4: iOS - AvatarDialogueViewModel                                        │
+│                                                                              │
+│ New file ios-app/BayitPlusApp/ViewModels/AvatarDialogueViewModel.swift       │
+│                                                                              │
+│ @MainActor @Observable class managing:                                       │
+│ - availableCharacters: [ContentCharacter]                                    │
+│ - selectedCharacter: ContentCharacter?                                       │
+│ - sessionId: String?                                                         │
+│ - exchanges: [DialogueExchange]                                              │
+│ - isSending: Bool                                                            │
+│ - isActive: Bool                                                             │
+│                                                                              │
+│ Methods: loadCharacters(contentId), startSession(contentId, profileId,       │
+│ avatarId), sendMessage(text) -> CharacterResponsePayload?, endSession()      │
+│                                                                              │
+│ Uses existing AvatarRepository pattern for API calls.                        │
+│                                                                              │
+│ Step 5: iOS - ContentCharacter Swift model                                   │
+│                                                                              │
+│ Add to ios-app/BayitPlusApp/Models/AvatarMeshModels.swift (after             │
+│ InteractiveMoment):                                                          │
+│                                                                              │
+│ struct ContentCharacter: Codable, Identifiable {                             │
+│     let name: String                                                         │
+│     let voiceId: String                                                      │
+│     let frameUrl: String                                                     │
+│     let description: String                                                  │
+│     let movieContext: String                                                 │
+│     var id: String { name }                                                  │
+│ }                                                                            │
+│                                                                              │
+│ Also add a DialogueExchange Swift struct if not already present (check       │
+│ existing models).                                                            │
+│                                                                              │
+│ Step 6: iOS - CharacterSelectionSheet                                        │
+│                                                                              │
+│ New file ios-app/BayitPlusApp/Views/Player/CharacterSelectionSheet.swift     │
+│                                                                              │
+│ Bottom sheet presenting availableCharacters as circular images with names.   │
+│ User taps to select. Uses BayitDesignSystem tokens. Fires                    │
+│ onSelect(ContentCharacter).                                                  │
+│                                                                              │
+│ Step 7: iOS - AvatarDialogueOverlayView                                      │
+│                                                                              │
+│ New file ios-app/BayitPlusApp/Views/Player/AvatarDialogueOverlayView.swift   │
+│                                                                              │
+│ Compact floating overlay (bottom area, not full-screen):                     │
+│ - Avatar circle (left, 100pt) + Character circle (right, 100pt)              │
+│ - Text field + send button below circles                                     │
+│ - Character video plays in character circle via AVPlayer when response       │
+│ arrives                                                                      │
+│ - Close button (X) to dismiss                                                │
+│ - allowsHitTesting only on overlay area (movie taps pass through elsewhere)  │
+│ - Follows existing InteractiveMomentOverlayView circle/player patterns       │
+│                                                                              │
+│ Step 8: iOS - PlayerView integration                                         │
+│                                                                              │
+│ Modify ios-app/BayitPlusApp/Views/Player/PlayerView.swift:                   │
+│                                                                              │
+│ - Add state: @State var dialogueVM: AvatarDialogueViewModel?, @State var     │
+│ showCharacterSheet = false, @State var showDialogueOverlay = false           │
+│ - Add "Talk" button in topBar (line ~595, after quality button, before       │
+│ liveFeatureButtons): chat bubble icon, only visible when                     │
+│ !mediaContentType.isLive && interactionVM != nil                             │
+│ - Button action: load characters, show CharacterSelectionSheet               │
+│ - On character select: start session, duck volume, show                      │
+│ AvatarDialogueOverlayView                                                    │
+│                                                                              │
+│ Modify ios-app/BayitPlusApp/Views/Player/PlayerView+VODInteractions.swift:   │
+│                                                                              │
+│ Add dialogueOverlay ViewBuilder alongside existing interactiveMomentOverlay. │
+│  Add volume duck/restore calls.                                              │
+│                                                                              │
+│ Step 9: tvOS - TVAvatarDialogueOverlayView                                   │
+│                                                                              │
+│ New file                                                                     │
+│ ios-app/BayitPlusTVApp/Views/Player/TVAvatarDialogueOverlayView.swift        │
+│                                                                              │
+│ tvOS adaptation:                                                             │
+│ - Same dual-circle layout, larger (160pt) for TV                             │
+│ - Focusable text field (tvOS keyboard on select)                             │
+│ - Focus navigation between text field, send button, close button             │
+│ - Follows existing TVPlayerView patterns                                     │
+│                                                                              │
+│ Modify ios-app/BayitPlusTVApp/Views/Player/TVPlayerView.swift:               │
+│ - Add dialogue state properties                                              │
+│ - Add "Talk" button to control bar                                           │
+│ - Integrate overlay in ZStack                                                │
+│                                                                              │
+│ Step 10: Web - AvatarDialoguePanel                                           │
+│                                                                              │
+│ New file web/src/components/vod-interactions/AvatarDialoguePanel.tsx         │
+│                                                                              │
+│ Compact floating panel (bottom-right, ~380px wide, ~320px tall):             │
+│ - Two circles at top (avatar + character)                                    │
+│ - Scrollable conversation (last 3 exchanges)                                 │
+│ - Input + send button                                                        │
+│ - Close (X) button                                                           │
+│ - Character video plays inline via <video> element                           │
+│ - Volume ducking via videoElement.volume = 0.15 on mount, restore on unmount │
+│ - Glass UI styling (GlassCard, GlassButton, GlassInput)                      │
+│                                                                              │
+│ Step 11: Web - CharacterSelectBar                                            │
+│                                                                              │
+│ New file web/src/components/vod-interactions/CharacterSelectBar.tsx          │
+│                                                                              │
+│ Horizontal bar of character avatar circles. Shows when user clicks "Talk to  │
+│ Character" in player controls. User clicks character to start dialogue.      │
+│                                                                              │
+│ Step 12: Web - useVODInteraction additions                                   │
+│                                                                              │
+│ Modify web/src/hooks/useVODInteraction.ts:                                   │
+│                                                                              │
+│ Add:                                                                         │
+│ - availableCharacters state                                                  │
+│ - loadCharacters(contentId) - GET /vod-interactions/characters/{contentId}   │
+│ - startFreeInteraction(characterName) - POST                                 │
+│ /vod-interactions/sessions/start-free                                        │
+│ - selectedCharacter state                                                    │
+│                                                                              │
+│ Keep existing moment-based flow intact.                                      │
+│                                                                              │
+│ Step 13: Web - Player controls button                                        │
+│                                                                              │
+│ Modify web/src/components/player/FullscreenVideoOverlay.tsx:                 │
+│                                                                              │
+│ Add "Talk to Character" button in controls area. Only visible when content   │
+│ has interactive_characters. Button opens CharacterSelectBar. Pass video      │
+│ element ref to AvatarDialoguePanel for volume control.                       │
+│                                                                              │
+│ Step 14: Android - API + ViewModel                                           │
+│                                                                              │
+│ New file android-app/.../data/api/VODInteractionApi.kt - Retrofit interface  │
+│ for characters, start-free, message, complete endpoints.                     │
+│                                                                              │
+│ New file android-app/.../ui/viewmodel/AvatarDialogueViewModel.kt -           │
+│ StateFlow-based ViewModel.                                                   │
+│                                                                              │
+│ Step 15: Android - Overlay + Sheet                                           │
+│                                                                              │
+│ New file android-app/.../ui/screens/player/AvatarDialogueOverlay.kt -        │
+│ Compose overlay with circles, input, video playback. Volume duck via         │
+│ player.volume = 0.15f.                                                       │
+│                                                                              │
+│ New file android-app/.../ui/screens/player/CharacterSelectionSheet.kt -      │
+│ ModalBottomSheet with character list.                                        │
+│                                                                              │
+│ Modify android-app/.../feature/player/ui/PlayerControlsOverlay.kt - Add      │
+│ "Talk" IconButton.                                                           │
+│                                                                              │
+│ Step 16: Localization                                                        │
+│                                                                              │
+│ Modify en.json, he.json, es.json - Add keys under player.dialogue:           │
+│ - talkToCharacter, selectCharacter, typeQuestion, sending,                   │
+│ characterSpeaking, endDialogue, noCharactersAvailable                        │
+│                                                                              │
+│ Step 17: iOS Repository - Add API methods                                    │
+│                                                                              │
+│ Modify existing avatar/interaction repository to add:                        │
+│ - fetchInteractiveCharacters(contentId:) -> [ContentCharacter]               │
+│ - startFreeSession(contentId:, profileId:, avatarId:, characterName:,        │
+│ timestamp:) -> VODSessionResponse                                            │
+│                                                                              │
+│ These call the new backend endpoints.                                        │
+│                                                                              │
+│ Files Summary                                                                │
+│                                                                              │
+│ New files (11):                                                              │
+│ 1. ios-app/BayitPlusApp/ViewModels/AvatarDialogueViewModel.swift             │
+│ 2. ios-app/BayitPlusApp/Views/Player/AvatarDialogueOverlayView.swift         │
+│ 3. ios-app/BayitPlusApp/Views/Player/CharacterSelectionSheet.swift           │
+│ 4. ios-app/BayitPlusTVApp/Views/Player/TVAvatarDialogueOverlayView.swift     │
+│ 5. web/src/components/vod-interactions/AvatarDialoguePanel.tsx               │
+│ 6. web/src/components/vod-interactions/CharacterSelectBar.tsx                │
+│ 7. android-app/.../data/api/VODInteractionApi.kt                             │
+│ 8. android-app/.../ui/viewmodel/AvatarDialogueViewModel.kt                   │
+│ 9. android-app/.../ui/screens/player/AvatarDialogueOverlay.kt                │
+│ 10. android-app/.../ui/screens/player/CharacterSelectionSheet.kt             │
+│                                                                              │
+│ Modified files (13):                                                         │
+│ 1. backend/app/models/vod_interaction.py - Add ContentCharacter              │
+│ 2. backend/app/models/content.py - Add interactive_characters field          │
+│ 3. backend/app/api/routes/vod_interactions.py - Add GET /characters/{id},    │
+│ POST /sessions/start-free                                                    │
+│ 4. backend/app/services/vod_interaction/interaction_service.py - Add         │
+│ start_free_interaction_session()                                             │
+│ 5. backend/app/services/vod_interaction/character_ai.py - Enhanced prompt    │
+│ 6. ios-app/BayitPlusApp/Models/AvatarMeshModels.swift - Add                  │
+│ ContentCharacter, DialogueExchange structs                                   │
+│ 7. ios-app/BayitPlusApp/Views/Player/PlayerView.swift - Add Talk button,     │
+│ dialogue state                                                               │
+│ 8. ios-app/BayitPlusApp/Views/Player/PlayerView+VODInteractions.swift - Add  │
+│ dialogueOverlay                                                              │
+│ 9. ios-app/BayitPlusTVApp/Views/Player/TVPlayerView.swift - Add Talk button, │
+│  dialogue state                                                              │
+│ 10. web/src/hooks/useVODInteraction.ts - Add loadCharacters,                 │
+│ startFreeInteraction                                                         │
+│ 11. web/src/components/player/FullscreenVideoOverlay.tsx - Add Talk button   │
+│ 12. android-app/.../feature/player/ui/PlayerControlsOverlay.kt - Add Talk    │
+│ button                                                                       │
+│ 13. Locale files (en.json, he.json, es.json) - Add player.dialogue keys      │
+│                                                                              │
+│ Reused unchanged                                                             │
+│                                                                              │
+│ - character_animator.py - TTS + Creatify lip-sync pipeline                   │
+│ - creatify_client.py - Aurora API client                                     │
+│ - elevenlabs_animator.py - TTS generation                                    │
+│ - config.py CHARACTER_VOICE_* - 9 voice IDs                                  │
+│ - reel_compositor.py - Reel generation                                       │
+│ - credit_service - Per-exchange charging                                     │
+│ - iOS InteractiveMomentOverlayView - Pattern for circle layout + AVPlayer    │
+│                                                                              │
+│ Verification                                                                 │
+│                                                                              │
+│ 1. Backend: curl POST /vod-interactions/sessions/start-free with a           │
+│ content_id that has interactive_characters                                   │
+│ 2. Backend: curl POST /sessions/{id}/message - verify character response     │
+│ with audio_url + animated_video_url                                          │
+│ 3. iOS: Build and run in simulator, play VOD content, tap "Talk" button,     │
+│ select character, type message, verify character video plays in overlay      │
+│ circle with ducked volume                                                    │
+│ 4. Web: npm start, play content, click "Talk to Character", select           │
+│ character, type message, verify floating panel with character video and      │
+│ ducked volume                                                                │
+│ 5. tvOS: Build in Xcode, test with Siri Remote navigation                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll implement this Phase 2 plan systematically. Let me start by reading the
+  existing files to understand the current codebase structure.
+
+⏺ Let me read all the key existing files in parallel to understand the current
+  codebase.
+
+⏺ Read 6 files (ctrl+o to expand)
+
+⏺ Now let me read the remaining files I need.
+
+⏺ Searched for 3 patterns, read 3 files (ctrl+o to expand)
+
+⏺ Let me read the remaining key files.
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Let me read the locale files with specific sections and some more needed
+  files.
+
+⏺ Searched for 4 patterns, read 4 files (ctrl+o to expand)
+
+⏺ Let me find the AvatarRepository protocol and see the existing API methods.
+
+⏺ Searched for 3 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Now I have a thorough understanding of the codebase. Let me create subtasks to
+   track progress and then start implementing. I'll work on multiple files in
+  parallel where possible.
+
+  Let me start with the backend changes (Steps 1-3), then iOS, then
+  web/localization.
+
+  Starting with Step 1: Backend - ContentCharacter model + characters endpoint
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/models/
+        vod_interaction.py)
+  ⎿  Added 9 lines
+      107      duration: float
+      108  
+      109  
+      110 +class ContentCharacter(BaseModel):                            
+      111 +    """Character available for dialogue in a content item.""" 
+      112 +    name: str = Field(..., description="Character display name
+          +")                                                            
+      113 +    voice_id: str = Field(..., description="ElevenLabs voice I
+          +D")                                                           
+      114 +    frame_url: str = Field(..., description="GCS URL of charac
+          +ter still frame")                                             
+      115 +    description: str = Field(..., description="Character perso
+          +nality description")                                          
+      116 +    movie_context: str = Field(..., description="Movie/scene c
+          +ontext for AI prompt")                                        
+      117 +                                                              
+      118 +                                                              
+      119  class CharacterResponse(BaseModel):
+      120      """Response from character AI service"""
+      121      text: str
+
+⏺ Now add interactive_characters field to Content model:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/models/
+        content.py)
+  ⎿  Added 1 line, removed 1 line
+       6  from pydantic import BaseModel, ConfigDict, Field, field_valida
+          tor
+       7  from pymongo import TEXT, IndexModel
+       8  
+       9 -from app.models.vod_interaction import InteractiveMoment       
+       9 +from app.models.vod_interaction import ContentCharacter, Intera
+         +ctiveMoment                                                    
+      10  
+      11  
+      12  class ContentBase(BaseModel):
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/models/
+        content.py)
+  ⎿  Added 3 lines
+      218      interactive_moments: List[InteractiveMoment] = Field(
+      219          default_factory=list
+      220      )  # Predefined moments where avatars can interact with ch
+           aracters
+      221 +    interactive_characters: List[ContentCharacter] = Field(   
+      222 +        default_factory=list                                  
+      223 +    )  # Characters available for free-form dialogue          
+      224      supports_avatar_interaction: bool = False  # Quick check f
+           or interaction support
+      225  
+      226      # Audiobook-specific fields
+
+⏺ Now add the characters endpoint and start-free endpoint to the routes:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/vod_interactions.py)
+  ⎿  Added 2 lines, removed 1 line
+       9  from pydantic import BaseModel, Field
+      10  
+      11  from app.models.user import User
+      12 -from app.models.vod_interaction import VODInteractionSession, D
+         -ialogueExchange                                                
+      12 +from app.models.content import Content                         
+      13 +from app.models.vod_interaction import ContentCharacter, VODInt
+         +eractionSession, DialogueExchange                              
+      14  from app.services.vod_interaction.interaction_service import vo
+          d_interaction_service
+      15  from app.core.security import get_current_user
+      16  from app.core.logging_config import get_logger
+
+⏺ Now add the new request model and endpoints:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/vod_interactions.py)
+  ⎿  Added 10 lines, removed 1 line
+      22  
+      23  
+      24  class StartInteractionRequest(BaseModel):
+      25 -    """Request to start an interaction session"""              
+      25 +    """Request to start an interaction session at a curated mom
+         +ent"""                                                         
+      26      profile_id: str = Field(..., description="Child profile ID"
+          )
+      27      avatar_id: str = Field(..., description="Avatar mesh ID")
+      28      content_id: str = Field(..., description="Content ID")
+      29      timestamp: float = Field(..., description="Timestamp of int
+          eractive moment")
+      30  
+      31  
+      32 +class StartFreeInteractionRequest(BaseModel):                  
+      33 +    """Request to start a free-form dialogue session with a cha
+         +racter"""                                                      
+      34 +    profile_id: str = Field(..., description="Child profile ID"
+         +)                                                              
+      35 +    avatar_id: str = Field(..., description="Avatar mesh ID")  
+      36 +    content_id: str = Field(..., description="Content ID")     
+      37 +    character_name: str = Field(..., description="Character to 
+         +talk to")                                                      
+      38 +    current_timestamp: float = Field(..., description="Current 
+         +playback position")                                            
+      39 +                                                               
+      40 +                                                               
+      41  class UserMessageRequest(BaseModel):
+      42      """Request to send user message to character"""
+      43      message: str = Field(..., min_length=1, max_length=500)
+
+⏺ Now add the two new endpoints before the existing start_interaction_session:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/vod_interactions.py)
+  ⎿  Added 94 lines
+       59      exchanges_count: int
+       60  
+       61  
+       62 +@router.get("/characters/{content_id}", response_model=List[Co
+          +ntentCharacter])                                              
+       63 +async def get_interactive_characters(                         
+       64 +    content_id: str,                                          
+       65 +    current_user: User = Depends(get_current_user)            
+       66 +):                                                            
+       67 +    """                                                       
+       68 +    Get characters available for free-form dialogue in a conte
+          +nt item.                                                      
+       69 +                                                              
+       70 +    Args:                                                     
+       71 +        content_id: Content ID                                
+       72 +        current_user: Authenticated user                      
+       73 +                                                              
+       74 +    Returns:                                                  
+       75 +        List of available characters                          
+       76 +    """                                                       
+       77 +    try:                                                      
+       78 +        content = await Content.get(content_id)               
+       79 +        if not content:                                       
+       80 +            raise HTTPException(                              
+       81 +                status_code=status.HTTP_404_NOT_FOUND,        
+       82 +                detail="Content not found"                    
+       83 +            )                                                 
+       84 +        return content.interactive_characters or []           
+       85 +                                                              
+       86 +    except HTTPException:                                     
+       87 +        raise                                                 
+       88 +    except Exception as e:                                    
+       89 +        logger.error(                                         
+       90 +            "Failed to fetch interactive characters",         
+       91 +            extra={"content_id": content_id, "error": str(e)} 
+       92 +        )                                                     
+       93 +        raise HTTPException(                                  
+       94 +            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+       95 +            detail="Failed to fetch characters"               
+       96 +        )                                                     
+       97 +                                                              
+       98 +                                                              
+       99 +@router.post("/sessions/start-free", response_model=VODInterac
+          +tionSession)                                                  
+      100 +async def start_free_interaction_session(                     
+      101 +    request: StartFreeInteractionRequest,                     
+      102 +    current_user: User = Depends(get_current_user)            
+      103 +):                                                            
+      104 +    """                                                       
+      105 +    Start a free-form dialogue session with a character at any
+          + timestamp.                                                   
+      106 +    Does not require a curated interactive moment.            
+      107 +                                                              
+      108 +    Args:                                                     
+      109 +        request: Session creation parameters                  
+      110 +        current_user: Authenticated user                      
+      111 +                                                              
+      112 +    Returns:                                                  
+      113 +        Created interaction session                           
+      114 +    """                                                       
+      115 +    try:                                                      
+      116 +        session = await vod_interaction_service.start_free_int
+          +eraction_session(                                             
+      117 +            user_id=str(current_user.id),                     
+      118 +            profile_id=request.profile_id,                    
+      119 +            avatar_id=request.avatar_id,                      
+      120 +            content_id=request.content_id,                    
+      121 +            character_name=request.character_name,            
+      122 +            current_timestamp=request.current_timestamp       
+      123 +        )                                                     
+      124 +                                                              
+      125 +        logger.info(                                          
+      126 +            "Free interaction session created via API",       
+      127 +            extra={                                           
+      128 +                "user_id": str(current_user.id),              
+      129 +                "session_id": str(session.id),                
+      130 +                "character_name": session.character_name      
+      131 +            }                                                 
+      132 +        )                                                     
+      133 +                                                              
+      134 +        return session                                        
+      135 +                                                              
+      136 +    except ValueError as e:                                   
+      137 +        logger.warning(                                       
+      138 +            "Invalid free session creation request",          
+      139 +            extra={"user_id": str(current_user.id), "error": s
+          +tr(e)}                                                        
+      140 +        )                                                     
+      141 +        raise HTTPException(                                  
+      142 +            status_code=status.HTTP_400_BAD_REQUEST,          
+      143 +            detail=str(e)                                     
+      144 +        )                                                     
+      145 +    except Exception as e:                                    
+      146 +        logger.error(                                         
+      147 +            "Failed to create free interaction session",      
+      148 +            extra={"user_id": str(current_user.id), "error": s
+          +tr(e)}                                                        
+      149 +        )                                                     
+      150 +        raise HTTPException(                                  
+      151 +            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      152 +            detail="Failed to start interaction session"      
+      153 +        )                                                     
+      154 +                                                              
+      155 +                                                              
+      156  @router.post("/sessions/start", response_model=VODInteractionS
+           ession)
+      157  async def start_interaction_session(
+      158      request: StartInteractionRequest,
+
+⏺ Step 2: Backend - interaction_service.py - Add start_free_interaction_session
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/interaction_service.py)
+  ⎿  Added 1 line
+       9  from typing import List, Optional
+      10  from app.models.vod_interaction import (
+      11      VODInteractionSession,
+      12 +    ContentCharacter,                                          
+      13      DialogueExchange,
+      14      InteractiveMoment
+      15  )
+
+⏺ Now add the start_free_interaction_session method and update
+  process_user_message:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/interaction_service.py)
+  ⎿  Added 78 lines
+      107              )
+      108              raise
+      109  
+      110 +    async def start_free_interaction_session(                 
+      111 +        self,                                                 
+      112 +        user_id: str,                                         
+      113 +        profile_id: str,                                      
+      114 +        avatar_id: str,                                       
+      115 +        content_id: str,                                      
+      116 +        character_name: str,                                  
+      117 +        current_timestamp: float                              
+      118 +    ) -> VODInteractionSession:                               
+      119 +        """                                                   
+      120 +        Start a free-form dialogue session with a character at
+          + any timestamp.                                               
+      121 +        Does not require a curated InteractiveMoment.         
+      122 +                                                              
+      123 +        Args:                                                 
+      124 +            user_id: User ID                                  
+      125 +            profile_id: Child profile ID                      
+      126 +            avatar_id: Avatar mesh ID                         
+      127 +            content_id: Content ID                            
+      128 +            character_name: Character to converse with        
+      129 +            current_timestamp: Current playback position      
+      130 +                                                              
+      131 +        Returns:                                              
+      132 +            Created session                                   
+      133 +        """                                                   
+      134 +        try:                                                  
+      135 +            content = await Content.get(content_id)           
+      136 +            if not content:                                   
+      137 +                raise ValueError(f"Content not found: {content
+          +_id}")                                                        
+      138 +                                                              
+      139 +            avatar = await ChildAvatar.get(avatar_id)         
+      140 +            if not avatar or avatar.profile_id != profile_id: 
+      141 +                raise ValueError(f"Invalid avatar: {avatar_id}
+          +")                                                            
+      142 +                                                              
+      143 +            # Find character in interactive_characters list   
+      144 +            character = self._find_character(                 
+      145 +                content.interactive_characters, character_name
+      146 +            )                                                 
+      147 +                                                              
+      148 +            # Build scene context from content metadata       
+      149 +            scene_context = (                                 
+      150 +                f"{content.title}: {content.description or ''}
+          +"                                                             
+      151 +            )                                                 
+      152 +                                                              
+      153 +            session = VODInteractionSession(                  
+      154 +                user_id=user_id,                              
+      155 +                profile_id=profile_id,                        
+      156 +                avatar_id=avatar_id,                          
+      157 +                content_id=content_id,                        
+      158 +                moment_timestamp=current_timestamp,           
+      159 +                character_name=character_name,                
+      160 +                status="active"                               
+      161 +            )                                                 
+      162 +            await session.save()                              
+      163 +                                                              
+      164 +            logger.info(                                      
+      165 +                "Free interaction session started",           
+      166 +                extra={                                       
+      167 +                    "session_id": str(session.id),            
+      168 +                    "character_name": character_name,         
+      169 +                    "user_id": user_id,                       
+      170 +                    "has_character_data": character is not Non
+          +e                                                             
+      171 +                }                                             
+      172 +            )                                                 
+      173 +                                                              
+      174 +            return session                                    
+      175 +                                                              
+      176 +        except Exception as e:                                
+      177 +            logger.error(                                     
+      178 +                "Failed to start free interaction session",   
+      179 +                extra={                                       
+      180 +                    "user_id": user_id,                       
+      181 +                    "content_id": content_id,                 
+      182 +                    "character_name": character_name,         
+      183 +                    "error": str(e)                           
+      184 +                }                                             
+      185 +            )                                                 
+      186 +            raise                                             
+      187 +                                                              
+      188      async def process_user_message(
+      189          self,
+      190          session_id: str,
+
+⏺ Now update process_user_message to support free-form sessions (where there may
+   not be a moment):
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/interaction_service.py)
+  ⎿  Added 32 lines, removed 5 lines
+      218              )
+      219              session.dialogue_exchanges.append(user_exchange)
+      220  
+      221 -            moment = await self._get_moment(session.content_id
+          -, session.moment_timestamp)                                   
+      221 +            # Resolve scene context, character metadata, and f
+          +rame URL.                                                     
+      222 +            # Free-form sessions may not have a curated moment
+          +.                                                             
+      223 +            moment = self._find_moment(                       
+      224 +                (await Content.get(session.content_id)).intera
+          +ctive_moments,                                                
+      225 +                session.moment_timestamp                      
+      226 +            )                                                 
+      227 +            content = await Content.get(session.content_id)   
+      228 +            character = self._find_character(                 
+      229 +                content.interactive_characters, session.charac
+          +ter_name                                                      
+      230 +            )                                                 
+      231  
+      232 +            if moment:                                        
+      233 +                scene_context = moment.scene_context          
+      234 +                frame_url = moment.character_frame_url        
+      235 +            elif character:                                   
+      236 +                scene_context = character.movie_context       
+      237 +                frame_url = character.frame_url               
+      238 +            else:                                             
+      239 +                scene_context = f"{content.title}: {content.de
+          +scription or ''}"                                             
+      240 +                frame_url = None                              
+      241 +                                                              
+      242 +            character_description = character.description if c
+          +haracter else ""                                              
+      243 +            movie_context = character.movie_context if charact
+          +er else ""                                                    
+      244 +                                                              
+      245              character_response = await character_ai_service.ge
+           nerate_response(
+      246                  character_name=session.character_name,
+      225 -                scene_context=moment.scene_context,           
+      247 +                scene_context=scene_context,                  
+      248                  user_message=user_message,
+      227 -                conversation_history=session.dialogue_exchange
+          -s                                                             
+      249 +                conversation_history=session.dialogue_exchange
+          +s,                                                            
+      250 +                character_description=character_description,  
+      251 +                movie_context=movie_context                   
+      252              )
+      253  
+      230 -            voice_id = self._get_character_voice_id(session.ch
+          -aracter_name)                                                 
+      254 +            voice_id = (                                      
+      255 +                character.voice_id if character               
+      256 +                else self._get_character_voice_id(session.char
+          +acter_name)                                                   
+      257 +            )                                                 
+      258  
+      259              animated = await character_animator_service.animat
+           e_character_response(
+      260                  character_name=session.character_name,
+      261                  dialogue_text=character_response.text,
+      235 -                character_frame_url=moment.character_frame_url
+          -,                                                             
+      262 +                character_frame_url=frame_url,                
+      263                  voice_id=voice_id
+      264              )
+      265  
+
+⏺ Now add the _find_character helper method:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/interaction_service.py)
+  ⎿  Added 11 lines
+      354              raise ValueError(f"Interactive moment not found at
+            {timestamp}")
+      355          return moment
+      356  
+      357 +    def _find_character(                                      
+      358 +        self,                                                 
+      359 +        characters: List[ContentCharacter],                   
+      360 +        character_name: str                                   
+      361 +    ) -> Optional[ContentCharacter]:                          
+      362 +        """Find a character by name in the interactive_charact
+          +ers list"""                                                   
+      363 +        for character in characters:                          
+      364 +            if character.name == character_name:              
+      365 +                return character                              
+      366 +        return None                                           
+      367 +                                                              
+      368      def _get_character_voice_id(self, character_name: str) -> 
+           str:
+      369          """Get ElevenLabs voice ID for character"""
+      370          voice_id = CHARACTER_VOICE_MAP.get(character_name)
+
+⏺ Step 3: Backend - Enhanced character AI prompt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/character_ai.py)
+  ⎿  Added 8 lines, removed 2 lines
+      25          character_name: str,
+      26          scene_context: str,
+      27          user_message: str,
+      28 -        conversation_history: List[DialogueExchange]           
+      28 +        conversation_history: List[DialogueExchange],          
+      29 +        character_description: str = "",                       
+      30 +        movie_context: str = ""                                
+      31      ) -> CharacterResponse:
+      32          """
+      33          Generate in-character response to user message
+     ...
+      37              scene_context: Scene description/subtitles for cont
+          ext
+      38              user_message: User's message to character
+      39              conversation_history: Previous dialogue exchanges
+      40 +            character_description: Personality/background descr
+         +iption                                                         
+      41 +            movie_context: Movie plot context for richer respon
+         +ses                                                            
+      42  
+      43          Returns:
+      44              Character's response with text and emotion
+     ...
+      48                  character_name,
+      49                  scene_context,
+      50                  user_message,
+      47 -                conversation_history                           
+      51 +                conversation_history,                          
+      52 +                character_description=character_description,   
+      53 +                movie_context=movie_context                    
+      54              )
+      55  
+      56              logger.info(
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/character_ai.py)
+  ⎿  Added 12 lines, removed 2 lines
+       97          character_name: str,
+       98          scene_context: str,
+       99          user_message: str,
+      100 -        history: List[DialogueExchange]                       
+      100 +        history: List[DialogueExchange],                      
+      101 +        character_description: str = "",                      
+      102 +        movie_context: str = ""                               
+      103      ) -> str:
+      104          """Build prompt for character dialogue generation"""
+      105  
+      106          history_text = self._format_history(history)
+      107  
+      108 +        description_block = ""                                
+      109 +        if character_description:                             
+      110 +            description_block = f"\nCharacter: {character_desc
+          +ription}"                                                     
+      111 +                                                              
+      112 +        context_block = ""                                    
+      113 +        if movie_context:                                     
+      114 +            context_block = f"\nMovie Context: {movie_context}
+          +"                                                             
+      115 +                                                              
+      116          return f"""You are {character_name} from this scene:
+      117  
+      108 -Scene Context: {scene_context}                                
+      118 +Scene Context: {scene_context}{description_block}{context_bloc
+          +k}                                                            
+      119  
+      120  A child's avatar just said to you: "{user_message}"
+      121  
+
+⏺ Backend is done. Now let me implement the iOS Swift files. I'll do multiple in
+   parallel.
+
+  Step 5: iOS - ContentCharacter + DialogueExchange Swift models (add to 
+  AvatarMeshModels.swift)
+
+⏺ Update(BayitPlusApp/Models/AvatarMeshModels.swift)
+  ⎿  Added 21 lines
+      71      let exchangesCount: Int
+      72  }
+      73  
+      74 +// MARK: - Free-Form Dialogue                                  
+      75 +                                                               
+      76 +struct ContentCharacter: Codable, Identifiable {               
+      77 +    let name: String                                           
+      78 +    let voiceId: String                                        
+      79 +    let frameUrl: String                                       
+      80 +    let description: String                                    
+      81 +    let movieContext: String                                   
+      82 +                                                               
+      83 +    var id: String { name }                                    
+      84 +}                                                              
+      85 +                                                               
+      86 +struct DialogueExchange: Codable, Identifiable {               
+      87 +    let speaker: String                                        
+      88 +    let messageText: String                                    
+      89 +    let audioUrl: String?                                      
+      90 +    let animatedVideoUrl: String?                              
+      91 +                                                               
+      92 +    var id: String { "\(speaker)-\(messageText.prefix(20))" }  
+      93 +}                                                              
+      94 +                                                               
+      95  // MARK: - Magic Mirror
+      96  
+      97  struct MagicMirrorGreeting: Codable {
+
+⏺ Step 17: iOS Repository - Add API methods to AvatarRepository
+
+⏺ Update(BayitPlusApp/Repositories/AvatarMeshRepository.swift)
+  ⎿  Added 12 lines
+      38          contentId: String
+      39      ) async throws -> [InteractiveMoment]
+      40  
+      41 +    func fetchInteractiveCharacters(                           
+      42 +        contentId: String                                      
+      43 +    ) async throws -> [ContentCharacter]                       
+      44 +                                                               
+      45      func startInteractionSession(
+      46          profileId: String,
+      47          avatarId: String,
+     ...
+      49          timestamp: Double
+      50      ) async throws -> VODSessionResponse
+      51  
+      52 +    func startFreeInteractionSession(                          
+      53 +        profileId: String,                                     
+      54 +        avatarId: String,                                      
+      55 +        contentId: String,                                     
+      56 +        characterName: String,                                 
+      57 +        currentTimestamp: Double                               
+      58 +    ) async throws -> VODSessionResponse                       
+      59 +                                                               
+      60      func sendInteractionMessage(
+      61          sessionId: String,
+      62          message: String
+
+⏺ Now add the implementations in APIAvatarRepository:
+
+⏺ Update(BayitPlusApp/Repositories/AvatarMeshRepository.swift)
+  ⎿  Added 30 lines
+      177          )
+      178      }
+      179  
+      180 +    func fetchInteractiveCharacters(                          
+      181 +        contentId: String                                     
+      182 +    ) async throws -> [ContentCharacter] {                    
+      183 +        return try await client.get(                          
+      184 +            "/api/v1/vod-interactions/characters/\(contentId)"
+          +,                                                             
+      185 +            as: [ContentCharacter].self                       
+      186 +        )                                                     
+      187 +    }                                                         
+      188 +                                                              
+      189      func startInteractionSession(
+      190          profileId: String,
+      191          avatarId: String,
+     ...
+      205          )
+      206      }
+      207  
+      208 +    func startFreeInteractionSession(                         
+      209 +        profileId: String,                                    
+      210 +        avatarId: String,                                     
+      211 +        contentId: String,                                    
+      212 +        characterName: String,                                
+      213 +        currentTimestamp: Double                              
+      214 +    ) async throws -> VODSessionResponse {                    
+      215 +        let body: [String: Any] = [                           
+      216 +            "profile_id": profileId,                          
+      217 +            "avatar_id": avatarId,                            
+      218 +            "content_id": contentId,                          
+      219 +            "character_name": characterName,                  
+      220 +            "current_timestamp": currentTimestamp,            
+      221 +        ]                                                     
+      222 +        return try await client.postJSON(                     
+      223 +            "/api/v1/vod-interactions/sessions/start-free",   
+      224 +            body: body,                                       
+      225 +            as: VODSessionResponse.self                       
+      226 +        )                                                     
+      227 +    }                                                         
+      228 +                                                              
+      229      func sendInteractionMessage(
+      230          sessionId: String,
+      231          message: String
+
+⏺ Step 4: iOS - AvatarDialogueViewModel
+
+⏺ Write(BayitPlusApp/ViewModels/AvatarDialogueViewModel.swift)
+  ⎿  Wrote 132 lines to
+     BayitPlusApp/ViewModels/AvatarDialogueViewModel.swift
+       1 #if os(iOS)
+       2 import BayitCore
+       3 import Foundation
+       4 import Observation
+       5 
+       6 /// Manages free-form dialogue sessions between user avatar and 
+         movie characters.
+       7 /// Loads available characters, starts sessions, and sends messa
+         ges.
+       8 @MainActor
+       9 @Observable
+      10 final class AvatarDialogueViewModel {
+     … +122 lines (ctrl+o to expand)
+
+⏺ Step 6: iOS - CharacterSelectionSheet
+
+⏺ Write(BayitPlusApp/Views/Player/CharacterSelectionSheet.swift)
+  ⎿  Wrote 86 lines to
+     BayitPlusApp/Views/Player/CharacterSelectionSheet.swift
+       1 #if os(iOS)
+       2 import BayitDesignSystem
+       3 import BayitLocalization
+       4 import SwiftUI
+       5 
+       6 /// Bottom sheet presenting available characters for free-form d
+         ialogue.
+       7 /// Displays character images in circular thumbnails with names.
+       8 struct CharacterSelectionSheet: View {
+       9 
+      10     @Environment(LocalizationManager.self) private var localizat
+         ion
+     … +76 lines (ctrl+o to expand)
+
+⏺ Step 7: iOS - AvatarDialogueOverlayView
+
+⏺ Write(BayitPlusApp/Views/Player/AvatarDialogueOverlayView.swift)
+  ⎿  Wrote 254 lines to
+     BayitPlusApp/Views/Player/AvatarDialogueOverlayView.swift
+       1 #if os(iOS)
+       2 import AVFoundation
+       3 import AVKit
+       4 import BayitDesignSystem
+       5 import BayitLocalization
+       6 import SwiftUI
+       7 
+       8 /// Compact floating overlay for free-form character dialogue.
+       9 /// Shows avatar circle (left) and character circle (right) with
+      10 /// a text input below. Character video plays inline when respon
+         se arrives.
+     … +244 lines (ctrl+o to expand)
+
+⏺ Step 8: iOS - PlayerView integration
+
+  Add dialogue state to PlayerView:
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 5 lines
+      52      @State var showNoAvatarWarning = false
+      53      @State var volumeBeforeDuck: Float?
+      54  
+      55 +    // Free-form dialogue state                                
+      56 +    @State var dialogueVM: AvatarDialogueViewModel?            
+      57 +    @State var showCharacterSheet = false                      
+      58 +    @State var showDialogueOverlay = false                     
+      59 +                                                               
+      60      // Catch-up ViewModel (shared across overlays)
+      61      @State var catchUpVM: CatchUpViewModel?
+      62  
+
+⏺ Add "Talk" button in the topBar (after quality button, before
+  liveFeatureButtons):
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 20 lines
+      599                  .accessibilityLabel("Quality settings")
+      600              }
+      601  
+      602 +            // Free-form dialogue button (VOD only, when inter
+          +actions enabled)                                              
+      603 +            if !mediaContentType.isLive, interactionVM != nil 
+          +{                                                             
+      604 +                Button {                                      
+      605 +                    Task { await openCharacterSheet() }       
+      606 +                } label: {                                    
+      607 +                    Image(systemName: showDialogueOverlay     
+      608 +                        ? "bubble.left.and.bubble.right.fill" 
+      609 +                        : "bubble.left.and.bubble.right")     
+      610 +                        .font(.system(size: 18))              
+      611 +                        .foregroundStyle(                     
+      612 +                            showDialogueOverlay               
+      613 +                                ? DesignTokens.Primary.p400 : 
+          +.white                                                        
+      614 +                        )                                     
+      615 +                        .frame(width: 44, height: 44)         
+      616 +                }                                             
+      617 +                .accessibilityLabel(                          
+      618 +                    localization.t("player.dialogue.talkToChar
+          +acter")                                                       
+      619 +                )                                             
+      620 +            }                                                 
+      621 +                                                              
+      622              liveFeatureButtons
+      623  
+      624              recordingButton
+
+⏺ Add the dialogue overlay in the ZStack (after interactiveMomentOverlay):
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 3 lines
+      231              // VOD interactive moment overlay
+      232              interactiveMomentOverlay
+      233  
+      234 +            // Free-form dialogue overlay                     
+      235 +            dialogueOverlay                                   
+      236 +                                                              
+      237              // Controls overlay
+      238              if showControls && !viewModel.isLoading && viewMod
+           el.errorMessage == nil {
+      239                  controlsOverlay
+
+⏺ Add character sheet and cleanup:
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 4 lines
+      297              catchUpVM?.reset()
+      298              catchUpVM = nil
+      299              interactionVM = nil
+      300 +            if dialogueVM?.isActive == true {                 
+      301 +                Task { await dialogueVM?.endSession() }       
+      302 +            }                                                 
+      303 +            dialogueVM = nil                                  
+      304          }
+      305          .onChange(of: viewModel.player.currentTime) { _, newTi
+           me in
+      306              updateNowPlaying()
+
+⏺ Add the sheet for character selection:
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 14 lines
+      334              .presentationDetents([.large])
+      335              .presentationDragIndicator(.visible)
+      336          }
+      337 +        .sheet(isPresented: $showCharacterSheet) {            
+      338 +            if let vm = dialogueVM {                          
+      339 +                CharacterSelectionSheet(                      
+      340 +                    characters: vm.availableCharacters,       
+      341 +                    onSelect: { character in                  
+      342 +                        showCharacterSheet = false            
+      343 +                        Task { await startDialogue(with: chara
+          +cter) }                                                       
+      344 +                    },                                        
+      345 +                    onDismiss: { showCharacterSheet = false } 
+      346 +                )                                             
+      347 +                .presentationDetents([.medium])               
+      348 +                .presentationDragIndicator(.visible)          
+      349 +            }                                                 
+      350 +        }                                                     
+      351          .sheet(isPresented: $showDubbingControls) {
+      352              if let vm = liveDubbingVM {
+      353                  LiveDubbingControlsView(viewModel: vm, channel
+           Id: contentId)
+
+⏺ Now add the PlayerView+VODInteractions extension with dialogue methods:
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView+VODInteractions.swift)
+  ⎿  Added 51 lines
+       75          }
+       76      }
+       77  
+       78 +    // MARK: - Free-Form Dialogue Overlay                     
+       79 +                                                              
+       80 +    @ViewBuilder                                              
+       81 +    var dialogueOverlay: some View {                          
+       82 +        if showDialogueOverlay,                               
+       83 +           let vm = dialogueVM,                               
+       84 +           let character = vm.selectedCharacter,              
+       85 +           let imgUrl = avatarImageUrl {                      
+       86 +            AvatarDialogueOverlayView(                        
+       87 +                avatarImageUrl: imgUrl,                       
+       88 +                character: character,                         
+       89 +                viewModel: vm,                                
+       90 +                onDismiss: {                                  
+       91 +                    Task { await dismissDialogue() }          
+       92 +                }                                             
+       93 +            )                                                 
+       94 +        }                                                     
+       95 +    }                                                         
+       96 +                                                              
+       97 +    func openCharacterSheet() async {                         
+       98 +        if dialogueVM == nil {                                
+       99 +            dialogueVM = AvatarDialogueViewModel(             
+      100 +                repository: repositories.avatarMeshRepository 
+      101 +            )                                                 
+      102 +        }                                                     
+      103 +        await dialogueVM?.loadCharacters(contentId: contentId)
+      104 +        showCharacterSheet = true                             
+      105 +    }                                                         
+      106 +                                                              
+      107 +    func startDialogue(with character: ContentCharacter) async
+          + {                                                            
+      108 +        guard let profileId = viewModel.activeProfileId,      
+      109 +              let avatarId = viewModel.activeAvatarId else {  
+      110 +            return                                            
+      111 +        }                                                     
+      112 +        await dialogueVM?.startSession(                       
+      113 +            contentId: contentId,                             
+      114 +            profileId: profileId,                             
+      115 +            avatarId: avatarId,                               
+      116 +            character: character,                             
+      117 +            currentTimestamp: viewModel.player.currentTime    
+      118 +        )                                                     
+      119 +        duckVolume()                                          
+      120 +        showDialogueOverlay = true                            
+      121 +    }                                                         
+      122 +                                                              
+      123 +    func dismissDialogue() async {                            
+      124 +        restoreVolume()                                       
+      125 +        showDialogueOverlay = false                           
+      126 +        await dialogueVM?.endSession()                        
+      127 +    }                                                         
+      128 +                                                              
+      129      // MARK: - Initialization
+      130  
+      131      func initializeInteractiveMoments() async {
+
+⏺ Now I need to check if MediaPlayerViewModel exposes activeProfileId and
+  activeAvatarId. Let me check.
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ I need to use authManager instead. Let me check how profiles and avatars are
+  accessed:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ I see the issue -- I used viewModel.activeProfileId which doesn't exist. Let
+  me look at how the existing Phase 1 code accesses profile/avatar IDs. The
+  initializeInteractiveMoments function in PlayerView+VODInteractions.swift
+  doesn't use profile/avatar IDs directly -- it only fetches the avatar status.
+  The actual session start uses the startInteractionSession method on the
+  repository. Let me check how the existing code handles this:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ I see -- the viewModel.activeProfileId and viewModel.activeAvatarId references
+   are from my own just-added code. I need to use authManager and the avatar
+  status that was already fetched during initialization. Let me look at how the
+  existing session start works in the Phase 1 code more carefully. The
+  initializeInteractiveMoments already fetches the avatar status -- the avatar
+  status has an avatarId. And the profile could come from authManager. Let me
+  fix this:
+
+⏺ Searched for 4 patterns (ctrl+o to expand)
+
+⏺ Now I understand -- authManager.activeProfile?.id gives the profile ID. For
+  the avatar ID, the existing code uses fetchAvatarStatus(avatarId: "any") which
+   returns the avatar status with an avatarId field. Let me fix the
+  startDialogue method:
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView+VODInteractions.swift)
+  ⎿  Added 10 lines, removed 2 lines
+      105      }
+      106  
+      107      func startDialogue(with character: ContentCharacter) async
+            {
+      108 -        guard let profileId = viewModel.activeProfileId,      
+      109 -              let avatarId = viewModel.activeAvatarId else {  
+      108 +        guard let profileId = authManager.activeProfile?.id el
+          +se { return }                                                 
+      109 +                                                              
+      110 +        // Resolve avatar ID from existing avatar status      
+      111 +        let avatarId: String                                  
+      112 +        do {                                                  
+      113 +            let status = try await repositories.avatarMeshRepo
+          +sitory                                                        
+      114 +                .fetchAvatarStatus(avatarId: "any")           
+      115 +            avatarId = status.avatarId                        
+      116 +        } catch {                                             
+      117              return
+      118          }
+      119 +                                                              
+      120          await dialogueVM?.startSession(
+      121              contentId: contentId,
+      122              profileId: profileId,
+
+⏺ Step 9: tvOS - TVAvatarDialogueOverlayView
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(BayitPlusTVApp/Views/Player/TVAvatarDialogueOverlayView.swift)
+  ⎿  Wrote 255 lines to
+     BayitPlusTVApp/Views/Player/TVAvatarDialogueOverlayView.swift
+       1 #if os(tvOS)
+       2 import AVFoundation
+       3 import AVKit
+       4 import BayitDesignSystem
+       5 import BayitLocalization
+       6 import SwiftUI
+       7 
+       8 /// tvOS adaptation of the free-form character dialogue overlay.
+       9 /// Larger circles (160pt) for 10-foot UI. Focusable text field 
+         and buttons.
+      10 struct TVAvatarDialogueOverlayView: View {
+     … +245 lines (ctrl+o to expand)
+
+⏺ Now I need to create a tvOS-specific AvatarDialogueViewModel (since the tvOS
+  target has its own copy):
+
+⏺ Write(BayitPlusTVApp/ViewModels/AvatarDialogueViewModel.swift)
+  ⎿  Wrote 132 lines to
+     BayitPlusTVApp/ViewModels/AvatarDialogueViewModel.swift
+       1 #if os(tvOS)
+       2 import BayitCore
+       3 import Foundation
+       4 import Observation
+       5 
+       6 /// Manages free-form dialogue sessions between user avatar and 
+         movie characters.
+       7 /// tvOS variant using TVRepositoryProvider's AvatarRepository.
+       8 @MainActor
+       9 @Observable
+      10 final class AvatarDialogueViewModel {
+     … +122 lines (ctrl+o to expand)
+
+⏺ Now integrate the dialogue into TVPlayerView. First check the tvOS repository
+  provider:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Good. Now modify TVPlayerView to add dialogue state and the Talk button:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 5 lines
+      40      @State private var avatarImageUrl: String?
+      41      @State private var showNoAvatarWarning = false
+      42  
+      43 +    // Free-form dialogue state                                
+      44 +    @State private var dialogueVM: AvatarDialogueViewModel?    
+      45 +    @State private var showCharacterSelection = false          
+      46 +    @State private var showDialogueOverlay = false             
+      47 +                                                               
+      48      // MARK: - Panel Visibility
+      49  
+      50      @State private var showSubtitleLanguagePicker = false
+
+⏺ Add the dialogue overlay in the ZStack (after interactiveMomentOverlay):
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 1 line
+      112                  translationOverlay
+      113                  catchUpAutoPromptOverlay
+      114                  interactiveMomentOverlay
+      115 +                dialogueOverlay                               
+      116  
+      117                  // Transparent playback controls overlay (cent
+           er)
+      118                  if !isLive {
+
+⏺ Add "Talk" button to the VOD control bar:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 22 lines, removed 2 lines
+      158                                  onLanguageTap: { showAILanguag
+           ePicker = true }
+      159                              )
+      160                          } else {
+      161 +                            HStack(spacing: TVDesignTokens.Spa
+          +cing.lg) {                                                    
+      162                              TVPlayerControlBar(
+      163                                  contentType: contentType,
+      164                                  onSubtitles: { showSubtitleLan
+           guagePicker = true },
+     ...
+      170                                  isSplitEnabled: splitModeEnabl
+           ed,
+      171                                  splitLanguages: splitLanguages
+      172                              )
+      172 -                            .focused($controlBarFocused)      
+      173 -                            .defaultFocus($controlBarFocused, 
+          -true)                                                         
+      173 +                                                              
+      174 +                            if interactionVM != nil {         
+      175 +                                Button {                      
+      176 +                                    Task { await openCharacter
+          +Selection() }                                                 
+      177 +                                } label: {                    
+      178 +                                    Image(systemName: showDial
+          +ogueOverlay                                                   
+      179 +                                        ? "bubble.left.and.bub
+          +ble.right.fill"                                               
+      180 +                                        : "bubble.left.and.bub
+          +ble.right")                                                   
+      181 +                                        .font(.system(size: TV
+          +DesignTokens.FontSize.lg))                                    
+      182 +                                        .foregroundStyle(     
+      183 +                                            showDialogueOverla
+          +y                                                             
+      184 +                                                ? DesignTokens
+          +.Primary.p400 : .white                                        
+      185 +                                        )                     
+      186 +                                }                             
+      187 +                                .accessibilityLabel(          
+      188 +                                    localization.t("player.dia
+          +logue.talkToCharacter")                                       
+      189 +                                )                             
+      190 +                            }                                 
+      191                          }
+      192 +                        .focused($controlBarFocused)          
+      193 +                        .defaultFocus($controlBarFocused, true
+          +)                                                             
+      194 +                        }                                     
+      195                      }
+      196                      .padding(.bottom, 40)
+      197                  }
+
+⏺ Add the dialogue overlay ViewBuilder, character selection, and cleanup methods
+   to TVPlayerView:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 58 lines
+      619          }
+      620      }
+      621  
+      622 +    // MARK: - Free-Form Dialogue Overlay                     
+      623 +                                                              
+      624 +    @ViewBuilder                                              
+      625 +    private var dialogueOverlay: some View {                  
+      626 +        if showDialogueOverlay,                               
+      627 +           let vm = dialogueVM,                               
+      628 +           let character = vm.selectedCharacter,              
+      629 +           let imgUrl = avatarImageUrl {                      
+      630 +            TVAvatarDialogueOverlayView(                      
+      631 +                avatarImageUrl: imgUrl,                       
+      632 +                character: character,                         
+      633 +                viewModel: vm,                                
+      634 +                onDismiss: {                                  
+      635 +                    Task { await dismissDialogue() }          
+      636 +                }                                             
+      637 +            )                                                 
+      638 +        }                                                     
+      639 +    }                                                         
+      640 +                                                              
+      641 +    private func openCharacterSelection() async {             
+      642 +        if dialogueVM == nil {                                
+      643 +            dialogueVM = AvatarDialogueViewModel(             
+      644 +                repository: repos.avatarMeshRepository        
+      645 +            )                                                 
+      646 +        }                                                     
+      647 +        await dialogueVM?.loadCharacters(contentId: contentId)
+      648 +        showCharacterSelection = true                         
+      649 +    }                                                         
+      650 +                                                              
+      651 +    private func startDialogue(with character: ContentCharacte
+          +r) async {                                                    
+      652 +        guard let profileId = authManager.activeProfile?.id el
+          +se { return }                                                 
+      653 +                                                              
+      654 +        let avatarId: String                                  
+      655 +        do {                                                  
+      656 +            let status = try await repos.avatarMeshRepository 
+      657 +                .fetchAvatarStatus(avatarId: "any")           
+      658 +            avatarId = status.avatarId                        
+      659 +        } catch {                                             
+      660 +            return                                            
+      661 +        }                                                     
+      662 +                                                              
+      663 +        await dialogueVM?.startSession(                       
+      664 +            contentId: contentId,                             
+      665 +            profileId: profileId,                             
+      666 +            avatarId: avatarId,                               
+      667 +            character: character,                             
+      668 +            currentTimestamp: mediaPlayer.currentTime         
+      669 +        )                                                     
+      670 +        duckVolume()                                          
+      671 +        showDialogueOverlay = true                            
+      672 +    }                                                         
+      673 +                                                              
+      674 +    private func dismissDialogue() async {                    
+      675 +        restoreVolume()                                       
+      676 +        showDialogueOverlay = false                           
+      677 +        await dialogueVM?.endSession()                        
+      678 +    }                                                         
+      679 +                                                              
+      680      // MARK: - Interactive Moment Overlay
+      681  
+      682      @ViewBuilder
+
+⏺ Add character selection fullScreenCover and cleanup to TVPlayerView:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 10 lines
+      356                  onDismiss: { showCompanion = false }
+      357              )
+      358          }
+      359 +        .fullScreenCover(isPresented: $showCharacterSelection)
+          + {                                                            
+      360 +            TVCharacterSelectionView(                         
+      361 +                characters: dialogueVM?.availableCharacters ??
+          + [],                                                          
+      362 +                onSelect: { character in                      
+      363 +                    showCharacterSelection = false            
+      364 +                    Task { await startDialogue(with: character
+          +) }                                                           
+      365 +                },                                            
+      366 +                onDismiss: { showCharacterSelection = false } 
+      367 +            )                                                 
+      368 +        }                                                     
+      369          .fullScreenCover(isPresented: $showQuiz) {
+      370              TVQuizOverlayView(
+      371                  contentId: contentId,
+
+⏺ Update cleanup:
+
+⏺ Update(BayitPlusTVApp/Views/Player/TVPlayerView.swift)
+  ⎿  Added 4 lines
+      1164          catchUpVM?.reset()
+      1165          catchUpVM = nil
+      1166          interactionVM = nil
+      1167 +        if dialogueVM?.isActive == true {                    
+      1168 +            Task { await dialogueVM?.endSession() }          
+      1169 +        }                                                    
+      1170 +        dialogueVM = nil                                     
+      1171      }
+      1172  
+      1173      // MARK: - Progress Tracking
+
+⏺ Now create the TVCharacterSelectionView (tvOS version of character selection):
+
+⏺ Write(BayitPlusTVApp/Views/Player/TVCharacterSelectionView.swift)
+  ⎿  Wrote 90 lines to
+     BayitPlusTVApp/Views/Player/TVCharacterSelectionView.swift
+       1 #if os(tvOS)
+       2 import BayitDesignSystem
+       3 import BayitLocalization
+       4 import SwiftUI
+       5 
+       6 /// tvOS full-screen character selection for free-form dialogue.
+       7 /// Focusable character cards with Siri Remote navigation.
+       8 struct TVCharacterSelectionView: View {
+       9 
+      10     @Environment(LocalizationManager.self) private var localizat
+         ion
+     … +80 lines (ctrl+o to expand)
+
+⏺ Now let me work on the Web implementation (Steps 10-13). Let me also check the
+   vod-interactions directory:
+
+⏺ Searched for 3 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me look at the web logger utility:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Good. Now let me create the web components and hook modifications.
+
+  Step 10: Web - AvatarDialoguePanel
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/v
+       od-interactions/AvatarDialoguePanel.tsx)
+  ⎿  Wrote 323 lines to
+     ../web/src/components/vod-interactions/AvatarDialoguePanel.tsx
+       1 /**
+       2  * AvatarDialoguePanel
+       3  *
+       4  * Compact floating panel for free-form character dialogue durin
+         g VOD playback.
+       5  * Bottom-right positioning, ~380px wide. Shows dual circles (av
+         atar + character),
+       6  * scrollable conversation, input field, and character video pla
+         yback.
+       7  * Ducks video volume on mount, restores on unmount.
+       8  */
+       9 
+      10 import { useState, useRef, useEffect, useCallback } from 'react'
+     … +313 lines (ctrl+o to expand)
+
+⏺ Step 11: Web - CharacterSelectBar
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/v
+       od-interactions/CharacterSelectBar.tsx)
+  ⎿  Wrote 148 lines to
+     ../web/src/components/vod-interactions/CharacterSelectBar.tsx
+       1 /**
+       2  * CharacterSelectBar
+       3  *
+       4  * Horizontal bar of character avatar circles for free-form dial
+         ogue selection.
+       5  * Shows when user clicks "Talk to Character" in player controls
+         .
+       6  */
+       7 
+       8 import { View, Text, Pressable, ScrollView, StyleSheet } from 'r
+         eact-native'
+       9 import { X } from 'lucide-react'
+      10 import { useTranslation } from 'react-i18next'
+     … +138 lines (ctrl+o to expand)
+
+⏺ Update the index:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        vod-interactions/index.ts)
+  ⎿  Added 2 lines
+      5  export { InteractiveMomentPrompt } from './InteractiveMomentProm
+         pt';
+      6  export { InteractionOverlay } from './InteractionOverlay';
+      7  export { VODInteractionPlayer } from './VODInteractionPlayer';
+      8 +export { AvatarDialoguePanel } from './AvatarDialoguePanel';    
+      9 +export { CharacterSelectBar } from './CharacterSelectBar';      
+
+⏺ Step 12: Web - useVODInteraction additions
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useVO
+        DInteraction.ts)
+  ⎿  Added 8 lines
+      24    interaction_prompt: string;
+      25  }
+      26  
+      27 +export interface ContentCharacter {                            
+      28 +  name: string;                                                
+      29 +  voice_id: string;                                            
+      30 +  frame_url: string;                                           
+      31 +  description: string;                                         
+      32 +  movie_context: string;                                       
+      33 +}                                                              
+      34 +                                                               
+      35  export interface DialogueExchange {
+      36    speaker: 'user' | 'character';
+      37    message_text: string;
+
+⏺ Now add the free-form dialogue state and methods:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useVO
+        DInteraction.ts)
+  ⎿  Added 6 lines
+      71    const [isSending, setIsSending] = useState(false);
+      72    const [lastCheckedTime, setLastCheckedTime] = useState(0);
+      73  
+      74 +  // Free-form dialogue state                                  
+      75 +  const [availableCharacters, setAvailableCharacters] = useStat
+         +e<ContentCharacter[]>([]);                                     
+      76 +  const [selectedCharacter, setSelectedCharacter] = useState<Co
+         +ntentCharacter | null>(null);                                  
+      77 +  const [freeDialogueExchanges, setFreeDialogueExchanges] = use
+         +State<DialogueExchange[]>([]);                                 
+      78 +  const [isFreeDialogueActive, setIsFreeDialogueActive] = useSt
+         +ate(false);                                                    
+      79 +                                                               
+      80    useEffect(() => {
+      81      loadInteractiveMoments();
+      82    }, [contentId]);
+
+⏺ Now add the free-form dialogue methods before the return statement:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useVO
+        DInteraction.ts)
+  ⎿  Added 82 lines
+      190      onResumeRequested();
+      191    };
+      192  
+      193 +  // MARK: - Free-Form Dialogue                               
+      194 +                                                              
+      195 +  const loadCharacters = async () => {                        
+      196 +    try {                                                     
+      197 +      const characters = await api.get(`/vod-interactions/char
+          +acters/${contentId}`);                                        
+      198 +      setAvailableCharacters(Array.isArray(characters) ? chara
+          +cters : []);                                                  
+      199 +    } catch (error) {                                         
+      200 +      log.error('Failed to load characters:', error);         
+      201 +      setAvailableCharacters([]);                             
+      202 +    }                                                         
+      203 +  };                                                          
+      204 +                                                              
+      205 +  const startFreeInteraction = async (character: ContentCharac
+          +ter) => {                                                     
+      206 +    setSelectedCharacter(character);                          
+      207 +    setFreeDialogueExchanges([]);                             
+      208 +                                                              
+      209 +    try {                                                     
+      210 +      const session = await api.post('/vod-interactions/sessio
+          +ns/start-free', {                                             
+      211 +        content_id: contentId,                                
+      212 +        profile_id: profileId,                                
+      213 +        avatar_id: avatarId,                                  
+      214 +        character_name: character.name,                       
+      215 +        current_timestamp: currentTime,                       
+      216 +      });                                                     
+      217 +                                                              
+      218 +      setActiveSession(session);                              
+      219 +      setIsFreeDialogueActive(true);                          
+      220 +    } catch (error) {                                         
+      221 +      log.error('Failed to start free interaction:', error);  
+      222 +      setSelectedCharacter(null);                             
+      223 +    }                                                         
+      224 +  };                                                          
+      225 +                                                              
+      226 +  const sendFreeMessage = async (messageText: string) => {    
+      227 +    if (!activeSession) return;                               
+      228 +                                                              
+      229 +    setIsSending(true);                                       
+      230 +                                                              
+      231 +    try {                                                     
+      232 +      const response = await api.post(                        
+      233 +        `/vod-interactions/sessions/${activeSession.id}/messag
+          +e`,                                                           
+      234 +        { message: messageText }                              
+      235 +      );                                                      
+      236 +                                                              
+      237 +      const userExchange: DialogueExchange = {                
+      238 +        speaker: 'user',                                      
+      239 +        message_text: messageText,                            
+      240 +        timestamp: new Date().toISOString(),                  
+      241 +      };                                                      
+      242 +      const characterExchange: DialogueExchange = {           
+      243 +        speaker: 'character',                                 
+      244 +        message_text: response.response_text,                 
+      245 +        audio_url: response.audio_url,                        
+      246 +        animated_video_url: response.animated_video_url,      
+      247 +        timestamp: new Date().toISOString(),                  
+      248 +      };                                                      
+      249 +                                                              
+      250 +      setFreeDialogueExchanges((prev) => [...prev, userExchang
+          +e, characterExchange]);                                       
+      251 +      return response;                                        
+      252 +    } catch (error) {                                         
+      253 +      log.error('Failed to send free message:', error);       
+      254 +      throw error;                                            
+      255 +    } finally {                                               
+      256 +      setIsSending(false);                                    
+      257 +    }                                                         
+      258 +  };                                                          
+      259 +                                                              
+      260 +  const endFreeInteraction = async () => {                    
+      261 +    if (activeSession) {                                      
+      262 +      try {                                                   
+      263 +        await api.post(`/vod-interactions/sessions/${activeSes
+          +sion.id}/complete`);                                          
+      264 +      } catch (error) {                                       
+      265 +        log.error('Failed to complete free interaction:', erro
+          +r);                                                           
+      266 +      }                                                       
+      267 +    }                                                         
+      268 +                                                              
+      269 +    setActiveSession(null);                                   
+      270 +    setSelectedCharacter(null);                               
+      271 +    setFreeDialogueExchanges([]);                             
+      272 +    setIsFreeDialogueActive(false);                           
+      273 +  };                                                          
+      274 +                                                              
+      275    const generateReel = async (sessionIds: string[]) => {
+      276      try {
+      277        const reel = await api.post('/vod-interactions/reels/gen
+           erate', {
+
+⏺ Update the return object:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useVO
+        DInteraction.ts)
+  ⎿  Added 10 lines, removed 1 line
+      296      sendMessage,
+      297      completeInteraction,
+      298      skipInteraction,
+      299 -    generateReel                                              
+      299 +    generateReel,                                             
+      300 +    // Free-form dialogue                                     
+      301 +    availableCharacters,                                      
+      302 +    selectedCharacter,                                        
+      303 +    freeDialogueExchanges,                                    
+      304 +    isFreeDialogueActive,                                     
+      305 +    loadCharacters,                                           
+      306 +    startFreeInteraction,                                     
+      307 +    sendFreeMessage,                                          
+      308 +    endFreeInteraction,                                       
+      309    };
+      310  };
+
+⏺ Step 16: Localization
+
+  Now let me add the localization keys. I need to read the locale files to find
+  the right spot.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I need to find the exact closing of the player section to add the dialogue
+  keys. Let me add them after the playNow key:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i
+        18n/locales/en.json)
+  ⎿  Added 10 lines, removed 1 line
+      5440      "related": "Related",
+      5441      "nextEpisode": "Next Episode",
+      5442      "playingIn": "Playing in {{seconds}}s...",
+      5443 -    "playNow": "Play Now"                                    
+      5443 +    "playNow": "Play Now",                                   
+      5444 +    "dialogue": {                                            
+      5445 +      "talkToCharacter": "Talk to Character",                
+      5446 +      "selectCharacter": "Select Character",                 
+      5447 +      "typeQuestion": "Type your question...",               
+      5448 +      "sending": "Sending...",                               
+      5449 +      "characterSpeaking": "Character is speaking...",       
+      5450 +      "endDialogue": "End Dialogue",                         
+      5451 +      "noCharactersAvailable": "No characters available for d
+           +ialogue"                                                     
+      5452 +    }                                                        
+      5453    },
+      5454    "podcast": {
+      5455      "selectLanguage": "Select Language",
+
+⏺ Now the Hebrew locale:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i
+        18n/locales/he.json)
+  ⎿  Added 10 lines, removed 1 line
+      5455      "related": "Related",
+      5456      "nextEpisode": "הפרק הבא",
+      5457      "playingIn": "מתנגן בעוד {{seconds}} שניות...",
+      5458 -    "playNow": "נגן עכשיו"                                   
+      5458 +    "playNow": "נגן עכשיו",                                  
+      5459 +    "dialogue": {                                            
+      5460 +      "talkToCharacter": "דבר עם דמות",                      
+      5461 +      "selectCharacter": "בחר דמות",                         
+      5462 +      "typeQuestion": "הקלד את השאלה שלך...",                
+      5463 +      "sending": "שולח...",                                  
+      5464 +      "characterSpeaking": "הדמות מדברת...",                 
+      5465 +      "endDialogue": "סיים שיחה",                            
+      5466 +      "noCharactersAvailable": "אין דמויות זמינות לשיחה"     
+      5467 +    }                                                        
+      5468    },
+      5469    "listen": {
+      5470      "title": "האזנה"
+
+⏺ Now Spanish:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/packages/ui/bayit-i
+        18n/locales/es.json)
+  ⎿  Added 10 lines, removed 1 line
+      5278      "related": "Related",
+      5279      "nextEpisode": "Siguiente episodio",
+      5280      "playingIn": "Reproduciendo en {{seconds}}s...",
+      5281 -    "playNow": "Reproducir ahora"                            
+      5281 +    "playNow": "Reproducir ahora",                           
+      5282 +    "dialogue": {                                            
+      5283 +      "talkToCharacter": "Hablar con personaje",             
+      5284 +      "selectCharacter": "Seleccionar personaje",            
+      5285 +      "typeQuestion": "Escribe tu pregunta...",              
+      5286 +      "sending": "Enviando...",                              
+      5287 +      "characterSpeaking": "El personaje esta hablando...",  
+      5288 +      "endDialogue": "Terminar dialogo",                     
+      5289 +      "noCharactersAvailable": "No hay personajes disponibles
+           + para dialogo"                                               
+      5290 +    }                                                        
+      5291    },
+      5292    "listen": {
+      5293      "title": "Escuchar"
+
+⏺ Also update the iOS-specific locale files:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ The iOS locale files have a flat structure under player.*. Let me find the
+  exact player section:
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ That's in a different section. Let me find the matching player section end:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I can add the dialogue keys right before the closing of the player section:
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/en.json)
+  ⎿  Added 9 lines
+      6274        "skip": "Skip",
+      6275        "continue": "Continue Watching",
+      6276        "thinking": "{{character}} is thinking..."
+      6277 +    },                                                       
+      6278 +    "dialogue": {                                            
+      6279 +      "talkToCharacter": "Talk to Character",                
+      6280 +      "selectCharacter": "Select Character",                 
+      6281 +      "typeQuestion": "Type your question...",               
+      6282 +      "sending": "Sending...",                               
+      6283 +      "characterSpeaking": "Character is speaking...",       
+      6284 +      "endDialogue": "End Dialogue",                         
+      6285 +      "noCharactersAvailable": "No characters available for d
+           +ialogue"                                                     
+      6286      }
+      6287    },
+      6288    "playlist": {
+
+⏺ Now update the Hebrew iOS locale:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/he.json)
+  ⎿  File must be read first
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/he.json)
+  ⎿  Added 9 lines
+      6338        "skip": "דלג",
+      6339        "continue": "המשך לצפות",
+      6340        "thinking": "{{character}} חושב..."
+      6341 +    },                                                       
+      6342 +    "dialogue": {                                            
+      6343 +      "talkToCharacter": "דבר עם דמות",                      
+      6344 +      "selectCharacter": "בחר דמות",                         
+      6345 +      "typeQuestion": "הקלד את השאלה שלך...",                
+      6346 +      "sending": "שולח...",                                  
+      6347 +      "characterSpeaking": "הדמות מדברת...",                 
+      6348 +      "endDialogue": "סיים שיחה",                            
+      6349 +      "noCharactersAvailable": "אין דמויות זמינות לשיחה"     
+      6350      }
+      6351    },
+      6352    "playlist": {
+
+⏺ Now Spanish iOS locale:
+
+⏺ Searched for 3 patterns (ctrl+o to expand)
+
+⏺ The Spanish locale might not have the player.interactive section. Let me check
+   if it has a player section that ends with a closing bracket:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/es.json)
+  ⎿  Added 10 lines, removed 1 line
+      6358      "scenes": "Escenas",
+      6359      "translate": "Traducir",
+      6360      "split": "Dividir",
+      6361 -    "dubbing": "Doblaje"                                     
+      6361 +    "dubbing": "Doblaje",                                    
+      6362 +    "dialogue": {                                            
+      6363 +      "talkToCharacter": "Hablar con personaje",             
+      6364 +      "selectCharacter": "Seleccionar personaje",            
+      6365 +      "typeQuestion": "Escribe tu pregunta...",              
+      6366 +      "sending": "Enviando...",                              
+      6367 +      "characterSpeaking": "El personaje esta hablando...",  
+      6368 +      "endDialogue": "Terminar dialogo",                     
+      6369 +      "noCharactersAvailable": "No hay personajes disponibles
+           + para dialogo"                                               
+      6370 +    }                                                        
+      6371    },
+      6372    "playlist": {
+      6373      "title": "Mi Lista",
+
+⏺ Now let me add the new files to the Xcode project. Let me use the existing
+  script:
+
+⏺ Bash(ls /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-ap
+      p/scripts/add-files-to-xcode.py 2>/dev/null && echo "exists" || echo "not
+      found")
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-ap
+     p/scripts/add-files-to-xcode.py
+     exists
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The Xcode project file management is complex. Let me verify the new files will
+   be picked up by checking if there's a wildcard or if I need to manually add
+  them. Let me check how Xcode finds files:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The files are not yet in the project. Let me add them via the
+  scripts/add-missing-files.sh approach, or better yet use the pbxproj directly.
+   Let me check how similar files are added:
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ I need to add the new files to the Xcode project. This requires adding entries
+   to several sections of the pbxproj. Let me use a Task agent to handle the
+  Xcode project file updates in the background while I verify the main code
+  changes:
+
+⏺ Task(Add new Swift files to Xcode project)
+  ⎿  Backgrounded agent (shift+↑ to manage · ctrl+o to expand)
+
+⏺ While that runs, let me verify the backend files are correct by checking them:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good. Now let me verify the interaction_service.py is well-formed:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I notice a small issue in process_user_message -- I'm calling Content.get
+  twice (line 223-224 and line 227). Let me fix this:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/vod_interaction/interaction_service.py)
+  ⎿  Added 2 lines, removed 3 lines
+      220  
+      221              # Resolve scene context, character metadata, and f
+           rame URL.
+      222              # Free-form sessions may not have a curated moment
+           .
+      223 +            content = await Content.get(session.content_id)   
+      224              moment = self._find_moment(
+      224 -                (await Content.get(session.content_id)).intera
+          -ctive_moments,                                                
+      225 -                session.moment_timestamp                      
+      225 +                content.interactive_moments, session.moment_ti
+          +mestamp                                                       
+      226              )
+      227 -            content = await Content.get(session.content_id)   
+      227              character = self._find_character(
+      228                  content.interactive_characters, session.charac
+           ter_name
+      229              )
+
+⏺ Now let me verify the routes file is complete:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ All backend files look correct. Let me now check the status of the Xcode
+  project file update:
+
+⏺ Task Output(non-blocking) a947e77
+  ⎿  Task is still running…
+
+⏺ The background agent is working on the Xcode project. Let me continue with the
+   remaining files. The plan mentions Android (Steps 14-15) but let me check if
+  there's an android-app directory:
+
+⏺ Bash(ls -d /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/and
+      roid-app 2>/dev/null && echo "exists" || echo "not found")
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+     d-app
+     exists
+
+⏺ Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ The Android app exists with a full feature-player module. Let me implement the
+   Android files (Steps 14-15). Let me create them:
+
+⏺ Task(Create Android dialogue files)
+  ⎿  Backgrounded agent (shift+↑ to manage · ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Brewed for 18m 41s

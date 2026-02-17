@@ -16,13 +16,16 @@ final class SearchViewModel {
     private(set) var hasSearched = false
     private(set) var trendingSearches: [String] = []
     private(set) var recentSearches: [String] = []
+    private(set) var autocompleteSuggestions: [String] = []
 
     private let searchRepository: any SearchRepository
     private let recentSearchesService: RecentSearchesService
     private let featureFlags: FeatureFlags
     private let logger = BayitLogger(category: "SearchViewModel")
     private var searchTask: Task<Void, Never>?
+    private var suggestionTask: Task<Void, Never>?
     private let debounceInterval: Duration = .milliseconds(300)
+    private let suggestionDebounceInterval: Duration = .milliseconds(150)
 
     init(
         searchRepository: any SearchRepository,
@@ -54,6 +57,20 @@ final class SearchViewModel {
     @MainActor
     func onQueryChanged() {
         searchTask?.cancel()
+        suggestionTask?.cancel()
+
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Fetch autocomplete suggestions with shorter debounce
+        if trimmed.count >= 2 {
+            suggestionTask = Task {
+                try? await Task.sleep(for: suggestionDebounceInterval)
+                guard !Task.isCancelled else { return }
+                await fetchSuggestions(for: trimmed)
+            }
+        } else {
+            autocompleteSuggestions = []
+        }
 
         searchTask = Task {
             try? await Task.sleep(for: debounceInterval)
@@ -74,11 +91,13 @@ final class SearchViewModel {
         }
     }
 
-    /// Select a trending or recent search query.
+    /// Select a trending, recent, or autocomplete search query.
     @MainActor
     func selectSuggestion(_ suggestion: String) {
         query = suggestion
+        autocompleteSuggestions = []
         searchTask?.cancel()
+        suggestionTask?.cancel()
         searchTask = Task {
             await performSearch()
         }
@@ -94,14 +113,30 @@ final class SearchViewModel {
     @MainActor
     func clearSearch() {
         searchTask?.cancel()
+        suggestionTask?.cancel()
         query = ""
         results = []
         totalResults = 0
         hasSearched = false
         error = nil
+        autocompleteSuggestions = []
     }
 
     // MARK: - Private
+
+    @MainActor
+    private func fetchSuggestions(for query: String) async {
+        do {
+            let suggestions = try await searchRepository.fetchSuggestions(query: query, limit: 5)
+            if !Task.isCancelled {
+                autocompleteSuggestions = suggestions
+            }
+        } catch {
+            if !Task.isCancelled {
+                autocompleteSuggestions = []
+            }
+        }
+    }
 
     @MainActor
     private func performSearch() async {

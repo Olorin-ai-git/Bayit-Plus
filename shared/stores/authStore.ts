@@ -486,18 +486,29 @@ export const useAuthStore = create<AuthState>()(
 
           state.isHydrated = true;
 
-          // Validate token on rehydration - if expired, log out immediately
-          // RS256 tokens from auth.olorin.ai cannot be refreshed client-side;
-          // users must re-authenticate when tokens expire.
+          // Validate token on rehydration
           if (state.token && state.isAuthenticated) {
             const payload = decodeToken(state.token);
             if (payload?.exp) {
               const isExpired = payload.exp * 1000 < Date.now();
               if (isExpired) {
-                state.token = null;
-                state.refreshToken = null;
-                state.isAuthenticated = false;
-                state.user = null;
+                // Token expired - attempt refresh before logging out
+                if (state.refreshToken) {
+                  // Defer refresh to next tick so store is fully hydrated
+                  setTimeout(() => {
+                    useAuthStore.getState().refreshAccessToken();
+                  }, 0);
+                } else {
+                  state.token = null;
+                  state.refreshToken = null;
+                  state.isAuthenticated = false;
+                  state.user = null;
+                }
+              } else {
+                // Token still valid - schedule proactive refresh
+                setTimeout(() => {
+                  useAuthStore.getState().scheduleTokenRefresh();
+                }, 0);
               }
             }
           }

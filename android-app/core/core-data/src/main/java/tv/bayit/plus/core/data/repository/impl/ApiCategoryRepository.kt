@@ -59,15 +59,15 @@ class ApiCategoryRepository(
 
 private interface CategoryService {
 
-    @GET("api/v1/categories")
+    @GET("api/v1/content/categories")
     suspend fun getCategories(): CategoriesListResponse
 
-    @GET("api/v1/categories/{parentId}/subcategories")
+    @GET("api/v1/content/section/{parentId}/subcategories")
     suspend fun getSubcategories(
         @Path("parentId") parentId: String,
     ): SubcategoriesResponse
 
-    @GET("api/v1/categories/{categoryId}/content")
+    @GET("api/v1/content/category/{categoryId}")
     suspend fun getCategoryContent(
         @Path("categoryId") categoryId: String,
         @Query("page") page: Int,

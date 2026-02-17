@@ -75,6 +75,65 @@ extension PlayerView {
         }
     }
 
+    // MARK: - Free-Form Dialogue Overlay
+
+    @ViewBuilder
+    var dialogueOverlay: some View {
+        if showDialogueOverlay,
+           let vm = dialogueVM,
+           let character = vm.selectedCharacter,
+           let imgUrl = avatarImageUrl {
+            AvatarDialogueOverlayView(
+                avatarImageUrl: imgUrl,
+                character: character,
+                viewModel: vm,
+                onDismiss: {
+                    Task { await dismissDialogue() }
+                }
+            )
+        }
+    }
+
+    func openCharacterSheet() async {
+        if dialogueVM == nil {
+            dialogueVM = AvatarDialogueViewModel(
+                repository: repositories.avatarMeshRepository
+            )
+        }
+        await dialogueVM?.loadCharacters(contentId: contentId)
+        showCharacterSheet = true
+    }
+
+    func startDialogue(with character: ContentCharacter) async {
+        guard let profileId = authManager.activeProfile?.id else { return }
+
+        // Resolve avatar ID from existing avatar status
+        let avatarId: String
+        do {
+            let status = try await repositories.avatarMeshRepository
+                .fetchAvatarStatus(avatarId: "any")
+            avatarId = status.avatarId
+        } catch {
+            return
+        }
+
+        await dialogueVM?.startSession(
+            contentId: contentId,
+            profileId: profileId,
+            avatarId: avatarId,
+            character: character,
+            currentTimestamp: viewModel.player.currentTime
+        )
+        duckVolume()
+        showDialogueOverlay = true
+    }
+
+    func dismissDialogue() async {
+        restoreVolume()
+        showDialogueOverlay = false
+        await dialogueVM?.endSession()
+    }
+
     // MARK: - Initialization
 
     func initializeInteractiveMoments() async {

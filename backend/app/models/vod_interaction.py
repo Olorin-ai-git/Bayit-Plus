@@ -107,6 +107,15 @@ class AnimatedResponse(BaseModel):
     duration: float
 
 
+class ContentCharacter(BaseModel):
+    """Character available for dialogue in a content item."""
+    name: str = Field(..., description="Character display name")
+    voice_id: str = Field(..., description="ElevenLabs voice ID")
+    frame_url: str = Field(..., description="GCS URL of character still frame")
+    description: str = Field(..., description="Character personality description")
+    movie_context: str = Field(..., description="Movie/scene context for AI prompt")
+
+
 class CharacterResponse(BaseModel):
     """Response from character AI service"""
     text: str

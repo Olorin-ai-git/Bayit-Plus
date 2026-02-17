@@ -4961,7 +4961,8 @@
     "empty": "No favorites yet",
     "emptyHint": "Add items to your favorites",
     "loading": "Loading favorites...",
-    "remove": "Remove from Favorites"
+    "remove": "Remove from Favorites",
+    "add": "Add to Favorites"
   },
   "flows": {
     "title": "Flows",
@@ -6273,6 +6274,15 @@
       "skip": "Skip",
       "continue": "Continue Watching",
       "thinking": "{{character}} is thinking..."
+    },
+    "dialogue": {
+      "talkToCharacter": "Talk to Character",
+      "selectCharacter": "Select Character",
+      "typeQuestion": "Type your question...",
+      "sending": "Sending...",
+      "characterSpeaking": "Character is speaking...",
+      "endDialogue": "End Dialogue",
+      "noCharactersAvailable": "No characters available for dialogue"
     }
   },
   "playlist": {
@@ -8227,6 +8237,7 @@
       "kids": "Kids"
     },
     "allCategories": "All",
+    "allGenres": "All Genres",
     "emptyTitle": "No Content Available",
     "emptyDescription": "Try selecting another category",
     "allContent": "All Content",
@@ -8247,7 +8258,10 @@
       "detail": "Collection Details",
       "aiRecommendation": "AI Recommendation",
       "watchNow": "Watch Now"
-    }
+    },
+    "trending": "Trending Now",
+    "aiCollections": "AI Collections",
+    "hebrewDub": "HEB"
   },
   "voice": {
     "listening": "Listening...",

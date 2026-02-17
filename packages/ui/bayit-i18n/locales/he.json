@@ -557,6 +557,7 @@
         "subtitles": "כתוביות"
       },
       "showOnlyWithSubtitles": "הצג רק עם כתוביות",
+      "semanticSearch": "חיפוש חכם AI",
       "showOnlyBetaContent": "הצג תוכן בטא בלבד",
       "beta": "בטא",
       "markAsBeta": "סמן כבטא",
@@ -5451,7 +5452,19 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "nextEpisode": "הפרק הבא",
+    "playingIn": "מתנגן בעוד {{seconds}} שניות...",
+    "playNow": "נגן עכשיו",
+    "dialogue": {
+      "talkToCharacter": "דבר עם דמות",
+      "selectCharacter": "בחר דמות",
+      "typeQuestion": "הקלד את השאלה שלך...",
+      "sending": "שולח...",
+      "characterSpeaking": "הדמות מדברת...",
+      "endDialogue": "סיים שיחה",
+      "noCharactersAvailable": "אין דמויות זמינות לשיחה"
+    }
   },
   "listen": {
     "title": "האזנה"

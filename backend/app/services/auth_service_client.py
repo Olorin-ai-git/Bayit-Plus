@@ -307,6 +307,53 @@ class AuthServiceClient:
                 logger.error("auth_service_request_error", error=str(e))
                 raise ValueError(f"Failed to connect to auth service: {str(e)}")
 
+    async def refresh_token(
+        self,
+        refresh_token: str,
+    ) -> dict:
+        """
+        Refresh an access token via auth service.
+
+        Args:
+            refresh_token: The refresh token from a previous login
+
+        Returns:
+            Dict with access_token, refresh_token, token_type
+
+        Raises:
+            ValueError: If refresh fails
+        """
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    f"{self.base_url}/api/v1/token/refresh",
+                    json={
+                        "refresh_token": refresh_token,
+                        "tenant_id": self.tenant_id,
+                    },
+                    headers=self._get_auth_headers(),
+                    timeout=self.timeout,
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info("auth_service_token_refresh_success")
+                    return data
+                else:
+                    error_detail = self._extract_error(
+                        response, "Token refresh failed"
+                    )
+                    logger.warning(
+                        "auth_service_token_refresh_failed",
+                        status_code=response.status_code,
+                        detail=error_detail,
+                    )
+                    raise ValueError(error_detail)
+
+            except httpx.RequestError as e:
+                logger.error("auth_service_request_error", error=str(e))
+                raise ValueError(f"Failed to connect to auth service: {str(e)}")
+
     async def create_user_in_bayit_db(
         self,
         auth_service_user_id: str,

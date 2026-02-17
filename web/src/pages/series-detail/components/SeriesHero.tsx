@@ -113,9 +113,9 @@ export function SeriesHero({
 
         <View style={[styles.metadataRow, { flexDirection }]}>
           {series.year && <Text style={styles.metadataText}>{series.year}</Text>}
-          {series.rating && (
+          {(series.age_rating || series.rating) && (
             <GlassBadge variant="default" size="sm">
-              {series.rating}
+              {series.age_rating || series.rating}
             </GlassBadge>
           )}
           {(series.total_seasons > 0 || (series.seasons && series.seasons.length > 0)) && (

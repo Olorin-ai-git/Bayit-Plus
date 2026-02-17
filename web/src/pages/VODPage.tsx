@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { CollectionPromoBanner } from '@/components/banners/CollectionPromoBanner';
 import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
-import api from '@/services/api';
+import api, { contentService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import {
   GlassCard,
@@ -80,6 +80,11 @@ export default function VODPage() {
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [continueWatching, setContinueWatching] = useState<any[]>([]);
+  const [trendingContent, setTrendingContent] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [useSemanticSearch, setUseSemanticSearch] = useState(false);
 
   // Use responsive hook for column count
   const numColumns = responsive.getColumns();
@@ -104,6 +109,25 @@ export default function VODPage() {
     };
   }, [searchQuery]);
 
+  // Fetch search suggestions
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const data = await contentService.getSearchSuggestions(searchQuery.trim());
+        setSuggestions(data?.suggestions || []);
+        setShowSuggestions(true);
+      } catch {
+        setSuggestions([]);
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   // Filter content by subtitle filter
   const filteredContent = useMemo(() => {
     if (!showOnlyWithSubtitles) return allContent;
@@ -125,7 +149,7 @@ export default function VODPage() {
   // Load content when filters change
   useEffect(() => {
     loadContent();
-  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
+  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch, useSemanticSearch]);
 
   // Load featured collections for rotating banner
   useEffect(() => {
@@ -137,11 +161,61 @@ export default function VODPage() {
         }
       } catch (error) {
         logger.error('Failed to load collection recommendations', 'VODPage', error);
-        // Silently fail - banner is optional
       }
     };
     loadFeaturedCollections();
   }, []);
+
+  // Load continue watching and trending on mount
+  useEffect(() => {
+    const loadContinueWatching = async () => {
+      try {
+        const data = await api.get('/history/continue');
+        if (data?.items && data.items.length > 0) {
+          setContinueWatching(data.items);
+        }
+      } catch (error) {
+        logger.debug('Continue watching not available', 'VODPage');
+      }
+    };
+
+    const loadTrending = async () => {
+      try {
+        const data = await api.get('/trending/recommendations', { params: { limit: 10 } });
+        if (data?.recommendations && data.recommendations.length > 0) {
+          setTrendingContent(data.recommendations);
+        } else if (data?.items && data.items.length > 0) {
+          setTrendingContent(data.items);
+        } else if (Array.isArray(data) && data.length > 0) {
+          setTrendingContent(data);
+        }
+      } catch (error) {
+        logger.debug('Trending content not available', 'VODPage');
+      }
+    };
+
+    loadContinueWatching();
+    loadTrending();
+  }, []);
+
+  // Auto-refresh content when tab regains focus (replaces pull-to-refresh)
+  useEffect(() => {
+    const lastRefreshRef = { current: Date.now() };
+    const MIN_REFRESH_INTERVAL = 60000; // 1 minute minimum between refreshes
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const elapsed = Date.now() - lastRefreshRef.current;
+        if (elapsed > MIN_REFRESH_INTERVAL) {
+          lastRefreshRef.current = Date.now();
+          loadContent();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
 
   const loadCategories = async () => {
     try {
@@ -166,6 +240,17 @@ export default function VODPage() {
 
       let items: ContentItem[] = [];
       let total = 0;
+
+      // Semantic/LLM search when enabled and query exists
+      if (useSemanticSearch && searchParam) {
+        const data = await contentService.searchLLM({ query: searchParam, limit: itemsPerPage });
+        items = data?.results || data?.items || [];
+        total = items.length;
+        setAllContent(items);
+        setTotalItems(total);
+        setLoading(false);
+        return;
+      }
 
       // Special handling for collections filter
       if (contentTypeFilter === 'collections') {
@@ -366,9 +451,29 @@ export default function VODPage() {
                 key="vod-search-input"
                 placeholder={t('vod.searchPlaceholder')}
                 value={searchQuery}
-                onChangeText={setSearchQuery}
+                onChangeText={(text: string) => {
+                  setSearchQuery(text);
+                  if (text.trim().length < 2) setShowSuggestions(false);
+                }}
                 containerStyle={styles.searchInput}
               />
+              {showSuggestions && suggestions.length > 0 && (
+                <GlassCard style={styles.suggestionsDropdown}>
+                  {suggestions.map((suggestion, index) => (
+                    <Pressable
+                      key={`${suggestion}-${index}`}
+                      onPress={() => {
+                        setSearchQuery(suggestion);
+                        setShowSuggestions(false);
+                      }}
+                      style={styles.suggestionItem}
+                    >
+                      <Search size={14} color={colors.textMuted} />
+                      <Text style={styles.suggestionText}>{suggestion}</Text>
+                    </Pressable>
+                  ))}
+                </GlassCard>
+              )}
             </View>
 
             {/* Voice Search Button */}
@@ -420,6 +525,11 @@ export default function VODPage() {
                   checked={showOnlyWithSubtitles}
                   onChange={setShowOnlyWithSubtitles}
                 />
+                <GlassCheckbox
+                  label={t('vod.semanticSearch', 'AI Smart Search')}
+                  checked={useSemanticSearch}
+                  onChange={setUseSemanticSearch}
+                />
               </View>
             </GlassModal>
           ) : (
@@ -436,6 +546,11 @@ export default function VODPage() {
                     label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
                     checked={showOnlyWithSubtitles}
                     onChange={setShowOnlyWithSubtitles}
+                  />
+                  <GlassCheckbox
+                    label={t('vod.semanticSearch', 'AI Smart Search')}
+                    checked={useSemanticSearch}
+                    onChange={setUseSemanticSearch}
                   />
                 </View>
               </GlassCard>
@@ -529,6 +644,38 @@ export default function VODPage() {
           </ScrollView>
         )}
 
+        {/* Continue Watching Row */}
+        {continueWatching.length > 0 && contentTypeFilter === 'all' && !debouncedSearch && (
+          <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { textAlign }]}>
+              {t('home.continueWatching', 'Continue Watching')}
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
+              {continueWatching.map((item: any) => (
+                <View key={item.id} style={styles.horizontalCard}>
+                  <ContentCard content={item} showProgress />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Trending Row */}
+        {trendingContent.length > 0 && contentTypeFilter === 'all' && !debouncedSearch && (
+          <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { textAlign }]}>
+              {t('home.trending', 'Trending Now')}
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalRow}>
+              {trendingContent.map((item: any) => (
+                <View key={item.id} style={styles.horizontalCard}>
+                  <ContentCard content={item} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         {/* Content Grid */}
         {loading ? (
           <View style={styles.grid}>
@@ -613,9 +760,31 @@ const styles = StyleSheet.create({
   },
   searchInputWrapper: {
     flex: 1,
+    position: 'relative',
+    zIndex: 20,
   },
   searchInput: {
     marginBottom: 0,
+  },
+  suggestionsDropdown: {
+    position: 'absolute',
+    top: 52,
+    left: 0,
+    right: 0,
+    zIndex: 30,
+    padding: spacing.xs,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: colors.text,
   },
   iconButton: {
     width: 48,
@@ -691,6 +860,23 @@ const styles = StyleSheet.create({
   subcategoriesContent: {
     gap: spacing.sm,
     paddingBottom: spacing.sm,
+  },
+  sectionContainer: {
+    marginBottom: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  horizontalRow: {
+    gap: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  horizontalCard: {
+    width: 180,
+    flexShrink: 0,
   },
   grid: {
     flexDirection: 'row',

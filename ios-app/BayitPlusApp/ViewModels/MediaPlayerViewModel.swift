@@ -35,6 +35,7 @@ final class MediaPlayerViewModel {
     private let widgetBridge: MediaPlayerWidgetBridge
     #endif
     private let repository: any MediaRepository
+    let preferences = PlayerPreferencesService()
 
     // MARK: - Init
 
@@ -142,6 +143,18 @@ final class MediaPlayerViewModel {
             // Auto-play after loading
             player.play()
 
+            // Restore saved playback rate
+            let savedRate = preferences.preferredPlaybackRate
+            if savedRate != 1.0 {
+                player.rate = savedRate
+            }
+
+            // Apply preferred quality if different from resolved
+            let savedQuality = preferences.preferredQuality
+            if savedQuality != "auto", savedQuality != currentQuality {
+                Task { await switchQuality(savedQuality) }
+            }
+
             // Immediately sync playback to widgets
             #if os(iOS)
             await syncToWidgets()
@@ -178,12 +191,13 @@ final class MediaPlayerViewModel {
 
     // MARK: - Quality
 
-    /// Switch stream quality.
+    /// Switch stream quality and persist preference.
     @MainActor
     func switchQuality(_ quality: String) async {
         guard quality != currentQuality else { return }
         let currentPos = player.currentTime
         currentQuality = quality
+        preferences.preferredQuality = quality
 
         do {
             let stream = try await repository.fetchStream(

@@ -204,18 +204,38 @@ api.interceptors.response.use(
       return api(config)
     }
 
-    // Handle 401 errors - token is invalid, log out and redirect to login
-    // RS256 tokens from auth.olorin.ai cannot be refreshed client-side;
-    // users must re-authenticate to get new tokens.
+    // Handle 401 errors - attempt token refresh before logging out
     if (error.response?.status === 401) {
       const requestUrl = config?.url || ''
+      const authState = useAuthStore.getState()
+
+      // Skip refresh attempt for auth endpoints to avoid infinite loops
+      const isAuthEndpoint = requestUrl.includes('/auth/')
+
+      if (!isAuthEndpoint && authState.refreshToken && !config._retryAfterRefresh) {
+        apiLogger.info('401 Unauthorized - attempting token refresh', {
+          correlationId,
+          url: requestUrl,
+        })
+
+        const refreshed = await authState.refreshAccessToken()
+        if (refreshed) {
+          // Retry the original request with the new token
+          const newToken = useAuthStore.getState().token
+          if (newToken) {
+            config.headers.Authorization = `Bearer ${newToken}`
+            config._retryAfterRefresh = true
+            return api(config)
+          }
+        }
+      }
 
       apiLogger.warn('401 Unauthorized - logging out', {
         correlationId,
         url: requestUrl,
       })
 
-      useAuthStore.getState().logout()
+      authState.logout()
 
       // Only redirect if not already on login/auth pages
       const currentPath = window.location.pathname
@@ -245,6 +265,7 @@ const apiContentService = {
   getStreamUrl: (contentId) => api.get(`/content/${contentId}/stream`),
   search: (params) => api.get('/search/unified', { params }),
   searchLLM: (data) => api.post('/search/llm', data),
+  getSearchSuggestions: (query, limit = 5) => api.get('/search/suggestions', { params: { query, limit } }),
   syncContent: () => api.post('/podcasts/refresh'),
 
   // Series endpoints

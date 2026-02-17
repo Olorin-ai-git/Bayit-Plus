@@ -15,6 +15,12 @@ export { useLiveDubbing } from './useLiveDubbing';
 export type { UseLiveDubbingOptions, UseLiveDubbingState, UseLiveDubbingReturn } from './useLiveDubbing';
 export { useYouTubeThumbnail } from './useYouTubeThumbnail';
 
+// VOD content hooks
+export { useVod, useVodDetail, useVodCategory } from './useVod';
+export { useFavorites } from './useFavorites';
+export { useWatchHistory, useProgressReporter } from './useWatchHistory';
+export { useCollections, useCollectionDetail } from './useCollections';
+
 // Voice-first conversational interface hooks (Phases 4-10)
 // These hooks depend on react-router-dom and are in a separate export for TV apps
 // Import from '@bayit/shared-hooks/voice' for web-only usage

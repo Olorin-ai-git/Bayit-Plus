@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import List, Optional
 from app.models.vod_interaction import (
     VODInteractionSession,
+    ContentCharacter,
     DialogueExchange,
     InteractiveMoment
 )
@@ -106,6 +107,84 @@ class VODInteractionService:
             )
             raise
 
+    async def start_free_interaction_session(
+        self,
+        user_id: str,
+        profile_id: str,
+        avatar_id: str,
+        content_id: str,
+        character_name: str,
+        current_timestamp: float
+    ) -> VODInteractionSession:
+        """
+        Start a free-form dialogue session with a character at any timestamp.
+        Does not require a curated InteractiveMoment.
+
+        Args:
+            user_id: User ID
+            profile_id: Child profile ID
+            avatar_id: Avatar mesh ID
+            content_id: Content ID
+            character_name: Character to converse with
+            current_timestamp: Current playback position
+
+        Returns:
+            Created session
+        """
+        try:
+            content = await Content.get(content_id)
+            if not content:
+                raise ValueError(f"Content not found: {content_id}")
+
+            avatar = await ChildAvatar.get(avatar_id)
+            if not avatar or avatar.profile_id != profile_id:
+                raise ValueError(f"Invalid avatar: {avatar_id}")
+
+            # Find character in interactive_characters list
+            character = self._find_character(
+                content.interactive_characters, character_name
+            )
+
+            # Build scene context from content metadata
+            scene_context = (
+                f"{content.title}: {content.description or ''}"
+            )
+
+            session = VODInteractionSession(
+                user_id=user_id,
+                profile_id=profile_id,
+                avatar_id=avatar_id,
+                content_id=content_id,
+                moment_timestamp=current_timestamp,
+                character_name=character_name,
+                status="active"
+            )
+            await session.save()
+
+            logger.info(
+                "Free interaction session started",
+                extra={
+                    "session_id": str(session.id),
+                    "character_name": character_name,
+                    "user_id": user_id,
+                    "has_character_data": character is not None
+                }
+            )
+
+            return session
+
+        except Exception as e:
+            logger.error(
+                "Failed to start free interaction session",
+                extra={
+                    "user_id": user_id,
+                    "content_id": content_id,
+                    "character_name": character_name,
+                    "error": str(e)
+                }
+            )
+            raise
+
     async def process_user_message(
         self,
         session_id: str,
@@ -139,21 +218,47 @@ class VODInteractionService:
             )
             session.dialogue_exchanges.append(user_exchange)
 
-            moment = await self._get_moment(session.content_id, session.moment_timestamp)
+            # Resolve scene context, character metadata, and frame URL.
+            # Free-form sessions may not have a curated moment.
+            content = await Content.get(session.content_id)
+            moment = self._find_moment(
+                content.interactive_moments, session.moment_timestamp
+            )
+            character = self._find_character(
+                content.interactive_characters, session.character_name
+            )
+
+            if moment:
+                scene_context = moment.scene_context
+                frame_url = moment.character_frame_url
+            elif character:
+                scene_context = character.movie_context
+                frame_url = character.frame_url
+            else:
+                scene_context = f"{content.title}: {content.description or ''}"
+                frame_url = None
+
+            character_description = character.description if character else ""
+            movie_context = character.movie_context if character else ""
 
             character_response = await character_ai_service.generate_response(
                 character_name=session.character_name,
-                scene_context=moment.scene_context,
+                scene_context=scene_context,
                 user_message=user_message,
-                conversation_history=session.dialogue_exchanges
+                conversation_history=session.dialogue_exchanges,
+                character_description=character_description,
+                movie_context=movie_context
             )
 
-            voice_id = self._get_character_voice_id(session.character_name)
+            voice_id = (
+                character.voice_id if character
+                else self._get_character_voice_id(session.character_name)
+            )
 
             animated = await character_animator_service.animate_character_response(
                 character_name=session.character_name,
                 dialogue_text=character_response.text,
-                character_frame_url=moment.character_frame_url,
+                character_frame_url=frame_url,
                 voice_id=voice_id
             )
 
@@ -247,6 +352,17 @@ class VODInteractionService:
         if not moment:
             raise ValueError(f"Interactive moment not found at {timestamp}")
         return moment
+
+    def _find_character(
+        self,
+        characters: List[ContentCharacter],
+        character_name: str
+    ) -> Optional[ContentCharacter]:
+        """Find a character by name in the interactive_characters list"""
+        for character in characters:
+            if character.name == character_name:
+                return character
+        return None
 
     def _get_character_voice_id(self, character_name: str) -> str:
         """Get ElevenLabs voice ID for character"""

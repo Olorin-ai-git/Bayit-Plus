@@ -29,6 +29,7 @@
       "searchPlaceholder": "Buscar contenido...",
       "emptyMessage": "No se encontró contenido",
       "showOnlyWithSubtitles": "Solo con subtítulos",
+      "semanticSearch": "Busqueda inteligente AI",
       "showOnlyBetaContent": "Mostrar solo contenido Beta",
       "beta": "Beta",
       "markAsBeta": "Marcar como Beta",
@@ -5274,7 +5275,19 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "nextEpisode": "Siguiente episodio",
+    "playingIn": "Reproduciendo en {{seconds}}s...",
+    "playNow": "Reproducir ahora",
+    "dialogue": {
+      "talkToCharacter": "Hablar con personaje",
+      "selectCharacter": "Seleccionar personaje",
+      "typeQuestion": "Escribe tu pregunta...",
+      "sending": "Enviando...",
+      "characterSpeaking": "El personaje esta hablando...",
+      "endDialogue": "Terminar dialogo",
+      "noCharactersAvailable": "No hay personajes disponibles para dialogo"
+    }
   },
   "listen": {
     "title": "Escuchar"

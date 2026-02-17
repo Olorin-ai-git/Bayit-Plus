@@ -40,6 +40,11 @@ struct TVPlayerView: View {
     @State private var avatarImageUrl: String?
     @State private var showNoAvatarWarning = false
 
+    // Free-form dialogue state
+    @State private var dialogueVM: AvatarDialogueViewModel?
+    @State private var showCharacterSelection = false
+    @State private var showDialogueOverlay = false
+
     // MARK: - Panel Visibility
 
     @State private var showSubtitleLanguagePicker = false
@@ -107,6 +112,7 @@ struct TVPlayerView: View {
                 translationOverlay
                 catchUpAutoPromptOverlay
                 interactiveMomentOverlay
+                dialogueOverlay
 
                 // Transparent playback controls overlay (center)
                 if !isLive {
@@ -152,6 +158,7 @@ struct TVPlayerView: View {
                                 onLanguageTap: { showAILanguagePicker = true }
                             )
                         } else {
+                            HStack(spacing: TVDesignTokens.Spacing.lg) {
                             TVPlayerControlBar(
                                 contentType: contentType,
                                 onSubtitles: { showSubtitleLanguagePicker = true },
@@ -163,8 +170,27 @@ struct TVPlayerView: View {
                                 isSplitEnabled: splitModeEnabled,
                                 splitLanguages: splitLanguages
                             )
-                            .focused($controlBarFocused)
-                            .defaultFocus($controlBarFocused, true)
+
+                            if interactionVM != nil {
+                                Button {
+                                    Task { await openCharacterSelection() }
+                                } label: {
+                                    Image(systemName: showDialogueOverlay
+                                        ? "bubble.left.and.bubble.right.fill"
+                                        : "bubble.left.and.bubble.right")
+                                        .font(.system(size: TVDesignTokens.FontSize.lg))
+                                        .foregroundStyle(
+                                            showDialogueOverlay
+                                                ? DesignTokens.Primary.p400 : .white
+                                        )
+                                }
+                                .accessibilityLabel(
+                                    localization.t("player.dialogue.talkToCharacter")
+                                )
+                            }
+                        }
+                        .focused($controlBarFocused)
+                        .defaultFocus($controlBarFocused, true)
                         }
                     }
                     .padding(.bottom, 40)
@@ -328,6 +354,16 @@ struct TVPlayerView: View {
             TVAICompanionView(
                 contentId: contentId,
                 onDismiss: { showCompanion = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showCharacterSelection) {
+            TVCharacterSelectionView(
+                characters: dialogueVM?.availableCharacters ?? [],
+                onSelect: { character in
+                    showCharacterSelection = false
+                    Task { await startDialogue(with: character) }
+                },
+                onDismiss: { showCharacterSelection = false }
             )
         }
         .fullScreenCover(isPresented: $showQuiz) {
@@ -591,6 +627,64 @@ struct TVPlayerView: View {
                 }
             )
         }
+    }
+
+    // MARK: - Free-Form Dialogue Overlay
+
+    @ViewBuilder
+    private var dialogueOverlay: some View {
+        if showDialogueOverlay,
+           let vm = dialogueVM,
+           let character = vm.selectedCharacter,
+           let imgUrl = avatarImageUrl {
+            TVAvatarDialogueOverlayView(
+                avatarImageUrl: imgUrl,
+                character: character,
+                viewModel: vm,
+                onDismiss: {
+                    Task { await dismissDialogue() }
+                }
+            )
+        }
+    }
+
+    private func openCharacterSelection() async {
+        if dialogueVM == nil {
+            dialogueVM = AvatarDialogueViewModel(
+                repository: repos.avatarMeshRepository
+            )
+        }
+        await dialogueVM?.loadCharacters(contentId: contentId)
+        showCharacterSelection = true
+    }
+
+    private func startDialogue(with character: ContentCharacter) async {
+        guard let profileId = authManager.activeProfile?.id else { return }
+
+        let avatarId: String
+        do {
+            let status = try await repos.avatarMeshRepository
+                .fetchAvatarStatus(avatarId: "any")
+            avatarId = status.avatarId
+        } catch {
+            return
+        }
+
+        await dialogueVM?.startSession(
+            contentId: contentId,
+            profileId: profileId,
+            avatarId: avatarId,
+            character: character,
+            currentTimestamp: mediaPlayer.currentTime
+        )
+        duckVolume()
+        showDialogueOverlay = true
+    }
+
+    private func dismissDialogue() async {
+        restoreVolume()
+        showDialogueOverlay = false
+        await dialogueVM?.endSession()
     }
 
     // MARK: - Interactive Moment Overlay
@@ -1070,6 +1164,10 @@ struct TVPlayerView: View {
         catchUpVM?.reset()
         catchUpVM = nil
         interactionVM = nil
+        if dialogueVM?.isActive == true {
+            Task { await dialogueVM?.endSession() }
+        }
+        dialogueVM = nil
     }
 
     // MARK: - Progress Tracking

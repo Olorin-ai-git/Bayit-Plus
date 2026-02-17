@@ -9,3 +9,8 @@ export * from './triviaStore';
 export * from './quizStore';
 export * from './rewardStore';
 export * from './playlistPlaybackStore';
+export * from './vodStore';
+export * from './playerStore';
+export * from './watchHistoryStore';
+export * from './favoritesStore';
+export * from './collectionsStore';

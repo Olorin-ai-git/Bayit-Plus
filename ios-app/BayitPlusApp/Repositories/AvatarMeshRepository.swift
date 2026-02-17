@@ -38,11 +38,23 @@ protocol AvatarRepository: Sendable {
         contentId: String
     ) async throws -> [InteractiveMoment]
 
+    func fetchInteractiveCharacters(
+        contentId: String
+    ) async throws -> [ContentCharacter]
+
     func startInteractionSession(
         profileId: String,
         avatarId: String,
         contentId: String,
         timestamp: Double
+    ) async throws -> VODSessionResponse
+
+    func startFreeInteractionSession(
+        profileId: String,
+        avatarId: String,
+        contentId: String,
+        characterName: String,
+        currentTimestamp: Double
     ) async throws -> VODSessionResponse
 
     func sendInteractionMessage(
@@ -165,6 +177,15 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
         )
     }
 
+    func fetchInteractiveCharacters(
+        contentId: String
+    ) async throws -> [ContentCharacter] {
+        return try await client.get(
+            "/api/v1/vod-interactions/characters/\(contentId)",
+            as: [ContentCharacter].self
+        )
+    }
+
     func startInteractionSession(
         profileId: String,
         avatarId: String,
@@ -179,6 +200,27 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
         ]
         return try await client.postJSON(
             "/api/v1/vod-interactions/sessions/start",
+            body: body,
+            as: VODSessionResponse.self
+        )
+    }
+
+    func startFreeInteractionSession(
+        profileId: String,
+        avatarId: String,
+        contentId: String,
+        characterName: String,
+        currentTimestamp: Double
+    ) async throws -> VODSessionResponse {
+        let body: [String: Any] = [
+            "profile_id": profileId,
+            "avatar_id": avatarId,
+            "content_id": contentId,
+            "character_name": characterName,
+            "current_timestamp": currentTimestamp,
+        ]
+        return try await client.postJSON(
+            "/api/v1/vod-interactions/sessions/start-free",
             body: body,
             as: VODSessionResponse.self
         )

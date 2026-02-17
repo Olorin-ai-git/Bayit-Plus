@@ -71,6 +71,27 @@ struct SessionStatusPayload: Codable {
     let exchangesCount: Int
 }
 
+// MARK: - Free-Form Dialogue
+
+struct ContentCharacter: Codable, Identifiable {
+    let name: String
+    let voiceId: String
+    let frameUrl: String
+    let description: String
+    let movieContext: String
+
+    var id: String { name }
+}
+
+struct DialogueExchange: Codable, Identifiable {
+    let speaker: String
+    let messageText: String
+    let audioUrl: String?
+    let animatedVideoUrl: String?
+
+    var id: String { "\(speaker)-\(messageText.prefix(20))" }
+}
+
 // MARK: - Magic Mirror
 
 struct MagicMirrorGreeting: Codable {

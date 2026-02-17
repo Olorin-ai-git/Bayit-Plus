@@ -5018,7 +5018,8 @@
     "empty": "Sin favoritos aún",
     "emptyHint": "Añade elementos a tus favoritos",
     "loading": "Cargando favoritos...",
-    "remove": "Eliminar de favoritos"
+    "remove": "Eliminar de favoritos",
+    "add": "Agregar a favoritos"
   },
   "flows": {
     "title": "Flujos",
@@ -6357,7 +6358,16 @@
     "scenes": "Escenas",
     "translate": "Traducir",
     "split": "Dividir",
-    "dubbing": "Doblaje"
+    "dubbing": "Doblaje",
+    "dialogue": {
+      "talkToCharacter": "Hablar con personaje",
+      "selectCharacter": "Seleccionar personaje",
+      "typeQuestion": "Escribe tu pregunta...",
+      "sending": "Enviando...",
+      "characterSpeaking": "El personaje esta hablando...",
+      "endDialogue": "Terminar dialogo",
+      "noCharactersAvailable": "No hay personajes disponibles para dialogo"
+    }
   },
   "playlist": {
     "title": "Mi Lista",
@@ -8588,6 +8598,7 @@
       "kids": "Niños"
     },
     "allCategories": "Todos",
+    "allGenres": "Todos los generos",
     "emptyTitle": "Sin contenido disponible",
     "emptyDescription": "Intenta seleccionar otra categoría",
     "allContent": "Todo el contenido",
@@ -8608,7 +8619,10 @@
       "detail": "Detalles de colección",
       "aiRecommendation": "Recomendación IA",
       "watchNow": "Ver ahora"
-    }
+    },
+    "trending": "Tendencia ahora",
+    "aiCollections": "Colecciones IA",
+    "hebrewDub": "HEB"
   },
   "voice": {
     "listening": "Escuchando...",

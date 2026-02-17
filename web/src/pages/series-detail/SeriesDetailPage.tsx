@@ -56,6 +56,8 @@ export default function SeriesDetailPage() {
         type: 'series',
         seriesId: series?.id,
         episodeId: episodeToPlay.id,
+        seasonNumber: selectedSeason,
+        episodeNumber: episodeToPlay.episode_number,
         is_kids_content: series?.is_kids_content,
       });
     }
@@ -74,6 +76,8 @@ export default function SeriesDetailPage() {
       type: 'series',
       seriesId: series?.id,
       episodeId: episode.id,
+      seasonNumber: selectedSeason,
+      episodeNumber: episode.episode_number,
       is_kids_content: series?.is_kids_content,
     });
   };

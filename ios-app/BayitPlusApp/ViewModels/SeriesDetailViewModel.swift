@@ -10,15 +10,27 @@ final class SeriesDetailViewModel {
     private(set) var isLoading = false
     private(set) var isLoadingEpisodes = false
     private(set) var error: String?
+    private(set) var episodeProgress: [String: Double] = [:]
+    private(set) var isFavorite = false
+    private(set) var isFavoriteLoading = false
 
     var selectedSeason: Int = 1
 
     private let seriesRepository: any SeriesRepository
+    private let contentRepository: any ContentRepository
+    private let userRepository: any UserRepository
     let seriesId: String
 
-    init(seriesId: String, repository: any SeriesRepository) {
+    init(
+        seriesId: String,
+        repository: any SeriesRepository,
+        contentRepository: any ContentRepository,
+        userRepository: any UserRepository
+    ) {
         self.seriesId = seriesId
         self.seriesRepository = repository
+        self.contentRepository = contentRepository
+        self.userRepository = userRepository
     }
 
     @MainActor
@@ -28,7 +40,12 @@ final class SeriesDetailViewModel {
         error = nil
 
         do {
-            detail = try await seriesRepository.fetchSeriesDetail(id: seriesId)
+            async let detailTask = seriesRepository.fetchSeriesDetail(id: seriesId)
+            async let progressTask = loadWatchProgress()
+            async let favoriteTask = loadFavoriteStatus()
+            detail = try await detailTask
+            await progressTask
+            await favoriteTask
             if let firstSeason = detail?.seasons?.first {
                 selectedSeason = firstSeason.seasonNumber
                 await loadEpisodes(season: firstSeason.seasonNumber)
@@ -60,6 +77,55 @@ final class SeriesDetailViewModel {
         }
 
         isLoadingEpisodes = false
+    }
+
+    /// Returns watch progress (0.0-1.0) for a given episode ID
+    func progress(for episodeId: String) -> Double? {
+        episodeProgress[episodeId]
+    }
+
+    @MainActor
+    private func loadWatchProgress() async {
+        do {
+            let response = try await contentRepository.fetchContinueWatching()
+            var progressMap: [String: Double] = [:]
+            for item in response.items {
+                if let progress = item.progress {
+                    progressMap[item.id] = progress / 100.0
+                }
+            }
+            episodeProgress = progressMap
+        } catch {
+            // Silently fail - progress is optional
+        }
+    }
+
+    @MainActor
+    func toggleFavorite() async {
+        isFavoriteLoading = true
+        let previousState = isFavorite
+        isFavorite.toggle()
+
+        do {
+            let response = try await userRepository.toggleFavorite(
+                request: FavoriteToggleRequest(contentId: seriesId, contentType: "series")
+            )
+            isFavorite = response.isFavorite ?? !previousState
+        } catch {
+            isFavorite = previousState
+        }
+
+        isFavoriteLoading = false
+    }
+
+    @MainActor
+    private func loadFavoriteStatus() async {
+        do {
+            let response = try await userRepository.checkFavorite(contentId: seriesId)
+            isFavorite = response.isFavorite ?? false
+        } catch {
+            // Silently fail - favorites check is non-critical
+        }
     }
 
     var seasons: [SeasonSummary] {

@@ -125,6 +125,13 @@ protocol ContentRepository: Sendable {
 
     /// Fetch content categories for filtering.
     func fetchCategories() async throws -> CategoriesResponse
+
+    /// Fetch trending content recommendations based on Israeli news topics.
+    ///
+    /// - Parameter limit: Maximum number of recommendations (default 10).
+    /// - Returns: Response with recommendations and matched trending topics.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchTrendingRecommendations(limit: Int) async throws -> TrendingRecommendationsResponse
 }
 
 /// Production implementation of `ContentRepository` using `APIClient`.
@@ -297,6 +304,14 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/content/categories",
             as: CategoriesResponse.self
+        )
+    }
+
+    func fetchTrendingRecommendations(limit: Int = 10) async throws -> TrendingRecommendationsResponse {
+        return try await client.get(
+            "/api/v1/trending/recommendations",
+            queryItems: [URLQueryItem(name: "limit", value: String(limit))],
+            as: TrendingRecommendationsResponse.self
         )
     }
 }

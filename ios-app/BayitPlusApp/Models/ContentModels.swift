@@ -92,6 +92,14 @@ struct ContentItem: Decodable, Sendable, Identifiable, Hashable {
     let isCollectionParent: Bool?
     let availableMovies: Int?
     let totalMovies: Int?
+    let contentRating: String?
+    let genre: String?
+    let genreIds: [String]?
+
+    /// Whether this content has a Hebrew dub (inferred from subtitle languages for now)
+    var hasHebrewDub: Bool {
+        availableSubtitleLanguages?.contains("he") == true
+    }
 
     static func == (lhs: ContentItem, rhs: ContentItem) -> Bool {
         lhs.id == rhs.id

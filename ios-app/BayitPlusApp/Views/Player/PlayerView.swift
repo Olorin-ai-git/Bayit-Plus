@@ -52,6 +52,11 @@ struct PlayerView: View {
     @State var showNoAvatarWarning = false
     @State var volumeBeforeDuck: Float?
 
+    // Free-form dialogue state
+    @State var dialogueVM: AvatarDialogueViewModel?
+    @State var showCharacterSheet = false
+    @State var showDialogueOverlay = false
+
     // Catch-up ViewModel (shared across overlays)
     @State var catchUpVM: CatchUpViewModel?
 
@@ -226,6 +231,9 @@ struct PlayerView: View {
             // VOD interactive moment overlay
             interactiveMomentOverlay
 
+            // Free-form dialogue overlay
+            dialogueOverlay
+
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
@@ -289,6 +297,10 @@ struct PlayerView: View {
             catchUpVM?.reset()
             catchUpVM = nil
             interactionVM = nil
+            if dialogueVM?.isActive == true {
+                Task { await dialogueVM?.endSession() }
+            }
+            dialogueVM = nil
         }
         .onChange(of: viewModel.player.currentTime) { _, newTime in
             updateNowPlaying()
@@ -321,6 +333,20 @@ struct PlayerView: View {
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showCharacterSheet) {
+            if let vm = dialogueVM {
+                CharacterSelectionSheet(
+                    characters: vm.availableCharacters,
+                    onSelect: { character in
+                        showCharacterSheet = false
+                        Task { await startDialogue(with: character) }
+                    },
+                    onDismiss: { showCharacterSheet = false }
+                )
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
         }
         .sheet(isPresented: $showDubbingControls) {
             if let vm = liveDubbingVM {
@@ -375,6 +401,7 @@ struct PlayerView: View {
             ForEach([0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0], id: \.self) { rate in
                 Button(rate == 1.0 ? "Normal" : "\(rate)x") {
                     viewModel.player.setRate(Float(rate))
+                    viewModel.preferences.preferredPlaybackRate = Float(rate)
                 }
             }
         }
@@ -591,6 +618,26 @@ struct PlayerView: View {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Quality settings")
+            }
+
+            // Free-form dialogue button (VOD only, when interactions enabled)
+            if !mediaContentType.isLive, interactionVM != nil {
+                Button {
+                    Task { await openCharacterSheet() }
+                } label: {
+                    Image(systemName: showDialogueOverlay
+                        ? "bubble.left.and.bubble.right.fill"
+                        : "bubble.left.and.bubble.right")
+                        .font(.system(size: 18))
+                        .foregroundStyle(
+                            showDialogueOverlay
+                                ? DesignTokens.Primary.p400 : .white
+                        )
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel(
+                    localization.t("player.dialogue.talkToCharacter")
+                )
             }
 
             liveFeatureButtons

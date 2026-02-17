@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Pressable, Text, StyleSheet } from 'react-native'
+import { View, Pressable, Text, Image, StyleSheet } from 'react-native'
 import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -68,8 +68,11 @@ export default function FullscreenVideoOverlay() {
   const [error, setError] = useState<string | null>(null)
   const [showQuiz, setShowQuiz] = useState(false)
   const [savedPosition, setSavedPosition] = useState<number | null>(null)
+  const [nextEpisode, setNextEpisode] = useState<{ id: string; title: string; thumbnail?: string; episode_number: number } | null>(null)
+  const [autoPlayCountdown, setAutoPlayCountdown] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const lastProgressRef = useRef<number>(0)
+  const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Determine if quiz should be shown after content ends
   // Quiz shows for all kids content regardless of profile type
@@ -273,6 +276,80 @@ export default function FullscreenVideoOverlay() {
     return false
   }, [])
 
+  // Fetch next episode for series auto-play
+  const fetchNextEpisode = useCallback(async () => {
+    if (!content?.seriesId || !content?.seasonNumber) return null
+    try {
+      const data = await contentService.getSeasonEpisodes(content.seriesId, content.seasonNumber)
+      const episodes = data?.episodes || []
+      const currentIndex = episodes.findIndex((ep: any) => ep.id === content.id)
+      if (currentIndex >= 0 && currentIndex < episodes.length - 1) {
+        return episodes[currentIndex + 1]
+      }
+    } catch (err) {
+      logger.debug('Failed to fetch next episode', 'FullscreenVideoOverlay')
+    }
+    return null
+  }, [content?.seriesId, content?.seasonNumber, content?.id])
+
+  // Start auto-play countdown for next episode
+  const startAutoPlayCountdown = useCallback((episode: { id: string; title: string; thumbnail?: string; episode_number: number }) => {
+    setNextEpisode(episode)
+    setAutoPlayCountdown(10)
+  }, [])
+
+  // Cancel auto-play countdown
+  const cancelAutoPlay = useCallback(() => {
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current)
+      countdownTimerRef.current = null
+    }
+    setNextEpisode(null)
+    setAutoPlayCountdown(null)
+  }, [])
+
+  // Play the next episode
+  const playNextEpisode = useCallback(() => {
+    if (!nextEpisode || !content) return
+    cancelAutoPlay()
+    const { openPlayer } = useFullscreenPlayerStore.getState()
+    openPlayer({
+      id: nextEpisode.id,
+      title: `${content.title?.split(' - ')[0]} - ${nextEpisode.title}`,
+      src: '',
+      poster: nextEpisode.thumbnail || content.poster,
+      type: 'series',
+      seriesId: content.seriesId,
+      episodeId: nextEpisode.id,
+      seasonNumber: content.seasonNumber,
+      episodeNumber: nextEpisode.episode_number,
+      is_kids_content: content.is_kids_content,
+    })
+  }, [nextEpisode, content, cancelAutoPlay])
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (autoPlayCountdown === null) return
+    if (autoPlayCountdown <= 0) {
+      playNextEpisode()
+      return
+    }
+    countdownTimerRef.current = setInterval(() => {
+      setAutoPlayCountdown((prev) => (prev !== null ? prev - 1 : null))
+    }, 1000)
+    return () => {
+      if (countdownTimerRef.current) {
+        clearInterval(countdownTimerRef.current)
+        countdownTimerRef.current = null
+      }
+    }
+  }, [autoPlayCountdown, playNextEpisode])
+
+  // Clean up countdown on unmount/close
+  useEffect(() => {
+    if (!isOpen) cancelAutoPlay()
+  }, [isOpen, cancelAutoPlay])
+
   // Handle video ended
   const handleEnded = useCallback(() => {
     if (!content) return
@@ -285,10 +362,20 @@ export default function FullscreenVideoOverlay() {
 
     // If playlist "Play All" is active, advance to next item
     if (!advancePlaylistOrClose()) {
-      // Not in playlist mode - default behavior (do nothing, player stays on last frame)
-      logger.debug('Content ended, no playlist active', 'FullscreenVideoOverlay')
+      // Auto-play next episode for series content
+      if (content.type === 'series' && content.seriesId) {
+        fetchNextEpisode().then((ep) => {
+          if (ep) {
+            startAutoPlayCountdown(ep)
+          } else {
+            logger.debug('No next episode available', 'FullscreenVideoOverlay')
+          }
+        })
+      } else {
+        logger.debug('Content ended, no playlist active', 'FullscreenVideoOverlay')
+      }
     }
-  }, [content?.id, content?.type, shouldShowQuiz, advancePlaylistOrClose])
+  }, [content?.id, content?.type, content?.seriesId, shouldShowQuiz, advancePlaylistOrClose, fetchNextEpisode, startAutoPlayCountdown])
 
   // Handle restart complete
   const handleRestartComplete = useCallback(() => {
@@ -432,6 +519,40 @@ export default function FullscreenVideoOverlay() {
         )
       )}
 
+      {/* Next Episode Auto-Play Overlay */}
+      {nextEpisode && autoPlayCountdown !== null && (
+        <View style={styles.nextEpisodeOverlay}>
+          <View style={styles.nextEpisodeCard}>
+            {nextEpisode.thumbnail && (
+              <Image
+                source={{ uri: nextEpisode.thumbnail }}
+                style={styles.nextEpisodeThumbnail}
+                resizeMode="cover"
+              />
+            )}
+            <View style={styles.nextEpisodeInfo}>
+              <Text style={styles.nextEpisodeLabel}>
+                {t('player.nextEpisode', 'Next Episode')}
+              </Text>
+              <Text style={styles.nextEpisodeTitle} numberOfLines={2}>
+                {t('content.episode')} {nextEpisode.episode_number}: {nextEpisode.title}
+              </Text>
+              <Text style={styles.nextEpisodeCountdown}>
+                {t('player.playingIn', { seconds: autoPlayCountdown })}
+              </Text>
+            </View>
+            <View style={styles.nextEpisodeActions}>
+              <Pressable onPress={playNextEpisode} style={styles.nextEpisodePlayBtn}>
+                <Text style={styles.nextEpisodePlayText}>{t('player.playNow', 'Play Now')}</Text>
+              </Pressable>
+              <Pressable onPress={cancelAutoPlay} style={styles.nextEpisodeCancelBtn}>
+                <Text style={styles.nextEpisodeCancelText}>{t('common.cancel')}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
       {/* Quiz Overlay for Kids Content */}
       {showQuiz && activeProfile && (
         <QuizOverlay
@@ -502,6 +623,73 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     fontWeight: '600',
+  },
+  nextEpisodeOverlay: {
+    position: 'absolute',
+    bottom: spacing[8],
+    right: spacing[8],
+    zIndex: 10002,
+  },
+  nextEpisodeCard: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(10, 10, 20, 0.92)',
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(107, 33, 168, 0.5)',
+    maxWidth: 460,
+  },
+  nextEpisodeThumbnail: {
+    width: 140,
+    height: 80,
+  },
+  nextEpisodeInfo: {
+    flex: 1,
+    padding: spacing[3],
+    justifyContent: 'center',
+  },
+  nextEpisodeLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: 'rgba(168, 85, 247, 1)',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  nextEpisodeTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  nextEpisodeCountdown: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  nextEpisodeActions: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing[3],
+    gap: spacing[2],
+  },
+  nextEpisodePlayBtn: {
+    backgroundColor: colors.primary.DEFAULT,
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
+    borderRadius: borderRadius.md,
+  },
+  nextEpisodePlayText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  nextEpisodeCancelBtn: {
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+  },
+  nextEpisodeCancelText: {
+    fontSize: 12,
+    color: colors.textSecondary,
   },
 })
 

@@ -1,0 +1,131 @@
+#if os(iOS)
+import BayitCore
+import Foundation
+import Observation
+
+/// Manages free-form dialogue sessions between user avatar and movie characters.
+/// Loads available characters, starts sessions, and sends messages.
+@MainActor
+@Observable
+final class AvatarDialogueViewModel {
+
+    // MARK: - Public State
+
+    private(set) var availableCharacters: [ContentCharacter] = []
+    private(set) var selectedCharacter: ContentCharacter?
+    private(set) var sessionId: String?
+    private(set) var exchanges: [DialogueExchange] = []
+    private(set) var isSending = false
+    private(set) var isActive = false
+
+    // MARK: - Private
+
+    private let repository: any AvatarRepository
+    private let logger = BayitLogger(category: "AvatarDialogueVM")
+
+    init(repository: any AvatarRepository) {
+        self.repository = repository
+    }
+
+    // MARK: - Load Characters
+
+    func loadCharacters(contentId: String) async {
+        do {
+            availableCharacters = try await repository.fetchInteractiveCharacters(
+                contentId: contentId
+            )
+            logger.info(
+                "Loaded \(availableCharacters.count) interactive characters"
+            )
+        } catch {
+            logger.error("Failed to load characters: \(error)")
+            availableCharacters = []
+        }
+    }
+
+    // MARK: - Start Session
+
+    func startSession(
+        contentId: String,
+        profileId: String,
+        avatarId: String,
+        character: ContentCharacter,
+        currentTimestamp: Double
+    ) async {
+        selectedCharacter = character
+        do {
+            let response = try await repository.startFreeInteractionSession(
+                profileId: profileId,
+                avatarId: avatarId,
+                contentId: contentId,
+                characterName: character.name,
+                currentTimestamp: currentTimestamp
+            )
+            sessionId = response.id
+            isActive = true
+            exchanges = []
+            logger.info("Free dialogue session started: \(response.id)")
+        } catch {
+            logger.error("Failed to start session: \(error)")
+            selectedCharacter = nil
+        }
+    }
+
+    // MARK: - Send Message
+
+    func sendMessage(_ text: String) async -> CharacterResponsePayload? {
+        guard let sessionId, isActive else { return nil }
+        isSending = true
+        defer { isSending = false }
+
+        do {
+            let response = try await repository.sendInteractionMessage(
+                sessionId: sessionId,
+                message: text
+            )
+
+            let userExchange = DialogueExchange(
+                speaker: "user",
+                messageText: text,
+                audioUrl: nil,
+                animatedVideoUrl: nil
+            )
+            let characterExchange = DialogueExchange(
+                speaker: "character",
+                messageText: response.responseText,
+                audioUrl: response.audioUrl,
+                animatedVideoUrl: response.animatedVideoUrl
+            )
+            exchanges.append(userExchange)
+            exchanges.append(characterExchange)
+
+            logger.info("Message sent, character responded")
+            return response
+
+        } catch {
+            logger.error("Failed to send message: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: - End Session
+
+    func endSession() async {
+        guard let sessionId else { return }
+
+        do {
+            _ = try await repository.completeInteractionSession(
+                sessionId: sessionId
+            )
+            logger.info("Dialogue session completed")
+        } catch {
+            logger.error("Failed to complete session: \(error)")
+        }
+
+        self.sessionId = nil
+        selectedCharacter = nil
+        exchanges = []
+        isActive = false
+    }
+}
+#endif

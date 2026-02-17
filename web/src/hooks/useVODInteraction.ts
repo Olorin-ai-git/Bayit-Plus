@@ -24,6 +24,14 @@ export interface InteractiveMoment {
   interaction_prompt: string;
 }
 
+export interface ContentCharacter {
+  name: string;
+  voice_id: string;
+  frame_url: string;
+  description: string;
+  movie_context: string;
+}
+
 export interface DialogueExchange {
   speaker: 'user' | 'character';
   message_text: string;
@@ -62,6 +70,12 @@ export const useVODInteraction = ({
   const [isInteracting, setIsInteracting] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [lastCheckedTime, setLastCheckedTime] = useState(0);
+
+  // Free-form dialogue state
+  const [availableCharacters, setAvailableCharacters] = useState<ContentCharacter[]>([]);
+  const [selectedCharacter, setSelectedCharacter] = useState<ContentCharacter | null>(null);
+  const [freeDialogueExchanges, setFreeDialogueExchanges] = useState<DialogueExchange[]>([]);
+  const [isFreeDialogueActive, setIsFreeDialogueActive] = useState(false);
 
   useEffect(() => {
     loadInteractiveMoments();
@@ -176,6 +190,88 @@ export const useVODInteraction = ({
     onResumeRequested();
   };
 
+  // MARK: - Free-Form Dialogue
+
+  const loadCharacters = async () => {
+    try {
+      const characters = await api.get(`/vod-interactions/characters/${contentId}`);
+      setAvailableCharacters(Array.isArray(characters) ? characters : []);
+    } catch (error) {
+      log.error('Failed to load characters:', error);
+      setAvailableCharacters([]);
+    }
+  };
+
+  const startFreeInteraction = async (character: ContentCharacter) => {
+    setSelectedCharacter(character);
+    setFreeDialogueExchanges([]);
+
+    try {
+      const session = await api.post('/vod-interactions/sessions/start-free', {
+        content_id: contentId,
+        profile_id: profileId,
+        avatar_id: avatarId,
+        character_name: character.name,
+        current_timestamp: currentTime,
+      });
+
+      setActiveSession(session);
+      setIsFreeDialogueActive(true);
+    } catch (error) {
+      log.error('Failed to start free interaction:', error);
+      setSelectedCharacter(null);
+    }
+  };
+
+  const sendFreeMessage = async (messageText: string) => {
+    if (!activeSession) return;
+
+    setIsSending(true);
+
+    try {
+      const response = await api.post(
+        `/vod-interactions/sessions/${activeSession.id}/message`,
+        { message: messageText }
+      );
+
+      const userExchange: DialogueExchange = {
+        speaker: 'user',
+        message_text: messageText,
+        timestamp: new Date().toISOString(),
+      };
+      const characterExchange: DialogueExchange = {
+        speaker: 'character',
+        message_text: response.response_text,
+        audio_url: response.audio_url,
+        animated_video_url: response.animated_video_url,
+        timestamp: new Date().toISOString(),
+      };
+
+      setFreeDialogueExchanges((prev) => [...prev, userExchange, characterExchange]);
+      return response;
+    } catch (error) {
+      log.error('Failed to send free message:', error);
+      throw error;
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const endFreeInteraction = async () => {
+    if (activeSession) {
+      try {
+        await api.post(`/vod-interactions/sessions/${activeSession.id}/complete`);
+      } catch (error) {
+        log.error('Failed to complete free interaction:', error);
+      }
+    }
+
+    setActiveSession(null);
+    setSelectedCharacter(null);
+    setFreeDialogueExchanges([]);
+    setIsFreeDialogueActive(false);
+  };
+
   const generateReel = async (sessionIds: string[]) => {
     try {
       const reel = await api.post('/vod-interactions/reels/generate', {
@@ -200,6 +296,15 @@ export const useVODInteraction = ({
     sendMessage,
     completeInteraction,
     skipInteraction,
-    generateReel
+    generateReel,
+    // Free-form dialogue
+    availableCharacters,
+    selectedCharacter,
+    freeDialogueExchanges,
+    isFreeDialogueActive,
+    loadCharacters,
+    startFreeInteraction,
+    sendFreeMessage,
+    endFreeInteraction,
   };
 };

@@ -89,6 +89,11 @@ struct SearchView: View {
 
     @ViewBuilder
     private func searchContent(_ vm: SearchViewModel) -> some View {
+        // Autocomplete suggestions while typing
+        if !vm.autocompleteSuggestions.isEmpty {
+            autocompleteSuggestionsView(vm)
+        }
+
         if vm.isSearching {
             searchingState
         } else if showSuggestions(vm) {
@@ -106,6 +111,37 @@ struct SearchView: View {
         } else if vm.hasSearched {
             emptyState
         }
+    }
+
+    private func autocompleteSuggestionsView(_ vm: SearchViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(vm.autocompleteSuggestions, id: \.self) { suggestion in
+                Button {
+                    vm.selectSuggestion(suggestion)
+                } label: {
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundColor(DesignTokens.Text.muted)
+
+                        Text(suggestion)
+                            .font(.system(size: DesignTokens.FontSize.md))
+                            .foregroundColor(DesignTokens.Text.primary)
+                            .lineLimit(1)
+
+                        Spacer()
+
+                        Image(systemName: "arrow.up.left")
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundColor(DesignTokens.Text.muted)
+                    }
+                    .padding(.horizontal, DesignTokens.Spacing.lg)
+                    .padding(.vertical, DesignTokens.Spacing.md)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .background(DesignTokens.Glass.bg)
     }
 
     private func resultsHeader(_ vm: SearchViewModel) -> some View {

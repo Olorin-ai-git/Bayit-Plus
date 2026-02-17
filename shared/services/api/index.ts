@@ -41,6 +41,13 @@ import { apiJerusalemService, apiTelAvivService, apiCultureService } from './cul
 import { securityService } from './securityService';
 import { triviaApi } from './triviaServices';
 import { apiPlaylistService } from './playlistServices';
+import {
+  apiCollectionsService,
+  apiVodBrowseService,
+  apiVodAudioService,
+  apiInteractiveMomentsService,
+  apiVodInteractionsService,
+} from './vodServices';
 
 // ===========================================
 // SERVICE EXPORTS
@@ -101,6 +108,13 @@ export const playlistService = apiPlaylistService;
 // Backward-compat alias: watchlist now routes through playlist
 export const watchlistService = playlistService;
 
+// VOD services
+export const collectionsService = apiCollectionsService;
+export const vodBrowseService = apiVodBrowseService;
+export const vodAudioService = apiVodAudioService;
+export const interactiveMomentsService = apiInteractiveMomentsService;
+export const vodInteractionsService = apiVodInteractionsService;
+
 // Rewards service (children/family rewards system)
 export const rewardsService = {
   getMyRewards: (profileId: string) => api.get(`/rewards/${profileId}`),
@@ -139,6 +153,11 @@ export {
   apiTelAvivService,
   apiCultureService,
   apiPlaylistService,
+  apiCollectionsService,
+  apiVodBrowseService,
+  apiVodAudioService,
+  apiInteractiveMomentsService,
+  apiVodInteractionsService,
 };
 
 // Default export - main api instance

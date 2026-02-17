@@ -414,6 +414,51 @@ async def login_apple_via_auth_service(request: Request, auth_data: AppleSocialA
         )
 
 
+class RefreshRequest(BaseModel):
+    """Request for token refresh."""
+    refresh_token: str
+
+
+class RefreshResponse(BaseModel):
+    """Response from token refresh."""
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+
+
+@router.post("/refresh", response_model=RefreshResponse)
+@limiter.limit("10/minute")
+async def refresh_token_via_auth_service(
+    request: Request, refresh_data: RefreshRequest
+):
+    """
+    Refresh access token via Olorin Auth Service.
+
+    Exchanges a refresh token for a new access_token + refresh_token pair.
+    Uses token rotation for security (each refresh token is single-use).
+    """
+    auth_client = get_auth_service_client()
+
+    try:
+        auth_response = await auth_client.refresh_token(
+            refresh_token=refresh_data.refresh_token,
+        )
+
+        return RefreshResponse(
+            access_token=auth_response["access_token"],
+            refresh_token=auth_response.get(
+                "refresh_token", refresh_data.refresh_token
+            ),
+            token_type=auth_response.get("token_type", "bearer"),
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e),
+        )
+
+
 @router.get("/health")
 async def auth_proxy_health():
     """Health check for auth proxy endpoints."""

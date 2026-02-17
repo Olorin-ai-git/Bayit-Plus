@@ -25,7 +25,9 @@ class CharacterAIService:
         character_name: str,
         scene_context: str,
         user_message: str,
-        conversation_history: List[DialogueExchange]
+        conversation_history: List[DialogueExchange],
+        character_description: str = "",
+        movie_context: str = ""
     ) -> CharacterResponse:
         """
         Generate in-character response to user message
@@ -35,6 +37,8 @@ class CharacterAIService:
             scene_context: Scene description/subtitles for context
             user_message: User's message to character
             conversation_history: Previous dialogue exchanges
+            character_description: Personality/background description
+            movie_context: Movie plot context for richer responses
 
         Returns:
             Character's response with text and emotion
@@ -44,7 +48,9 @@ class CharacterAIService:
                 character_name,
                 scene_context,
                 user_message,
-                conversation_history
+                conversation_history,
+                character_description=character_description,
+                movie_context=movie_context
             )
 
             logger.info(
@@ -91,15 +97,25 @@ class CharacterAIService:
         character_name: str,
         scene_context: str,
         user_message: str,
-        history: List[DialogueExchange]
+        history: List[DialogueExchange],
+        character_description: str = "",
+        movie_context: str = ""
     ) -> str:
         """Build prompt for character dialogue generation"""
 
         history_text = self._format_history(history)
 
+        description_block = ""
+        if character_description:
+            description_block = f"\nCharacter: {character_description}"
+
+        context_block = ""
+        if movie_context:
+            context_block = f"\nMovie Context: {movie_context}"
+
         return f"""You are {character_name} from this scene:
 
-Scene Context: {scene_context}
+Scene Context: {scene_context}{description_block}{context_block}
 
 A child's avatar just said to you: "{user_message}"
 

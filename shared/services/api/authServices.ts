@@ -13,11 +13,8 @@ export const apiAuthService = {
   register: (userData: { email: string; name: string; password: string }) =>
     api.post('/auth/v2/register', userData),
   me: () => api.get('/auth/me'),
-  refreshToken: (_refreshToken: string) => {
-    // Token refresh is no longer supported for RS256 tokens from auth.olorin.ai.
-    // Users must re-authenticate to get new tokens.
-    return Promise.reject(new Error('Token refresh not supported. Please re-authenticate.'));
-  },
+  refreshToken: (refreshToken: string) =>
+    api.post('/auth/v2/refresh', { refresh_token: refreshToken }),
   getGoogleAuthUrl: async (redirectUri?: string) => {
     const uri = redirectUri || (isWebPlatform() && typeof window !== 'undefined'
       ? `${window.location.origin}/auth/google/callback`

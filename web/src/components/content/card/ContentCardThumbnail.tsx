@@ -25,6 +25,7 @@ const ContentCardThumbnailPropsSchema = z.object({
     total_episodes: z.number().optional(),
     available_subtitle_languages: z.array(z.string()).optional(),
     quality_tier: z.string().optional(),
+    content_rating: z.string().optional(),
   }),
   isHovered: z.boolean(),
   showProgress: z.boolean(),
@@ -184,6 +185,45 @@ export function ContentCardThumbnail(props: ContentCardThumbnailProps) {
           <View className="w-1.5 h-1.5 rounded-full bg-white" />
           <Text className="text-[10px] font-bold text-white">
             {t('common.live')}
+          </Text>
+        </View>
+      )}
+
+      {/* Content Rating Badge (PG, PG-13, R, etc.) */}
+      {content.content_rating && content.type !== 'live' && (
+        <View
+          className="absolute top-3 px-1.5 py-0.5 rounded-sm bg-black/70"
+          style={isRTL ? { right: 12 } : { left: 12 }}
+        >
+          <Text className="text-[9px] font-bold text-white">
+            {content.content_rating}
+          </Text>
+        </View>
+      )}
+
+      {/* Series Type Badge */}
+      {isSeriesContent(content) && content.type !== 'live' && (
+        <View
+          className="absolute px-2 py-0.5 rounded-sm bg-purple-600/80"
+          style={{
+            ...(isRTL ? { right: 12 } : { left: 12 }),
+            bottom: content.duration ? 32 : 12,
+          }}
+        >
+          <Text className="text-[10px] font-bold text-white">
+            {t('vod.series', 'SERIES')}
+          </Text>
+        </View>
+      )}
+
+      {/* Hebrew Dub Badge */}
+      {content.available_subtitle_languages?.includes('he') && content.type !== 'live' && (
+        <View
+          className="absolute top-3 px-1.5 py-0.5 rounded-sm bg-purple-500/85"
+          style={isRTL ? { left: 12 } : { right: 12 }}
+        >
+          <Text className="text-[9px] font-semibold text-white">
+            {t('vod.hebrewDub', 'HEB')}
           </Text>
         </View>
       )}

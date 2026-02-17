@@ -54,6 +54,9 @@ COPY --chown=bayit:bayit backend/app ./app
 # Copy scripts directory (needed for migration models)
 COPY --chown=bayit:bayit scripts ./scripts
 
+# Copy shared i18n locales (required by olorin-i18n at /app/shared/i18n/locales)
+COPY --chown=bayit:bayit shared/i18n/locales ./shared/i18n/locales
+
 # Switch to non-root user
 USER bayit
 

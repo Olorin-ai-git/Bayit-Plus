@@ -9,6 +9,9 @@ struct VODView: View {
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: VODViewModel?
     @State private var featuredCollection: CollectionDetail?
+    @State private var continueWatchingItems: [WatchHistoryItem] = []
+    @State private var trendingRecommendations: [TrendingContentRecommendation] = []
+    @State private var aiCollectionRecommendations: [CollectionDetail] = []
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -21,10 +24,24 @@ struct VODView: View {
             PageHeader(icon: "film.fill", title: "VOD")
 
             if let vm = viewModel {
+                // Continue Watching row (only on "All" filter when user has progress)
+                if !continueWatchingItems.isEmpty && vm.selectedType == .all {
+                    ContinueWatchingSection(items: continueWatchingItems) { item in
+                        coordinator.navigate(to: .player(
+                            contentId: item.id,
+                            contentType: item.type ?? "vod"
+                        ))
+                    }
+                }
+
                 contentTypeFilters(vm)
 
                 if !vm.categories.isEmpty {
                     categoryFilters(vm)
+                }
+
+                if !vm.availableGenres.isEmpty {
+                    genreFilters(vm)
                 }
 
                 if let collection = featuredCollection, vm.selectedType == .all {
@@ -37,6 +54,14 @@ struct VODView: View {
                     )
                     .padding(.horizontal, DesignTokens.Spacing.lg)
                     .padding(.vertical, DesignTokens.Spacing.sm)
+                }
+
+                if !trendingRecommendations.isEmpty && vm.selectedType == .all {
+                    trendingSection
+                }
+
+                if !aiCollectionRecommendations.isEmpty && vm.selectedType == .all {
+                    aiCollectionsSection
                 }
 
                 if vm.isLoading && vm.items.isEmpty {
@@ -61,7 +86,20 @@ struct VODView: View {
                 viewModel = VODViewModel(repository: repos.content)
             }
             await viewModel?.loadContent()
-            await loadFeaturedCollection()
+            async let collectionTask: Void = loadFeaturedCollection()
+            async let continueWatchingTask: Void = loadContinueWatching()
+            async let trendingTask: Void = loadTrendingRecommendations()
+            async let aiCollectionsTask: Void = loadAICollectionRecommendations()
+            _ = await (collectionTask, continueWatchingTask, trendingTask, aiCollectionsTask)
+        }
+    }
+
+    private func loadContinueWatching() async {
+        do {
+            let response = try await repos.content.fetchContinueWatching()
+            continueWatchingItems = response.items
+        } catch {
+            // Silently fail - continue watching is optional
         }
     }
 
@@ -74,6 +112,73 @@ struct VODView: View {
         } catch {
             // Silently fail - banner is optional
         }
+    }
+
+    private func loadTrendingRecommendations() async {
+        do {
+            let response = try await repos.content.fetchTrendingRecommendations(limit: 10)
+            trendingRecommendations = response.recommendations
+        } catch {
+            // Silently fail - trending is optional
+        }
+    }
+
+    private func loadAICollectionRecommendations() async {
+        do {
+            aiCollectionRecommendations = try await repos.content.fetchCollectionRecommendations()
+        } catch {
+            // Silently fail - AI collections are optional
+        }
+    }
+
+    private var trendingSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.orange)
+                Text(localization.t("vod.trending"))
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: DesignTokens.Spacing.md) {
+                    ForEach(trendingRecommendations) { item in
+                        TrendingContentCard(item: item) {
+                            coordinator.navigate(to: .movieDetail(movieId: item.id))
+                        }
+                    }
+                }
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+            }
+        }
+        .padding(.vertical, DesignTokens.Spacing.sm)
+    }
+
+    private var aiCollectionsSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Image(systemName: "sparkles")
+                    .foregroundColor(DesignTokens.Primary.default)
+                Text(localization.t("vod.aiCollections"))
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: DesignTokens.Spacing.md) {
+                    ForEach(aiCollectionRecommendations) { collection in
+                        AICollectionCard(collection: collection) {
+                            coordinator.navigate(to: .collectionDetail(collectionId: collection.id))
+                        }
+                    }
+                }
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+            }
+        }
+        .padding(.vertical, DesignTokens.Spacing.sm)
     }
 
     private func contentTypeFilters(_ vm: VODViewModel) -> some View {
@@ -117,6 +222,31 @@ struct VODView: View {
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.vertical, DesignTokens.Spacing.sm)
+        }
+    }
+
+    private func genreFilters(_ vm: VODViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                FilterPill(
+                    title: localization.t("vod.allGenres"),
+                    isSelected: vm.selectedGenre == nil
+                ) {
+                    vm.selectedGenre = nil
+                    vm.applyFilters()
+                }
+
+                ForEach(vm.availableGenres, id: \.self) { genre in
+                    FilterPill(
+                        title: genre,
+                        isSelected: vm.selectedGenre == genre
+                    ) {
+                        vm.selectedGenre = genre
+                        vm.applyFilters()
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
         }
     }
 
@@ -194,6 +324,12 @@ private struct VODCard: View {
                         } else {
                             seriesBadge
                         }
+                    }
+                    .overlay(alignment: .topLeading) {
+                        contentRatingBadge
+                    }
+                    .overlay(alignment: .topTrailing) {
+                        hebrewDubBadge
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -301,6 +437,44 @@ private struct VODCard: View {
             .padding(DesignTokens.Spacing.xs)
     }
 
+    @ViewBuilder
+    private var contentRatingBadge: some View {
+        if let rating = item.contentRating, !rating.isEmpty {
+            Text(rating)
+                .font(.system(
+                    size: DesignTokens.FontSize.xs - 1,
+                    weight: .bold
+                ))
+                .foregroundColor(DesignTokens.Text.primary)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(Color.black.opacity(0.7))
+                .clipShape(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                )
+                .padding(DesignTokens.Spacing.xs)
+        }
+    }
+
+    @ViewBuilder
+    private var hebrewDubBadge: some View {
+        if item.hasHebrewDub {
+            Text(localization.t("vod.hebrewDub"))
+                .font(.system(
+                    size: DesignTokens.FontSize.xs - 1,
+                    weight: .semibold
+                ))
+                .foregroundColor(DesignTokens.Text.primary)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(DesignTokens.Primary.default.opacity(0.85))
+                .clipShape(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                )
+                .padding(DesignTokens.Spacing.xs)
+        }
+    }
+
     private var subtitle: String? {
         var parts: [String] = []
         if let year = item.year { parts.append(String(year)) }
@@ -344,5 +518,140 @@ private struct FilterPill: View {
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Card for trending content recommendations
+private struct TrendingContentCard: View {
+    let item: TrendingContentRecommendation
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+                posterImage
+                    .aspectRatio(2 / 3, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                    .overlay(alignment: .topLeading) {
+                        if let topic = item.trendingTopic {
+                            Text(topic)
+                                .font(.system(
+                                    size: DesignTokens.FontSize.xs - 1,
+                                    weight: .semibold
+                                ))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 2)
+                                .background(Color.orange.opacity(0.85))
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                                )
+                                .padding(DesignTokens.Spacing.xs)
+                        }
+                    }
+
+                Text(item.title ?? "")
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .lineLimit(2)
+                    .padding(.top, DesignTokens.Spacing.xs)
+            }
+            .frame(width: 120)
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var posterImage: some View {
+        if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let img):
+                    img.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    ZStack {
+                        DesignTokens.Glass.bgMedium
+                        Image(systemName: "film")
+                            .font(.system(size: 24))
+                            .foregroundColor(DesignTokens.Text.muted)
+                    }
+                }
+            }
+        } else {
+            ZStack {
+                DesignTokens.Glass.bgMedium
+                Image(systemName: "film")
+                    .font(.system(size: 24))
+                    .foregroundColor(DesignTokens.Text.muted)
+            }
+        }
+    }
+}
+
+/// Card for AI-recommended collections
+private struct AICollectionCard: View {
+    @Environment(LocalizationManager.self) private var localization
+    let collection: CollectionDetail
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                posterImage
+                    .frame(width: 160, height: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                    .overlay(alignment: .topLeading) {
+                        HStack(spacing: 2) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 8))
+                            Text("AI")
+                                .font(.system(
+                                    size: DesignTokens.FontSize.xs - 1,
+                                    weight: .bold
+                                ))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .background(DesignTokens.Primary.default.opacity(0.85))
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                        )
+                        .padding(DesignTokens.Spacing.xs)
+                    }
+
+                Text(collection.localizedTitle(
+                    for: localization.currentLanguage.rawValue
+                ) ?? "")
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .lineLimit(2)
+
+                if let movies = collection.availableMovies {
+                    Text("\(movies) \(localization.t("vod.collection.movies"))")
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundColor(DesignTokens.Text.muted)
+                }
+            }
+            .frame(width: 160)
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var posterImage: some View {
+        if let urlStr = collection.thumbnail ?? collection.backdrop,
+           let url = URL(string: urlStr) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let img):
+                    img.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    DesignTokens.Glass.bgMedium
+                }
+            }
+        } else {
+            DesignTokens.Glass.bgMedium
+        }
     }
 }

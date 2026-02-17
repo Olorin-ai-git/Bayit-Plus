@@ -33,7 +33,8 @@ struct MovieDetailView: View {
             if viewModel == nil {
                 viewModel = MovieDetailViewModel(
                     movieId: movieId,
-                    repository: repos.content
+                    repository: repos.content,
+                    userRepository: repos.user
                 )
             }
             await viewModel?.loadDetail()
@@ -45,6 +46,10 @@ struct MovieDetailView: View {
             backdropSection(detail)
             metadataSection(detail)
             actionButtons(detail)
+
+            if let genre = detail.genre, !genre.isEmpty {
+                genreChips(genre)
+            }
 
             if let cast = detail.cast, !cast.isEmpty {
                 castSection(cast)
@@ -159,8 +164,44 @@ struct MovieDetailView: View {
                     ))
                 }
             }
+
+            favoriteButton
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private var favoriteButton: some View {
+        let isFav = viewModel?.isFavorite ?? false
+        return Button {
+            Task { await viewModel?.toggleFavorite() }
+        } label: {
+            Image(systemName: isFav ? "heart.fill" : "heart")
+                .font(.system(size: 20))
+                .foregroundColor(isFav ? DesignTokens.Primary.default : DesignTokens.Text.secondary)
+                .frame(width: 44, height: 44)
+                .background(DesignTokens.Glass.bg)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(viewModel?.isFavoriteLoading ?? false)
+    }
+
+    private func genreChips(_ genre: String) -> some View {
+        let genres = genre.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ForEach(genres, id: \.self) { g in
+                    Text(g)
+                        .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .padding(.horizontal, DesignTokens.Spacing.md)
+                        .padding(.vertical, DesignTokens.Spacing.xs)
+                        .background(DesignTokens.Glass.bg)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+        }
     }
 
     private func castSection(_ cast: [String]) -> some View {

@@ -9,6 +9,8 @@ interface FullscreenPlayerContent {
   contentId?: string
   episodeId?: string
   seriesId?: string
+  seasonNumber?: number
+  episodeNumber?: number
   chapters?: Array<{
     start_time: number
     end_time: number

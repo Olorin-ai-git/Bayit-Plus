@@ -454,8 +454,8 @@ export default function MovieDetailPage() {
           {!IS_MOBILE && (
             <View style={[styles.metadataRow, { flexDirection }]}>
               {movie.year && <Text style={styles.metadataText}>{movie.year}</Text>}
-              {movie.rating && (
-                <GlassBadge variant="default" size="sm">{movie.rating}</GlassBadge>
+              {(movie.age_rating || movie.rating) && (
+                <GlassBadge variant="default" size="sm">{movie.age_rating || movie.rating}</GlassBadge>
               )}
               {movie.duration && <Text style={styles.metadataText}>{movie.duration}</Text>}
               {movie.genre && <Text style={styles.metadataText}>{movie.genre}</Text>}

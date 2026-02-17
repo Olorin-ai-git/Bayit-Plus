@@ -560,6 +560,7 @@
         "subtitles": "Subtitles"
       },
       "showOnlyWithSubtitles": "Show only with subtitles",
+      "semanticSearch": "AI Smart Search",
       "showOnlyBetaContent": "Show Beta content only",
       "beta": "Beta",
       "markAsBeta": "Mark as Beta",
@@ -5436,7 +5437,19 @@
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
     "director": "Director",
     "castLabel": "Cast",
-    "related": "Related"
+    "related": "Related",
+    "nextEpisode": "Next Episode",
+    "playingIn": "Playing in {{seconds}}s...",
+    "playNow": "Play Now",
+    "dialogue": {
+      "talkToCharacter": "Talk to Character",
+      "selectCharacter": "Select Character",
+      "typeQuestion": "Type your question...",
+      "sending": "Sending...",
+      "characterSpeaking": "Character is speaking...",
+      "endDialogue": "End Dialogue",
+      "noCharactersAvailable": "No characters available for dialogue"
+    }
   },
   "podcast": {
     "selectLanguage": "Select Language",

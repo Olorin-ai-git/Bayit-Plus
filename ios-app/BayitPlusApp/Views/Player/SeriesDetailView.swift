@@ -33,7 +33,9 @@ struct SeriesDetailView: View {
             if viewModel == nil {
                 viewModel = SeriesDetailViewModel(
                     seriesId: seriesId,
-                    repository: repos.series
+                    repository: repos.series,
+                    contentRepository: repos.content,
+                    userRepository: repos.user
                 )
             }
             await viewModel?.loadDetail()
@@ -44,6 +46,7 @@ struct SeriesDetailView: View {
         LazyVStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             backdropSection(detail)
             metadataSection(detail)
+            favoriteButton(vm)
 
             if !vm.seasons.isEmpty {
                 seasonPicker(vm)
@@ -117,12 +120,28 @@ struct SeriesDetailView: View {
 
     private func metadataSection(_ detail: SeriesDetail) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            if let languages = detail.availableSubtitleLanguages, !languages.isEmpty {
-                SubtitleFlagsPill(
-                    languages: languages,
-                    aiLanguages: aiLanguages(for: languages),
-                    size: .medium
-                )
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                if let languages = detail.availableSubtitleLanguages, !languages.isEmpty {
+                    SubtitleFlagsPill(
+                        languages: languages,
+                        aiLanguages: aiLanguages(for: languages),
+                        size: .medium
+                    )
+                }
+
+                if let rating = detail.ageRating ?? detail.rating, !rating.isEmpty {
+                    Text(rating)
+                        .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(Color.black.opacity(0.7))
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xs))
+                }
+            }
+
+            if let genre = detail.genre, !genre.isEmpty {
+                genreChips(genre)
             }
 
             if let description = detail.description {
@@ -135,11 +154,53 @@ struct SeriesDetailView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
+    private func genreChips(_ genre: String) -> some View {
+        let genres = genre.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ForEach(genres, id: \.self) { g in
+                    Text(g)
+                        .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .padding(.horizontal, DesignTokens.Spacing.md)
+                        .padding(.vertical, DesignTokens.Spacing.xs)
+                        .background(DesignTokens.Glass.bg)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+    }
+
     private func aiLanguages(for languages: [String]) -> Set<String> {
         var aiLangs = Set<String>()
         if languages.contains("he") { aiLangs.insert("he") }
         if languages.contains("en") { aiLangs.insert("en") }
         return aiLangs
+    }
+
+    private func favoriteButton(_ vm: SeriesDetailViewModel) -> some View {
+        Button {
+            Task { await vm.toggleFavorite() }
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Image(systemName: vm.isFavorite ? "heart.fill" : "heart")
+                    .font(.system(size: 18))
+                    .foregroundColor(
+                        vm.isFavorite ? DesignTokens.Primary.default : DesignTokens.Text.secondary
+                    )
+
+                Text(localization.t(vm.isFavorite ? "favorites.remove" : "favorites.add"))
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                    .foregroundColor(DesignTokens.Text.primary)
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.vertical, DesignTokens.Spacing.sm)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .disabled(vm.isFavoriteLoading)
+        .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
     private func seasonPicker(_ vm: SeriesDetailViewModel) -> some View {
@@ -167,7 +228,10 @@ struct SeriesDetailView: View {
                     .padding(.vertical, DesignTokens.Spacing.xl)
             } else {
                 ForEach(vm.episodes) { episode in
-                    EpisodeRow(episode: episode) {
+                    EpisodeRow(
+                        episode: episode,
+                        progress: vm.progress(for: episode.id)
+                    ) {
                         coordinator.presentFullscreen(.player(
                             contentId: episode.id,
                             contentType: .episode
@@ -223,39 +287,70 @@ struct SeriesDetailView: View {
 private struct EpisodeRow: View {
     @Environment(LocalizationManager.self) private var localization
     let episode: EpisodeItem
+    let progress: Double?
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                episodeThumbnail
-                    .frame(width: 120, height: 68)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            VStack(spacing: 0) {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    ZStack(alignment: .center) {
+                        episodeThumbnail
+                            .frame(width: 120, height: 68)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
 
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                    if let number = episode.episodeNumber {
-                        Text("\(localization.t("player.episode")) \(number)")
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
+                        if progress != nil {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.white)
+                                .shadow(color: .black.opacity(0.5), radius: 2)
+                        }
                     }
 
-                    Text(episode.title ?? localization.t("player.episode"))
-                        .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .lineLimit(2)
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                        if let number = episode.episodeNumber {
+                            Text("\(localization.t("player.episode")) \(number)")
+                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .foregroundColor(DesignTokens.Text.muted)
+                        }
 
-                    if let duration = episode.duration {
-                        Text(duration)
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
+                        Text(episode.title ?? localization.t("player.episode"))
+                            .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                            .foregroundColor(DesignTokens.Text.primary)
+                            .lineLimit(2)
+
+                        if let duration = episode.duration {
+                            Text(duration)
+                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .foregroundColor(DesignTokens.Text.muted)
+                        }
                     }
+
+                    Spacer()
+
+                    Image(systemName: progress != nil ? "play.circle.fill" : "play.circle")
+                        .font(.system(size: 28))
+                        .foregroundColor(DesignTokens.Primary.default)
                 }
 
-                Spacer()
+                if let progress, progress > 0 {
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(DesignTokens.Glass.bg)
+                                .frame(height: 3)
 
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 28))
-                    .foregroundColor(DesignTokens.Primary.default)
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(DesignTokens.Primary.default)
+                                .frame(
+                                    width: geo.size.width * min(progress, 1.0),
+                                    height: 3
+                                )
+                        }
+                    }
+                    .frame(height: 3)
+                    .padding(.top, DesignTokens.Spacing.xs)
+                }
             }
             .padding(DesignTokens.Spacing.md)
             .glassCard()

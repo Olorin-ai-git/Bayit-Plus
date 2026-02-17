@@ -26,6 +26,15 @@ protocol SearchRepository: Sendable {
     /// - Returns: Array of trending search query strings.
     /// - Throws: `NetworkError` if the request fails.
     func fetchTrendingSearches(limit: Int) async throws -> [String]
+
+    /// Fetch autocomplete suggestions for a partial query.
+    ///
+    /// - Parameters:
+    ///   - query: Partial search query string.
+    ///   - limit: Maximum number of suggestions.
+    /// - Returns: Array of suggested search query strings.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchSuggestions(query: String, limit: Int) async throws -> [String]
 }
 
 /// Production implementation of `SearchRepository` using `APIClient`.
@@ -69,5 +78,18 @@ final class APISearchRepository: SearchRepository, @unchecked Sendable {
             as: TrendingSearchesResponse.self
         )
         return response.trending
+    }
+
+    func fetchSuggestions(query: String, limit: Int) async throws -> [String] {
+        let queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+        let response: SearchSuggestionsResponse = try await client.get(
+            "/api/v1/search/suggestions",
+            queryItems: queryItems,
+            as: SearchSuggestionsResponse.self
+        )
+        return response.suggestions
     }
 }
