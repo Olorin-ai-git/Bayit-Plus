@@ -6277,7 +6277,12 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing"
+    "dubbing": "Dubbing",
+    "interactive": {
+      "skip": "Skip",
+      "continue": "Continue Watching",
+      "thinking": "{{character}} is thinking..."
+    }
   },
   "playlist": {
     "title": "My Playlist",
@@ -7443,6 +7448,9 @@
     "quality": "Quality",
     "subtitles": "Subtitles",
     "autoplay": "Autoplay",
+    "interactiveMoments": "Interactive Moments",
+    "interactiveMomentsRequiresAvatar": "Interactive Moments requires a Creatify avatar persona. Create one in Avatar Settings first.",
+    "interactiveMomentsNoAvatar": "Interactive mode is unavailable because no avatar persona was found. The movie will play without interactive moments.",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
     "privacy": "Privacy",

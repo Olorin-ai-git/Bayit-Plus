@@ -6341,7 +6341,12 @@
     "scenes": "סצנות",
     "translate": "תרגום",
     "split": "פיצול",
-    "dubbing": "דיבוב"
+    "dubbing": "דיבוב",
+    "interactive": {
+      "skip": "דלג",
+      "continue": "המשך לצפות",
+      "thinking": "{{character}} חושב..."
+    }
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -7476,6 +7481,9 @@
     "quality": "איכות",
     "subtitles": "כתוביות",
     "autoplay": "ניגון אוטומטי",
+    "interactiveMoments": "רגעים אינטראקטיביים",
+    "interactiveMomentsRequiresAvatar": "רגעים אינטראקטיביים דורשים אווטאר Creatify. צור אחד בהגדרות האווטאר תחילה.",
+    "interactiveMomentsNoAvatar": "מצב אינטראקטיבי לא זמין כי לא נמצא אווטאר. הסרט יופעל ללא רגעים אינטראקטיביים.",
     "appearance": "מראה",
     "darkMode": "מצב כהה",
     "privacy": "פרטיות",

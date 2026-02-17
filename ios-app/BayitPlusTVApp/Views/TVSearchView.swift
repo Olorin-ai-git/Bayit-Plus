@@ -117,10 +117,7 @@ struct TVSearchView: View {
                             badge: result.contentType,
                             aspectRatio: 2 / 3,
                             onSelect: {
-                                coordinator.presentPlayer(
-                                    contentId: result.id,
-                                    contentType: TVContentTypeMapper.map(result.contentType)
-                                )
+                                handleResultSelection(result)
                             }
                         )
 
@@ -201,5 +198,19 @@ struct TVSearchView: View {
         if let year = result.year { parts.append(String(year)) }
         if let duration = result.duration { parts.append(duration) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func handleResultSelection(_ result: UnifiedSearchResult) {
+        let contentType = result.contentType?.lowercased() ?? ""
+        if contentType.contains("collection") {
+            coordinator.fullscreenRoute = .collectionDetail(collectionId: result.id)
+        } else if contentType == "series" {
+            coordinator.fullscreenRoute = .seriesDetail(seriesId: result.id)
+        } else {
+            coordinator.presentPlayer(
+                contentId: result.id,
+                contentType: TVContentTypeMapper.map(result.contentType)
+            )
+        }
     }
 }

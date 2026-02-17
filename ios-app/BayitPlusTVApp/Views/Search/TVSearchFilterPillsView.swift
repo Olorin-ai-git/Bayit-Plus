@@ -6,14 +6,10 @@ struct TVSearchFilterPillsView: View {
     @Binding var selectedFilter: SearchContentTypeFilter
     let onFilterChanged: (SearchContentTypeFilter) -> Void
 
-    private var visibleFilters: [SearchContentTypeFilter] {
-        SearchContentTypeFilter.allCases.filter { $0 != .vod }
-    }
-
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                ForEach(visibleFilters, id: \.self) { filter in
+                ForEach(SearchContentTypeFilter.allCases, id: \.self) { filter in
                     GlassChip(
                         title: filter.displayLabel,
                         isSelected: selectedFilter == filter

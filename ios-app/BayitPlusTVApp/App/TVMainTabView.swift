@@ -19,6 +19,10 @@ struct TVMainTabView: View {
 
         HStack(spacing: 0) {
             TabView(selection: $coord.selectedTab) {
+                TVSearchView()
+                    .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
+                    .tag(TVTab.search)
+
                 TVHomeView()
                     .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
                     .tag(TVTab.home)
@@ -42,10 +46,6 @@ struct TVMainTabView: View {
                 TVKidsHubView()
                     .tabItem { Label(localization.t("nav.children"), systemImage: TVTab.kids.iconName) }
                     .tag(TVTab.kids)
-
-                TVSearchView()
-                    .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
-                    .tag(TVTab.search)
 
                 TVProfileView()
                     .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }

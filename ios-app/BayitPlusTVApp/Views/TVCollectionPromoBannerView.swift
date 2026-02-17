@@ -85,7 +85,7 @@ struct TVCollectionPromoBannerView: View {
             .background(DesignTokens.Glass.bgMedium)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         }
-        .buttonStyle(.card)
+        .buttonStyle(.plain)
         .tvFocusStyle()
     }
 

@@ -39,27 +39,38 @@ struct UnifiedSearchResult: Decodable, Sendable, Identifiable {
 /// Filter options for unified search, matching web search filter pills
 enum SearchContentTypeFilter: CaseIterable, Sendable {
     case all
-    case vod
+    case movies
+    case series
+    case collections
     case live
+    case radio
     case podcasts
+    case kids
 
     var displayLabel: String {
         switch self {
         case .all: return "All"
-        case .vod: return "Movies"
+        case .movies: return "Movies"
+        case .series: return "Series"
+        case .collections: return "Collections"
         case .live: return "Channels"
+        case .radio: return "Radio"
         case .podcasts: return "Podcasts"
+        case .kids: return "Kids"
         }
     }
 
     /// Content type strings sent to the API `content_types` query param
     var apiContentTypes: [String] {
         switch self {
-        // TEMPORARILY HIDDEN: "vod" removed from all-filter per product request
-        case .all: return ["live", "radio", "podcast"]
-        case .vod: return ["vod"]
+        case .all: return ["live", "radio", "podcast", "vod"]
+        case .movies: return ["vod"]
+        case .series: return ["vod"]
+        case .collections: return ["vod"]
         case .live: return ["live"]
+        case .radio: return ["radio"]
         case .podcasts: return ["podcast"]
+        case .kids: return ["vod", "live", "podcast"]
         }
     }
 }

@@ -28,7 +28,8 @@ struct TVSettingsView: View {
                 if viewModel == nil {
                     viewModel = SettingsViewModel(
                         settingsRepository: repos.settings,
-                        userRepository: repos.user
+                        userRepository: repos.user,
+                        avatarRepository: repos.avatarMeshRepository
                     )
                 }
                 await viewModel?.load()
@@ -137,6 +138,14 @@ struct TVSettingsView: View {
                 .tint(DesignTokens.Primary.default)
                 .onChange(of: vm.interactiveMoments) { _, newValue in
                     Task { await vm.updateInteractiveMoments(newValue) }
+                }
+
+                if vm.interactiveMomentsBlocked,
+                   let msgKey = vm.interactiveMomentsBlockedMessage {
+                    Text(localization.t(msgKey))
+                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Warning.default)
+                        .padding(.leading, 44)
                 }
             }
 

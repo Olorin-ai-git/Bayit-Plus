@@ -36,6 +36,9 @@ struct TVPlayerView: View {
     @State private var triviaVM: TriviaFactsViewModel?
     @State private var webSocketService: LiveDubbingWebSocketService?
     @State private var catchUpVM: CatchUpViewModel?
+    @State private var interactionVM: VODInteractionViewModel?
+    @State private var avatarImageUrl: String?
+    @State private var showNoAvatarWarning = false
 
     // MARK: - Panel Visibility
 
@@ -46,6 +49,8 @@ struct TVPlayerView: View {
     @State private var showAudioTracks = false
     @State private var showSpeedControl = false
     @State private var showControlButtons = true
+    @State private var showPlaybackOverlay = true
+    @State private var overlayHideTask: Task<Void, Never>?
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
     @State private var showCatchUp = false
@@ -80,6 +85,7 @@ struct TVPlayerView: View {
     // MARK: - Available Languages
 
     @State private var availableSubtitleLanguages: [String] = []
+    @State private var hasChapters = false
 
     private var isLive: Bool { contentType == .liveTV }
 
@@ -99,6 +105,12 @@ struct TVPlayerView: View {
                 liveSubtitleOverlay
                 translationOverlay
                 catchUpAutoPromptOverlay
+                interactiveMomentOverlay
+
+                // Transparent playback controls overlay (center)
+                if !isLive {
+                    playbackControlsOverlay
+                }
 
                 if showControlButtons {
                     // Gradient scrim for readability
@@ -154,24 +166,32 @@ struct TVPlayerView: View {
                             .defaultFocus($controlBarFocused, true)
                         }
                     }
-                    .padding(.bottom, TVDesignTokens.Spacing.xxl)
+                    .padding(.bottom, 40)
                 }
             }
         }
         .onDisappear { cleanup() }
         .task { await resolveAndPlay() }
         .task { initializeViewModels() }
+        .task { await loadChapters() }
         .onChange(of: mediaPlayer.currentTime) { _, newTime in
             subtitlesVM?.updateActiveCue(currentTime: newTime)
             triviaVM?.updateActiveFact(currentTime: newTime)
+            if let vm = interactionVM, vm.phase == .idle {
+                _ = vm.checkForMoment(currentTime: newTime)
+            }
         }
         .onChange(of: showControlButtons) { _, isVisible in
             if isVisible {
                 controlBarFocused = true
             }
         }
-        .onPlayPauseCommand { mediaPlayer.togglePlayPause() }
+        .onPlayPauseCommand {
+            mediaPlayer.togglePlayPause()
+            resetOverlayTimer()
+        }
         .onMoveCommand { direction in
+            resetOverlayTimer()
             switch direction {
             case .up: showControlButtons = true
             case .down: showControlButtons = false
@@ -179,6 +199,9 @@ struct TVPlayerView: View {
             case .right: Task { await mediaPlayer.skipForward(seconds: 10) }
             @unknown default: break
             }
+        }
+        .task {
+            resetOverlayTimer()
         }
         .onExitCommand {
             if showControlButtons {
@@ -328,6 +351,41 @@ struct TVPlayerView: View {
                 currentLanguage: selectedAILanguage,
                 onDismiss: { vm.dismissFact() }
             )
+        }
+    }
+
+    // MARK: - Playback Controls Overlay
+
+    private var playbackControlsOverlay: some View {
+        TVPlaybackControlsOverlay(
+            isPlaying: mediaPlayer.state == .playing,
+            hasChapters: hasChapters,
+            currentPosition: mediaPlayer.currentTime,
+            isVisible: showPlaybackOverlay,
+            onPlayPause: { mediaPlayer.togglePlayPause() },
+            onSkipBackward30: { Task { await mediaPlayer.skipBackward(seconds: 30) } },
+            onSkipForward30: { Task { await mediaPlayer.skipForward(seconds: 30) } },
+            onPreviousChapter: { skipToPreviousChapter() },
+            onNextChapter: { skipToNextChapter() },
+            onStartOver: { startOver() },
+            onInteraction: { resetOverlayTimer() }
+        )
+    }
+
+    private func resetOverlayTimer() {
+        overlayHideTask?.cancel()
+        showPlaybackOverlay = true
+        overlayHideTask = Task {
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else { return }
+            await MainActor.run { showPlaybackOverlay = false }
+        }
+    }
+
+    private func startOver() {
+        Task {
+            await mediaPlayer.seek(to: 0)
+            mediaPlayer.play()
         }
     }
 
@@ -531,6 +589,52 @@ struct TVPlayerView: View {
                     vm.dismissAutoPrompt(channelId: channelId ?? contentId)
                 }
             )
+        }
+    }
+
+    // MARK: - Interactive Moment Overlay
+
+    @ViewBuilder
+    private var interactiveMomentOverlay: some View {
+        if let vm = interactionVM,
+           let moment = vm.activeMoment,
+           let videoUrl = moment.lipsyncVideoUrl,
+           let imgUrl = avatarImageUrl {
+            TVInteractiveMomentOverlayView(
+                videoUrl: videoUrl,
+                avatarImageUrl: imgUrl,
+                onDismiss: { vm.dismiss() }
+            )
+        }
+
+        if showNoAvatarWarning {
+            noAvatarWarningBanner
+        }
+    }
+
+    private var noAvatarWarningBanner: some View {
+        VStack {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(DesignTokens.Warning.default)
+                Text(localization.t("settings.interactiveMomentsNoAvatar"))
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                    .foregroundStyle(DesignTokens.Text.primary)
+            }
+            .padding(TVDesignTokens.Spacing.lg)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+            )
+            Spacer()
+        }
+        .padding(.top, TVDesignTokens.Spacing.xxl)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .onAppear {
+            Task {
+                try? await Task.sleep(for: .seconds(5))
+                withAnimation { showNoAvatarWarning = false }
+            }
         }
     }
 
@@ -824,6 +928,9 @@ struct TVPlayerView: View {
     }
 
     private func initializeViewModels() {
+        BayitLogger(category: "TVPlayerView").warning(
+            "initializeViewModels called: isLive=\(isLive), contentId=\(contentId)"
+        )
         // Catch-up for live content when user is beta
         if isLive, authManager.user?.isBetaUser == true {
             let vm = CatchUpViewModel(repository: repos.liveTV)
@@ -851,6 +958,11 @@ struct TVPlayerView: View {
             }
         }
 
+        // Interactive moments -- gated by preference + persona
+        if !isLive {
+            Task { await initializeInteractiveMoments() }
+        }
+
         // Live dubbing
         let dubbingWS = LiveDubbingWebSocketService(
             configuration: repos.configuration,
@@ -875,6 +987,32 @@ struct TVPlayerView: View {
         }
     }
 
+    private func initializeInteractiveMoments() async {
+        let logger = BayitLogger(category: "TVPlayerView")
+
+        // 1. Check preference (hardcoded true for debug)
+        // TODO: restore preference check
+        let interactiveMomentsEnabled = true
+        guard interactiveMomentsEnabled else {
+            logger.info("Interactive moments disabled in preferences")
+            return
+        }
+
+        // 2. Verify persona avatar exists (hardcoded for debug)
+        let imageUrl = "https://cdn.creatify.ai/creator/4045d05f-2dc5-4661-8121-733ecd3e8aec/st.png"
+
+        // 3. Initialize VM and load moments
+        let vm = VODInteractionViewModel(
+            repository: repos.avatarMeshRepository
+        )
+        vm.loadHardcodedMoments()
+        avatarImageUrl = imageUrl
+        interactionVM = vm
+        logger.warning(
+            "Interactive moments enabled with \(vm.moments.count) moments"
+        )
+    }
+
     @MainActor
     private func cleanup() {
         progressTrackingTask?.cancel()
@@ -886,6 +1024,7 @@ struct TVPlayerView: View {
         triviaVM?.disconnectLiveTrivia()
         catchUpVM?.reset()
         catchUpVM = nil
+        interactionVM = nil
     }
 
     // MARK: - Progress Tracking
@@ -957,6 +1096,51 @@ struct TVPlayerView: View {
             try await repos.subtitle.updatePreferences(update)
         } catch {
             // Preference save failures are non-critical
+        }
+    }
+
+    // MARK: - Chapter Navigation
+
+    @State private var chapters: [Chapter] = []
+
+    @MainActor
+    private func loadChapters() async {
+        do {
+            chapters = try await repos.chapter.fetchChapters(contentId: contentId)
+            hasChapters = !chapters.isEmpty
+        } catch {
+            chapters = []
+            hasChapters = false
+        }
+    }
+
+    private func skipToPreviousChapter() {
+        guard !chapters.isEmpty else { return }
+        let currentTime = mediaPlayer.currentTime
+
+        // Find the previous chapter (last chapter with startTime < currentTime - 3 seconds)
+        let previousChapter = chapters
+            .filter { ($0.startTime ?? 0) < currentTime - 3 }
+            .last
+
+        if let chapter = previousChapter, let startTime = chapter.startTime {
+            Task { await mediaPlayer.seek(to: startTime) }
+        } else if let firstChapter = chapters.first, let startTime = firstChapter.startTime {
+            // If no previous chapter, go to the beginning of first chapter
+            Task { await mediaPlayer.seek(to: startTime) }
+        }
+    }
+
+    private func skipToNextChapter() {
+        guard !chapters.isEmpty else { return }
+        let currentTime = mediaPlayer.currentTime
+
+        // Find the next chapter (first chapter with startTime > currentTime)
+        let nextChapter = chapters
+            .first { ($0.startTime ?? 0) > currentTime }
+
+        if let chapter = nextChapter, let startTime = chapter.startTime {
+            Task { await mediaPlayer.seek(to: startTime) }
         }
     }
 

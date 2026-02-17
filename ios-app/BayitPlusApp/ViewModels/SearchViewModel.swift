@@ -124,17 +124,28 @@ final class SearchViewModel {
                 limit: 30
             )
             if !Task.isCancelled {
-                // Filter movies and series from results if legacy features are disabled
                 var filteredResults = response.results
-                if !featureFlags.isLegacyFeaturesEnabled {
+
+                // Apply filter-specific logic
+                switch selectedFilter {
+                case .movies:
                     filteredResults = filteredResults.filter { result in
                         let contentType = result.contentType?.lowercased() ?? ""
-                        return contentType != "vod" && contentType != "movie" && contentType != "series"
+                        return (contentType == "vod" || contentType == "movie") && result.isSeries != true && !(contentType.contains("collection"))
                     }
+                case .series:
+                    filteredResults = filteredResults.filter { $0.isSeries == true }
+                case .collections:
+                    filteredResults = filteredResults.filter { result in
+                        let contentType = result.contentType?.lowercased() ?? ""
+                        return contentType.contains("collection")
+                    }
+                case .kids:
+                    filteredResults = filteredResults.filter { $0.isKidsContent == true }
+                default:
+                    break
                 }
-                if selectedFilter == .vod {
-                    filteredResults = filteredResults.filter { $0.isSeries != true }
-                }
+
                 results = filteredResults
                 totalResults = filteredResults.count
                 hasSearched = true

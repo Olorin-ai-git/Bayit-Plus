@@ -23,29 +23,31 @@ struct TVVODView: View {
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
-                if let vm = viewModel {
-                    contentTypeFilters(vm)
+                LazyVStack(spacing: TVDesignTokens.Spacing.lg) {
+                    if let vm = viewModel {
+                        contentTypeFilters(vm)
 
-                    if let collection = featuredCollection, vm.selectedType == .all {
-                        TVCollectionPromoBannerView(
-                            collectionId: collection.id,
-                            title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
-                            posterUrl: collection.thumbnail,
-                            promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
-                            movieCount: collection.availableMovies ?? 0
-                        )
-                        .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                        .padding(.vertical, TVDesignTokens.Spacing.lg)
-                    }
-
-                    if vm.isLoading && vm.items.isEmpty {
-                        loadingGrid
-                    } else if let error = vm.error, vm.items.isEmpty {
-                        tvErrorState(error) {
-                            Task { await vm.refresh() }
+                        if let collection = featuredCollection, vm.selectedType == .all {
+                            TVCollectionPromoBannerView(
+                                collectionId: collection.id,
+                                title: collection.localizedTitle(for: localization.currentLanguage.rawValue) ?? localization.t("home.collection"),
+                                posterUrl: collection.thumbnail,
+                                promoText: collection.localizedPromoText(for: localization.currentLanguage.rawValue) ?? localization.t("home.discoverCollection"),
+                                movieCount: collection.availableMovies ?? 0
+                            )
+                            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                            .padding(.vertical, TVDesignTokens.Spacing.lg)
                         }
-                    } else {
-                        contentGrid(vm.items, isLoadingMore: vm.isLoadingMore)
+
+                        if vm.isLoading && vm.items.isEmpty {
+                            loadingGrid
+                        } else if let error = vm.error, vm.items.isEmpty {
+                            tvErrorState(error) {
+                                Task { await vm.refresh() }
+                            }
+                        } else {
+                            contentGrid(vm.items, isLoadingMore: vm.isLoadingMore)
+                        }
                     }
                 }
             }

@@ -52,12 +52,17 @@ struct TVPlayerControlBar: View {
         .padding(.vertical, TVDesignTokens.Spacing.lg)
         .background {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                .fill(.ultraThinMaterial)
-                .environment(\.colorScheme, .dark)
+                .fill(Color.black.opacity(0.35))
+                .background(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                        .fill(.ultraThinMaterial)
+                        .opacity(0.4)
+                        .environment(\.colorScheme, .dark)
+                )
         }
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
         )
         .focusSection()
     }

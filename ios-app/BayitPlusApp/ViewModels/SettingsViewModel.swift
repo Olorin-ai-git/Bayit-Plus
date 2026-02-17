@@ -11,6 +11,8 @@ final class SettingsViewModel {
     private(set) var isSaving = false
     private(set) var isDeletingAccount = false
     private(set) var preferences: UserPreferencesDetail?
+    private(set) var interactiveMomentsBlocked = false
+    private(set) var interactiveMomentsBlockedMessage: String?
 
     var autoTranslate = false
     var showIsraelTime = false
@@ -22,13 +24,16 @@ final class SettingsViewModel {
 
     private let settingsRepository: any SettingsRepository
     private let userRepository: any UserRepository
+    private let avatarRepository: (any AvatarRepository)?
 
     init(
         settingsRepository: any SettingsRepository,
-        userRepository: any UserRepository
+        userRepository: any UserRepository,
+        avatarRepository: (any AvatarRepository)? = nil
     ) {
         self.settingsRepository = settingsRepository
         self.userRepository = userRepository
+        self.avatarRepository = avatarRepository
     }
 
     @MainActor
@@ -72,12 +77,47 @@ final class SettingsViewModel {
 
     @MainActor
     func updateInteractiveMoments(_ enabled: Bool) async {
-        interactiveMoments = enabled
+        guard enabled else {
+            interactiveMoments = false
+            interactiveMomentsBlocked = false
+            interactiveMomentsBlockedMessage = nil
+            await savePreference(UserPreferencesUpdate(
+                autoTranslateEnabled: nil,
+                showIsraelTime: nil, shabbatModeEnabled: nil,
+                subtitlesEnabled: nil, interactiveMomentsEnabled: false
+            ))
+            return
+        }
+
+        let hasPersona = await checkPersonaExists()
+        if !hasPersona {
+            interactiveMoments = false
+            interactiveMomentsBlocked = true
+            interactiveMomentsBlockedMessage =
+                "settings.interactiveMomentsRequiresAvatar"
+            return
+        }
+
+        interactiveMomentsBlocked = false
+        interactiveMomentsBlockedMessage = nil
+        interactiveMoments = true
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil,
             showIsraelTime: nil, shabbatModeEnabled: nil,
-            subtitlesEnabled: nil, interactiveMomentsEnabled: enabled
+            subtitlesEnabled: nil, interactiveMomentsEnabled: true
         ))
+    }
+
+    @MainActor
+    private func checkPersonaExists() async -> Bool {
+        guard let repo = avatarRepository else { return false }
+        do {
+            let status = try await repo.fetchAvatarStatus(avatarId: "any")
+            return status.avatarImageUrl != nil
+                && status.status == "ready"
+        } catch {
+            return false
+        }
     }
 
     @MainActor
