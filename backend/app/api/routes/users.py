@@ -121,7 +121,10 @@ class UpdatePreferencesRequest(BaseModel):
     """Request model for updating user preferences."""
 
     auto_translate_enabled: Optional[bool] = None
-    # Add other preference fields as needed
+    show_israel_time: Optional[bool] = None
+    shabbat_mode_enabled: Optional[bool] = None
+    subtitles_enabled: Optional[bool] = None
+    interactive_moments_enabled: Optional[bool] = None
 
 
 @router.get("/me/preferences")
@@ -150,6 +153,20 @@ async def update_my_preferences(
     if request.auto_translate_enabled is not None:
         current_user.preferences["auto_translate_enabled"] = (
             request.auto_translate_enabled
+        )
+    if request.show_israel_time is not None:
+        current_user.preferences["show_israel_time"] = request.show_israel_time
+    if request.shabbat_mode_enabled is not None:
+        current_user.preferences["shabbat_mode_enabled"] = (
+            request.shabbat_mode_enabled
+        )
+    if request.subtitles_enabled is not None:
+        current_user.preferences["subtitles_enabled"] = (
+            request.subtitles_enabled
+        )
+    if request.interactive_moments_enabled is not None:
+        current_user.preferences["interactive_moments_enabled"] = (
+            request.interactive_moments_enabled
         )
 
     await current_user.save()

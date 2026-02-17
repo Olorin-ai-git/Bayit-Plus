@@ -20,6 +20,10 @@ class InteractiveMoment(BaseModel):
     character_frame_url: Optional[str] = Field(None, description="GCS URL of character still")
     interaction_prompt: str = Field(..., description="Display text for user")
     voice_id: str = Field(..., description="ElevenLabs voice ID for character")
+    dialogue_options: List[str] = Field(
+        default_factory=list,
+        description="Predefined dialogue choices shown to user",
+    )
 
 
 class DialogueExchange(BaseModel):

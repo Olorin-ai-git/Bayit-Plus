@@ -145,6 +145,7 @@ struct UserPreferencesUpdate: Encodable, Sendable {
     let showIsraelTime: Bool?
     let shabbatModeEnabled: Bool?
     let subtitlesEnabled: Bool?
+    let interactiveMomentsEnabled: Bool?
 }
 
 /// Response from PATCH /api/v1/users/me/preferences
@@ -159,4 +160,5 @@ struct UserPreferencesDetail: Decodable, Sendable {
     let showIsraelTime: Bool?
     let shabbatModeEnabled: Bool?
     let subtitlesEnabled: Bool?
+    let interactiveMomentsEnabled: Bool?
 }

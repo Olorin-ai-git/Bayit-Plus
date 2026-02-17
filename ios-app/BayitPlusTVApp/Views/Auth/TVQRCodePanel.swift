@@ -13,8 +13,8 @@ struct TVQRCodePanel: View {
     @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
-
     let logger: APILogger
+    @Binding var errorMessage: String?
 
     @State private var viewModel: TVQRAuthViewModel?
 
@@ -34,6 +34,7 @@ struct TVQRCodePanel: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task {
             if viewModel == nil {
+                errorMessage = nil // Clear any existing errors
                 let vm = TVQRAuthViewModel(
                     authManager: authManager,
                     logger: logger
@@ -48,8 +49,18 @@ struct TVQRCodePanel: View {
             }
         }
         .onChange(of: viewModel?.status) { _, newValue in
-            if newValue == .authenticated {
+            switch newValue {
+            case .authenticated:
                 onAuthSuccess()
+            case .failed:
+                if let error = viewModel?.error {
+                    errorMessage = error
+                }
+            case .waitingForScan, .companionConnected, .authenticating:
+                // Clear error when user takes action or progresses
+                errorMessage = nil
+            default:
+                break
             }
         }
     }
@@ -126,10 +137,7 @@ struct TVQRCodePanel: View {
     // MARK: - QR Code
 
     private func qrCodeSection(_ vm: TVQRAuthViewModel) -> some View {
-        GlassCard(
-            radius: TVDesignTokens.Radius.lg,
-            padding: TVDesignTokens.Spacing.xxl
-        ) {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
             VStack(spacing: TVDesignTokens.Spacing.xl) {
                 if let code = vm.qrCodeData {
                     qrCodeImage(for: code)
@@ -179,6 +187,34 @@ struct TVQRCodePanel: View {
                 }
             }
         }
+        .padding(TVDesignTokens.Spacing.xxl)
+        .background {
+            ZStack {
+                Color.black.opacity(0.4)
+                VisualEffectBlur()
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            DesignTokens.Colors.Primary.base.opacity(0.3),
+                            DesignTokens.Glass.border.opacity(0.5)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(
+            color: DesignTokens.Colors.Primary.base.opacity(0.2),
+            radius: 15,
+            x: 0,
+            y: 8
+        )
     }
 
     // MARK: - Status Views
@@ -264,6 +300,7 @@ struct TVQRCodePanel: View {
                     size: .large,
                     icon: Image(systemName: "arrow.clockwise")
                 ) {
+                    errorMessage = nil
                     Task { await vm.retry() }
                 }
             }
@@ -294,6 +331,7 @@ struct TVQRCodePanel: View {
                     size: .large,
                     icon: Image(systemName: "qrcode")
                 ) {
+                    errorMessage = nil
                     Task { await vm.retry() }
                 }
             }

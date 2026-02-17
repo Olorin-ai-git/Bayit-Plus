@@ -268,6 +268,8 @@ class User(Document):
             "location_consent_given": False,  # GDPR: explicit user consent for location tracking
             "location_consent_timestamp": None,  # When consent was given (ISO datetime)
             "location_data_retention_days": 90,  # User's preference for how long to keep location data
+            # Interactive moments (VOD character interactions)
+            "interactive_moments_enabled": False,
         }
     )
 

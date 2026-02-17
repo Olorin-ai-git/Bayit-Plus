@@ -31,6 +31,28 @@ protocol AvatarRepository: Sendable {
     func getMagicMirrorGreeting(
         profileId: String
     ) async throws -> MagicMirrorGreeting
+
+    // MARK: - VOD Interactions
+
+    func fetchInteractiveMoments(
+        contentId: String
+    ) async throws -> [InteractiveMoment]
+
+    func startInteractionSession(
+        profileId: String,
+        avatarId: String,
+        contentId: String,
+        timestamp: Double
+    ) async throws -> VODSessionResponse
+
+    func sendInteractionMessage(
+        sessionId: String,
+        message: String
+    ) async throws -> CharacterResponsePayload
+
+    func completeInteractionSession(
+        sessionId: String
+    ) async throws -> SessionStatusPayload
 }
 
 final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
@@ -129,6 +151,58 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/zeh-ani/magic-mirror/\(profileId)",
             as: MagicMirrorGreeting.self
+        )
+    }
+
+    // MARK: - VOD Interactions
+
+    func fetchInteractiveMoments(
+        contentId: String
+    ) async throws -> [InteractiveMoment] {
+        return try await client.get(
+            "/api/v1/admin/interactive-moments/content/\(contentId)/moments",
+            as: [InteractiveMoment].self
+        )
+    }
+
+    func startInteractionSession(
+        profileId: String,
+        avatarId: String,
+        contentId: String,
+        timestamp: Double
+    ) async throws -> VODSessionResponse {
+        let body: [String: Any] = [
+            "profile_id": profileId,
+            "avatar_id": avatarId,
+            "content_id": contentId,
+            "timestamp": timestamp,
+        ]
+        return try await client.postJSON(
+            "/api/v1/vod-interactions/sessions/start",
+            body: body,
+            as: VODSessionResponse.self
+        )
+    }
+
+    func sendInteractionMessage(
+        sessionId: String,
+        message: String
+    ) async throws -> CharacterResponsePayload {
+        let body: [String: String] = ["message": message]
+        return try await client.post(
+            "/api/v1/vod-interactions/sessions/\(sessionId)/message",
+            body: body,
+            as: CharacterResponsePayload.self
+        )
+    }
+
+    func completeInteractionSession(
+        sessionId: String
+    ) async throws -> SessionStatusPayload {
+        return try await client.postJSON(
+            "/api/v1/vod-interactions/sessions/\(sessionId)/complete",
+            body: [:],
+            as: SessionStatusPayload.self
         )
     }
 }

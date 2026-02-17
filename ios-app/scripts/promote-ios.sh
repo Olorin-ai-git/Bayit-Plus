@@ -20,6 +20,31 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
+# Validate Info.plist contains production values only
+echo -e "${BLUE}🔍 Validating Info.plist for production values...${NC}"
+
+API_BASE_URL=$(plutil -extract API_BASE_URL raw -o - BayitPlusApp/Info.plist)
+
+# Check for localhost or any non-production URLs
+if [[ "$API_BASE_URL" == *"localhost"* ]] || [[ "$API_BASE_URL" == *"127.0.0.1"* ]] || [[ "$API_BASE_URL" =~ ^http://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+ ]]; then
+  echo -e "${RED}❌ ERROR: Info.plist contains non-production API_BASE_URL${NC}"
+  echo -e "${RED}   Found: $API_BASE_URL${NC}"
+  echo -e "${RED}   Expected: https://api.bayit.tv/api/v1${NC}"
+  echo ""
+  echo -e "${BLUE}Fix with: plutil -replace API_BASE_URL -string 'https://api.bayit.tv/api/v1' BayitPlusApp/Info.plist${NC}"
+  exit 1
+fi
+
+# Verify it's the exact production URL
+if [[ "$API_BASE_URL" != "https://api.bayit.tv/api/v1" ]]; then
+  echo -e "${RED}❌ ERROR: API_BASE_URL is not set to production value${NC}"
+  echo -e "${RED}   Found: $API_BASE_URL${NC}"
+  echo -e "${RED}   Expected: https://api.bayit.tv/api/v1${NC}"
+  exit 1
+fi
+
+echo -e "${GREEN}✅ Info.plist validation passed - production values confirmed${NC}"
+
 # Get current build number from Info.plist
 CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))

@@ -750,6 +750,20 @@ class Settings(BaseSettings):
         description="Default ElevenLabs voice ID for unmatched characters"
     )
 
+    # Back to the Future character voices
+    CHARACTER_VOICE_DOC_BROWN: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Doc Brown (eccentric, energetic)"
+    )
+    CHARACTER_VOICE_GEORGE_MCFLY: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for George McFly (timid, earnest)"
+    )
+    CHARACTER_VOICE_LORRAINE_BAINES: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Lorraine Baines (warm, kind)"
+    )
+
     @field_validator("CHARACTER_ANIMATION_PROVIDER")
     @classmethod
     def validate_animation_provider(cls, v: str) -> str:

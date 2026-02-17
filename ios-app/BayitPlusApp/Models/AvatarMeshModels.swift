@@ -33,6 +33,43 @@ struct ConsentEntry: Codable, Identifiable {
     let active: Bool
 }
 
+// MARK: - VOD Interactive Moments
+
+struct InteractiveMoment: Codable, Identifiable {
+    let timestamp: Double
+    let duration: Double
+    let sceneContext: String
+    let characterName: String
+    let characterFrameUrl: String?
+    let interactionPrompt: String
+    let voiceId: String
+    let dialogueOptions: [String]
+
+    var id: Double { timestamp }
+}
+
+struct VODSessionResponse: Codable {
+    let id: String
+    let characterName: String
+    let status: String
+}
+
+struct CharacterResponsePayload: Codable {
+    let characterName: String
+    let responseText: String
+    let audioUrl: String
+    let animatedVideoUrl: String
+}
+
+struct SessionStatusPayload: Codable {
+    let sessionId: String
+    let characterName: String
+    let status: String
+    let exchangesCount: Int
+}
+
+// MARK: - Magic Mirror
+
 struct MagicMirrorGreeting: Codable {
     let id: String
     let userId: String

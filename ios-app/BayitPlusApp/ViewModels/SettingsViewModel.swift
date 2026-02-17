@@ -18,6 +18,7 @@ final class SettingsViewModel {
     var subtitles = false
     var autoplay = false
     var notifications = false
+    var interactiveMoments = false
 
     private let settingsRepository: any SettingsRepository
     private let userRepository: any UserRepository
@@ -54,7 +55,8 @@ final class SettingsViewModel {
         autoTranslate = enabled
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: enabled,
-            showIsraelTime: nil, shabbatModeEnabled: nil, subtitlesEnabled: nil
+            showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil
         ))
     }
 
@@ -63,7 +65,18 @@ final class SettingsViewModel {
         subtitles = enabled
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil,
-            showIsraelTime: nil, shabbatModeEnabled: nil, subtitlesEnabled: enabled
+            showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: enabled, interactiveMomentsEnabled: nil
+        ))
+    }
+
+    @MainActor
+    func updateInteractiveMoments(_ enabled: Bool) async {
+        interactiveMoments = enabled
+        await savePreference(UserPreferencesUpdate(
+            autoTranslateEnabled: nil,
+            showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: enabled
         ))
     }
 
@@ -151,5 +164,6 @@ final class SettingsViewModel {
         showIsraelTime = prefs?.showIsraelTime ?? false
         shabbatMode = prefs?.shabbatModeEnabled ?? false
         subtitles = prefs?.subtitlesEnabled ?? false
+        interactiveMoments = prefs?.interactiveMomentsEnabled ?? false
     }
 }

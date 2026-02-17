@@ -13,7 +13,7 @@ from app.models.vod_interaction import (
     InteractiveMoment
 )
 from app.models.content import Content
-from app.models.avatar_mesh import AvatarMesh
+from app.models.child_avatar import ChildAvatar
 from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import character_animator_service
 from app.services.beta.credit_service import credit_service
@@ -28,6 +28,9 @@ CHARACTER_VOICE_MAP = {
     "David HaMelech": settings.CHARACTER_VOICE_DAVID,
     "Miriam": settings.CHARACTER_VOICE_MIRIAM,
     "Esther": settings.CHARACTER_VOICE_ESTHER,
+    "Doc Brown": settings.CHARACTER_VOICE_DOC_BROWN,
+    "George McFly": settings.CHARACTER_VOICE_GEORGE_MCFLY,
+    "Lorraine Baines": settings.CHARACTER_VOICE_LORRAINE_BAINES,
 }
 
 
@@ -64,7 +67,7 @@ class VODInteractionService:
             if not moment:
                 raise ValueError(f"No interactive moment at timestamp {moment_timestamp}")
 
-            avatar = await AvatarMesh.get(avatar_id)
+            avatar = await ChildAvatar.get(avatar_id)
             if not avatar or avatar.profile_id != profile_id:
                 raise ValueError(f"Invalid avatar: {avatar_id}")
 

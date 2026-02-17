@@ -125,7 +125,7 @@ struct RouteDestinationResolver {
         case .zehAniV2V(let avatarId, let profileId):
             V2VPracticeView(avatarId: avatarId, profileId: profileId)
         case .zehAniAvatar3D(let avatarId):
-            Avatar3DPreviewView(avatarId: avatarId)
+            Avatar3DPreviewView(avatarImageUrl: avatarId)
         case .zehAniHighlights(let profileId):
             HighlightReelView(profileId: profileId)
         case .zehAniContacts(let profileId):

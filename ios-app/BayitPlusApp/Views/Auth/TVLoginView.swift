@@ -20,6 +20,7 @@ struct TVLoginView: View {
     @State private var status: PairingStatus = .idle
     @State private var errorMessage: String?
     @State private var isVerifying = false
+    @State private var debugLog: [String] = []
 
     private let logger = BayitLogger(category: "TVLogin")
 
@@ -29,6 +30,11 @@ struct TVLoginView: View {
                 headerSection
 
                 statusContent
+
+                // Debug log section (visible in TestFlight)
+                if !debugLog.isEmpty {
+                    debugSection
+                }
 
                 Spacer()
             }
@@ -124,12 +130,16 @@ struct TVLoginView: View {
                     isLoading: status == .authenticating,
                     icon: Image(systemName: "arrow.right")
                 ) {
-                    logger.info("Sign In to TV button tapped")
-                    Task {
+                    addDebugLog("🔘 Button tapped!")
+                    logger.info("🔘 Sign In to TV button tapped")
+                    Task { @MainActor in
+                        addDebugLog("🚀 Starting auth task...")
                         await completeAuthentication()
+                        addDebugLog("✅ Task completed")
                     }
                 }
                 .frame(maxWidth: .infinity)
+                .disabled(status == .authenticating)
             } else {
                 Text(localization.t("tvLogin.pleaseSignIn"))
                     .font(.subheadline)
@@ -276,31 +286,85 @@ struct TVLoginView: View {
         )
     }
 
+    private var debugSection: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            HStack {
+                Text("Debug Log")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundStyle(DesignTokens.Text.secondary)
+
+                Spacer()
+
+                Button("Copy") {
+                    UIPasteboard.general.string = debugLog.joined(separator: "\n")
+                }
+                .font(.caption)
+                .foregroundStyle(DesignTokens.Primary.p400)
+            }
+
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(Array(debugLog.enumerated()), id: \.offset) { _, log in
+                        Text(log)
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
+                }
+            }
+            .frame(maxHeight: 200)
+        }
+        .padding(DesignTokens.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                .fill(Color.black.opacity(0.3))
+        )
+    }
+
+    // MARK: - Debug Helpers
+
+    private func addDebugLog(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        let logMessage = "[\(timestamp)] \(message)"
+        Task { @MainActor in
+            debugLog.append(logMessage)
+            if debugLog.count > 50 {
+                debugLog.removeFirst()
+            }
+        }
+    }
+
     // MARK: - API Methods
 
     private func verifyAndConnect() async {
+        logger.info("🔵 verifyAndConnect() called")
         status = .loading
         errorMessage = nil
 
         do {
             let config = AppConfiguration()
+            logger.info("🔍 Verifying session...")
             let verified = try await verifySession(config: config)
 
             guard verified else {
+                logger.warning("⚠️ Session verification failed")
                 status = .failed
                 errorMessage = "Invalid or expired session"
                 return
             }
 
+            logger.info("✅ Session verified successfully")
             status = .companionConnected
+            logger.info("📡 Notifying TV of companion connection...")
             try await notifyConnection(config: config)
+            logger.info("✅ TV notified of connection")
 
-            if authManager.isAuthenticated {
-                await completeAuthentication()
-            }
+            // Note: Do NOT auto-complete here - let user tap the button
+            // This prevents race conditions and gives user control
+            logger.info("⏸️ Waiting for user to tap 'Sign In' button")
 
         } catch {
-            logger.error("TV login verification failed", error: error)
+            logger.error("❌ TV login verification failed", error: error)
             status = .failed
             errorMessage = error.localizedDescription
         }
@@ -369,61 +433,100 @@ struct TVLoginView: View {
     }
 
     private func completeAuthentication() async {
-        logger.info("completeAuthentication() called")
+        addDebugLog("🔵 completeAuthentication() called")
+        logger.info("🔵 completeAuthentication() called")
+        addDebugLog("📊 Status: \(String(describing: status)), Auth: \(authManager.isAuthenticated)")
 
         guard authManager.isAuthenticated else {
-            logger.warning("User not authenticated, cannot complete TV login")
+            addDebugLog("⚠️ User NOT authenticated!")
+            logger.warning("⚠️ User not authenticated, cannot complete TV login")
+            await MainActor.run {
+                status = .failed
+                errorMessage = "Please sign in first"
+            }
             return
         }
 
-        logger.info("Setting status to authenticating")
-        status = .authenticating
+        addDebugLog("🟢 User authenticated, proceeding...")
+        logger.info("🟢 User is authenticated, proceeding with completion")
+
+        await MainActor.run {
+            status = .authenticating
+        }
+        addDebugLog("📝 Status → authenticating")
 
         do {
             let config = AppConfiguration()
             let url = config.apiBaseURL
                 .appendingPathComponent("auth/device-pairing/v2/complete-token")
 
-            logger.info("Calling API: \(url.absoluteString)")
+            addDebugLog("🌐 API: \(url.absoluteString)")
+            addDebugLog("📦 Session: \(sessionId)")
+            logger.info("🌐 Calling API: \(url.absoluteString)")
 
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.timeoutInterval = config.apiTimeout
 
-            if let token = try await authManager.authTokenProvider.currentToken() {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                logger.info("Auth token added to request")
-            } else {
-                logger.warning("No auth token available")
+            // Get current auth token
+            guard let token = try await authManager.authTokenProvider.currentToken() else {
+                addDebugLog("❌ No auth token!")
+                logger.error("❌ No auth token available from authManager")
+                throw AuthError.devicePairingFailed(underlying: "No authentication token")
             }
+
+            addDebugLog("🔑 Token length: \(token.count)")
+            addDebugLog("🔑 Prefix: \(String(token.prefix(20)))...")
+            logger.info("🔑 Auth token obtained, length: \(token.count)")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
             let body = ["session_id": sessionId]
             request.httpBody = try JSONEncoder().encode(body)
-            logger.info("Request body: session_id=\(sessionId)")
+            addDebugLog("📤 Sending request...")
 
             let (data, response) = try await URLSession.shared.data(for: request)
+            addDebugLog("📥 Response received")
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                logger.error("Invalid response type")
+                addDebugLog("❌ Invalid response type")
+                logger.error("❌ Invalid response type")
                 throw AuthError.devicePairingFailed(underlying: "Invalid response")
             }
 
-            logger.info("Response status: \(httpResponse.statusCode)")
+            addDebugLog("📊 Status: \(httpResponse.statusCode)")
+            logger.info("📊 Response status: \(httpResponse.statusCode)")
+
+            let responseBody = String(data: data, encoding: .utf8) ?? "(binary)"
+            addDebugLog("📄 Body: \(responseBody.prefix(100))...")
 
             if httpResponse.statusCode != 200 {
-                let responseBody = String(data: data, encoding: .utf8) ?? "Unable to decode"
-                logger.error("API error: \(httpResponse.statusCode), body: \(responseBody)")
-                throw AuthError.devicePairingFailed(underlying: "Authentication failed with status \(httpResponse.statusCode)")
+                addDebugLog("❌ Error: \(httpResponse.statusCode)")
+                addDebugLog("❌ Body: \(responseBody)")
+                logger.error("❌ API error: \(httpResponse.statusCode), body: \(responseBody)")
+                throw AuthError.devicePairingFailed(underlying: "Failed with status \(httpResponse.statusCode): \(responseBody)")
             }
 
-            logger.info("✅ TV login completed successfully")
-            status = .authenticated
+            addDebugLog("✅ SUCCESS!")
+            logger.info("✅✅✅ TV login completed successfully!")
+            await MainActor.run {
+                status = .authenticated
+            }
 
+        } catch let error as AuthError {
+            addDebugLog("❌ AuthError: \(error.userFacingMessage)")
+            logger.error("❌ AuthError during TV login completion", error: error)
+            await MainActor.run {
+                status = .failed
+                errorMessage = error.userFacingMessage
+            }
         } catch {
-            logger.error("TV login completion failed", error: error)
-            status = .failed
-            errorMessage = error.localizedDescription
+            addDebugLog("❌ Error: \(error.localizedDescription)")
+            logger.error("❌ Unexpected error during TV login completion", error: error)
+            await MainActor.run {
+                status = .failed
+                errorMessage = "Failed: \(error.localizedDescription)"
+            }
         }
     }
 }

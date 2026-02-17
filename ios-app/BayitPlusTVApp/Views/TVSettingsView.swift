@@ -124,6 +124,22 @@ struct TVSettingsView: View {
                 TVTriviaSettingsView()
             }
 
+            if let vm = viewModel {
+                Toggle(isOn: Bindable(vm).interactiveMoments) {
+                    HStack {
+                        Image(systemName: "person.2.wave.2")
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                            .frame(width: 32)
+                        Text(localization.t("settings.interactiveMoments"))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                    }
+                }
+                .tint(DesignTokens.Primary.default)
+                .onChange(of: vm.interactiveMoments) { _, newValue in
+                    Task { await vm.updateInteractiveMoments(newValue) }
+                }
+            }
+
             settingsNavRow(
                 icon: "flame",
                 title: localization.t("judaism.shabbat.title"),
