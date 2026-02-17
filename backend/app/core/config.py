@@ -763,6 +763,14 @@ class Settings(BaseSettings):
         default="ashjVK50jp28G73AUTnb",
         description="ElevenLabs voice ID for Lorraine Baines (warm, kind)"
     )
+    CHARACTER_VOICE_MARTY_MCFLY: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Marty McFly (energetic, teenage)"
+    )
+    CHARACTER_VOICE_JENNIFER_PARKER: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Jennifer Parker (warm, supportive)"
+    )
 
     @field_validator("CHARACTER_ANIMATION_PROVIDER")
     @classmethod

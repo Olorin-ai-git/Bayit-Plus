@@ -31,6 +31,8 @@ CHARACTER_VOICE_MAP = {
     "Doc Brown": settings.CHARACTER_VOICE_DOC_BROWN,
     "George McFly": settings.CHARACTER_VOICE_GEORGE_MCFLY,
     "Lorraine Baines": settings.CHARACTER_VOICE_LORRAINE_BAINES,
+    "Marty McFly": settings.CHARACTER_VOICE_MARTY_MCFLY,
+    "Jennifer Parker": settings.CHARACTER_VOICE_JENNIFER_PARKER,
 }
 
 

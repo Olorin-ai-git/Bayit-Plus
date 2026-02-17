@@ -45,6 +45,8 @@ struct InteractiveMoment: Codable, Identifiable {
     let voiceId: String
     let dialogueOptions: [String]
     let lipsyncVideoUrl: String?
+    let characterResponseText: String?
+    let characterResponseVideoUrl: String?
 
     var id: Double { timestamp }
 }

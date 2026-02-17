@@ -56,6 +56,7 @@ struct TVPlayerView: View {
     @State private var showCatchUp = false
     @State private var showCompanion = false
     @State private var showQuiz = false
+    @State private var volumeBeforeDuck: Float?
 
     // MARK: - Playback State
 
@@ -601,15 +602,32 @@ struct TVPlayerView: View {
            let videoUrl = moment.lipsyncVideoUrl,
            let imgUrl = avatarImageUrl {
             TVInteractiveMomentOverlayView(
-                videoUrl: videoUrl,
+                avatarVideoUrl: videoUrl,
                 avatarImageUrl: imgUrl,
-                onDismiss: { vm.dismiss() }
+                characterVideoUrl: moment.characterResponseVideoUrl,
+                characterImageUrl: moment.characterFrameUrl,
+                onDismiss: { restoreVolume(); vm.dismiss() }
             )
+            .onAppear { duckVolume() }
         }
 
         if showNoAvatarWarning {
             noAvatarWarningBanner
         }
+    }
+
+    private func duckVolume() {
+        let duckedLevel: Float = 0.15
+        volumeBeforeDuck = mediaPlayer.avPlayer.volume
+        mediaPlayer.avPlayer.volume = duckedLevel
+    }
+
+    private func restoreVolume() {
+        let target = volumeBeforeDuck ?? 1.0
+        withAnimation {
+            mediaPlayer.avPlayer.volume = target
+        }
+        volumeBeforeDuck = nil
     }
 
     private var noAvatarWarningBanner: some View {

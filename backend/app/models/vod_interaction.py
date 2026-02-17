@@ -24,6 +24,22 @@ class InteractiveMoment(BaseModel):
         default_factory=list,
         description="Predefined dialogue choices shown to user",
     )
+    lipsync_video_url: Optional[str] = Field(
+        None,
+        description="Pre-generated Creatify lip-sync video URL",
+    )
+    character_response_text: Optional[str] = Field(
+        None,
+        description="Pre-generated character dialogue response text",
+    )
+    character_response_audio_url: Optional[str] = Field(
+        None,
+        description="Pre-generated character response TTS audio URL",
+    )
+    character_response_video_url: Optional[str] = Field(
+        None,
+        description="Pre-generated character response lip-sync video URL",
+    )
 
 
 class DialogueExchange(BaseModel):

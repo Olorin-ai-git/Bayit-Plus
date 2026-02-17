@@ -4,56 +4,90 @@ import AVKit
 import BayitDesignSystem
 import SwiftUI
 
-/// PiP-style overlay that plays a Creatify lip-sync video of the
-/// child's avatar speaking about the current movie scene.
-/// Positioned on the lower-right so the movie remains fully visible.
-/// Auto-dismisses when the video finishes playing.
+/// Dual-circle overlay for interactive moments: child avatar (left) and
+/// movie character (right). The movie never pauses -- volume ducks while
+/// the conversation plays, then restores on dismiss.
 struct TVInteractiveMomentOverlayView: View {
 
-    let videoUrl: String
+    let avatarVideoUrl: String
     let avatarImageUrl: String
+    let characterVideoUrl: String?
+    let characterImageUrl: String?
     let onDismiss: () -> Void
 
-    private let avatarSize: CGFloat = 240
+    private let circleSize: CGFloat = 240
+    private let transitionDelay: TimeInterval = 0.5
 
-    @State private var player: AVPlayer?
-    @State private var isVideoReady = false
+    @State private var phase: OverlayPhase = .avatarSpeaking
+    @State private var avatarPlayer: AVPlayer?
+    @State private var characterPlayer: AVPlayer?
+    @State private var isAvatarVideoReady = false
+    @State private var isCharacterVideoReady = false
 
     var body: some View {
         VStack {
             Spacer()
-            HStack {
+            HStack(spacing: TVDesignTokens.Spacing.xxl) {
                 Spacer()
-                ZStack {
-                    avatarStillImage
-                    if isVideoReady, let avPlayer = player {
-                        VideoPlayer(player: avPlayer)
-                            .scaleEffect(2)
-                    }
+                avatarCircle
+                    .opacity(phase != .done ? 1 : 0)
+                    .scaleEffect(phase != .done ? 1 : 0.8)
+
+                if characterVideoUrl != nil || characterImageUrl != nil {
+                    characterCircle
+                        .opacity(phase == .characterSpeaking ? 1 : 0)
+                        .scaleEffect(phase == .characterSpeaking ? 1 : 0.8)
                 }
-                .frame(width: avatarSize, height: avatarSize)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(.white.opacity(0.3), lineWidth: 3)
-                )
-                .shadow(
-                    color: DesignTokens.Primary.default.opacity(0.4),
-                    radius: 20, x: 0, y: 8
-                )
-                .padding(.trailing, TVDesignTokens.Spacing.xxl)
-                .padding(.bottom, 140)
+                Spacer()
             }
+            .padding(.bottom, 140)
         }
+        .animation(.easeInOut(duration: 0.4), value: phase)
         .allowsHitTesting(false)
-        .onAppear { setupPlayer() }
-        .onDisappear { cleanupPlayer() }
+        .onAppear { setupAvatarPlayer() }
+        .onDisappear { cleanupPlayers() }
     }
 
-    // MARK: - Content
+    // MARK: - Circles
 
-    private var avatarStillImage: some View {
-        AsyncImage(url: URL(string: avatarImageUrl)) { phase in
+    private var avatarCircle: some View {
+        ZStack {
+            stillImage(url: avatarImageUrl)
+            if isAvatarVideoReady, let player = avatarPlayer {
+                VideoPlayer(player: player)
+                    .scaleEffect(2)
+            }
+        }
+        .frame(width: circleSize, height: circleSize)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
+        .shadow(
+            color: DesignTokens.Primary.default.opacity(0.4),
+            radius: 20, x: 0, y: 8
+        )
+    }
+
+    private var characterCircle: some View {
+        ZStack {
+            if let imgUrl = characterImageUrl {
+                stillImage(url: imgUrl)
+            }
+            if isCharacterVideoReady, let player = characterPlayer {
+                VideoPlayer(player: player)
+                    .scaleEffect(2)
+            }
+        }
+        .frame(width: circleSize, height: circleSize)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
+        .shadow(
+            color: DesignTokens.Primary.default.opacity(0.4),
+            radius: 20, x: 0, y: 8
+        )
+    }
+
+    private func stillImage(url: String) -> some View {
+        AsyncImage(url: URL(string: url)) { phase in
             switch phase {
             case .success(let image):
                 image.resizable().scaledToFill()
@@ -63,42 +97,100 @@ struct TVInteractiveMomentOverlayView: View {
         }
     }
 
-    // MARK: - Player
+    // MARK: - Avatar Player
 
-    private func setupPlayer() {
-        guard let url = URL(string: videoUrl) else {
+    private func setupAvatarPlayer() {
+        guard let url = URL(string: avatarVideoUrl) else {
             onDismiss()
             return
         }
 
-        let avPlayer = AVPlayer(url: url)
-        player = avPlayer
+        let player = AVPlayer(url: url)
+        avatarPlayer = player
 
         NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
-            object: avPlayer.currentItem,
+            object: player.currentItem,
             queue: .main
         ) { _ in
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.3))
-                onDismiss()
-            }
+            Task { @MainActor in onAvatarFinished() }
         }
 
         Task {
             try? await Task.sleep(for: .seconds(0.8))
             await MainActor.run {
-                withAnimation(.easeIn(duration: 0.3)) {
-                    isVideoReady = true
-                }
-                avPlayer.play()
+                withAnimation(.easeIn(duration: 0.3)) { isAvatarVideoReady = true }
+                player.play()
             }
         }
     }
 
-    private func cleanupPlayer() {
-        player?.pause()
-        player = nil
+    private func onAvatarFinished() {
+        guard let charUrl = characterVideoUrl, URL(string: charUrl) != nil else {
+            dismissAfterDelay()
+            return
+        }
+
+        phase = .transition
+        Task {
+            try? await Task.sleep(for: .seconds(transitionDelay))
+            await MainActor.run { setupCharacterPlayer(urlString: charUrl) }
+        }
     }
+
+    // MARK: - Character Player
+
+    private func setupCharacterPlayer(urlString: String) {
+        guard let url = URL(string: urlString) else {
+            dismissAfterDelay()
+            return
+        }
+
+        let player = AVPlayer(url: url)
+        characterPlayer = player
+        phase = .characterSpeaking
+
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem,
+            queue: .main
+        ) { _ in
+            Task { @MainActor in dismissAfterDelay() }
+        }
+
+        Task {
+            try? await Task.sleep(for: .seconds(0.5))
+            await MainActor.run {
+                withAnimation(.easeIn(duration: 0.3)) { isCharacterVideoReady = true }
+                player.play()
+            }
+        }
+    }
+
+    // MARK: - Lifecycle
+
+    private func dismissAfterDelay() {
+        phase = .done
+        Task {
+            try? await Task.sleep(for: .seconds(0.3))
+            await MainActor.run { onDismiss() }
+        }
+    }
+
+    private func cleanupPlayers() {
+        avatarPlayer?.pause()
+        avatarPlayer = nil
+        characterPlayer?.pause()
+        characterPlayer = nil
+    }
+}
+
+// MARK: - Overlay Phase
+
+enum OverlayPhase {
+    case avatarSpeaking
+    case transition
+    case characterSpeaking
+    case done
 }
 #endif

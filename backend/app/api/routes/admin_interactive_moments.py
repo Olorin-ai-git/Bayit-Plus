@@ -17,6 +17,10 @@ from app.core.security import get_current_user
 from app.api.routes.admin.auth import require_admin
 from app.core.storage import storage_service
 from app.core.logging_config import get_logger
+from app.services.vod_interaction.character_ai import character_ai_service
+from app.services.vod_interaction.character_animator import character_animator_service
+from app.services.vod_interaction.interaction_service import CHARACTER_VOICE_MAP
+from app.core.config import settings
 
 logger = get_logger(__name__)
 
@@ -203,6 +207,115 @@ async def get_interactive_moments(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve interactive moments"
+        )
+
+
+@router.post("/content/{content_id}/generate-responses")
+async def generate_character_responses(
+    content_id: str,
+    current_user: User = Depends(require_admin)
+):
+    """
+    Pre-generate character response videos for all interactive moments.
+
+    For each moment that has a lipsync_video_url (avatar video) but no
+    character_response_video_url, generates AI dialogue, TTS audio,
+    and lip-sync video using the character's cloned voice.
+    """
+    try:
+        content = await Content.get(content_id)
+        if not content:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Content not found"
+            )
+
+        if not content.interactive_moments:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Content has no interactive moments"
+            )
+
+        generated_count = 0
+        errors = []
+
+        for idx, moment in enumerate(content.interactive_moments):
+            if not moment.lipsync_video_url:
+                continue
+            if moment.character_response_video_url:
+                continue
+            if not moment.character_frame_url:
+                errors.append(
+                    f"Moment at {moment.timestamp}s: missing character_frame_url"
+                )
+                continue
+
+            try:
+                voice_id = CHARACTER_VOICE_MAP.get(
+                    moment.character_name, settings.CHARACTER_VOICE_DEFAULT
+                )
+
+                ai_response = await character_ai_service.generate_response(
+                    character_name=moment.character_name,
+                    scene_context=moment.scene_context,
+                    user_message=moment.interaction_prompt,
+                    conversation_history=[]
+                )
+
+                animated = await character_animator_service.animate_character_response(
+                    character_name=moment.character_name,
+                    dialogue_text=ai_response.text,
+                    character_frame_url=moment.character_frame_url,
+                    voice_id=voice_id
+                )
+
+                moment.character_response_text = ai_response.text
+                moment.character_response_audio_url = animated.audio_url
+                moment.character_response_video_url = animated.video_url
+                generated_count += 1
+
+                logger.info(
+                    "Character response generated for moment",
+                    extra={
+                        "content_id": content_id,
+                        "timestamp": moment.timestamp,
+                        "character_name": moment.character_name,
+                    }
+                )
+
+            except Exception as e:
+                errors.append(
+                    f"Moment at {moment.timestamp}s ({moment.character_name}): {e}"
+                )
+                logger.error(
+                    "Failed to generate character response for moment",
+                    extra={
+                        "content_id": content_id,
+                        "timestamp": moment.timestamp,
+                        "error": str(e),
+                    }
+                )
+
+        if generated_count > 0:
+            await content.save()
+
+        return {
+            "content_id": content_id,
+            "total_moments": len(content.interactive_moments),
+            "generated": generated_count,
+            "errors": errors,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            "Failed to generate character responses",
+            extra={"content_id": content_id, "error": str(e)}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate character responses"
         )
 
 
