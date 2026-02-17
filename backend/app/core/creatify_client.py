@@ -1,8 +1,8 @@
 """
 Creatify Aurora API Client
 
-Client for Creatify Aurora API to generate lip-synced animated videos
-from character still images and audio files.
+Client for Creatify Aurora API to manage personas (avatar images)
+and generate lip-synced animated videos from still images and audio.
 """
 
 import asyncio
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 
 class CreatifyClient:
-    """Client for Creatify Aurora lip-sync animation API"""
+    """Client for Creatify Aurora persona and lip-sync API"""
 
     def __init__(self):
         self.api_url = settings.CREATIFY_API_URL
@@ -31,6 +31,98 @@ class CreatifyClient:
             "X-API-KEY": self.api_key,
             "Content-Type": "application/json"
         }
+
+    async def create_persona(
+        self,
+        name: str,
+        image_url: str,
+    ) -> dict:
+        """
+        Create a Creatify persona from an avatar image.
+
+        Args:
+            name: Display name for the persona
+            image_url: Public/signed URL of the avatar image
+
+        Returns:
+            Persona dict with id, image_url, status
+        """
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                payload = {
+                    "name": name,
+                    "image_url": image_url,
+                }
+
+                logger.info(
+                    "Creating Creatify persona",
+                    extra={"name": name, "image_url": image_url}
+                )
+
+                response = await client.post(
+                    f"{self.api_url}/api/personas/",
+                    json=payload,
+                    headers=self._get_headers()
+                )
+                response.raise_for_status()
+
+                result = response.json()
+                logger.info(
+                    "Creatify persona created",
+                    extra={"persona_id": result.get("id")}
+                )
+                return result
+
+        except httpx.HTTPStatusError as e:
+            logger.error(
+                "Creatify persona creation HTTP error",
+                extra={
+                    "status_code": e.response.status_code,
+                    "response": e.response.text
+                }
+            )
+            raise
+        except Exception as e:
+            logger.error(
+                "Creatify persona creation error",
+                extra={"error": str(e)}
+            )
+            raise
+
+    async def get_persona(self, persona_id: str) -> dict:
+        """
+        Get persona details by ID.
+
+        Args:
+            persona_id: Creatify persona identifier
+
+        Returns:
+            Persona dict with id, image_url, status
+        """
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.get(
+                    f"{self.api_url}/api/personas/{persona_id}",
+                    headers=self._get_headers()
+                )
+                response.raise_for_status()
+                return response.json()
+
+        except httpx.HTTPStatusError as e:
+            logger.error(
+                "Creatify get persona HTTP error",
+                extra={
+                    "persona_id": persona_id,
+                    "status_code": e.response.status_code,
+                }
+            )
+            raise
+        except Exception as e:
+            logger.error(
+                "Creatify get persona error",
+                extra={"persona_id": persona_id, "error": str(e)}
+            )
+            raise
 
     async def create_lipsync(
         self,

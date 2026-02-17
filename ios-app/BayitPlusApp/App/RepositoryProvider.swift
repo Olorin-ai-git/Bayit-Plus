@@ -52,7 +52,7 @@ final class RepositoryProvider {
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let grandparentBridgeRepository: any GrandparentBridgeRepository
     let gamificationRepository: any GamificationRepository
-    let avatarMeshRepository: any AvatarMeshRepository
+    let avatarMeshRepository: any AvatarRepository
     let talkBack: any TalkBackRepository
     let zehAniRepository: any ZehAniRepository
     let webSocketManager: WebSocketManager
@@ -105,7 +105,7 @@ final class RepositoryProvider {
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.gamificationRepository = APIGamificationRepository(client: client)
-        self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
+        self.avatarMeshRepository = APIAvatarRepository(client: client)
         self.talkBack = APITalkBackRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
         self.webSocketManager = webSocketManager

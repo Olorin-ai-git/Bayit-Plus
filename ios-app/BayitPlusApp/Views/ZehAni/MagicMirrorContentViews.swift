@@ -1,6 +1,5 @@
 import BayitDesignSystem
 import BayitLocalization
-import SceneKit
 import SwiftUI
 
 struct MagicMirrorGreetingCard: View {
@@ -90,21 +89,3 @@ struct MagicMirrorNoCreditsPrompt: View {
     }
 }
 
-enum MagicMirrorSceneBuilder {
-    static func createScene() -> SCNScene {
-        let scene = SCNScene()
-
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 60)
-        scene.rootNode.addChildNode(cameraNode)
-
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light?.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 20, z: 60)
-        scene.rootNode.addChildNode(lightNode)
-
-        return scene
-    }
-}

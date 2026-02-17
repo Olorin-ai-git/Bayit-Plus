@@ -2,7 +2,7 @@
 Mirror Greeting Helpers.
 
 Vocabulary selection, greeting text construction, TTS audio generation,
-and lip-sync data production for the Magic Mirror daily greeting pipeline.
+and Creatify lip-sync video production for the Magic Mirror greeting pipeline.
 """
 
 from typing import Optional
@@ -22,11 +22,11 @@ def select_vocabulary_of_the_day(
     from random import choice
 
     common_words = [
-        "שלום (shalom)",
-        "תודה (toda)",
-        "בבקשה (bevakasha)",
-        "משפחה (mishpacha)",
-        "אהבה (ahava)",
+        "shalom (shalom)",
+        "toda (toda)",
+        "bevakasha (bevakasha)",
+        "mishpacha (mishpacha)",
+        "ahava (ahava)",
     ]
 
     if not proficiency or not proficiency.vocabulary_learning:
@@ -65,13 +65,13 @@ def build_greeting_text(
     current_hour = datetime.now().hour
 
     if current_hour < 12:
-        greeting_prefix_he = "בוקר טוב"
+        greeting_prefix_he = "\u05d1\u05d5\u05e7\u05e8 \u05d8\u05d5\u05d1"
         greeting_prefix_en = "Good morning"
     elif current_hour < 18:
-        greeting_prefix_he = "צהריים טובים"
+        greeting_prefix_he = "\u05e6\u05d4\u05e8\u05d9\u05d9\u05dd \u05d8\u05d5\u05d1\u05d9\u05dd"
         greeting_prefix_en = "Good afternoon"
     else:
-        greeting_prefix_he = "ערב טוב"
+        greeting_prefix_he = "\u05e2\u05e8\u05d1 \u05d8\u05d5\u05d1"
         greeting_prefix_en = "Good evening"
 
     greeting_he = f"{greeting_prefix_he}, {child_name}!"
@@ -79,7 +79,7 @@ def build_greeting_text(
 
     if vocab_word:
         clean_word = vocab_word.split(" (")[0]
-        vocab_segment_he = f" המילה של היום: {vocab_word}"
+        vocab_segment_he = f" \u05d4\u05de\u05d9\u05dc\u05d4 \u05e9\u05dc \u05d4\u05d9\u05d5\u05dd: {vocab_word}"
         vocab_segment_en = f" Your word of the day is: {vocab_word}."
         greeting_he += vocab_segment_he
         greeting_en += vocab_segment_en
@@ -106,37 +106,29 @@ async def generate_greeting_lipsync(
     avatar: ChildAvatar,
     audio_path: Optional[str],
 ) -> Optional[str]:
-    """Generate lip-sync blend shape data for the greeting audio."""
-    if not audio_path or not avatar.has_3d_mesh:
+    """Generate Creatify lip-sync video from avatar image and audio."""
+    if not audio_path:
         return None
 
-    from app.services.zeh_ani.synclabs_lipsync_service import (
-        synclabs_lipsync_service,
-    )
+    if not avatar.creatify_avatar_image_url:
+        return None
+
+    from app.core.creatify_client import creatify_client
     from app.services.olorin.storage_service import storage_service
 
-    mesh_signed_url = await storage_service.generate_signed_url(
-        f"zeh-ani/meshes/{avatar.id}/avatar.glb",
-        expiry_seconds=settings.MESH_SIGNED_URL_EXPIRY_SECONDS,
+    image_signed_url = await storage_service.generate_signed_url(
+        avatar.primary_avatar_gcs_path,
+        expiry_seconds=settings.CREATIFY_SIGNED_URL_EXPIRY_SECONDS,
     )
 
-    lipsync_data = (
-        await synclabs_lipsync_service.generate_realtime_lipsync(
-            mesh_glb_url=mesh_signed_url,
-            audio_gcs_path=audio_path,
-        )
+    audio_signed_url = await storage_service.generate_signed_url(
+        audio_path,
+        expiry_seconds=settings.CREATIFY_SIGNED_URL_EXPIRY_SECONDS,
     )
 
-    import json as json_lib
-
-    output_path = (
-        f"zeh-ani/mirror/{avatar.user_id}/{avatar.profile_id}/"
-        f"greeting_lipsync.json"
-    )
-    lipsync_bytes = json_lib.dumps(lipsync_data).encode("utf-8")
-    await storage_service.upload_bytes(
-        lipsync_bytes, output_path,
-        content_type="application/json",
+    gcs_url = await creatify_client.create_lipsync(
+        image_url=image_signed_url,
+        audio_url=audio_signed_url,
     )
 
-    return output_path
+    return gcs_url

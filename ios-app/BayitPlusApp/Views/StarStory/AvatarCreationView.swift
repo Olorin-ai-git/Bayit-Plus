@@ -1,4 +1,3 @@
-import ARKit
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -22,7 +21,7 @@ struct AvatarCreationView: View {
     @State private var errorMessage: String?
     @State private var videoData: Data?
     @State private var isUploading = false
-    @State private var showMeshGeneration = false
+    @State private var showPersonaCreation = false
 
     private enum CreationStep: Int, CaseIterable {
         case consent, recordVideo, processing
@@ -41,12 +40,12 @@ struct AvatarCreationView: View {
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
-            .sheet(isPresented: $showMeshGeneration) {
+            .sheet(isPresented: $showPersonaCreation) {
                 if let id = avatarId {
                     MeshGenerationView(avatarId: id, profileId: profileId)
                 }
             }
-            .onChange(of: showMeshGeneration) { _, showing in
+            .onChange(of: showPersonaCreation) { _, showing in
                 if !showing { dismiss() }
             }
             .onAppear {
@@ -147,77 +146,19 @@ struct AvatarCreationView: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
                 .padding(.top, DesignTokens.Spacing.sm)
 
-            #if targetEnvironment(simulator)
-            simulatorCaptureView
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-                .padding(.top, DesignTokens.Spacing.md)
-            #else
-            if ARFaceTrackingConfiguration.isSupported {
-                ARFaceCaptureView(
-                    onCaptureComplete: { glbData in
-                        Task { await processARKitCapture(glbData: glbData) }
-                    },
-                    onCancel: { currentStep = .consent }
-                )
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-                .padding(.top, DesignTokens.Spacing.md)
-            } else {
-                SelfieRecorderView(
-                    onVideoRecorded: { data in
-                        videoData = data
-                        currentStep = .processing
-                        Task { await processVideo() }
-                    },
-                    onCancel: { currentStep = .consent }
-                )
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-                .padding(.top, DesignTokens.Spacing.md)
-            }
-            #endif
+            SelfieRecorderView(
+                onVideoRecorded: { data in
+                    videoData = data
+                    currentStep = .processing
+                    Task { await processVideo() }
+                },
+                onCancel: { currentStep = .consent }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.top, DesignTokens.Spacing.md)
         }
     }
-
-    // MARK: - Simulator Debug
-
-    #if targetEnvironment(simulator)
-    private var simulatorCaptureView: some View {
-        VStack(spacing: DesignTokens.Spacing.lg) {
-            Spacer()
-            Image(systemName: "face.smiling")
-                .font(.system(size: DesignTokens.FontSize.xxxl))
-                .foregroundStyle(DesignTokens.Primary.p400)
-            Text(localization.t("avatar.simulatorUnavailable"))
-                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
-            Text(localization.t("avatar.simulatorHint"))
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .multilineTextAlignment(.center)
-            GlassButton("Use Sample Face", variant: .primary, size: .large) {
-                Task { await buildSyntheticAndUpload() }
-            }
-            .disabled(isUploading)
-            GlassButton(localization.t("common.cancel"), variant: .ghost, size: .medium) {
-                currentStep = .consent
-            }
-            Spacer()
-        }
-    }
-
-    private func buildSyntheticAndUpload() async {
-        let result = ARFaceCaptureSession.syntheticResult()
-        let glbData = await Task.detached(priority: .userInitiated) {
-            GLBBuilder.build(from: result)
-        }.value
-        guard let glbData else {
-            errorMessage = localization.t("zehAni.arCapture.noFace")
-            return
-        }
-        await processARKitCapture(glbData: glbData)
-    }
-    #endif
 
     // MARK: - Actions
 
@@ -239,42 +180,19 @@ struct AvatarCreationView: View {
         isUploading = true
         errorMessage = nil
 
-        let success = await viewModel?.processVideoAndGenerateMesh(
+        let success = await viewModel?.processVideoAndCreatePersona(
             avatarId: avatarId, videoData: videoData,
             profileId: profileId, pin: familyPin,
-            meshRepo: repos.avatarMeshRepository
+            avatarRepo: repos.avatarMeshRepository
         ) ?? false
 
         if success {
             self.videoData = nil
             familyPin = ""
             isUploading = false
-            showMeshGeneration = true
+            showPersonaCreation = true
         } else {
             isUploading = false
-            errorMessage = viewModel?.errorMessage
-        }
-    }
-
-    private func processARKitCapture(glbData: Data) async {
-        guard let avatarId else { return }
-        isUploading = true
-        errorMessage = nil
-        currentStep = .processing
-
-        let success = await viewModel?.uploadARKitMesh(
-            avatarId: avatarId,
-            glbData: glbData,
-            profileId: profileId,
-            pin: familyPin,
-            meshRepo: repos.avatarMeshRepository
-        ) ?? false
-
-        isUploading = false
-        if success {
-            familyPin = ""
-            dismiss()
-        } else {
             errorMessage = viewModel?.errorMessage
         }
     }

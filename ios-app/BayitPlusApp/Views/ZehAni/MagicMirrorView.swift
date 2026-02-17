@@ -1,7 +1,7 @@
+import AVKit
 import BayitDesignSystem
 import BayitLocalization
 import BayitNetworking
-import SceneKit
 import SwiftUI
 
 struct MagicMirrorView: View {
@@ -17,8 +17,9 @@ struct MagicMirrorView: View {
     @State private var showAvatarCreation = false
     @State private var starStoryVM: StarStoryViewModel?
     @State private var existingAvatarId: String?
-    @State private var glbData: Data?
-    @State private var meshLoadFailed = false
+    @State private var avatarImageUrl: String?
+    @State private var isPlayingVideo = false
+    @State private var player: AVPlayer?
 
     var body: some View {
         ZStack {
@@ -101,7 +102,7 @@ struct MagicMirrorView: View {
     private func greetingContent(_ greeting: MagicMirrorGreeting) -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
-                avatarSceneView
+                avatarDisplayView(greeting)
                 greetingCard(greeting)
                 vocabularyCard(greeting)
             }
@@ -109,41 +110,77 @@ struct MagicMirrorView: View {
     }
 
     @ViewBuilder
-    private var avatarSceneView: some View {
-        if let glbData = glbData {
-            ZStack(alignment: .topLeading) {
-                SceneKitView(glbData: glbData)
-                Text("GLB \(glbData.count / 1024)KB")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.green)
-                    .padding(4)
-            }
-            .frame(height: 280)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
-            )
-        } else if meshLoadFailed {
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(DesignTokens.Glass.bg.opacity(0.3))
-                .frame(height: 280)
-                .overlay {
-                    VStack(spacing: DesignTokens.Spacing.sm) {
-                        Image(systemName: "person.crop.circle")
-                            .font(.system(size: 48))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                        Text(localization.t("zehAni.magicMirror.meshUnavailable"))
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
+    private func avatarDisplayView(_ greeting: MagicMirrorGreeting) -> some View {
+        ZStack {
+            if isPlayingVideo, let player = player {
+                VideoPlayer(player: player)
+                    .frame(height: 280)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                            .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                    )
+                    .onReceive(NotificationCenter.default.publisher(
+                        for: .AVPlayerItemDidPlayToEndTime
+                    )) { _ in
+                        isPlayingVideo = false
+                        self.player = nil
+                    }
+            } else if let imageUrlString = avatarImageUrl,
+                      let imageUrl = URL(string: imageUrlString) {
+                AsyncImage(url: imageUrl) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    case .failure:
+                        avatarPlaceholder
+                    default:
+                        ProgressView().tint(.white)
                     }
                 }
-        } else {
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(DesignTokens.Glass.bg.opacity(0.3))
                 .frame(height: 280)
-                .overlay { ProgressView().tint(.white) }
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                )
+                .overlay(alignment: .bottom) {
+                    if greeting.lipsyncVideoUrl != nil {
+                        playGreetingButton(greeting)
+                    }
+                }
+            } else {
+                avatarPlaceholder
+                    .frame(height: 280)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+            }
         }
+    }
+
+    private func playGreetingButton(_ greeting: MagicMirrorGreeting) -> some View {
+        GlassButton(
+            localization.t("zehAni.magicMirror.playGreeting"),
+            variant: .primary,
+            size: .small
+        ) {
+            guard let videoUrlString = greeting.lipsyncVideoUrl,
+                  let videoUrl = URL(string: videoUrlString) else { return }
+            let avPlayer = AVPlayer(url: videoUrl)
+            player = avPlayer
+            isPlayingVideo = true
+            avPlayer.play()
+        }
+        .padding(DesignTokens.Spacing.sm)
+    }
+
+    private var avatarPlaceholder: some View {
+        RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+            .fill(DesignTokens.Glass.bg.opacity(0.3))
+            .overlay {
+                Image(systemName: "person.crop.circle")
+                    .font(.system(size: 48))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
     }
 
     @ViewBuilder
@@ -201,9 +238,9 @@ struct MagicMirrorView: View {
         isLoading = true
         error = nil
         noAvatar = false
-        glbData = nil
-        meshLoadFailed = false
-        NSLog("BAYIT_MM loadGreeting start profileId=\(profileId)")
+        avatarImageUrl = nil
+        isPlayingVideo = false
+        player = nil
 
         Task {
             do {
@@ -215,7 +252,6 @@ struct MagicMirrorView: View {
                 let fetched = try await greetingTask
                 let avatarsResponse = try? await avatarsTask
                 let avatarId = avatarsResponse?.avatars.first?.avatarId
-                NSLog("BAYIT_MM greeting ok, avatarId=\(avatarId ?? "nil")")
 
                 await MainActor.run {
                     greeting = fetched
@@ -224,10 +260,7 @@ struct MagicMirrorView: View {
                 }
 
                 if let avatarId {
-                    await loadAvatarMesh(avatarId: avatarId)
-                } else {
-                    NSLog("BAYIT_MM no avatarId, meshLoadFailed")
-                    await MainActor.run { meshLoadFailed = true }
+                    await loadAvatarImage(avatarId: avatarId)
                 }
             } catch let apiError as APIError {
                 await MainActor.run {
@@ -247,28 +280,16 @@ struct MagicMirrorView: View {
         }
     }
 
-    private func loadAvatarMesh(avatarId: String) async {
+    private func loadAvatarImage(avatarId: String) async {
         do {
-            let meshGlb = try await repos.avatarMeshRepository.fetchGlbUrl(
+            let status = try await repos.avatarMeshRepository.fetchAvatarStatus(
                 avatarId: avatarId
             )
-            guard let url = URL(string: meshGlb.signedUrl) else {
-                await MainActor.run { meshLoadFailed = true }
-                return
-            }
-            let (data, response) = try await URLSession.shared.data(from: url)
-            let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
-            let isValidGlb = (httpStatus == 200 || httpStatus == 0) && data.count > 50_000
-            NSLog("BAYIT_MM meshDownload status=\(httpStatus) size=\(data.count) valid=\(isValidGlb)")
             await MainActor.run {
-                if isValidGlb {
-                    glbData = data
-                } else {
-                    meshLoadFailed = true
-                }
+                avatarImageUrl = status.avatarImageUrl
             }
         } catch {
-            await MainActor.run { meshLoadFailed = true }
+            // Avatar image is optional; greeting still works without it
         }
     }
 }

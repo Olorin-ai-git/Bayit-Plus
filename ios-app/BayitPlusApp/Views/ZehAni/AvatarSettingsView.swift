@@ -11,7 +11,7 @@ struct AvatarSettingsView: View {
     let profileId: String
     let avatarId: String
 
-    @State private var meshStatus: AvatarMeshStatus?
+    @State private var avatarStatus: CreatifyAvatarStatus?
     @State private var avatar: StarStoryAvatar?
     @State private var isLoading = true
     @State private var error: String?
@@ -58,7 +58,7 @@ struct AvatarSettingsView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
                 avatarInfoCard
-                meshStatusCard
+                creatifyStatusCard
                 actionsSection
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -89,7 +89,7 @@ struct AvatarSettingsView: View {
         }
     }
 
-    private var meshStatusCard: some View {
+    private var creatifyStatusCard: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                 Text(localization.t("avatar.settings.meshStatus"))
@@ -98,9 +98,9 @@ struct AvatarSettingsView: View {
 
                 HStack {
                     Circle()
-                        .fill(meshStatusColor)
+                        .fill(statusColor)
                         .frame(width: 10, height: 10)
-                    Text(meshStatusLabel)
+                    Text(statusLabel)
                         .font(.system(size: DesignTokens.FontSize.base))
                         .foregroundStyle(DesignTokens.Text.primary)
                     Spacer()
@@ -128,22 +128,20 @@ struct AvatarSettingsView: View {
         }
     }
 
-    private var meshStatusColor: Color {
-        switch meshStatus?.status.lowercased() {
-        case "ready", "completed": return DesignTokens.Success.default
-        case "generating", "rigging", "pending": return DesignTokens.Warning.default
-        case "failed", "error": return DesignTokens.ErrorColor.default
+    private var statusColor: Color {
+        switch avatarStatus?.status.lowercased() {
+        case "ready": return DesignTokens.Success.default
+        case "creating": return DesignTokens.Warning.default
+        case "failed": return DesignTokens.ErrorColor.default
         default: return DesignTokens.Text.muted
         }
     }
 
-    private var meshStatusLabel: String {
-        switch meshStatus?.status.lowercased() {
-        case "ready", "completed": return localization.t("avatar.settings.statusReady")
-        case "generating": return localization.t("avatar.settings.statusGenerating")
-        case "rigging": return localization.t("avatar.settings.statusRigging")
-        case "pending": return localization.t("avatar.settings.statusPending")
-        case "failed", "error": return localization.t("avatar.settings.statusFailed")
+    private var statusLabel: String {
+        switch avatarStatus?.status.lowercased() {
+        case "ready": return localization.t("avatar.settings.statusReady")
+        case "creating": return localization.t("avatar.settings.statusGenerating")
+        case "failed": return localization.t("avatar.settings.statusFailed")
         default: return localization.t("avatar.settings.statusUnknown")
         }
     }
@@ -155,16 +153,16 @@ struct AvatarSettingsView: View {
         Task { [repos] in
             do {
                 async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
-                async let meshTask = repos.avatarMeshRepository.fetchMeshStatus(avatarId: avatarId)
+                async let statusTask = repos.avatarMeshRepository.fetchAvatarStatus(avatarId: avatarId)
 
                 let avatarsResponse = try await avatarsTask
                 await MainActor.run {
                     avatar = avatarsResponse.avatars.first { $0.avatarId == avatarId }
                 }
 
-                let mesh = try? await meshTask
+                let status = try? await statusTask
                 await MainActor.run {
-                    meshStatus = mesh
+                    avatarStatus = status
                 }
             } catch {
                 logger.error("Failed to load avatar settings", error: error)

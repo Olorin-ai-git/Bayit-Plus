@@ -2619,20 +2619,20 @@ class Settings(BaseSettings):
         env="READY_PLAYER_ME_MAX_POLLS",
         description="Maximum number of RPM status poll attempts",
     )
-    CREDIT_RATE_3D_MESH: int = Field(
-        default=50, ge=0,
-        env="CREDIT_RATE_3D_MESH",
-        description="Beta credits per 3D mesh generation",
+    CREDIT_RATE_CREATIFY_AVATAR: int = Field(
+        default=30, ge=0,
+        env="CREDIT_RATE_CREATIFY_AVATAR",
+        description="Beta credits per Creatify persona creation",
     )
-    CREDIT_RATE_3D_MESH_ARKIT: int = Field(
-        default=25, ge=0,
-        env="CREDIT_RATE_3D_MESH_ARKIT",
-        description="Beta credits per on-device ARKit mesh capture",
+    CREDIT_RATE_CREATIFY_LIPSYNC: int = Field(
+        default=20, ge=0,
+        env="CREDIT_RATE_CREATIFY_LIPSYNC",
+        description="Beta credits per Creatify lip-sync video generation",
     )
-    MAX_GLB_UPLOAD_SIZE_BYTES: int = Field(
-        default=10_485_760, ge=1_048_576, le=52_428_800,
-        env="MAX_GLB_UPLOAD_SIZE_BYTES",
-        description="Maximum GLB file upload size in bytes",
+    CREATIFY_SIGNED_URL_EXPIRY_SECONDS: int = Field(
+        default=3600, ge=300, le=86400,
+        env="CREATIFY_SIGNED_URL_EXPIRY_SECONDS",
+        description="Signed URL expiry for avatar images sent to Creatify API",
     )
     CONTROLNET_API_BASE_URL: str = Field(
         default="",

@@ -142,48 +142,23 @@ final class StarStoryViewModel {
         }
     }
 
-    func processVideoAndGenerateMesh(
+    func processVideoAndCreatePersona(
         avatarId: String, videoData: Data,
         profileId: String, pin: String,
-        meshRepo: any AvatarMeshRepository
+        avatarRepo: any AvatarRepository
     ) async -> Bool {
         let uploaded = await uploadVideoSelfie(avatarId: avatarId, videoData: videoData)
         guard uploaded else { return false }
 
         do {
-            _ = try await meshRepo.generateMesh(
+            _ = try await avatarRepo.createCreatifyPersona(
                 avatarId: avatarId, profileId: profileId, pin: pin
             )
-            logger.info("Mesh generation triggered for avatar \(avatarId)")
+            logger.info("Creatify persona creation triggered for avatar \(avatarId)")
             return true
         } catch {
             errorMessage = error.localizedDescription
-            logger.error("Failed to trigger mesh generation", error: error)
-            return false
-        }
-    }
-
-    func uploadARKitMesh(
-        avatarId: String,
-        glbData: Data,
-        profileId: String,
-        pin: String,
-        meshRepo: any AvatarMeshRepository
-    ) async -> Bool {
-        errorMessage = nil
-
-        do {
-            let status = try await meshRepo.uploadGlbMesh(
-                avatarId: avatarId,
-                profileId: profileId,
-                pin: pin,
-                glbData: glbData
-            )
-            logger.info("ARKit mesh uploaded for avatar \(status.avatarId)")
-            return status.status == "ready"
-        } catch {
-            errorMessage = error.localizedDescription
-            logger.error("Failed to upload ARKit mesh", error: error)
+            logger.error("Failed to trigger Creatify persona creation", error: error)
             return false
         }
     }

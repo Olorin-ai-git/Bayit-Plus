@@ -32,7 +32,7 @@ class StyleTransferService:
         show_content_id: str,
     ) -> AvatarStyleCache:
         """Apply style transfer to all avatar poses and cache results."""
-        if avatar.has_3d_mesh and avatar.mesh_id:
+        if avatar.creatify_persona_id and avatar.creatify_avatar_status == "ready":
             return await self._delegate_controlnet(
                 avatar, style, show_content_id,
             )

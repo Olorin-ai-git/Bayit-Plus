@@ -3,31 +3,17 @@ import Foundation
 /// APIClient uses .convertFromSnakeCase key decoding, so explicit
 /// snake_case CodingKeys are unnecessary and would conflict.
 
-struct AvatarMeshStatus: Codable, Identifiable {
-    let id: String
+struct CreatifyAvatarStatus: Codable, Identifiable {
     let avatarId: String
     let userId: String
+    let creatifyPersonaId: String?
     let status: String
-    let glbGcsPath: String?
-    let thumbnailGcsPath: String?
-    let blendShapes: [MeshBlendShapeInfo]
-    let boneCount: Int?
-    let vertexCount: Int?
-    let creditsCharged: Int
+    let avatarImageUrl: String?
     let errorMessage: String?
     let createdAt: String
     let updatedAt: String
-}
 
-struct MeshBlendShapeInfo: Codable {
-    let name: String
-    let defaultWeight: Double
-}
-
-struct MeshGlbUrl: Codable {
-    let avatarId: String
-    let signedUrl: String
-    let expiresInSeconds: Int
+    var id: String { avatarId }
 }
 
 enum BiometricConsentType: String, CaseIterable {
@@ -53,8 +39,8 @@ struct MagicMirrorGreeting: Codable {
     let profileId: String
     let greetingTextHe: String
     let greetingTextEn: String
-    let greetingAudioGcsPath: String?
-    let lipsyncDataGcsPath: String?
+    let greetingAudioUrl: String?
+    let lipsyncVideoUrl: String?
     let vocabularyOfTheDay: String?
     let generatedAt: String
     let expiresAt: String?

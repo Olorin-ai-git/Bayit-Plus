@@ -1,9 +1,9 @@
 """
 Magic Mirror Service.
 
-Generates personalized daily Hebrew greetings rendered by the child's 3D
-avatar. Combines proficiency-based vocabulary selection, TTS via the child's
-cloned voice, and lip-sync blend shape data for animated 3D greeting playback.
+Generates personalized daily Hebrew greetings rendered by the child's avatar.
+Combines proficiency-based vocabulary selection, TTS via the child's cloned
+voice, and Creatify lip-sync video for animated greeting playback.
 """
 
 from __future__ import annotations
@@ -78,7 +78,7 @@ class MagicMirrorService:
             greeting_text_he=greeting_he,
             greeting_text_en=greeting_en,
             greeting_audio_gcs_path=audio_path,
-            lipsync_data_gcs_path=lipsync_path,
+            lipsync_video_gcs_path=lipsync_path,
             vocabulary_of_the_day=vocab_word,
             generated_at=datetime.now(timezone.utc),
             expires_at=expires_at,

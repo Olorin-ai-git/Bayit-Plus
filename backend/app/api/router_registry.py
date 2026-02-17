@@ -119,8 +119,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.grandparent_bridge import bridge_core as gp_bridge
     # Chameleon Engine routes (visual style transfer)
     from app.api.routes.chameleon import style_routes as chameleon_routes
-    # Zeh Ani routes (3D mesh, biometric consent, V2V, identity engine)
-    from app.api.routes.zeh_ani import mesh_routes as za_mesh
+    # Zeh Ani routes (Creatify avatar, biometric consent, V2V, identity engine)
+    from app.api.routes.zeh_ani import avatar_routes as za_avatar
     from app.api.routes.zeh_ani import consent_routes as za_consent
     from app.api.routes.zeh_ani import v2v_routes as za_v2v
     from app.api.routes import websocket_v2v
@@ -656,9 +656,9 @@ def register_all_routers(app: FastAPI) -> None:
     logger.debug("Registered Chameleon Engine routes (prepare, status, cached)")
 
     # ============================================
-    # Zeh Ani Routes (3D Mesh + Biometric Consent + V2V)
+    # Zeh Ani Routes (Creatify Avatar + Biometric Consent + V2V)
     # ============================================
-    app.include_router(za_mesh.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_avatar.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_consent.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_v2v.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(

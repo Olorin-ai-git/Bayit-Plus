@@ -10,16 +10,15 @@ struct MeshGenerationView: View {
     let avatarId: String
     let profileId: String
 
-    @State private var meshState: MeshState = .idle
-    @State private var meshStatus: AvatarMeshStatus?
+    @State private var creationState: CreationState = .idle
+    @State private var avatarStatus: CreatifyAvatarStatus?
     @State private var error: String?
     @State private var pollingTask: Task<Void, Never>?
     @State private var showPreview = false
 
-    enum MeshState {
+    enum CreationState {
         case idle
-        case generating
-        case rigging
+        case creating
         case ready
         case failed
     }
@@ -52,14 +51,16 @@ struct MeshGenerationView: View {
                 pollingTask?.cancel()
             }
             .sheet(isPresented: $showPreview) {
-                Avatar3DPreviewView(avatarId: avatarId)
+                if let imageUrl = avatarStatus?.avatarImageUrl {
+                    Avatar3DPreviewView(avatarImageUrl: imageUrl)
+                }
             }
         }
     }
 
     private var statusSection: some View {
         VStack(spacing: DesignTokens.Spacing.base) {
-            if meshState == .generating || meshState == .rigging {
+            if creationState == .creating {
                 ProgressView()
                     .progressViewStyle(.circular)
                     .scaleEffect(1.5)
@@ -71,8 +72,10 @@ struct MeshGenerationView: View {
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .medium))
                 .multilineTextAlignment(.center)
 
-            if meshState == .ready, let thumbnailPath = meshStatus?.thumbnailGcsPath {
-                AsyncImage(url: URL(string: thumbnailPath)) { image in
+            if creationState == .ready,
+               let imageUrl = avatarStatus?.avatarImageUrl,
+               let url = URL(string: imageUrl) {
+                AsyncImage(url: url) { image in
                     image.resizable().scaledToFit()
                 } placeholder: {
                     ProgressView()
@@ -91,7 +94,7 @@ struct MeshGenerationView: View {
 
     private var actionSection: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            if meshState == .ready {
+            if creationState == .ready {
                 GlassButton(
                     localization.t("zehAni.mesh.viewPreview"),
                     variant: .primary, size: .large
@@ -100,7 +103,7 @@ struct MeshGenerationView: View {
                 }
             }
 
-            if meshState == .failed {
+            if creationState == .failed {
                 GlassButton(
                     localization.t("common.retry"),
                     variant: .secondary, size: .large
@@ -112,13 +115,11 @@ struct MeshGenerationView: View {
     }
 
     private var statusText: String {
-        switch meshState {
+        switch creationState {
         case .idle:
             return localization.t("zehAni.mesh.statusIdle")
-        case .generating:
+        case .creating:
             return localization.t("zehAni.mesh.statusGenerating")
-        case .rigging:
-            return localization.t("zehAni.mesh.statusRigging")
         case .ready:
             return localization.t("zehAni.mesh.statusReady")
         case .failed:
@@ -130,7 +131,7 @@ struct MeshGenerationView: View {
         pollingTask = Task {
             while !Task.isCancelled {
                 await fetchStatus()
-                if meshState == .ready || meshState == .failed {
+                if creationState == .ready || creationState == .failed {
                     break
                 }
                 try? await Task.sleep(nanoseconds: 3_000_000_000)
@@ -140,38 +141,36 @@ struct MeshGenerationView: View {
 
     private func fetchStatus() async {
         do {
-            let status = try await repositories.avatarMeshRepository.fetchMeshStatus(avatarId: avatarId)
+            let status = try await repositories.avatarMeshRepository.fetchAvatarStatus(avatarId: avatarId)
             await MainActor.run {
-                meshStatus = status
+                avatarStatus = status
                 updateState(from: status)
             }
         } catch {
             await MainActor.run {
                 self.error = error.localizedDescription
-                meshState = .failed
+                creationState = .failed
             }
         }
     }
 
-    private func updateState(from status: AvatarMeshStatus) {
+    private func updateState(from status: CreatifyAvatarStatus) {
         switch status.status.lowercased() {
-        case "pending", "generating":
-            meshState = .generating
-        case "rigging":
-            meshState = .rigging
-        case "ready", "completed":
-            meshState = .ready
-        case "failed", "error":
-            meshState = .failed
+        case "not_started", "creating":
+            creationState = .creating
+        case "ready":
+            creationState = .ready
+        case "failed":
+            creationState = .failed
             error = status.errorMessage
         default:
-            meshState = .idle
+            creationState = .idle
         }
     }
 
     private func retry() {
         error = nil
-        meshState = .idle
+        creationState = .idle
         startPolling()
     }
 }

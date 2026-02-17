@@ -1,7 +1,6 @@
+import AVKit
 import BayitDesignSystem
 import BayitLocalization
-import BayitMedia
-import SceneKit
 import SwiftUI
 
 struct TVLiveAvatarOverlayView: View {
@@ -10,12 +9,13 @@ struct TVLiveAvatarOverlayView: View {
 
     let avatarId: String
     let contentId: String
-    var lipsyncWeights: [String: Float] = [:]
+    var lipsyncVideoUrl: String?
 
-    @State private var scene: SCNScene?
-    @State private var avatarNode: SCNNode?
+    @State private var avatarImageUrl: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isPlayingVideo = false
+    @State private var player: AVPlayer?
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -28,81 +28,74 @@ struct TVLiveAvatarOverlayView: View {
                     .foregroundColor(DesignTokens.Colors.Semantic.error)
                     .font(.system(size: 24))
                     .frame(width: 280, height: 280)
-            } else if let scene {
-                SceneView(
-                    scene: scene,
-                    options: [.autoenablesDefaultLighting]
-                )
-                .frame(width: 280, height: 280)
-                .clipShape(RoundedRectangle(cornerRadius: 24))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 24)
-                        .stroke(.white.opacity(0.15), lineWidth: 2)
-                )
-                .shadow(color: .black.opacity(0.5), radius: 12, x: 0, y: 6)
+            } else {
+                avatarOverlay
             }
         }
         .padding(40)
-        .onAppear { loadMesh() }
-        .onChange(of: lipsyncWeights) { _, newWeights in
-            applyBlendShapes(newWeights)
+        .onAppear { loadAvatarImage() }
+    }
+
+    @ViewBuilder
+    private var avatarOverlay: some View {
+        ZStack {
+            if isPlayingVideo, let player = player {
+                VideoPlayer(player: player)
+                    .onReceive(NotificationCenter.default.publisher(
+                        for: .AVPlayerItemDidPlayToEndTime
+                    )) { _ in
+                        isPlayingVideo = false
+                        self.player = nil
+                    }
+            } else if let imageUrlString = avatarImageUrl,
+                      let imageUrl = URL(string: imageUrlString) {
+                AsyncImage(url: imageUrl) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().scaledToFill()
+                    default:
+                        Color.clear
+                    }
+                }
+            }
+        }
+        .frame(width: 280, height: 280)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(.white.opacity(0.15), lineWidth: 2)
+        )
+        .shadow(color: .black.opacity(0.5), radius: 12, x: 0, y: 6)
+        .onTapGesture {
+            playLipsyncVideo()
         }
     }
 
-    private func loadMesh() {
+    private func loadAvatarImage() {
         Task {
             do {
-                let glbUrl = try await repos.avatarMeshRepository.fetchGlbUrl(
+                let status = try await repos.avatarMeshRepository.fetchAvatarStatus(
                     avatarId: avatarId
                 )
-                guard let url = URL(string: glbUrl.signedUrl) else {
-                    error = localization.t("zehAni.preview3d.error")
+                await MainActor.run {
+                    avatarImageUrl = status.avatarImageUrl
                     isLoading = false
-                    return
                 }
-
-                let (glbData, _) = try await URLSession.shared.data(from: url)
-                let loadedScene = try GLBSceneLoader.loadScene(from: glbData)
-
-                let ambient = SCNLight()
-                ambient.type = .ambient
-                ambient.intensity = 800
-                let ambientNode = SCNNode()
-                ambientNode.light = ambient
-                loadedScene.rootNode.addChildNode(ambientNode)
-
-                let key = SCNLight()
-                key.type = .directional
-                key.intensity = 600
-                let keyNode = SCNNode()
-                keyNode.light = key
-                keyNode.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 6, 0)
-                loadedScene.rootNode.addChildNode(keyNode)
-
-                avatarNode = findMeshNode(in: loadedScene.rootNode)
-                scene = loadedScene
-                isLoading = false
             } catch {
-                self.error = localization.t("zehAni.preview3d.error")
-                isLoading = false
+                await MainActor.run {
+                    self.error = error.localizedDescription
+                    isLoading = false
+                }
             }
         }
     }
 
-    private func findMeshNode(in root: SCNNode) -> SCNNode? {
-        if root.morpher != nil { return root }
-        for child in root.childNodes {
-            if let found = findMeshNode(in: child) { return found }
-        }
-        return nil
-    }
-
-    private func applyBlendShapes(_ weights: [String: Float]) {
-        guard let node = avatarNode, let morpher = node.morpher else { return }
-        for (name, weight) in weights {
-            if let index = morpher.targets.firstIndex(where: { $0.name == name }) {
-                morpher.setWeight(CGFloat(weight), forTargetAt: index)
-            }
-        }
+    private func playLipsyncVideo() {
+        guard let urlString = lipsyncVideoUrl,
+              let videoUrl = URL(string: urlString) else { return }
+        let avPlayer = AVPlayer(url: videoUrl)
+        player = avPlayer
+        isPlayingVideo = true
+        avPlayer.play()
     }
 }

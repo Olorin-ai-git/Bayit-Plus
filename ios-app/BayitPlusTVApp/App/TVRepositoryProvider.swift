@@ -48,7 +48,7 @@ final class TVRepositoryProvider {
     let starStory: any StarStoryRepository
     let grandparentBridgeRepository: any GrandparentBridgeRepository
     let gamificationRepository: any GamificationRepository
-    let avatarMeshRepository: any AvatarMeshRepository
+    let avatarMeshRepository: any AvatarRepository
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let zehAniRepository: any ZehAniRepository
     let authTokenProvider: AuthTokenProvider
@@ -99,7 +99,7 @@ final class TVRepositoryProvider {
         self.starStory = APIStarStoryRepository(client: client)
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.gamificationRepository = APIGamificationRepository(client: client)
-        self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
+        self.avatarMeshRepository = APIAvatarRepository(client: client)
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
         self.authTokenProvider = authTokenProvider
