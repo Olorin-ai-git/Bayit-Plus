@@ -20,83 +20,113 @@ struct MiniAudioPlayerBar: View {
     }
 
     private var barContent: some View {
-        HStack(spacing: DesignTokens.Spacing.md) {
+        VStack(spacing: DesignTokens.Spacing.md) {
             closeButton
 
             artworkThumbnail
-                .frame(width: 40, height: 40)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                .frame(width: 120, height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 4)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(spacing: 4) {
                 Text(audioManager.title ?? "")
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(1)
 
                 if let subtitle = audioManager.subtitle {
                     Text(subtitle)
-                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
                         .lineLimit(1)
                 }
             }
 
-            Spacer()
+            progressBar
 
             playbackControls
         }
-        .padding(.horizontal, DesignTokens.Spacing.md)
-        .padding(.vertical, DesignTokens.Spacing.sm)
+        .padding(DesignTokens.Spacing.lg)
         .glassCard()
         .padding(.horizontal, DesignTokens.Spacing.base)
     }
 
     private var closeButton: some View {
-        Button {
-            audioManager.stop()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(DesignTokens.Text.muted)
-                .frame(width: 28, height: 28)
+        HStack {
+            Button {
+                audioManager.stop()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .frame(width: 30, height: 30)
+            }
+            .accessibilityLabel("Close player")
+
+            Spacer()
         }
-        .accessibilityLabel("Close player")
+    }
+
+    private var progressBar: some View {
+        VStack(spacing: 6) {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(DesignTokens.Glass.bgMedium)
+                        .frame(height: 4)
+
+                    if audioManager.duration > 0 {
+                        Capsule()
+                            .fill(DesignTokens.Primary.default)
+                            .frame(
+                                width: geometry.size.width * CGFloat(audioManager.currentTime / audioManager.duration),
+                                height: 4
+                            )
+                    }
+                }
+            }
+            .frame(height: 4)
+
+            HStack {
+                Text(formatTime(audioManager.currentTime))
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .monospacedDigit()
+
+                Spacer()
+
+                Text("-\(formatTime(max(0, audioManager.duration - audioManager.currentTime)))")
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .monospacedDigit()
+            }
+        }
     }
 
     private var playbackControls: some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
+        HStack(spacing: DesignTokens.Spacing.xl) {
             if audioManager.isLoading {
                 ProgressView()
                     .tint(DesignTokens.Primary.default)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 44, height: 44)
             } else {
                 Button {
-                    audioManager.restart()
+                    audioManager.skipBackward(seconds: 15)
                 } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(DesignTokens.Text.secondary)
-                        .frame(width: 28, height: 28)
+                    Image(systemName: "gobackward.15")
+                        .font(.system(size: 32, weight: .light))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Restart")
-
-                Button {
-                    audioManager.skipBackward(seconds: 30)
-                } label: {
-                    Image(systemName: "gobackward.30")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(DesignTokens.Text.secondary)
-                        .frame(width: 32, height: 32)
-                }
-                .accessibilityLabel("Skip backward 30 seconds")
+                .accessibilityLabel("Skip backward 15 seconds")
 
                 Button {
                     audioManager.togglePlayPause()
                 } label: {
                     Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 20, weight: .medium))
+                        .font(.system(size: 36, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.primary)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 60, height: 60)
                 }
                 .accessibilityLabel(audioManager.isPlaying ? "Pause" : "Play")
 
@@ -104,13 +134,21 @@ struct MiniAudioPlayerBar: View {
                     audioManager.skipForward(seconds: 30)
                 } label: {
                     Image(systemName: "goforward.30")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(DesignTokens.Text.secondary)
-                        .frame(width: 32, height: 32)
+                        .font(.system(size: 32, weight: .light))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Skip forward 30 seconds")
             }
         }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func formatTime(_ time: TimeInterval) -> String {
+        let totalSeconds = Int(time)
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 
     @ViewBuilder

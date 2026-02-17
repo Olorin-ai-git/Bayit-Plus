@@ -26,6 +26,14 @@ final class AudioPlaybackManager {
         mediaPlayer.state == .playing || mediaPlayer.state == .buffering
     }
 
+    var currentTime: TimeInterval {
+        mediaPlayer.currentTime
+    }
+
+    var duration: TimeInterval {
+        mediaPlayer.duration
+    }
+
     // MARK: - Dependencies
 
     private let mediaPlayer: MediaPlayer
