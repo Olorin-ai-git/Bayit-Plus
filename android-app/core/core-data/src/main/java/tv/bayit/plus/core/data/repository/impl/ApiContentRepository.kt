@@ -28,6 +28,11 @@ class ApiContentRepository(
 
     private val service: ContentService = client.createService()
 
+    override suspend fun getAllContent(page: Int, limit: Int): BayitResult<List<Any>> =
+        runCatchingResult {
+            client.safeApiCall { service.getAllContent(page, limit) }
+        }
+
     override suspend fun getHomeFeed(): BayitResult<List<Any>> = runCatchingResult {
         val response = client.safeApiCall { service.getFeatured() }
         response.categories.flatMap { category -> category.items }

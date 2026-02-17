@@ -70,6 +70,9 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // Retrofit (for VODInteractionApi annotations)
+    implementation(libs.retrofit)
+
     // Logging
     implementation(libs.timber)
 

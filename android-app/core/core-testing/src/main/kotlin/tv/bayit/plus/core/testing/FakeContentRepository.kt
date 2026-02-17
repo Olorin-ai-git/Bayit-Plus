@@ -21,6 +21,16 @@ class FakeContentRepository : ContentRepository {
     var shouldReturnError = false
     var errorMessage = "Content repository error"
 
+    var allContentItems = mutableListOf<ContentItem>()
+
+    override suspend fun getAllContent(page: Int, limit: Int): BayitResult<List<Any>> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success(allContentItems.toList())
+        }
+    }
+
     override suspend fun getHomeFeed(): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
