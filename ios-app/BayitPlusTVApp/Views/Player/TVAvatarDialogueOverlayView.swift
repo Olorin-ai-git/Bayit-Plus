@@ -6,7 +6,8 @@ import BayitLocalization
 import SwiftUI
 
 /// tvOS adaptation of the free-form character dialogue overlay.
-/// Larger circles (160pt) for 10-foot UI. Focusable text field and buttons.
+/// Larger circles (160pt) for 10-foot UI. Supports voice via Siri Remote
+/// and multi-character interactions with focusable navigation.
 struct TVAvatarDialogueOverlayView: View {
 
     @Environment(LocalizationManager.self) private var localization
@@ -14,6 +15,8 @@ struct TVAvatarDialogueOverlayView: View {
     let avatarImageUrl: String
     let character: ContentCharacter
     @Bindable var viewModel: AvatarDialogueViewModel
+    let voiceService: TVVoiceInteractionService?
+    let avatarPlacement: AvatarPlacement?
     let onDismiss: () -> Void
 
     @State private var messageText = ""
@@ -25,20 +28,39 @@ struct TVAvatarDialogueOverlayView: View {
 
     var body: some View {
         VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                overlayContent
-                    .frame(maxWidth: 520)
-                    .padding(.trailing, TVDesignTokens.Spacing.xxl)
-                    .padding(.bottom, TVDesignTokens.Spacing.xxl)
-            }
+            if positionIsTop { overlayPanel; Spacer() }
+            else { Spacer(); overlayPanel }
         }
+    }
+
+    private var positionIsTop: Bool {
+        avatarPlacement?.position.hasPrefix("top") ?? false
+    }
+
+    private var overlayPanel: some View {
+        HStack {
+            if positionIsRight { Spacer() }
+            overlayContent
+                .frame(maxWidth: 520)
+                .padding(TVDesignTokens.Spacing.xxl)
+            if !positionIsRight { Spacer() }
+        }
+    }
+
+    private var positionIsRight: Bool {
+        avatarPlacement?.position.hasSuffix("right") ?? true
     }
 
     private var overlayContent: some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             headerRow
+            if viewModel.isMultiCharacterMode {
+                TVMultiCharacterCirclesView(
+                    characters: viewModel.multiCharacters,
+                    addressedCharacter: viewModel.addressedCharacterName,
+                    onSelectCharacter: { viewModel.addressedCharacterName = $0 }
+                )
+            }
             circlesRow
             conversationList
             inputRow
@@ -59,12 +81,11 @@ struct TVAvatarDialogueOverlayView: View {
                     size: TVDesignTokens.FontSize.lg, weight: .semibold
                 ))
                 .foregroundStyle(DesignTokens.Text.primary)
-
             Spacer()
-
-            Button {
-                onDismiss()
-            } label: {
+            if let service = voiceService {
+                voiceButton(service)
+            }
+            Button { onDismiss() } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: TVDesignTokens.FontSize.xl))
                     .foregroundStyle(DesignTokens.Text.muted)
@@ -73,6 +94,36 @@ struct TVAvatarDialogueOverlayView: View {
                 localization.t("player.dialogue.endDialogue")
             )
         }
+    }
+
+    private func voiceButton(
+        _ service: TVVoiceInteractionService
+    ) -> some View {
+        Button {
+            if service.isListening {
+                Task {
+                    guard let sessionId = viewModel.sessionId else { return }
+                    let response = await service.stopListeningAndSend(
+                        sessionId: sessionId
+                    )
+                    if let videoUrl = response?.animatedVideoUrl {
+                        playCharacterVideo(urlString: videoUrl)
+                    }
+                }
+            } else {
+                service.startListening()
+            }
+        } label: {
+            Image(systemName: service.isListening
+                ? "mic.fill" : "mic")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(service.isListening
+                    ? DesignTokens.ErrorColor.default
+                    : DesignTokens.Text.secondary)
+        }
+        .accessibilityLabel(
+            localization.t("player.dialogue.voiceMode")
+        )
     }
 
     // MARK: - Circles
@@ -98,10 +149,6 @@ struct TVAvatarDialogueOverlayView: View {
         .frame(width: circleSize, height: circleSize)
         .clipShape(Circle())
         .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
-        .shadow(
-            color: DesignTokens.Primary.default.opacity(0.4),
-            radius: 16, x: 0, y: 4
-        )
     }
 
     private var characterCircle: some View {
@@ -114,19 +161,13 @@ struct TVAvatarDialogueOverlayView: View {
                     Color.gray.opacity(0.3)
                 }
             }
-
             if isCharacterVideoReady, let player = characterPlayer {
-                VideoPlayer(player: player)
-                    .scaledToFill()
+                VideoPlayer(player: player).scaledToFill()
             }
         }
         .frame(width: circleSize, height: circleSize)
         .clipShape(Circle())
         .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
-        .shadow(
-            color: DesignTokens.Primary.default.opacity(0.4),
-            radius: 16, x: 0, y: 4
-        )
     }
 
     // MARK: - Conversation
@@ -159,18 +200,14 @@ struct TVAvatarDialogueOverlayView: View {
                 .background(
                     exchange.speaker == "user"
                         ? DesignTokens.Glass.bgStrong
-                        : DesignTokens.Glass.bgSubtle
+                        : DesignTokens.Glass.bgLight
                 )
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: TVDesignTokens.Radius.md
-                    )
-                )
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             if exchange.speaker == "character" { Spacer() }
         }
     }
 
-    // MARK: - Input
+    // MARK: - Input & Actions
 
     private var inputRow: some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -183,63 +220,57 @@ struct TVAvatarDialogueOverlayView: View {
             .font(.system(size: TVDesignTokens.FontSize.md))
             .foregroundStyle(DesignTokens.Text.primary)
             .padding(TVDesignTokens.Spacing.md)
-            .background(DesignTokens.Glass.bgSubtle)
-            .clipShape(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-            )
+            .background(DesignTokens.Glass.bgLight)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             .disabled(viewModel.isSending)
 
             GlassButton(
                 viewModel.isSending
                     ? localization.t("player.dialogue.sending")
                     : localization.t("common.send"),
-                variant: .primary,
-                size: .large
-            ) {
-                sendMessage()
-            }
+                variant: .primary, size: .large
+            ) { sendMessage() }
             .disabled(messageText.isEmpty || viewModel.isSending)
         }
     }
-
-    // MARK: - Actions
 
     private func sendMessage() {
         let text = messageText
         messageText = ""
         cleanupCharacterPlayer()
-
         Task {
-            let response = await viewModel.sendMessage(text)
-            if let videoUrl = response?.animatedVideoUrl {
-                playCharacterVideo(urlString: videoUrl)
+            if viewModel.isMultiCharacterMode {
+                let response = await viewModel.sendMultiCharacterMessage(text)
+                if let first = response?.exchanges.first(where: { $0.animatedVideoUrl != nil }),
+                   let url = first.animatedVideoUrl {
+                    playCharacterVideo(urlString: url)
+                }
+            } else {
+                let response = await viewModel.sendMessage(text)
+                if let videoUrl = response?.animatedVideoUrl {
+                    playCharacterVideo(urlString: videoUrl)
+                }
             }
         }
     }
 
     private func playCharacterVideo(urlString: String) {
         guard let url = URL(string: urlString) else { return }
-
         let player = AVPlayer(url: url)
         characterPlayer = player
-
         NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem,
-            queue: .main
+            object: player.currentItem, queue: .main
         ) { _ in
             Task { @MainActor in
                 isCharacterVideoReady = false
                 characterPlayer = nil
             }
         }
-
         Task {
             try? await Task.sleep(for: .seconds(0.3))
             await MainActor.run {
-                withAnimation(.easeIn(duration: 0.3)) {
-                    isCharacterVideoReady = true
-                }
+                withAnimation(.easeIn(duration: 0.3)) { isCharacterVideoReady = true }
                 player.play()
             }
         }

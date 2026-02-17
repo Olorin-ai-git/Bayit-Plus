@@ -20,6 +20,7 @@ class BiometricConsentType(str, Enum):
     MESH_GENERATION = "mesh_generation"
     VOICE_V2V = "voice_v2v"
     LATENT_FEATURES = "latent_features"
+    VOICE_INTERACTION = "voice_interaction"
 
 
 class BiometricConsent(Document):

@@ -65,6 +65,40 @@ protocol AvatarRepository: Sendable {
     func completeInteractionSession(
         sessionId: String
     ) async throws -> SessionStatusPayload
+
+    // MARK: - Multi-Character Interaction (Phase 3)
+
+    func sendMultiCharacterMessage(
+        sessionId: String,
+        message: String,
+        addressedCharacter: String
+    ) async throws -> MultiCharacterResponse
+
+    // MARK: - Shared Interaction (Phase 3)
+
+    func startSharedInteraction(
+        partyId: String,
+        contentId: String,
+        momentTimestamp: Double,
+        characterName: String
+    ) async throws -> VODSessionResponse
+
+    func sendSharedMessage(
+        partyId: String,
+        sessionId: String,
+        message: String,
+        addressedCharacter: String?
+    ) async throws -> MultiCharacterResponse
+
+    func endSharedInteraction(
+        partyId: String,
+        sessionId: String
+    ) async throws -> SessionStatusPayload
+
+    func getSharedInteractionState(
+        partyId: String,
+        sessionId: String
+    ) async throws -> SharedSessionState
 }
 
 final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
@@ -245,6 +279,82 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
             "/api/v1/vod-interactions/sessions/\(sessionId)/complete",
             body: [:],
             as: SessionStatusPayload.self
+        )
+    }
+
+    // MARK: - Multi-Character Interaction (Phase 3)
+
+    func sendMultiCharacterMessage(
+        sessionId: String,
+        message: String,
+        addressedCharacter: String
+    ) async throws -> MultiCharacterResponse {
+        let body: [String: String] = [
+            "message": message,
+            "addressed_character": addressedCharacter,
+        ]
+        return try await client.post(
+            "/api/v1/vod-interactions/sessions/\(sessionId)/multi-message",
+            body: body,
+            as: MultiCharacterResponse.self
+        )
+    }
+
+    // MARK: - Shared Interaction (Phase 3)
+
+    func startSharedInteraction(
+        partyId: String,
+        contentId: String,
+        momentTimestamp: Double,
+        characterName: String
+    ) async throws -> VODSessionResponse {
+        let body: [String: Any] = [
+            "content_id": contentId,
+            "moment_timestamp": momentTimestamp,
+            "character_name": characterName,
+        ]
+        return try await client.postJSON(
+            "/api/v1/parties/\(partyId)/interaction/start",
+            body: body,
+            as: VODSessionResponse.self
+        )
+    }
+
+    func sendSharedMessage(
+        partyId: String,
+        sessionId: String,
+        message: String,
+        addressedCharacter: String?
+    ) async throws -> MultiCharacterResponse {
+        var body: [String: String] = ["message": message]
+        if let addressed = addressedCharacter {
+            body["addressed_character"] = addressed
+        }
+        return try await client.post(
+            "/api/v1/parties/\(partyId)/interaction/\(sessionId)/message",
+            body: body,
+            as: MultiCharacterResponse.self
+        )
+    }
+
+    func endSharedInteraction(
+        partyId: String,
+        sessionId: String
+    ) async throws -> SessionStatusPayload {
+        return try await client.postJSON(
+            "/api/v1/parties/\(partyId)/interaction/\(sessionId)/end",
+            body: [:],
+            as: SessionStatusPayload.self
+        )
+    }
+
+    func getSharedInteractionState(
+        partyId: String,
+        sessionId: String
+    ) async throws -> SharedSessionState {
+        return try await client.get(
+            "/api/v1/parties/\(partyId)/interaction/\(sessionId)",
+            as: SharedSessionState.self
         )
     }
 }

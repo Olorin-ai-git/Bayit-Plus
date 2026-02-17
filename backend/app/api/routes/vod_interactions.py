@@ -5,7 +5,7 @@ User-facing endpoints for VOD avatar interactions with movie characters.
 """
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from app.models.user import User
@@ -64,6 +64,7 @@ class SessionStatusResponse(BaseModel):
 @router.get("/characters/{content_id}", response_model=List[ContentCharacter])
 @limiter.limit(RATE_LIMITS.get("vod_interaction_characters", "30/minute"))
 async def get_interactive_characters(
+    request: Request,
     content_id: str,
     current_user: User = Depends(get_current_user)
 ):
@@ -102,7 +103,8 @@ async def get_interactive_characters(
 @router.post("/sessions/start-free", response_model=VODInteractionSession)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_free_interaction_session(
-    request: StartFreeInteractionRequest,
+    request: Request,
+    body: StartFreeInteractionRequest,
     current_user: User = Depends(get_current_user)
 ):
     """
@@ -110,14 +112,14 @@ async def start_free_interaction_session(
     Does not require a curated interactive moment.
 
     Args:
-        request: Session creation parameters
+        body: Session creation parameters
         current_user: Authenticated user
 
     Returns:
         Created interaction session
     """
     try:
-        profile = await Profile.get(request.profile_id)
+        profile = await Profile.get(body.profile_id)
         if not profile or profile.user_id != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -126,11 +128,11 @@ async def start_free_interaction_session(
 
         session = await vod_interaction_service.start_free_interaction_session(
             user_id=str(current_user.id),
-            profile_id=request.profile_id,
-            avatar_id=request.avatar_id,
-            content_id=request.content_id,
-            character_name=request.character_name,
-            current_timestamp=request.current_timestamp
+            profile_id=body.profile_id,
+            avatar_id=body.avatar_id,
+            content_id=body.content_id,
+            character_name=body.character_name,
+            current_timestamp=body.current_timestamp
         )
 
         logger.info(
@@ -169,21 +171,22 @@ async def start_free_interaction_session(
 @router.post("/sessions/start", response_model=VODInteractionSession)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_interaction_session(
-    request: StartInteractionRequest,
+    request: Request,
+    body: StartInteractionRequest,
     current_user: User = Depends(get_current_user)
 ):
     """
     Start a new interaction session at an interactive moment
 
     Args:
-        request: Session creation parameters
+        body: Session creation parameters
         current_user: Authenticated user
 
     Returns:
         Created interaction session
     """
     try:
-        profile = await Profile.get(request.profile_id)
+        profile = await Profile.get(body.profile_id)
         if not profile or profile.user_id != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -192,10 +195,10 @@ async def start_interaction_session(
 
         session = await vod_interaction_service.start_interaction_session(
             user_id=str(current_user.id),
-            profile_id=request.profile_id,
-            avatar_id=request.avatar_id,
-            content_id=request.content_id,
-            moment_timestamp=request.timestamp
+            profile_id=body.profile_id,
+            avatar_id=body.avatar_id,
+            content_id=body.content_id,
+            moment_timestamp=body.timestamp
         )
 
         logger.info(
@@ -234,8 +237,9 @@ async def start_interaction_session(
 @router.post("/sessions/{session_id}/message", response_model=CharacterResponseModel)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_message", "10/minute"))
 async def send_user_message(
+    request: Request,
     session_id: str,
-    request: UserMessageRequest,
+    body: UserMessageRequest,
     current_user: User = Depends(get_current_user)
 ):
     """
@@ -243,7 +247,7 @@ async def send_user_message(
 
     Args:
         session_id: Session ID
-        request: User message
+        body: User message
         current_user: Authenticated user
 
     Returns:
@@ -259,7 +263,7 @@ async def send_user_message(
 
         exchange = await vod_interaction_service.process_user_message(
             session_id=session_id,
-            user_message=request.message
+            user_message=body.message
         )
 
         logger.info(
@@ -303,6 +307,7 @@ async def send_user_message(
 @router.post("/sessions/{session_id}/complete", response_model=SessionStatusResponse)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_complete", "20/minute"))
 async def complete_session(
+    request: Request,
     session_id: str,
     current_user: User = Depends(get_current_user)
 ):

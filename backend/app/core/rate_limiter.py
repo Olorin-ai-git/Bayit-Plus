@@ -125,6 +125,13 @@ try:
         "vod_interaction_session_start": _dev_limit("10/minute"),  # Session creation
         "vod_interaction_message": _dev_limit("10/minute"),  # AI dialogue exchange (expensive)
         "vod_interaction_complete": _dev_limit("20/minute"),  # Session completion
+        # VOD Voice Interaction - WebSocket voice pipeline (expensive: ASR + AI + animation)
+        "vod_interaction_voice_ws_connect": _dev_limit("5/minute"),
+        "vod_interaction_voice_utterance": _dev_limit("10/minute"),
+        # VOD Multi-Character Interaction
+        "vod_interaction_multi_message": _dev_limit("10/minute"),
+        # VOD Shared Interaction
+        "vod_interaction_shared_message": _dev_limit("10/minute"),
     }
 
     RATE_LIMITING_ENABLED = True

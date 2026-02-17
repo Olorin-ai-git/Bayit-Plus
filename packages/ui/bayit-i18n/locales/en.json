@@ -5448,7 +5448,29 @@
       "sending": "Sending...",
       "characterSpeaking": "Character is speaking...",
       "endDialogue": "End Dialogue",
-      "noCharactersAvailable": "No characters available for dialogue"
+      "noCharactersAvailable": "No characters available for dialogue",
+      "voiceMode": "Voice Mode",
+      "holdToSpeak": "Hold to Speak",
+      "listening": "Listening...",
+      "transcribing": "Transcribing...",
+      "thinking": "Thinking...",
+      "voiceConsentRequired": "Voice consent required for voice interaction",
+      "micPermissionDenied": "Microphone permission denied"
+    },
+    "multiCharacter": {
+      "selectCharacter": "Select Character to Address",
+      "talkingTo": "Talking to",
+      "reaction": "Reaction",
+      "switchCharacter": "Switch Character"
+    },
+    "shared": {
+      "waitingForTurn": "Waiting for your turn...",
+      "yourTurn": "Your Turn!",
+      "turnSkipped": "Turn skipped",
+      "countdownWarning": "Time running out!",
+      "sessionEnded": "Session ended",
+      "startInteraction": "Start Interaction",
+      "participants": "Participants"
     }
   },
   "podcast": {

@@ -78,7 +78,10 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_bilingual_dubbing, websocket_talk_back,
                                 widget_toggle, widgets, youngsters, zman,
                                 vod_interactions, vod_interaction_reels,
-                                admin_interactive_moments)
+                                vod_interaction_multi, vod_interaction_shared,
+                                admin_interactive_moments,
+                                websocket_vod_interaction,
+                                vod_interaction_admin)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     # Quiz and rewards routes
@@ -498,6 +501,15 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         admin_interactive_moments.router, prefix=prefix, tags=["admin-interactive-moments"]
     )
+    app.include_router(
+        vod_interaction_admin.router, prefix=prefix, tags=["vod-interaction-admin"]
+    )
+    app.include_router(
+        vod_interaction_multi.router, prefix=prefix, tags=["vod-interaction-multi"]
+    )
+    app.include_router(
+        vod_interaction_shared.router, prefix=prefix, tags=["vod-interaction-shared"]
+    )
     logger.debug("Registered VOD avatar interaction routes")
 
     # ============================================
@@ -548,6 +560,11 @@ def register_all_routers(app: FastAPI) -> None:
         websocket_interactive_mission.router,
         prefix=prefix,
         tags=["websocket", "interactive-missions"],
+    )
+    app.include_router(
+        websocket_vod_interaction.router,
+        prefix=prefix,
+        tags=["websocket", "vod-interaction"],
     )
     logger.debug("Registered websocket routes")
 

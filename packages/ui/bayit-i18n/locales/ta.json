@@ -4077,7 +4077,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "கதாபாத்திரத்துடன் பேசு",
+      "selectCharacter": "கதாபாத்திரத்தை தேர்வுசெய்",
+      "typeQuestion": "உங்கள் கேள்வியை தட்டச்சு செய்யுங்கள்...",
+      "sending": "அனுப்புகிறது...",
+      "characterSpeaking": "கதாபாத்திரம் பேசுகிறது...",
+      "endDialogue": "உரையாடலை முடி",
+      "noCharactersAvailable": "உரையாடலுக்கு கதாபாத்திரங்கள் இல்லை",
+      "voiceMode": "குரல் பயன்முறை",
+      "holdToSpeak": "பேச அழுத்திப் பிடிக்கவும்",
+      "listening": "கேட்கிறது...",
+      "transcribing": "எழுத்தாக்கம் செய்கிறது...",
+      "thinking": "யோசிக்கிறது...",
+      "voiceConsentRequired": "குரல் தொடர்புக்கு குரல் ஒப்புதல் தேவை",
+      "micPermissionDenied": "ஒலிவாங்கி அனுமதி மறுக்கப்பட்டது"
+    },
+    "multiCharacter": {
+      "selectCharacter": "உரையாட கதாபாத்திரத்தை தேர்வுசெய்",
+      "talkingTo": "உரையாடுகிறது",
+      "reaction": "எதிர்வினை",
+      "switchCharacter": "கதாபாத்திரத்தை மாற்று"
+    },
+    "shared": {
+      "waitingForTurn": "உங்கள் முறைக்கு காத்திருக்கிறது...",
+      "yourTurn": "உங்கள் முறை!",
+      "turnSkipped": "முறை தவிர்க்கப்பட்டது",
+      "countdownWarning": "நேரம் முடிகிறது!",
+      "sessionEnded": "அமர்வு முடிந்தது",
+      "startInteraction": "தொடர்பை தொடங்கு",
+      "participants": "பங்கேற்பாளர்கள்"
+    }
   },
   "listen": {
     "title": "கேளுங்கள்"

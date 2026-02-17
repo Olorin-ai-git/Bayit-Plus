@@ -385,6 +385,25 @@ class VODInteractionService:
                 return character
         return None
 
+    async def process_multi_character_message(
+        self,
+        session_id: str,
+        user_message: str,
+        addressed_character: str,
+    ) -> List[DialogueExchange]:
+        """Delegate multi-character message processing to handler"""
+        from app.services.vod_interaction.multi_character_handler import (
+            multi_character_handler,
+        )
+        session = await VODInteractionSession.get(session_id)
+        if not session:
+            raise ValueError(f"Session not found: {session_id}")
+        if session.status != "active":
+            raise ValueError(f"Session not active: {session.status}")
+        return await multi_character_handler.process_multi_character_message(
+            session, user_message, addressed_character,
+        )
+
     def _get_character_voice_id(self, character_name: str) -> str:
         """Get ElevenLabs voice ID for character"""
         voice_id = CHARACTER_VOICE_MAP.get(character_name)

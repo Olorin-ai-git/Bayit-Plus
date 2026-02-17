@@ -3994,7 +3994,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "চরিত্রের সাথে কথা বলুন",
+      "selectCharacter": "চরিত্র নির্বাচন করুন",
+      "typeQuestion": "আপনার প্রশ্ন লিখুন...",
+      "sending": "পাঠানো হচ্ছে...",
+      "characterSpeaking": "চরিত্র কথা বলছে...",
+      "endDialogue": "সংলাপ শেষ করুন",
+      "noCharactersAvailable": "সংলাপের জন্য কোনো চরিত্র উপলব্ধ নেই",
+      "voiceMode": "ভয়েস মোড",
+      "holdToSpeak": "কথা বলতে চেপে ধরুন",
+      "listening": "শুনছে...",
+      "transcribing": "প্রতিলিপি করছে...",
+      "thinking": "ভাবছে...",
+      "voiceConsentRequired": "ভয়েস ইন্টারঅ্যাকশনের জন্য ভয়েস সম্মতি প্রয়োজন",
+      "micPermissionDenied": "মাইক্রোফোন অনুমতি প্রত্যাখ্যান করা হয়েছে"
+    },
+    "multiCharacter": {
+      "selectCharacter": "সম্বোধন করতে চরিত্র নির্বাচন করুন",
+      "talkingTo": "কথা বলছেন",
+      "reaction": "প্রতিক্রিয়া",
+      "switchCharacter": "চরিত্র পরিবর্তন করুন"
+    },
+    "shared": {
+      "waitingForTurn": "আপনার পালার জন্য অপেক্ষা করছে...",
+      "yourTurn": "আপনার পালা!",
+      "turnSkipped": "পালা বাদ দেওয়া হয়েছে",
+      "countdownWarning": "সময় শেষ হয়ে যাচ্ছে!",
+      "sessionEnded": "সেশন শেষ হয়েছে",
+      "startInteraction": "ইন্টারঅ্যাকশন শুরু করুন",
+      "participants": "অংশগ্রহণকারী"
+    }
   },
   "listen": {
     "title": "শুনুন"

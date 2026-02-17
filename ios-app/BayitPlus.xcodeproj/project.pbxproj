@@ -528,6 +528,9 @@
 		86277596B44C947FA0D6749A /* FlowsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C59F5F2AD5BDF491C914215F /* FlowsViewModel.swift */; };
 		8673501517856991CCF10C9E /* AppNetworkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32BB6C22F3817C67791E512D /* AppNetworkConfiguration.swift */; };
 		868B6A19D79E409181A6A9E3 /* SearchResultsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9751F60774D770ABC1CA8DA /* SearchResultsGridView.swift */; };
+		8A1F2C3D4E5F60710912AB02 /* SortOptionsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1F2C3D4E5F60710912AB01 /* SortOptionsSheet.swift */; };
+		8A1F2C3D4E5F60710912AB04 /* SearchFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1F2C3D4E5F60710912AB03 /* SearchFilterSheet.swift */; };
+		8A1F2C3D4E5F60710912AB06 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1F2C3D4E5F60710912AB05 /* FlowLayout.swift */; };
 		869F1CA8508CAA7133010ECA /* NowPlayingWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400B3920D7AED83835AD3D1 /* NowPlayingWidgetView.swift */; };
 		86C331D231660EBF3DB878C4 /* WatchPartyMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1C5E010CC50A467F5936B6 /* WatchPartyMessage.swift */; };
 		86FE1B76C60E6F7C86B3AAC9 /* QuickActionsTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEE1D2018050AC6AA29F29C5 /* QuickActionsTimelineProvider.swift */; };
@@ -1011,6 +1014,16 @@
 		D7E8F9A0B1C2D3E4F5A6B7C8 /* AvatarDialogueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B7A6F5E4D3C2B1A0F9E8D7 /* AvatarDialogueViewModel.swift */; };
 		E9F0A1B2C3D4E5F6A7B8C9D0 /* TVAvatarDialogueOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C9B8A7F6E5D4C3B2A1F0E9 /* TVAvatarDialogueOverlayView.swift */; };
 		F1A2B3C4D5E6F7A8B9C0D1E2 /* TVCharacterSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D1C0B9A8F7E6D5C4B3A2F1 /* TVCharacterSelectionView.swift */; };
+		AA11BB22CC33DD44EE55FF01 /* VoiceInteractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF00 /* VoiceInteractionService.swift */; };
+		AA11BB22CC33DD44EE55FF03 /* MultiCharacterCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF02 /* MultiCharacterCirclesView.swift */; };
+		AA11BB22CC33DD44EE55FF05 /* DialogueCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF04 /* DialogueCirclesView.swift */; };
+		AA11BB22CC33DD44EE55FF07 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF06 /* PlayerPreferencesService.swift */; };
+		AA11BB22CC33DD44EE55FF09 /* ContinueWatchingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF08 /* ContinueWatchingSection.swift */; };
+		AA11BB22CC33DD44EE55FF11 /* SharedInteractionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF10 /* SharedInteractionViewModel.swift */; };
+		AA11BB22CC33DD44EE55FF13 /* SharedInteractionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF12 /* SharedInteractionOverlayView.swift */; };
+		AA11BB22CC33DD44EE55FF15 /* TVVoiceInteractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF14 /* TVVoiceInteractionService.swift */; };
+		AA11BB22CC33DD44EE55FF17 /* TVMultiCharacterCirclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF16 /* TVMultiCharacterCirclesView.swift */; };
+		AA11BB22CC33DD44EE55FF19 /* TVSharedInteractionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF18 /* TVSharedInteractionView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1796,6 +1809,9 @@
 		F8F5EAB0F1B64D01A006BF25 /* RecentSearchesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchesService.swift; sourceTree = "<group>"; };
 		F95C26DFF486AC46A273CFDB /* RewardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardsView.swift; sourceTree = "<group>"; };
 		F9751F60774D770ABC1CA8DA /* SearchResultsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsGridView.swift; sourceTree = "<group>"; };
+		8A1F2C3D4E5F60710912AB01 /* SortOptionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOptionsSheet.swift; sourceTree = "<group>"; };
+		8A1F2C3D4E5F60710912AB03 /* SearchFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFilterSheet.swift; sourceTree = "<group>"; };
+		8A1F2C3D4E5F60710912AB05 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 		FA02170F1808336E30A51F21 /* VoiceOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOnboardingViewModel.swift; sourceTree = "<group>"; };
 		FA1BF57C3D64AF9135AED229 /* ARFaceCaptureSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARFaceCaptureSession.swift; sourceTree = "<group>"; };
 		FA63C3D4394145C9BD12D330 /* TVAvatarPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAvatarPickerView.swift; sourceTree = "<group>"; };
@@ -1819,6 +1835,16 @@
 		C8B7A6F5E4D3C2B1A0F9E8D7 /* AvatarDialogueViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDialogueViewModel.swift; sourceTree = "<group>"; };
 		D0C9B8A7F6E5D4C3B2A1F0E9 /* TVAvatarDialogueOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAvatarDialogueOverlayView.swift; sourceTree = "<group>"; };
 		E2D1C0B9A8F7E6D5C4B3A2F1 /* TVCharacterSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVCharacterSelectionView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF00 /* VoiceInteractionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInteractionService.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF02 /* MultiCharacterCirclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiCharacterCirclesView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF04 /* DialogueCirclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueCirclesView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF06 /* PlayerPreferencesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPreferencesService.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF08 /* ContinueWatchingSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinueWatchingSection.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF10 /* SharedInteractionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInteractionViewModel.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF12 /* SharedInteractionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInteractionOverlayView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF14 /* TVVoiceInteractionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVoiceInteractionService.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF16 /* TVMultiCharacterCirclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMultiCharacterCirclesView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF18 /* TVSharedInteractionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSharedInteractionView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2336,6 +2362,7 @@
 				D3FC143643D41D281ED69E3D /* BreadcrumbBar.swift */,
 				5A14B410A66D686461708701 /* CultureClock.swift */,
 				ED1AF60A7030835E8C9B8A38 /* ErrorStateView.swift */,
+				8A1F2C3D4E5F60710912AB05 /* FlowLayout.swift */,
 				D5809F2F19E6D9B13A1A064F /* PageHeader.swift */,
 				69481AE1E4253624D6DF25D6 /* ScreenLoadingView.swift */,
 				CB9D4E3FE6779CDE7F7677FD /* SubtitleFlagsPill.swift */,
@@ -2401,6 +2428,8 @@
 				F1B8DA3338DFCD1E290AF91F /* TVAIFeaturesPanel.swift */,
 				F8DB31638570A34214693E5B /* TVAILanguagePickerView.swift */,
 				D0C9B8A7F6E5D4C3B2A1F0E9 /* TVAvatarDialogueOverlayView.swift */,
+				AA11BB22CC33DD44EE55FF16 /* TVMultiCharacterCirclesView.swift */,
+				AA11BB22CC33DD44EE55FF18 /* TVSharedInteractionView.swift */,
 				CE50113F9BC021763F27164F /* TVAudioTrackSelectorView.swift */,
 				FDBC47F2234E628BCCB2E03C /* TVBilingualDubbingOverlayView.swift */,
 				6A846EC598DD5372F5BC57EC /* TVCatchUpAutoPromptView.swift */,
@@ -2517,6 +2546,9 @@
 				724B34ADC76739BE05A370EB /* AICompanion */,
 				2B9FEBB47825445FD0F1C4D2 /* Subtitles */,
 				A4F3E2D1C0B9A8F7E6D5C4B3 /* AvatarDialogueOverlayView.swift */,
+				AA11BB22CC33DD44EE55FF04 /* DialogueCirclesView.swift */,
+				AA11BB22CC33DD44EE55FF02 /* MultiCharacterCirclesView.swift */,
+				AA11BB22CC33DD44EE55FF12 /* SharedInteractionOverlayView.swift */,
 				F0DBED5DCD5838D68202D334 /* AudioTrackSelectorView.swift */,
 				2F610B4E0E6DB0E00DC2AC24 /* BilingualDubbingOverlayView.swift */,
 				26E9AA96236AC7C89BFC5F5C /* CatchUpAutoPromptView.swift */,
@@ -3025,6 +3057,7 @@
 			children = (
 				E11E607698FFB5080248C5F9 /* TopShelfDataProvider.swift */,
 				E2DBC8FEBBE5CB842C9BCE5F /* TVAudioPlaybackManager.swift */,
+				AA11BB22CC33DD44EE55FF14 /* TVVoiceInteractionService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -3171,6 +3204,8 @@
 				F9751F60774D770ABC1CA8DA /* SearchResultsGridView.swift */,
 				2894E7AD5E408F3AF65E0372 /* SearchSuggestionsView.swift */,
 				0A5C751B941DB7CCFF6198EF /* SearchView.swift */,
+				8A1F2C3D4E5F60710912AB01 /* SortOptionsSheet.swift */,
+				8A1F2C3D4E5F60710912AB03 /* SearchFilterSheet.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -3222,6 +3257,7 @@
 			isa = PBXGroup;
 			children = (
 				416483275A5CA071A8086335 /* CollectionDetailView.swift */,
+				AA11BB22CC33DD44EE55FF08 /* ContinueWatchingSection.swift */,
 				6D07D28549B74345E9AF51A1 /* CollectionPromoBannerView.swift */,
 				C368DC7093EBEE2BC5D5DFA8 /* VODDebugView.swift */,
 				420C86F3F3A1CFD6BAD6627A /* VODView.swift */,
@@ -3279,12 +3315,14 @@
 				0E75ED1BECA95315C0468380 /* NetworkMonitor.swift */,
 				45FA21AB8481260ED9E0CCB1 /* OfflineCacheService.swift */,
 				DE94BDC4E485796A12D967B5 /* PendingIntentHandler.swift */,
+				AA11BB22CC33DD44EE55FF06 /* PlayerPreferencesService.swift */,
 				A070263D1B172F92FFF2A542 /* PlaybackSessionService.swift */,
 				33DDCB36F3528B6BB055905F /* PresenceDetectionService.swift */,
 				9A9D2769ABD129158E01819C /* ProactiveSuggestionEngine.swift */,
 				F8F5EAB0F1B64D01A006BF25 /* RecentSearchesService.swift */,
 				1525F35743AEE573F635720C /* ShabbatModeService.swift */,
 				D992F5120D7B3076BACB5AE8 /* ShoreshParser.swift */,
+				AA11BB22CC33DD44EE55FF00 /* VoiceInteractionService.swift */,
 				3F21A3AB32699932FE79916C /* WakeWordService.swift */,
 				4E205AE616B03D4924F5616D /* WidgetDataSyncService.swift */,
 			);
@@ -3459,6 +3497,7 @@
 				E59F8347D3F3B056C30F0D8C /* AudiobookDetailViewModel.swift */,
 				5145234E59211F38DDFA7EBD /* AudiobooksViewModel.swift */,
 				F2E1D0C9B8A7F6E5D4C3B2A1 /* AvatarDialogueViewModel.swift */,
+				AA11BB22CC33DD44EE55FF10 /* SharedInteractionViewModel.swift */,
 				8E6D297DFBC3DC8F4704829F /* AvatarViewModel.swift */,
 				F0A53855575B3E2877536A28 /* BetaCreditsViewModel.swift */,
 				819CE4437737E8CD1AA04128 /* BilingualDubbingViewModel.swift */,
@@ -3932,6 +3971,9 @@
 				D7E8F9A0B1C2D3E4F5A6B7C8 /* AvatarDialogueViewModel.swift in Sources */,
 				78CDB713ACA6479AB0F4B6CD /* VODInteractionViewModel.swift in Sources */,
 				E9F0A1B2C3D4E5F6A7B8C9D0 /* TVAvatarDialogueOverlayView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF15 /* TVVoiceInteractionService.swift in Sources */,
+				AA11BB22CC33DD44EE55FF17 /* TVMultiCharacterCirclesView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF19 /* TVSharedInteractionView.swift in Sources */,
 				F1A2B3C4D5E6F7A8B9C0D1E2 /* TVCharacterSelectionView.swift in Sources */,
 				587BB357845E41E5B77B8A95 /* TVInteractiveMomentOverlayView.swift in Sources */,
 				82ED84E082421B61B8057087 /* TVBetaCreditsView.swift in Sources */,
@@ -4578,6 +4620,9 @@
 				868B6A19D79E409181A6A9E3 /* SearchResultsGridView.swift in Sources */,
 				7E090D8D6411FBD7C72474A7 /* SearchSuggestionsView.swift in Sources */,
 				7FB1F1513ABBF7A345CBDB29 /* SearchView.swift in Sources */,
+				8A1F2C3D4E5F60710912AB02 /* SortOptionsSheet.swift in Sources */,
+				8A1F2C3D4E5F60710912AB04 /* SearchFilterSheet.swift in Sources */,
+				8A1F2C3D4E5F60710912AB06 /* FlowLayout.swift in Sources */,
 				F0C947D28A98EE2A5633C3CF /* SearchViewModel.swift in Sources */,
 				8DCBBF6502AB5E09234AD40F /* SecurityModels.swift in Sources */,
 				E6DF44728BB553940180F35C /* SecurityRepository.swift in Sources */,
@@ -4666,10 +4711,17 @@
 				2798908298A1C66FD1CFF21B /* V2VResultView.swift in Sources */,
 				1B39EC0C985A5E667490563C /* VODDebugView.swift in Sources */,
 				971501753DC1B28210AAC745 /* VODView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF09 /* ContinueWatchingSection.swift in Sources */,
 				FC89B9C4958CEC3F9E33004F /* VODViewModel.swift in Sources */,
 				B259B598108347DCAEFC6817 /* VODInteractionViewModel.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* AvatarDialogueViewModel.swift in Sources */,
 				B3C4D5E6F7A8B9C0D1E2F3A4 /* AvatarDialogueOverlayView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF05 /* DialogueCirclesView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF03 /* MultiCharacterCirclesView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF01 /* VoiceInteractionService.swift in Sources */,
+				AA11BB22CC33DD44EE55FF11 /* SharedInteractionViewModel.swift in Sources */,
+				AA11BB22CC33DD44EE55FF13 /* SharedInteractionOverlayView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF07 /* PlayerPreferencesService.swift in Sources */,
 				C5D6E7F8A9B0C1D2E3F4A5B6 /* CharacterSelectionSheet.swift in Sources */,
 				E958423D6DFBD3DEF813BF69 /* VideoPlayerView.swift in Sources */,
 				296F5A10BD59DAC7209075E3 /* VideoProcessingStepView.swift in Sources */,

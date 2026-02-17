@@ -5082,7 +5082,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "キャラクターと話す",
+      "selectCharacter": "キャラクターを選択",
+      "typeQuestion": "質問を入力してください...",
+      "sending": "送信中...",
+      "characterSpeaking": "キャラクターが話しています...",
+      "endDialogue": "対話を終了",
+      "noCharactersAvailable": "対話可能なキャラクターがいません",
+      "voiceMode": "音声モード",
+      "holdToSpeak": "押し続けて話す",
+      "listening": "聞いています...",
+      "transcribing": "文字起こし中...",
+      "thinking": "考えています...",
+      "voiceConsentRequired": "音声インタラクションには音声同意が必要です",
+      "micPermissionDenied": "マイクの許可が拒否されました"
+    },
+    "multiCharacter": {
+      "selectCharacter": "話しかけるキャラクターを選択",
+      "talkingTo": "話し相手",
+      "reaction": "リアクション",
+      "switchCharacter": "キャラクターを切り替え"
+    },
+    "shared": {
+      "waitingForTurn": "順番を待っています...",
+      "yourTurn": "あなたの番です!",
+      "turnSkipped": "順番がスキップされました",
+      "countdownWarning": "時間がなくなります!",
+      "sessionEnded": "セッションが終了しました",
+      "startInteraction": "インタラクションを開始",
+      "participants": "参加者"
+    }
   },
   "listen": {
     "title": "聴く"

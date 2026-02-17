@@ -5463,7 +5463,29 @@
       "sending": "שולח...",
       "characterSpeaking": "הדמות מדברת...",
       "endDialogue": "סיים שיחה",
-      "noCharactersAvailable": "אין דמויות זמינות לשיחה"
+      "noCharactersAvailable": "אין דמויות זמינות לשיחה",
+      "voiceMode": "מצב קולי",
+      "holdToSpeak": "לחץ והחזק לדיבור",
+      "listening": "מאזין...",
+      "transcribing": "מתמלל...",
+      "thinking": "חושב...",
+      "voiceConsentRequired": "נדרשת הסכמה קולית לאינטראקציה קולית",
+      "micPermissionDenied": "הרשאת מיקרופון נדחתה"
+    },
+    "multiCharacter": {
+      "selectCharacter": "בחר דמות לפנות אליה",
+      "talkingTo": "מדבר עם",
+      "reaction": "תגובה",
+      "switchCharacter": "החלף דמות"
+    },
+    "shared": {
+      "waitingForTurn": "ממתין לתורך...",
+      "yourTurn": "התור שלך!",
+      "turnSkipped": "התור דולג",
+      "countdownWarning": "הזמן אוזל!",
+      "sessionEnded": "הפגישה הסתיימה",
+      "startInteraction": "התחל אינטראקציה",
+      "participants": "משתתפים"
     }
   },
   "listen": {

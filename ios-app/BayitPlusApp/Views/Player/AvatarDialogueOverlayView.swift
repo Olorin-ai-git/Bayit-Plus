@@ -6,8 +6,7 @@ import BayitLocalization
 import SwiftUI
 
 /// Compact floating overlay for free-form character dialogue.
-/// Shows avatar circle (left) and character circle (right) with
-/// a text input below. Character video plays inline when response arrives.
+/// Supports text and voice input, multi-character mode, and dynamic positioning.
 struct AvatarDialogueOverlayView: View {
 
     @Environment(LocalizationManager.self) private var localization
@@ -15,26 +14,44 @@ struct AvatarDialogueOverlayView: View {
     let avatarImageUrl: String
     let character: ContentCharacter
     @Bindable var viewModel: AvatarDialogueViewModel
+    let voiceService: VoiceInteractionService?
+    let avatarPlacement: AvatarPlacement?
     let onDismiss: () -> Void
 
     @State private var messageText = ""
     @State private var characterPlayer: AVPlayer?
     @State private var isCharacterVideoReady = false
+    @State private var inputMode: InputMode = .text
 
     private let circleSize: CGFloat = 100
 
+    enum InputMode { case text, voice }
+
     var body: some View {
         VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                overlayContent
-                    .frame(maxWidth: 380)
-                    .padding(.trailing, DesignTokens.Spacing.base)
-                    .padding(.bottom, DesignTokens.Spacing.xxl)
-            }
+            if positionIsTop { overlayPanel; Spacer() }
+            else { Spacer(); overlayPanel }
         }
         .allowsHitTesting(true)
+    }
+
+    private var positionIsTop: Bool {
+        guard let placement = avatarPlacement else { return false }
+        return placement.position.hasPrefix("top")
+    }
+
+    private var overlayPanel: some View {
+        HStack {
+            if positionIsRight { Spacer() }
+            overlayContent
+                .frame(maxWidth: 380)
+                .padding(DesignTokens.Spacing.base)
+            if !positionIsRight { Spacer() }
+        }
+    }
+
+    private var positionIsRight: Bool {
+        avatarPlacement?.position.hasSuffix("right") ?? true
     }
 
     private var overlayContent: some View {
@@ -44,9 +61,22 @@ struct AvatarDialogueOverlayView: View {
         ) {
             VStack(spacing: DesignTokens.Spacing.md) {
                 headerRow
-                circlesRow
+                if viewModel.isMultiCharacterMode {
+                    MultiCharacterCirclesView(
+                        characters: viewModel.multiCharacters,
+                        addressedCharacter: viewModel.addressedCharacterName,
+                        onSelectCharacter: { viewModel.addressedCharacterName = $0 }
+                    )
+                }
+                DialogueCirclesView(
+                    avatarImageUrl: avatarImageUrl,
+                    characterFrameUrl: character.frameUrl,
+                    characterPlayer: characterPlayer,
+                    isCharacterVideoReady: isCharacterVideoReady,
+                    circleSize: circleSize
+                )
                 conversationList
-                inputRow
+                inputSection
             }
         }
     }
@@ -63,6 +93,20 @@ struct AvatarDialogueOverlayView: View {
 
             Spacer()
 
+            if voiceService != nil {
+                Button {
+                    inputMode = inputMode == .text ? .voice : .text
+                } label: {
+                    Image(systemName: inputMode == .voice
+                        ? "keyboard" : "mic.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                }
+                .accessibilityLabel(
+                    localization.t("player.dialogue.voiceMode")
+                )
+            }
+
             Button { onDismiss() } label: {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 22))
@@ -72,60 +116,6 @@ struct AvatarDialogueOverlayView: View {
                 localization.t("player.dialogue.endDialogue")
             )
         }
-    }
-
-    // MARK: - Circles
-
-    private var circlesRow: some View {
-        HStack(spacing: DesignTokens.Spacing.xl) {
-            Spacer()
-            avatarCircle
-            characterCircle
-            Spacer()
-        }
-    }
-
-    private var avatarCircle: some View {
-        AsyncImage(url: URL(string: avatarImageUrl)) { phase in
-            switch phase {
-            case .success(let image):
-                image.resizable().scaledToFill()
-            default:
-                Color.gray.opacity(0.3)
-            }
-        }
-        .frame(width: circleSize, height: circleSize)
-        .clipShape(Circle())
-        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 2))
-        .shadow(
-            color: DesignTokens.Primary.default.opacity(0.4),
-            radius: 8, x: 0, y: 2
-        )
-    }
-
-    private var characterCircle: some View {
-        ZStack {
-            AsyncImage(url: URL(string: character.frameUrl)) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.gray.opacity(0.3)
-                }
-            }
-
-            if isCharacterVideoReady, let player = characterPlayer {
-                VideoPlayer(player: player)
-                    .scaledToFill()
-            }
-        }
-        .frame(width: circleSize, height: circleSize)
-        .clipShape(Circle())
-        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 2))
-        .shadow(
-            color: DesignTokens.Primary.default.opacity(0.4),
-            radius: 8, x: 0, y: 2
-        )
     }
 
     // MARK: - Conversation
@@ -146,32 +136,46 @@ struct AvatarDialogueOverlayView: View {
     ) -> some View {
         HStack {
             if exchange.speaker == "user" { Spacer() }
-            Text(exchange.messageText)
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(
-                    exchange.speaker == "user"
-                        ? DesignTokens.Text.primary
-                        : DesignTokens.Primary.p300
-                )
-                .padding(.horizontal, DesignTokens.Spacing.sm)
-                .padding(.vertical, DesignTokens.Spacing.xs)
-                .background(
-                    exchange.speaker == "user"
-                        ? DesignTokens.Glass.bgStrong
-                        : DesignTokens.Glass.bgSubtle
-                )
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: DesignTokens.Radius.md
+            VStack(alignment: .leading, spacing: 2) {
+                if let name = exchange.characterName {
+                    Text(name)
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                Text(exchange.messageText)
+                    .font(.system(size: exchange.reactionTo != nil
+                        ? DesignTokens.FontSize.xs
+                        : DesignTokens.FontSize.sm))
+                    .foregroundStyle(
+                        exchange.speaker == "user"
+                            ? DesignTokens.Text.primary
+                            : DesignTokens.Primary.p300
                     )
-                )
+            }
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .padding(.vertical, DesignTokens.Spacing.xs)
+            .background(
+                exchange.speaker == "user"
+                    ? DesignTokens.Glass.bgStrong
+                    : DesignTokens.Glass.bgLight
+            )
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             if exchange.speaker == "character" { Spacer() }
         }
     }
 
     // MARK: - Input
 
-    private var inputRow: some View {
+    @ViewBuilder
+    private var inputSection: some View {
+        if inputMode == .voice, let service = voiceService {
+            voiceInputRow(service)
+        } else {
+            textInputRow
+        }
+    }
+
+    private var textInputRow: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             TextField(
                 localization.t("player.dialogue.typeQuestion"),
@@ -182,22 +186,43 @@ struct AvatarDialogueOverlayView: View {
             .foregroundStyle(DesignTokens.Text.primary)
             .padding(.horizontal, DesignTokens.Spacing.sm)
             .padding(.vertical, DesignTokens.Spacing.xs)
-            .background(DesignTokens.Glass.bgSubtle)
-            .clipShape(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-            )
+            .background(DesignTokens.Glass.bgLight)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             .disabled(viewModel.isSending)
 
             GlassButton(
                 viewModel.isSending
                     ? localization.t("player.dialogue.sending")
                     : localization.t("common.send"),
-                variant: .primary,
-                size: .small
-            ) {
-                sendMessage()
-            }
+                variant: .primary, size: .small
+            ) { sendMessage() }
             .disabled(messageText.isEmpty || viewModel.isSending)
+        }
+    }
+
+    private func voiceInputRow(
+        _ service: VoiceInteractionService
+    ) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            if service.isProcessing {
+                Text(localization.t("player.dialogue.\(service.processingStage ?? "thinking")"))
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+            }
+            Spacer()
+            Button {
+                if service.isRecording { service.stopRecording() }
+                else { service.startRecording() }
+            } label: {
+                Image(systemName: service.isRecording
+                    ? "stop.circle.fill" : "mic.circle.fill")
+                    .font(.system(size: 44))
+                    .foregroundStyle(service.isRecording
+                        ? DesignTokens.ErrorColor.default
+                        : DesignTokens.Primary.default)
+            }
+            .disabled(service.isProcessing)
+            .accessibilityLabel(localization.t("player.dialogue.holdToSpeak"))
         }
     }
 
@@ -209,36 +234,38 @@ struct AvatarDialogueOverlayView: View {
         cleanupCharacterPlayer()
 
         Task {
-            let response = await viewModel.sendMessage(text)
-            if let videoUrl = response?.animatedVideoUrl {
-                playCharacterVideo(urlString: videoUrl)
+            if viewModel.isMultiCharacterMode {
+                let response = await viewModel.sendMultiCharacterMessage(text)
+                if let first = response?.exchanges.first(where: { $0.animatedVideoUrl != nil }),
+                   let url = first.animatedVideoUrl {
+                    playCharacterVideo(urlString: url)
+                }
+            } else {
+                let response = await viewModel.sendMessage(text)
+                if let videoUrl = response?.animatedVideoUrl {
+                    playCharacterVideo(urlString: videoUrl)
+                }
             }
         }
     }
 
     private func playCharacterVideo(urlString: String) {
         guard let url = URL(string: urlString) else { return }
-
         let player = AVPlayer(url: url)
         characterPlayer = player
-
         NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem,
-            queue: .main
+            object: player.currentItem, queue: .main
         ) { _ in
             Task { @MainActor in
                 isCharacterVideoReady = false
                 characterPlayer = nil
             }
         }
-
         Task {
             try? await Task.sleep(for: .seconds(0.3))
             await MainActor.run {
-                withAnimation(.easeIn(duration: 0.3)) {
-                    isCharacterVideoReady = true
-                }
+                withAnimation(.easeIn(duration: 0.3)) { isCharacterVideoReady = true }
                 player.play()
             }
         }

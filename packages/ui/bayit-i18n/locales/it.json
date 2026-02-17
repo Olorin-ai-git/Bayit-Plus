@@ -4308,7 +4308,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "Parla con il personaggio",
+      "selectCharacter": "Seleziona personaggio",
+      "typeQuestion": "Scrivi la tua domanda...",
+      "sending": "Invio in corso...",
+      "characterSpeaking": "Il personaggio sta parlando...",
+      "endDialogue": "Termina dialogo",
+      "noCharactersAvailable": "Nessun personaggio disponibile per il dialogo",
+      "voiceMode": "Modalita vocale",
+      "holdToSpeak": "Tieni premuto per parlare",
+      "listening": "In ascolto...",
+      "transcribing": "Trascrizione in corso...",
+      "thinking": "Sto pensando...",
+      "voiceConsentRequired": "Consenso vocale richiesto per l'interazione vocale",
+      "micPermissionDenied": "Autorizzazione microfono negata"
+    },
+    "multiCharacter": {
+      "selectCharacter": "Seleziona personaggio a cui rivolgerti",
+      "talkingTo": "Stai parlando con",
+      "reaction": "Reazione",
+      "switchCharacter": "Cambia personaggio"
+    },
+    "shared": {
+      "waitingForTurn": "In attesa del tuo turno...",
+      "yourTurn": "Tocca a te!",
+      "turnSkipped": "Turno saltato",
+      "countdownWarning": "Il tempo sta per scadere!",
+      "sessionEnded": "Sessione terminata",
+      "startInteraction": "Avvia interazione",
+      "participants": "Partecipanti"
+    }
   },
   "listen": {
     "title": "Ascolta"

@@ -21,6 +21,18 @@ from app.services.vod_interaction.reel_compositor import (
     reel_compositor_service,
     ReelCompositorService
 )
+from app.services.vod_interaction.multi_character_ai import (
+    multi_character_ai_service,
+    MultiCharacterAIService,
+)
+from app.services.vod_interaction.multi_character_handler import (
+    multi_character_handler,
+    MultiCharacterHandler,
+)
+from app.services.vod_interaction.shared_interaction_service import (
+    shared_interaction_service,
+    SharedInteractionService,
+)
 
 __all__ = [
     "vod_interaction_service",
@@ -31,4 +43,10 @@ __all__ = [
     "CharacterAnimatorService",
     "reel_compositor_service",
     "ReelCompositorService",
+    "multi_character_ai_service",
+    "MultiCharacterAIService",
+    "multi_character_handler",
+    "MultiCharacterHandler",
+    "shared_interaction_service",
+    "SharedInteractionService",
 ]

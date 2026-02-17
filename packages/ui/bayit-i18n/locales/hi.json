@@ -4149,7 +4149,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "पात्र से बात करें",
+      "selectCharacter": "पात्र चुनें",
+      "typeQuestion": "अपना प्रश्न लिखें...",
+      "sending": "भेज रहे हैं...",
+      "characterSpeaking": "पात्र बोल रहा है...",
+      "endDialogue": "संवाद समाप्त करें",
+      "noCharactersAvailable": "संवाद के लिए कोई पात्र उपलब्ध नहीं",
+      "voiceMode": "ध्वनि मोड",
+      "holdToSpeak": "बोलने के लिए दबाए रखें",
+      "listening": "सुन रहे हैं...",
+      "transcribing": "प्रतिलेखन हो रहा है...",
+      "thinking": "सोच रहे हैं...",
+      "voiceConsentRequired": "ध्वनि इंटरैक्शन के लिए ध्वनि सहमति आवश्यक है",
+      "micPermissionDenied": "माइक्रोफ़ोन अनुमति अस्वीकृत"
+    },
+    "multiCharacter": {
+      "selectCharacter": "संबोधित करने के लिए पात्र चुनें",
+      "talkingTo": "से बात कर रहे हैं",
+      "reaction": "प्रतिक्रिया",
+      "switchCharacter": "पात्र बदलें"
+    },
+    "shared": {
+      "waitingForTurn": "अपनी बारी की प्रतीक्षा कर रहे हैं...",
+      "yourTurn": "आपकी बारी!",
+      "turnSkipped": "बारी छोड़ दी गई",
+      "countdownWarning": "समय समाप्त हो रहा है!",
+      "sessionEnded": "सत्र समाप्त",
+      "startInteraction": "इंटरैक्शन शुरू करें",
+      "participants": "प्रतिभागी"
+    }
   },
   "listen": {
     "title": "सुनें"

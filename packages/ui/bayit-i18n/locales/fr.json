@@ -4153,7 +4153,38 @@
     "castLabel": "Cast",
     "director": "Director",
     "liveDubbing": "Live Dubbing",
-    "liveDubbingOnlyLive": "Live dubbing is only available for live channels"
+    "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
+    "dialogue": {
+      "talkToCharacter": "Parler au personnage",
+      "selectCharacter": "Selectionner un personnage",
+      "typeQuestion": "Tapez votre question...",
+      "sending": "Envoi en cours...",
+      "characterSpeaking": "Le personnage parle...",
+      "endDialogue": "Terminer le dialogue",
+      "noCharactersAvailable": "Aucun personnage disponible pour le dialogue",
+      "voiceMode": "Mode vocal",
+      "holdToSpeak": "Maintenez pour parler",
+      "listening": "Ecoute en cours...",
+      "transcribing": "Transcription en cours...",
+      "thinking": "Reflexion en cours...",
+      "voiceConsentRequired": "Consentement vocal requis pour l'interaction vocale",
+      "micPermissionDenied": "Autorisation du microphone refusee"
+    },
+    "multiCharacter": {
+      "selectCharacter": "Selectionner un personnage a interpeller",
+      "talkingTo": "En conversation avec",
+      "reaction": "Reaction",
+      "switchCharacter": "Changer de personnage"
+    },
+    "shared": {
+      "waitingForTurn": "En attente de votre tour...",
+      "yourTurn": "A votre tour !",
+      "turnSkipped": "Tour passe",
+      "countdownWarning": "Le temps s'ecoule !",
+      "sessionEnded": "Session terminee",
+      "startInteraction": "Demarrer l'interaction",
+      "participants": "Participants"
+    }
   },
   "listen": {
     "title": "Ecouter"

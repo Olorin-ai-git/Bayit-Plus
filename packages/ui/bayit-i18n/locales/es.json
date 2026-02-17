@@ -5286,7 +5286,29 @@
       "sending": "Enviando...",
       "characterSpeaking": "El personaje esta hablando...",
       "endDialogue": "Terminar dialogo",
-      "noCharactersAvailable": "No hay personajes disponibles para dialogo"
+      "noCharactersAvailable": "No hay personajes disponibles para dialogo",
+      "voiceMode": "Modo de voz",
+      "holdToSpeak": "Mantener para hablar",
+      "listening": "Escuchando...",
+      "transcribing": "Transcribiendo...",
+      "thinking": "Pensando...",
+      "voiceConsentRequired": "Se requiere consentimiento de voz para la interaccion de voz",
+      "micPermissionDenied": "Permiso de microfono denegado"
+    },
+    "multiCharacter": {
+      "selectCharacter": "Seleccionar personaje para dirigirse",
+      "talkingTo": "Hablando con",
+      "reaction": "Reaccion",
+      "switchCharacter": "Cambiar personaje"
+    },
+    "shared": {
+      "waitingForTurn": "Esperando tu turno...",
+      "yourTurn": "Tu turno!",
+      "turnSkipped": "Turno omitido",
+      "countdownWarning": "Se acaba el tiempo!",
+      "sessionEnded": "Sesion finalizada",
+      "startInteraction": "Iniciar interaccion",
+      "participants": "Participantes"
     }
   },
   "listen": {

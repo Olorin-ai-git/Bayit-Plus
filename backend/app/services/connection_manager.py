@@ -198,6 +198,17 @@ class ConnectionManager:
 
         return success_count
 
+    async def broadcast_interaction_event(
+        self,
+        party_id: str,
+        event_type: str,
+        data: dict,
+        exclude_user_id: Optional[str] = None,
+    ) -> int:
+        """Broadcast a VOD interaction event to all party members."""
+        message = {"type": "interaction_event", "event": event_type, **data}
+        return await self.broadcast_to_party(message, party_id, exclude_user_id)
+
     async def broadcast_all(self, message: dict) -> int:
         """Broadcast a message to all connections"""
         connection_ids = list(self._connections.keys())

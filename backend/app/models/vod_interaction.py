@@ -11,6 +11,43 @@ from pydantic import BaseModel, Field
 from beanie import Document
 
 
+class BoundingBox(BaseModel):
+    """Normalized bounding box for region of interest detection"""
+    x: float = Field(..., ge=0.0, le=1.0, description="Left edge (normalized)")
+    y: float = Field(..., ge=0.0, le=1.0, description="Top edge (normalized)")
+    w: float = Field(..., ge=0.0, le=1.0, description="Width (normalized)")
+    h: float = Field(..., ge=0.0, le=1.0, description="Height (normalized)")
+    label: str = Field(default="roi", description="Region label")
+
+
+class AvatarPlacement(BaseModel):
+    """Computed safe placement for avatar overlay on video frame"""
+    position: str = Field(..., description="Quadrant: top_left, top_right, bottom_left, bottom_right")
+    offset_x: float = Field(default=0.0, description="Horizontal offset within quadrant (normalized)")
+    offset_y: float = Field(default=0.0, description="Vertical offset within quadrant (normalized)")
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="Placement confidence score")
+    fallback_position: str = Field(default="bottom_left", description="Fallback position if primary fails")
+    regions_of_interest: List[BoundingBox] = Field(
+        default_factory=list,
+        description="Detected regions to avoid overlapping",
+    )
+
+
+class CharacterProfile(BaseModel):
+    """Character profile for multi-character interactions"""
+    name: str = Field(..., description="Character display name")
+    voice_id: str = Field(..., description="ElevenLabs voice ID")
+    frame_url: str = Field(..., description="GCS URL of character still frame")
+    personality_traits: List[str] = Field(
+        default_factory=list,
+        description="Key personality traits for AI prompt",
+    )
+    relationship_to_others: Optional[str] = Field(
+        None,
+        description="Relationship context with other characters",
+    )
+
+
 class InteractiveMoment(BaseModel):
     """Marks an interactive moment in content metadata"""
     timestamp: float = Field(..., description="Seconds into video")
@@ -40,6 +77,23 @@ class InteractiveMoment(BaseModel):
         None,
         description="Pre-generated character response lip-sync video URL",
     )
+    # Phase 3: Smart Positioning (WS2)
+    avatar_placement: Optional[AvatarPlacement] = Field(
+        None, description="Pre-computed safe avatar placement for this moment",
+    )
+    # Phase 3: Multi-Character (WS3)
+    characters: List[CharacterProfile] = Field(
+        default_factory=list,
+        description="Characters available for multi-character interaction",
+    )
+    allow_cross_character_reactions: bool = Field(
+        default=True,
+        description="Whether non-addressed characters can react",
+    )
+    max_active_characters: int = Field(
+        default=3, ge=1, le=5,
+        description="Max simultaneous active characters",
+    )
 
 
 class DialogueExchange(BaseModel):
@@ -49,6 +103,52 @@ class DialogueExchange(BaseModel):
     audio_url: Optional[str] = Field(None, description="TTS audio URL (character only)")
     animated_video_url: Optional[str] = Field(None, description="Creatify video URL")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    # Phase 3: Multi-Character (WS3)
+    character_name: Optional[str] = Field(
+        None, description="Character name for multi-character exchanges",
+    )
+    addressed_to: Optional[str] = Field(
+        None, description="Character being addressed (multi-char)",
+    )
+    reaction_to: Optional[str] = Field(
+        None, description="If set, this is a reaction to another character's response",
+    )
+    # Phase 3: Shared Sessions (WS4)
+    participant_user_id: Optional[str] = Field(
+        None, description="User ID of participant in shared session",
+    )
+    participant_name: Optional[str] = Field(
+        None, description="Display name of participant in shared session",
+    )
+
+
+class SharedParticipant(BaseModel):
+    """Participant in a shared interactive session"""
+    user_id: str = Field(..., description="Participant user ID")
+    profile_id: str = Field(..., description="Participant profile ID")
+    avatar_id: str = Field(..., description="Participant avatar ID")
+    avatar_image_url: Optional[str] = Field(None, description="Participant avatar image URL")
+    display_name: str = Field(..., description="Participant display name")
+
+
+class SharedSessionMetadata(BaseModel):
+    """Metadata for shared interactive sessions within watch parties"""
+    party_id: str = Field(..., description="Watch party ID")
+    participants: List[SharedParticipant] = Field(default_factory=list)
+    turn_order: List[str] = Field(
+        default_factory=list,
+        description="User IDs in turn order",
+    )
+    current_turn_user_id: Optional[str] = Field(
+        None, description="User ID whose turn it is",
+    )
+    current_turn_started_at: Optional[datetime] = Field(
+        None, description="When current turn started",
+    )
+    turns_completed: int = Field(default=0, description="Total turns completed")
+    max_turns_per_participant: int = Field(
+        default=3, description="Max turns each participant gets",
+    )
 
 
 class VODInteractionSession(Document):
@@ -67,6 +167,11 @@ class VODInteractionSession(Document):
     status: str = Field(default="active", description="active, recording, completed")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    # Phase 3: Shared Sessions (WS4)
+    is_shared: bool = Field(default=False, description="Whether this is a shared session")
+    shared_metadata: Optional[SharedSessionMetadata] = Field(
+        None, description="Shared session state (participants, turns)",
+    )
 
     class Settings:
         name = "vod_interaction_sessions"

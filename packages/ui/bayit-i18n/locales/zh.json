@@ -4526,7 +4526,38 @@
     "director": "Director",
     "liveDubbing": "Live Dubbing",
     "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "related": "Related"
+    "related": "Related",
+    "dialogue": {
+      "talkToCharacter": "与角色对话",
+      "selectCharacter": "选择角色",
+      "typeQuestion": "输入你的问题...",
+      "sending": "发送中...",
+      "characterSpeaking": "角色正在说话...",
+      "endDialogue": "结束对话",
+      "noCharactersAvailable": "没有可用于对话的角色",
+      "voiceMode": "语音模式",
+      "holdToSpeak": "按住说话",
+      "listening": "正在聆听...",
+      "transcribing": "正在转录...",
+      "thinking": "正在思考...",
+      "voiceConsentRequired": "语音交互需要语音同意",
+      "micPermissionDenied": "麦克风权限被拒绝"
+    },
+    "multiCharacter": {
+      "selectCharacter": "选择要对话的角色",
+      "talkingTo": "正在与...对话",
+      "reaction": "反应",
+      "switchCharacter": "切换角色"
+    },
+    "shared": {
+      "waitingForTurn": "等待你的回合...",
+      "yourTurn": "轮到你了!",
+      "turnSkipped": "回合已跳过",
+      "countdownWarning": "时间快到了!",
+      "sessionEnded": "会话已结束",
+      "startInteraction": "开始互动",
+      "participants": "参与者"
+    }
   },
   "listen": {
     "title": "收听"
