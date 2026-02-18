@@ -17,144 +17,94 @@ struct PrivacySettingsView: View {
                 VStack(spacing: DesignTokens.Spacing.lg) {
                     headerSection
                     if vm.isLoading {
-                        ProgressView().tint(.white)
-                            .padding(.top, DesignTokens.Spacing.xxxxl)
+                        ProgressView().tint(.white).padding(.top, DesignTokens.Spacing.xxxxl)
                     } else {
                         dataCollectionSection(vm)
                         historySection(vm)
-                        saveButton(vm)
+                        GlassButton(localization.t("common.save"), isLoading: vm.isSaving) {
+                            Task { await vm.save() }
+                        }.padding(.horizontal, DesignTokens.Spacing.lg)
                         successBanner(vm)
                     }
-                }
-                .padding(.vertical, DesignTokens.Spacing.lg)
-            } else {
-                ScreenLoadingView()
-            }
+                }.padding(.vertical, DesignTokens.Spacing.lg)
+            } else { ScreenLoadingView() }
         }
         .background(DesignTokens.Background.primary)
         .task {
-            if viewModel == nil {
-                viewModel = PrivacySettingsViewModel(
-                    repository: repos.userSettings
-                )
-            }
+            if viewModel == nil { viewModel = PrivacySettingsViewModel(repository: repos.userSettings) }
             await viewModel?.load()
         }
-        .alert(
-            localization.t("settings.privacy.clearWatchHistoryTitle"),
-            isPresented: $showClearWatchHistory
-        ) {
+        .alert(localization.t("settings.privacy.clearWatchHistoryTitle"),
+               isPresented: $showClearWatchHistory) {
             Button(localization.t("common.cancel"), role: .cancel) {}
             Button(localization.t("settings.privacy.clear"), role: .destructive) {
                 Task { await viewModel?.clearWatchHistory() }
             }
-        } message: {
-            Text(localization.t("settings.privacy.clearWatchHistoryMessage"))
-        }
-        .alert(
-            localization.t("settings.privacy.clearSearchHistoryTitle"),
-            isPresented: $showClearSearchHistory
-        ) {
+        } message: { Text(localization.t("settings.privacy.clearWatchHistoryMessage")) }
+        .alert(localization.t("settings.privacy.clearSearchHistoryTitle"),
+               isPresented: $showClearSearchHistory) {
             Button(localization.t("common.cancel"), role: .cancel) {}
             Button(localization.t("settings.privacy.clear"), role: .destructive) {
                 Task { await viewModel?.clearSearchHistory() }
             }
-        } message: {
-            Text(localization.t("settings.privacy.clearSearchHistoryMessage"))
-        }
+        } message: { Text(localization.t("settings.privacy.clearSearchHistoryMessage")) }
     }
-
-    // MARK: - Header
 
     private var headerSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            Image(systemName: "hand.raised")
-                .font(.system(size: 48))
+            Image(systemName: "hand.raised").font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Primary.p400)
             Text(localization.t("settings.privacy.title"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Text(localization.t("settings.privacy.description"))
                 .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
+                .foregroundStyle(DesignTokens.Text.secondary).multilineTextAlignment(.center)
+        }.padding(.horizontal, DesignTokens.Spacing.lg)
     }
-
-    // MARK: - Data Collection
 
     private func dataCollectionSection(_ vm: PrivacySettingsViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            sectionLabel(localization.t("settings.privacy.dataCollection"))
-            toggleRow(
+            settingsSectionLabel(localization.t("settings.privacy.dataCollection"))
+            settingsIconToggleRow(
                 icon: "chart.bar",
                 title: localization.t("settings.privacy.analytics"),
                 subtitle: localization.t("settings.privacy.analyticsDesc"),
-                isOn: Binding(
-                    get: { vm.analyticsEnabled },
-                    set: { vm.analyticsEnabled = $0 }
-                )
+                isOn: Binding(get: { vm.analyticsEnabled }, set: { vm.analyticsEnabled = $0 })
             )
-            toggleRow(
+            settingsIconToggleRow(
                 icon: "exclamationmark.triangle",
                 title: localization.t("settings.privacy.crashReports"),
                 subtitle: localization.t("settings.privacy.crashReportsDesc"),
-                isOn: Binding(
-                    get: { vm.crashReports },
-                    set: { vm.crashReports = $0 }
-                )
+                isOn: Binding(get: { vm.crashReports }, set: { vm.crashReports = $0 })
             )
-            toggleRow(
+            settingsIconToggleRow(
                 icon: "sparkles",
                 title: localization.t("settings.privacy.personalization"),
                 subtitle: localization.t("settings.privacy.personalizationDesc"),
-                isOn: Binding(
-                    get: { vm.personalization },
-                    set: { vm.personalization = $0 }
-                )
+                isOn: Binding(get: { vm.personalization }, set: { vm.personalization = $0 })
             )
-        }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
+        }.padding(.horizontal, DesignTokens.Spacing.lg)
     }
-
-    // MARK: - History
 
     private func historySection(_ vm: PrivacySettingsViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            sectionLabel(localization.t("settings.privacy.history"))
+            settingsSectionLabel(localization.t("settings.privacy.history"))
             historyToggleRow(
                 title: localization.t("settings.privacy.watchHistory"),
-                isOn: Binding(
-                    get: { vm.watchHistoryEnabled },
-                    set: { vm.watchHistoryEnabled = $0 }
-                ),
+                isOn: Binding(get: { vm.watchHistoryEnabled }, set: { vm.watchHistoryEnabled = $0 }),
                 clearTitle: localization.t("settings.privacy.clearWatchHistory"),
                 isClearing: vm.isClearingWatchHistory,
                 onClear: { showClearWatchHistory = true }
             )
             historyToggleRow(
                 title: localization.t("settings.privacy.searchHistory"),
-                isOn: Binding(
-                    get: { vm.searchHistoryEnabled },
-                    set: { vm.searchHistoryEnabled = $0 }
-                ),
+                isOn: Binding(get: { vm.searchHistoryEnabled }, set: { vm.searchHistoryEnabled = $0 }),
                 clearTitle: localization.t("settings.privacy.clearSearchHistory"),
                 isClearing: vm.isClearingSearchHistory,
                 onClear: { showClearSearchHistory = true }
             )
-        }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    // MARK: - Save & Success
-
-    private func saveButton(_ vm: PrivacySettingsViewModel) -> some View {
-        GlassButton(
-            localization.t("common.save"),
-            isLoading: vm.isSaving
-        ) { Task { await vm.save() } }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
+        }.padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
     @ViewBuilder
@@ -162,59 +112,11 @@ struct PrivacySettingsView: View {
         if let message = vm.successMessage {
             GlassCard {
                 HStack(spacing: DesignTokens.Spacing.sm) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                    Text(message)
-                        .font(.system(size: DesignTokens.FontSize.sm))
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    Text(message).font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.primary)
-                }
-                .padding(DesignTokens.Spacing.md)
-            }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-        }
-    }
-}
-
-// MARK: - Shared Components
-
-extension PrivacySettingsView {
-    private func sectionLabel(_ text: String) -> some View {
-        HStack {
-            Text(text)
-                .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .textCase(.uppercase)
-            Spacer()
-        }
-    }
-
-    private func toggleRow(
-        icon: String, title: String, subtitle: String?,
-        isOn: Binding<Bool>
-    ) -> some View {
-        GlassCard {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Image(systemName: icon)
-                    .font(.system(size: DesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Primary.default)
-                    .frame(width: 32)
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                    Text(title)
-                        .font(.system(size: DesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                    if let subtitle {
-                        Text(subtitle)
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                            .lineLimit(2)
-                    }
-                }
-                Spacer()
-                Toggle("", isOn: isOn)
-                    .tint(DesignTokens.Primary.default)
-                    .labelsHidden()
-            }
-            .padding(DesignTokens.Spacing.md)
+                }.padding(DesignTokens.Spacing.md)
+            }.padding(.horizontal, DesignTokens.Spacing.lg)
         }
     }
 
@@ -226,20 +128,12 @@ extension PrivacySettingsView {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.sm) {
                 Toggle(isOn: isOn) {
-                    Text(title)
-                        .font(.system(size: DesignTokens.FontSize.md))
+                    Text(title).font(.system(size: DesignTokens.FontSize.md))
                         .foregroundStyle(DesignTokens.Text.primary)
-                }
-                .tint(DesignTokens.Primary.default)
-                GlassButton(
-                    clearTitle,
-                    variant: .destructive,
-                    size: .small,
-                    isLoading: isClearing,
-                    action: onClear
-                )
-            }
-            .padding(DesignTokens.Spacing.md)
+                }.tint(DesignTokens.Primary.default)
+                GlassButton(clearTitle, variant: .destructive, size: .small,
+                             isLoading: isClearing, action: onClear)
+            }.padding(DesignTokens.Spacing.md)
         }
     }
 }

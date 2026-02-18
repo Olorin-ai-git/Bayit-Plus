@@ -6197,7 +6197,30 @@
     "autoTranslateDescription": "Automatically translate chat messages to your preferred language",
     "notifications": "Notifications",
     "pushNotifications": "Push Notifications",
-    "playback": "Playback",
+    "playback": {
+      "title": "Playback",
+      "videoQuality": "Video Quality",
+      "cellularQuality": "Cellular Quality",
+      "autoplay": "Autoplay",
+      "autoplayNext": "Autoplay Next Episode",
+      "countdownTimer": "Countdown Timer",
+      "countdownSeconds": "{{count}} seconds",
+      "pip": "Picture-in-Picture",
+      "backgroundAudio": "Background Audio",
+      "downloadQuality": "Download Quality",
+      "wifiOnlyDownloads": "WiFi-Only Downloads",
+      "continueWatching": "Continue Watching",
+      "skipIntro": "Skip Intro",
+      "skipCredits": "Skip Credits",
+      "playbackSpeed": "Playback Speed",
+      "liveTvBuffer": "Live TV Buffer Size",
+      "hardwareAcceleration": "Hardware Acceleration",
+      "qualityAuto": "Auto",
+      "quality4k": "4K",
+      "quality1080p": "1080p",
+      "quality720p": "720p",
+      "quality480p": "480p"
+    },
     "quality": "Quality",
     "subtitles": "Subtitles",
     "autoplay": "Autoplay",
@@ -6379,7 +6402,8 @@
       "downloadData": "Download My Data",
       "downloadDataDesc": "Get a copy of all your data (GDPR)",
       "deleteAllData": "Delete All Data",
-      "cookiePreferences": "Cookie Preferences"
+      "cookiePreferences": "Cookie Preferences",
+      "activeSessions": "Active Sessions"
     },
     "parentalSettings": {
       "title": "Parental Controls",
@@ -6390,9 +6414,12 @@
       "restrictPurchases": "Restrict Purchases",
       "restrictAI": "Restrict AI Features",
       "dailyLimit": "Daily Viewing Limit",
+      "dailyLimitMinutes": "{{count}} minutes",
       "blockedCategories": "Blocked Categories",
       "blockedChannels": "Blocked Channels",
-      "restrictedHours": "Restricted Hours"
+      "restrictedHours": "Restricted Hours",
+      "restrictedStart": "Start Time",
+      "restrictedEnd": "End Time"
     },
     "accessibilitySettings": {
       "title": "Accessibility",
@@ -6407,6 +6434,10 @@
       "touchTargetSize": "Touch Target Size",
       "focusIndicatorSize": "Focus Indicator Size",
       "colorBlindMode": "Color Blind Mode",
+      "colorBlindNone": "None",
+      "colorBlindProtanopia": "Protanopia",
+      "colorBlindDeuteranopia": "Deuteranopia",
+      "colorBlindTritanopia": "Tritanopia",
       "standard": "Standard",
       "large": "Large"
     },
