@@ -101,6 +101,13 @@ sealed class Route {
     // Help Center
     @Serializable data object HelpCenter : Route()
 
+    // Extended Settings
+    @Serializable data object SubtitleSettings : Route()
+    @Serializable data object AudioSettings : Route()
+    @Serializable data object AIFeatures : Route()
+    @Serializable data object AccessibilitySettings : Route()
+    @Serializable data object PlaybackSettings : Route()
+
     // Rewards
     @Serializable data object Rewards : Route()
 

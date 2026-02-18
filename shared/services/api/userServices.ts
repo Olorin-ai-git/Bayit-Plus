@@ -81,6 +81,30 @@ export const apiProfilesService = {
     api.get('/profiles/preferences/home_page'),
   updateHomePagePreferences: (prefs: HomePagePreferencesAPI): Promise<{ message: string; preferences: HomePagePreferencesAPI }> =>
     api.put('/profiles/preferences/home_page', prefs),
+  // Playback Preferences
+  getPlaybackPreferences: () => api.get('/profiles/preferences/playback'),
+  updatePlaybackPreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/playback', prefs),
+  // Subtitle Preferences
+  getSubtitlePreferences: () => api.get('/profiles/preferences/subtitles'),
+  updateSubtitlePreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/subtitles', prefs),
+  // Audio Preferences
+  getAudioPreferences: () => api.get('/profiles/preferences/audio'),
+  updateAudioPreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/audio', prefs),
+  // Notification Preferences
+  getNotificationPreferences: () => api.get('/profiles/preferences/notifications'),
+  updateNotificationPreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/notifications', prefs),
+  // Privacy Preferences
+  getPrivacyPreferences: () => api.get('/profiles/preferences/privacy'),
+  updatePrivacyPreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/privacy', prefs),
+  // Accessibility Preferences
+  getAccessibilityPreferences: () => api.get('/profiles/preferences/accessibility'),
+  updateAccessibilityPreferences: (prefs: Record<string, any>) =>
+    api.put('/profiles/preferences/accessibility', prefs),
 };
 
 // Children Service (API)

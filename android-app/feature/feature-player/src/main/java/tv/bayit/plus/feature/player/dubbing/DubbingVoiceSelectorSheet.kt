@@ -111,14 +111,14 @@ private fun VoiceRow(
             Row {
                 Text(
                     text = voice.language,
-                    color = DesignTokens.Colors.Text.tertiary,
+                    color = DesignTokens.Colors.Text.muted,
                     fontSize = DesignTokens.FontSize.xs,
                 )
                 voice.description?.let { desc ->
                     Spacer(modifier = Modifier.width(DesignTokens.Spacing.sm))
                     Text(
                         text = desc,
-                        color = DesignTokens.Colors.Text.tertiary,
+                        color = DesignTokens.Colors.Text.muted,
                         fontSize = DesignTokens.FontSize.xs,
                     )
                 }

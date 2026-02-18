@@ -70,7 +70,7 @@ fun DubbingMixerControls(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
             Text(
                 text = bayitString("dubbing.mixer.latency", latencyMs),
-                color = DesignTokens.Colors.Text.tertiary,
+                color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.xs,
             )
         }
@@ -101,7 +101,7 @@ private fun VolumeSlider(
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "${(value * 100).toInt()}%",
-                color = DesignTokens.Colors.Text.tertiary,
+                color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.xs,
             )
         }

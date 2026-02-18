@@ -37,10 +37,15 @@ struct DubbingAvailability: Decodable, Sendable {
 
 /// Audio data received during a live dubbing session.
 struct DubbingAudioMessage: Decodable, Sendable {
-    let audioData: String?
+    let data: String?
     let originalText: String?
     let translatedText: String?
-    let timestamp: Double?
+    let sequence: Int?
+    let timestampMs: Int?
+    let latencyMs: Int?
+    let videoTimestampMs: Int?
+    let durationMs: Int?
+    let processingTimeMs: Int?
 }
 
 /// Latency metrics for a live dubbing session.

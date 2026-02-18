@@ -95,6 +95,11 @@ internal val routeLabels = mapOf(
     "VideoSelfie" to "Selfie",
     "NewsClip" to "News",
     "WidgetGallery" to "Widget Gallery",
+    "SubtitleSettings" to "Subtitles",
+    "AudioSettings" to "Audio",
+    "AIFeatures" to "AI Features",
+    "AccessibilitySettings" to "Accessibility",
+    "PlaybackSettings" to "Playback",
 )
 
 private fun extractRouteName(routePattern: String): String {

@@ -73,9 +73,9 @@ struct TriviaSettingsView: View {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     ForEach(availableLanguages, id: \.self) { lang in
                         GlassChip(
-                            text: lang.uppercased(),
+                            title: lang.uppercased(),
                             isSelected: lang == selectedLanguage,
-                            action: { selectedLanguage = lang }
+                            onTap: { selectedLanguage = lang }
                         )
                     }
                 }
@@ -92,9 +92,9 @@ struct TriviaSettingsView: View {
             FlowLayout(spacing: DesignTokens.Spacing.sm) {
                 ForEach(availableCategories, id: \.self) { category in
                     GlassChip(
-                        text: category,
+                        title: category,
                         isSelected: selectedCategories.contains(category),
-                        action: {
+                        onTap: {
                             if selectedCategories.contains(category) {
                                 selectedCategories.remove(category)
                             } else {
@@ -118,7 +118,7 @@ struct TriviaSettingsView: View {
 
                 Text(String(localized: "trivia.settings.seconds \(displayDuration)"))
                     .font(.system(size: DesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .monospacedDigit()
             }
 

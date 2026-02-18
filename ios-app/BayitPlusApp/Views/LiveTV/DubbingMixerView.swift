@@ -31,7 +31,7 @@ struct DubbingMixerView: View {
                         Spacer()
                         Text(String(localized: "dubbing.mixer.latency \(latencyMs)"))
                             .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundStyle(DesignTokens.Text.tertiary)
+                            .foregroundStyle(DesignTokens.Text.muted)
                     }
                 }
             }
@@ -59,7 +59,7 @@ private struct VolumeRow: View {
 
                 Text("\(Int(value * 100))%")
                     .font(.system(size: DesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .monospacedDigit()
             }
 

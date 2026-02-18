@@ -22,7 +22,7 @@ struct SplitSubtitleOverlay: View {
                             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
                                 Text(originalLanguage.uppercased())
                                     .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
-                                    .foregroundStyle(DesignTokens.Text.tertiary)
+                                    .foregroundStyle(DesignTokens.Text.muted)
 
                                 Text(originalText)
                                     .font(.system(size: DesignTokens.FontSize.sm))

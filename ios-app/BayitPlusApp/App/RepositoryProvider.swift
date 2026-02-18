@@ -20,6 +20,7 @@ final class RepositoryProvider {
     let category: any CategoryRepository
     let voice: any VoiceRepository
     let settings: any SettingsRepository
+    let userSettings: any UserSettingsRepository
     let trivia: any TriviaRepository
     let chat: any ChatRepository
     let liveDubbing: any LiveDubbingRepository
@@ -73,6 +74,7 @@ final class RepositoryProvider {
         self.category = APICategoryRepository(client: client)
         self.voice = APIVoiceRepository(client: client)
         self.settings = APISettingsRepository(client: client)
+        self.userSettings = APIUserSettingsRepository(client: client)
         self.trivia = APITriviaRepository(client: client)
         self.chat = APIChatRepository(client: client)
         self.liveDubbing = APILiveDubbingRepository(client: client)

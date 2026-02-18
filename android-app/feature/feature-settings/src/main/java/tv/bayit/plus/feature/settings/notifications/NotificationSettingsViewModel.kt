@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.SettingsRepository
-import tv.bayit.plus.core.model.AppSettings
 import tv.bayit.plus.core.model.NotificationSettings
 import javax.inject.Inject
 
@@ -30,15 +29,10 @@ class NotificationSettingsViewModel @Inject constructor(
     private fun loadSettings() {
         viewModelScope.launch {
             logger.debug("Loading notification settings")
-            when (val result = settingsRepository.getSettings()) {
+            when (val result = settingsRepository.getNotificationSettings()) {
                 is BayitResult.Success -> {
-                    val settings = result.data as? AppSettings
-                    val notif = settings?.notifications ?: NotificationSettings()
                     _uiState.value = NotificationUiState.Success(
-                        liveAlerts = notif.liveAlerts,
-                        downloadComplete = notif.downloadComplete,
-                        socialUpdates = notif.socialUpdates,
-                        contentRecommendations = notif.contentRecommendations,
+                        settings = result.data,
                         isSaving = false,
                     )
                     logger.info("Notification settings loaded")
@@ -54,31 +48,19 @@ class NotificationSettingsViewModel @Inject constructor(
         }
     }
 
-    fun toggleLiveAlerts(enabled: Boolean) = updateSetting("notifications.live_alerts", enabled)
-    fun toggleDownloadComplete(enabled: Boolean) = updateSetting("notifications.download_complete", enabled)
-    fun toggleSocialUpdates(enabled: Boolean) = updateSetting("notifications.social_updates", enabled)
-    fun toggleContentRecommendations(enabled: Boolean) = updateSetting("notifications.content_recommendations", enabled)
-
-    private fun updateSetting(key: String, value: Boolean) {
+    fun updateSettings(updated: NotificationSettings) {
         val current = _uiState.value as? NotificationUiState.Success ?: return
-        val updated = when (key) {
-            "notifications.live_alerts" -> current.copy(liveAlerts = value)
-            "notifications.download_complete" -> current.copy(downloadComplete = value)
-            "notifications.social_updates" -> current.copy(socialUpdates = value)
-            "notifications.content_recommendations" -> current.copy(contentRecommendations = value)
-            else -> current
-        }.copy(isSaving = true)
-        _uiState.value = updated
+        _uiState.value = current.copy(settings = updated, isSaving = true)
 
         viewModelScope.launch {
-            logger.debug("Updating notification setting", mapOf("key" to key, "value" to value.toString()))
-            when (val result = settingsRepository.updateSetting(key, value)) {
+            logger.debug("Updating notification settings")
+            when (val result = settingsRepository.updateNotificationSettings(updated)) {
                 is BayitResult.Success -> {
-                    _uiState.value = updated.copy(isSaving = false)
-                    logger.info("Notification setting updated", mapOf("key" to key))
+                    _uiState.value = current.copy(settings = updated, isSaving = false)
+                    logger.info("Notification settings updated")
                 }
                 is BayitResult.Error -> {
-                    logger.error("Failed to update notification setting", result.exception, mapOf("key" to key))
+                    logger.error("Failed to update notification settings", result.exception)
                     _uiState.value = current.copy(isSaving = false)
                 }
                 is BayitResult.Loading -> Unit
@@ -96,10 +78,7 @@ sealed interface NotificationUiState {
     data object Loading : NotificationUiState
 
     data class Success(
-        val liveAlerts: Boolean,
-        val downloadComplete: Boolean,
-        val socialUpdates: Boolean,
-        val contentRecommendations: Boolean,
+        val settings: NotificationSettings,
         val isSaving: Boolean,
     ) : NotificationUiState
 

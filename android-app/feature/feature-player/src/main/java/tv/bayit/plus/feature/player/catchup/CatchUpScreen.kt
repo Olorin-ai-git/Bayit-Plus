@@ -86,7 +86,7 @@ private fun CatchUpAutoPrompt(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
                 text = bayitString("player.catchup.creditsRemaining", remainingCredits),
-                color = DesignTokens.Colors.Text.tertiary,
+                color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.sm,
             )
         }
@@ -170,7 +170,7 @@ private fun CatchUpSummaryView(
                     summary.creditsUsed,
                     summary.remainingCredits ?: 0,
                 ),
-                color = DesignTokens.Colors.Text.tertiary,
+                color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.xs,
             )
         }

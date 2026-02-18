@@ -79,6 +79,11 @@ import tv.bayit.plus.feature.settings.security.devices.DevicePairingRoute
 import tv.bayit.plus.feature.settings.security.mfa.MFASetupRoute
 import tv.bayit.plus.feature.settings.security.passkey.PasskeyManagementRoute
 import tv.bayit.plus.feature.settings.security.phone.PhoneVerificationRoute
+import tv.bayit.plus.feature.settings.accessibility.AccessibilitySettingsRoute
+import tv.bayit.plus.feature.settings.ai.AIFeaturesRoute
+import tv.bayit.plus.feature.settings.audio.AudioSettingsRoute
+import tv.bayit.plus.feature.settings.playback.PlaybackSettingsRoute
+import tv.bayit.plus.feature.settings.subtitles.SubtitleSettingsRoute
 import tv.bayit.plus.feature.settings.subscription.SubscriptionRoute
 import tv.bayit.plus.feature.social.chess.ChessRoute
 import tv.bayit.plus.feature.social.grandparent.NewsClipRoute
@@ -334,6 +339,21 @@ fun BayitNavHost(
         }
         composable<Route.Security> {
             SecurityRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.SubtitleSettings> {
+            SubtitleSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.AudioSettings> {
+            AudioSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.AIFeatures> {
+            AIFeaturesRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.AccessibilitySettings> {
+            AccessibilitySettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.PlaybackSettings> {
+            PlaybackSettingsRoute(onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.ConnectedAccounts> {
             ConnectedAccountsRoute(onNavigateBack = { navController.popBackStack() })
@@ -636,6 +656,11 @@ private fun NavController.navigateToSettingsSubScreen(route: String) {
         "family" -> navigate(Route.FamilyControls)
         "household" -> navigate(Route.Household)
         "help" -> navigate(Route.HelpCenter)
+        "subtitles" -> navigate(Route.SubtitleSettings)
+        "audio" -> navigate(Route.AudioSettings)
+        "ai_features" -> navigate(Route.AIFeatures)
+        "accessibility" -> navigate(Route.AccessibilitySettings)
+        "playback" -> navigate(Route.PlaybackSettings)
         "passkeys" -> navigate(Route.PasskeyManagement)
         "mfa" -> navigate(Route.MfaSetup)
         "phone" -> navigate(Route.PhoneVerification)

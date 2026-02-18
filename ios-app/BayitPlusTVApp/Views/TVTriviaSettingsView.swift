@@ -15,7 +15,7 @@ struct TVTriviaSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
                 Text(String(localized: "trivia.settings.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.title2, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 enableSection
@@ -44,18 +44,18 @@ struct TVTriviaSettingsView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
                         Text(String(localized: "trivia.settings.enableTrivia"))
-                            .font(.system(size: TVDesignTokens.FontSize.body, weight: .medium))
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.primary)
 
                         Text(String(localized: "trivia.settings.enableDescription"))
-                            .font(.system(size: TVDesignTokens.FontSize.caption))
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
 
                     Spacer()
 
                     Image(systemName: isEnabled ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: TVDesignTokens.FontSize.title3))
+                        .font(.system(size: TVDesignTokens.FontSize.md))
                         .foregroundStyle(
                             isEnabled ? DesignTokens.Primary.light : DesignTokens.Text.muted
                         )
@@ -68,7 +68,7 @@ struct TVTriviaSettingsView: View {
     private var languageSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(String(localized: "trivia.settings.language"))
-                .font(.system(size: TVDesignTokens.FontSize.body, weight: .bold))
+                .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -77,7 +77,7 @@ struct TVTriviaSettingsView: View {
                         selectedLanguage = lang
                     } label: {
                         Text(lang.uppercased())
-                            .font(.system(size: TVDesignTokens.FontSize.body, weight: .semibold))
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                             .foregroundStyle(
                                 lang == selectedLanguage
                                     ? DesignTokens.Primary.light : DesignTokens.Text.primary
@@ -95,7 +95,7 @@ struct TVTriviaSettingsView: View {
     private var durationSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(String(localized: "trivia.settings.displayDuration"))
-                .font(.system(size: TVDesignTokens.FontSize.body, weight: .bold))
+                .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -104,7 +104,7 @@ struct TVTriviaSettingsView: View {
                         displayDuration = duration
                     } label: {
                         Text(String(localized: "trivia.settings.seconds \(duration)"))
-                            .font(.system(size: TVDesignTokens.FontSize.body))
+                            .font(.system(size: TVDesignTokens.FontSize.base))
                             .foregroundStyle(
                                 duration == displayDuration
                                     ? DesignTokens.Primary.light : DesignTokens.Text.primary
@@ -122,7 +122,7 @@ struct TVTriviaSettingsView: View {
     private var frequencySection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(String(localized: "trivia.settings.frequency"))
-                .font(.system(size: TVDesignTokens.FontSize.body, weight: .bold))
+                .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
             ForEach(TriviaFrequency.allCases) { freq in
@@ -131,7 +131,7 @@ struct TVTriviaSettingsView: View {
                 } label: {
                     HStack {
                         Text(freq.label)
-                            .font(.system(size: TVDesignTokens.FontSize.body))
+                            .font(.system(size: TVDesignTokens.FontSize.base))
                             .foregroundStyle(DesignTokens.Text.primary)
 
                         Spacer()

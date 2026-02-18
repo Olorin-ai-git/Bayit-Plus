@@ -47,6 +47,10 @@ export type RootStackParamList = {
   AIVoiceSettings: undefined;
   SecuritySettings: undefined;
   DevicesManager: undefined;
+  PrivacySettings: undefined;
+  NotificationSettings: undefined;
+  SubtitleSettings: undefined;
+  AccessibilitySettings: undefined;
 
   // Beta AI features
   BetaAI: undefined;

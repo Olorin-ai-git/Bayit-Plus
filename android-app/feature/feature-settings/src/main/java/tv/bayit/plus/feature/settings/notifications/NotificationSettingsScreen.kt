@@ -24,10 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.NotificationSettings
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -40,10 +43,7 @@ fun NotificationSettingsRoute(
     NotificationSettingsScreen(
         uiState = uiState,
         onNavigateBack = onNavigateBack,
-        onToggleLiveAlerts = viewModel::toggleLiveAlerts,
-        onToggleDownloadComplete = viewModel::toggleDownloadComplete,
-        onToggleSocialUpdates = viewModel::toggleSocialUpdates,
-        onToggleContentRecs = viewModel::toggleContentRecommendations,
+        onUpdate = viewModel::updateSettings,
         onRetry = viewModel::retry,
         modifier = modifier,
     )
@@ -53,10 +53,7 @@ fun NotificationSettingsRoute(
 internal fun NotificationSettingsScreen(
     uiState: NotificationUiState,
     onNavigateBack: () -> Unit,
-    onToggleLiveAlerts: (Boolean) -> Unit,
-    onToggleDownloadComplete: (Boolean) -> Unit,
-    onToggleSocialUpdates: (Boolean) -> Unit,
-    onToggleContentRecs: (Boolean) -> Unit,
+    onUpdate: (NotificationSettings) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -68,50 +65,45 @@ internal fun NotificationSettingsScreen(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
                 }
             },
+            actions = {
+                if (uiState is NotificationUiState.Success && uiState.isSaving) {
+                    GlassSpinner(size = SpinnerSize.SMALL)
+                }
+            },
         )
         when (uiState) {
             is NotificationUiState.Loading -> GlassLoadingIndicator()
-            is NotificationUiState.Error -> NotificationErrorContent(message = uiState.message, onRetry = onRetry)
-            is NotificationUiState.Success -> NotificationToggles(
-                state = uiState,
-                onToggleLiveAlerts = onToggleLiveAlerts,
-                onToggleDownloadComplete = onToggleDownloadComplete,
-                onToggleSocialUpdates = onToggleSocialUpdates,
-                onToggleContentRecs = onToggleContentRecs,
-            )
+            is NotificationUiState.Error -> NotifErrorContent(message = uiState.message, onRetry = onRetry)
+            is NotificationUiState.Success -> NotifContent(state = uiState, onUpdate = onUpdate)
         }
     }
 }
 
 @Composable
-private fun NotificationToggles(
-    state: NotificationUiState.Success,
-    onToggleLiveAlerts: (Boolean) -> Unit,
-    onToggleDownloadComplete: (Boolean) -> Unit,
-    onToggleSocialUpdates: (Boolean) -> Unit,
-    onToggleContentRecs: (Boolean) -> Unit,
-) {
+private fun NotifContent(state: NotificationUiState.Success, onUpdate: (NotificationSettings) -> Unit) {
+    val s = state.settings
+    val saving = state.isSaving
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
-        item { NotificationToggleRow(label = "Live TV Alerts", description = "Get notified when live channels go on air", checked = state.liveAlerts, enabled = !state.isSaving, onToggle = onToggleLiveAlerts) }
-        item { NotificationToggleRow(label = "Download Complete", description = "Notify when downloads finish", checked = state.downloadComplete, enabled = !state.isSaving, onToggle = onToggleDownloadComplete) }
-        item { NotificationToggleRow(label = "Social Updates", description = "Friend requests, watch party invites", checked = state.socialUpdates, enabled = !state.isSaving, onToggle = onToggleSocialUpdates) }
-        item { NotificationToggleRow(label = "Content Recommendations", description = "Personalized content suggestions", checked = state.contentRecommendations, enabled = !state.isSaving, onToggle = onToggleContentRecs) }
+        item { NotifToggle("Live TV Alerts", "Get notified when live channels go on air", s.liveAlerts, saving) { onUpdate(s.copy(liveAlerts = it)) } }
+        item { NotifToggle("Download Complete", "Notify when downloads finish", s.downloadComplete, saving) { onUpdate(s.copy(downloadComplete = it)) } }
+        item { NotifToggle("Social Updates", "Friend requests, watch party invites", s.socialUpdates, saving) { onUpdate(s.copy(socialUpdates = it)) } }
+        item { NotifToggle("Content Recommendations", "Personalized content suggestions", s.contentRecommendations, saving) { onUpdate(s.copy(contentRecommendations = it)) } }
+        item { NotifToggle("Credits Alerts", "Notify when credits are low", s.creditsAlerts, saving) { onUpdate(s.copy(creditsAlerts = it)) } }
+        item { NotifToggle("Email Digest", "Receive content updates via email", s.emailDigest, saving) { onUpdate(s.copy(emailDigest = it)) } }
+        if (s.emailDigest) {
+            item { FrequencySelect(s.emailDigestFrequency, saving) { onUpdate(s.copy(emailDigestFrequency = it)) } }
+        }
+        item { NotifToggle("Quiet Hours", "Mute notifications during set hours", s.quietHoursEnabled, saving) { onUpdate(s.copy(quietHoursEnabled = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }
 
 @Composable
-private fun NotificationToggleRow(
-    label: String,
-    description: String,
-    checked: Boolean,
-    enabled: Boolean,
-    onToggle: (Boolean) -> Unit,
-) {
+private fun NotifToggle(label: String, description: String, checked: Boolean, isSaving: Boolean, onToggle: (Boolean) -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.weight(1f)) {
@@ -119,22 +111,31 @@ private fun NotificationToggleRow(
                 Text(text = description, color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
             }
             Switch(
-                checked = checked,
-                onCheckedChange = onToggle,
-                enabled = enabled,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = DesignTokens.Colors.Text.primary,
-                    checkedTrackColor = DesignTokens.Colors.Primary.base,
-                    uncheckedThumbColor = DesignTokens.Colors.Text.muted,
-                    uncheckedTrackColor = DesignTokens.Colors.Glass.bgStrong,
-                ),
+                checked = checked, onCheckedChange = onToggle, enabled = !isSaving,
+                colors = SwitchDefaults.colors(checkedThumbColor = DesignTokens.Colors.Text.primary, checkedTrackColor = DesignTokens.Colors.Primary.base, uncheckedThumbColor = DesignTokens.Colors.Text.muted, uncheckedTrackColor = DesignTokens.Colors.Glass.bgStrong),
             )
         }
     }
 }
 
 @Composable
-private fun NotificationErrorContent(message: String, onRetry: () -> Unit) {
+private fun FrequencySelect(selected: String, isSaving: Boolean, onSelect: (String) -> Unit) {
+    val options = listOf("daily", "weekly", "monthly")
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column {
+            Text(text = "Digest Frequency", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+            Spacer(Modifier.height(DesignTokens.Spacing.sm))
+            Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+                options.forEach { option ->
+                    GlassButton(text = option.replaceFirstChar { it.uppercase() }, onClick = { if (!isSaving) onSelect(option) }, isPrimary = option == selected)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NotifErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)

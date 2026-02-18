@@ -31,6 +31,10 @@ import {
   AIVoiceSettingsScreen,
   SecuritySettingsScreen,
   DevicesManagerScreen,
+  PrivacySettingsScreen,
+  NotificationSettingsScreen,
+  SubtitleSettingsScreen,
+  AccessibilitySettingsScreen,
 } from '../screens';
 import { RecordingsScreenTV } from '../screens/RecordingsScreenTV';
 import ProfileControlsScreen from '../screens/ProfileControlsScreen';
@@ -144,6 +148,10 @@ export const AppNavigator: React.FC = () => (
     <Stack.Screen name="AIVoiceSettings" component={AIVoiceSettingsScreen} />
     <Stack.Screen name="SecuritySettings" component={SecuritySettingsScreen} />
     <Stack.Screen name="DevicesManager" component={DevicesManagerScreen} />
+    <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} />
+    <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+    <Stack.Screen name="SubtitleSettings" component={SubtitleSettingsScreen} />
+    <Stack.Screen name="AccessibilitySettings" component={AccessibilitySettingsScreen} />
 
     {/* Beta AI features */}
     {/* BetaAI is the header nav tab entry point; AISearch is a deep-link alias */}

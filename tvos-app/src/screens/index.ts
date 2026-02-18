@@ -33,3 +33,9 @@ export { JudaismScreen } from './JudaismScreen';
 export { AIVoiceSettingsScreen } from './AIVoiceSettingsScreen';
 export { SecuritySettingsScreen } from './SecuritySettingsScreen';
 export { DevicesManagerScreen } from './DevicesManagerScreen';
+
+// Settings Sub-Screens (Feature Parity)
+export { PrivacySettingsScreen } from './PrivacySettingsScreen';
+export { NotificationSettingsScreen } from './NotificationSettingsScreen';
+export { SubtitleSettingsScreen } from './SubtitleSettingsScreen';
+export { AccessibilitySettingsScreen } from './AccessibilitySettingsScreen';

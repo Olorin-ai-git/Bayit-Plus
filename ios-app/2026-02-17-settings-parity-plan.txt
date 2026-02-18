@@ -1,0 +1,27 @@
+iOS Settings Feature Parity Implementation Plan
+================================================
+
+Files to Create:
+1. Models/PlaybackSettingsModels.swift - Playback, Audio, Accessibility, Privacy API models
+2. Repositories/UserSettingsRepository.swift - Protocol + API impl for preference endpoints
+3. ViewModels/PlaybackSettingsViewModel.swift - ViewModel for playback settings
+4. ViewModels/AudioSettingsViewModel.swift - ViewModel for audio settings
+5. ViewModels/AccessibilitySettingsViewModel.swift - ViewModel for accessibility settings
+6. ViewModels/PrivacySettingsViewModel.swift - ViewModel for privacy settings
+7. Views/Settings/PlaybackSettingsView.swift - Video quality, autoplay, skip intro/credits, speed, buffer
+8. Views/Settings/AudioSettingsView.swift - Audio language, quality, normalization, dubbed, dubbing lang
+9. Views/Settings/AccessibilitySettingsView.swift - Large text, bold, contrast, reduce motion, etc.
+10. Views/Settings/PrivacySettingsView.swift - Analytics, crash, personalization, history, GDPR
+
+Files to Modify:
+11. Navigation/Route.swift - Add 4 new routes
+12. Navigation/RouteDestinationResolver.swift - Add 4 new case handlers
+13. Navigation/DeepLinkRouter.swift - Add 4 new deep link cases
+14. BayitPlusApp/App/RepositoryProvider.swift - Add userSettings repository
+15. Views/Settings/SettingsView.swift - Add nav rows for new screens
+
+API Endpoints (from backend user_settings.py):
+- GET/PUT /api/v1/profiles/preferences/playback
+- GET/PUT /api/v1/profiles/preferences/audio
+- GET/PUT /api/v1/profiles/preferences/accessibility
+- GET/PUT /api/v1/profiles/preferences/privacy

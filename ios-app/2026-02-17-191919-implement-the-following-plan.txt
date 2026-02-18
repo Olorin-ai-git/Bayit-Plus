@@ -1,0 +1,2660 @@
+
+ ▐▛███▜▌   Claude Code v2.1.45
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Settings Feature Parity Plan - All Bayit+ Platforms                          │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ An exhaustive investigation of the Settings/Config page across all 5 Bayit+  │
+│ platforms (web, mobile web, Android, iOS, tvOS) reveals significant feature  │
+│ disparity. The iOS app has the most complete settings implementation with 12 │
+│  sections and 100+ individual settings. The goal is to bring ALL platforms   │
+│ to full feature parity with the iOS superset, while respecting               │
+│ platform-specific constraints (e.g., tvOS has no downloads, no keyboard).    │
+│                                                                              │
+│ Reference Platform: iOS App                                                  │
+│                                                                              │
+│ The iOS app is the gold standard with these sections:                        │
+│ 1. Profile Settings                                                          │
+│ 2. General Settings (Language, Theme)                                        │
+│ 3. Playback Settings                                                         │
+│ 4. Subtitle Settings                                                         │
+│ 5. Audio Settings                                                            │
+│ 6. Notification Settings                                                     │
+│ 7. AI Features (Beta Credits, Dubbing Config, Trivia Config)                 │
+│ 8. Privacy & Security (Privacy, Parental Controls, Security)                 │
+│ 9. Subscription Settings                                                     │
+│ 10. Accessibility Settings                                                   │
+│ 11. About & Legal                                                            │
+│ 12. Account Actions (Sign Out)                                               │
+│                                                                              │
+│ ---                                                                          │
+│ Cross-Platform Feature Gap Matrix                                            │
+│                                                                              │
+│ Legend                                                                       │
+│                                                                              │
+│ - Y = Fully implemented                                                      │
+│ - P = Partially implemented (UI only / not connected)                        │
+│ - N = Missing entirely                                                       │
+│ - X = Not applicable (platform limitation)                                   │
+│                                                                              │
+│ #: PROFILE                                                                   │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 1                                                                         │
+│ Feature: Avatar upload                                                       │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N (display only)                                                       │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 2                                                                         │
+│ Feature: Display name edit                                                   │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 3                                                                         │
+│ Feature: Email display                                                       │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 4                                                                         │
+│ Feature: Phone number edit                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 5                                                                         │
+│ Feature: Account deletion                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P (alert)                                                               │
+│ Mobile Web: P (alert)                                                        │
+│ ────────────────────────────────────────                                     │
+│ #: PLAYBACK                                                                  │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 6                                                                         │
+│ Feature: Video quality                                                       │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 7                                                                         │
+│ Feature: Cellular quality (separate)                                         │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 8                                                                         │
+│ Feature: Autoplay                                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 9                                                                         │
+│ Feature: Autoplay next episode                                               │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 10                                                                        │
+│ Feature: Autoplay countdown timer                                            │
+│ iOS: N                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 11                                                                        │
+│ Feature: PiP toggle                                                          │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 12                                                                        │
+│ Feature: Background audio                                                    │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 13                                                                        │
+│ Feature: Download quality                                                    │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 14                                                                        │
+│ Feature: WiFi-only downloads                                                 │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 15                                                                        │
+│ Feature: Continue watching                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 16                                                                        │
+│ Feature: Skip intro                                                          │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 17                                                                        │
+│ Feature: Skip credits                                                        │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 18                                                                        │
+│ Feature: Playback speed                                                      │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 19                                                                        │
+│ Feature: Live TV buffer size                                                 │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 20                                                                        │
+│ Feature: Hardware acceleration                                               │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: SUBTITLES                                                                 │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 21                                                                        │
+│ Feature: Subtitles enable/disable                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 22                                                                        │
+│ Feature: Subtitle language                                                   │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 23                                                                        │
+│ Feature: Subtitle font size                                                  │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 24                                                                        │
+│ Feature: Subtitle text color                                                 │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 25                                                                        │
+│ Feature: Subtitle bg color                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 26                                                                        │
+│ Feature: Subtitle bg opacity                                                 │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 27                                                                        │
+│ Feature: Subtitle position                                                   │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 28                                                                        │
+│ Feature: Subtitle font style                                                 │
+│ iOS: N                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 29                                                                        │
+│ Feature: AI subtitle translation                                             │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 30                                                                        │
+│ Feature: AI translation language                                             │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 31                                                                        │
+│ Feature: Live subtitle preview                                               │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: AUDIO                                                                     │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 32                                                                        │
+│ Feature: Preferred audio language                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 33                                                                        │
+│ Feature: Audio quality picker                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 34                                                                        │
+│ Feature: Spatial audio                                                       │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 35                                                                        │
+│ Feature: Volume normalization                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 36                                                                        │
+│ Feature: Prefer dubbed audio                                                 │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 37                                                                        │
+│ Feature: Dubbing language                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: NOTIFICATIONS                                                             │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 38                                                                        │
+│ Feature: Push notifications master                                           │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 39                                                                        │
+│ Feature: System settings link                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 40                                                                        │
+│ Feature: New content alerts                                                  │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 41                                                                        │
+│ Feature: Live TV alerts                                                      │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 42                                                                        │
+│ Feature: Recommendations                                                     │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 43                                                                        │
+│ Feature: Promotions                                                          │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 44                                                                        │
+│ Feature: Credits alerts                                                      │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 45                                                                        │
+│ Feature: Email digest toggle                                                 │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 46                                                                        │
+│ Feature: Email digest frequency                                              │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 47                                                                        │
+│ Feature: Weekly digest                                                       │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 48                                                                        │
+│ Feature: Marketing emails                                                    │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 49                                                                        │
+│ Feature: Quiet hours                                                         │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: AI FEATURES                                                               │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 50                                                                        │
+│ Feature: Beta credits balance                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 51                                                                        │
+│ Feature: Credits usage history                                               │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 52                                                                        │
+│ Feature: Feature cost breakdown                                              │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 53                                                                        │
+│ Feature: Auto-dub toggle                                                     │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 54                                                                        │
+│ Feature: Dubbing voice preference                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 55                                                                        │
+│ Feature: Original audio mix slider                                           │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 56                                                                        │
+│ Feature: Cost per minute display                                             │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 57                                                                        │
+│ Feature: Trivia enable/disable                                               │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 58                                                                        │
+│ Feature: Trivia auto-show                                                    │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 59                                                                        │
+│ Feature: Trivia difficulty                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 60                                                                        │
+│ Feature: Trivia categories (6)                                               │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 61                                                                        │
+│ Feature: Trivia stats                                                        │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 62                                                                        │
+│ Feature: Beta feature toggles                                                │
+│ iOS: N                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 63                                                                        │
+│ Feature: Beta enrollment                                                     │
+│ iOS: N                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 64                                                                        │
+│ Feature: Beta feedback button                                                │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: PRIVACY                                                                   │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 65                                                                        │
+│ Feature: Analytics toggle                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 66                                                                        │
+│ Feature: Crash reports toggle                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 67                                                                        │
+│ Feature: Personalization toggle                                              │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 68                                                                        │
+│ Feature: Watch history toggle                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 69                                                                        │
+│ Feature: Clear watch history                                                 │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 70                                                                        │
+│ Feature: Download data (GDPR)                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P (alert)                                                               │
+│ Mobile Web: P (alert)                                                        │
+│ ────────────────────────────────────────                                     │
+│ #: 71                                                                        │
+│ Feature: Delete all data                                                     │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 72                                                                        │
+│ Feature: Search history toggle                                               │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 73                                                                        │
+│ Feature: Clear search history                                                │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 74                                                                        │
+│ Feature: Cookie preferences                                                  │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 75                                                                        │
+│ Feature: Active sessions list                                                │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: PARENTAL CONTROLS                                                         │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 76                                                                        │
+│ Feature: Parental PIN toggle                                                 │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 77                                                                        │
+│ Feature: PIN entry/change                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y (custom pad)                                                         │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 78                                                                        │
+│ Feature: Max content rating                                                  │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 79                                                                        │
+│ Feature: Block explicit content                                              │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 80                                                                        │
+│ Feature: Restrict purchases                                                  │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 81                                                                        │
+│ Feature: Restrict AI features                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 82                                                                        │
+│ Feature: Daily viewing time limit                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 83                                                                        │
+│ Feature: Time limit stepper                                                  │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 84                                                                        │
+│ Feature: Blocked categories                                                  │
+│ iOS: N                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 85                                                                        │
+│ Feature: Blocked channels                                                    │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 86                                                                        │
+│ Feature: Restricted hours                                                    │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: SECURITY                                                                  │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 87                                                                        │
+│ Feature: Biometric auth toggle                                               │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: X                                                                      │
+│ Web: X                                                                       │
+│ Mobile Web: X                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 88                                                                        │
+│ Feature: Change password                                                     │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 89                                                                        │
+│ Feature: Active sessions list                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 90                                                                        │
+│ Feature: Sign out all sessions                                               │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 91                                                                        │
+│ Feature: Two-factor auth                                                     │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: ACCESSIBILITY                                                             │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 92                                                                        │
+│ Feature: Large text toggle                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 93                                                                        │
+│ Feature: Bold text toggle                                                    │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 94                                                                        │
+│ Feature: High contrast toggle                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 95                                                                        │
+│ Feature: Reduce motion toggle                                                │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 96                                                                        │
+│ Feature: Audio descriptions                                                  │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 97                                                                        │
+│ Feature: Closed captions toggle                                              │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 98                                                                        │
+│ Feature: Mono audio toggle                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 99                                                                        │
+│ Feature: VoiceOver hints                                                     │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 100                                                                       │
+│ Feature: Touch target size                                                   │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 101                                                                       │
+│ Feature: Focus indicator size                                                │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 102                                                                       │
+│ Feature: Color blind mode                                                    │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: SUBSCRIPTION                                                              │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 103                                                                       │
+│ Feature: Current plan display                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 104                                                                       │
+│ Feature: Available plans list                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 105                                                                       │
+│ Feature: Plan change/upgrade                                                 │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P (alert)                                                               │
+│ Mobile Web: P (alert)                                                        │
+│ ────────────────────────────────────────                                     │
+│ #: 106                                                                       │
+│ Feature: Billing history                                                     │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P (placeholder)                                                         │
+│ Mobile Web: P (placeholder)                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 107                                                                       │
+│ Feature: Manage via store                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 108                                                                       │
+│ Feature: Auto-renew toggle                                                   │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 109                                                                       │
+│ Feature: Promo code                                                          │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 110                                                                       │
+│ Feature: Cancel subscription                                                 │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P (alert)                                                               │
+│ Mobile Web: P (alert)                                                        │
+│ ────────────────────────────────────────                                     │
+│ #: ABOUT                                                                     │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 111                                                                       │
+│ Feature: App version/build                                                   │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P (hardcoded)                                                           │
+│ Mobile Web: P (hardcoded)                                                    │
+│ ────────────────────────────────────────                                     │
+│ #: 112                                                                       │
+│ Feature: Device info                                                         │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 113                                                                       │
+│ Feature: Terms of service                                                    │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 114                                                                       │
+│ Feature: Privacy policy                                                      │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 115                                                                       │
+│ Feature: Cookie policy                                                       │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 116                                                                       │
+│ Feature: Open source licenses                                                │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 117                                                                       │
+│ Feature: Contact/support                                                     │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 118                                                                       │
+│ Feature: Feedback link                                                       │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 119                                                                       │
+│ Feature: Website link                                                        │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 120                                                                       │
+│ Feature: App Store/Play Store link                                           │
+│ iOS: Y                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 121                                                                       │
+│ Feature: Debug info (dev only)                                               │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: THEME                                                                     │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 122                                                                       │
+│ Feature: Theme mode (dark/light/system)                                      │
+│ iOS: Y                                                                       │
+│ Android: P (data, no UI)                                                     │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 123                                                                       │
+│ Feature: Startup screen selection                                            │
+│ iOS: N                                                                       │
+│ Android: N                                                                   │
+│ tvOS: N                                                                      │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: 124                                                                       │
+│ Feature: Text direction (RTL/LTR)                                            │
+│ iOS: Y (auto)                                                                │
+│ Android: Y (auto)                                                            │
+│ tvOS: Y (auto)                                                               │
+│ Web: P                                                                       │
+│ Mobile Web: P                                                                │
+│ ────────────────────────────────────────                                     │
+│ #: ACCOUNT ACTIONS                                                           │
+│ Feature:                                                                     │
+│ iOS:                                                                         │
+│ Android:                                                                     │
+│ tvOS:                                                                        │
+│ Web:                                                                         │
+│ Mobile Web:                                                                  │
+│ ────────────────────────────────────────                                     │
+│ #: 125                                                                       │
+│ Feature: Sign out                                                            │
+│ iOS: Y                                                                       │
+│ Android: Y                                                                   │
+│ tvOS: Y                                                                      │
+│ Web: N                                                                       │
+│ Mobile Web: N                                                                │
+│                                                                              │
+│ ---                                                                          │
+│ Priority & Phasing                                                           │
+│                                                                              │
+│ Phase 1: Web App Critical Fixes (BLOCKING - Must fix first)                  │
+│                                                                              │
+│ The web app has severe architectural issues that must be resolved before     │
+│ feature work:                                                                │
+│                                                                              │
+│ 1. Decompose SettingsPage.jsx (2050 lines) into component files per section  │
+│ (200-line limit)                                                             │
+│ 2. Replace native HTML elements with Glass components throughout             │
+│ 3. Replace window.alert()/window.confirm() with Glass modal/dialog           │
+│ components                                                                   │
+│ 4. Integrate i18n - use @bayit/shared-i18n settings namespace                │
+│ 5. Connect to shared settingsStore - replace web-only localStorage store     │
+│ with shared Zustand store                                                    │
+│ 6. Connect to backend API - use shared settingsApi service for persistence   │
+│ 7. Remove hardcoded values - version, emails, URLs, FAQ content must come    │
+│ from config                                                                  │
+│                                                                              │
+│ Phase 2: Core Feature Parity (All platforms)                                 │
+│                                                                              │
+│ Add missing features that exist on iOS but are absent on other platforms:    │
+│                                                                              │
+│ Android gaps (estimated ~25 features to add):                                │
+│ - Subtitle Settings sub-screen (text color, bg color, bg opacity, preview)   │
+│ - Audio Settings sub-screen (quality, spatial, normalization, mono)          │
+│ - AI Features section (dubbing config, trivia config, feature cost           │
+│ breakdown)                                                                   │
+│ - Security section (biometric, sessions, 2FA)                                │
+│ - Accessibility section (large text, bold, contrast, reduce motion,          │
+│ captions, VoiceOver, touch targets)                                          │
+│ - Surface theme mode toggle in UI                                            │
+│ - Additional playback settings (PiP, skip intro/credits, playback speed,     │
+│ continue watching)                                                           │
+│ - Profile phone number editing                                               │
+│ - More notification categories (credits alerts, email digest frequency)      │
+│                                                                              │
+│ tvOS gaps (estimated ~20 features to add):                                   │
+│ - Profile editing (name edit, phone)                                         │
+│ - Subtitle text/bg color pickers                                             │
+│ - AI subtitle translation                                                    │
+│ - Audio quality, spatial (if supported), normalization                       │
+│ - More notification categories                                               │
+│ - Privacy section (analytics, crash reports, personalization, watch/search   │
+│ history, GDPR export)                                                        │
+│ - Security features (change password - limited on tvOS)                      │
+│ - Subscription management (plan list, billing history)                       │
+│ - Cookie policy in About                                                     │
+│ - Theme mode toggle                                                          │
+│                                                                              │
+│ Web/Mobile Web gaps (estimated ~40 features to make functional):             │
+│ - Make ALL existing cosmetic features functional (connect to real systems)   │
+│ - Add: Subtitle customization (text color, bg color, font style, position,   │
+│ preview)                                                                     │
+│ - Add: Audio settings (quality, spatial support check, normalization)        │
+│ - Add: AI Features section (dubbing config, trivia config, credits usage,    │
+│ cost breakdown)                                                              │
+│ - Add: Security section (biometric where supported via WebAuthn, sessions,   │
+│ 2FA)                                                                         │
+│ - Add: Accessibility section (large text, bold, contrast, reduce motion,     │
+│ captions)                                                                    │
+│ - Add: Profile phone number, avatar upload                                   │
+│ - Add: Proper subscription management with payment integration               │
+│ - Connect all notification toggles to FCM/service worker                     │
+│                                                                              │
+│ Phase 3: Platform-Unique Features (bring best of each to all)                │
+│                                                                              │
+│ Features that originate from non-iOS platforms:                              │
+│                                                                              │
+│ ┌───────────────────────────────┬──────────────┬─────────────────────────┐   │
+│ │            Feature            │    Origin    │         Add To          │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Autoplay countdown timer      │ Android/tvOS │ iOS, Web                │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Live TV buffer size           │ tvOS/Web     │ iOS, Android            │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Blocked categories (parental) │ Android/tvOS │ iOS, Web                │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Blocked channels (parental)   │ tvOS         │ iOS, Android, Web       │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Weekly digest notification    │ tvOS         │ iOS, Android, Web       │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Beta enrollment flow          │ Android      │ iOS, tvOS, Web          │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Beta feedback button          │ tvOS         │ iOS, Android, Web       │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Focus indicator size (a11y)   │ tvOS         │ (tvOS-only)             │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Device info in About          │ tvOS         │ iOS, Android            │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Debug info in About           │ tvOS         │ iOS, Android, Web       │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Startup screen selection      │ Web          │ iOS, Android            │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Quiet hours (notifications)   │ Web          │ iOS, Android, tvOS      │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Search history toggle/clear   │ Web          │ iOS, Android, tvOS      │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Promo code (subscription)     │ Web          │ iOS, Android            │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Subtitle position picker      │ tvOS         │ iOS, Android, Web       │   │
+│ ├───────────────────────────────┼──────────────┼─────────────────────────┤   │
+│ │ Color blind mode (a11y)       │ Shared types │ iOS, Android, tvOS, Web │   │
+│ └───────────────────────────────┴──────────────┴─────────────────────────┘   │
+│                                                                              │
+│ ---                                                                          │
+│ Implementation Strategy Per Platform                                         │
+│                                                                              │
+│ Android App                                                                  │
+│                                                                              │
+│ - Architecture: Already excellent (MVVM, Hilt, Proto DataStore, Compose)     │
+│ - Approach: Add new sub-screens to existing feature-settings module          │
+│ - Key files to modify/create:                                                │
+│   - New: SubtitleSettingsScreen.kt + ViewModel                               │
+│   - New: AudioSettingsScreen.kt + ViewModel                                  │
+│   - New: AIFeaturesScreen.kt + ViewModel (with sub-sections for              │
+│ Dubbing/Trivia)                                                              │
+│   - New: SecuritySettingsScreen.kt + ViewModel                               │
+│   - New: AccessibilitySettingsScreen.kt + ViewModel                          │
+│   - Modify: SettingsNavigation.kt - add new destinations                     │
+│   - Modify: SettingsScreen.kt - add new navigation items                     │
+│   - Modify: PlaybackSettingsScreen.kt - add skip intro/credits, playback     │
+│ speed, PiP, continue watching                                                │
+│   - Modify: AccountSettingsScreen.kt - add phone number field                │
+│   - Modify: NotificationSettingsScreen.kt - add credits, email digest, quiet │
+│  hours                                                                       │
+│   - Modify: user_preferences.proto - add new fields for missing settings     │
+│   - Modify: PreferencesRepository.kt - add new methods                       │
+│   - Add string resources for all 10 language files                           │
+│                                                                              │
+│ tvOS App                                                                     │
+│                                                                              │
+│ - Architecture: Good (SwiftUI, MVVM, @AppStorage)                            │
+│ - Approach: Add new view files, enhance existing sections                    │
+│ - Key files to modify/create:                                                │
+│   - Modify: AccountSettingsView.swift - add name/phone editing               │
+│   - Modify: AccessibilitySettingsView.swift - add subtitle color pickers, AI │
+│  translation                                                                 │
+│   - New: PrivacySettingsView.swift + section in SettingsView                 │
+│   - New: SecuritySettingsView.swift (limited: password change, sessions)     │
+│   - Modify: SettingsView.swift - add Privacy, Security tabs                  │
+│   - Modify: SettingsViewModel.swift - add new @AppStorage properties         │
+│   - Modify: NotificationSettingsView.swift - add more categories             │
+│   - Modify: BetaProgramView.swift - add enrollment flow                      │
+│   - Modify: AboutView.swift - add cookie policy, more links                  │
+│                                                                              │
+│ Web App (Desktop + Mobile Web)                                               │
+│                                                                              │
+│ - Architecture: MUST REFACTOR (monolithic 2050-line file)                    │
+│ - Approach: Full decomposition + feature implementation                      │
+│ - Key files to create:                                                       │
+│   - web/src/components/settings/ProfileSection.jsx                           │
+│   - web/src/components/settings/PlaybackSection.jsx                          │
+│   - web/src/components/settings/SubtitleSection.jsx                          │
+│   - web/src/components/settings/AudioSection.jsx                             │
+│   - web/src/components/settings/LanguageSection.jsx                          │
+│   - web/src/components/settings/NotificationSection.jsx                      │
+│   - web/src/components/settings/AIFeaturesSection.jsx                        │
+│   - web/src/components/settings/PrivacySection.jsx                           │
+│   - web/src/components/settings/ParentalSection.jsx                          │
+│   - web/src/components/settings/SecuritySection.jsx                          │
+│   - web/src/components/settings/SubscriptionSection.jsx                      │
+│   - web/src/components/settings/AccessibilitySection.jsx                     │
+│   - web/src/components/settings/AboutSection.jsx                             │
+│   - web/src/components/settings/shared/SettingRow.jsx                        │
+│   - web/src/components/settings/shared/SettingToggle.jsx                     │
+│   - web/src/components/settings/shared/SettingSelect.jsx                     │
+│   - web/src/components/settings/shared/SettingSlider.jsx                     │
+│ - Key files to modify:                                                       │
+│   - Rewrite: web/src/pages/SettingsPage.jsx (thin orchestrator, <200 lines)  │
+│   - Replace: web/src/stores/settingsStore.js with import from                │
+│ shared/stores/settingsStore.ts                                               │
+│ - Key files to delete:                                                       │
+│   - None (the monolithic file gets rewritten, components extracted)          │
+│                                                                              │
+│ iOS App (Reference - minimal changes)                                        │
+│                                                                              │
+│ - Add features from other platforms: autoplay countdown, live TV buffer,     │
+│ blocked categories/channels, weekly digest, enrollment flow, feedback        │
+│ button, startup screen, quiet hours, search history, promo code, subtitle    │
+│ position, color blind mode, device info, debug info                          │
+│                                                                              │
+│ ---                                                                          │
+│ Shared Infrastructure Requirements                                           │
+│                                                                              │
+│ Backend API Additions Needed                                                 │
+│                                                                              │
+│ The backend at backend/app/api/routes/settings.py currently has 7 endpoints. │
+│  Additional endpoints needed:                                                │
+│                                                                              │
+│ 1. GET/PATCH /api/settings/accessibility - Accessibility preferences         │
+│ 2. GET/PATCH /api/settings/parental - Parental controls (with PIN hashing)   │
+│ 3. GET/PATCH /api/settings/privacy - Privacy preferences                     │
+│ 4. GET/PATCH /api/settings/security - Security settings                      │
+│ 5. GET /api/auth/sessions - Active sessions list                             │
+│ 6. DELETE /api/auth/sessions/{id} - Revoke session                           │
+│ 7. POST /api/auth/2fa/setup - 2FA setup                                      │
+│ 8. POST /api/auth/2fa/verify - 2FA verification                              │
+│ 9. GET/PATCH /api/settings/ai-features - AI feature configuration            │
+│ 10. GET /api/settings/ai-features/trivia-stats - Trivia statistics           │
+│                                                                              │
+│ Shared Types Updates                                                         │
+│                                                                              │
+│ Update shared/types/settings.ts to include:                                  │
+│ - SecuritySettings interface (biometric, 2FA, sessions)                      │
+│ - AIFeatureSettings interface (dubbing config, trivia config)                │
+│ - TriviaSettings interface (categories, difficulty, stats)                   │
+│ - DubbingSettings interface (voice, language, audio mix)                     │
+│ - Expand AccessibilitySettings (color blind mode, touch targets, focus size) │
+│ - Expand ParentalControlSettings (blocked categories, channels, time limits, │
+│  restricted hours)                                                           │
+│                                                                              │
+│ i18n Updates                                                                 │
+│                                                                              │
+│ Add keys to all 10 locale files for new features:                            │
+│ - settings.security.* - Security section strings                             │
+│ - settings.aiFeatures.* - AI features strings                                │
+│ - settings.aiFeatures.dubbing.* - Dubbing config strings                     │
+│ - settings.aiFeatures.trivia.* - Trivia config strings                       │
+│ - settings.accessibility.colorBlind* - Color blind mode strings              │
+│ - settings.parental.blockedChannels* - Channel blocking strings              │
+│                                                                              │
+│ ---                                                                          │
+│ Files to Modify/Create Summary                                               │
+│                                                                              │
+│ Shared (affects all platforms)                                               │
+│                                                                              │
+│ ┌────────┬────────────────────────────────────────────────┐                  │
+│ │ Action │                      File                      │                  │
+│ ├────────┼────────────────────────────────────────────────┤                  │
+│ │ Modify │ shared/types/settings.ts                       │                  │
+│ ├────────┼────────────────────────────────────────────────┤                  │
+│ │ Modify │ shared/stores/settingsStore.ts                 │                  │
+│ ├────────┼────────────────────────────────────────────────┤                  │
+│ │ Modify │ shared/services/api/settingsApi.ts             │                  │
+│ ├────────┼────────────────────────────────────────────────┤                  │
+│ │ Modify │ shared/utils/settings/settingsHelpers.ts       │                  │
+│ ├────────┼────────────────────────────────────────────────┤                  │
+│ │ Modify │ shared/i18n/locales/*/settings.json (10 files) │                  │
+│ └────────┴────────────────────────────────────────────────┘                  │
+│                                                                              │
+│ Backend                                                                      │
+│                                                                              │
+│ ┌────────┬────────────────────────────────────────────────────┐              │
+│ │ Action │                        File                        │              │
+│ ├────────┼────────────────────────────────────────────────────┤              │
+│ │ Modify │ backend/app/api/routes/settings.py                 │              │
+│ ├────────┼────────────────────────────────────────────────────┤              │
+│ │ Modify │ backend/app/models/user_settings.py                │              │
+│ ├────────┼────────────────────────────────────────────────────┤              │
+│ │ Modify │ backend/app/services/settings_service.py           │              │
+│ ├────────┼────────────────────────────────────────────────────┤              │
+│ │ Modify │ backend/app/schemas/settings.py                    │              │
+│ ├────────┼────────────────────────────────────────────────────┤              │
+│ │ Create │ backend/app/api/routes/security.py (sessions, 2FA) │              │
+│ └────────┴────────────────────────────────────────────────────┘              │
+│                                                                              │
+│ Web App (~20 files)                                                          │
+│                                                                              │
+│ ┌─────────┬───────────────────────────────────────────────────────────┐      │
+│ │ Action  │                           File                            │      │
+│ ├─────────┼───────────────────────────────────────────────────────────┤      │
+│ │ Rewrite │ web/src/pages/SettingsPage.jsx                            │      │
+│ ├─────────┼───────────────────────────────────────────────────────────┤      │
+│ │ Create  │ web/src/components/settings/*.jsx (14 section files)      │      │
+│ ├─────────┼───────────────────────────────────────────────────────────┤      │
+│ │ Create  │ web/src/components/settings/shared/*.jsx (4 helper files) │      │
+│ ├─────────┼───────────────────────────────────────────────────────────┤      │
+│ │ Replace │ web/src/stores/settingsStore.js                           │      │
+│ └─────────┴───────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│ Android App (~15 files)                                                      │
+│                                                                              │
+│ ┌────────┬──────────────────────────────────────────┐                        │
+│ │ Action │                   File                   │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Create │ 5 new screen + ViewModel pairs           │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ SettingsNavigation.kt, SettingsScreen.kt │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ user_preferences.proto                   │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ PreferencesRepository.kt                 │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ 10 string resource files                 │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ 3 existing settings screens              │                        │
+│ └────────┴──────────────────────────────────────────┘                        │
+│                                                                              │
+│ tvOS App (~8 files)                                                          │
+│                                                                              │
+│ ┌────────┬──────────────────────────────────────────┐                        │
+│ │ Action │                   File                   │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Create │ PrivacySettingsView.swift                │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Create │ SecuritySettingsView.swift (limited)     │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ SettingsView.swift (add 2 tabs)          │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ SettingsViewModel.swift (add properties) │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ AccountSettingsView.swift                │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ AccessibilitySettingsView.swift          │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ NotificationSettingsView.swift           │                        │
+│ ├────────┼──────────────────────────────────────────┤                        │
+│ │ Modify │ AboutView.swift                          │                        │
+│ └────────┴──────────────────────────────────────────┘                        │
+│                                                                              │
+│ iOS App (~10 files)                                                          │
+│                                                                              │
+│ ┌────────┬─────────────────────────────────────────────────────────────┐     │
+│ │ Action │                            File                             │     │
+│ ├────────┼─────────────────────────────────────────────────────────────┤     │
+│ │ Modify │ Settings views to add ~15 new features from other platforms │     │
+│ ├────────┼─────────────────────────────────────────────────────────────┤     │
+│ │ Modify │ SettingsViewModel for new state                             │     │
+│ └────────┴─────────────────────────────────────────────────────────────┘     │
+│                                                                              │
+│ ---                                                                          │
+│ Verification Plan                                                            │
+│                                                                              │
+│ 1. Backend: Run poetry run pytest for all new/modified settings endpoints    │
+│ 2. Web: Run /webapp-testing after all web changes; verify all sections       │
+│ render, all toggles persist, all API calls succeed                           │
+│ 3. Android: Build with ./gradlew :feature:feature-settings:assembleDebug;    │
+│ verify all new screens navigate correctly                                    │
+│ 4. iOS: Build via Xcode; verify all settings sections and new features       │
+│ 5. tvOS: Build via Xcode; verify focus navigation through new sections       │
+│ 6. Cross-platform: Change a setting on one platform, verify it syncs to      │
+│ others via backend API                                                       │
+│ 7. i18n: Switch to each of the 10 languages and verify all settings labels   │
+│ render correctly                                                             │
+│ 8. Accessibility: Test VoiceOver/TalkBack on each platform's accessibility   │
+│ settings                                                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ This is a massive cross-platform effort. Let me start by understanding the
+  current state of the codebase across all platforms before writing any code.
+  I'll explore in parallel.
+
+⏺ Let me explore the current codebase structure across all platforms in
+  parallel.
+
+⏺ 5 Explore agents launched (ctrl+o to expand)
+   ├─ Explore iOS settings
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Explore web settings
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Explore shared + backend settings
+   │  ⎿  Running in the background (shift+↑ to manage)
+   ├─ Explore Android settings
+   │  ⎿  Running in the background (shift+↑ to manage)
+   └─ Explore tvOS settings
+      ⎿  Running in the background (shift+↑ to manage)
+
+⏺ All 5 exploration agents are running in parallel. Let me wait for them to
+  complete before starting implementation. I'll check their progress.
+
+⏺ Task Output ae2831e
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ tvOS exploration complete. Let me check on the remaining agents.
+
+⏺ Task Output ad85e9c
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output ad92969
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Android and shared infrastructure exploration complete. Let me wait for the
+  remaining iOS and web agents.
+
+⏺ Task Output a41f3fd
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Task Output aff3c91
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ All 5 exploration agents are complete. I now have a comprehensive
+  understanding of the codebase. Let me mark the exploration task complete and
+  set up the implementation work.
+
+  Key findings:
+  - iOS: SettingsView (275 lines) + SettingsViewModel (210 lines) + sub-views
+  for language, notifications, subtitles, wake word, trivia, avatar. API-backed
+  with optimistic updates.
+  - Android: Well-structured MVVM with Hilt DI, 10 settings sub-screens.
+  API-backed via BayitApiClient.
+  - tvOS: React Native/TS with Zustand stores + backend API. Settings,
+  SecuritySettings, AIVoiceSettings, DevicesManager screens.
+  - Web: Already has some decomposed settings components (voice/, ritual/,
+  trivia/ sections). Also has many relevant stores (aiSettingsStore,
+  devicesStore, dubbingSettingsStore, etc.)
+  - Shared: voiceSettingsStore.ts, homePageConfigStore.ts, API services, type
+  definitions
+
+  This is a massive cross-platform effort. Let me start with Phase 1: Web App 
+  Critical Fixes as the plan prescribes. First, I need to read the current
+  SettingsPage to understand what we're decomposing.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Good news - the web app already has some well-decomposed settings components
+  (voice, ritual, trivia). Let me read the monolithic SettingsPage to understand
+   what remains.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The SettingsPage is actually only 407 lines (not 2050 as the plan estimated).
+  It already uses Glass components and i18n. The main issues are:
+  - Missing sections (subtitles, audio, AI features, security, accessibility,
+  subscription, about)
+  - Some toggles not connected to APIs (notifications, autoplay, dark mode)
+  - Hardcoded version string
+
+  Let me check the existing shared types and backend before creating the task
+  list.
+
+⏺ Searched for 3 patterns, read 3 files (ctrl+o to expand)
+
+⏺ Now I have a clear picture. Let me check what backend routes exist for
+  settings to understand the API surface.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Good - I now have a complete picture. The current state is better than the
+  plan assumed:
+  - SettingsPage is 407 lines (not 2050)
+  - Already uses Glass components and i18n
+  - Voice, ritual, trivia settings already decomposed
+  - Backend already has AI, voice, home page preference endpoints
+  - Multiple settings stores already exist
+
+  Let me create the task list and start implementing Phase 1 (Web App) and the
+  shared infrastructure.
+
+⏺ Now let me start implementing. I'll begin with the shared settings components
+  and the backend simultaneously.
+
+⏺ Let me first check what Glass UI components are available.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Let me check the existing shared-like components and patterns.
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ Now I understand the patterns. Let me start building. I'll create the shared
+  components and section components for the web, plus the backend endpoints in
+  parallel.
+
+⏺ backend-specialist(Create backend settings endpoints)
+  ⎿  Backgrounded agent (shift+↑ to manage · ctrl+o to expand)
+
+⏺ Now let me create the web shared settings components and section components.
+  Let me start with the shared components.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/shared/SettingRow.tsx)
+  ⎿  Wrote 154 lines to
+     ../web/src/components/settings/shared/SettingRow.tsx
+       1 /**
+       2  * SettingRow Component
+       3  * Reusable row for settings pages - supports toggle, navigation
+         , select, and value display.
+       4  */
+       5 
+       6 import { View, Text, Pressable, StyleSheet } from 'react-native'
+         ;
+       7 import { GlassToggle } from '@bayit/shared/ui';
+       8 import { ChevronRight } from 'lucide-react';
+       9 import { colors, spacing, fontSize } from '@olorin/design-tokens
+         ';
+      10 import type { LucideIcon } from 'lucide-react';
+     … +144 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/shared/SettingSection.tsx)
+  ⎿  Wrote 45 lines to
+     ../web/src/components/settings/shared/SettingSection.tsx
+       1 /**
+       2  * SettingSection Component
+       3  * Glass-styled container for a group of related settings.
+       4  */
+       5 
+       6 import { View, Text, StyleSheet } from 'react-native';
+       7 import { GlassView } from '@bayit/shared/ui';
+       8 import { colors, spacing, fontSize } from '@olorin/design-tokens
+         ';
+       9 
+      10 interface SettingSectionProps {
+     … +35 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/shared/SettingSelect.tsx)
+  ⎿  Wrote 151 lines to
+     ../web/src/components/settings/shared/SettingSelect.tsx
+       1 /**
+       2  * SettingSelect Component
+       3  * Setting row with a dropdown/picker for selecting from options
+         .
+       4  */
+       5 
+       6 import { View, Text, Pressable, StyleSheet } from 'react-native'
+         ;
+       7 import { colors, spacing, fontSize } from '@olorin/design-tokens
+         ';
+       8 import type { LucideIcon } from 'lucide-react';
+       9 
+      10 interface SelectOption {
+     … +141 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/shared/SettingSlider.tsx)
+  ⎿  Wrote 133 lines to
+     ../web/src/components/settings/shared/SettingSlider.tsx
+       1 /**
+       2  * SettingSlider Component
+       3  * Setting row with a range slider for numeric values.
+       4  */
+       5 
+       6 import { View, Text, StyleSheet } from 'react-native';
+       7 import { colors, spacing, fontSize } from '@olorin/design-tokens
+         ';
+       8 import type { LucideIcon } from 'lucide-react';
+       9 
+      10 interface SettingSliderProps {
+     … +123 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/shared/index.ts)
+  ⎿  Wrote 11 lines to ../web/src/components/settings/shared/index.ts
+       1 /**
+       2  * Shared Settings Components
+       3  * Reusable building blocks for all settings sections.
+       4  */
+       5 
+       6 export { SettingRow } from './SettingRow';
+       7 export type { SettingRowProps } from './SettingRow';
+       8 export { SettingSection } from './SettingSection';
+       9 export { SettingSelect } from './SettingSelect';
+      10 export { SettingSlider } from './SettingSlider';
+     … +1 line (ctrl+o to expand)
+
+⏺ Shared components done. Now let me create the section components. I'll launch
+  parallel agents for multiple sections.
+
+⏺ Now I'll create the section components. I'll write them directly since I
+  understand the patterns well.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/ProfileSection.tsx)
+  ⎿  Wrote 122 lines to ../web/src/components/settings/ProfileSection.tsx
+       1 /**
+       2  * ProfileSection
+       3  * User profile settings: avatar, display name, email, phone, ac
+         count actions.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, Pressable, StyleSheet } from 'react-native'
+         ;
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import { useAuthStore } from '@bayit/shared-stores/authStore';
+     … +112 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/PlaybackSection.tsx)
+  ⎿  Wrote 158 lines to ../web/src/components/settings/PlaybackSection.tsx
+       1 /**
+       2  * PlaybackSection
+       3  * Video playback settings: quality, autoplay, skip intro/credit
+         s, speed, etc.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import { Play, SkipForward, Gauge, Zap, FastForward } from 'luci
+         de-react';
+      10 import { SettingSection } from './shared/SettingSection';
+     … +148 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/SubtitleSection.tsx)
+  ⎿  Wrote 212 lines to ../web/src/components/settings/SubtitleSection.tsx
+       1 /**
+       2  * SubtitleSection
+       3  * Subtitle display settings: language, font size, colors, posit
+         ion, AI translation.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, StyleSheet } from 'react-native';
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import { Subtitles, Type, Palette, Languages, Sparkles } from 'l
+         ucide-react';
+     … +202 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/AudioSection.tsx)
+  ⎿  Wrote 125 lines to ../web/src/components/settings/AudioSection.tsx
+       1 /**
+       2  * AudioSection
+       3  * Audio settings: preferred language, quality, normalization, d
+         ubbing preferences.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import { Volume2, Languages, Headphones, Mic } from 'lucide-reac
+         t';
+      10 import { SettingSection } from './shared/SettingSection';
+     … +115 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/NotificationSection.tsx)
+  ⎿  Wrote 169 lines to
+     ../web/src/components/settings/NotificationSection.tsx
+       1 /**
+       2  * NotificationSection
+       3  * Notification settings: push, email digest, quiet hours, per-c
+         ategory toggles.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import {
+      10   Bell, BellRing, Mail, Moon, Film, Radio, Star, Tag, Coins,
+     … +159 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/PrivacySection.tsx)
+  ⎿  Wrote 215 lines to ../web/src/components/settings/PrivacySection.tsx
+       1 /**
+       2  * PrivacySection
+       3  * Privacy settings: analytics, crash reports, personalization, 
+         history.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, StyleSheet } from 'react-native';
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import { GlassButton, GlassModal } from '@bayit/shared/ui';
+     … +205 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/AccessibilitySection.tsx)
+  ⎿  Wrote 143 lines to
+     ../web/src/components/settings/AccessibilitySection.tsx
+       1 /**
+       2  * AccessibilitySection
+       3  * Accessibility settings: text size, contrast, motion, captions
+         , color blind mode.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import {
+      10   Accessibility, Type, Bold, Contrast, Minimize2,
+     … +133 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/SecuritySection.tsx)
+  ⎿  Wrote 237 lines to ../web/src/components/settings/SecuritySection.tsx
+       1 /**
+       2  * SecuritySection
+       3  * Security settings: change password, 2FA, active sessions, sig
+         n out all.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, StyleSheet } from 'react-native';
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import { GlassButton, GlassModal } from '@bayit/shared/ui';
+     … +227 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/SubscriptionSection.tsx)
+  ⎿  Wrote 115 lines to
+     ../web/src/components/settings/SubscriptionSection.tsx
+       1 /**
+       2  * SubscriptionSection
+       3  * Subscription management: current plan, upgrade, billing histo
+         ry.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, StyleSheet } from 'react-native';
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import { GlassButton } from '@bayit/shared/ui';
+     … +105 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/LanguageSection.tsx)
+  ⎿  Wrote 65 lines to ../web/src/components/settings/LanguageSection.tsx
+       1 /**
+       2  * LanguageSection
+       3  * Language and theme settings: app language, theme mode, text d
+         irection.
+       4  */
+       5 
+       6 import { View, Text, Pressable, StyleSheet } from 'react-native'
+         ;
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import { Globe, Moon, Sun, Monitor } from 'lucide-react';
+      10 import { colors, spacing, fontSize } from '@olorin/design-tokens
+         ';
+     … +55 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/AIFeaturesSection.tsx)
+  ⎿  Wrote 220 lines to
+     ../web/src/components/settings/AIFeaturesSection.tsx
+       1 /**
+       2  * AIFeaturesSection
+       3  * AI feature settings: beta credits, dubbing config, trivia con
+         fig.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { View, Text, StyleSheet } from 'react-native';
+       8 import { useTranslation } from 'react-i18next';
+       9 import { useDirection } from '@/hooks/useDirection';
+      10 import {
+     … +210 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/ParentalSection.tsx)
+  ⎿  Wrote 123 lines to ../web/src/components/settings/ParentalSection.tsx
+       1 /**
+       2  * ParentalSection
+       3  * Parental controls: PIN, content rating, block explicit, restr
+         ict AI/purchases, time limits.
+       4  */
+       5 
+       6 import { useState, useEffect } from 'react';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import { useNavigate } from 'react-router-dom';
+      10 import {
+     … +113 lines (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/s
+       ettings/AboutSection.tsx)
+  ⎿  Wrote 79 lines to ../web/src/components/settings/AboutSection.tsx
+       1 /**
+       2  * AboutSection
+       3  * App information: version, legal links, support.
+       4  */
+       5 
+       6 import { View, Text, StyleSheet, Linking } from 'react-native';
+       7 import { useTranslation } from 'react-i18next';
+       8 import { useDirection } from '@/hooks/useDirection';
+       9 import {
+      10   Info, FileText, Shield, Code, HelpCircle, MessageSquare, Exter
+         nalLink,
+     … +69 lines (ctrl+o to expand)
+
+⏺ Now I need to check if appConfig exists in the web app.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ I need to add version and links to appConfig. Let me update it.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/config/appC
+        onfig.js)
+  ⎿  Added 19 lines
+      20  
+      21  export const isProduction = APP_MODE === 'production';
+      22  
+      23 +// App version from build-time env                             
+      24 +const getVersion = () => {                                     
+      25 +  if (typeof import.meta !== 'undefined' && import.meta.env) { 
+      26 +    return import.meta.env.VITE_APP_VERSION || '1.0.0';        
+      27 +  }                                                            
+      28 +  return '1.0.0';                                              
+      29 +};                                                             
+      30 +                                                               
+      31  // Strict mode settings
+      32  export const config = {
+      33    mode: APP_MODE,
+      34    isProduction,
+      35 +  version: getVersion(),                                       
+      36  
+      37    // API settings
+      38    api: {
+     ...
+      53      aiChapters: true,
+      54      hebronicsVoice: true,
+      55    },
+      56 +                                                               
+      57 +  // External links                                            
+      58 +  links: {                                                     
+      59 +    termsOfService: 'https://bayit.tv/terms',                  
+      60 +    privacyPolicy: 'https://bayit.tv/privacy',                 
+      61 +    openSource: 'https://bayit.tv/licenses',                   
+      62 +    helpCenter: 'https://bayit.tv/help',                       
+      63 +    feedback: 'https://bayit.tv/feedback',                     
+      64 +    website: 'https://bayit.tv',                               
+      65 +  },                                                           
+      66  };
+      67  
+      68  // Log mode on startup
+
+⏺ Now let me also need to update the AboutSection import to use the correct
+  name. Let me also update the alias since it exports as config not appConfig.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        settings/AboutSection.tsx)
+  ⎿  Added 1 line, removed 1 line
+      12  import { colors, spacing, fontSize } from '@olorin/design-token
+          s';
+      13  import { SettingSection } from './shared/SettingSection';
+      14  import { SettingRow } from './shared/SettingRow';
+      15 -import { appConfig } from '@/config/appConfig';                
+      15 +import { config as appConfig } from '@/config/appConfig';      
+      16  
+      17  export function AboutSection() {
+      18    const { t } = useTranslation();
+
+⏺ Now let me add the API methods that the section components need. Let me check
+  the existing profilesService.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ I need to find where profilesService is defined in the shared services.
+
+⏺ Searched for 3 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me find the userServices file to see what profilesService already
+  offers and add the missing methods.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ I need to add the new preference methods to apiProfilesService. Let me add
+  them.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/shared/services/api
+        /userServices.ts)
+  ⎿  Added 24 lines
+       81      api.get('/profiles/preferences/home_page'),
+       82    updateHomePagePreferences: (prefs: HomePagePreferencesAPI): 
+           Promise<{ message: string; preferences: HomePagePreferencesAPI
+            }> =>
+       83      api.put('/profiles/preferences/home_page', prefs),
+       84 +  // Playback Preferences                                     
+       85 +  getPlaybackPreferences: () => api.get('/profiles/preferences
+          +/playback'),                                                  
+       86 +  updatePlaybackPreferences: (prefs: Record<string, any>) =>  
+       87 +    api.put('/profiles/preferences/playback', prefs),         
+       88 +  // Subtitle Preferences                                     
+       89 +  getSubtitlePreferences: () => api.get('/profiles/preferences
+          +/subtitles'),                                                 
+       90 +  updateSubtitlePreferences: (prefs: Record<string, any>) =>  
+       91 +    api.put('/profiles/preferences/subtitles', prefs),        
+       92 +  // Audio Preferences                                        
+       93 +  getAudioPreferences: () => api.get('/profiles/preferences/au
+          +dio'),                                                        
+       94 +  updateAudioPreferences: (prefs: Record<string, any>) =>     
+       95 +    api.put('/profiles/preferences/audio', prefs),            
+       96 +  // Notification Preferences                                 
+       97 +  getNotificationPreferences: () => api.get('/profiles/prefere
+          +nces/notifications'),                                         
+       98 +  updateNotificationPreferences: (prefs: Record<string, any>) 
+          +=>                                                            
+       99 +    api.put('/profiles/preferences/notifications', prefs),    
+      100 +  // Privacy Preferences                                      
+      101 +  getPrivacyPreferences: () => api.get('/profiles/preferences/
+          +privacy'),                                                    
+      102 +  updatePrivacyPreferences: (prefs: Record<string, any>) =>   
+      103 +    api.put('/profiles/preferences/privacy', prefs),          
+      104 +  // Accessibility Preferences                                
+      105 +  getAccessibilityPreferences: () => api.get('/profiles/prefer
+          +ences/accessibility'),                                        
+      106 +  updateAccessibilityPreferences: (prefs: Record<string, any>)
+          + =>                                                           
+      107 +    api.put('/profiles/preferences/accessibility', prefs),    
+      108  };
+      109  
+      110  // Children Service (API)
+
+⏺ Now let me mark the section components task as complete and rewrite the
+  SettingsPage orchestrator.
+
+⏺ Now let me rewrite the SettingsPage as a thin orchestrator.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/pages/Settin
+       gsPage.tsx)
+  ⎿  Added 79 lines, removed 338 lines
+       1 -import { useState, useEffect } from 'react';                   
+       2 -import { View, Text, ScrollView, Pressable, StyleSheet } from '
+         -react-native';                                                 
+       3 -import { useNavigate } from 'react-router-dom';                
+       1 +/**                                                            
+       2 + * SettingsPage                                                
+       3 + * Main settings page orchestrator - renders all settings secti
+         +ons.                                                           
+       4 + * Each section is self-contained with its own state management
+         + and API calls.                                                
+       5 + */                                                            
+       6 +                                                               
+       7 +import { useState } from 'react';                              
+       8 +import { Text, ScrollView, StyleSheet } from 'react-native';   
+       9  import { useTranslation } from 'react-i18next';
+      10  import { useDirection } from '@/hooks/useDirection';
+       6 -import { colors, spacing, fontSize, borderRadius } from '@olori
+         -n/design-tokens';                                              
+       7 -import { GlassView, GlassToggle } from '@bayit/shared/ui';     
+      11 +import { colors, spacing, fontSize } from '@olorin/design-token
+         +s';                                                            
+      12 +import { GlassButton } from '@bayit/shared/ui';                
+      13 +import { LogOut, Languages } from 'lucide-react';              
+      14  import { useAuthStore } from '@bayit/shared-stores/authStore';
+       9 -import { Globe, Bell, Moon, Volume2, Shield, ChevronRight, Lang
+         -uages } from 'lucide-react';                                   
+      15  import logger from '@/utils/logger';
+      16 +                                                               
+      17 +// Settings sections                                           
+      18 +import { ProfileSection } from '@/components/settings/ProfileSe
+         +ction';                                                        
+      19 +import { LanguageSection } from '@/components/settings/Language
+         +Section';                                                      
+      20 +import { PlaybackSection } from '@/components/settings/Playback
+         +Section';                                                      
+      21 +import { SubtitleSection } from '@/components/settings/Subtitle
+         +Section';                                                      
+      22 +import { AudioSection } from '@/components/settings/AudioSectio
+         +n';                                                            
+      23 +import { NotificationSection } from '@/components/settings/Noti
+         +ficationSection';                                              
+      24 +import { AIFeaturesSection } from '@/components/settings/AIFeat
+         +uresSection';                                                  
+      25 +import { PrivacySection } from '@/components/settings/PrivacySe
+         +ction';                                                        
+      26 +import { ParentalSection } from '@/components/settings/Parental
+         +Section';                                                      
+      27 +import { SecuritySection } from '@/components/settings/Security
+         +Section';                                                      
+      28 +import { AccessibilitySection } from '@/components/settings/Acc
+         +essibilitySection';                                            
+      29 +import { SubscriptionSection } from '@/components/settings/Subs
+         +criptionSection';                                              
+      30 +import { AboutSection } from '@/components/settings/AboutSectio
+         +n';                                                            
+      31 +                                                               
+      32 +// Chat translation toggle (preserved from original)           
+      33 +import { SettingSection } from '@/components/settings/shared/Se
+         +ttingSection';                                                 
+      34 +import { SettingRow } from '@/components/settings/shared/Settin
+         +gRow';                                                         
+      35  import api from '@/services/api';
+      36 +import { useState as useTranslateState, useEffect } from 'react
+         +';                                                             
+      37  
+      38  export default function SettingsPage() {
+      14 -  const navigate = useNavigate();                              
+      15 -  const { t, i18n } = useTranslation();                        
+      16 -  const { isRTL, textAlign, flexDirection } = useDirection();  
+      17 -  const { user } = useAuthStore();                             
+      39 +  const { t } = useTranslation();                              
+      40 +  const { isRTL } = useDirection();                            
+      41 +  const { logout } = useAuthStore();                           
+      42  
+      19 -  const [notifications, setNotifications] = useState(true);    
+      20 -  const [autoplay, setAutoplay] = useState(true);              
+      21 -  const [darkMode, setDarkMode] = useState(true);              
+      43 +  // Auto-translate state (preserved from original page)       
+      44    const [autoTranslate, setAutoTranslate] = useState(true);
+      45    const [isLoadingPrefs, setIsLoadingPrefs] = useState(true);
+      46  
+      25 -  // Load user preferences on mount                            
+      47    useEffect(() => {
+      48      const loadPreferences = async () => {
+      49        try {
+      50          const response = await api.get('/users/me/preferences')
+          ;
+      30 -        const prefs = response.data?.preferences || {};        
+      51 +        const prefs = response?.data?.preferences || response?.
+         +preferences || {};                                             
+      52          setAutoTranslate(prefs.auto_translate_enabled !== false
+          );
+      53        } catch (error) {
+      54          logger.error('Failed to load preferences', 'SettingsPag
+          e', error);
+     ...
+       64      try {
+       65        await api.patch('/users/me/preferences', { auto_translat
+           e_enabled: value });
+       66      } catch (error) {
+       46 -      logger.error('Failed to update auto-translate preference
+          -', 'SettingsPage', error);                                    
+       47 -      // Revert on error                                      
+       67 +      logger.error('Failed to update auto-translate', 'Setting
+          +sPage', error);                                               
+       68        setAutoTranslate(!value);
+       69      }
+       70    };
+       71  
+       52 -  const currentLanguage = i18n.language === 'he' ? 'Hebrew' : 
+          -'English';                                                    
+       53 -                                                              
+       54 -  const handleLanguageChange = () => {                        
+       55 -    const newLang = i18n.language === 'he' ? 'en' : 'he';     
+       56 -    i18n.changeLanguage(newLang);                             
+       57 -    localStorage.setItem('bayit-language', newLang);          
+       72 +  const handleSignOut = async () => {                         
+       73 +    try {                                                     
+       74 +      await logout();                                         
+       75 +    } catch (error) {                                         
+       76 +      logger.error('Failed to sign out', 'SettingsPage', error
+          +);                                                            
+       77 +    }                                                         
+       78    };
+       79  
+       80    return (
+       61 -    <ScrollView                                               
+       62 -      style={styles.container}                                
+       63 -      contentContainerStyle={styles.scrollContent}            
+       64 -    >                                                         
+       65 -      <Text style={[                                          
+       66 -        styles.title,                                         
+       67 -        textAlign === 'right' && styles.textRight             
+       68 -      ]}>                                                     
+       81 +    <ScrollView style={styles.container} contentContainerStyle
+          +={styles.scrollContent}>                                      
+       82 +      <Text style={[styles.title, isRTL && styles.textRight]}>
+       83          {t('nav.settings')}
+       84        </Text>
+       85  
+       72 -      {/* Language Settings */}                               
+       73 -      <GlassView style={styles.section}>                      
+       74 -        <Text style={[                                        
+       75 -          styles.sectionHeader,                               
+       76 -          textAlign === 'right' && styles.textRight           
+       77 -        ]}>                                                   
+       78 -          {t('settings.language', 'Language')}                
+       79 -        </Text>                                               
+       80 -        <Pressable                                            
+       81 -          style={[                                            
+       82 -            styles.settingRow,                                
+       83 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+       84 -          ]}                                                  
+       85 -          onPress={handleLanguageChange}                      
+       86 -        >                                                     
+       87 -          <View style={[                                      
+       88 -            styles.settingLeft,                               
+       89 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+       90 -          ]}>                                                 
+       91 -            <Globe size={20} color={colors.primary.DEFAULT} />
+       92 -            <Text style={[                                    
+       93 -              styles.settingLabel,                            
+       94 -              textAlign === 'right' && styles.textRight       
+       95 -            ]}>                                               
+       96 -              {t('settings.appLanguage', 'App Language')}     
+       97 -            </Text>                                           
+       98 -          </View>                                             
+       99 -          <View style={[                                      
+      100 -            styles.settingRight,                              
+      101 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      102 -          ]}>                                                 
+      103 -            <Text style={styles.settingValue}>{currentLanguage
+          -}</Text>                                                      
+      104 -            <ChevronRight size={20} color={colors.textMuted} /
+          ->                                                             
+      105 -          </View>                                             
+      106 -        </Pressable>                                          
+      107 -      </GlassView>                                            
+       86 +      <ProfileSection />                                      
+       87 +      <LanguageSection />                                     
+       88  
+      109 -      {/* Chat Translation Settings */}                       
+      110 -      <GlassView style={styles.section}>                      
+      111 -        <Text style={[                                        
+      112 -          styles.sectionHeader,                               
+      113 -          textAlign === 'right' && styles.textRight           
+      114 -        ]}>                                                   
+      115 -          {t('settings.chatTranslation', 'Chat Translation')} 
+      116 -        </Text>                                               
+      117 -        <View style={[                                        
+      118 -          styles.settingRow,                                  
+      119 -          flexDirection === 'row-reverse' && styles.rowReverse
+      120 -        ]}>                                                   
+      121 -          <View style={[                                      
+      122 -            styles.settingLeft,                               
+      123 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      124 -          ]}>                                                 
+      125 -            <Languages size={20} color={colors.primary.DEFAULT
+          -} />                                                          
+      126 -            <View style={styles.settingTextContainer}>        
+      127 -              <Text style={[                                  
+      128 -                styles.settingLabel,                          
+      129 -                textAlign === 'right' && styles.textRight     
+      130 -              ]}>                                             
+      131 -                {t('settings.autoTranslate', 'Auto-translate m
+          -essages')}                                                    
+      132 -              </Text>                                         
+      133 -              <Text style={[                                  
+      134 -                styles.settingDescription,                    
+      135 -                textAlign === 'right' && styles.textRight     
+      136 -              ]}>                                             
+      137 -                {t('settings.autoTranslateDescription', 'Autom
+          -atically translate chat messages to your preferred language')}
+      138 -              </Text>                                         
+      139 -            </View>                                           
+      140 -          </View>                                             
+      141 -          <GlassToggle                                        
+      142 -            value={autoTranslate}                             
+      143 -            onValueChange={handleAutoTranslateChange}         
+      144 -            disabled={isLoadingPrefs}                         
+      145 -          />                                                  
+      146 -        </View>                                               
+      147 -      </GlassView>                                            
+       89 +      {/* Chat Translation (feature-specific, kept inline) */}
+       90 +      <SettingSection title={t('settings.chatTranslation', 'Ch
+          +at Translation')} isRTL={isRTL}>                              
+       91 +        <SettingRow                                           
+       92 +          type="toggle"                                       
+       93 +          icon={Languages}                                    
+       94 +          label={t('settings.autoTranslate', 'Auto-translate m
+          +essages')}                                                    
+       95 +          description={t('settings.autoTranslateDescription', 
+          +'Automatically translate chat messages')}                     
+       96 +          value={autoTranslate}                               
+       97 +          onValueChange={handleAutoTranslateChange}           
+       98 +          disabled={isLoadingPrefs}                           
+       99 +          isRTL={isRTL}                                       
+      100 +        />                                                    
+      101 +      </SettingSection>                                       
+      102  
+      149 -      {/* Notification Settings */}                           
+      150 -      <GlassView style={styles.section}>                      
+      151 -        <Text style={[                                        
+      152 -          styles.sectionHeader,                               
+      153 -          textAlign === 'right' && styles.textRight           
+      154 -        ]}>                                                   
+      155 -          {t('settings.notifications', 'Notifications')}      
+      156 -        </Text>                                               
+      157 -        <View style={[                                        
+      158 -          styles.settingRow,                                  
+      159 -          flexDirection === 'row-reverse' && styles.rowReverse
+      160 -        ]}>                                                   
+      161 -          <View style={[                                      
+      162 -            styles.settingLeft,                               
+      163 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      164 -          ]}>                                                 
+      165 -            <Bell size={20} color={colors.primary.DEFAULT} /> 
+      166 -            <Text style={[                                    
+      167 -              styles.settingLabel,                            
+      168 -              textAlign === 'right' && styles.textRight       
+      169 -            ]}>                                               
+      170 -              {t('settings.pushNotifications', 'Push Notificat
+          -ions')}                                                       
+      171 -            </Text>                                           
+      172 -          </View>                                             
+      173 -          <GlassToggle                                        
+      174 -            value={notifications}                             
+      175 -            onValueChange={setNotifications}                  
+      176 -          />                                                  
+      177 -        </View>                                               
+      178 -      </GlassView>                                            
+      103 +      <PlaybackSection />                                     
+      104 +      <SubtitleSection />                                     
+      105 +      <AudioSection />                                        
+      106 +      <NotificationSection />                                 
+      107 +      <AIFeaturesSection />                                   
+      108 +      <PrivacySection />                                      
+      109 +      <ParentalSection />                                     
+      110 +      <SecuritySection />                                     
+      111 +      <AccessibilitySection />                                
+      112 +      <SubscriptionSection />                                 
+      113 +      <AboutSection />                                        
+      114  
+      180 -      {/* Playback Settings */}                               
+      181 -      <GlassView style={styles.section}>                      
+      182 -        <Text style={[                                        
+      183 -          styles.sectionHeader,                               
+      184 -          textAlign === 'right' && styles.textRight           
+      185 -        ]}>                                                   
+      186 -          {t('settings.playback', 'Playback')}                
+      187 -        </Text>                                               
+      188 -        <View style={[                                        
+      189 -          styles.settingRow,                                  
+      190 -          flexDirection === 'row-reverse' && styles.rowReverse
+      191 -        ]}>                                                   
+      192 -          <View style={[                                      
+      193 -            styles.settingLeft,                               
+      194 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      195 -          ]}>                                                 
+      196 -            <Volume2 size={20} color={colors.primary.DEFAULT} 
+          -/>                                                            
+      197 -            <Text style={[                                    
+      198 -              styles.settingLabel,                            
+      199 -              textAlign === 'right' && styles.textRight       
+      200 -            ]}>                                               
+      201 -              {t('settings.autoplay', 'Autoplay')}            
+      202 -            </Text>                                           
+      203 -          </View>                                             
+      204 -          <GlassToggle                                        
+      205 -            value={autoplay}                                  
+      206 -            onValueChange={setAutoplay}                       
+      207 -          />                                                  
+      208 -        </View>                                               
+      209 -      </GlassView>                                            
+      210 -                                                              
+      211 -      {/* Appearance */}                                      
+      212 -      <GlassView style={styles.section}>                      
+      213 -        <Text style={[                                        
+      214 -          styles.sectionHeader,                               
+      215 -          textAlign === 'right' && styles.textRight           
+      216 -        ]}>                                                   
+      217 -          {t('settings.appearance', 'Appearance')}            
+      218 -        </Text>                                               
+      219 -        <View style={[                                        
+      220 -          styles.settingRow,                                  
+      221 -          flexDirection === 'row-reverse' && styles.rowReverse
+      222 -        ]}>                                                   
+      223 -          <View style={[                                      
+      224 -            styles.settingLeft,                               
+      225 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      226 -          ]}>                                                 
+      227 -            <Moon size={20} color={colors.primary.DEFAULT} /> 
+      228 -            <Text style={[                                    
+      229 -              styles.settingLabel,                            
+      230 -              textAlign === 'right' && styles.textRight       
+      231 -            ]}>                                               
+      232 -              {t('settings.darkMode', 'Dark Mode')}           
+      233 -            </Text>                                           
+      234 -          </View>                                             
+      235 -          <GlassToggle                                        
+      236 -            value={darkMode}                                  
+      237 -            onValueChange={setDarkMode}                       
+      238 -          />                                                  
+      239 -        </View>                                               
+      240 -      </GlassView>                                            
+      241 -                                                              
+      242 -      {/* Family Controls */}                                 
+      243 -      <GlassView style={styles.section}>                      
+      244 -        <Text style={[                                        
+      245 -          styles.sectionHeader,                               
+      246 -          textAlign === 'right' && styles.textRight           
+      247 -        ]}>                                                   
+      248 -          {t('settings.familyAndSafety', 'Family & Safety')}  
+      249 -        </Text>                                               
+      250 -        <Pressable                                            
+      251 -          style={[                                            
+      252 -            styles.settingRow,                                
+      253 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      254 -          ]}                                                  
+      255 -          onPress={() => navigate('/settings/family-controls')
+          -}                                                             
+      256 -        >                                                     
+      257 -          <View style={[                                      
+      258 -            styles.settingLeft,                               
+      259 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      260 -          ]}>                                                 
+      261 -            <Shield size={20} color={colors.primary.DEFAULT} /
+          ->                                                             
+      262 -            <Text style={[                                    
+      263 -              styles.settingLabel,                            
+      264 -              textAlign === 'right' && styles.textRight       
+      265 -            ]}>                                               
+      266 -              {t('settings.familyControls', 'Family Controls')
+          -}                                                             
+      267 -            </Text>                                           
+      268 -          </View>                                             
+      269 -          <ChevronRight size={20} color={colors.textMuted} /> 
+      270 -        </Pressable>                                          
+      271 -      </GlassView>                                            
+      272 -                                                              
+      273 -      {/* Privacy */}                                         
+      274 -      <GlassView style={styles.section}>                      
+      275 -        <Text style={[                                        
+      276 -          styles.sectionHeader,                               
+      277 -          textAlign === 'right' && styles.textRight           
+      278 -        ]}>                                                   
+      279 -          {t('settings.privacy', 'Privacy')}                  
+      280 -        </Text>                                               
+      281 -        <Pressable style={[                                   
+      282 -          styles.settingRow,                                  
+      283 -          flexDirection === 'row-reverse' && styles.rowReverse
+      284 -        ]}>                                                   
+      285 -          <View style={[                                      
+      286 -            styles.settingLeft,                               
+      287 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      288 -          ]}>                                                 
+      289 -            <Shield size={20} color={colors.primary.DEFAULT} /
+          ->                                                             
+      290 -            <Text style={[                                    
+      291 -              styles.settingLabel,                            
+      292 -              textAlign === 'right' && styles.textRight       
+      293 -            ]}>                                               
+      294 -              {t('settings.privacyPolicy', 'Privacy Policy')} 
+      295 -            </Text>                                           
+      296 -          </View>                                             
+      297 -          <ChevronRight size={20} color={colors.textMuted} /> 
+      298 -        </Pressable>                                          
+      299 -        <Pressable style={[                                   
+      300 -          styles.settingRow,                                  
+      301 -          flexDirection === 'row-reverse' && styles.rowReverse
+      302 -        ]}>                                                   
+      303 -          <View style={[                                      
+      304 -            styles.settingLeft,                               
+      305 -            flexDirection === 'row-reverse' && styles.rowRever
+          -se                                                            
+      306 -          ]}>                                                 
+      307 -            <Shield size={20} color={colors.primary.DEFAULT} /
+          ->                                                             
+      308 -            <Text style={[                                    
+      309 -              styles.settingLabel,                            
+      310 -              textAlign === 'right' && styles.textRight       
+      311 -            ]}>                                               
+      312 -              {t('settings.termsOfService', 'Terms of Service'
+          -)}                                                            
+      313 -            </Text>                                           
+      314 -          </View>                                             
+      315 -          <ChevronRight size={20} color={colors.textMuted} /> 
+      316 -        </Pressable>                                          
+      317 -      </GlassView>                                            
+      318 -                                                              
+      319 -      {/* App Info */}                                        
+      320 -      <View style={styles.appInfo}>                           
+      321 -        <Text style={styles.appVersion}>                      
+      322 -          {t('common.appVersion', 'Bayit+ v1.0.0')}           
+      323 -        </Text>                                               
+      324 -      </View>                                                 
+      115 +      {/* Sign Out */}                                        
+      116 +      <GlassButton variant="secondary" size="md" onPress={hand
+          +leSignOut}>                                                   
+      117 +        <LogOut size={16} color={colors.textMuted} />         
+      118 +        <Text style={styles.signOutText}>{t('settings.signOut'
+          +, 'Sign Out')}</Text>                                         
+      119 +      </GlassButton>                                          
+      120      </ScrollView>
+      121    );
+      122  }
+     ...
+      139    textRight: {
+      140      textAlign: 'right',
+      141    },
+      347 -  section: {                                                  
+      348 -    padding: spacing.md,                                      
+      349 -    marginBottom: spacing.md,                                 
+      350 -    borderRadius: borderRadius.lg,                            
+      351 -  },                                                          
+      352 -  sectionHeader: {                                            
+      142 +  signOutText: {                                              
+      143 +    color: colors.textMuted,                                  
+      144      fontSize: fontSize.base,
+      354 -    fontWeight: '600',                                        
+      355 -    color: 'rgba(255, 255, 255, 0.6)',                        
+      356 -    marginBottom: spacing.md,                                 
+      357 -    textTransform: 'uppercase',                               
+      358 -    letterSpacing: 1.5,                                       
+      145 +    marginLeft: spacing.sm,                                   
+      146    },
+      360 -  settingRow: {                                               
+      361 -    flexDirection: 'row',                                     
+      362 -    alignItems: 'center',                                     
+      363 -    justifyContent: 'space-between',                          
+      364 -    paddingVertical: spacing.sm,                              
+      365 -    borderBottomWidth: 1,                                     
+      366 -    borderBottomColor: 'rgba(255, 255, 255, 0.1)',            
+      367 -  },                                                          
+      368 -  rowReverse: {                                               
+      369 -    flexDirection: 'row-reverse',                             
+      370 -  },                                                          
+      371 -  settingLeft: {                                              
+      372 -    flexDirection: 'row',                                     
+      373 -    alignItems: 'center',                                     
+      374 -    gap: spacing.md,                                          
+      375 -    flex: 1,                                                  
+      376 -  },                                                          
+      377 -  settingTextContainer: {                                     
+      378 -    flex: 1,                                                  
+      379 -  },                                                          
+      380 -  settingLabel: {                                             
+      381 -    fontSize: fontSize.base,                                  
+      382 -    color: colors.text,                                       
+      383 -  },                                                          
+      384 -  settingDescription: {                                       
+      385 -    fontSize: fontSize.xs,                                    
+      386 -    color: 'rgba(255, 255, 255, 0.6)',                        
+      387 -    marginTop: 2,                                             
+      388 -  },                                                          
+      389 -  settingRight: {                                             
+      390 -    flexDirection: 'row',                                     
+      391 -    alignItems: 'center',                                     
+      392 -    gap: spacing.sm,                                          
+      393 -  },                                                          
+      394 -  settingValue: {                                             
+      395 -    fontSize: fontSize.sm,                                    
+      396 -    color: 'rgba(255, 255, 255, 0.6)',                        
+      397 -  },                                                          
+      398 -  appInfo: {                                                  
+      399 -    alignItems: 'center',                                     
+      400 -    marginTop: spacing.xl,                                    
+      401 -  },                                                          
+      402 -  appVersion: {                                               
+      403 -    fontSize: fontSize.xs,                                    
+      404 -    color: 'rgba(255, 255, 255, 0.6)',                        
+      405 -  },                                                          
+      147  });
+
+⏺ I have a duplicate import issue. Let me fix it.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/pages/Setti
+        ngsPage.tsx)
+  ⎿  Added 2 lines, removed 3 lines
+       4   * Each section is self-contained with its own state management
+           and API calls.
+       5   */
+       6  
+       7 -import { useState } from 'react';                              
+       7 +import { useState, useEffect } from 'react';                   
+       8  import { Text, ScrollView, StyleSheet } from 'react-native';
+       9  import { useTranslation } from 'react-i18next';
+      10  import { useDirection } from '@/hooks/useDirection';
+     ...
+      13  import { LogOut, Languages } from 'lucide-react';
+      14  import { useAuthStore } from '@bayit/shared-stores/authStore';
+      15  import logger from '@/utils/logger';
+      16 +import api from '@/services/api';                              
+      17  
+      18  // Settings sections
+      19  import { ProfileSection } from '@/components/settings/ProfileSe
+          ction';
+     ...
+      33  // Chat translation toggle (preserved from original)
+      34  import { SettingSection } from '@/components/settings/shared/Se
+          ttingSection';
+      35  import { SettingRow } from '@/components/settings/shared/Settin
+          gRow';
+      35 -import api from '@/services/api';                              
+      36 -import { useState as useTranslateState, useEffect } from 'react
+         -';                                                             
+      36  
+      37  export default function SettingsPage() {
+      38    const { t } = useTranslation();
+
+⏺ Now let me check on the backend agent.
+
+⏺ Task Output(non-blocking) aa2b10b
+  ⎿  Read output (ctrl+o to expand)
+
+⏺ Backend agent completed successfully. It created:
+  - backend/app/api/routes/user_settings.py (195 lines) with 6 preference
+  endpoint groups (playback, subtitles, audio, notifications, privacy,
+  accessibility)
+  - Registered the router in router_registry.py
+  - Both files pass Python syntax validation
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Brewed for 12m 28s
+
+⏺ Agent "Explore Android settings" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Explore iOS settings" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Explore shared + backend settings" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Explore tvOS settings" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Explore web settings" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+⏺ Agent "Create backend settings endpoints" completed
+  ⎿  Context limit reached · /compact or /clear to continue
+
+❯ /model 
+  ⎿  Kept model as opus
+
+❯ /model 
+  ⎿  Kept model as Default (recommended)

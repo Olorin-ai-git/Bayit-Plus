@@ -44,6 +44,14 @@ struct RouteDestinationResolver {
             SecurityView()
         case .connectedAccounts:
             ConnectedAccountsView()
+        case .playbackSettings:
+            PlaybackSettingsView()
+        case .audioSettings:
+            AudioSettingsView()
+        case .accessibilitySettings:
+            AccessibilitySettingsView()
+        case .privacySettings:
+            PrivacySettingsView()
         case .children:
             ChildrenView()
         case .youngsters:

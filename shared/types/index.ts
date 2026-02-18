@@ -69,6 +69,43 @@ export {
 } from './trivia';
 
 export type {
+  VideoQuality,
+  PlaybackSpeed,
+  PlaybackSettings,
+  AudioQuality,
+  AudioSettings,
+  EmailDigestFrequency,
+  NotificationSettings,
+  PrivacySettings,
+  ContentRating,
+  ParentalControlSettings,
+  SecuritySettings,
+  ActiveSession,
+  TriviaDifficulty,
+  DubbingVoice,
+  DubbingSettings,
+  TriviaGameSettings,
+  AIFeatureSettings,
+  ColorBlindMode,
+  AccessibilitySettings,
+  ThemeMode,
+  StartupScreen,
+  ThemeSettings,
+} from './settings';
+
+export {
+  DEFAULT_PLAYBACK_SETTINGS,
+  DEFAULT_AUDIO_SETTINGS,
+  DEFAULT_NOTIFICATION_SETTINGS,
+  DEFAULT_PRIVACY_SETTINGS,
+  DEFAULT_PARENTAL_SETTINGS,
+  DEFAULT_DUBBING_SETTINGS,
+  DEFAULT_TRIVIA_GAME_SETTINGS,
+  DEFAULT_ACCESSIBILITY_SETTINGS,
+  DEFAULT_THEME_SETTINGS,
+} from './settings';
+
+export type {
   ContentFormat,
   ContentRating,
   AudienceId,

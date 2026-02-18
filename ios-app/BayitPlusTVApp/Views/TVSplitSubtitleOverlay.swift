@@ -19,11 +19,11 @@ struct TVSplitSubtitleOverlay: View {
                         if !originalText.isEmpty {
                             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                                 Text(originalLanguage.uppercased())
-                                    .font(.system(size: TVDesignTokens.FontSize.caption, weight: .bold))
-                                    .foregroundStyle(DesignTokens.Text.tertiary)
+                                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                                    .foregroundStyle(DesignTokens.Text.muted)
 
                                 Text(originalText)
-                                    .font(.system(size: TVDesignTokens.FontSize.body))
+                                    .font(.system(size: TVDesignTokens.FontSize.base))
                                     .foregroundStyle(DesignTokens.Text.secondary)
                                     .lineLimit(3)
                                     .multilineTextAlignment(
@@ -40,11 +40,11 @@ struct TVSplitSubtitleOverlay: View {
 
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                             Text(translatedLanguage.uppercased())
-                                .font(.system(size: TVDesignTokens.FontSize.caption, weight: .bold))
+                                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                                 .foregroundStyle(DesignTokens.Primary.light)
 
                             Text(translatedText)
-                                .font(.system(size: TVDesignTokens.FontSize.title3, weight: .medium))
+                                .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                                 .foregroundStyle(DesignTokens.Text.primary)
                                 .lineLimit(3)
                         }

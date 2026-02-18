@@ -60,7 +60,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 notifications,
                                 onboarding, party, password_reset, payments,
                                 playback_session, podcasts, profile_controls, profile_stats,
-                                profiles, profiles_me, profiles_preferences,
+                                profiles, profiles_me, profiles_preferences, user_settings,
                                 radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
                                 ritual, search,
                                 security_settings, series_recording_rules,
@@ -303,6 +303,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(profiles_me.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(profiles_preferences.router, prefix=f"{prefix}/profiles", tags=["profiles"])
+    app.include_router(user_settings.router, prefix=f"{prefix}/profiles", tags=["user-settings"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])
     app.include_router(
         youngsters.router, prefix=f"{prefix}/youngsters", tags=["youngsters"]

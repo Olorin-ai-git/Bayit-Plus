@@ -20,10 +20,19 @@ export const APP_MODE = getEnvMode();
 
 export const isProduction = APP_MODE === 'production';
 
+// App version from build-time env
+const getVersion = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    return import.meta.env.VITE_APP_VERSION || '1.0.0';
+  }
+  return '1.0.0';
+};
+
 // Strict mode settings
 export const config = {
   mode: APP_MODE,
   isProduction,
+  version: getVersion(),
 
   // API settings
   api: {
@@ -43,6 +52,16 @@ export const config = {
     dualClock: true,
     aiChapters: true,
     hebronicsVoice: true,
+  },
+
+  // External links
+  links: {
+    termsOfService: 'https://bayit.tv/terms',
+    privacyPolicy: 'https://bayit.tv/privacy',
+    openSource: 'https://bayit.tv/licenses',
+    helpCenter: 'https://bayit.tv/help',
+    feedback: 'https://bayit.tv/feedback',
+    website: 'https://bayit.tv',
   },
 };
 

@@ -35,6 +35,10 @@ public enum Route: Hashable {
     case subscription
     case security
     case connectedAccounts
+    case playbackSettings
+    case audioSettings
+    case accessibilitySettings
+    case privacySettings
 
     // Content categories
     case children
@@ -166,6 +170,10 @@ extension Route {
         case .subscription: return "Subscription"
         case .security: return "Security"
         case .connectedAccounts: return "Connected Accounts"
+        case .playbackSettings: return "Playback"
+        case .audioSettings: return "Audio"
+        case .accessibilitySettings: return "Accessibility"
+        case .privacySettings: return "Privacy"
         case .children: return "Children"
         case .youngsters: return "Youngsters"
         case .judaism: return "Judaism"

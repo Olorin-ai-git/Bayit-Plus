@@ -78,6 +78,18 @@ public enum DeepLink {
         case "security":
             return .security
 
+        case "playbackSettings":
+            return .playbackSettings
+
+        case "audioSettings":
+            return .audioSettings
+
+        case "accessibilitySettings":
+            return .accessibilitySettings
+
+        case "privacySettings":
+            return .privacySettings
+
         case "support":
             return .support
 

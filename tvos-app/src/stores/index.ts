@@ -43,3 +43,15 @@ export { useSecuritySettingsStore } from './securitySettingsStore';
 
 // Devices Store
 export { useDevicesStore } from './devicesStore';
+
+// Privacy Settings Store
+export { usePrivacySettingsStore } from './privacySettingsStore';
+
+// Notification Settings Store
+export { useNotificationSettingsStore } from './notificationSettingsStore';
+
+// Subtitle Settings Store
+export { useSubtitleSettingsStore } from './subtitleSettingsStore';
+
+// Accessibility Settings Store
+export { useAccessibilitySettingsStore } from './accessibilitySettingsStore';

@@ -19,7 +19,7 @@ struct TVDubbingMixerView: View {
         GlassCard(radius: DesignTokens.Radius.lg, padding: TVDesignTokens.Spacing.lg) {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
                 Text(String(localized: "dubbing.mixer.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.title3, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 TVVolumeRow(
@@ -42,8 +42,8 @@ struct TVDubbingMixerView: View {
                     HStack {
                         Spacer()
                         Text(String(localized: "dubbing.mixer.latency \(latencyMs)"))
-                            .font(.system(size: TVDesignTokens.FontSize.caption))
-                            .foregroundStyle(DesignTokens.Text.tertiary)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
                     }
                 }
             }
@@ -62,20 +62,20 @@ private struct TVVolumeRow: View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
             HStack {
                 Image(systemName: iconName)
-                    .font(.system(size: TVDesignTokens.FontSize.body))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(
                         isFocused ? DesignTokens.Primary.light : DesignTokens.Text.secondary
                     )
 
                 Text(label)
-                    .font(.system(size: TVDesignTokens.FontSize.body))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 Spacer()
 
                 Text("\(Int(value * 100))%")
-                    .font(.system(size: TVDesignTokens.FontSize.caption))
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .monospacedDigit()
             }
 

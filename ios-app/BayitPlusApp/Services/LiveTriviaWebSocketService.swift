@@ -100,7 +100,7 @@ final class LiveTriviaWebSocketService {
             return
         }
 
-        let authMessage = ["type": "auth", "token": token]
+        let authMessage = ["type": "authenticate", "token": token]
         guard let data = try? JSONSerialization.data(withJSONObject: authMessage),
               let jsonString = String(data: data, encoding: .utf8) else {
             return

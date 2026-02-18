@@ -1,0 +1,40 @@
+PLAN: Android Settings Feature Parity with iOS/Web
+====================================================
+Date: 2026-02-17
+Status: IN PROGRESS
+
+SCOPE
+-----
+Add 6 new settings sub-screens + enhance 2 existing files + update models/routes/nav.
+
+FILES TO CREATE (12 new files):
+1. feature/feature-settings/.../subtitles/SubtitleSettingsScreen.kt
+2. feature/feature-settings/.../subtitles/SubtitleSettingsViewModel.kt
+3. feature/feature-settings/.../audio/AudioSettingsScreen.kt
+4. feature/feature-settings/.../audio/AudioSettingsViewModel.kt
+5. feature/feature-settings/.../ai/AIFeaturesScreen.kt
+6. feature/feature-settings/.../ai/AIFeaturesViewModel.kt
+7. feature/feature-settings/.../accessibility/AccessibilitySettingsScreen.kt
+8. feature/feature-settings/.../accessibility/AccessibilitySettingsViewModel.kt
+9. feature/feature-settings/.../playback/PlaybackSettingsScreen.kt
+10. feature/feature-settings/.../playback/PlaybackSettingsViewModel.kt
+
+FILES TO MODIFY (5 existing files):
+1. core/core-model/.../SettingsModels.kt - Add new data classes
+2. core/core-data/.../SettingsRepository.kt - Add new methods
+3. feature/feature-settings/.../SettingsMenuItem.kt - Add new menu entries
+4. app/.../navigation/Route.kt - Add new route objects
+5. app/.../navigation/RouteBreadcrumbs.kt - Add new breadcrumb labels
+6. app/.../navigation/BayitNavHost.kt - Register new composables
+7. feature/feature-settings/.../notifications/NotificationSettingsScreen.kt - Enhance
+8. feature/feature-settings/.../notifications/NotificationSettingsViewModel.kt - Enhance
+
+PATTERNS FOLLOWED:
+- Route() wrapper + Screen() composable + ViewModel with sealed UiState
+- @HiltViewModel with @Inject constructor
+- MutableStateFlow/StateFlow for state
+- BayitResult wrapper for API calls
+- GlassTopBar, GlassCard, GlassButton, GlassLoadingIndicator
+- DesignTokens for spacing/colors
+- BayitLogger for structured logging
+- 200-line max per file

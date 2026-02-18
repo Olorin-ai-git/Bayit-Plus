@@ -11,7 +11,10 @@
 import React, { useState} from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet} from 'react-native';
 import { useTranslation} from 'react-i18next';
-import { Settings, Mic, Monitor, User, Info} from 'lucide-react-native';
+import {
+  Settings, Mic, Monitor, User, Info,
+  Eye, Bell, Subtitles, Accessibility, ChevronRight,
+} from 'lucide-react-native';
 import { GlassTVSwitch} from '@bayit/glass';
 import { TVHeader} from '../components/TVHeader';
 import { useMultiWindowStore} from '../stores/multiWindowStore';
@@ -127,6 +130,41 @@ export const SettingsScreen: React.FC<{ navigation: any}> = ({ navigation}) => {
             </View>
           );
        })}
+
+        {/* Quick Access to Settings Sub-Screens */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Settings size={32} color="#A855F7" />
+            <Text style={styles.sectionTitle}>{t('tvos.settings.moreSettings', 'More Settings')}</Text>
+          </View>
+          <View style={styles.sectionContent}>
+            {[
+              { id: 'nav_privacy', title: t('tvos.settings.privacy', 'Privacy & Data'), icon: Eye, route: 'PrivacySettings' },
+              { id: 'nav_notifications', title: t('tvos.settings.notifications', 'Notifications'), icon: Bell, route: 'NotificationSettings' },
+              { id: 'nav_subtitles', title: t('tvos.settings.subtitles', 'Subtitles'), icon: Subtitles, route: 'SubtitleSettings' },
+              { id: 'nav_accessibility', title: t('tvos.settings.accessibility', 'Accessibility'), icon: Accessibility, route: 'AccessibilitySettings' },
+            ].map((navItem) => {
+              const NavIcon = navItem.icon;
+              const isNavFocused = focusedItem === navItem.id;
+              return (
+                <Pressable
+                  key={navItem.id}
+                  onPress={() => navigation.navigate(navItem.route)}
+                  onFocus={() => setFocusedItem(navItem.id)}
+                  style={styles.settingButton}
+                >
+                  <View style={[styles.settingItem, isNavFocused && styles.settingItemFocused]}>
+                    <NavIcon size={28} color="#A855F7" style={{ marginRight: 16 }} />
+                    <View style={styles.settingInfo}>
+                      <Text style={styles.settingTitle}>{navItem.title}</Text>
+                    </View>
+                    <ChevronRight size={24} color="rgba(255,255,255,0.5)" />
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
 
         {/* App Info */}
         <View style={styles.infoSection}>

@@ -1,0 +1,39 @@
+TVOS SETTINGS FEATURE PARITY - IMPLEMENTATION PLAN
+====================================================
+Date: 2026-02-17
+
+GOAL: Implement tvOS feature parity for Privacy, Subtitle enhancement,
+Notification, and Accessibility settings screens.
+
+NEW FILES TO CREATE:
+1. stores/privacySettingsStore.ts - Privacy settings Zustand store
+2. stores/notificationSettingsStore.ts - Notification settings Zustand store
+3. stores/subtitleSettingsStore.ts - Subtitle settings Zustand store
+4. stores/accessibilitySettingsStore.ts - Accessibility settings Zustand store
+5. screens/PrivacySettingsScreen.tsx - Privacy settings screen
+6. screens/NotificationSettingsScreen.tsx - Notification settings screen
+7. screens/SubtitleSettingsScreen.tsx - Enhanced subtitle settings screen
+8. screens/AccessibilitySettingsScreen.tsx - Accessibility settings screen
+9. screens/styles/PrivacySettingsScreen.styles.ts - Privacy screen styles
+10. screens/styles/NotificationSettingsScreen.styles.ts - Notification screen styles
+11. screens/styles/SubtitleSettingsScreen.styles.ts - Subtitle screen styles
+12. screens/styles/AccessibilitySettingsScreen.styles.ts - Accessibility screen styles
+
+FILES TO MODIFY:
+1. screens/index.ts - Export new screens
+2. stores/index.ts - Export new stores
+3. navigation/types.ts - Add new route types
+4. navigation/AppNavigator.tsx - Register new screens
+5. screens/SettingsScreen.tsx - Add navigation items for new screens
+6. screens/ProfileScreen.tsx - Add Privacy, Notifications, Accessibility nav
+
+PATTERNS:
+- Use shared types from shared/types/settings.ts
+- Use API from @bayit/shared-services (api.get/put)
+- API endpoints from shared/services/api/userServices.ts
+- Zustand store pattern matching aiVoiceSettingsStore.ts
+- SettingRow component for all settings
+- TVHeader on every screen
+- Optimistic updates with rollback on error
+- Focus management: focusedItem state, hasTVPreferredFocus
+- 200-line file limit per file
