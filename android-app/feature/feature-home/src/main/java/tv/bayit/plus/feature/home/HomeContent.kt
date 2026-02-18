@@ -18,9 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
+import tv.bayit.plus.designsystem.i18n.LocalBayitStrings
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.vod.components.CollectionBanner
-import java.util.Locale
 
 @Composable
 internal fun HomeSuccessContent(
@@ -51,15 +52,6 @@ internal fun HomeSuccessContent(
         ) {
             item(key = "header_clocks") {
                 Column {
-                    PageHeader(
-                        icon = android.R.drawable.ic_menu_view,
-                        title = "Home",
-                        userPhotoUrl = null,
-                        userName = null,
-                        currentLanguage = java.util.Locale.getDefault().language,
-                        onProfileClick = { },
-                        onLanguageSelected = { languageCode -> },
-                    )
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -71,14 +63,20 @@ internal fun HomeSuccessContent(
                     ) {
                         CultureClock(
                             flagText = "🇮🇱",
-                            locationLabel = "Time in Israel",
+                            locationLabel = bayitString(
+                                "cultureClock.timeIn",
+                                mapOf("location" to bayitString("clock.israel")),
+                            ),
                             timezoneId = "Asia/Jerusalem",
                             isIsraeli = true,
                             modifier = Modifier.weight(1f),
                         )
                         CultureClock(
                             flagText = "🇺🇸",
-                            locationLabel = "Time in New York, NY",
+                            locationLabel = bayitString(
+                                "cultureClock.timeIn",
+                                mapOf("location" to "New York, NY"),
+                            ),
                             timezoneId = "America/New_York",
                             isIsraeli = false,
                             modifier = Modifier.weight(1f),
@@ -118,7 +116,7 @@ internal fun HomeSuccessContent(
                         collections = uiState.featuredCollections,
                         onCollectionClick = onCollectionClick,
                         onWatchNowClick = onWatchNowClick,
-                        currentLanguage = Locale.getDefault().language,
+                        currentLanguage = LocalBayitStrings.current.currentLanguage,
                         onDismiss = { isBannerDismissed = true },
                     )
                 }
@@ -139,7 +137,7 @@ internal fun HomeSuccessContent(
             if (uiState.israelisInCity != null) {
                 item(key = "israelis") {
                     LocationContentRow(
-                        title = "Israelis in Your City",
+                        title = bayitString("home.nearYou"),
                         israelisResponse = uiState.israelisInCity,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
                     )
@@ -177,7 +175,7 @@ internal fun HomeSuccessContent(
             if (uiState.jerusalemContent?.items?.isNotEmpty() == true) {
                 item(key = "jerusalem") {
                     CityContentRow(
-                        title = "Jerusalem",
+                        title = bayitString("home.jerusalemConnection"),
                         items = uiState.jerusalemContent.items,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
                         onShowAllClick = onJerusalemClick,
@@ -188,7 +186,7 @@ internal fun HomeSuccessContent(
             if (uiState.telAvivContent?.items?.isNotEmpty() == true) {
                 item(key = "telaviv") {
                     CityContentRow(
-                        title = "Tel Aviv",
+                        title = bayitString("home.telAvivConnection"),
                         items = uiState.telAvivContent.items,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
                         onShowAllClick = onTelAvivClick,

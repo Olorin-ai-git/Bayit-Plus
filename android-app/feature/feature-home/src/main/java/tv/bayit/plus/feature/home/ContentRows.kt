@@ -16,6 +16,7 @@ import tv.bayit.plus.core.model.RadioStationItem
 import tv.bayit.plus.core.model.SectionContentItem
 import tv.bayit.plus.core.model.WatchHistoryItem
 import tv.bayit.plus.designsystem.component.GlassContentCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -24,7 +25,7 @@ internal fun ContinueWatchingRow(
     onItemClick: (String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = "Continue Watching", modifier = modifier)
+    SectionRowHeader(title = bayitString("home.continueWatching"), modifier = modifier)
     Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     LazyRow(
         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
@@ -47,7 +48,7 @@ internal fun LiveTVRow(
     onChannelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = "Live TV", modifier = modifier)
+    SectionRowHeader(title = bayitString("home.liveTV"), modifier = modifier)
     Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     LazyRow(
         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
@@ -57,7 +58,9 @@ internal fun LiveTVRow(
             GlassContentCard(
                 imageUrl = channel.logo ?: channel.thumbnail,
                 title = channel.name,
+                subtitle = channel.currentShow,
                 cardWidth = 140.dp,
+                badge = "LIVE",
                 onClick = { onChannelClick(channel.id) },
             )
         }
@@ -70,7 +73,7 @@ internal fun RadioStationsRow(
     onStationClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = "Radio Stations", modifier = modifier)
+    SectionRowHeader(title = bayitString("radio.title"), modifier = modifier)
     Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     LazyRow(
         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
@@ -80,7 +83,9 @@ internal fun RadioStationsRow(
             GlassContentCard(
                 imageUrl = station.logo,
                 title = station.name,
+                subtitle = station.currentSong ?: station.currentShow,
                 cardWidth = 140.dp,
+                aspectRatio = 1f,
                 onClick = { onStationClick(station.id) },
             )
         }
@@ -93,7 +98,7 @@ internal fun TrendingRow(
     onItemClick: (String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = "What's Hot in Israel", modifier = modifier)
+    SectionRowHeader(title = bayitString("home.trendingInIsrael"), modifier = modifier)
     Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     LazyRow(
         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
@@ -118,7 +123,7 @@ internal fun YoungstersSection(
 ) {
     Column(modifier = modifier) {
         SectionRowHeaderWithAction(
-            title = "Youngsters",
+            title = bayitString("youngsters.title"),
             onShowAllClick = onShowAllClick,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))

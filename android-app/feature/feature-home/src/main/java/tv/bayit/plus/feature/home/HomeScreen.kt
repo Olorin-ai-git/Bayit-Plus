@@ -16,6 +16,7 @@ import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -44,6 +45,7 @@ fun HomeRoute(
         onJerusalemClick = onNavigateToJerusalem,
         onTelAvivClick = onNavigateToTelAviv,
         onRefresh = viewModel::refresh,
+        onDismissShabbatBanner = viewModel::dismissShabbatBanner,
         modifier = modifier,
     )
 }
@@ -61,6 +63,7 @@ internal fun HomeScreen(
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
     onRefresh: () -> Unit,
+    onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
@@ -77,6 +80,7 @@ internal fun HomeScreen(
             onJerusalemClick = onJerusalemClick,
             onTelAvivClick = onTelAvivClick,
             onRefresh = onRefresh,
+            onDismissShabbatBanner = onDismissShabbatBanner,
             modifier = modifier,
         )
         is HomeUiState.Error -> ErrorSection(
@@ -103,7 +107,7 @@ private fun ErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

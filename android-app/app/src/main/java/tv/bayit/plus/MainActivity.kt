@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
                 ProvideBayitStrings(provider = stringProvider) {
                     val navController = rememberNavController()
                     val authState by authService.authState.collectAsStateWithLifecycle()
+                    val language by stringProvider.languageState.collectAsStateWithLifecycle()
 
                     LaunchedEffect(authState) {
                     when (authState) {
@@ -74,7 +76,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BayitMainScaffold(
+                    key(language) { BayitMainScaffold(
                         navController = navController,
                         authState = authState
                     ) {
@@ -83,7 +85,7 @@ class MainActivity : ComponentActivity() {
                             googleSignInHelper = googleSignInHelper,
                             modifier = Modifier.fillMaxSize()
                         )
-                    }
+                    } }
                 }
             }
         }

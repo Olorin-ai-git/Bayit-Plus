@@ -2,6 +2,9 @@ package tv.bayit.plus.core.common.i18n
 
 import android.content.Context
 import android.content.SharedPreferences
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -29,6 +32,9 @@ class JsonBayitStringProvider(
     private var _currentLanguage: String = prefs.getString(PREF_KEY, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
 
     override val currentLanguage: String get() = _currentLanguage
+
+    private val _languageState = MutableStateFlow(_currentLanguage)
+    override val languageState: StateFlow<String> = _languageState.asStateFlow()
 
     override val supportedLanguages: List<String> = SUPPORTED_LANGUAGES
 
@@ -64,6 +70,7 @@ class JsonBayitStringProvider(
         } else {
             loadLocaleFile(languageCode)
         }
+        _languageState.value = languageCode
         logger.info("Language changed", mapOf("language" to languageCode))
     }
 

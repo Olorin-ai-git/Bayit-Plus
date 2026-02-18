@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.icons.BayitIcons
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
@@ -43,7 +44,7 @@ fun GlassBottomNavBar(
     ) {
         AppTab.entries.forEach { tab ->
             BottomNavItem(
-                label = tab.label,
+                label = bayitString(tab.labelKey),
                 icon = getTabIcon(tab),
                 isSelected = selectedTab == tab,
                 onClick = { onTabSelected(tab) },

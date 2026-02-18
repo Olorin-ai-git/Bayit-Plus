@@ -2,11 +2,8 @@ package tv.bayit.plus.feature.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -17,34 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.designsystem.theme.DesignTokens
-
-@Composable
-internal fun PageHeader(
-    icon: Int,
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = DesignTokens.Spacing.lg),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-            tint = DesignTokens.Colors.Primary.light,
-            modifier = Modifier.size(DesignTokens.Spacing.xl),
-        )
-        Spacer(modifier = Modifier.width(DesignTokens.Spacing.md))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineLarge,
-            color = DesignTokens.Colors.Text.primary,
-            fontWeight = FontWeight.Bold,
-        )
-    }
-}
 
 @Composable
 internal fun SectionRowHeader(

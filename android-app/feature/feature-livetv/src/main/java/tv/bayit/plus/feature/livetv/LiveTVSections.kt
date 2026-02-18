@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import tv.bayit.plus.core.model.LiveChannelItem
@@ -30,6 +31,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -46,7 +48,7 @@ internal fun CategoryFilterRow(
     ) {
         item(key = "all") {
             GlassChip(
-                label = "All",
+                label = bayitString("common.all"),
                 isSelected = selectedCategory == null,
                 onClick = { onCategorySelected(null) },
             )
@@ -71,11 +73,12 @@ internal fun ChannelGridItem(
         Column {
             Box {
                 CachedAsyncImage(
-                    url = channel.thumbnail ?: channel.logo,
+                    url = channel.logo ?: channel.thumbnail,
                     contentDescription = channel.name,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(16f / 9f),
+                        .aspectRatio(1f),
                 )
                 LiveIndicator(
                     modifier = Modifier
@@ -152,7 +155,7 @@ internal fun LiveTVErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -52,9 +52,7 @@ class ApiPlaylistRepository(
         mediaId: String,
     ): BayitResult<Unit> = runCatchingResult {
         val request = PlaylistMediaRequest(mediaId = mediaId)
-        client.safeApiCall {
-            service.addToPlaylist(playlistId, request)
-        }
+        client.safeApiCall { service.addToPlaylist(request) }
         Unit
     }
 
@@ -62,68 +60,49 @@ class ApiPlaylistRepository(
         playlistId: String,
         mediaId: String,
     ): BayitResult<Unit> = runCatchingResult {
-        client.safeApiCall {
-            service.removeFromPlaylist(playlistId, mediaId)
-        }
+        client.safeApiCall { service.removeFromPlaylist(mediaId) }
         Unit
     }
 
     override suspend fun deletePlaylist(playlistId: String): BayitResult<Unit> =
         runCatchingResult {
-            client.safeApiCall { service.deletePlaylist(playlistId) }
+            client.safeApiCall { service.deletePlaylist() }
             Unit
         }
 }
 
 private interface PlaylistService {
 
-    @GET("api/v1/playlists")
+    @GET("api/v1/playlist")
     suspend fun getPlaylists(): PlaylistListResponse
 
-    @GET("api/v1/playlists/{id}")
+    @GET("api/v1/playlist/check/{id}")
     suspend fun getPlaylist(
         @Path("id") playlistId: String,
-    ): PlaylistDetailResponse
+    ): PlaylistListResponse
 
-    @POST("api/v1/playlists")
+    @POST("api/v1/playlist/items")
     suspend fun createPlaylist(
         @Body request: CreatePlaylistRequest,
-    ): PlaylistDetailResponse
+    ): PlaylistListResponse
 
-    @POST("api/v1/playlists/{id}/items")
+    @POST("api/v1/playlist/items")
     suspend fun addToPlaylist(
-        @Path("id") playlistId: String,
         @Body request: PlaylistMediaRequest,
     ): MessageResponse
 
-    @DELETE("api/v1/playlists/{id}/items/{mediaId}")
+    @DELETE("api/v1/playlist/items/{contentId}")
     suspend fun removeFromPlaylist(
-        @Path("id") playlistId: String,
-        @Path("mediaId") mediaId: String,
+        @Path("contentId") contentId: String,
     ): MessageResponse
 
-    @DELETE("api/v1/playlists/{id}")
-    suspend fun deletePlaylist(
-        @Path("id") playlistId: String,
-    ): MessageResponse
+    @DELETE("api/v1/playlist")
+    suspend fun deletePlaylist(): MessageResponse
 }
 
-/** List wrapper for playlists. */
+/** List wrapper matching backend GET /api/v1/playlist response. */
 @Serializable
 private data class PlaylistListResponse(
-    val items: List<PlaylistDetailResponse> = emptyList(),
-)
-
-/** Detail response for a single playlist. */
-@Serializable
-private data class PlaylistDetailResponse(
-    val id: String,
-    val name: String? = null,
-    val description: String? = null,
-    @SerialName("item_count") val itemCount: Int = 0,
-    @SerialName("thumbnail_url") val thumbnailUrl: String? = null,
-    @SerialName("created_at") val createdAt: String? = null,
-    @SerialName("updated_at") val updatedAt: String? = null,
     val items: List<PlaylistItem> = emptyList(),
 )
 

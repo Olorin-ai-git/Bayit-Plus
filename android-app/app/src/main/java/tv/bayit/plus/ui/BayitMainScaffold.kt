@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,6 +27,7 @@ import tv.bayit.plus.ui.components.VoiceAssistantFAB
 import tv.bayit.plus.ui.components.VoiceAssistantModal
 import tv.bayit.plus.ui.components.WidgetDock
 import tv.bayit.plus.ui.components.rememberBreadcrumbTrail
+import tv.bayit.plus.ui.viewmodel.NavBarViewModel
 import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
 
 @Composable
@@ -34,6 +35,7 @@ fun BayitMainScaffold(
     navController: NavHostController,
     authState: AuthState,
     widgetDockViewModel: WidgetDockViewModel = hiltViewModel(),
+    navBarViewModel: NavBarViewModel = hiltViewModel(),
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val isAuthenticated = authState is AuthState.Authenticated
@@ -56,7 +58,10 @@ fun BayitMainScaffold(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    val widgetDockState by widgetDockViewModel.uiState.collectAsState()
+    val widgetDockState by widgetDockViewModel.uiState.collectAsStateWithLifecycle()
+    val userPhotoUrl by navBarViewModel.userPhotoUrl.collectAsStateWithLifecycle()
+    val userName by navBarViewModel.userName.collectAsStateWithLifecycle()
+    val currentLanguage by navBarViewModel.currentLanguage.collectAsStateWithLifecycle()
 
     val isRootTab = AppTab.entries.any { tab ->
         tab.route::class.qualifiedName == currentRoute
@@ -68,8 +73,12 @@ fun BayitMainScaffold(
         topBar = {
             if (isRootTab) {
                 TopAppBar(
+                    userPhotoUrl = userPhotoUrl,
+                    userName = userName,
+                    currentLanguage = currentLanguage,
                     onProfileClick = { navigateWithAuthGuard(Route.Profile) },
-                    onLanguageClick = { navigateWithAuthGuard(Route.LanguageSettings) },
+                    onLanguageSelected = { code -> navBarViewModel.setLanguage(code) },
+                    onPlaylistClick = { navigateWithAuthGuard(Route.Playlist) },
                 )
             } else if (breadcrumbs.size >= 2) {
                 BreadcrumbBar(

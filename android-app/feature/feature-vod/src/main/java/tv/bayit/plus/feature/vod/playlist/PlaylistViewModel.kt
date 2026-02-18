@@ -45,7 +45,9 @@ class PlaylistViewModel @Inject constructor(
             when (val result = playlistRepository.getPlaylists()) {
                 is BayitResult.Success -> {
                     @Suppress("UNCHECKED_CAST")
-                    val items = (result.data as List<Any>).filterIsInstance<PlaylistItem>()
+                    val items = (result.data as? List<*>)
+                        ?.filterIsInstance<PlaylistItem>()
+                        .orEmpty()
 
                     logger.info(
                         "Playlists loaded",
