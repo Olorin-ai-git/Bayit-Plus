@@ -27,6 +27,8 @@ targets:
     sources:
       - path: BayitPlusApp
         type: group
+      - path: BayitPlusIPadApp
+        type: group
     dependencies:
       - package: BayitPlus
         product: BayitCore

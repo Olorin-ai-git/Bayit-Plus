@@ -64,7 +64,7 @@ private struct VolumeRow: View {
             }
 
             Slider(value: $value, in: 0 ... 1, step: 0.05)
-                .tint(DesignTokens.Primary.light)
+                .tint(DesignTokens.Primary.p400)
                 .accessibilityLabel(label)
                 .accessibilityValue("\(Int(value * 100)) percent")
         }

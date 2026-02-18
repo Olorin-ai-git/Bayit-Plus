@@ -44,7 +44,7 @@ struct SplitSubtitleOverlay: View {
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
                             Text(translatedLanguage.uppercased())
                                 .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
-                                .foregroundStyle(DesignTokens.Primary.light)
+                                .foregroundStyle(DesignTokens.Primary.p400)
 
                             Text(translatedText)
                                 .font(.system(size: DesignTokens.FontSize.md, weight: .medium))

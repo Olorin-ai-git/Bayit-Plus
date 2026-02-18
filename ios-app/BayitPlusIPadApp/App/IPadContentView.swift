@@ -4,8 +4,8 @@ import BayitMedia
 import BayitNetworking
 import SwiftUI
 
-/// Root content view - shows splash, then auth flow or main tab view
-struct ContentView: View {
+/// Root content view for iPad - shows splash, then auth flow or main split view
+struct IPadContentView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
     @Environment(RepositoryProvider.self) private var repositories
@@ -32,13 +32,8 @@ struct ContentView: View {
                 AuthFlowView()
                     .transition(.opacity)
             } else {
-                if UIDevice.current.userInterfaceIdiom == .pad {
-                    IPadContentView()
-                        .transition(.opacity)
-                } else {
-                    MainTabView()
-                        .transition(.opacity)
-                }
+                IPadMainView()
+                    .transition(.opacity)
             }
 
             if let fullscreenRoute = coordinator.fullscreenRoute {
@@ -49,12 +44,8 @@ struct ContentView: View {
             if let tvLoginRoute = coordinator.pendingTVLogin {
                 tvLoginView(for: tvLoginRoute)
                     .transition(.move(edge: .bottom))
-                    .onAppear {
-                        print("📱 TVLoginView appeared on screen")
-                    }
             }
 
-            // Shabbat banner overlay (top)
             if ShabbatModeService.shared.isShabbatActive
                 || ShabbatModeService.shared.isErevShabbat {
                 VStack {
@@ -66,12 +57,6 @@ struct ContentView: View {
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuth in
             coordinator.showingAuth = !isAuth
-        }
-        .onChange(of: coordinator.pendingTVLogin) { oldValue, newValue in
-            print("📱 ContentView: pendingTVLogin changed from \(oldValue != nil ? "set" : "nil") to \(newValue != nil ? "set" : "nil")")
-            if let route = newValue {
-                print("📱 ContentView: New TV login route detected")
-            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)
@@ -106,7 +91,7 @@ struct ContentView: View {
                 widgetSync: widgetSync
             )
         case .search:
-            SearchView()
+            IPadSearchView()
         default:
             EmptyView()
         }

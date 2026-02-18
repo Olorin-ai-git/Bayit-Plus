@@ -1,0 +1,176 @@
+import BayitDesignSystem
+import SwiftUI
+
+/// iPad-optimized Live TV screen with a 4-column channel grid
+struct IPadLiveTVView: View {
+    @Environment(RepositoryProvider.self) private var repos
+    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(FeatureFlags.self) private var featureFlags
+    @State private var viewModel: LiveTVViewModel?
+
+    private let columns = [
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            GlassNavigationBar(
+                title: "Live TV",
+                trailing: {
+                    Button {
+                        coordinator.navigate(to: .epg)
+                    } label: {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 20))
+                            .foregroundColor(DesignTokens.Text.primary)
+                            .frame(width: 44, height: 44)
+                            .background(DesignTokens.Glass.bgMedium)
+                            .clipShape(Circle())
+                    }
+                    .accessibilityLabel("TV Guide")
+                }
+            )
+
+            ScrollView(.vertical, showsIndicators: false) {
+                if let vm = viewModel {
+                    if vm.isLoading && vm.channels.isEmpty {
+                        loadingGrid
+                    } else if let error = vm.error, vm.channels.isEmpty {
+                        ErrorStateView(message: error) {
+                            Task { await vm.refresh() }
+                        }
+                    } else {
+                        channelGrid(vm.channels)
+                    }
+                } else {
+                    ScreenLoadingView()
+                }
+            }
+        }
+        .background(DesignTokens.Background.primary)
+        .refreshable { await viewModel?.refresh() }
+        .task {
+            if viewModel == nil {
+                viewModel = LiveTVViewModel(
+                    repository: repos.liveTV,
+                    featureFlags: featureFlags
+                )
+            }
+            await viewModel?.loadChannels()
+        }
+    }
+
+    private func channelGrid(_ channels: [LiveChannelItem]) -> some View {
+        LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
+            ForEach(channels) { channel in
+                IPadChannelCard(channel: channel) {
+                    coordinator.navigate(to: .player(
+                        contentId: channel.id,
+                        contentType: .liveTV
+                    ))
+                }
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.xl)
+        .padding(.top, DesignTokens.Spacing.md)
+        .padding(.bottom, DesignTokens.Spacing.xxxxl)
+    }
+
+    private var loadingGrid: some View {
+        LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
+            ForEach(0..<8, id: \.self) { _ in
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .fill(DesignTokens.Glass.bg)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .accessibilityHidden(true)
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.xl)
+        .padding(.top, DesignTokens.Spacing.md)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Loading channels")
+    }
+}
+
+/// Individual iPad channel card with logo, live badge, name, and current show
+private struct IPadChannelCard: View {
+    let channel: LiveChannelItem
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+                logoArea
+                channelInfo
+            }
+            .glassCard()
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var logoArea: some View {
+        ZStack(alignment: .topTrailing) {
+            GeometryReader { geo in
+                channelLogo
+                    .frame(width: geo.size.width, height: geo.size.height)
+            }
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .clipped()
+
+            GlassBadge(text: "LIVE", variant: .live)
+                .padding(DesignTokens.Spacing.sm)
+        }
+    }
+
+    private var channelLogo: some View {
+        Group {
+            if let urlStr = channel.logo ?? channel.thumbnail,
+               let url = URL(string: urlStr) {
+                CachedAsyncImage(url: url) {
+                    channelPlaceholder
+                }
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(DesignTokens.Spacing.md)
+            } else {
+                channelPlaceholder
+            }
+        }
+        .background(DesignTokens.Glass.bgMedium)
+    }
+
+    private var channelPlaceholder: some View {
+        ZStack {
+            DesignTokens.Glass.bgMedium
+            Image(systemName: "tv")
+                .font(.system(size: 32))
+                .foregroundColor(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var channelInfo: some View {
+        VStack(alignment: .center, spacing: 2) {
+            Text(channel.name ?? "Channel")
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                .foregroundColor(DesignTokens.Text.primary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .multilineTextAlignment(.center)
+
+            if let show = channel.currentShow {
+                Text(show)
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, DesignTokens.Spacing.sm)
+        .padding(.vertical, DesignTokens.Spacing.sm)
+    }
+}
