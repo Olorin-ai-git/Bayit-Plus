@@ -103,6 +103,9 @@ sealed class Route {
     // Device Pairing
     @Serializable data object DevicePairing : Route()
 
+    // TV Login (phone companion flow)
+    @Serializable data class TVLogin(val sessionId: String, val token: String, val expires: String) : Route()
+
     // Help Center
     @Serializable data object HelpCenter : Route()
 

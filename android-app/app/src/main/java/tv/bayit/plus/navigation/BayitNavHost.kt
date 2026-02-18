@@ -25,6 +25,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
 import tv.bayit.plus.feature.audiobooks.detail.AudiobookDetailRoute
 import tv.bayit.plus.feature.auth.login.LoginRoute
+import tv.bayit.plus.feature.auth.tvlogin.TVLoginRoute
 import tv.bayit.plus.feature.auth.payment.PaymentCancelledRoute
 import tv.bayit.plus.feature.auth.payment.PaymentPendingRoute
 import tv.bayit.plus.feature.auth.payment.PaymentSuccessRoute
@@ -495,6 +496,19 @@ fun BayitNavHost(
         }
         composable<Route.DevicePairing> {
             DevicePairingRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.TVLogin> { entry ->
+            val route = entry.toRoute<Route.TVLogin>()
+            TVLoginRoute(
+                sessionId = route.sessionId,
+                token = route.token,
+                onNavigateToHome = {
+                    navController.navigate(Route.Home) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = { navController.navigate(Route.Login) },
+            )
         }
         composable<Route.BetaCredits> {
             BetaCreditsRoute(onNavigateBack = { navController.popBackStack() })

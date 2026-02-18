@@ -55,6 +55,7 @@ internal val routeLabels = mapOf(
     "SubscriptionGate" to "Subscribe",
     "Household" to "Household",
     "DevicePairing" to "Devices",
+    "TVLogin" to "TV Sign In",
     "HelpCenter" to "Help",
     "Rewards" to "Rewards",
     "Widgets" to "Widgets",
@@ -123,6 +124,7 @@ private val authRouteNames = setOf(
     "Splash", "Login", "Register", "ForgotPassword",
     "ProfileSelection", "AddProfile", "EditProfile",
     "PaymentSuccess", "PaymentCancelled", "PaymentPending",
+    "TVLogin",
 )
 
 fun isAuthRoutePattern(routePattern: String): Boolean {
