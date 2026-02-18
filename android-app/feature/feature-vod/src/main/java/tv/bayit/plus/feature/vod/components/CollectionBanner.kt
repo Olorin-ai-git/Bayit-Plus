@@ -8,6 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -53,18 +56,20 @@ fun CollectionBanner(
     modifier: Modifier = Modifier,
     autoRotate: Boolean = true,
     rotationIntervalMs: Long = 5000L,
+    onDismiss: (() -> Unit)? = null,
 ) {
     if (collections.isEmpty()) return
 
     var currentIndex by remember { mutableIntStateOf(0) }
     val alpha = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()
+    var isDismissing by remember { mutableStateOf(false) }
 
     val currentCollection = collections[currentIndex]
 
     // Auto-rotation effect
-    LaunchedEffect(autoRotate, collections.size) {
-        if (!autoRotate || collections.size <= 1) return@LaunchedEffect
+    LaunchedEffect(autoRotate, collections.size, isDismissing) {
+        if (!autoRotate || collections.size <= 1 || isDismissing) return@LaunchedEffect
 
         while (true) {
             delay(rotationIntervalMs)
@@ -118,9 +123,7 @@ fun CollectionBanner(
 
             // Text Content
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
                 // Header
@@ -197,6 +200,35 @@ fun CollectionBanner(
                         color = Color.White
                     )
                 }
+            }
+        }
+
+        // Close button
+        if (onDismiss != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(DesignTokens.Spacing.sm)
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(DesignTokens.Colors.Glass.bgStrong)
+                    .clickable {
+                        if (!isDismissing) {
+                            isDismissing = true
+                            scope.launch {
+                                alpha.animateTo(0f, animationSpec = tween(durationMillis = 400))
+                                onDismiss()
+                            }
+                        }
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Dismiss banner",
+                    tint = DesignTokens.Colors.Text.secondary,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
 

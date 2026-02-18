@@ -11,6 +11,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
@@ -31,8 +35,10 @@ internal fun HomeSuccessContent(
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
     onRefresh: () -> Unit,
+    onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    var isBannerDismissed by remember { mutableStateOf(false) }
     PullToRefreshBox(
         isRefreshing = uiState.isRefreshing,
         onRefresh = onRefresh,
@@ -45,7 +51,15 @@ internal fun HomeSuccessContent(
         ) {
             item(key = "header_clocks") {
                 Column {
-                    PageHeader(icon = android.R.drawable.ic_menu_view, title = "Home")
+                    PageHeader(
+                        icon = android.R.drawable.ic_menu_view,
+                        title = "Home",
+                        userPhotoUrl = null,
+                        userName = null,
+                        currentLanguage = java.util.Locale.getDefault().language,
+                        onProfileClick = { },
+                        onLanguageSelected = { languageCode -> },
+                    )
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -73,6 +87,16 @@ internal fun HomeSuccessContent(
                 }
             }
 
+            if (uiState.shabbatInfo != null && uiState.shabbatInfo.isShabbat && !uiState.isShabbatBannerDismissed) {
+                item(key = "shabbat_banner") {
+                    ShabbatBanner(
+                        shabbatInfo = uiState.shabbatInfo,
+                        onDismiss = onDismissShabbatBanner,
+                        modifier = Modifier.padding(horizontal = DesignTokens.Spacing.lg),
+                    )
+                }
+            }
+
             if (uiState.spotlight.isNotEmpty()) {
                 item(key = "carousel") {
                     HeroCarousel(items = uiState.spotlight, onItemClick = onSpotlightClick)
@@ -88,13 +112,14 @@ internal fun HomeSuccessContent(
                 }
             }
 
-            if (uiState.featuredCollections.isNotEmpty()) {
+            if (uiState.featuredCollections.isNotEmpty() && !isBannerDismissed) {
                 item(key = "collections_banner") {
                     CollectionBanner(
                         collections = uiState.featuredCollections,
                         onCollectionClick = onCollectionClick,
                         onWatchNowClick = onWatchNowClick,
                         currentLanguage = Locale.getDefault().language,
+                        onDismiss = { isBannerDismissed = true },
                     )
                 }
             }

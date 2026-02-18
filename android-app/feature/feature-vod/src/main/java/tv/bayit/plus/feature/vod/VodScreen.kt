@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +62,7 @@ internal fun VodScreen(
     when (uiState) {
         is VodUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
         is VodUiState.Success -> {
+            var isBannerDismissed by remember { mutableStateOf(false) }
             PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = onRefresh,
@@ -72,12 +76,13 @@ internal fun VodScreen(
                             onCategorySelected = onCategorySelected,
                         )
                     }
-                    if (uiState.featuredCollections.isNotEmpty() && uiState.selectedCategoryId == null) {
+                    if (uiState.featuredCollections.isNotEmpty() && uiState.selectedCategoryId == null && !isBannerDismissed) {
                         CollectionBanner(
                             collections = uiState.featuredCollections,
                             onCollectionClick = onCollectionClick,
                             onWatchNowClick = onWatchNowClick,
                             currentLanguage = Locale.getDefault().language,
+                            onDismiss = { isBannerDismissed = true },
                         )
                     }
                     if (uiState.isLoadingContent) {
