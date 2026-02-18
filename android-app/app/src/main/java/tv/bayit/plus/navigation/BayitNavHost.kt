@@ -102,9 +102,14 @@ import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
 import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
 import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
 import tv.bayit.plus.feature.vod.trending.TrendingRoute
+import tv.bayit.plus.feature.voice.avatar.AvatarOverlayRoute
 import tv.bayit.plus.feature.voice.chatbot.ChatbotRoute
 import tv.bayit.plus.feature.voice.onboarding.AIOnboardingRoute
 import tv.bayit.plus.feature.voice.onboarding.VoiceOnboardingRoute
+import tv.bayit.plus.feature.voice.search.VoiceSearchRoute
+import tv.bayit.plus.feature.voice.settings.VoiceSettingsRoute
+import tv.bayit.plus.feature.voice.talkback.TalkBackRoute
+import tv.bayit.plus.feature.voice.wizard.VoiceWizardRoute
 import tv.bayit.plus.feature.widgets.WidgetGalleryRoute
 import tv.bayit.plus.feature.zehani.ZehAniDashboardRoute
 import tv.bayit.plus.feature.zehani.mesh.MeshAvatarRoute
@@ -446,6 +451,27 @@ fun BayitNavHost(
                 onNavigateBack = { navController.popBackStack() },
             )
         }
+        composable<Route.VoiceSearch> {
+            VoiceSearchRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+            )
+        }
+        composable<Route.VoiceSettings> {
+            VoiceSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.VoiceWizard> {
+            VoiceWizardRoute(
+                onComplete = { navController.popBackStack() },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.TalkBack> {
+            TalkBackRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.VoiceAvatar> {
+            AvatarOverlayRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.ShabbatMode> {
             ShabbatModeRoute(onNavigateBack = { navController.popBackStack() })
         }
@@ -665,5 +691,6 @@ private fun NavController.navigateToSettingsSubScreen(route: String) {
         "mfa" -> navigate(Route.MfaSetup)
         "phone" -> navigate(Route.PhoneVerification)
         "devices" -> navigate(Route.DevicePairing)
+        "voice" -> navigate(Route.VoiceSettings)
     }
 }

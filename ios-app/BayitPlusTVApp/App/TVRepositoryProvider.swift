@@ -19,6 +19,7 @@ final class TVRepositoryProvider {
     let epg: any EPGRepository
     let category: any CategoryRepository
     let settings: any SettingsRepository
+    let userSettings: any UserSettingsRepository
     let liveDubbing: any LiveDubbingRepository
     let subtitle: any SubtitleRepository
     let chapter: any ChapterRepository
@@ -70,6 +71,7 @@ final class TVRepositoryProvider {
         self.epg = APIEPGRepository(client: client)
         self.category = APICategoryRepository(client: client)
         self.settings = APISettingsRepository(client: client)
+        self.userSettings = APIUserSettingsRepository(client: client)
         self.liveDubbing = APILiveDubbingRepository(client: client)
         self.subtitle = APISubtitleRepository(client: client)
         self.chapter = APIChapterRepository(client: client)

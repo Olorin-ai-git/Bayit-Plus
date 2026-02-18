@@ -1,6 +1,7 @@
 package tv.bayit.plus.feature.voice.chatbot
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +38,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -41,13 +50,19 @@ fun ChatbotRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val messageInput by viewModel.messageInput.collectAsStateWithLifecycle()
     val isSending by viewModel.isSending.collectAsStateWithLifecycle()
+    val isListening by viewModel.isListening.collectAsStateWithLifecycle()
+    val isSpeaking by viewModel.isSpeaking.collectAsStateWithLifecycle()
 
     ChatbotScreen(
         uiState = uiState,
         messageInput = messageInput,
         isSending = isSending,
+        isListening = isListening,
+        isSpeaking = isSpeaking,
         onMessageInputChanged = viewModel::updateMessageInput,
         onSendMessage = viewModel::sendMessage,
+        onToggleVoice = { viewModel.toggleVoiceInput("he") },
+        onStopTts = viewModel::stopTts,
         onRetry = viewModel::retry,
         onNavigateBack = onNavigateBack,
         modifier = modifier,
@@ -59,8 +74,12 @@ internal fun ChatbotScreen(
     uiState: ChatbotUiState,
     messageInput: String,
     isSending: Boolean,
+    isListening: Boolean,
+    isSpeaking: Boolean,
     onMessageInputChanged: (String) -> Unit,
     onSendMessage: () -> Unit,
+    onToggleVoice: () -> Unit,
+    onStopTts: () -> Unit,
     onRetry: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -84,8 +103,12 @@ internal fun ChatbotScreen(
         ChatInputBar(
             text = messageInput,
             isSending = isSending,
+            isListening = isListening,
+            isSpeaking = isSpeaking,
             onTextChanged = onMessageInputChanged,
             onSend = onSendMessage,
+            onToggleVoice = onToggleVoice,
+            onStopTts = onStopTts,
         )
     }
 }
@@ -158,8 +181,12 @@ private fun ChatBubble(message: ChatMessage) {
 private fun ChatInputBar(
     text: String,
     isSending: Boolean,
+    isListening: Boolean,
+    isSpeaking: Boolean,
     onTextChanged: (String) -> Unit,
     onSend: () -> Unit,
+    onToggleVoice: () -> Unit,
+    onStopTts: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -169,18 +196,48 @@ private fun ChatInputBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .glassMorphism(
+                    cornerRadius = DesignTokens.Radius.full,
+                    backgroundColor = when {
+                        isListening -> DesignTokens.Colors.Semantic.error
+                        isSpeaking -> DesignTokens.Colors.Primary.light
+                        else -> DesignTokens.Colors.Primary.base
+                    },
+                )
+                .clickable {
+                    if (isSpeaking) onStopTts() else onToggleVoice()
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = when {
+                    isSpeaking -> Icons.Default.VolumeUp
+                    isListening -> Icons.Default.Stop
+                    else -> Icons.Default.Mic
+                },
+                contentDescription = bayitString("aiChat.voiceButton"),
+                tint = DesignTokens.Colors.Text.primary,
+                modifier = Modifier.size(20.dp),
+            )
+        }
         GlassTextField(
             value = text,
             onValueChange = onTextChanged,
             modifier = Modifier.weight(1f),
-            placeholder = bayitString("aiChat.inputPlaceholder"),
+            placeholder = bayitString(
+                if (isListening) "aiChat.listening" else "aiChat.inputPlaceholder"
+            ),
             singleLine = true,
-            enabled = !isSending,
+            enabled = !isSending && !isListening,
         )
         GlassButton(
             text = bayitString("aiChat.sendButton"),
             onClick = onSend,
-            enabled = text.isNotBlank() && !isSending,
+            enabled = text.isNotBlank() && !isSending && !isListening,
         )
     }
 }

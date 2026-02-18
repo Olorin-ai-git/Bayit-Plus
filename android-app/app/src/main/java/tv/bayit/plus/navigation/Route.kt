@@ -47,6 +47,11 @@ sealed class Route {
 
     // Voice
     @Serializable data object VoiceOnboarding : Route()
+    @Serializable data object VoiceSearch : Route()
+    @Serializable data object VoiceSettings : Route()
+    @Serializable data object VoiceWizard : Route()
+    @Serializable data class TalkBack(val contentId: String) : Route()
+    @Serializable data object VoiceAvatar : Route()
 
     // Support
     @Serializable data object Support : Route()

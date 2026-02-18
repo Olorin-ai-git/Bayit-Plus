@@ -4,8 +4,8 @@ import BayitLocalization
 import SwiftUI
 
 /// tvOS Settings screen with account info, navigation to sub-screens
-/// for language, notifications, security, billing, subscription,
-/// device pairing, and playback preferences.
+/// for language, notifications, audio, accessibility, privacy,
+/// security, billing, subscription, device pairing, and preferences.
 struct TVSettingsView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) private var localization
@@ -83,6 +83,22 @@ struct TVSettingsView: View {
                 detail: nil
             ) {
                 TVNotificationSettingsView()
+            }
+
+            settingsNavRow(
+                icon: "speaker.wave.3",
+                title: localization.t("settings.audio.title"),
+                detail: nil
+            ) {
+                TVAudioSettingsView()
+            }
+
+            settingsNavRow(
+                icon: "accessibility",
+                title: localization.t("settings.accessibility.title"),
+                detail: nil
+            ) {
+                TVAccessibilitySettingsView()
             }
 
             if let vm = viewModel {
@@ -198,6 +214,14 @@ struct TVSettingsView: View {
     private var securitySection: some View {
         Section {
             settingsNavRow(
+                icon: "hand.raised",
+                title: localization.t("settings.privacy.title"),
+                detail: nil
+            ) {
+                TVPrivacySettingsView()
+            }
+
+            settingsNavRow(
                 icon: "lock.shield",
                 title: localization.t("settings.security"),
                 detail: nil
@@ -221,7 +245,7 @@ struct TVSettingsView: View {
                 TVFamilyControlsView()
             }
         } header: {
-            sectionHeader(localization.t("settings.security"))
+            sectionHeader(localization.t("settings.privacySecurity"))
         }
     }
 
@@ -229,17 +253,30 @@ struct TVSettingsView: View {
 
     private var aboutSection: some View {
         Section {
-            HStack {
-                Image(systemName: "info.circle")
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                    .frame(width: 32)
-                Text(localization.t("settings.version"))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                Spacer()
-                Text(Bundle.main.object(
+            settingsNavRow(
+                icon: "info.circle",
+                title: localization.t("settings.about.title"),
+                detail: Bundle.main.object(
                     forInfoDictionaryKey: "CFBundleShortVersionString"
-                ) as? String ?? "1.0.0")
-                    .foregroundStyle(DesignTokens.Text.muted)
+                ) as? String ?? "1.0.0"
+            ) {
+                TVAboutView()
+            }
+
+            settingsNavRow(
+                icon: "questionmark.circle",
+                title: localization.t("settings.help"),
+                detail: nil
+            ) {
+                TVHelpView()
+            }
+
+            settingsNavRow(
+                icon: "link.circle",
+                title: localization.t("settings.connectedAccounts"),
+                detail: nil
+            ) {
+                TVConnectedAccountsView()
             }
         } header: {
             sectionHeader(localization.t("settings.about"))

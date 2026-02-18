@@ -3,6 +3,7 @@ package tv.bayit.plus.feature.voice.chatbot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,11 +11,15 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ChatRepository
+import tv.bayit.plus.core.voice.SpeechRecognitionService
+import tv.bayit.plus.core.voice.TTSService
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
+    private val speechService: SpeechRecognitionService,
+    private val ttsService: TTSService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -27,12 +32,56 @@ class ChatbotViewModel @Inject constructor(
     private val _isSending = MutableStateFlow(false)
     val isSending: StateFlow<Boolean> = _isSending.asStateFlow()
 
+    private val _isListening = MutableStateFlow(false)
+    val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
+
+    val isSpeaking: StateFlow<Boolean> = ttsService.isSpeaking
+
+    private var recognitionStop: (() -> Unit)? = null
+    private var recognitionJob: Job? = null
+
     init {
         loadActiveChannelAndMessages()
     }
 
     fun updateMessageInput(text: String) {
         _messageInput.value = text
+    }
+
+    fun toggleVoiceInput(language: String) {
+        if (_isListening.value) stopVoiceInput() else startVoiceInput(language)
+    }
+
+    private fun startVoiceInput(language: String) {
+        try {
+            val (flow, stop) = speechService.startRecognition(language)
+            recognitionStop = stop
+            _isListening.value = true
+            recognitionJob = viewModelScope.launch {
+                flow.collect { result ->
+                    _messageInput.value = result.transcription
+                    if (result.isFinal) {
+                        _isListening.value = false
+                        sendMessage()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            _isListening.value = false
+            logger.error("Voice input failed", e)
+        }
+    }
+
+    private fun stopVoiceInput() {
+        recognitionStop?.invoke()
+        recognitionStop = null
+        recognitionJob?.cancel()
+        recognitionJob = null
+        _isListening.value = false
+    }
+
+    fun stopTts() {
+        ttsService.stop()
     }
 
     fun sendMessage() {
@@ -112,6 +161,7 @@ class ChatbotViewModel @Inject constructor(
                     channelId = channelId,
                     messages = messages,
                 )
+                speakLatestAiResponse(messages)
             }
             is BayitResult.Error -> {
                 logger.error("Failed to load messages", result.exception)
@@ -123,9 +173,22 @@ class ChatbotViewModel @Inject constructor(
         }
     }
 
+    private fun speakLatestAiResponse(messages: List<ChatMessage>) {
+        val lastAiMessage = messages.lastOrNull { it.isAi } ?: return
+        if (lastAiMessage.content.isNotBlank()) {
+            ttsService.speak(lastAiMessage.content, "he")
+        }
+    }
+
     private fun extractChannelId(channel: Any): String {
         val map = channel as? Map<*, *>
         return map?.get("id")?.toString() ?: channel.toString()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopVoiceInput()
+        ttsService.stop()
     }
 }
 
