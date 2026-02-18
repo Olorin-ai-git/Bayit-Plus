@@ -2,6 +2,7 @@
 Admin Live Channel Management Routes - CRUD operations for live TV channels
 """
 
+import logging
 from datetime import datetime
 from typing import Optional
 
@@ -14,6 +15,8 @@ from app.models.user import User
 from .admin_content_schemas import (LiveChannelCreateRequest,
                                     LiveChannelUpdateRequest)
 from .admin_content_utils import has_permission, log_audit
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -322,3 +325,65 @@ async def seed_kan_educational_channel(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/live-channels/cache/invalidate")
+async def invalidate_channel_cache(
+    request: Request,
+    channel_id: Optional[str] = None,
+    current_user: User = Depends(has_permission(Permission.CONTENT_UPDATE)),
+):
+    """
+    Invalidate cached channel data after admin updates.
+
+    Clears subtitle quota cache and EPG service caches so that
+    updated channel settings take effect immediately.
+
+    Args:
+        channel_id: Specific channel ID to invalidate, or None for all.
+    """
+    cleared = []
+
+    # Clear subtitle quota cache
+    try:
+        from app.api.routes.websocket_live_subtitles import _quota_cache
+        if channel_id:
+            _quota_cache.clear()
+        else:
+            _quota_cache.clear()
+        cleared.append("subtitle_quota_cache")
+    except ImportError:
+        pass
+
+    # Clear EPG service cache (per-instance)
+    try:
+        from app.services.epg_service import EPGService
+        svc = EPGService()
+        svc.cache.clear()
+        cleared.append("epg_cache")
+    except (ImportError, AttributeError):
+        pass
+
+    logger.info(
+        "Cache invalidated by admin",
+        extra={
+            "admin_user_id": str(current_user.id),
+            "channel_id": channel_id or "all",
+            "caches_cleared": cleared,
+        },
+    )
+
+    await log_audit(
+        str(current_user.id),
+        AuditAction.LIVE_CHANNEL_UPDATED,
+        "cache",
+        channel_id,
+        {"action": "invalidate_cache", "caches_cleared": cleared},
+        request,
+    )
+
+    return {
+        "message": "Cache invalidated",
+        "channel_id": channel_id or "all",
+        "caches_cleared": cleared,
+    }

@@ -99,6 +99,12 @@ class DubbingConfig(BaseSettings):
         le=1000,
         description="Maximum concurrent dubbing sessions per instance",
     )
+    max_sessions_per_user: int = Field(
+        default=2,
+        ge=1,
+        le=10,
+        description="Maximum concurrent dubbing sessions per user (cost protection)",
+    )
     session_timeout_minutes: int = Field(
         default=120,
         ge=1,

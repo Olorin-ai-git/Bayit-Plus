@@ -10,7 +10,7 @@ from app.api.routes.websocket_helpers.quota_helpers import (
     update_quota_during_session)
 from app.api.routes.websocket_helpers.session_manager import (
     cleanup_dubbing_session, get_active_session_count,
-    initialize_dubbing_session)
+    get_user_session_count, initialize_dubbing_session)
 from app.api.routes.websocket_helpers.trivia_processor import (
     process_trivia_stream, update_quota_if_needed)
 from app.api.routes.websocket_helpers.trivia_session import (
@@ -27,6 +27,7 @@ __all__ = [
     "initialize_dubbing_session",
     "cleanup_dubbing_session",
     "get_active_session_count",
+    "get_user_session_count",
     "process_trivia_stream",
     "update_quota_if_needed",
     "validate_channel_and_feature",

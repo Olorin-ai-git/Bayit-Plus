@@ -21,6 +21,7 @@ from app.api.routes.websocket_helpers import (check_and_start_quota_session,
                                               end_quota_session,
                                               get_active_session_count,
                                               get_user_from_token,
+                                              get_user_session_count,
                                               initialize_dubbing_session,
                                               update_quota_during_session,
                                               validate_channel_for_dubbing)
@@ -154,6 +155,24 @@ async def websocket_live_dubbing(
 
     # Step 6: Check subscription tier (Premium feature)
     if not await check_subscription_tier(websocket, user, ["premium", "family"]):
+        return
+
+    # Step 6.5: Enforce per-user concurrent session limit
+    max_per_user = settings.olorin.dubbing.max_sessions_per_user
+    current_user_sessions = get_user_session_count(str(user.id))
+    if current_user_sessions >= max_per_user:
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": f"Maximum {max_per_user} concurrent dubbing sessions allowed",
+                "recoverable": False,
+            }
+        )
+        await websocket.close(code=4029, reason="Per-user session limit exceeded")
+        logger.warning(
+            f"Per-user dubbing session limit exceeded: user={user.id}, "
+            f"active={current_user_sessions}, max={max_per_user}"
+        )
         return
 
     # Step 7: Verify channel exists and supports dubbing

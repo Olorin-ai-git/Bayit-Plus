@@ -6,7 +6,7 @@ and family scopes across daily/weekly/monthly/all-time periods.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Tuple
 
 from app.core.config import settings
@@ -76,6 +76,19 @@ class LeaderboardService:
             }
         )
 
+    @staticmethod
+    def _period_start(period: LeaderboardPeriod) -> Optional[datetime]:
+        """Return the start datetime for a given period, or None for ALL_TIME."""
+        now = datetime.now(timezone.utc)
+        if period == LeaderboardPeriod.DAILY:
+            return now.replace(hour=0, minute=0, second=0, microsecond=0)
+        if period == LeaderboardPeriod.WEEKLY:
+            start_of_week = now - timedelta(days=now.weekday())
+            return start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+        if period == LeaderboardPeriod.MONTHLY:
+            return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        return None
+
     async def recompute_global_leaderboard(
         self,
         period: LeaderboardPeriod,
@@ -84,11 +97,19 @@ class LeaderboardService:
         """
         Recompute global leaderboard from UserReward data.
 
+        For time-bound periods (daily/weekly/monthly), only includes users
+        whose rewards were updated within the period window.
+
         Returns:
             Number of entries created.
         """
+        period_start = self._period_start(period)
+        query_filter = {}
+        if period_start is not None:
+            query_filter["updated_at"] = {"$gte": period_start}
+
         rewards = (
-            await UserReward.find()
+            await UserReward.find(query_filter)
             .sort("-total_points")
             .to_list()
         )

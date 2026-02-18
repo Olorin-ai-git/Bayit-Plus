@@ -18,6 +18,14 @@ logger = logging.getLogger(__name__)
 # Track active sessions per channel
 _active_sessions: dict[str, set[str]] = {}
 
+# Track active sessions per user (user_id -> set of session_ids)
+_user_sessions: dict[str, set[str]] = {}
+
+
+def get_user_session_count(user_id: str) -> int:
+    """Get number of active dubbing sessions for a user."""
+    return len(_user_sessions.get(user_id, set()))
+
 
 async def initialize_dubbing_session(
     websocket: WebSocket,
@@ -71,11 +79,15 @@ async def initialize_dubbing_session(
             f"sync_delay={connection_info['sync_delay_ms']}ms"
         )
 
-        # Track active session
+        # Track active session (per channel and per user)
         channel_id = str(channel.id)
+        user_id = str(user.id)
         if channel_id not in _active_sessions:
             _active_sessions[channel_id] = set()
         _active_sessions[channel_id].add(dubbing_service.session_id)
+        if user_id not in _user_sessions:
+            _user_sessions[user_id] = set()
+        _user_sessions[user_id].add(dubbing_service.session_id)
 
         # Start pipeline processing task
         pipeline_task = asyncio.create_task(dubbing_service.run_pipeline())
@@ -142,11 +154,17 @@ async def cleanup_dubbing_session(
 
     # Cleanup dubbing service
     if dubbing_service:
-        # Remove from active sessions
+        # Remove from active sessions (per channel)
         if channel_id in _active_sessions:
             _active_sessions[channel_id].discard(dubbing_service.session_id)
             if not _active_sessions[channel_id]:
                 del _active_sessions[channel_id]
+
+        # Remove from per-user sessions
+        for uid, sessions in list(_user_sessions.items()):
+            sessions.discard(dubbing_service.session_id)
+            if not sessions:
+                del _user_sessions[uid]
 
         # Stop dubbing service
         try:
