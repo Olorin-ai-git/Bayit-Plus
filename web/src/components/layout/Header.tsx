@@ -160,8 +160,16 @@ export default function Header() {
   }, []);
 
   // Navigation component - document.dir handles visual direction
-  // Disabled in Voice Only mode
-  const NavSection = !isMobile && isRemoteControlEnabled && (
+  // On mobile: show house logo linking to home. On desktop: show nav links (disabled in Voice Only mode).
+  const NavSection = isMobile ? (
+    <Link to="/" style={{ textDecoration: 'none' }}>
+      <Image
+        source={{ uri: '/assets/images/logo.png' }}
+        style={styles.logoMobile}
+        accessibilityLabel="Bayit+"
+      />
+    </Link>
+  ) : isRemoteControlEnabled && (
     <View style={styles.nav}>
       {navLinkKeys.map((link) => (
         <NavLink
@@ -206,24 +214,13 @@ export default function Header() {
         </Link>
       )}
 
-      {/* Profile/Login - simplified on mobile */}
+      {/* Profile/Login */}
       {authReady && isAuthenticated && user ? (
-        isMobile ? (
-          // Mobile: Simple logout button
-          <Pressable
-            onPress={handleLogout}
-            style={styles.mobileLogoutButton}
-          >
-            <Text style={styles.mobileLogoutText}>{t('account.logout')}</Text>
-          </Pressable>
-        ) : (
-          // Desktop: Full profile dropdown
-          <ProfileDropdown
-            user={user}
-            onNavigate={handleProfileNavigate}
-            onLogout={handleLogout}
-          />
-        )
+        <ProfileDropdown
+          user={user}
+          onNavigate={handleProfileNavigate}
+          onLogout={handleLogout}
+        />
       ) : (
         <Pressable
           onPress={() => navigate('/login')}
@@ -450,21 +447,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  mobileLogoutButton: {
-    minWidth: 80,
-    minHeight: 48,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 8,
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  mobileLogoutText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ef4444',
+  logoMobile: {
+    width: 70,
+    height: 35,
+    resizeMode: 'contain' as const,
   },
 });

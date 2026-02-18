@@ -136,6 +136,9 @@ export default function HomePage() {
   const [continueWatching, setContinueWatching] = useState<ContentItem[]>([]);
   const [continueLoading, setContinueLoading] = useState(true);
 
+  const [youngstersTrending, setYoungstersTrending] = useState<ContentItem[]>([]);
+  const [youngstersLoading, setYoungstersLoading] = useState(true);
+
   const [featuredCollections, setFeaturedCollections] = useState<any[]>([]);
 
   const [syncing, setSyncing] = useState(false);
@@ -160,6 +163,7 @@ export default function HomePage() {
     loadLiveChannels();
     loadContinueWatching();
     loadFeaturedCollections();
+    loadYoungstersTrending();
 
     // Fetch cultures for dynamic content
     fetchCultures();
@@ -252,6 +256,17 @@ export default function HomePage() {
       }
     } catch (error) {
       logger.debug('Collection recommendations not available', 'HomePage');
+    }
+  };
+
+  const loadYoungstersTrending = async () => {
+    try {
+      const response = await api.get('/youngsters/featured');
+      setYoungstersTrending(response.items || []);
+    } catch (error) {
+      logger.debug('Youngsters trending not available', 'HomePage');
+    } finally {
+      setYoungstersLoading(false);
     }
   };
 
@@ -439,6 +454,18 @@ export default function HomePage() {
           <View style={styles.section}>
             <CultureTrendingRow cultureId={currentCulture?.culture_id} />
           </View>
+
+          {/* Youngsters Section */}
+          {youngstersLoading ? (
+            <SectionSkeleton />
+          ) : youngstersTrending.length > 0 && (
+            <ContentCarousel
+              title={t('youngsters.title')}
+              items={youngstersTrending}
+              seeAllLink="/youngsters"
+              style={styles.section}
+            />
+          )}
 
           {/* 2 & 3. Jerusalem and Tel Aviv */}
           {cultureCities.length === 0 && !cultureLoading && (

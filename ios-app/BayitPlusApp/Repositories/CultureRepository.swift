@@ -8,6 +8,8 @@ protocol CultureRepository: Sendable {
     func fetchCultureCategories(cultureId: String) async throws -> [CultureCategory]
     func fetchCultureTime(cultureId: String) async throws -> CultureTime
     func fetchTrending(cultureId: String, limit: Int?) async throws -> CultureContentResponse
+    func fetchCultureCities(cultureId: String, featuredOnly: Bool) async throws -> [CultureCity]
+    func fetchCityContent(cultureId: String, cityId: String, limit: Int?) async throws -> CultureContentResponse
 }
 
 /// Production implementation of `CultureRepository` using `APIClient`.
@@ -84,6 +86,33 @@ final class APICultureRepository: CultureRepository, @unchecked Sendable {
         }
         return try await client.get(
             "/api/v1/cultures/\(cultureId)/trending",
+            queryItems: queryItems,
+            as: CultureContentResponse.self
+        )
+    }
+
+    func fetchCultureCities(cultureId: String, featuredOnly: Bool = true) async throws -> [CultureCity] {
+        let queryItems = [
+            URLQueryItem(name: "featured_only", value: String(featuredOnly))
+        ]
+        return try await client.get(
+            "/api/v1/cultures/\(cultureId)/cities",
+            queryItems: queryItems,
+            as: [CultureCity].self
+        )
+    }
+
+    func fetchCityContent(
+        cultureId: String,
+        cityId: String,
+        limit: Int? = 10
+    ) async throws -> CultureContentResponse {
+        var queryItems: [URLQueryItem] = []
+        if let limit {
+            queryItems.append(URLQueryItem(name: "limit", value: String(limit)))
+        }
+        return try await client.get(
+            "/api/v1/cultures/\(cultureId)/cities/\(cityId)/content",
             queryItems: queryItems,
             as: CultureContentResponse.self
         )

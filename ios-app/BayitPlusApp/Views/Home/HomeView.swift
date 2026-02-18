@@ -87,6 +87,12 @@ struct HomeView: View {
         .padding(.trailing, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
 
+        // Shabbat Mode Banner (during Shabbat)
+        ShabbatBannerView()
+
+        // Shabbat Eve Section (Friday 6 hours before candle lighting)
+        ShabbatEveView()
+
         // Hero carousel (legacy feature - controlled by feature flag)
         if featureFlags.isLegacyFeaturesEnabled && !vm.spotlight.isEmpty {
             HeroCarousel(items: vm.spotlight, coordinator: coordinator)
@@ -156,6 +162,15 @@ struct HomeView: View {
             CityContentRow(title: "Tel Aviv", items: telAviv.items) {
                 coordinator.navigate(to: .telAvivContent)
             }
+        }
+
+        // Dynamic culture city rows (beyond Jerusalem and Tel Aviv)
+        ForEach(vm.cultureCities) { cityWithContent in
+            DynamicCityContentRow(
+                cityName: cityWithContent.city.name,
+                items: cityWithContent.content.items,
+                accentColor: DesignTokens.Primary.p400
+            )
         }
 
         // Category rows (Movies, Series, Audiobooks, Kids, Music, Documentary are legacy features)

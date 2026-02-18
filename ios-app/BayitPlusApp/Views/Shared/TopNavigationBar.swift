@@ -11,9 +11,10 @@ struct TopNavigationBar: View {
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
-            Text("Bayit+")
-                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
-                .foregroundColor(DesignTokens.Primary.p400)
+            Image("logo")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 30)
 
             Spacer()
 
