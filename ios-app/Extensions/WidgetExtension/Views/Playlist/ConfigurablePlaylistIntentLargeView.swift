@@ -31,7 +31,7 @@ struct ConfigurablePlaylistIntentLargeView: View {
 
                     // Play All button
                     Button(intent: {
-                        var intent = PlayPlaylistIntent()
+                        let intent = PlayPlaylistIntent()
                         intent.playlistID = playlist.id
                         intent.playlistName = playlist.name
                         return intent

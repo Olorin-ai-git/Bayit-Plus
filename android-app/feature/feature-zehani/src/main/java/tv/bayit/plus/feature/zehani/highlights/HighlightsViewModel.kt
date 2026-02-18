@@ -32,6 +32,9 @@ class HighlightsViewModel @Inject constructor(
     private val _shareEvents = MutableSharedFlow<String>()
     val shareEvents: SharedFlow<String> = _shareEvents.asSharedFlow()
 
+    private val _sendResult = MutableSharedFlow<SendResult>()
+    val sendResult: SharedFlow<SendResult> = _sendResult.asSharedFlow()
+
     init {
         loadHighlights()
     }
@@ -61,8 +64,18 @@ class HighlightsViewModel @Inject constructor(
     fun shareReel(reel: HighlightReel) {
         val token = reel.shareToken ?: return
         viewModelScope.launch {
-            logger.info("Sharing reel", mapOf("reelId" to reel.id))
-            _shareEvents.emit(token)
+            logger.info("Sending reel to family contacts", mapOf("reelId" to reel.id))
+            when (val result = zehAniRepository.sendHighlightReelToContacts(reel.id)) {
+                is BayitResult.Success -> {
+                    logger.info("Reel sent to contacts", mapOf("count" to result.data.toString()))
+                    _sendResult.emit(SendResult.Success(result.data))
+                }
+                is BayitResult.Error -> {
+                    logger.error("Reel send failed, falling back to share sheet", result.exception)
+                    _shareEvents.emit(token)
+                }
+                is BayitResult.Loading -> Unit
+            }
         }
     }
 
@@ -94,4 +107,8 @@ sealed interface HighlightsUiState {
     data object Loading : HighlightsUiState
     data class Success(val highlights: List<HighlightReel>, val isRefreshing: Boolean) : HighlightsUiState
     data class Error(val message: String) : HighlightsUiState
+}
+
+sealed interface SendResult {
+    data class Success(val sentCount: Int) : SendResult
 }

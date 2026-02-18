@@ -123,6 +123,11 @@ class ApiZehAniRepository(
     override suspend fun listHighlightReels(profileId: String): BayitResult<List<HighlightReel>> =
         runCatchingResult { client.safeApiCall { service.listHighlightReels(profileId) } }
 
+    override suspend fun sendHighlightReelToContacts(reelId: String): BayitResult<Int> =
+        runCatchingResult {
+            client.safeApiCall { service.sendHighlightReelToContacts(reelId) }.sentCount
+        }
+
     override suspend fun listContacts(profileId: String): BayitResult<List<WhatsAppContact>> =
         runCatchingResult { client.safeApiCall { service.listContacts(profileId) } }
 

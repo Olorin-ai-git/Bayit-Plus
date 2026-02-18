@@ -142,4 +142,11 @@ interface ZehAniApiService {
     suspend fun submitFeedback(
         @Body request: SubmitFeedbackRequest,
     ): MessageResponse
+
+    // -- Highlight sharing --
+
+    @POST("api/v1/zeh-ani/highlights/reel/{reelId}/send")
+    suspend fun sendHighlightReelToContacts(
+        @Path("reelId") reelId: String,
+    ): tv.bayit.plus.core.model.zehani.SendToContactsResponse
 }

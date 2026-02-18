@@ -57,6 +57,7 @@ interface ZehAniRepository {
     // -- Highlights --
     suspend fun generateHighlightReel(avatarId: String, profileId: String): BayitResult<HighlightGenerateResponse>
     suspend fun listHighlightReels(profileId: String): BayitResult<List<HighlightReel>>
+    suspend fun sendHighlightReelToContacts(reelId: String): BayitResult<Int>
 
     // -- Contacts --
     suspend fun listContacts(profileId: String): BayitResult<List<WhatsAppContact>>

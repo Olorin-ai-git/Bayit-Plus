@@ -18,6 +18,8 @@ data class HighlightReel(
     @SerialName("moment_count") val momentCount: Int = 0,
     @SerialName("has_video") val hasVideo: Boolean = false,
     @SerialName("has_thumbnail") val hasThumbnail: Boolean = false,
+    @SerialName("video_url") val videoUrl: String? = null,
+    @SerialName("thumbnail_url") val thumbnailUrl: String? = null,
     @SerialName("share_token") val shareToken: String? = null,
     val status: String,
     @SerialName("credits_charged") val creditsCharged: Double = 0.0,
@@ -30,4 +32,9 @@ data class HighlightReel(
 data class HighlightGenerateResponse(
     val status: String,
     @SerialName("profile_id") val profileId: String,
+)
+
+@Serializable
+data class SendToContactsResponse(
+    @SerialName("sent_count") val sentCount: Int,
 )

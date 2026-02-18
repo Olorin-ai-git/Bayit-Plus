@@ -40,4 +40,21 @@ interface VODInteractionApi {
         @Path("sessionId") sessionId: String,
         @Body request: MultiMessageRequest,
     ): MultiCharacterResponse
+
+    @POST("api/v1/vod-interactions/reels/generate")
+    suspend fun generateVodReel(
+        @Body request: VodReelRequest,
+    ): VodReelResponse
 }
+
+data class VodReelRequest(
+    val sessionIds: List<String>,
+    val contentId: String,
+    val profileId: String,
+)
+
+data class VodReelResponse(
+    val reelId: String,
+    val shareToken: String?,
+    val status: String,
+)

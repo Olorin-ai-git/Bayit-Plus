@@ -1,10 +1,12 @@
 package tv.bayit.plus.feature.zehani.highlights
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,16 +20,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import tv.bayit.plus.core.model.zehani.HighlightReel
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HighlightsRoute(
@@ -45,6 +52,14 @@ fun HighlightsRoute(
                 putExtra(Intent.EXTRA_TEXT, shareToken)
             }
             context.startActivity(Intent.createChooser(intent, "Share Highlight"))
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sendResult.collect { result ->
+            if (result is SendResult.Success) {
+                Toast.makeText(context, "Sent to ${result.sentCount} family contacts", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -119,9 +134,21 @@ private fun HighlightsContent(
 private fun ReelCard(reel: HighlightReel, onShare: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            if (reel.thumbnailUrl != null) {
+                AsyncImage(
+                    model = reel.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = "Reel ${reel.id.take(8)}",
+                    text = formatReelDate(reel.createdAt),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Medium,
@@ -138,13 +165,27 @@ private fun ReelCard(reel: HighlightReel, onShare: () -> Unit) {
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-            Text(text = "${reel.momentCount} moments", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary)
+            Text(
+                text = "${reel.momentCount} moments",
+                style = MaterialTheme.typography.bodySmall,
+                color = DesignTokens.Colors.Text.secondary,
+            )
             if (reel.shareToken != null && reel.status == "ready") {
-                GlassButton(text = "Share", onClick = onShare, isPrimary = false, modifier = Modifier.fillMaxWidth())
+                GlassButton(
+                    text = "Send to Family",
+                    onClick = onShare,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
 }
+
+private fun formatReelDate(createdAt: String): String = try {
+    val instant = Instant.parse(createdAt)
+    val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy").withZone(ZoneId.systemDefault())
+    formatter.format(instant)
+} catch (_: Exception) { createdAt }
 
 @Composable
 private fun ErrorContent(message: String, onRetry: () -> Unit) {

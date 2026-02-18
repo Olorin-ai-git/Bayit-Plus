@@ -33,7 +33,7 @@ struct PlaylistMediumView: View {
                     // Play All button
                     if #available(iOS 17.0, *) {
                         Button(intent: {
-                            var intent = PlayPlaylistIntent()
+                            let intent = PlayPlaylistIntent()
                             intent.playlistID = playlist.id
                             intent.playlistName = playlist.name
                             return intent
