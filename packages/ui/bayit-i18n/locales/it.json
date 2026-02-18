@@ -3907,7 +3907,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "Abilita la posizione per vedere contenuti israeliani e attività commerciali vicino a te",
-    "enableLocation": "Abilita posizione"
+    "enableLocation": "Abilita posizione",
+    "locationPermissionDeniedDescription": "L'accesso alla posizione è stato negato. Apri Impostazioni per abilitarlo e vedere contenuti israeliani vicino a te.",
+    "openSettings": "Apri Impostazioni"
   },
   "judaism": {
     "title": "Ebraismo",
@@ -4449,7 +4451,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "Riproduci ultimo",
+    "subscribe": "Iscriviti",
+    "unsubscribe": "Annulla iscrizione"
+  },
+  "miniPlayer": {
+    "skipBackward": "Indietro di 15 secondi",
+    "skipForward": "Avanti di 30 secondi",
+    "closePlayer": "Chiudi lettore"
   },
   "profile": {
     "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",

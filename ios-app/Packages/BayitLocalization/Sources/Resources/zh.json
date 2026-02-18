@@ -5416,7 +5416,9 @@
     "documentary": "Documentary",
     "series": "Series",
     "locationPermissionDescription": "启用位置以查看附近的以色列内容和商店",
-    "enableLocation": "启用位置"
+    "enableLocation": "启用位置",
+    "locationPermissionDeniedDescription": "位置访问被拒绝。打开设置以启用它并查看附近的以色列内容。",
+    "openSettings": "打开设置"
   },
   "household": {
     "title": "家庭管理",
@@ -6440,7 +6442,15 @@
     "notFound": "Podcast not found",
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
-    "rssUrlHint": "Enter the RSS feed URL for your podcast"
+    "rssUrlHint": "Enter the RSS feed URL for your podcast",
+    "playLatest": "播放最新",
+    "subscribe": "订阅",
+    "unsubscribe": "取消订阅"
+  },
+  "miniPlayer": {
+    "skipBackward": "后退15秒",
+    "skipForward": "前进30秒",
+    "closePlayer": "关闭播放器"
   },
   "portal": {
     "nav": {

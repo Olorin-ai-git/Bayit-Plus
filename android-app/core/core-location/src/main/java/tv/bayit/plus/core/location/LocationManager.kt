@@ -165,6 +165,22 @@ class LocationManager @Inject constructor(
     }
 
     /**
+     * Returns true if we have ever launched the OS permission dialog for location.
+     * Used to distinguish "never asked" from "permanently denied" when combined
+     * with shouldShowRequestPermissionRationale().
+     */
+    fun wasPermissionRequested(): Boolean =
+        preferences.getBoolean("permission_requested", false)
+
+    /**
+     * Records that we have launched the OS permission dialog at least once.
+     * Call this immediately before launching the permission request.
+     */
+    fun markPermissionRequested() {
+        preferences.edit().putBoolean("permission_requested", true).apply()
+    }
+
+    /**
      * Clears cached location.
      */
     fun clearCache() {

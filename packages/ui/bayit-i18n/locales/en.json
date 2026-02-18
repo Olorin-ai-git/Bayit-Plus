@@ -4898,7 +4898,9 @@
     "contentFrom": "Content from {{city}} ({{distance}} miles away)",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "Enable location to see Israeli content and businesses near you",
-    "enableLocation": "Enable Location"
+    "enableLocation": "Enable Location",
+    "locationPermissionDeniedDescription": "Location access was denied. Open Settings to enable it and see Israeli content near you.",
+    "openSettings": "Open Settings"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -5603,7 +5605,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "radio": "Radio",
-    "loadingPodcasts": "Loading Podcasts..."
+    "loadingPodcasts": "Loading Podcasts...",
+    "playLatest": "Play Latest",
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe"
+  },
+  "miniPlayer": {
+    "skipBackward": "Skip back 15 seconds",
+    "skipForward": "Skip forward 30 seconds",
+    "closePlayer": "Close player"
   },
   "profile": {
     "title": "My Profile",

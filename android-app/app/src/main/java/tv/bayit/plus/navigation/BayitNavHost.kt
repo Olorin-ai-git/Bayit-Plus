@@ -167,12 +167,25 @@ fun BayitNavHost(
                 onNavigateToYoungsters = { navController.navigate(Route.Youngsters) },
                 onNavigateToJerusalem = { navController.navigate(Route.JerusalemContent) },
                 onNavigateToTelAviv = { navController.navigate(Route.TelAvivContent) },
+                onNavigateToContinueWatchingAll = { navController.navigate(Route.Vod) },
+                onNavigateToLiveTV = { navController.navigate(Route.LiveTV) },
+                onNavigateToRadioBrowse = { navController.navigate(Route.Radio) },
+                onNavigateToTrending = { navController.navigate(Route.Trending) },
+                onNavigateToCategoryBrowse = { categoryId -> navController.navigate(Route.CategoryBrowse(categoryId = categoryId)) },
+                onNavigateToIsraelisCity = { navController.navigate(Route.Culture) },
+                onNavigateToIsraeliBusinesses = { navController.navigate(Route.Culture) },
             )
         }
         composable<Route.LiveTV> {
             LiveTVRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
         }
         composable<Route.Vod> {
+            VodRoute(
+                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+            )
+        }
+        composable<Route.CategoryBrowse> {
             VodRoute(
                 onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
                 onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },

@@ -10,12 +10,15 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
+import tv.bayit.plus.core.media.AudioPlaybackManager
+import tv.bayit.plus.core.model.PodcastDetail
 import tv.bayit.plus.core.model.PodcastShow
 import javax.inject.Inject
 
 @HiltViewModel
 class PodcastsViewModel @Inject constructor(
     private val podcastRepository: PodcastRepository,
+    private val audioPlaybackManager: AudioPlaybackManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -23,7 +26,37 @@ class PodcastsViewModel @Inject constructor(
     val uiState: StateFlow<PodcastsUiState> = _uiState.asStateFlow()
 
     init {
+        audioPlaybackManager.attachScope(viewModelScope)
         loadPodcasts()
+    }
+
+    fun playLatestEpisode(showId: String) {
+        viewModelScope.launch {
+            logger.debug("Playing latest episode", mapOf("showId" to showId))
+
+            when (val result = podcastRepository.getPodcast(showId)) {
+                is BayitResult.Success -> {
+                    val detail = result.data as? PodcastDetail ?: return@launch
+                    val audioUrl = detail.latestEpisode?.audioUrl
+                        ?: detail.episodes?.firstOrNull()?.audioUrl
+                        ?: return@launch
+
+                    audioPlaybackManager.playDirectUrl(
+                        url = audioUrl,
+                        title = detail.title,
+                        subtitle = detail.author,
+                        artworkUrl = detail.cover,
+                        contentId = showId,
+                    )
+                }
+                is BayitResult.Error -> {
+                    logger.error("Failed to fetch podcast for playback", result.exception, mapOf(
+                        "showId" to showId,
+                    ))
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
     }
 
     fun refresh() {

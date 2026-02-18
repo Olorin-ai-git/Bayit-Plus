@@ -5669,7 +5669,9 @@
     "documentary": "Documentary",
     "series": "Series",
     "locationPermissionDescription": "Abilita la posizione per vedere contenuti israeliani e attività commerciali vicino a te",
-    "enableLocation": "Abilita posizione"
+    "enableLocation": "Abilita posizione",
+    "locationPermissionDeniedDescription": "L'accesso alla posizione è stato negato. Apri Impostazioni per abilitarlo e vedere contenuti israeliani vicino a te.",
+    "openSettings": "Apri Impostazioni"
   },
   "household": {
     "title": "Gestione della Famiglia",
@@ -6693,7 +6695,15 @@
     "notFound": "Podcast not found",
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
-    "rssUrlHint": "Enter the RSS feed URL for your podcast"
+    "rssUrlHint": "Enter the RSS feed URL for your podcast",
+    "playLatest": "Riproduci ultimo",
+    "subscribe": "Iscriviti",
+    "unsubscribe": "Annulla iscrizione"
+  },
+  "miniPlayer": {
+    "skipBackward": "Indietro di 15 secondi",
+    "skipForward": "Avanti di 30 secondi",
+    "closePlayer": "Chiudi lettore"
   },
   "portal": {
     "nav": {

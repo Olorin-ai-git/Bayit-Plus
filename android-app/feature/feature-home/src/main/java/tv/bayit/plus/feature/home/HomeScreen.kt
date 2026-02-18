@@ -1,5 +1,12 @@
 package tv.bayit.plus.feature.home
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,10 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
@@ -28,10 +39,40 @@ fun HomeRoute(
     onNavigateToYoungsters: () -> Unit,
     onNavigateToJerusalem: () -> Unit,
     onNavigateToTelAviv: () -> Unit,
+    onNavigateToContinueWatchingAll: () -> Unit,
+    onNavigateToLiveTV: () -> Unit,
+    onNavigateToRadioBrowse: () -> Unit,
+    onNavigateToTrending: () -> Unit,
+    onNavigateToCategoryBrowse: (String) -> Unit,
+    onNavigateToIsraelisCity: () -> Unit,
+    onNavigateToIsraeliBusinesses: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val activity = LocalContext.current as? android.app.Activity
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Re-check permission when returning from the Settings screen
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) viewModel.recheckLocationPermission()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { isGranted ->
+        if (isGranted) viewModel.onLocationPermissionGranted() else viewModel.onLocationPermissionDenied()
+    }
+
+    // Permanently denied = was requested before AND system no longer shows rationale
+    val successState = uiState as? HomeUiState.Success
+    val isPermanentlyDenied = successState?.locationPermissionNeeded == true &&
+        successState.locationPermissionPreviouslyDenied &&
+        activity?.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) == false
 
     HomeScreen(
         uiState = uiState,
@@ -44,6 +85,24 @@ fun HomeRoute(
         onYoungstersClick = onNavigateToYoungsters,
         onJerusalemClick = onNavigateToJerusalem,
         onTelAvivClick = onNavigateToTelAviv,
+        onContinueWatchingShowAll = onNavigateToContinueWatchingAll,
+        onLiveTVShowAll = onNavigateToLiveTV,
+        onRadioShowAll = onNavigateToRadioBrowse,
+        onTrendingShowAll = onNavigateToTrending,
+        onCategoryShowAll = onNavigateToCategoryBrowse,
+        onIsraelisCityShowAll = onNavigateToIsraelisCity,
+        onIsraeliBusinessesShowAll = onNavigateToIsraeliBusinesses,
+        isLocationPermissionPermanentlyDenied = isPermanentlyDenied,
+        onRequestLocationPermission = {
+            viewModel.markLocationPermissionRequested()
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+        },
+        onOpenLocationSettings = {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", activity?.packageName.orEmpty(), null)
+            }
+            activity?.startActivity(intent)
+        },
         onRefresh = viewModel::refresh,
         onDismissShabbatBanner = viewModel::dismissShabbatBanner,
         modifier = modifier,
@@ -62,6 +121,16 @@ internal fun HomeScreen(
     onYoungstersClick: () -> Unit,
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
+    onContinueWatchingShowAll: () -> Unit,
+    onLiveTVShowAll: () -> Unit,
+    onRadioShowAll: () -> Unit,
+    onTrendingShowAll: () -> Unit,
+    onCategoryShowAll: (String) -> Unit,
+    onIsraelisCityShowAll: () -> Unit,
+    onIsraeliBusinessesShowAll: () -> Unit,
+    isLocationPermissionPermanentlyDenied: Boolean,
+    onRequestLocationPermission: () -> Unit,
+    onOpenLocationSettings: () -> Unit,
     onRefresh: () -> Unit,
     onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -79,6 +148,16 @@ internal fun HomeScreen(
             onYoungstersClick = onYoungstersClick,
             onJerusalemClick = onJerusalemClick,
             onTelAvivClick = onTelAvivClick,
+            onContinueWatchingShowAll = onContinueWatchingShowAll,
+            onLiveTVShowAll = onLiveTVShowAll,
+            onRadioShowAll = onRadioShowAll,
+            onTrendingShowAll = onTrendingShowAll,
+            onCategoryShowAll = onCategoryShowAll,
+            onIsraelisCityShowAll = onIsraelisCityShowAll,
+            onIsraeliBusinessesShowAll = onIsraeliBusinessesShowAll,
+            isLocationPermissionPermanentlyDenied = isLocationPermissionPermanentlyDenied,
+            onRequestLocationPermission = onRequestLocationPermission,
+            onOpenLocationSettings = onOpenLocationSettings,
             onRefresh = onRefresh,
             onDismissShabbatBanner = onDismissShabbatBanner,
             modifier = modifier,

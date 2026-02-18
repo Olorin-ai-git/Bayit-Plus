@@ -32,6 +32,7 @@ import tv.bayit.plus.core.model.PodcastEpisodeItem
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val HERO_ASPECT_RATIO = 1f
@@ -91,14 +92,28 @@ internal fun PodcastMetadataSection(state: PodcastDetailUiState.Success) {
 }
 
 @Composable
-internal fun PodcastActionSection(isSubscribed: Boolean, onSubscribeToggle: () -> Unit) {
+internal fun PodcastActionSection(
+    isSubscribed: Boolean,
+    onPlayLatest: () -> Unit,
+    onSubscribeToggle: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassButton(
-            text = if (isSubscribed) "Unsubscribe" else "Subscribe",
+            text = bayitString("podcasts.playLatest"),
+            onClick = onPlayLatest,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        GlassButton(
+            text = if (isSubscribed) {
+                bayitString("podcasts.unsubscribe")
+            } else {
+                bayitString("podcasts.subscribe")
+            },
             onClick = onSubscribeToggle,
-            isPrimary = !isSubscribed,
+            isPrimary = false,
             modifier = Modifier.fillMaxWidth(),
         )
     }

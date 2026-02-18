@@ -1,6 +1,7 @@
 package tv.bayit.plus.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,14 @@ import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
 import tv.bayit.plus.ui.components.BreadcrumbBar
 import tv.bayit.plus.ui.components.GlassBottomNavBar
+import tv.bayit.plus.ui.components.MiniAudioPlayerBar
 import tv.bayit.plus.ui.components.PiPWidgetContainer
 import tv.bayit.plus.ui.components.TopAppBar
 import tv.bayit.plus.ui.components.VoiceAssistantFAB
 import tv.bayit.plus.ui.components.VoiceAssistantModal
 import tv.bayit.plus.ui.components.WidgetDock
 import tv.bayit.plus.ui.components.rememberBreadcrumbTrail
+import tv.bayit.plus.ui.viewmodel.MiniPlayerViewModel
 import tv.bayit.plus.ui.viewmodel.NavBarViewModel
 import tv.bayit.plus.ui.viewmodel.WidgetDockViewModel
 
@@ -36,6 +39,7 @@ fun BayitMainScaffold(
     authState: AuthState,
     widgetDockViewModel: WidgetDockViewModel = hiltViewModel(),
     navBarViewModel: NavBarViewModel = hiltViewModel(),
+    miniPlayerViewModel: MiniPlayerViewModel = hiltViewModel(),
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val isAuthenticated = authState is AuthState.Authenticated
@@ -62,6 +66,7 @@ fun BayitMainScaffold(
     val userPhotoUrl by navBarViewModel.userPhotoUrl.collectAsStateWithLifecycle()
     val userName by navBarViewModel.userName.collectAsStateWithLifecycle()
     val currentLanguage by navBarViewModel.currentLanguage.collectAsStateWithLifecycle()
+    val audioState by miniPlayerViewModel.audioState.collectAsStateWithLifecycle()
 
     val isRootTab = AppTab.entries.any { tab ->
         tab.route::class.qualifiedName == currentRoute
@@ -93,19 +98,29 @@ fun BayitMainScaffold(
         },
         bottomBar = {
             if (isRootTab) {
-                GlassBottomNavBar(
-                    selectedTab = selectedTab,
-                    onTabSelected = { tab ->
-                        selectedTab = tab
-                        navController.navigate(tab.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                Column {
+                    MiniAudioPlayerBar(
+                        audioState = audioState,
+                        isVisible = audioState.isActive,
+                        onTogglePlayPause = miniPlayerViewModel::togglePlayPause,
+                        onSkipBackward = miniPlayerViewModel::skipBackward,
+                        onSkipForward = miniPlayerViewModel::skipForward,
+                        onClose = miniPlayerViewModel::stop,
+                    )
+                    GlassBottomNavBar(
+                        selectedTab = selectedTab,
+                        onTabSelected = { tab ->
+                            selectedTab = tab
+                            navController.navigate(tab.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         },
         floatingActionButton = {

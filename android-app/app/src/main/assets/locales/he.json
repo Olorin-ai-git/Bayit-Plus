@@ -321,7 +321,9 @@
       }
     },
     "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
-    "enableLocation": "הפעל מיקום"
+    "enableLocation": "הפעל מיקום",
+    "locationPermissionDeniedDescription": "הגישה למיקום נדחתה. פתח הגדרות כדי להפעיל אותה ולראות תוכן ישראלי בקרבתך.",
+    "openSettings": "פתח הגדרות"
   },
   "search": {
     "title": "חיפוש",
@@ -404,7 +406,15 @@
       "educational": "חינוכי"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
-    "tryLater": "נסה שוב מאוחר יותר"
+    "tryLater": "נסה שוב מאוחר יותר",
+    "playLatest": "נגן אחרון",
+    "subscribe": "הירשם",
+    "unsubscribe": "בטל הרשמה"
+  },
+  "miniPlayer": {
+    "skipBackward": "דלג 15 שניות אחורה",
+    "skipForward": "דלג 30 שניות קדימה",
+    "closePlayer": "סגור נגן"
   },
   "vod": {
     "title": "סרטים וסדרות",

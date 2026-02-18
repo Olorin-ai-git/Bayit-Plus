@@ -133,11 +133,12 @@ private fun GreetingContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        val lipsyncUrl = greeting.lipsyncVideoUrl
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            if (greeting.lipsyncVideoUrl != null) {
+            if (lipsyncUrl != null) {
                 GlassButton(
                     text = "Play Lipsync",
-                    onClick = { onPlayLipsyncVideo(greeting.lipsyncVideoUrl) },
+                    onClick = { onPlayLipsyncVideo(lipsyncUrl) },
                     isPrimary = false,
                     modifier = Modifier.weight(1f),
                 )

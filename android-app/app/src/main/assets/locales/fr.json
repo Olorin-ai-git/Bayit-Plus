@@ -323,7 +323,9 @@
       }
     },
     "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
-    "enableLocation": "Activer la localisation"
+    "enableLocation": "Activer la localisation",
+    "locationPermissionDeniedDescription": "L'accès à la localisation a été refusé. Ouvrez les Paramètres pour l'activer et voir le contenu israélien près de chez vous.",
+    "openSettings": "Ouvrir les Paramètres"
   },
   "search": {
     "title": "Rechercher",
@@ -406,7 +408,15 @@
       "educational": "Éducatif"
     },
     "noPodcasts": "Aucun podcast disponible",
-    "tryLater": "Réessayez plus tard"
+    "tryLater": "Réessayez plus tard",
+    "playLatest": "Lire le dernier",
+    "subscribe": "S'abonner",
+    "unsubscribe": "Se desabonner"
+  },
+  "miniPlayer": {
+    "skipBackward": "Reculer de 15 secondes",
+    "skipForward": "Avancer de 30 secondes",
+    "closePlayer": "Fermer le lecteur"
   },
   "vod": {
     "title": "Films et Séries",

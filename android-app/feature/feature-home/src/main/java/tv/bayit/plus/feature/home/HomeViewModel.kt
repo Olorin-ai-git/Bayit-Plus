@@ -114,9 +114,34 @@ class HomeViewModel @Inject constructor(
         launchSection { loadYoungsters().let { data -> updateState { copy(youngstersTrending = data) } } }
         launchSection { loadTelAvivContent().let { data -> updateState { copy(telAvivContent = data) } } }
         launchSection { loadJerusalemContent().let { data -> updateState { copy(jerusalemContent = data) } } }
+        launchSection { loadShabbatInfo().let { data -> updateState { copy(shabbatInfo = data) } } }
+
+        if (locationManager.hasLocationPermission()) {
+            launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }
+            launchSection { loadIsraeliBusinesses().let { data -> updateState { copy(israeliBusinesses = data) } } }
+        } else {
+            val previouslyDenied = locationManager.wasPermissionRequested()
+            updateState { copy(locationPermissionNeeded = true, locationPermissionPreviouslyDenied = previouslyDenied) }
+        }
+    }
+
+    fun markLocationPermissionRequested() {
+        locationManager.markPermissionRequested()
+    }
+
+    fun onLocationPermissionGranted() {
+        updateState { copy(locationPermissionNeeded = false, locationPermissionPreviouslyDenied = false) }
         launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }
         launchSection { loadIsraeliBusinesses().let { data -> updateState { copy(israeliBusinesses = data) } } }
-        launchSection { loadShabbatInfo().let { data -> updateState { copy(shabbatInfo = data) } } }
+    }
+
+    fun onLocationPermissionDenied() {
+        locationManager.markPermissionRequested()
+        updateState { copy(locationPermissionPreviouslyDenied = true) }
+    }
+
+    fun recheckLocationPermission() {
+        if (locationManager.hasLocationPermission()) onLocationPermissionGranted()
     }
 
     private fun launchSection(block: suspend () -> Unit) {
@@ -361,6 +386,8 @@ sealed interface HomeUiState {
         val israeliBusinesses: IsraeliBusinessesResponse? = null,
         val shabbatInfo: ShabbatInfo? = null,
         val isShabbatBannerDismissed: Boolean = false,
+        val locationPermissionNeeded: Boolean = false,
+        val locationPermissionPreviouslyDenied: Boolean = false,
         val isRefreshing: Boolean = false,
     ) : HomeUiState
 

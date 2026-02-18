@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
+import tv.bayit.plus.core.media.AudioPlaybackManager
 import tv.bayit.plus.core.model.PodcastDetail
 import tv.bayit.plus.core.model.PodcastEpisodeItem
 import javax.inject.Inject
@@ -20,13 +21,13 @@ import javax.inject.Inject
  *
  * Loads podcast metadata via [PodcastRepository.getPodcast] and
  * episode list via [PodcastRepository.getEpisodes].
- * Manages subscribe/unsubscribe state toggling.
- * Exposes [PodcastDetailUiState] for pattern matching in the Compose layer.
+ * Manages subscribe/unsubscribe state toggling and inline playback.
  */
 @HiltViewModel
 class PodcastDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val podcastRepository: PodcastRepository,
+    private val audioPlaybackManager: AudioPlaybackManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -36,12 +37,32 @@ class PodcastDetailViewModel @Inject constructor(
     val uiState: StateFlow<PodcastDetailUiState> = _uiState.asStateFlow()
 
     init {
+        audioPlaybackManager.attachScope(viewModelScope)
         loadPodcastDetail()
     }
 
     fun retry() {
         _uiState.value = PodcastDetailUiState.Loading
         loadPodcastDetail()
+    }
+
+    fun refresh() {
+        val current = _uiState.value as? PodcastDetailUiState.Success ?: return
+        _uiState.value = current.copy(isRefreshing = true)
+        loadPodcastDetail()
+    }
+
+    fun playLatestEpisode() {
+        val current = _uiState.value as? PodcastDetailUiState.Success ?: return
+        val audioUrl = current.episodes.firstOrNull()?.audioUrl ?: return
+
+        audioPlaybackManager.playDirectUrl(
+            url = audioUrl,
+            title = current.title,
+            subtitle = current.author,
+            artworkUrl = current.cover,
+            contentId = current.showId,
+        )
     }
 
     fun toggleSubscription() {
@@ -154,23 +175,4 @@ class PodcastDetailViewModel @Inject constructor(
             }
         }
     }
-}
-
-sealed interface PodcastDetailUiState {
-    data object Loading : PodcastDetailUiState
-
-    data class Success(
-        val showId: String,
-        val title: String,
-        val author: String?,
-        val description: String?,
-        val cover: String?,
-        val category: String?,
-        val episodeCount: Int?,
-        val episodes: List<PodcastEpisodeItem>,
-        val isSubscribed: Boolean,
-        val isLoadingEpisodes: Boolean,
-    ) : PodcastDetailUiState
-
-    data class Error(val message: String) : PodcastDetailUiState
 }

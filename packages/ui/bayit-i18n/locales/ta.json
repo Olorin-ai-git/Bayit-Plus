@@ -3669,7 +3669,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
-    "enableLocation": "இருப்பிடத்தை இயக்கு"
+    "enableLocation": "இருப்பிடத்தை இயக்கு",
+    "locationPermissionDeniedDescription": "இருப்பிட அணுகல் மறுக்கப்பட்டது. அதை இயக்க மற்றும் உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கத்தைக் காண அமைப்புகளைத் திறக்கவும்.",
+    "openSettings": "அமைப்புகளைத் திற"
   },
   "judaism": {
     "title": "யூதமதம்",
@@ -4223,7 +4225,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "சமீபத்தியதை இயக்கு",
+    "subscribe": "சந்தா செய்",
+    "unsubscribe": "சந்தா நீக்கு"
+  },
+  "miniPlayer": {
+    "skipBackward": "15 வினாடி பின்னால்",
+    "skipForward": "30 வினாடி முன்னால்",
+    "closePlayer": "பிளேயரை மூடு"
   },
   "profile": {
     "title": "என் சுயவிவரம்",

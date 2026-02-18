@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -44,7 +45,7 @@ fun PodcastsRoute(
     PodcastsScreen(
         uiState = uiState,
         onShowClick = { show -> onNavigateToPodcast(show.id) },
-        onSubscribeClick = viewModel::toggleSubscription,
+        onPlayLatest = viewModel::playLatestEpisode,
         onRefresh = viewModel::refresh,
         modifier = modifier,
     )
@@ -54,7 +55,7 @@ fun PodcastsRoute(
 internal fun PodcastsScreen(
     uiState: PodcastsUiState,
     onShowClick: (PodcastShow) -> Unit,
-    onSubscribeClick: (String) -> Unit,
+    onPlayLatest: (String) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -80,7 +81,7 @@ internal fun PodcastsScreen(
                         PodcastGridItem(
                             show = show,
                             onClick = { onShowClick(show) },
-                            onSubscribeClick = { onSubscribeClick(show.id) },
+                            onPlayLatest = { onPlayLatest(show.id) },
                         )
                     }
                 }
@@ -98,7 +99,7 @@ internal fun PodcastsScreen(
 private fun PodcastGridItem(
     show: PodcastShow,
     onClick: () -> Unit,
-    onSubscribeClick: () -> Unit,
+    onPlayLatest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     GlassCard(modifier = modifier.clickable(onClick = onClick)) {
@@ -138,16 +139,15 @@ private fun PodcastGridItem(
             ) {
                 show.episodeCount?.let { count ->
                     Text(
-                        text = "$count episodes",
+                        text = "$count ${bayitString("podcasts.episodes")}",
                         style = MaterialTheme.typography.labelSmall,
                         color = DesignTokens.Colors.Text.muted,
                     )
                 }
                 Spacer(modifier = Modifier.width(DesignTokens.Spacing.xs))
                 GlassButton(
-                    text = if (show.isSubscribed == true) "Subscribed" else "Subscribe",
-                    onClick = onSubscribeClick,
-                    isPrimary = show.isSubscribed != true,
+                    text = bayitString("podcasts.playLatest"),
+                    onClick = onPlayLatest,
                 )
             }
         }

@@ -233,7 +233,9 @@
     "nearYou": "आसपास के इज़राइली",
     "betaExclusive": "बीटा एक्सक्लूसिव",
     "locationPermissionDescription": "इज़राइली सामग्री और आपके नज़दीक व्यवसायों को देखने के लिए स्थान सक्षम करें",
-    "enableLocation": "स्थान सक्षम करें"
+    "enableLocation": "स्थान सक्षम करें",
+    "locationPermissionDeniedDescription": "स्थान पहुंच अस्वीकृत कर दी गई। इसे सक्षम करने और अपने पास इज़राइली सामग्री देखने के लिए सेटिंग खोलें।",
+    "openSettings": "सेटिंग खोलें"
   },
   "search": {
     "title": "खोजें",
@@ -300,7 +302,15 @@
       "sports": "खेल",
       "history": "इतिहास",
       "educational": "शैक्षिक"
-    }
+    },
+    "playLatest": "नवीनतम चलाएं",
+    "subscribe": "सदस्यता लें",
+    "unsubscribe": "सदस्यता रद्द करें"
+  },
+  "miniPlayer": {
+    "skipBackward": "15 सेकंड पीछे",
+    "skipForward": "30 सेकंड आगे",
+    "closePlayer": "प्लेयर बंद करें"
   },
   "vod": {
     "title": "फ़िल्में और सीरीज़",

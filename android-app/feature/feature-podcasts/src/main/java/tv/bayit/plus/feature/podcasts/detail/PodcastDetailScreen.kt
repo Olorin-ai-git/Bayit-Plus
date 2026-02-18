@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,9 +34,11 @@ fun PodcastDetailRoute(
     PodcastDetailScreen(
         uiState = uiState,
         onEpisodePlay = { episodeId -> onNavigateToPlayer(episodeId, "podcast_episode") },
+        onPlayLatest = viewModel::playLatestEpisode,
         onSubscribeToggle = viewModel::toggleSubscription,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
+        onRefresh = viewModel::refresh,
         modifier = modifier,
     )
 }
@@ -44,9 +47,11 @@ fun PodcastDetailRoute(
 internal fun PodcastDetailScreen(
     uiState: PodcastDetailUiState,
     onEpisodePlay: (String) -> Unit,
+    onPlayLatest: () -> Unit,
     onSubscribeToggle: () -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -60,8 +65,10 @@ internal fun PodcastDetailScreen(
             is PodcastDetailUiState.Success -> PodcastSuccessContent(
                 state = uiState,
                 onEpisodePlay = onEpisodePlay,
+                onPlayLatest = onPlayLatest,
                 onSubscribeToggle = onSubscribeToggle,
                 onBack = onBack,
+                onRefresh = onRefresh,
             )
         }
     }
@@ -71,27 +78,35 @@ internal fun PodcastDetailScreen(
 private fun PodcastSuccessContent(
     state: PodcastDetailUiState.Success,
     onEpisodePlay: (String) -> Unit,
+    onPlayLatest: () -> Unit,
     onSubscribeToggle: () -> Unit,
     onBack: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item { PodcastHeroSection(state, onBack) }
-        item { PodcastMetadataSection(state) }
-        item { PodcastActionSection(state.isSubscribed, onSubscribeToggle) }
-        if (state.isLoadingEpisodes) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(DesignTokens.Spacing.xxxxl),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    GlassSpinner(size = SpinnerSize.MEDIUM)
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { PodcastHeroSection(state, onBack) }
+            item { PodcastMetadataSection(state) }
+            item { PodcastActionSection(state.isSubscribed, onPlayLatest, onSubscribeToggle) }
+            if (state.isLoadingEpisodes) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(DesignTokens.Spacing.xxxxl),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        GlassSpinner(size = SpinnerSize.MEDIUM)
+                    }
                 }
-            }
-        } else {
-            items(items = state.episodes, key = { it.id }) { episode ->
-                PodcastEpisodeRow(episode = episode, onPlay = { onEpisodePlay(episode.id) })
+            } else {
+                items(items = state.episodes, key = { it.id }) { episode ->
+                    PodcastEpisodeRow(episode = episode, onPlay = { onEpisodePlay(episode.id) })
+                }
             }
         }
     }

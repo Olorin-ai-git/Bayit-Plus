@@ -5692,7 +5692,9 @@
     "documentary": "Documentary",
     "series": "Series",
     "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
-    "enableLocation": "Activer la localisation"
+    "enableLocation": "Activer la localisation",
+    "locationPermissionDeniedDescription": "L'accès à la localisation a été refusé. Ouvrez les Paramètres pour l'activer et voir le contenu israélien près de chez vous.",
+    "openSettings": "Ouvrir les Paramètres"
   },
   "household": {
     "title": "Gestion du Foyer",
@@ -6885,7 +6887,15 @@
     "notFound": "Podcast not found",
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
-    "rssUrlHint": "Enter the RSS feed URL for your podcast"
+    "rssUrlHint": "Enter the RSS feed URL for your podcast",
+    "playLatest": "Lire le dernier",
+    "subscribe": "S'abonner",
+    "unsubscribe": "Se desabonner"
+  },
+  "miniPlayer": {
+    "skipBackward": "Reculer de 15 secondes",
+    "skipForward": "Avancer de 30 secondes",
+    "closePlayer": "Fermer le lecteur"
   },
   "portal": {
     "nav": {

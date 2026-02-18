@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
+import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.i18n.LocalBayitStrings
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
@@ -35,6 +36,16 @@ internal fun HomeSuccessContent(
     onYoungstersClick: () -> Unit,
     onJerusalemClick: () -> Unit,
     onTelAvivClick: () -> Unit,
+    onContinueWatchingShowAll: () -> Unit,
+    onLiveTVShowAll: () -> Unit,
+    onRadioShowAll: () -> Unit,
+    onTrendingShowAll: () -> Unit,
+    onCategoryShowAll: (String) -> Unit,
+    onIsraelisCityShowAll: () -> Unit,
+    onIsraeliBusinessesShowAll: () -> Unit,
+    onRequestLocationPermission: () -> Unit,
+    onOpenLocationSettings: () -> Unit,
+    isLocationPermissionPermanentlyDenied: Boolean,
     onRefresh: () -> Unit,
     onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -106,6 +117,7 @@ internal fun HomeSuccessContent(
                     ContinueWatchingRow(
                         items = uiState.continueWatching,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onShowAllClick = onContinueWatchingShowAll,
                     )
                 }
             }
@@ -124,13 +136,32 @@ internal fun HomeSuccessContent(
 
             if (uiState.liveChannels.isNotEmpty()) {
                 item(key = "live") {
-                    LiveTVRow(channels = uiState.liveChannels, onChannelClick = onChannelClick)
+                    LiveTVRow(
+                        channels = uiState.liveChannels,
+                        onChannelClick = onChannelClick,
+                        onShowAllClick = onLiveTVShowAll,
+                    )
                 }
             }
 
             if (uiState.radioStations.isNotEmpty()) {
                 item(key = "radio") {
-                    RadioStationsRow(stations = uiState.radioStations, onStationClick = onRadioClick)
+                    RadioStationsRow(
+                        stations = uiState.radioStations,
+                        onStationClick = onRadioClick,
+                        onShowAllClick = onRadioShowAll,
+                    )
+                }
+            }
+
+            if (uiState.locationPermissionNeeded) {
+                item(key = "location_permission") {
+                    LocationPermissionCard(
+                        isPermanentlyDenied = isLocationPermissionPermanentlyDenied,
+                        onRequestPermission = onRequestLocationPermission,
+                        onOpenSettings = onOpenLocationSettings,
+                        modifier = Modifier.padding(horizontal = DesignTokens.Spacing.lg),
+                    )
                 }
             }
 
@@ -140,6 +171,7 @@ internal fun HomeSuccessContent(
                         title = bayitString("home.nearYou"),
                         israelisResponse = uiState.israelisInCity,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onShowAllClick = onIsraelisCityShowAll,
                     )
                 }
             }
@@ -149,6 +181,7 @@ internal fun HomeSuccessContent(
                     BusinessLocationRow(
                         businessesResponse = uiState.israeliBusinesses,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onShowAllClick = onIsraeliBusinessesShowAll,
                     )
                 }
             }
@@ -158,6 +191,7 @@ internal fun HomeSuccessContent(
                     TrendingRow(
                         items = uiState.trendingContent,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onShowAllClick = onTrendingShowAll,
                     )
                 }
             }
@@ -197,7 +231,11 @@ internal fun HomeSuccessContent(
             }
 
             items(items = uiState.categories, key = { it.id }) { category ->
-                CategoryRow(category = category, onItemClick = onContentClick)
+                CategoryRow(
+                    category = category,
+                    onItemClick = onContentClick,
+                    onShowAllClick = onCategoryShowAll,
+                )
             }
         }
     }

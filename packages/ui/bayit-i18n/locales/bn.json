@@ -3586,7 +3586,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "আপনার কাছের ইসরায়েলি বিষয়বস্তু এবং ব্যবসা দেখতে অবস্থান সক্ষম করুন",
-    "enableLocation": "অবস্থান সক্ষম করুন"
+    "enableLocation": "অবস্থান সক্ষম করুন",
+    "locationPermissionDeniedDescription": "অবস্থান অ্যাক্সেস অস্বীকৃত হয়েছে। এটি সক্ষম করতে এবং আপনার কাছের ইসরায়েলি বিষয়বস্তু দেখতে সেটিংস খুলুন।",
+    "openSettings": "সেটিংস খুলুন"
   },
   "judaism": {
     "title": "ইহুদি ধর্ম",
@@ -4135,7 +4137,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "সর্বশেষ চালান",
+    "subscribe": "সাবস্ক্রাইব",
+    "unsubscribe": "আনসাবস্ক্রাইব"
+  },
+  "miniPlayer": {
+    "skipBackward": "15 সেকেন্ড পিছনে",
+    "skipForward": "30 সেকেন্ড সামনে",
+    "closePlayer": "প্লেয়ার বন্ধ করুন"
   },
   "profile": {
     "title": "আমার প্রোফাইল",

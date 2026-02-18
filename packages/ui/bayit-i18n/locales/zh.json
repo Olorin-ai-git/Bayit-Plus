@@ -4057,7 +4057,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "启用位置以查看附近的以色列内容和商店",
-    "enableLocation": "启用位置"
+    "enableLocation": "启用位置",
+    "locationPermissionDeniedDescription": "位置访问被拒绝。打开设置以启用它并查看附近的以色列内容。",
+    "openSettings": "打开设置"
   },
   "jerusalem": {
     "title": "耶路撒冷连接",
@@ -4667,7 +4669,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "播放最新",
+    "subscribe": "订阅",
+    "unsubscribe": "取消订阅"
+  },
+  "miniPlayer": {
+    "skipBackward": "后退15秒",
+    "skipForward": "前进30秒",
+    "closePlayer": "关闭播放器"
   },
   "profile": {
     "title": "我的资料",

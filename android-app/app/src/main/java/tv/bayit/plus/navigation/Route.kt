@@ -79,6 +79,9 @@ sealed class Route {
     // Trending
     @Serializable data object Trending : Route()
 
+    // Category browse (VOD filtered to a specific category)
+    @Serializable data class CategoryBrowse(val categoryId: String) : Route()
+
     // Interactive Subtitles
     @Serializable data class InteractiveSubtitles(val contentId: String) : Route()
 

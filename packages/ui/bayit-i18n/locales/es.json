@@ -4735,7 +4735,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
-    "enableLocation": "Activar ubicación"
+    "enableLocation": "Activar ubicación",
+    "locationPermissionDeniedDescription": "El acceso a la ubicación fue denegado. Abre Configuración para habilitarlo y ver contenido israelí cerca de ti.",
+    "openSettings": "Abrir Configuración"
   },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
@@ -5419,7 +5421,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "Reproducir ultimo",
+    "subscribe": "Suscribirse",
+    "unsubscribe": "Cancelar suscripcion"
+  },
+  "miniPlayer": {
+    "skipBackward": "Retroceder 15 segundos",
+    "skipForward": "Adelantar 30 segundos",
+    "closePlayer": "Cerrar reproductor"
   },
   "profile": {
     "title": "Mi Perfil",

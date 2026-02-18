@@ -5462,7 +5462,9 @@
     "documentary": "דוקומנטרי",
     "series": "סדרות",
     "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
-    "enableLocation": "הפעל מיקום"
+    "enableLocation": "הפעל מיקום",
+    "locationPermissionDeniedDescription": "הגישה למיקום נדחתה. פתח הגדרות כדי להפעיל אותה ולראות תוכן ישראלי בקרבתך.",
+    "openSettings": "פתח הגדרות"
   },
   "household": {
     "title": "ניהול משק בית",
@@ -6519,7 +6521,15 @@
     "notFound": "Podcast not found",
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
-    "rssUrlHint": "Enter the RSS feed URL for your podcast"
+    "rssUrlHint": "Enter the RSS feed URL for your podcast",
+    "playLatest": "נגן אחרון",
+    "subscribe": "הירשם",
+    "unsubscribe": "בטל הרשמה"
+  },
+  "miniPlayer": {
+    "skipBackward": "דלג 15 שניות אחורה",
+    "skipForward": "דלג 30 שניות קדימה",
+    "closePlayer": "סגור נגן"
   },
   "portal": {
     "nav": {

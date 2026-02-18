@@ -56,6 +56,8 @@ data class MediaPlayback(
     val streamUrl: String,
     val contentId: String? = null,
     val title: String? = null,
+    val subtitle: String? = null,
+    val artworkUrl: String? = null,
     val startPosition: Long? = null,
     val isLive: Boolean = false,
 )

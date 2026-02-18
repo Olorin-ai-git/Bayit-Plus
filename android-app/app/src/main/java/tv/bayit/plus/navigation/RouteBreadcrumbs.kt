@@ -47,6 +47,7 @@ internal val routeLabels = mapOf(
     "Audiobooks" to "Audiobooks",
     "AudiobookDetail" to "Audiobook",
     "Trending" to "Trending",
+    "CategoryBrowse" to "Browse",
     "InteractiveSubtitles" to "Subtitles",
     "Chapters" to "Chapters",
     "Chatbot" to "AI Chat",

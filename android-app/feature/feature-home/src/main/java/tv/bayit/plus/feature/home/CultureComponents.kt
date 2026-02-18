@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.painterResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,7 +28,9 @@ import kotlinx.coroutines.delay
 import tv.bayit.plus.core.model.IsraeliBusinessesResponse
 import tv.bayit.plus.core.model.IsraelisInCityResponse
 import tv.bayit.plus.core.model.SectionContentItem
+import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassContentCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import java.text.SimpleDateFormat
@@ -91,6 +96,7 @@ internal fun LocationContentRow(
     title: String,
     israelisResponse: IsraelisInCityResponse?,
     onItemClick: (String, String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val content = israelisResponse?.content
@@ -108,17 +114,26 @@ internal fun LocationContentRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.Bold,
-            )
-            israelisResponse?.coverage?.let { coverage ->
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = coverage,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.Colors.Text.secondary,
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.Bold,
+                )
+                israelisResponse?.coverage?.let { coverage ->
+                    Text(
+                        text = coverage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = DesignTokens.Colors.Text.secondary,
+                    )
+                }
+            }
+            IconButton(onClick = onShowAllClick) {
+                Icon(
+                    painter = painterResource(android.R.drawable.ic_menu_more),
+                    contentDescription = null,
+                    tint = DesignTokens.Colors.Primary.p400,
                 )
             }
         }
@@ -147,6 +162,7 @@ internal fun LocationContentRow(
 internal fun BusinessLocationRow(
     businessesResponse: IsraeliBusinessesResponse?,
     onItemClick: (String, String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val content = businessesResponse?.content
@@ -162,17 +178,26 @@ internal fun BusinessLocationRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = "Israeli Businesses Near You",
-                style = MaterialTheme.typography.titleLarge,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.Bold,
-            )
-            businessesResponse?.coverage?.let { coverage ->
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = coverage,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.Colors.Text.secondary,
+                    text = "Israeli Businesses Near You",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.Bold,
+                )
+                businessesResponse?.coverage?.let { coverage ->
+                    Text(
+                        text = coverage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = DesignTokens.Colors.Text.secondary,
+                    )
+                }
+            }
+            IconButton(onClick = onShowAllClick) {
+                Icon(
+                    painter = painterResource(android.R.drawable.ic_menu_more),
+                    contentDescription = null,
+                    tint = DesignTokens.Colors.Primary.p400,
                 )
             }
         }
@@ -194,6 +219,45 @@ internal fun BusinessLocationRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+internal fun LocationPermissionCard(
+    isPermanentlyDenied: Boolean,
+    onRequestPermission: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .glassMorphism()
+            .padding(DesignTokens.Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+    ) {
+        Text(
+            text = bayitString("home.nearYou"),
+            style = MaterialTheme.typography.titleLarge,
+            color = DesignTokens.Colors.Text.primary,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = if (isPermanentlyDenied)
+                bayitString("home.locationPermissionDeniedDescription")
+            else
+                bayitString("home.locationPermissionDescription"),
+            style = MaterialTheme.typography.bodyMedium,
+            color = DesignTokens.Colors.Text.secondary,
+        )
+        GlassButton(
+            text = if (isPermanentlyDenied)
+                bayitString("home.openSettings")
+            else
+                bayitString("home.enableLocation"),
+            onClick = if (isPermanentlyDenied) onOpenSettings else onRequestPermission,
+            isPrimary = true,
+        )
     }
 }
 

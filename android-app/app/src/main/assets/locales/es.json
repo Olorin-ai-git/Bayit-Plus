@@ -325,7 +325,9 @@
       }
     },
     "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
-    "enableLocation": "Activar ubicación"
+    "enableLocation": "Activar ubicación",
+    "locationPermissionDeniedDescription": "El acceso a la ubicación fue denegado. Abre Configuración para habilitarlo y ver contenido israelí cerca de ti.",
+    "openSettings": "Abrir Configuración"
   },
   "search": {
     "title": "Buscar",
@@ -408,7 +410,15 @@
       "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
+    "tryLater": "Intenta de nuevo más tarde",
+    "playLatest": "Reproducir ultimo",
+    "subscribe": "Suscribirse",
+    "unsubscribe": "Cancelar suscripcion"
+  },
+  "miniPlayer": {
+    "skipBackward": "Retroceder 15 segundos",
+    "skipForward": "Adelantar 30 segundos",
+    "closePlayer": "Cerrar reproductor"
   },
   "vod": {
     "title": "Películas y Series",

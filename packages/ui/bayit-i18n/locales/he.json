@@ -4907,7 +4907,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
-    "enableLocation": "הפעל מיקום"
+    "enableLocation": "הפעל מיקום",
+    "locationPermissionDeniedDescription": "הגישה למיקום נדחתה. פתח הגדרות כדי להפעיל אותה ולראות תוכן ישראלי בקרבתך.",
+    "openSettings": "פתח הגדרות"
   },
   "jerusalem": {
     "title": "חיבור לירושלים",
@@ -5596,7 +5598,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "נגן אחרון",
+    "subscribe": "הירשם",
+    "unsubscribe": "בטל הרשמה"
+  },
+  "miniPlayer": {
+    "skipBackward": "דלג 15 שניות אחורה",
+    "skipForward": "דלג 30 שניות קדימה",
+    "closePlayer": "סגור נגן"
   },
   "profile": {
     "title": "הפרופיל שלי",

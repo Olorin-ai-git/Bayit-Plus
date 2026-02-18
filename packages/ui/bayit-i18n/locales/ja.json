@@ -4492,7 +4492,9 @@
     "liveTVRow": "Live TV",
     "youngsters": "Youngsters",
     "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
-    "enableLocation": "位置情報を有効にする"
+    "enableLocation": "位置情報を有効にする",
+    "locationPermissionDeniedDescription": "位置情報へのアクセスが拒否されました。設定を開いて有効にし、近くのイスラエルコンテンツを見てください。",
+    "openSettings": "設定を開く"
   },
   "judaism": {
     "title": "ユダヤ教",
@@ -5264,7 +5266,15 @@
     "podcastAdded": "Podcast added successfully",
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
-    "radio": "Radio"
+    "radio": "Radio",
+    "playLatest": "最新を再生",
+    "subscribe": "登録する",
+    "unsubscribe": "登録解除"
+  },
+  "miniPlayer": {
+    "skipBackward": "15秒戻る",
+    "skipForward": "30秒進む",
+    "closePlayer": "プレーヤーを閉じる"
   },
   "profile": {
     "title": "プロフィール",

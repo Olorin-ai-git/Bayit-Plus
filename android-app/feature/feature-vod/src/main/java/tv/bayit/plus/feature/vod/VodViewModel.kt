@@ -2,6 +2,7 @@ package tv.bayit.plus.feature.vod
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,10 +19,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VodViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val categoryRepository: CategoryRepository,
     private val contentRepository: ContentRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
+
+    /** Category pre-selected when entering from a home section "Show All" tap. */
+    private val initialCategoryId: String? = savedStateHandle.get<String>("categoryId")
 
     private val _uiState = MutableStateFlow<VodUiState>(VodUiState.Loading)
     val uiState: StateFlow<VodUiState> = _uiState.asStateFlow()
@@ -75,6 +80,7 @@ class VodViewModel @Inject constructor(
                     val currentState = _uiState.value
                     val categories = (currentState as? VodUiState.Success)?.categories ?: emptyList()
                     val selectedId = (currentState as? VodUiState.Success)?.selectedCategoryId
+                        ?: initialCategoryId
                     _uiState.value = VodUiState.Success(
                         categories = categories,
                         selectedCategoryId = selectedId,
@@ -113,11 +119,13 @@ class VodViewModel @Inject constructor(
                     )
 
                     val currentState = _uiState.value as? VodUiState.Success ?: return@launch
+                    val effectiveCategoryId = currentState.selectedCategoryId ?: initialCategoryId
                     _uiState.value = currentState.copy(
                         categories = categories,
+                        selectedCategoryId = effectiveCategoryId,
                         contentItems = filterByCategory(
                             _allItems.value,
-                            currentState.selectedCategoryId,
+                            effectiveCategoryId,
                             categories,
                         ),
                     )

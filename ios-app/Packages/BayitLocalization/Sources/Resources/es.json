@@ -5492,7 +5492,9 @@
     "documentary": "Documental",
     "series": "Series",
     "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
-    "enableLocation": "Activar ubicación"
+    "enableLocation": "Activar ubicación",
+    "locationPermissionDeniedDescription": "El acceso a la ubicación fue denegado. Abre Configuración para habilitarlo y ver contenido israelí cerca de ti.",
+    "openSettings": "Abrir Configuración"
   },
   "household": {
     "title": "Gestion del Hogar",
@@ -6540,7 +6542,15 @@
     "notFound": "Podcast not found",
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
-    "rssUrlHint": "Enter the RSS feed URL for your podcast"
+    "rssUrlHint": "Enter the RSS feed URL for your podcast",
+    "playLatest": "Reproducir ultimo",
+    "subscribe": "Suscribirse",
+    "unsubscribe": "Cancelar suscripcion"
+  },
+  "miniPlayer": {
+    "skipBackward": "Retroceder 15 segundos",
+    "skipForward": "Adelantar 30 segundos",
+    "closePlayer": "Cerrar reproductor"
   },
   "portal": {
     "nav": {

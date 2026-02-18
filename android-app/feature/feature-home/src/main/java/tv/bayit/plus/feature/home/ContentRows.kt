@@ -43,21 +43,24 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 internal fun ContinueWatchingRow(
     items: List<WatchHistoryItem>,
     onItemClick: (String, String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = bayitString("home.continueWatching"), modifier = modifier)
-    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-    ) {
-        items(items = items, key = { it.id }) { item ->
-            GlassContentCard(
-                imageUrl = item.thumbnail,
-                title = item.title,
-                progress = item.progress?.toFloat(),
-                onClick = { onItemClick(item.id, item.type.orEmpty()) },
-            )
+    Column(modifier = modifier) {
+        SectionRowHeaderWithAction(title = bayitString("home.continueWatching"), onShowAllClick = onShowAllClick)
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        ) {
+            items(items = items, key = { it.id }) { item ->
+                GlassContentCard(
+                    imageUrl = item.thumbnail,
+                    title = item.title,
+                    progress = item.progress?.toFloat(),
+                    onClick = { onItemClick(item.id, item.type.orEmpty()) },
+                )
+            }
         }
     }
 }
@@ -66,23 +69,26 @@ internal fun ContinueWatchingRow(
 internal fun LiveTVRow(
     channels: List<LiveChannelItem>,
     onChannelClick: (String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = bayitString("home.liveTV"), modifier = modifier)
-    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-    ) {
-        items(items = channels, key = { it.id }) { channel ->
-            GlassContentCard(
-                imageUrl = channel.logo ?: channel.thumbnail,
-                title = channel.name,
-                subtitle = channel.currentShow,
-                cardWidth = 140.dp,
-                badge = "LIVE",
-                onClick = { onChannelClick(channel.id) },
-            )
+    Column(modifier = modifier) {
+        SectionRowHeaderWithAction(title = bayitString("home.liveTV"), onShowAllClick = onShowAllClick)
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        ) {
+            items(items = channels, key = { it.id }) { channel ->
+                GlassContentCard(
+                    imageUrl = channel.logo ?: channel.thumbnail,
+                    title = channel.name,
+                    subtitle = channel.currentShow,
+                    cardWidth = 140.dp,
+                    badge = "LIVE",
+                    onClick = { onChannelClick(channel.id) },
+                )
+            }
         }
     }
 }
@@ -91,23 +97,26 @@ internal fun LiveTVRow(
 internal fun RadioStationsRow(
     stations: List<RadioStationItem>,
     onStationClick: (String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SectionRowHeader(title = bayitString("radio.title"), modifier = modifier)
-    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-    ) {
-        items(items = stations, key = { it.id }) { station ->
-            GlassContentCard(
-                imageUrl = station.logo,
-                title = station.name,
-                subtitle = station.currentSong ?: station.currentShow,
-                cardWidth = 140.dp,
-                aspectRatio = 1f,
-                onClick = { onStationClick(station.id) },
-            )
+    Column(modifier = modifier) {
+        SectionRowHeaderWithAction(title = bayitString("radio.title"), onShowAllClick = onShowAllClick)
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        ) {
+            items(items = stations, key = { it.id }) { station ->
+                GlassContentCard(
+                    imageUrl = station.logo,
+                    title = station.name,
+                    subtitle = station.currentSong ?: station.currentShow,
+                    cardWidth = 140.dp,
+                    aspectRatio = 1f,
+                    onClick = { onStationClick(station.id) },
+                )
+            }
         }
     }
 }
@@ -116,11 +125,13 @@ internal fun RadioStationsRow(
 internal fun TrendingRow(
     items: List<CultureTrendingItem>,
     onItemClick: (String, String) -> Unit,
+    onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     PanoramicSection(
         backgroundRes = R.drawable.bg_masada,
         title = bayitString("home.trendingInIsrael"),
+        onShowAll = onShowAllClick,
         modifier = modifier,
     ) {
         LazyRow(

@@ -195,6 +195,7 @@ internal fun HeroCarousel(
 internal fun CategoryRow(
     category: ContentCategory,
     onItemClick: (ContentItem) -> Unit,
+    onShowAllClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (category.items.isEmpty()) return
@@ -204,12 +205,9 @@ internal fun CategoryRow(
         ?: category.name
 
     Column(modifier = modifier) {
-        Text(
-            text = localizedName,
-            style = MaterialTheme.typography.titleLarge,
-            color = DesignTokens.Colors.Text.primary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = DesignTokens.Spacing.lg),
+        SectionRowHeaderWithAction(
+            title = localizedName,
+            onShowAllClick = { onShowAllClick(category.id) },
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
         LazyRow(
