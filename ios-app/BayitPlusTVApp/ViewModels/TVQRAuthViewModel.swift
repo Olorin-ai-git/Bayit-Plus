@@ -35,11 +35,11 @@ final class TVQRAuthViewModel {
     private let authManager: AuthManager
     private let logger: APILogger
     private let config: AppConfiguration
-    nonisolated private var webSocketTask: URLSessionWebSocketTask?
-    nonisolated private var refreshTask: Task<Void, Never>?
-    nonisolated private var initTask: Task<Void, Never>?
-    nonisolated private var pollingTask: Task<Void, Never>?
-    nonisolated private var pingTask: Task<Void, Never>?
+    @ObservationIgnored nonisolated(unsafe) private var webSocketTask: URLSessionWebSocketTask?
+    @ObservationIgnored nonisolated(unsafe) private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored nonisolated(unsafe) private var initTask: Task<Void, Never>?
+    @ObservationIgnored nonisolated(unsafe) private var pollingTask: Task<Void, Never>?
+    @ObservationIgnored nonisolated(unsafe) private var pingTask: Task<Void, Never>?
     private var lastInitTime: Date?
 
     /// When true, a WebSocket message has already updated the state;

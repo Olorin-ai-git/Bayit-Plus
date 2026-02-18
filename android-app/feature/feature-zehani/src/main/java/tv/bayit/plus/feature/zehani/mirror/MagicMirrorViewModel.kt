@@ -22,19 +22,26 @@ class MagicMirrorViewModel @Inject constructor(
 ) : ViewModel() {
 
     val profileId: String = checkNotNull(savedStateHandle["profileId"])
+    private val avatarId: String = savedStateHandle["avatarId"] ?: ""
 
     private val _uiState = MutableStateFlow<MagicMirrorUiState>(MagicMirrorUiState.Loading)
     val uiState: StateFlow<MagicMirrorUiState> = _uiState.asStateFlow()
 
+    private val _avatarImageUrl = MutableStateFlow<String?>(null)
+    val avatarImageUrl: StateFlow<String?> = _avatarImageUrl.asStateFlow()
+
+    private val _noAvatar = MutableStateFlow(false)
+    val noAvatar: StateFlow<Boolean> = _noAvatar.asStateFlow()
+
     init {
         loadGreeting()
+        if (avatarId.isNotBlank()) loadAvatarImage()
     }
 
     fun refreshGreeting() {
         viewModelScope.launch {
             _uiState.value = MagicMirrorUiState.Loading
             logger.debug("Refreshing greeting", mapOf("profileId" to profileId))
-
             when (val result = zehAniRepository.refreshGreeting(profileId)) {
                 is BayitResult.Success -> {
                     logger.info("Greeting refreshed", mapOf("profileId" to profileId))
@@ -42,9 +49,7 @@ class MagicMirrorViewModel @Inject constructor(
                 }
                 is BayitResult.Error -> {
                     logger.error("Greeting refresh failed", result.exception)
-                    _uiState.value = MagicMirrorUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = MagicMirrorUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
             }
@@ -59,7 +64,6 @@ class MagicMirrorViewModel @Inject constructor(
     private fun loadGreeting() {
         viewModelScope.launch {
             logger.debug("Loading daily greeting", mapOf("profileId" to profileId))
-
             when (val result = zehAniRepository.getDailyGreeting(profileId)) {
                 is BayitResult.Success -> {
                     logger.info("Daily greeting loaded", mapOf("profileId" to profileId))
@@ -67,9 +71,25 @@ class MagicMirrorViewModel @Inject constructor(
                 }
                 is BayitResult.Error -> {
                     logger.error("Daily greeting load failed", result.exception)
-                    _uiState.value = MagicMirrorUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = MagicMirrorUiState.Error(result.message ?: result.exception.message.orEmpty())
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
+    private fun loadAvatarImage() {
+        viewModelScope.launch {
+            logger.debug("Loading avatar image", mapOf("avatarId" to avatarId))
+            when (val result = zehAniRepository.getMeshStatus(avatarId)) {
+                is BayitResult.Success -> {
+                    _avatarImageUrl.value = result.data.avatarImageUrl
+                    _noAvatar.value = result.data.avatarImageUrl == null
+                    logger.info("Avatar image loaded", mapOf("hasImage" to (result.data.avatarImageUrl != null).toString()))
+                }
+                is BayitResult.Error -> {
+                    _noAvatar.value = true
+                    logger.debug("No avatar found", mapOf("avatarId" to avatarId))
                 }
                 is BayitResult.Loading -> Unit
             }

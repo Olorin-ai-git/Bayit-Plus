@@ -119,7 +119,7 @@ import tv.bayit.plus.feature.zehani.selfie.VideoSelfieRoute
 import tv.bayit.plus.feature.zehani.wardrobe.AvatarWardrobeRoute
 import tv.bayit.plus.feature.zehani.avatar.Avatar3DRoute
 import tv.bayit.plus.feature.zehani.contacts.ContactsRoute
-import tv.bayit.plus.feature.zehani.feedback.FeedbackRoute
+import tv.bayit.plus.feature.zehani.feedback.FeedbackInboxRoute
 import tv.bayit.plus.feature.zehani.highlights.HighlightsRoute
 import tv.bayit.plus.feature.zehani.mirror.MagicMirrorRoute
 import tv.bayit.plus.feature.zehani.consent.BiometricConsentRoute
@@ -566,7 +566,7 @@ fun BayitNavHost(
         }
         composable<Route.ZehAni> {
             ZehAniDashboardRoute(
-                onNavigateToMagicMirror = { navController.navigate(Route.ZehAniMagicMirror(profileId = "current")) },
+                onNavigateToMagicMirror = { navController.navigate(Route.ZehAniMagicMirror(profileId = "current", avatarId = "current")) },
                 onNavigateToV2V = { navController.navigate(Route.ZehAniV2V(avatarId = "default", profileId = "current")) },
                 onNavigateToAvatar3D = { navController.navigate(Route.ZehAniAvatar3D(avatarId = "default")) },
                 onNavigateToHighlights = { navController.navigate(Route.ZehAniHighlights(profileId = "current")) },
@@ -577,7 +577,10 @@ fun BayitNavHost(
             )
         }
         composable<Route.ZehAniMagicMirror> {
-            MagicMirrorRoute(onNavigateBack = { navController.popBackStack() })
+            MagicMirrorRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onCreateAvatar = { navController.navigate(Route.VideoSelfie) },
+            )
         }
         composable<Route.ZehAniV2V> {
             V2VPracticeRoute(onNavigateBack = { navController.popBackStack() })
@@ -592,7 +595,7 @@ fun BayitNavHost(
             ContactsRoute(onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.ZehAniFeedback> {
-            FeedbackRoute(onNavigateBack = { navController.popBackStack() })
+            FeedbackInboxRoute(onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.ZehAniAvatarSettings> {
             AvatarSettingsRoute(onNavigateBack = { navController.popBackStack() })

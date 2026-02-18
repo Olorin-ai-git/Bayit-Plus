@@ -19,6 +19,7 @@ data class MagicMirrorGreeting(
     @SerialName("greeting_text_en") val greetingTextEn: String,
     @SerialName("greeting_audio_gcs_path") val greetingAudioGcsPath: String? = null,
     @SerialName("lipsync_data_gcs_path") val lipsyncDataGcsPath: String? = null,
+    @SerialName("lipsync_video_url") val lipsyncVideoUrl: String? = null,
     @SerialName("vocabulary_of_the_day") val vocabularyOfTheDay: String? = null,
     @SerialName("generated_at") val generatedAt: String,
     @SerialName("expires_at") val expiresAt: String? = null,

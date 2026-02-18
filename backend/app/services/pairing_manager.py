@@ -12,7 +12,10 @@ from typing import Dict, Optional
 
 from fastapi import WebSocket
 
+from app.core.logging_config import get_logger
 from app.models.device_pairing import DevicePairingSession
+
+logger = get_logger(__name__)
 
 try:
     import qrcode
@@ -145,8 +148,14 @@ class PairingManager:
             if session_id in self._tv_websockets:
                 try:
                     await self._tv_websockets[session_id].close()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug(
+                        "Error closing existing TV WebSocket",
+                        extra={
+                            "session_id_prefix": session_id[:8],
+                            "error": str(exc),
+                        },
+                    )
 
             self._tv_websockets[session_id] = websocket
             return session
@@ -155,11 +164,14 @@ class PairingManager:
         self,
         session_id: str,
         device_info: dict,
-    ) -> bool:
-        """Register companion device connection"""
+    ) -> dict:
+        """Register companion device connection.
+
+        Returns dict with 'success' and 'ws_notified' flags, or None if session not found.
+        """
         session = await self.get_session(session_id)
         if not session or session.is_expired():
-            return False
+            return {"success": False, "ws_notified": False}
 
         # Update session in MongoDB
         session.companion_device_info = device_info
@@ -167,6 +179,7 @@ class PairingManager:
         await session.save()
 
         # Notify TV via WebSocket
+        ws_notified = False
         if session_id in self._tv_websockets:
             try:
                 await self._tv_websockets[session_id].send_json(
@@ -175,10 +188,22 @@ class PairingManager:
                         "device_info": device_info,
                     }
                 )
-            except Exception:
-                pass
+                ws_notified = True
+            except Exception as exc:
+                logger.warning(
+                    "Failed to notify TV via WebSocket for companion_connected",
+                    extra={
+                        "session_id_prefix": session_id[:8],
+                        "error": str(exc),
+                    },
+                )
+        else:
+            logger.info(
+                "No TV WebSocket connected for session; TV will rely on polling",
+                extra={"session_id_prefix": session_id[:8]},
+            )
 
-        return True
+        return {"success": True, "ws_notified": ws_notified}
 
     async def start_authentication(self, session_id: str) -> bool:
         """Mark session as authenticating"""
@@ -198,8 +223,14 @@ class PairingManager:
                         "type": "authenticating",
                     }
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(
+                    "Failed to notify TV via WebSocket for authenticating",
+                    extra={
+                        "session_id_prefix": session_id[:8],
+                        "error": str(exc),
+                    },
+                )
 
         return True
 
@@ -231,8 +262,14 @@ class PairingManager:
                         "access_token": access_token,
                     }
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(
+                    "Failed to notify TV via WebSocket for pairing_success",
+                    extra={
+                        "session_id_prefix": session_id[:8],
+                        "error": str(exc),
+                    },
+                )
 
         return True
 
@@ -255,8 +292,14 @@ class PairingManager:
                         "reason": reason,
                     }
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(
+                    "Failed to notify TV via WebSocket for pairing_failed",
+                    extra={
+                        "session_id_prefix": session_id[:8],
+                        "error": str(exc),
+                    },
+                )
 
         return True
 
@@ -279,8 +322,14 @@ class PairingManager:
                     }
                 )
                 await self._tv_websockets[session_id].close()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug(
+                    "Error notifying TV of session expiry",
+                    extra={
+                        "session_id_prefix": session_id[:8],
+                        "error": str(exc),
+                    },
+                )
 
         # Clean up WebSocket connections
         self._tv_websockets.pop(session_id, None)
@@ -299,8 +348,14 @@ class PairingManager:
             if session_id in self._tv_websockets:
                 try:
                     await self._tv_websockets[session_id].close()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug(
+                        "Error closing TV WebSocket during session removal",
+                        extra={
+                            "session_id_prefix": session_id[:8],
+                            "error": str(exc),
+                        },
+                    )
 
             # Remove from in-memory WebSocket tracking
             self._tv_websockets.pop(session_id, None)
@@ -328,8 +383,14 @@ class PairingManager:
                         }
                     )
                     await self._tv_websockets[session.session_id].close()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug(
+                        "Error notifying TV during expired session cleanup",
+                        extra={
+                            "session_id_prefix": session.session_id[:8],
+                            "error": str(exc),
+                        },
+                    )
 
             # Clean up
             self._tv_websockets.pop(session.session_id, None)
@@ -340,13 +401,17 @@ class PairingManager:
         return count
 
     async def get_session_status(self, session_id: str) -> Optional[dict]:
-        """Get current session status"""
+        """Get current session status.
+
+        When status is 'success', includes access_token and authenticated_user_id
+        so that polling clients can complete authentication without WebSocket.
+        """
         session = await self.get_session(session_id)
 
         if not session:
             return None
 
-        return {
+        result = {
             "session_id": session.session_id,
             "status": session.status,
             "is_expired": session.is_expired(),
@@ -354,6 +419,14 @@ class PairingManager:
             "has_companion": session.companion_device_info is not None,
             "companion_device": session.companion_device_info,
         }
+
+        # Include credentials when pairing is complete so polling clients
+        # can finish authentication even if the WebSocket message was lost
+        if session.status == "success" and session.authenticated_token:
+            result["access_token"] = session.authenticated_token
+            result["authenticated_user_id"] = session.authenticated_user_id
+
+        return result
 
     async def get_active_sessions_count(self) -> int:
         """Number of active (non-expired) sessions"""

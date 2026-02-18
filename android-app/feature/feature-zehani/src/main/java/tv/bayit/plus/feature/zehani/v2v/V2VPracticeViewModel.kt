@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
+import tv.bayit.plus.core.data.repository.PracticePhrase
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import tv.bayit.plus.core.model.zehani.V2VSession
 import tv.bayit.plus.core.model.zehani.V2VTransformResult
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class V2VPracticeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
+    private val phoneticMirrorRepository: PhoneticMirrorRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -31,6 +34,22 @@ class V2VPracticeViewModel @Inject constructor(
 
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
+
+    private val _currentPhrase = MutableStateFlow<PracticePhrase?>(null)
+    val currentPhrase: StateFlow<PracticePhrase?> = _currentPhrase.asStateFlow()
+
+    private val phrases = mutableListOf<PracticePhrase>()
+    private var phraseIndex = 0
+
+    init {
+        loadPhrases()
+    }
+
+    fun nextPhrase() {
+        if (phrases.isEmpty()) return
+        phraseIndex = (phraseIndex + 1) % phrases.size
+        _currentPhrase.value = phrases[phraseIndex]
+    }
 
     fun startRecording() {
         _isRecording.value = true
@@ -54,26 +73,36 @@ class V2VPracticeViewModel @Inject constructor(
                 }
                 is BayitResult.Error -> {
                     logger.error("V2V sessions load failed", result.exception)
-                    _uiState.value = V2VPracticeUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = V2VPracticeUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
             }
         }
     }
 
-    fun resetToReady() {
-        _uiState.value = V2VPracticeUiState.Ready
+    fun resetToReady() { _uiState.value = V2VPracticeUiState.Ready }
+
+    private fun loadPhrases() {
+        viewModelScope.launch {
+            logger.debug("Loading practice phrases", mapOf("profileId" to profileId))
+            when (val result = phoneticMirrorRepository.fetchPhrases(profileId, "medium", 10)) {
+                is BayitResult.Success -> {
+                    phrases.clear()
+                    phrases.addAll(result.data)
+                    if (phrases.isNotEmpty()) _currentPhrase.value = phrases[0]
+                    logger.info("Practice phrases loaded", mapOf("count" to phrases.size.toString()))
+                }
+                is BayitResult.Error -> logger.error("Failed to load practice phrases", result.exception)
+                is BayitResult.Loading -> Unit
+            }
+        }
     }
 
     private fun submitAttempt(text: String, audioData: ByteArray) {
         viewModelScope.launch {
             _uiState.value = V2VPracticeUiState.Analyzing
             logger.debug("Submitting pronunciation attempt")
-
             val audioBase64 = Base64.encodeToString(audioData, Base64.NO_WRAP)
-
             when (val result = zehAniRepository.transformVoice(avatarId, profileId, audioBase64, text)) {
                 is BayitResult.Success -> {
                     logger.info("Pronunciation feedback received")
@@ -81,9 +110,7 @@ class V2VPracticeViewModel @Inject constructor(
                 }
                 is BayitResult.Error -> {
                     logger.error("Pronunciation attempt failed", result.exception)
-                    _uiState.value = V2VPracticeUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = V2VPracticeUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
             }

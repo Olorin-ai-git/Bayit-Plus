@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.highlights
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,9 +14,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,10 +36,23 @@ fun HighlightsRoute(
     viewModel: HighlightsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.shareEvents.collect { shareToken ->
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, shareToken)
+            }
+            context.startActivity(Intent.createChooser(intent, "Share Highlight"))
+        }
+    }
+
     HighlightsScreen(
         uiState = uiState,
         onRefresh = viewModel::refresh,
         onGenerate = viewModel::generateReel,
+        onShareReel = viewModel::shareReel,
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -48,6 +64,7 @@ internal fun HighlightsScreen(
     uiState: HighlightsUiState,
     onRefresh: () -> Unit,
     onGenerate: () -> Unit,
+    onShareReel: (HighlightReel) -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -62,6 +79,7 @@ internal fun HighlightsScreen(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = onRefresh,
                 onGenerate = onGenerate,
+                onShareReel = onShareReel,
             )
         }
     }
@@ -73,55 +91,41 @@ private fun HighlightsContent(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onGenerate: () -> Unit,
+    onShareReel: (HighlightReel) -> Unit,
 ) {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
-            item {
-                GlassButton(
-                    text = "Generate New Reel",
-                    onClick = onGenerate,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            item { GlassButton(text = "Generate New Reel", onClick = onGenerate, modifier = Modifier.fillMaxWidth()) }
 
             if (highlights.isEmpty()) {
                 item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "No highlights yet",
-                            color = DesignTokens.Colors.Text.muted,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                    Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
+                        Text(text = "No highlights yet", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
 
             items(highlights, key = { it.id }) { reel ->
-                ReelCard(reel = reel)
+                ReelCard(reel = reel, onShare = { onShareReel(reel) })
             }
         }
     }
 }
 
 @Composable
-private fun ReelCard(reel: HighlightReel) {
+private fun ReelCard(reel: HighlightReel, onShare: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Reel ${reel.id.take(8)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = reel.status,
@@ -134,17 +138,9 @@ private fun ReelCard(reel: HighlightReel) {
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-            Text(
-                text = "${reel.momentCount} moments",
-                style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.secondary,
-            )
-            if (reel.shareToken != null) {
-                Text(
-                    text = "Shareable link available",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.Colors.Primary.light,
-                )
+            Text(text = "${reel.momentCount} moments", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary)
+            if (reel.shareToken != null && reel.status == "ready") {
+                GlassButton(text = "Share", onClick = onShare, isPrimary = false, modifier = Modifier.fillMaxWidth())
             }
         }
     }
@@ -153,10 +149,7 @@ private fun ReelCard(reel: HighlightReel) {
 @Composable
 private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }

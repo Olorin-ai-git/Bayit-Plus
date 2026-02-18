@@ -12,6 +12,7 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
+import tv.bayit.plus.core.data.repository.PracticePhrase
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 /**
@@ -72,6 +73,23 @@ class ApiPhoneticMirrorRepository(
             }
             response.lessons
         }
+
+    override suspend fun fetchPhrases(
+        profileId: String,
+        difficulty: String,
+        count: Int,
+    ): BayitResult<List<PracticePhrase>> = runCatchingResult {
+        val response = client.safeApiCall {
+            service.getPhrases(profileId, difficulty, count)
+        }
+        response.phrases.map { p ->
+            PracticePhrase(
+                phraseHe = p.phraseHe,
+                transliteration = p.transliteration,
+                translation = p.translation,
+            )
+        }
+    }
 }
 
 private interface PhoneticMirrorService {
@@ -100,6 +118,13 @@ private interface PhoneticMirrorService {
     suspend fun getLessons(
         @Path("language") language: String,
     ): PhoneticLessonsResponse
+
+    @GET("api/v1/phonetic/phrases")
+    suspend fun getPhrases(
+        @Query("profile_id") profileId: String,
+        @Query("difficulty") difficulty: String,
+        @Query("count") count: Int,
+    ): PhoneticPhrasesResponse
 }
 
 /** Request body for generating a phonetic guide. */
@@ -168,6 +193,20 @@ private data class PhoneticLesson(
     val difficulty: String? = null,
     @SerialName("word_count") val wordCount: Int = 0,
     @SerialName("is_completed") val isCompleted: Boolean = false,
+)
+
+/** List wrapper for practice phrases response. */
+@Serializable
+private data class PhoneticPhrasesResponse(
+    val phrases: List<PhoneticPhraseItem> = emptyList(),
+)
+
+/** A single Hebrew practice phrase with transliteration and English translation. */
+@Serializable
+private data class PhoneticPhraseItem(
+    @SerialName("phrase_he") val phraseHe: String,
+    val transliteration: String,
+    val translation: String,
 )
 
 private val AUDIO_WAV_TYPE = "audio/wav".toMediaType()

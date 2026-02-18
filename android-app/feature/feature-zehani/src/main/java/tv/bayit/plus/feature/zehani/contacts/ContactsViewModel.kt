@@ -29,6 +29,9 @@ class ContactsViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _showAddSheet = MutableStateFlow(false)
+    val showAddSheet: StateFlow<Boolean> = _showAddSheet.asStateFlow()
+
     init {
         loadContacts()
     }
@@ -36,30 +39,27 @@ class ContactsViewModel @Inject constructor(
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
         val current = _uiState.value as? ContactsUiState.Success ?: return
-        val filtered = if (query.isBlank()) {
-            current.allContacts
-        } else {
-            current.allContacts.filter {
-                it.displayName.contains(query, ignoreCase = true) ||
-                    it.relationship.contains(query, ignoreCase = true)
-            }
+        val filtered = if (query.isBlank()) current.allContacts
+        else current.allContacts.filter {
+            it.displayName.contains(query, ignoreCase = true) ||
+                it.relationship.contains(query, ignoreCase = true)
         }
         _uiState.value = current.copy(filteredContacts = filtered)
     }
 
-    fun addContact(displayName: String, phoneNumber: String, pin: String) {
+    fun showAddContact() { _showAddSheet.value = true }
+    fun hideAddContact() { _showAddSheet.value = false }
+
+    fun addContact(displayName: String, phoneNumber: String, relationship: String, language: String, pin: String) {
         viewModelScope.launch {
             logger.debug("Adding WhatsApp contact", mapOf("name" to displayName))
-            when (val result = zehAniRepository.addContact(
-                profileId, phoneNumber, displayName, "grandparent", "he", pin,
-            )) {
+            when (val result = zehAniRepository.addContact(profileId, phoneNumber, displayName, relationship, language, pin)) {
                 is BayitResult.Success -> {
                     logger.info("Contact added", mapOf("contactId" to result.data.id))
+                    _showAddSheet.value = false
                     loadContacts()
                 }
-                is BayitResult.Error -> {
-                    logger.error("Add contact failed", result.exception)
-                }
+                is BayitResult.Error -> logger.error("Add contact failed", result.exception)
                 is BayitResult.Loading -> Unit
             }
         }
@@ -73,9 +73,7 @@ class ContactsViewModel @Inject constructor(
                     logger.info("Contact deleted", mapOf("contactId" to contactId))
                     loadContacts()
                 }
-                is BayitResult.Error -> {
-                    logger.error("Delete contact failed", result.exception)
-                }
+                is BayitResult.Error -> logger.error("Delete contact failed", result.exception)
                 is BayitResult.Loading -> Unit
             }
         }
@@ -94,16 +92,11 @@ class ContactsViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val contacts = result.data
                     logger.info("Contacts loaded", mapOf("count" to contacts.size.toString()))
-                    _uiState.value = ContactsUiState.Success(
-                        allContacts = contacts,
-                        filteredContacts = contacts,
-                    )
+                    _uiState.value = ContactsUiState.Success(allContacts = contacts, filteredContacts = contacts)
                 }
                 is BayitResult.Error -> {
                     logger.error("Contacts load failed", result.exception)
-                    _uiState.value = ContactsUiState.Error(
-                        message = result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = ContactsUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
             }
@@ -113,11 +106,9 @@ class ContactsViewModel @Inject constructor(
 
 sealed interface ContactsUiState {
     data object Loading : ContactsUiState
-
     data class Success(
         val allContacts: List<WhatsAppContact>,
         val filteredContacts: List<WhatsAppContact>,
     ) : ContactsUiState
-
     data class Error(val message: String) : ContactsUiState
 }

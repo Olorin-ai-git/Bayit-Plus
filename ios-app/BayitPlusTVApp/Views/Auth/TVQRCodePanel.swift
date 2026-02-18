@@ -42,9 +42,13 @@ struct TVQRCodePanel: View {
                 viewModel = vm
                 await vm.initSession()
 
-                // Log QR code URL for debugging
                 if let qrData = vm.qrCodeData {
-                    print("📱 QR Code URL: \(qrData)")
+                    logger.debug(
+                        "QR code pairing URL generated",
+                        metadata: [
+                            "url_prefix": String(qrData.prefix(40)),
+                        ]
+                    )
                 }
             }
         }

@@ -129,6 +129,9 @@ async def companion_connect(request: CompanionConnectRequest):
     """
     Register companion device connection.
     Called by companion after verifying session to notify TV of connection.
+
+    Returns ws_notified flag so the companion knows if the TV received
+    the WebSocket notification or will rely on polling.
     """
     device_info = {
         "device_type": request.device_type,
@@ -136,15 +139,18 @@ async def companion_connect(request: CompanionConnectRequest):
         "connected_at": datetime.utcnow().isoformat(),
     }
 
-    success = await pairing_manager.connect_companion(request.session_id, device_info)
+    result = await pairing_manager.connect_companion(request.session_id, device_info)
 
-    if not success:
+    if not result["success"]:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Session not found or expired",
         )
 
-    return {"status": "connected"}
+    return {
+        "status": "connected",
+        "ws_notified": result["ws_notified"],
+    }
 
 
 @router.post("/complete", response_model=TokenResponse)
@@ -308,6 +314,9 @@ async def complete_auth_token(
 async def get_session_status(session_id: str):
     """
     Get current status of a pairing session.
+
+    When status is 'success', includes access_token and user data
+    so polling clients can complete authentication without WebSocket.
     """
     status_info = await pairing_manager.get_session_status(session_id)
 
@@ -316,6 +325,16 @@ async def get_session_status(session_id: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Session not found",
         )
+
+    # Resolve user data for completed sessions so polling clients
+    # can finish authentication even if the WebSocket message was lost
+    if (
+        status_info.get("status") == "success"
+        and status_info.get("authenticated_user_id")
+    ):
+        user = await User.get(status_info["authenticated_user_id"])
+        if user:
+            status_info["user"] = user.to_response().model_dump(mode="json")
 
     return status_info
 

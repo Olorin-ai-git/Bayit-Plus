@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,10 +40,16 @@ fun ContactsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val showAddSheet by viewModel.showAddSheet.collectAsStateWithLifecycle()
+
     ContactsScreen(
         uiState = uiState,
         searchQuery = searchQuery,
+        showAddSheet = showAddSheet,
         onSearchQueryChange = viewModel::updateSearchQuery,
+        onShowAddContact = viewModel::showAddContact,
+        onHideAddContact = viewModel::hideAddContact,
+        onAddContact = viewModel::addContact,
         onDeleteContact = viewModel::deleteContact,
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
@@ -51,14 +61,25 @@ fun ContactsRoute(
 internal fun ContactsScreen(
     uiState: ContactsUiState,
     searchQuery: String,
+    showAddSheet: Boolean,
     onSearchQueryChange: (String) -> Unit,
+    onShowAddContact: () -> Unit,
+    onHideAddContact: () -> Unit,
+    onAddContact: (String, String, String, String, String) -> Unit,
     onDeleteContact: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Contacts")
+        GlassTopBar(
+            title = "Contacts",
+            actions = {
+                IconButton(onClick = onShowAddContact) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Contact", tint = DesignTokens.Colors.Text.primary)
+                }
+            },
+        )
         when (uiState) {
             is ContactsUiState.Loading -> GlassLoadingIndicator()
             is ContactsUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -69,6 +90,13 @@ internal fun ContactsScreen(
                 onDeleteContact = onDeleteContact,
             )
         }
+    }
+
+    if (showAddSheet) {
+        AddContactSheet(
+            onDismiss = onHideAddContact,
+            onSave = { name, phone, rel, lang, pin -> onAddContact(name, phone, rel, lang, pin) },
+        )
     }
 }
 
@@ -85,20 +113,13 @@ private fun ContactsContent(
     ) {
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            GlassSearchBar(
-                query = searchQuery,
-                onQueryChange = onSearchQueryChange,
-                placeholder = "Search contacts...",
-            )
+            GlassSearchBar(query = searchQuery, onQueryChange = onSearchQueryChange, placeholder = "Search contacts...")
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
         }
 
         if (contacts.isEmpty()) {
             item {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl),
-                    contentAlignment = Alignment.Center,
-                ) {
+                Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
                     Text(
                         text = if (searchQuery.isBlank()) "No contacts yet" else "No matching contacts",
                         color = DesignTokens.Colors.Text.muted,
@@ -123,23 +144,10 @@ private fun ContactCard(contact: WhatsAppContact, onDelete: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = contact.displayName,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.Medium,
-                )
-                Text(
-                    text = "${contact.relationship} - ${contact.language}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = DesignTokens.Colors.Text.secondary,
-                )
+                Text(text = contact.displayName, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.Medium)
+                Text(text = "${contact.relationship} - ${contact.language}", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary)
                 if (contact.totalReelsSent > 0) {
-                    Text(
-                        text = "${contact.totalReelsSent} reels shared",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = DesignTokens.Colors.Text.muted,
-                    )
+                    Text(text = "${contact.totalReelsSent} reels shared", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
                 }
             }
             GlassButton(text = "Remove", onClick = onDelete, isPrimary = false)
@@ -150,10 +158,7 @@ private fun ContactCard(contact: WhatsAppContact, onDelete: () -> Unit) {
 @Composable
 private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }

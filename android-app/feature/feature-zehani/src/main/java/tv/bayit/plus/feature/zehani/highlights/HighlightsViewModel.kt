@@ -4,8 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
@@ -25,6 +28,9 @@ class HighlightsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<HighlightsUiState>(HighlightsUiState.Loading)
     val uiState: StateFlow<HighlightsUiState> = _uiState.asStateFlow()
+
+    private val _shareEvents = MutableSharedFlow<String>()
+    val shareEvents: SharedFlow<String> = _shareEvents.asSharedFlow()
 
     init {
         loadHighlights()
@@ -46,11 +52,17 @@ class HighlightsViewModel @Inject constructor(
                     logger.info("Highlight reel generation started", mapOf("status" to result.data.status))
                     loadHighlights()
                 }
-                is BayitResult.Error -> {
-                    logger.error("Highlight reel generation failed", result.exception)
-                }
+                is BayitResult.Error -> logger.error("Highlight reel generation failed", result.exception)
                 is BayitResult.Loading -> Unit
             }
+        }
+    }
+
+    fun shareReel(reel: HighlightReel) {
+        val token = reel.shareToken ?: return
+        viewModelScope.launch {
+            logger.info("Sharing reel", mapOf("reelId" to reel.id))
+            _shareEvents.emit(token)
         }
     }
 
@@ -66,16 +78,11 @@ class HighlightsViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val reels = result.data
                     logger.info("Highlights loaded", mapOf("count" to reels.size.toString()))
-                    _uiState.value = HighlightsUiState.Success(
-                        highlights = reels,
-                        isRefreshing = false,
-                    )
+                    _uiState.value = HighlightsUiState.Success(highlights = reels, isRefreshing = false)
                 }
                 is BayitResult.Error -> {
                     logger.error("Highlights load failed", result.exception)
-                    _uiState.value = HighlightsUiState.Error(
-                        message = result.message ?: result.exception.message.orEmpty(),
-                    )
+                    _uiState.value = HighlightsUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
             }
@@ -85,11 +92,6 @@ class HighlightsViewModel @Inject constructor(
 
 sealed interface HighlightsUiState {
     data object Loading : HighlightsUiState
-
-    data class Success(
-        val highlights: List<HighlightReel>,
-        val isRefreshing: Boolean,
-    ) : HighlightsUiState
-
+    data class Success(val highlights: List<HighlightReel>, val isRefreshing: Boolean) : HighlightsUiState
     data class Error(val message: String) : HighlightsUiState
 }

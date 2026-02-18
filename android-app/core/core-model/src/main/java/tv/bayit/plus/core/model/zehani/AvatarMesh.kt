@@ -18,6 +18,7 @@ data class AvatarMesh(
     val source: String? = null,
     @SerialName("has_glb") val hasGlb: Boolean = false,
     @SerialName("has_thumbnail") val hasThumbnail: Boolean = false,
+    @SerialName("avatar_image_url") val avatarImageUrl: String? = null,
     @SerialName("blend_shapes") val blendShapes: List<BlendShape> = emptyList(),
     @SerialName("bone_count") val boneCount: Int = 0,
     @SerialName("vertex_count") val vertexCount: Int = 0,

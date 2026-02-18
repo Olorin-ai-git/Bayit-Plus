@@ -4,19 +4,20 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * User feedback/interaction history item for Zeh Ani features.
+ * Received feedback item from a WhatsApp contact about a shared highlight reel.
  *
- * Maps to the backend feedback endpoint response from
- * `/api/v1/zeh-ani/feedback` endpoints.
+ * Maps to the backend FeedbackItem model returned from
+ * `GET /api/v1/zeh-ani/feedback` endpoints.
  */
 @Serializable
 data class FeedbackItem(
     val id: String,
-    @SerialName("profile_id") val profileId: String? = null,
-    val feedback: String,
-    val rating: Int,
-    val status: String? = null,
-    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("profile_id") val profileId: String,
+    @SerialName("contact_name") val contactName: String,
+    @SerialName("transcript_text") val transcriptText: String? = null,
+    @SerialName("detected_language") val detectedLanguage: String? = null,
+    @SerialName("audio_url") val audioUrl: String? = null,
+    @SerialName("created_at") val createdAt: String,
 )
 
 @Serializable

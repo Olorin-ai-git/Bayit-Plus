@@ -146,7 +146,7 @@ sealed class Route {
 
     // Zeh Ani (Me in the Story)
     @Serializable data object ZehAni : Route()
-    @Serializable data class ZehAniMagicMirror(val profileId: String) : Route()
+    @Serializable data class ZehAniMagicMirror(val profileId: String, val avatarId: String = "") : Route()
     @Serializable data class ZehAniV2V(val avatarId: String, val profileId: String) : Route()
     @Serializable data class ZehAniAvatar3D(val avatarId: String) : Route()
     @Serializable data class ZehAniHighlights(val profileId: String) : Route()
