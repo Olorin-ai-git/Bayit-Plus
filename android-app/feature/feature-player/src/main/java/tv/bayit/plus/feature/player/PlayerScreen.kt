@@ -31,6 +31,8 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
+import tv.bayit.plus.feature.player.sleeptimer.SleepTimerBanner
+import tv.bayit.plus.feature.player.sleeptimer.SleepTimerPickerSheet
 import tv.bayit.plus.feature.player.ui.PlayerOverlay
 
 /**
@@ -63,6 +65,7 @@ fun PlayerRoute(
     var showSubtitlePicker by remember { mutableStateOf(false) }
     var showSplitSubtitlePicker by remember { mutableStateOf(false) }
     var showOpenSubtitles by remember { mutableStateOf(false) }
+    var showSleepTimerPicker by remember { mutableStateOf(false) }
 
     DisposableEffect(contentId) {
         viewModel.loadContent(contentId, contentType)
@@ -137,6 +140,15 @@ fun PlayerRoute(
         onRestart = viewModel::restartContent,
         onVolumeChange = viewModel::setVolume,
         onSpeedChange = viewModel::setPlaybackSpeed,
+        showSleepTimerPicker = showSleepTimerPicker,
+        onShowSleepTimerPicker = { showSleepTimerPicker = true },
+        onHideSleepTimerPicker = { showSleepTimerPicker = false },
+        onStartSleepTimer = { minutes ->
+            viewModel.startSleepTimer(minutes)
+            showSleepTimerPicker = false
+        },
+        onExtendSleepTimer = viewModel::extendSleepTimer,
+        onCancelSleepTimer = viewModel::cancelSleepTimer,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -193,6 +205,12 @@ private fun PlayerScreen(
     onRestart: () -> Unit,
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
+    showSleepTimerPicker: Boolean,
+    onShowSleepTimerPicker: () -> Unit,
+    onHideSleepTimerPicker: () -> Unit,
+    onStartSleepTimer: (Int) -> Unit,
+    onExtendSleepTimer: (Int) -> Unit,
+    onCancelSleepTimer: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -236,6 +254,24 @@ private fun PlayerScreen(
                     onSpeedChange = onSpeedChange,
                     onBack = onBack,
                 )
+
+                if (!uiState.isLiveContent) {
+                    SleepTimerBanner(
+                        isVisible = extendedState.isSleepTimerActive,
+                        remainingSeconds = extendedState.sleepTimerRemainingSeconds,
+                        onExtend = onExtendSleepTimer,
+                        onCancel = onCancelSleepTimer,
+                        modifier = Modifier.align(Alignment.TopCenter).padding(top = DesignTokens.Spacing.xl),
+                    )
+                }
+
+                if (showSleepTimerPicker) {
+                    SleepTimerPickerSheet(
+                        activeDurationMinutes = extendedState.sleepTimerDurationMinutes,
+                        onSelect = onStartSleepTimer,
+                        onCancel = onHideSleepTimerPicker,
+                    )
+                }
 
                 if (showLanguagePicker) {
                     AILanguagePicker(

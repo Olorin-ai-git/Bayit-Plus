@@ -4733,7 +4733,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
+    "enableLocation": "Activar ubicación"
   },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
@@ -5310,6 +5312,18 @@
       "sessionEnded": "Sesion finalizada",
       "startInteraction": "Iniciar interaccion",
       "participants": "Participantes"
+    },
+    "sleepTimer": {
+      "title": "Temporizador de sueño",
+      "setTimer": "Configurar temporizador",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} restante",
+      "extend": "+{{minutes}} min",
+      "cancel": "Cancelar temporizador",
+      "off": "Apagado",
+      "timerSet": "Temporizador configurado para {{minutes}} minutos",
+      "timerExtended": "Temporizador extendido {{minutes}} minutos",
+      "timerCancelled": "Temporizador de sueño cancelado"
     }
   },
   "listen": {

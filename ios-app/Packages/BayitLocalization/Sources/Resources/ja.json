@@ -5870,7 +5870,9 @@
     "movies": "Movies",
     "music": "Music",
     "documentary": "Documentary",
-    "series": "Series"
+    "series": "Series",
+    "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
+    "enableLocation": "位置情報を有効にする"
   },
   "household": {
     "title": "世帯管理",
@@ -6855,7 +6857,19 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing"
+    "dubbing": "Dubbing",
+    "sleepTimer": {
+      "title": "スリープタイマー",
+      "setTimer": "タイマーを設定",
+      "minutesFormat": "{{minutes}}分",
+      "remaining": "残り{{time}}",
+      "extend": "+{{minutes}}分",
+      "cancel": "タイマーをキャンセル",
+      "off": "オフ",
+      "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
+      "timerExtended": "タイマーを{{minutes}}分延長しました",
+      "timerCancelled": "スリープタイマーがキャンセルされました"
+    }
   },
   "playlist": {
     "title": "マイリスト",

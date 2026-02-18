@@ -5460,7 +5460,9 @@
     "movies": "סרטים",
     "music": "מוזיקה",
     "documentary": "דוקומנטרי",
-    "series": "סדרות"
+    "series": "סדרות",
+    "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
+    "enableLocation": "הפעל מיקום"
   },
   "household": {
     "title": "ניהול משק בית",
@@ -6238,7 +6240,7 @@
     "recordingError": "שגיאת הקלטה",
     "startRecording": "התחל הקלטה",
     "stopRecording": "עצור הקלטה",
-    "premiumRequired": "נדרש מנוי פרימיום",
+    "premiumRequired": "Premium Required",
     "recordingLiveOnly": "הקלטה זמינה רק עבור ערוצים חיים",
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
@@ -6331,7 +6333,6 @@
     "episodes": "Episodes",
     "loadingEpisode": "Loading episode...",
     "loadingStream": "Loading stream...",
-    "premiumRequired": "Premium Required",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
@@ -6358,16 +6359,19 @@
       "endDialogue": "סיים שיחה",
       "noCharactersAvailable": "אין דמויות זמינות לשיחה"
     },
-    "speedNormal": "רגיל",
-    "dismiss": "סגור",
-    "dismissPlayer": "סגור נגן",
-    "loadingMedia": "טוען מדיה",
-    "qualitySettings": "הגדרות איכות",
-    "recordingError": "שגיאת הקלטה",
-    "startRecording": "התחל הקלטה",
-    "stopRecording": "עצור הקלטה",
     "premiumRequiredRecording": "נדרש מנוי פרימיום",
-    "recordingLiveOnly": "הקלטה זמינה רק עבור ערוצים חיים"
+    "sleepTimer": {
+      "title": "טיימר שינה",
+      "setTimer": "הגדר טיימר שינה",
+      "minutesFormat": "{{minutes}} דק׳",
+      "remaining": "{{time}} נותרו",
+      "extend": "+{{minutes}} דק׳",
+      "cancel": "בטל טיימר",
+      "off": "כבוי",
+      "timerSet": "טיימר שינה הוגדר ל-{{minutes}} דקות",
+      "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
+      "timerCancelled": "טיימר שינה בוטל"
+    }
   },
   "playlist": {
     "title": "הרשימה שלי",

@@ -324,7 +324,9 @@
         "subtitle": "Watch Now",
         "description": "News, current affairs and quality content"
       }
-    }
+    },
+    "locationPermissionDescription": "Enable location to see Israeli content and businesses near you",
+    "enableLocation": "Enable Location"
   },
   "search": {
     "title": "Search",
@@ -1051,7 +1053,19 @@
     "scene_search": "Scene Search",
     "search_placeholder": "Search for a scene...",
     "language_ratio": "Language Learning Ratio",
-    "go_back": "Go Back"
+    "go_back": "Go Back",
+    "sleepTimer": {
+      "title": "Sleep Timer",
+      "setTimer": "Set Sleep Timer",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} remaining",
+      "extend": "+{{minutes}} min",
+      "cancel": "Cancel Timer",
+      "off": "Off",
+      "timerSet": "Sleep timer set for {{minutes}} minutes",
+      "timerExtended": "Timer extended by {{minutes}} minutes",
+      "timerCancelled": "Sleep timer cancelled"
+    }
   },
   "empty": {
     "noContent": "No content available",

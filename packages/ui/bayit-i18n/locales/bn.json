@@ -3584,7 +3584,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "আপনার কাছের ইসরায়েলি বিষয়বস্তু এবং ব্যবসা দেখতে অবস্থান সক্ষম করুন",
+    "enableLocation": "অবস্থান সক্ষম করুন"
   },
   "judaism": {
     "title": "ইহুদি ধর্ম",
@@ -4026,6 +4028,18 @@
       "sessionEnded": "সেশন শেষ হয়েছে",
       "startInteraction": "ইন্টারঅ্যাকশন শুরু করুন",
       "participants": "অংশগ্রহণকারী"
+    },
+    "sleepTimer": {
+      "title": "স্লিপ টাইমার",
+      "setTimer": "টাইমার সেট করুন",
+      "minutesFormat": "{{minutes}} মিনিট",
+      "remaining": "{{time}} বাকি",
+      "extend": "+{{minutes}} মিনিট",
+      "cancel": "টাইমার বাতিল",
+      "off": "বন্ধ",
+      "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
+      "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
+      "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
     }
   },
   "listen": {

@@ -5416,7 +5416,9 @@
     "movies": "Movies",
     "music": "Music",
     "documentary": "Documentary",
-    "series": "Series"
+    "series": "Series",
+    "locationPermissionDescription": "Enable location to see Israeli content and businesses near you",
+    "enableLocation": "Enable Location"
   },
   "household": {
     "title": "Household Management",
@@ -6180,7 +6182,7 @@
     "recordingError": "Recording Error",
     "startRecording": "Start recording",
     "stopRecording": "Stop recording",
-    "premiumRequired": "Premium subscription required",
+    "premiumRequired": "Premium Required",
     "recordingLiveOnly": "Recording is only available for live channels",
     "subscription": {
       "requiredTitle": "Subscription Required",
@@ -6267,7 +6269,6 @@
     "episodes": "Episodes",
     "loadingEpisode": "Loading episode...",
     "loadingStream": "Loading stream...",
-    "premiumRequired": "Premium Required",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
@@ -6294,16 +6295,19 @@
       "endDialogue": "End Dialogue",
       "noCharactersAvailable": "No characters available for dialogue"
     },
-    "speedNormal": "Normal",
-    "dismiss": "Dismiss",
-    "dismissPlayer": "Dismiss player",
-    "loadingMedia": "Loading media",
-    "qualitySettings": "Quality settings",
-    "recordingError": "Recording Error",
-    "startRecording": "Start recording",
-    "stopRecording": "Stop recording",
     "premiumRequiredRecording": "Premium subscription required",
-    "recordingLiveOnly": "Recording is only available for live channels"
+    "sleepTimer": {
+      "title": "Sleep Timer",
+      "setTimer": "Set Sleep Timer",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} remaining",
+      "extend": "+{{minutes}} min",
+      "cancel": "Cancel Timer",
+      "off": "Off",
+      "timerSet": "Sleep timer set for {{minutes}} minutes",
+      "timerExtended": "Timer extended by {{minutes}} minutes",
+      "timerCancelled": "Sleep timer cancelled"
+    }
   },
   "playlist": {
     "title": "My Playlist",

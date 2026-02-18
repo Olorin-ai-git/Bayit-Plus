@@ -9,7 +9,7 @@ import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
 import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Moon } from 'lucide-react'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, borderRadius, spacing } from '@olorin/design-tokens'
 import { GlassView, GlassBadge, GlassSlider } from '@bayit/shared/ui'
@@ -19,7 +19,10 @@ import { useDirection } from '@bayit/shared/hooks'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useResponsive } from '@/hooks/useResponsive'
 import { logger } from '@/utils/logger'
+import { useSleepTimer } from '@bayit/shared/hooks'
 import VolumeControls from './controls/VolumeControls'
+import SleepTimerPicker from './controls/SleepTimerPicker'
+import SleepTimerBanner from './controls/SleepTimerBanner'
 
 interface AudioPlayerProps {
   src: string
@@ -63,6 +66,9 @@ export default function AudioPlayer({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
+  const [showSleepTimerPicker, setShowSleepTimerPicker] = useState(false)
+
+  const sleepTimer = useSleepTimer({ audioRef })
 
   const playFocus = useTVFocus({ styleType: 'button' })
   const skipBackFocus = useTVFocus({ styleType: 'button' })
@@ -418,6 +424,27 @@ export default function AudioPlayer({
                 </View>
               </View>
 
+              {sleepTimer.isActive && !isLive && (
+                <SleepTimerBanner
+                  remainingSeconds={sleepTimer.remainingSeconds}
+                  onExtend={sleepTimer.extendTimer}
+                  onCancel={sleepTimer.cancelTimer}
+                />
+              )}
+
+              {!isLive && (
+                <View style={[styles.playbackBtns, { flexDirection, justifyContent: 'center' }]}>
+                  <Pressable
+                    onPress={() => setShowSleepTimerPicker(true)}
+                    style={[styles.heroSkipBtn, { width: 36, height: 36, borderRadius: 18 }]}
+                    accessibilityLabel={t('player.sleepTimer.title')}
+                    accessibilityRole="button"
+                  >
+                    <Moon size={16} color={sleepTimer.isActive ? colors.primary.light : colors.text} />
+                  </Pressable>
+                </View>
+              )}
+
               {/* Progress bar at bottom */}
               {!isLive && duration > 0 && (
                 <View style={styles.mobileBottomProgress}>
@@ -485,6 +512,14 @@ export default function AudioPlayer({
                   </View>
                 )}
 
+                {sleepTimer.isActive && !isLive && (
+                  <SleepTimerBanner
+                    remainingSeconds={sleepTimer.remainingSeconds}
+                    onExtend={sleepTimer.extendTimer}
+                    onCancel={sleepTimer.cancelTimer}
+                  />
+                )}
+
                 <View style={[styles.desktopControlsRow, { flexDirection }]}>
                   <View style={[styles.playbackBtns, { flexDirection }]}>
                     {!isLive && (
@@ -542,17 +577,43 @@ export default function AudioPlayer({
                     )}
                   </View>
 
-                  <VolumeControls
-                    isMuted={isMuted}
-                    volume={volume}
-                    onToggleMute={toggleMute}
-                    onVolumeChange={handleVolumeChange}
-                  />
+                  <View style={[styles.playbackBtns, { flexDirection }]}>
+                    {!isLive && (
+                      <Pressable
+                        onPress={() => setShowSleepTimerPicker(true)}
+                        style={[styles.heroSkipBtn, { width: 36, height: 36, borderRadius: 18 }]}
+                        accessibilityLabel={t('player.sleepTimer.title')}
+                        accessibilityRole="button"
+                      >
+                        <Moon size={16} color={sleepTimer.isActive ? colors.primary.light : colors.text} />
+                      </Pressable>
+                    )}
+                    <VolumeControls
+                      isMuted={isMuted}
+                      volume={volume}
+                      onToggleMute={toggleMute}
+                      onVolumeChange={handleVolumeChange}
+                    />
+                  </View>
                 </View>
                 </View>
               </>
             )}
         </View>
+
+        <SleepTimerPicker
+          isOpen={showSleepTimerPicker}
+          onSelect={(minutes) => {
+            sleepTimer.startTimer(minutes)
+            setShowSleepTimerPicker(false)
+          }}
+          onCancel={() => {
+            if (sleepTimer.isActive) sleepTimer.cancelTimer()
+            setShowSleepTimerPicker(false)
+          }}
+          activeDuration={sleepTimer.selectedDurationMinutes}
+          timerOptions={sleepTimer.timerOptions}
+        />
 
         {/* Error overlay */}
         {error && (
@@ -648,7 +709,26 @@ export default function AudioPlayer({
             </Text>
           )}
         </View>
+
+        {!isLive && (
+          <Pressable
+            onPress={() => setShowSleepTimerPicker(true)}
+            style={[styles.compactSkipBtn, { width: 28, height: 28, borderRadius: 14 }]}
+            accessibilityLabel={t('player.sleepTimer.title')}
+            accessibilityRole="button"
+          >
+            <Moon size={12} color={sleepTimer.isActive ? colors.primary.light : colors.text} />
+          </Pressable>
+        )}
       </View>
+
+      {sleepTimer.isActive && !isLive && (
+        <SleepTimerBanner
+          remainingSeconds={sleepTimer.remainingSeconds}
+          onExtend={sleepTimer.extendTimer}
+          onCancel={sleepTimer.cancelTimer}
+        />
+      )}
 
       {/* Full-width progress bar */}
       {!isLive && duration > 0 && (
@@ -668,6 +748,20 @@ export default function AudioPlayer({
           </View>
         </View>
       )}
+
+      <SleepTimerPicker
+        isOpen={showSleepTimerPicker}
+        onSelect={(minutes) => {
+          sleepTimer.startTimer(minutes)
+          setShowSleepTimerPicker(false)
+        }}
+        onCancel={() => {
+          if (sleepTimer.isActive) sleepTimer.cancelTimer()
+          setShowSleepTimerPicker(false)
+        }}
+        activeDuration={sleepTimer.selectedDurationMinutes}
+        timerOptions={sleepTimer.timerOptions}
+      />
 
       {/* Error Display */}
       {error && (

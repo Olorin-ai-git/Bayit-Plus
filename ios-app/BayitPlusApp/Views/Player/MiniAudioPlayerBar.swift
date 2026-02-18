@@ -8,6 +8,7 @@ import SwiftUI
 struct MiniAudioPlayerBar: View {
     @Environment(AudioPlaybackManager.self) private var audioManager
     @Environment(NavigationCoordinator.self) private var coordinator
+    @State private var showSleepTimerPicker = false
 
     var body: some View {
         if audioManager.isActive, coordinator.fullscreenRoute == nil {
@@ -42,11 +43,37 @@ struct MiniAudioPlayerBar: View {
                 }
             }
 
+            if audioManager.sleepTimerManager.isActive, !isLiveContent {
+                SleepTimerBanner(
+                    remainingSeconds: audioManager.sleepTimerManager.remainingSeconds,
+                    onExtend: { minutes in audioManager.extendSleepTimer(minutes: minutes) },
+                    onCancel: { audioManager.cancelSleepTimer() }
+                )
+            }
+
             progressBar
 
             playbackControls
         }
         .padding(DesignTokens.Spacing.lg)
+        .sheet(isPresented: $showSleepTimerPicker) {
+            SleepTimerPicker(
+                activeDuration: audioManager.sleepTimerManager.selectedDurationMinutes,
+                timerOptions: audioManager.sleepTimerManager.timerOptions,
+                onSelect: { minutes in
+                    audioManager.startSleepTimer(minutes: minutes)
+                    showSleepTimerPicker = false
+                },
+                onCancel: {
+                    if audioManager.sleepTimerManager.isActive {
+                        audioManager.cancelSleepTimer()
+                    }
+                    showSleepTimerPicker = false
+                }
+            )
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+        }
         .background(
             ZStack {
                 Color.black.opacity(0.3)
@@ -85,7 +112,27 @@ struct MiniAudioPlayerBar: View {
             .accessibilityLabel("Close player")
 
             Spacer()
+
+            if !isLiveContent {
+                Button {
+                    showSleepTimerPicker = true
+                } label: {
+                    Image(systemName: "moon.zzz.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(
+                            audioManager.sleepTimerManager.isActive
+                                ? DesignTokens.Primary.default
+                                : DesignTokens.Text.muted
+                        )
+                        .frame(width: 30, height: 30)
+                }
+                .accessibilityLabel("Sleep timer")
+            }
         }
+    }
+
+    private var isLiveContent: Bool {
+        audioManager.activeContentType == .radio || audioManager.activeContentType == .live || audioManager.activeContentType == .liveTV
     }
 
     private var progressBar: some View {

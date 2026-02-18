@@ -5690,7 +5690,9 @@
     "movies": "Movies",
     "music": "Music",
     "documentary": "Documentary",
-    "series": "Series"
+    "series": "Series",
+    "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
+    "enableLocation": "Activer la localisation"
   },
   "household": {
     "title": "Gestion du Foyer",
@@ -6686,7 +6688,19 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing"
+    "dubbing": "Dubbing",
+    "sleepTimer": {
+      "title": "Minuterie de sommeil",
+      "setTimer": "Régler la minuterie",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} restant",
+      "extend": "+{{minutes}} min",
+      "cancel": "Annuler la minuterie",
+      "off": "Éteint",
+      "timerSet": "Minuterie réglée pour {{minutes}} minutes",
+      "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
+      "timerCancelled": "Minuterie de sommeil annulée"
+    }
   },
   "playlist": {
     "title": "Ma Liste",

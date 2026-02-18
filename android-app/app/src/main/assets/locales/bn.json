@@ -170,7 +170,9 @@
     "liveNow": "এখন লাইভ",
     "categories": "বিভাগ",
     "nearYou": "কাছাকাছি ইসরায়েলীয়",
-    "betaExclusive": "বিটা এক্সক্লুসিভ"
+    "betaExclusive": "বিটা এক্সক্লুসিভ",
+    "locationPermissionDescription": "আপনার কাছের ইসরায়েলি বিষয়বস্তু এবং ব্যবসা দেখতে অবস্থান সক্ষম করুন",
+    "enableLocation": "অবস্থান সক্ষম করুন"
   },
   "search": {
     "title": "খুঁজুন",
@@ -398,7 +400,19 @@
     "scene_search": "দৃশ্য অনুসন্ধান",
     "search_placeholder": "একটি দৃশ্য অনুসন্ধান করুন...",
     "language_ratio": "ভাষা শেখার অনুপাত",
-    "go_back": "ফিরে যান"
+    "go_back": "ফিরে যান",
+    "sleepTimer": {
+      "title": "স্লিপ টাইমার",
+      "setTimer": "টাইমার সেট করুন",
+      "minutesFormat": "{{minutes}} মিনিট",
+      "remaining": "{{time}} বাকি",
+      "extend": "+{{minutes}} মিনিট",
+      "cancel": "টাইমার বাতিল",
+      "off": "বন্ধ",
+      "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
+      "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
+      "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
+    }
   },
   "content": {
     "play": "চালান",

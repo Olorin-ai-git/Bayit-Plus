@@ -4905,7 +4905,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
+    "enableLocation": "הפעל מיקום"
   },
   "jerusalem": {
     "title": "חיבור לירושלים",
@@ -5487,6 +5489,18 @@
       "sessionEnded": "הפגישה הסתיימה",
       "startInteraction": "התחל אינטראקציה",
       "participants": "משתתפים"
+    },
+    "sleepTimer": {
+      "title": "טיימר שינה",
+      "setTimer": "הגדר טיימר שינה",
+      "minutesFormat": "{{minutes}} דק׳",
+      "remaining": "{{time}} נותרו",
+      "extend": "+{{minutes}} דק׳",
+      "cancel": "בטל טיימר",
+      "off": "כבוי",
+      "timerSet": "טיימר שינה הוגדר ל-{{minutes}} דקות",
+      "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
+      "timerCancelled": "טיימר שינה בוטל"
     }
   },
   "listen": {

@@ -5490,7 +5490,9 @@
     "movies": "Peliculas",
     "music": "Musica",
     "documentary": "Documental",
-    "series": "Series"
+    "series": "Series",
+    "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
+    "enableLocation": "Activar ubicación"
   },
   "household": {
     "title": "Gestion del Hogar",
@@ -6255,7 +6257,7 @@
     "recordingError": "Error de grabacion",
     "startRecording": "Iniciar grabacion",
     "stopRecording": "Detener grabacion",
-    "premiumRequired": "Se requiere suscripcion premium",
+    "premiumRequired": "Premium Required",
     "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo",
     "subscription": {
       "requiredMessage": "requiere una suscripción paga",
@@ -6356,7 +6358,6 @@
     "episodes": "Episodes",
     "loadingEpisode": "Loading episode...",
     "loadingStream": "Loading stream...",
-    "premiumRequired": "Premium Required",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
@@ -6378,16 +6379,19 @@
       "endDialogue": "Terminar dialogo",
       "noCharactersAvailable": "No hay personajes disponibles para dialogo"
     },
-    "speedNormal": "Normal",
-    "dismiss": "Cerrar",
-    "dismissPlayer": "Cerrar reproductor",
-    "loadingMedia": "Cargando media",
-    "qualitySettings": "Ajustes de calidad",
-    "recordingError": "Error de grabacion",
-    "startRecording": "Iniciar grabacion",
-    "stopRecording": "Detener grabacion",
     "premiumRequiredRecording": "Se requiere suscripcion premium",
-    "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo"
+    "sleepTimer": {
+      "title": "Temporizador de sueño",
+      "setTimer": "Configurar temporizador",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} restante",
+      "extend": "+{{minutes}} min",
+      "cancel": "Cancelar temporizador",
+      "off": "Apagado",
+      "timerSet": "Temporizador configurado para {{minutes}} minutos",
+      "timerExtended": "Temporizador extendido {{minutes}} minutos",
+      "timerCancelled": "Temporizador de sueño cancelado"
+    }
   },
   "playlist": {
     "title": "Mi Lista",

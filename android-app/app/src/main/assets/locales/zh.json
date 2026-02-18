@@ -320,7 +320,9 @@
         "subtitle": "立即观看",
         "description": "新闻、时事和优质内容"
       }
-    }
+    },
+    "locationPermissionDescription": "启用位置以查看附近的以色列内容和商店",
+    "enableLocation": "启用位置"
   },
   "search": {
     "title": "搜索",
@@ -987,7 +989,19 @@
     "scene_search": "场景搜索",
     "search_placeholder": "搜索场景...",
     "language_ratio": "语言学习比例",
-    "go_back": "返回"
+    "go_back": "返回",
+    "sleepTimer": {
+      "title": "睡眠定时器",
+      "setTimer": "设置定时器",
+      "minutesFormat": "{{minutes}}分钟",
+      "remaining": "剩余{{time}}",
+      "extend": "+{{minutes}}分钟",
+      "cancel": "取消定时器",
+      "off": "关闭",
+      "timerSet": "睡眠定时器已设置{{minutes}}分钟",
+      "timerExtended": "定时器延长{{minutes}}分钟",
+      "timerCancelled": "睡眠定时器已取消"
+    }
   },
   "empty": {
     "noContent": "无可用内容",

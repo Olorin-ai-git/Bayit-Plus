@@ -4490,7 +4490,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
+    "enableLocation": "位置情報を有効にする"
   },
   "judaism": {
     "title": "ユダヤ教",
@@ -5114,6 +5116,18 @@
       "sessionEnded": "セッションが終了しました",
       "startInteraction": "インタラクションを開始",
       "participants": "参加者"
+    },
+    "sleepTimer": {
+      "title": "スリープタイマー",
+      "setTimer": "タイマーを設定",
+      "minutesFormat": "{{minutes}}分",
+      "remaining": "残り{{time}}",
+      "extend": "+{{minutes}}分",
+      "cancel": "タイマーをキャンセル",
+      "off": "オフ",
+      "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
+      "timerExtended": "タイマーを{{minutes}}分延長しました",
+      "timerCancelled": "スリープタイマーがキャンセルされました"
     }
   },
   "listen": {

@@ -675,7 +675,9 @@
     "myList": "マイリスト",
     "seeAll": "すべて見る",
     "nearYou": "近くのイスラエル人",
-    "betaExclusive": "ベータ限定"
+    "betaExclusive": "ベータ限定",
+    "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
+    "enableLocation": "位置情報を有効にする"
   },
   "search": {
     "title": "検索",
@@ -1177,7 +1179,19 @@
     "scene_search": "シーン検索",
     "search_placeholder": "シーンを検索...",
     "language_ratio": "言語学習比率",
-    "go_back": "戻る"
+    "go_back": "戻る",
+    "sleepTimer": {
+      "title": "スリープタイマー",
+      "setTimer": "タイマーを設定",
+      "minutesFormat": "{{minutes}}分",
+      "remaining": "残り{{time}}",
+      "extend": "+{{minutes}}分",
+      "cancel": "タイマーをキャンセル",
+      "off": "オフ",
+      "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
+      "timerExtended": "タイマーを{{minutes}}分延長しました",
+      "timerCancelled": "スリープタイマーがキャンセルされました"
+    }
   },
   "content": {
     "title": "タイトル",

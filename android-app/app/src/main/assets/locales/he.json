@@ -319,7 +319,9 @@
         "subtitle": "צפו עכשיו",
         "description": "חדשות, תוכניות אקטואליה ותוכן איכותי"
       }
-    }
+    },
+    "locationPermissionDescription": "הפעל מיקום כדי לראות תוכן ישראלי ועסקים בקרבתך",
+    "enableLocation": "הפעל מיקום"
   },
   "search": {
     "title": "חיפוש",
@@ -1057,7 +1059,19 @@
     "scene_search": "חיפוש סצנה",
     "search_placeholder": "חפש סצנה...",
     "language_ratio": "יחס למידת שפה",
-    "go_back": "חזור"
+    "go_back": "חזור",
+    "sleepTimer": {
+      "title": "טיימר שינה",
+      "setTimer": "הגדר טיימר שינה",
+      "minutesFormat": "{{minutes}} דק׳",
+      "remaining": "{{time}} נותרו",
+      "extend": "+{{minutes}} דק׳",
+      "cancel": "בטל טיימר",
+      "off": "כבוי",
+      "timerSet": "טיימר שינה הוגדר ל-{{minutes}} דקות",
+      "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
+      "timerCancelled": "טיימר שינה בוטל"
+    }
   },
   "empty": {
     "noContent": "אין תוכן זמין",

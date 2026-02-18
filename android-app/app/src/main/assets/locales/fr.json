@@ -321,7 +321,9 @@
         "subtitle": "Regardez maintenant",
         "description": "Actualités, affaires courantes et contenu de qualité"
       }
-    }
+    },
+    "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
+    "enableLocation": "Activer la localisation"
   },
   "search": {
     "title": "Rechercher",
@@ -589,7 +591,19 @@
     "scene_search": "Recherche de Scène",
     "search_placeholder": "Rechercher une scène...",
     "language_ratio": "Ratio d'Apprentissage Linguistique",
-    "go_back": "Retour"
+    "go_back": "Retour",
+    "sleepTimer": {
+      "title": "Minuterie de sommeil",
+      "setTimer": "Régler la minuterie",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} restant",
+      "extend": "+{{minutes}} min",
+      "cancel": "Annuler la minuterie",
+      "off": "Éteint",
+      "timerSet": "Minuterie réglée pour {{minutes}} minutes",
+      "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
+      "timerCancelled": "Minuterie de sommeil annulée"
+    }
   },
   "content": {
     "play": "Lire",

@@ -22,6 +22,7 @@ import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 import tv.bayit.plus.feature.player.live.LiveAICoordinator
+import tv.bayit.plus.feature.player.sleeptimer.SleepTimerManager
 import tv.bayit.plus.feature.player.trivia.VodTriviaManager
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class PlayerViewModel @Inject constructor(
     private val mediaPlayer: BayitMediaPlayer,
     private val liveAICoordinator: LiveAICoordinator,
     private val vodTriviaManager: VodTriviaManager,
+    private val sleepTimerManager: SleepTimerManager,
     private val userRepository: UserRepository,
     private val timeProvider: TimeProvider,
     private val logger: BayitLogger,
@@ -66,6 +68,7 @@ class PlayerViewModel @Inject constructor(
         mediaPlayer.initialize()
         startPositionPolling()
         observeVodTriviaState()
+        observeSleepTimerState()
     }
 
     fun loadContent(contentId: String, contentType: String) {
@@ -370,6 +373,24 @@ class PlayerViewModel @Inject constructor(
         _extendedState.value = _extendedState.value.copy(volume = volume)
     }
 
+    fun startSleepTimer(minutes: Int) {
+        val originalVolume = _extendedState.value.volume
+        sleepTimerManager.start(
+            durationMinutes = minutes,
+            scope = viewModelScope,
+            onFadeOut = { volume -> mediaPlayer.setVolume(volume) },
+            onComplete = {
+                mediaPlayer.pause()
+                mediaPlayer.setVolume(originalVolume)
+                _extendedState.value = _extendedState.value.copy(volume = originalVolume)
+            },
+        )
+    }
+
+    fun extendSleepTimer(minutes: Int) = sleepTimerManager.extend(minutes)
+
+    fun cancelSleepTimer() = sleepTimerManager.cancel()
+
     fun hideOmriOverlay() {
         _extendedState.value = _extendedState.value.copy(showOmriOverlay = false)
     }
@@ -388,6 +409,7 @@ class PlayerViewModel @Inject constructor(
         progressSaveJob?.cancel()
         saveProgress()
         viewModelScope.launch { liveAICoordinator.cleanupAll() }
+        sleepTimerManager.cancel()
         vodTriviaManager.cleanup()
         positionPollingJob?.cancel()
         mediaPlayer.release()
@@ -408,6 +430,24 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             vodTriviaManager.language.collect { lang ->
                 _extendedState.value = _extendedState.value.copy(vodTriviaLanguage = lang)
+            }
+        }
+    }
+
+    private fun observeSleepTimerState() {
+        viewModelScope.launch {
+            sleepTimerManager.isActive.collect { active ->
+                _extendedState.value = _extendedState.value.copy(isSleepTimerActive = active)
+            }
+        }
+        viewModelScope.launch {
+            sleepTimerManager.remainingSeconds.collect { remaining ->
+                _extendedState.value = _extendedState.value.copy(sleepTimerRemainingSeconds = remaining)
+            }
+        }
+        viewModelScope.launch {
+            sleepTimerManager.durationMinutes.collect { duration ->
+                _extendedState.value = _extendedState.value.copy(sleepTimerDurationMinutes = duration)
             }
         }
     }

@@ -4055,7 +4055,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "启用位置以查看附近的以色列内容和商店",
+    "enableLocation": "启用位置"
   },
   "jerusalem": {
     "title": "耶路撒冷连接",
@@ -4558,6 +4560,18 @@
       "sessionEnded": "会话已结束",
       "startInteraction": "开始互动",
       "participants": "参与者"
+    },
+    "sleepTimer": {
+      "title": "睡眠定时器",
+      "setTimer": "设置定时器",
+      "minutesFormat": "{{minutes}}分钟",
+      "remaining": "剩余{{time}}",
+      "extend": "+{{minutes}}分钟",
+      "cancel": "取消定时器",
+      "off": "关闭",
+      "timerSet": "睡眠定时器已设置{{minutes}}分钟",
+      "timerExtended": "定时器延长{{minutes}}分钟",
+      "timerCancelled": "睡眠定时器已取消"
     }
   },
   "listen": {

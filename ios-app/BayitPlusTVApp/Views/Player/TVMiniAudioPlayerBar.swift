@@ -11,6 +11,7 @@ import SwiftUI
 struct TVMiniAudioPlayerBar: View {
     @Environment(TVAudioPlaybackManager.self) private var audioManager
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @State private var showSleepTimerPicker = false
 
     var body: some View {
         if audioManager.isActive, coordinator.fullscreenRoute == nil {
@@ -23,49 +24,103 @@ struct TVMiniAudioPlayerBar: View {
     }
 
     private var barContent: some View {
-        HStack(spacing: TVDesignTokens.Spacing.lg) {
-            artworkThumbnail
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
+        VStack(spacing: TVDesignTokens.Spacing.sm) {
+            if audioManager.sleepTimerManager.isActive, !isLiveContent {
+                TVSleepTimerBanner(
+                    remainingSeconds: audioManager.sleepTimerManager.remainingSeconds,
+                    onExtend: { minutes in audioManager.extendSleepTimer(minutes: minutes) },
+                    onCancel: { audioManager.cancelSleepTimer() }
+                )
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            }
 
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                Text(audioManager.title ?? "")
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(1)
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                artworkThumbnail
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
 
-                if let subtitle = audioManager.subtitle {
-                    Text(subtitle)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.muted)
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
+                    Text(audioManager.title ?? "")
+                        .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
                         .lineLimit(1)
+
+                    if let subtitle = audioManager.subtitle {
+                        Text(subtitle)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                            .lineLimit(1)
+                    }
+                }
+
+                Spacer()
+
+                if audioManager.isLoading {
+                    ProgressView()
+                        .tint(DesignTokens.Primary.default)
+                        .frame(
+                            width: TVDesignTokens.MinSize.focusableWidth,
+                            height: TVDesignTokens.MinSize.focusableHeight
+                        )
+                } else {
+                    if !isLiveContent {
+                        sleepTimerButton
+                    }
+                    playPauseButton
+                    stopButton
                 }
             }
-
-            Spacer()
-
-            if audioManager.isLoading {
-                ProgressView()
-                    .tint(DesignTokens.Primary.default)
-                    .frame(
-                        width: TVDesignTokens.MinSize.focusableWidth,
-                        height: TVDesignTokens.MinSize.focusableHeight
-                    )
-            } else {
-                playPauseButton
-                stopButton
-            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
-        .padding(.vertical, TVDesignTokens.Spacing.md)
-        .background(DesignTokens.Glass.bgStrong)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
-        .overlay(
-            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(DesignTokens.Glass.border, lineWidth: 1)
-        )
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.bottom, TVDesignTokens.Spacing.md)
+        .sheet(isPresented: $showSleepTimerPicker) {
+            TVSleepTimerPicker(
+                activeDuration: audioManager.sleepTimerManager.selectedDurationMinutes,
+                timerOptions: audioManager.sleepTimerManager.timerOptions,
+                onSelect: { minutes in
+                    audioManager.startSleepTimer(minutes: minutes)
+                    showSleepTimerPicker = false
+                },
+                onCancel: {
+                    if audioManager.sleepTimerManager.isActive {
+                        audioManager.cancelSleepTimer()
+                    }
+                    showSleepTimerPicker = false
+                }
+            )
+        }
+    }
+
+    private var isLiveContent: Bool {
+        audioManager.activeContentType == .radio || audioManager.activeContentType == .liveTV
+    }
+
+    private var sleepTimerButton: some View {
+        Button {
+            showSleepTimerPicker = true
+        } label: {
+            Image(systemName: "moon.zzz.fill")
+                .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
+                .foregroundStyle(
+                    audioManager.sleepTimerManager.isActive
+                        ? DesignTokens.Primary.default
+                        : DesignTokens.Text.muted
+                )
+                .frame(
+                    width: TVDesignTokens.MinSize.focusableWidth,
+                    height: TVDesignTokens.MinSize.focusableHeight
+                )
+        }
+        .buttonStyle(.card)
+        .accessibilityLabel("Sleep timer")
     }
 
     private var playPauseButton: some View {

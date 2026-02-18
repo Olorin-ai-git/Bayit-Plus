@@ -28,6 +28,10 @@ final class TVAudioPlaybackManager {
         mediaPlayer.state == .playing || mediaPlayer.state == .buffering
     }
 
+    // MARK: - Sleep Timer
+
+    private(set) var sleepTimerManager = TVSleepTimerManager()
+
     // MARK: - Dependencies
 
     private let mediaPlayer: MediaPlayer
@@ -130,11 +134,36 @@ final class TVAudioPlaybackManager {
 
     /// Stop playback, clear Now Playing, and reset state.
     func stop() {
+        sleepTimerManager.cancel()
         mediaPlayer.stop()
         nowPlayingService.clear()
         remoteCommandService.unregister()
         resetState()
         logger.info("TV audio playback stopped")
+    }
+
+    // MARK: - Sleep Timer Controls
+
+    func startSleepTimer(minutes: Int) {
+        let originalVolume = mediaPlayer.avPlayer.volume
+        sleepTimerManager.start(
+            durationMinutes: minutes,
+            fadeOutAction: { [weak self] volume in
+                self?.mediaPlayer.avPlayer.volume = volume
+            },
+            completionAction: { [weak self] in
+                self?.mediaPlayer.pause()
+                self?.mediaPlayer.avPlayer.volume = originalVolume
+            }
+        )
+    }
+
+    func extendSleepTimer(minutes: Int) {
+        sleepTimerManager.extend(additionalMinutes: minutes)
+    }
+
+    func cancelSleepTimer() {
+        sleepTimerManager.cancel()
     }
 
     // MARK: - Stream Resolution

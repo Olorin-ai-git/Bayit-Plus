@@ -3667,7 +3667,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
+    "enableLocation": "இருப்பிடத்தை இயக்கு"
   },
   "judaism": {
     "title": "யூதமதம்",
@@ -4109,6 +4111,18 @@
       "sessionEnded": "அமர்வு முடிந்தது",
       "startInteraction": "தொடர்பை தொடங்கு",
       "participants": "பங்கேற்பாளர்கள்"
+    },
+    "sleepTimer": {
+      "title": "தூக்க டைமர்",
+      "setTimer": "டைமர் அமைக்கவும்",
+      "minutesFormat": "{{minutes}} நிமிடம்",
+      "remaining": "{{time}} மீதம்",
+      "extend": "+{{minutes}} நிமிடம்",
+      "cancel": "டைமர் ரத்து",
+      "off": "ஆப்",
+      "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
+      "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
+      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
     }
   },
   "listen": {

@@ -15,6 +15,9 @@ export { useLiveDubbing } from './useLiveDubbing';
 export type { UseLiveDubbingOptions, UseLiveDubbingState, UseLiveDubbingReturn } from './useLiveDubbing';
 export { useYouTubeThumbnail } from './useYouTubeThumbnail';
 
+// Playback utility hooks
+export { useSleepTimer } from './useSleepTimer';
+
 // VOD content hooks
 export { useVod, useVodDetail, useVodCategory } from './useVod';
 export { useFavorites } from './useFavorites';

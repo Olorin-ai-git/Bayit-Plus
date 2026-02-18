@@ -323,7 +323,9 @@
         "subtitle": "Ver Ahora",
         "description": "Noticias, actualidad y contenido de calidad"
       }
-    }
+    },
+    "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
+    "enableLocation": "Activar ubicación"
   },
   "search": {
     "title": "Buscar",
@@ -970,7 +972,19 @@
     "scene_search": "Búsqueda de Escena",
     "search_placeholder": "Buscar una escena...",
     "language_ratio": "Proporción de Aprendizaje de Idioma",
-    "go_back": "Volver"
+    "go_back": "Volver",
+    "sleepTimer": {
+      "title": "Temporizador de sueño",
+      "setTimer": "Configurar temporizador",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} restante",
+      "extend": "+{{minutes}} min",
+      "cancel": "Cancelar temporizador",
+      "off": "Apagado",
+      "timerSet": "Temporizador configurado para {{minutes}} minutos",
+      "timerExtended": "Temporizador extendido {{minutes}} minutos",
+      "timerCancelled": "Temporizador de sueño cancelado"
+    }
   },
   "empty": {
     "noContent": "No hay contenido disponible",

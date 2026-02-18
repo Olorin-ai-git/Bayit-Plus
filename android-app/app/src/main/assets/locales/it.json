@@ -249,7 +249,9 @@
     "telAvivConnection": "Connessione Tel Aviv",
     "categories": "Categorie",
     "nearYou": "Israeliani Vicino a Te",
-    "betaExclusive": "Esclusivo Beta"
+    "betaExclusive": "Esclusivo Beta",
+    "locationPermissionDescription": "Abilita la posizione per vedere contenuti israeliani e attività commerciali vicino a te",
+    "enableLocation": "Abilita posizione"
   },
   "search": {
     "title": "Cerca",
@@ -505,7 +507,19 @@
     "scene_search": "Ricerca Scena",
     "search_placeholder": "Cerca una scena...",
     "language_ratio": "Rapporto di Apprendimento Linguistico",
-    "go_back": "Indietro"
+    "go_back": "Indietro",
+    "sleepTimer": {
+      "title": "Timer di spegnimento",
+      "setTimer": "Imposta timer",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} rimanente",
+      "extend": "+{{minutes}} min",
+      "cancel": "Annulla timer",
+      "off": "Spento",
+      "timerSet": "Timer impostato per {{minutes}} minuti",
+      "timerExtended": "Timer esteso di {{minutes}} minuti",
+      "timerCancelled": "Timer di spegnimento annullato"
+    }
   },
   "content": {
     "play": "Riproduci",

@@ -170,7 +170,9 @@
     "liveNow": "இப்போது நேரலை",
     "categories": "வகைகள்",
     "nearYou": "அருகிலுள்ள இஸ்ரேலியர்கள்",
-    "betaExclusive": "பீட்டா எக்ஸ்க்ளூசிவ்"
+    "betaExclusive": "பீட்டா எக்ஸ்க்ளூசிவ்",
+    "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
+    "enableLocation": "இருப்பிடத்தை இயக்கு"
   },
   "search": {
     "title": "தேடு",
@@ -397,7 +399,19 @@
     "scene_search": "காட்சி தேடல்",
     "search_placeholder": "காட்சியைத் தேடு...",
     "language_ratio": "மொழி கற்றல் விகிதம்",
-    "go_back": "திரும்பு"
+    "go_back": "திரும்பு",
+    "sleepTimer": {
+      "title": "தூக்க டைமர்",
+      "setTimer": "டைமர் அமைக்கவும்",
+      "minutesFormat": "{{minutes}} நிமிடம்",
+      "remaining": "{{time}} மீதம்",
+      "extend": "+{{minutes}} நிமிடம்",
+      "cancel": "டைமர் ரத்து",
+      "off": "ஆப்",
+      "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
+      "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
+      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
+    }
   },
   "content": {
     "play": "இயக்கு",

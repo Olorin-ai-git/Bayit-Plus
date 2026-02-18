@@ -5405,7 +5405,9 @@
     "movies": "Movies",
     "music": "Music",
     "documentary": "Documentary",
-    "series": "Series"
+    "series": "Series",
+    "locationPermissionDescription": "আপনার কাছের ইসরায়েলি বিষয়বস্তু এবং ব্যবসা দেখতে অবস্থান সক্ষম করুন",
+    "enableLocation": "অবস্থান সক্ষম করুন"
   },
   "household": {
     "title": "পরিবার ব্যবস্থাপনা",
@@ -6266,7 +6268,19 @@
     "scenes": "Scenes",
     "translate": "Translate",
     "split": "Split",
-    "dubbing": "Dubbing"
+    "dubbing": "Dubbing",
+    "sleepTimer": {
+      "title": "স্লিপ টাইমার",
+      "setTimer": "টাইমার সেট করুন",
+      "minutesFormat": "{{minutes}} মিনিট",
+      "remaining": "{{time}} বাকি",
+      "extend": "+{{minutes}} মিনিট",
+      "cancel": "টাইমার বাতিল",
+      "off": "বন্ধ",
+      "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
+      "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
+      "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
+    }
   },
   "playlist": {
     "title": "আমার তালিকা",

@@ -3905,7 +3905,9 @@
     "israeli-cities": "Israeli Cities",
     "israeliCities": "Israeli Cities",
     "liveTVRow": "Live TV",
-    "youngsters": "Youngsters"
+    "youngsters": "Youngsters",
+    "locationPermissionDescription": "Abilita la posizione per vedere contenuti israeliani e attività commerciali vicino a te",
+    "enableLocation": "Abilita posizione"
   },
   "judaism": {
     "title": "Ebraismo",
@@ -4340,6 +4342,18 @@
       "sessionEnded": "Sessione terminata",
       "startInteraction": "Avvia interazione",
       "participants": "Partecipanti"
+    },
+    "sleepTimer": {
+      "title": "Timer di spegnimento",
+      "setTimer": "Imposta timer",
+      "minutesFormat": "{{minutes}} min",
+      "remaining": "{{time}} rimanente",
+      "extend": "+{{minutes}} min",
+      "cancel": "Annulla timer",
+      "off": "Spento",
+      "timerSet": "Timer impostato per {{minutes}} minuti",
+      "timerExtended": "Timer esteso di {{minutes}} minuti",
+      "timerCancelled": "Timer di spegnimento annullato"
     }
   },
   "listen": {
