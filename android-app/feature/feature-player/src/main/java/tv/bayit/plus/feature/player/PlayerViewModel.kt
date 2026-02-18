@@ -15,6 +15,8 @@ import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.time.TimeProvider
 import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.data.repository.SubtitleRepository
+import tv.bayit.plus.core.data.repository.UserRepository
+import tv.bayit.plus.core.model.ProfileResponse
 import tv.bayit.plus.core.media.BayitMediaPlayer
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
@@ -31,6 +33,7 @@ class PlayerViewModel @Inject constructor(
     private val mediaPlayer: BayitMediaPlayer,
     private val liveAICoordinator: LiveAICoordinator,
     private val vodTriviaManager: VodTriviaManager,
+    private val userRepository: UserRepository,
     private val timeProvider: TimeProvider,
     private val logger: BayitLogger,
 ) : ViewModel() {
@@ -69,6 +72,11 @@ class PlayerViewModel @Inject constructor(
         if (currentContentId == contentId) return
         currentContentId = contentId
         currentContentType = contentType
+        _extendedState.value = _extendedState.value.copy(
+            showOmriOverlay = false,
+            hasTriggeredOmriOverlay = false,
+        )
+        viewModelScope.launch { checkSpecialUser() }
         viewModelScope.launch {
             logger.debug("Loading content", mapOf("contentId" to contentId, "contentType" to contentType))
             val isLive = contentResolver.isLiveContent(contentType)
@@ -345,6 +353,20 @@ class PlayerViewModel @Inject constructor(
     fun dismissVodTrivia() = vodTriviaManager.dismissFact()
     fun requestVodTriviaFollowUp() = vodTriviaManager.requestFollowUp(viewModelScope)
 
+    fun hideOmriOverlay() {
+        _extendedState.value = _extendedState.value.copy(showOmriOverlay = false)
+    }
+
+    private suspend fun checkSpecialUser() {
+        val result = userRepository.getCurrentUser()
+        if (result is BayitResult.Success) {
+            val email = (result.data as? ProfileResponse)?.email
+            _extendedState.value = _extendedState.value.copy(
+                isSpecialUser = email in SPECIAL_USER_EMAILS,
+            )
+        }
+    }
+
     override fun onCleared() {
         progressSaveJob?.cancel()
         saveProgress()
@@ -384,6 +406,15 @@ class PlayerViewModel @Inject constructor(
                 val isLive = (_uiState.value as? PlayerUiState.Ready)?.isLiveContent == true
                 if (!isLive) {
                     vodTriviaManager.updatePlaybackPosition(pos, this)
+                    val ext = _extendedState.value
+                    if (ext.isSpecialUser && !ext.hasTriggeredOmriOverlay
+                        && playerState.value is PlayerState.Playing
+                    ) {
+                        _extendedState.value = ext.copy(
+                            showOmriOverlay = true,
+                            hasTriggeredOmriOverlay = true,
+                        )
+                    }
                 }
                 delay(POSITION_POLL_INTERVAL_MS)
             }
@@ -461,5 +492,6 @@ class PlayerViewModel @Inject constructor(
         private const val CONTROLS_HIDE_DELAY_MS = 4000L
         private const val POSITION_POLL_INTERVAL_MS = 250L
         private const val PROGRESS_SAVE_INTERVAL_MS = 15_000L
+        private val SPECIAL_USER_EMAILS = setOf("oklainert@gmail.com", "admin@olorin.ai")
     }
 }

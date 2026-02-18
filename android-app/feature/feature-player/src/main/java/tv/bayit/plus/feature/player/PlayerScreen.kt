@@ -131,6 +131,7 @@ fun PlayerRoute(
             viewModel.requestVodTriviaFollowUp()
         },
         onToggleVodTrivia = viewModel::toggleVodTrivia,
+        onHideOmriOverlay = viewModel::hideOmriOverlay,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -181,6 +182,7 @@ private fun PlayerScreen(
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onToggleVodTrivia: () -> Unit,
+    onHideOmriOverlay: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -216,6 +218,7 @@ private fun PlayerScreen(
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp,
                     onToggleVodTrivia = onToggleVodTrivia,
+                    onHideOmriOverlay = onHideOmriOverlay,
                     onBack = onBack,
                 )
 

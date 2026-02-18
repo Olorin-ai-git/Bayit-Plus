@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -95,6 +96,7 @@ private fun getTabIcon(tab: AppTab): ImageVector {
         "home" -> Icons.Default.Home
         "tv" -> BayitIcons.Tv
         "film" -> BayitIcons.Film
+        "person" -> Icons.Default.Person
         "headphones" -> BayitIcons.Headphones
         "search" -> Icons.Default.Search
         else -> Icons.Default.Home

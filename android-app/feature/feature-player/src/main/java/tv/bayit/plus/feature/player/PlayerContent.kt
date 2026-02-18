@@ -27,6 +27,7 @@ import tv.bayit.plus.feature.player.live.LiveSubtitleUiState
 import tv.bayit.plus.feature.player.live.LiveTriviaUiState
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
 import tv.bayit.plus.feature.player.trivia.TriviaFactsOverlay
+import tv.bayit.plus.feature.player.ui.OmriOverlay
 import tv.bayit.plus.feature.player.ui.PlayerOverlay
 
 @Composable
@@ -54,6 +55,7 @@ internal fun ReadyContent(
     onDismissTrivia: () -> Unit,
     onTriviaFollowUp: () -> Unit,
     onToggleVodTrivia: () -> Unit,
+    onHideOmriOverlay: () -> Unit,
     onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -148,6 +150,10 @@ internal fun ReadyContent(
                     onDismissTrivia = onDismissTrivia,
                     onTriviaFollowUp = onTriviaFollowUp
                 )
+            }
+
+            if (!state.isLiveContent && extendedState.showOmriOverlay) {
+                OmriOverlay(onHide = onHideOmriOverlay)
             }
         }
 
