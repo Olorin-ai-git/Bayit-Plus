@@ -34,6 +34,8 @@ struct ResetPasswordView: View {
                 Spacer(minLength: DesignTokens.Spacing.xl)
             }
             .padding(.horizontal, DesignTokens.Spacing.xl)
+            .frame(maxWidth: 480)
+            .frame(maxWidth: .infinity)
         }
     }
 

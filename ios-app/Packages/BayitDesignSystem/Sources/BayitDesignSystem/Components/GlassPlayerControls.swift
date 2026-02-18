@@ -44,7 +44,7 @@ public struct GlassPlayerControls: View {
     }
 
     public var body: some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
+        VStack(spacing: DesignTokens.Spacing.xs) {
             if isSeekable && !isLive {
                 timelineSection
             } else if isLive {

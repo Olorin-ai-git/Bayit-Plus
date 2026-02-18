@@ -51,6 +51,12 @@ struct ContentView: View {
                     .transition(.move(edge: .bottom))
             }
 
+            // Mini video player bar (bottom)
+            VStack {
+                Spacer()
+                MiniVideoPlayerBar()
+            }
+
             // Shabbat banner overlay (top)
             if ShabbatModeService.shared.isShabbatActive
                 || ShabbatModeService.shared.isErevShabbat {

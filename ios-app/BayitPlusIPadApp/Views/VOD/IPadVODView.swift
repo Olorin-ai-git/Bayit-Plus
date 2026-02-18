@@ -58,6 +58,11 @@ struct IPadVODView: View {
             await viewModel?.loadContent()
             await loadContinueWatching()
         }
+        .onChange(of: coordinator.fullscreenRoute == nil) { _, isDismissed in
+            if isDismissed {
+                Task { await loadContinueWatching() }
+            }
+        }
     }
 
     private func loadContinueWatching() async {

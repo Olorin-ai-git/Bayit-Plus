@@ -11,7 +11,8 @@
 
 import { useEffect, useCallback } from 'react'
 import { useAuthStore } from '@bayit/shared-stores/authStore'
-import { GlassButton, GlassIcon } from '@bayit/glass'
+import { GlassButton } from '@bayit/glass'
+import { Mic } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useVODInteraction } from '../../hooks/useVODInteraction'
 import { useVoiceInteractionWS } from '../../hooks/useVoiceInteractionWS'
@@ -134,7 +135,7 @@ export function VODInteractionPlayer({
             onClick={interaction.showCharacterSelect}
             aria-label={t('player.talkToCharacter')}
           >
-            <GlassIcon name="microphone" />
+            <Mic size={18} />
             {t('player.talk')}
           </GlassButton>
         </div>

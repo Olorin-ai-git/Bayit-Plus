@@ -21,6 +21,11 @@ public final class NavigationCoordinator {
     /// Whether a fullscreen modal is presented (player)
     var fullscreenRoute: Route?
 
+    /// Minimized video player state (PiP bar)
+    var minimizedRoute: Route?
+    var minimizedTitle: String?
+    var minimizedThumbnail: String?
+
     /// Whether the auth flow is being shown
     var showingAuth: Bool = false
 
@@ -165,6 +170,29 @@ public final class NavigationCoordinator {
     /// Present a route as a fullscreen modal (player)
     func presentFullscreen(_ route: Route) {
         fullscreenRoute = route
+    }
+
+    /// Minimize fullscreen player to PiP bar (keeps playback alive)
+    func minimizeFullscreen(title: String?, thumbnail: String?) {
+        minimizedRoute = fullscreenRoute
+        minimizedTitle = title
+        minimizedThumbnail = thumbnail
+        fullscreenRoute = nil
+    }
+
+    /// Restore minimized player to fullscreen
+    func restoreMinimizedPlayer() {
+        fullscreenRoute = minimizedRoute
+        minimizedRoute = nil
+        minimizedTitle = nil
+        minimizedThumbnail = nil
+    }
+
+    /// Close minimized player completely
+    func closeMinimizedPlayer() {
+        minimizedRoute = nil
+        minimizedTitle = nil
+        minimizedThumbnail = nil
     }
 
     /// Dismiss fullscreen modal

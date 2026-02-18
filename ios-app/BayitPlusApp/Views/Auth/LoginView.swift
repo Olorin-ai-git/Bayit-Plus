@@ -33,6 +33,8 @@ struct LoginView: View {
                 Spacer(minLength: DesignTokens.Spacing.xl)
             }
             .padding(.horizontal, DesignTokens.Spacing.xl)
+            .frame(maxWidth: 480)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -84,7 +86,7 @@ struct LoginView: View {
                 .foregroundStyle(Color.white.opacity(0.7))
 
             AuthComponents.GlassTextField(
-                placeholder: "Enter your email",
+                placeholder: localization.t("login.emailPlaceholder"),
                 text: $email,
                 contentType: .emailAddress,
                 keyboardType: .emailAddress
@@ -107,7 +109,7 @@ struct LoginView: View {
             }
 
             AuthComponents.GlassSecureField(
-                placeholder: "Enter your password",
+                placeholder: localization.t("login.passwordPlaceholder"),
                 text: $password,
                 showText: $showPassword,
                 contentType: .password

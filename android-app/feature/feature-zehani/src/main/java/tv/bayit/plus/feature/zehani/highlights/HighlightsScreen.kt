@@ -20,13 +20,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import tv.bayit.plus.core.model.zehani.HighlightReel
+import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -135,10 +134,9 @@ private fun ReelCard(reel: HighlightReel, onShare: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
             if (reel.thumbnailUrl != null) {
-                AsyncImage(
-                    model = reel.thumbnailUrl,
+                CachedAsyncImage(
+                    url = reel.thumbnailUrl,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
                 )
             }

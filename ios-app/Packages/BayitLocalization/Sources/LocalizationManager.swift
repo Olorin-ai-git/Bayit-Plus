@@ -110,10 +110,22 @@ public final class LocalizationManager {
     }
 
     private static func restoredLanguage(from defaults: UserDefaults) -> Language {
-        guard let raw = defaults.string(forKey: Keys.persistedLanguage),
-              let language = Language(rawValue: raw) else {
-            return .english
+        if let raw = defaults.string(forKey: Keys.persistedLanguage),
+           let language = Language(rawValue: raw) {
+            return language
         }
-        return language
+        return systemLanguage()
+    }
+
+    /// Detects the best matching `Language` from the device's preferred
+    /// language list, falling back to `.english` when no match is found.
+    private static func systemLanguage() -> Language {
+        for preferred in Locale.preferredLanguages {
+            let code = Locale(identifier: preferred).language.languageCode?.identifier ?? ""
+            if let match = Language(rawValue: code) {
+                return match
+            }
+        }
+        return .english
     }
 }

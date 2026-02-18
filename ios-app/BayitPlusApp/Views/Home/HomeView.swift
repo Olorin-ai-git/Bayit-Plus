@@ -58,6 +58,11 @@ struct HomeView: View {
             }
             await viewModel?.loadFeatured()
         }
+        .onChange(of: coordinator.fullscreenRoute == nil) { _, isDismissed in
+            if isDismissed {
+                Task { await viewModel?.refreshContinueWatching() }
+            }
+        }
     }
 
     @ViewBuilder

@@ -194,6 +194,12 @@ final class HomeViewModel {
         }
     }
 
+    /// Refresh only the continue watching section (called when player is dismissed)
+    @MainActor
+    func refreshContinueWatching() async {
+        await loadContinueWatching()
+    }
+
     @MainActor
     private func loadContinueWatching() async {
         do {

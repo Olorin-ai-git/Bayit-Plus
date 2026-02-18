@@ -113,7 +113,7 @@ struct HeroCarousel: View {
                 .padding(.bottom, DesignTokens.Spacing.lg)
             }
         }
-        .frame(height: 320)
+        .frame(height: UIDevice.current.userInterfaceIdiom == .pad ? 500 : 320)
         .clipped()
         .overlay(alignment: .topTrailing) {
             // Favorites and bookmark actions

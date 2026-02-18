@@ -84,6 +84,11 @@ struct VODView: View {
             async let aiCollectionsTask: Void = loadAICollectionRecommendations()
             _ = await (continueWatchingTask, trendingTask, aiCollectionsTask)
         }
+        .onChange(of: coordinator.fullscreenRoute == nil) { _, isDismissed in
+            if isDismissed {
+                Task { await loadContinueWatching() }
+            }
+        }
     }
 
     private func loadContinueWatching() async {

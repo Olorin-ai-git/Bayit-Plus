@@ -558,7 +558,7 @@ struct PlayerView: View {
                 onSkipBackward: { Task { await viewModel.player.skipBackward() } },
                 onSeek: { time in Task { await viewModel.player.seek(to: time) } }
             )
-            .padding(.bottom, DesignTokens.Spacing.xxl)
+            .padding(.bottom, DesignTokens.Spacing.base)
         }
         .background(controlsGradient)
         .transition(.opacity)
@@ -654,7 +654,9 @@ struct PlayerView: View {
 
             liveFeatureButtons
 
-            recordingButton
+            if mediaContentType.isLive {
+                recordingButton
+            }
 
             AirPlayView()
                 .frame(width: 36, height: 36)
@@ -691,7 +693,7 @@ struct PlayerView: View {
                 colors: [.clear, .black.opacity(0.7)],
                 startPoint: .top, endPoint: .bottom
             )
-            .frame(height: 200)
+            .frame(height: 120)
         }
         .ignoresSafeArea()
     }
