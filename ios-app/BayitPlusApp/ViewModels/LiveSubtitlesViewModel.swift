@@ -14,6 +14,7 @@ final class LiveSubtitlesViewModel {
     private(set) var activeCueText: String = ""
     private(set) var originalCueText: String?
     private(set) var showOverlay = false
+    var isSplitMode = false
     private(set) var error: String?
     private(set) var isPremiumRequired = false
     private(set) var isQuotaExceeded = false

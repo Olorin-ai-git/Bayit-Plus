@@ -22,6 +22,8 @@ final class LiveDubbingViewModel {
     private(set) var translatedText: String?
     private(set) var showOverlay = false
     private(set) var isPremiumRequired = false
+    var originalVolume: Float = 0.3
+    var dubbedVolume: Float = 0.8
 
     let webSocketService: LiveDubbingWebSocketService
     private let repository: any LiveDubbingRepository
