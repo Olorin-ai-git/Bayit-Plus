@@ -14,7 +14,6 @@ sealed interface PodcastDetailUiState {
         val category: String?,
         val episodeCount: Int?,
         val episodes: List<PodcastEpisodeItem>,
-        val isSubscribed: Boolean,
         val isLoadingEpisodes: Boolean,
         val isRefreshing: Boolean = false,
     ) : PodcastDetailUiState

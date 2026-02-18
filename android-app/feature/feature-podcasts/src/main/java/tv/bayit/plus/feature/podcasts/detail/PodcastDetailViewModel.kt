@@ -12,17 +12,11 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
 import tv.bayit.plus.core.media.AudioPlaybackManager
+import tv.bayit.plus.core.media.AudioPlaybackState
 import tv.bayit.plus.core.model.PodcastDetail
 import tv.bayit.plus.core.model.PodcastEpisodeItem
 import javax.inject.Inject
 
-/**
- * ViewModel for the Podcast Detail screen.
- *
- * Loads podcast metadata via [PodcastRepository.getPodcast] and
- * episode list via [PodcastRepository.getEpisodes].
- * Manages subscribe/unsubscribe state toggling and inline playback.
- */
 @HiltViewModel
 class PodcastDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -35,6 +29,8 @@ class PodcastDetailViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<PodcastDetailUiState>(PodcastDetailUiState.Loading)
     val uiState: StateFlow<PodcastDetailUiState> = _uiState.asStateFlow()
+
+    val audioState: StateFlow<AudioPlaybackState> = audioPlaybackManager.state
 
     init {
         audioPlaybackManager.attachScope(viewModelScope)
@@ -52,53 +48,37 @@ class PodcastDetailViewModel @Inject constructor(
         loadPodcastDetail()
     }
 
-    fun playLatestEpisode() {
+    fun toggleLatestPlayback() {
         val current = _uiState.value as? PodcastDetailUiState.Success ?: return
-        val audioUrl = current.episodes.firstOrNull()?.audioUrl ?: return
-
-        audioPlaybackManager.playDirectUrl(
-            url = audioUrl,
-            title = current.title,
-            subtitle = current.author,
-            artworkUrl = current.cover,
-            contentId = current.showId,
-        )
+        val state = audioPlaybackManager.state.value
+        if (state.isActive && state.contentId == current.showId) {
+            audioPlaybackManager.togglePlayPause()
+        } else {
+            val audioUrl = current.episodes.firstOrNull()?.audioUrl ?: return
+            audioPlaybackManager.playDirectUrl(
+                url = audioUrl,
+                title = current.title,
+                subtitle = current.author,
+                artworkUrl = current.cover,
+                contentId = current.showId,
+            )
+        }
     }
 
-    fun toggleSubscription() {
+    fun toggleEpisodePlayback(episode: PodcastEpisodeItem) {
         val current = _uiState.value as? PodcastDetailUiState.Success ?: return
-        val wasSubscribed = current.isSubscribed
-
-        _uiState.value = current.copy(isSubscribed = !wasSubscribed)
-
-        viewModelScope.launch {
-            logger.debug("Toggling podcast subscription", mapOf(
-                "showId" to showId,
-                "unsubscribing" to wasSubscribed.toString(),
-            ))
-
-            val result = if (wasSubscribed) {
-                podcastRepository.unsubscribe(showId)
-            } else {
-                podcastRepository.subscribe(showId)
-            }
-
-            when (result) {
-                is BayitResult.Success -> {
-                    logger.info("Podcast subscription toggled", mapOf(
-                        "showId" to showId,
-                        "subscribed" to (!wasSubscribed).toString(),
-                    ))
-                }
-                is BayitResult.Error -> {
-                    logger.error("Podcast subscription toggle failed", result.exception, mapOf(
-                        "showId" to showId,
-                    ))
-                    val state = _uiState.value as? PodcastDetailUiState.Success ?: return@launch
-                    _uiState.value = state.copy(isSubscribed = wasSubscribed)
-                }
-                is BayitResult.Loading -> Unit
-            }
+        val state = audioPlaybackManager.state.value
+        if (state.isActive && state.contentId == episode.id) {
+            audioPlaybackManager.togglePlayPause()
+        } else {
+            val audioUrl = episode.audioUrl ?: return
+            audioPlaybackManager.playDirectUrl(
+                url = audioUrl,
+                title = episode.title,
+                subtitle = current.author,
+                artworkUrl = episode.thumbnail ?: current.cover,
+                contentId = episode.id,
+            )
         }
     }
 
@@ -126,7 +106,6 @@ class PodcastDetailViewModel @Inject constructor(
                         category = detail.category,
                         episodeCount = detail.episodeCount,
                         episodes = detail.episodes.orEmpty(),
-                        isSubscribed = false,
                         isLoadingEpisodes = detail.episodes.isNullOrEmpty(),
                     )
                     if (detail.episodes.isNullOrEmpty()) {

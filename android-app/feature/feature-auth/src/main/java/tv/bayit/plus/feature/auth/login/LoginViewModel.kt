@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
@@ -15,6 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
+    private val biometricAuthService: BiometricAuthService,
+    private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -22,6 +26,16 @@ class LoginViewModel @Inject constructor(
         LoginUiState.Input(email = "", password = ""),
     )
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    init {
+        val capable = biometricAuthService.checkCapability().canAuthenticate
+        val enrolled = biometricAuthService.isBiometricSignInEnabled()
+        val hasToken = secureStorage.getAccessToken() != null
+        _uiState.value = LoginUiState.Input(
+            email = "", password = "",
+            showBiometricSignIn = capable && enrolled && hasToken,
+        )
+    }
 
     fun updateEmail(email: String) {
         val current = _uiState.value
@@ -66,9 +80,7 @@ class LoginViewModel @Inject constructor(
                             "requires_payment" to result.data.requiresPayment.toString(),
                         ),
                     )
-                    _uiState.value = LoginUiState.Success(
-                        requiresPayment = result.data.requiresPayment,
-                    )
+                    _uiState.value = buildSuccessState(result.data.requiresPayment)
                 }
 
                 is BayitResult.Failure -> {
@@ -110,9 +122,7 @@ class LoginViewModel @Inject constructor(
                             "requires_payment" to result.data.requiresPayment.toString(),
                         ),
                     )
-                    _uiState.value = LoginUiState.Success(
-                        requiresPayment = result.data.requiresPayment,
-                    )
+                    _uiState.value = buildSuccessState(result.data.requiresPayment)
                 }
 
                 is BayitResult.Failure -> {
@@ -139,12 +149,32 @@ class LoginViewModel @Inject constructor(
             )
         }
     }
+
+    fun onBiometricSignInResult(success: Boolean) {
+        if (success && secureStorage.getAccessToken() != null) {
+            _uiState.value = LoginUiState.Success(requiresPayment = false, offerBiometricEnrollment = false)
+        } else if (success) {
+            _uiState.value = LoginUiState.Error(
+                message = "Session expired. Please sign in again.",
+                previousEmail = "", previousPassword = "",
+            )
+        }
+    }
+
+    fun enableBiometricSignIn() = biometricAuthService.enableBiometricSignIn()
+
+    private fun buildSuccessState(requiresPayment: Boolean): LoginUiState.Success {
+        val capable = biometricAuthService.checkCapability().canAuthenticate
+        val offerEnrollment = capable && !biometricAuthService.isBiometricSignInEnabled()
+        return LoginUiState.Success(requiresPayment = requiresPayment, offerBiometricEnrollment = offerEnrollment)
+    }
 }
 
 sealed interface LoginUiState {
     data class Input(
         val email: String,
         val password: String,
+        val showBiometricSignIn: Boolean = false,
     ) : LoginUiState
 
     data object Loading : LoginUiState
@@ -157,5 +187,6 @@ sealed interface LoginUiState {
 
     data class Success(
         val requiresPayment: Boolean = false,
+        val offerBiometricEnrollment: Boolean = false,
     ) : LoginUiState
 }

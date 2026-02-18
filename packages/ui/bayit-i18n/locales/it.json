@@ -7804,7 +7804,12 @@
     "login": "Accedi",
     "signUp": "Registrati",
     "signInRequired": "Accesso richiesto",
-    "signInRequiredTitle": "Effettua l'accesso per continuare"
+    "signInRequiredTitle": "Effettua l'accesso per continuare",
+    "biometricSignIn": "Accedi con impronta digitale",
+    "biometricEnrollTitle": "Abilita accesso biometrico",
+    "biometricEnrollMessage": "Usa la tua impronta o il tuo viso per accedere più velocemente la prossima volta",
+    "biometricEnrollEnable": "Abilita",
+    "biometricEnrollSkip": "Non ora"
   },
   "email": {
     "greeting": "Ciao",

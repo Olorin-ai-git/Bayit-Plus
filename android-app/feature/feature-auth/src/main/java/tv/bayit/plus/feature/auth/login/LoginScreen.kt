@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -36,28 +37,37 @@ fun LoginRoute(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onRequestGoogleSignIn: ((String) -> Unit) -> Unit,
+    onRequestBiometricSignIn: ((Boolean) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState) {
-        if (uiState is LoginUiState.Success) {
-            onNavigateToHome()
-        }
+        val success = uiState as? LoginUiState.Success ?: return@LaunchedEffect
+        if (!success.offerBiometricEnrollment) onNavigateToHome()
     }
 
-    LoginScreen(
-        uiState = uiState,
-        onEmailChange = viewModel::updateEmail,
-        onPasswordChange = viewModel::updatePassword,
-        onLoginClick = viewModel::loginWithEmail,
-        onGoogleSignInClick = { onRequestGoogleSignIn(viewModel::loginWithGoogle) },
-        onRegisterClick = onNavigateToRegister,
-        onForgotPasswordClick = onNavigateToForgotPassword,
-        onDismissError = viewModel::dismissError,
-        modifier = modifier,
-    )
+    if (uiState is LoginUiState.Success && (uiState as LoginUiState.Success).offerBiometricEnrollment) {
+        BiometricEnrollmentDialog(
+            onEnable = { viewModel.enableBiometricSignIn(); onNavigateToHome() },
+            onDismiss = onNavigateToHome,
+        )
+    } else {
+        LoginScreen(
+            uiState = uiState,
+            onEmailChange = viewModel::updateEmail,
+            onPasswordChange = viewModel::updatePassword,
+            onLoginClick = viewModel::loginWithEmail,
+            onGoogleSignInClick = { onRequestGoogleSignIn(viewModel::loginWithGoogle) },
+            onRegisterClick = onNavigateToRegister,
+            onForgotPasswordClick = onNavigateToForgotPassword,
+            onDismissError = viewModel::dismissError,
+            showBiometricSignIn = (uiState as? LoginUiState.Input)?.showBiometricSignIn ?: false,
+            onBiometricSignInClick = { onRequestBiometricSignIn(viewModel::onBiometricSignInResult) },
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
@@ -70,6 +80,8 @@ internal fun LoginScreen(
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
     onDismissError: () -> Unit,
+    showBiometricSignIn: Boolean = false,
+    onBiometricSignInClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -157,6 +169,17 @@ internal fun LoginScreen(
                 isPrimary = false,
                 modifier = Modifier.fillMaxWidth(),
             )
+
+            if (showBiometricSignIn) {
+                Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                GlassButton(
+                    text = bayitString("auth.biometricSignIn"),
+                    onClick = onBiometricSignInClick,
+                    enabled = !isLoading,
+                    isPrimary = false,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
 

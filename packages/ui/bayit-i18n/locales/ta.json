@@ -7641,7 +7641,12 @@
     "login": "உள்நுழைவு",
     "signUp": "பதிவு செய்யவும்",
     "signInRequired": "உள்நுழைவு தேவை",
-    "signInRequiredTitle": "தொடர உள்நுழையுங்கள்"
+    "signInRequiredTitle": "தொடர உள்நுழையுங்கள்",
+    "biometricSignIn": "கைரேகையில் உள்நுழைக",
+    "biometricEnrollTitle": "பயோமெட்ரிக் உள்நுழைவை இயக்கு",
+    "biometricEnrollMessage": "அடுத்த முறை விரைவாக உள்நுழைய உங்கள் கைரேகை அல்லது முகத்தைப் பயன்படுத்தவும்",
+    "biometricEnrollEnable": "இயக்கு",
+    "biometricEnrollSkip": "இப்போது வேண்டாம்"
   },
   "email": {
     "greeting": "வணக்கம்",

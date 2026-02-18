@@ -20,7 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
-import tv.bayit.plus.ui.components.BreadcrumbBar
+import tv.bayit.plus.navigation.isAuthRoutePattern
 import tv.bayit.plus.ui.components.GlassBottomNavBar
 import tv.bayit.plus.ui.components.MiniAudioPlayerBar
 import tv.bayit.plus.ui.components.PiPWidgetContainer
@@ -74,10 +74,20 @@ fun BayitMainScaffold(
 
     val breadcrumbs = rememberBreadcrumbTrail(navController)
 
+    val isAuthScreen = currentRoute?.let { isAuthRoutePattern(it) } == true
+
     Scaffold(
         topBar = {
-            if (isRootTab) {
+            if (!isAuthScreen) {
                 TopAppBar(
+                    showBack = !isRootTab,
+                    onBack = { navController.popBackStack() },
+                    breadcrumbs = breadcrumbs,
+                    onBreadcrumbClick = { entry ->
+                        repeat(entry.popCount) {
+                            navController.popBackStack()
+                        }
+                    },
                     userPhotoUrl = userPhotoUrl,
                     userName = userName,
                     currentLanguage = currentLanguage,
@@ -85,19 +95,10 @@ fun BayitMainScaffold(
                     onLanguageSelected = { code -> navBarViewModel.setLanguage(code) },
                     onPlaylistClick = { navigateWithAuthGuard(Route.Playlist) },
                 )
-            } else if (breadcrumbs.size >= 2) {
-                BreadcrumbBar(
-                    entries = breadcrumbs,
-                    onEntryClick = { entry ->
-                        repeat(entry.popCount) {
-                            navController.popBackStack()
-                        }
-                    },
-                )
             }
         },
         bottomBar = {
-            if (isRootTab) {
+            if (!isAuthScreen) {
                 Column {
                     MiniAudioPlayerBar(
                         audioState = audioState,
@@ -107,19 +108,21 @@ fun BayitMainScaffold(
                         onSkipForward = miniPlayerViewModel::skipForward,
                         onClose = miniPlayerViewModel::stop,
                     )
-                    GlassBottomNavBar(
-                        selectedTab = selectedTab,
-                        onTabSelected = { tab ->
-                            selectedTab = tab
-                            navController.navigate(tab.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                    if (isRootTab) {
+                        GlassBottomNavBar(
+                            selectedTab = selectedTab,
+                            onTabSelected = { tab ->
+                                selectedTab = tab
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                    )
+                            },
+                        )
+                    }
                 }
             }
         },

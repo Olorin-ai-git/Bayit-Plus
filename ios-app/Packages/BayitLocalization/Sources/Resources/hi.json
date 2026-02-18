@@ -3102,7 +3102,12 @@
     "login": "लॉगिन",
     "signUp": "साइन अप",
     "signInRequired": "साइन इन आवश्यक है",
-    "signInRequiredTitle": "कृपया जारी रखने के लिए साइन इन करें"
+    "signInRequiredTitle": "कृपया जारी रखने के लिए साइन इन करें",
+    "biometricSignIn": "फिंगरप्रिंट से साइन इन करें",
+    "biometricEnrollTitle": "बायोमेट्रिक साइन-इन सक्षम करें",
+    "biometricEnrollMessage": "अगली बार तेज़ साइन इन के लिए अपनी उंगली या चेहरे का उपयोग करें",
+    "biometricEnrollEnable": "सक्षम करें",
+    "biometricEnrollSkip": "अभी नहीं"
   },
   "avatar": {
     "dialogue": {

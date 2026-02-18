@@ -4245,7 +4245,7 @@
     "upNext": "Suivant",
     "subscribed": "Abonné",
     "subscribe": "S'abonner",
-    "unsubscribe": "Se désabonner",
+    "unsubscribe": "Se desabonner",
     "subscriptions": "Abonnements",
     "discover": "Découvrir",
     "popular": "Populaires",
@@ -4328,9 +4328,7 @@
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
     "radio": "Radio",
-    "playLatest": "Lire le dernier",
-    "subscribe": "S'abonner",
-    "unsubscribe": "Se desabonner"
+    "playLatest": "Lire le dernier"
   },
   "miniPlayer": {
     "skipBackward": "Reculer de 15 secondes",
@@ -8485,7 +8483,12 @@
     "login": "Connexion",
     "signUp": "Inscription",
     "signInRequired": "Connexion requise",
-    "signInRequiredTitle": "Veuillez vous connecter pour continuer"
+    "signInRequiredTitle": "Veuillez vous connecter pour continuer",
+    "biometricSignIn": "Se connecter avec l'empreinte digitale",
+    "biometricEnrollTitle": "Activer la connexion biométrique",
+    "biometricEnrollMessage": "Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement",
+    "biometricEnrollEnable": "Activer",
+    "biometricEnrollSkip": "Pas maintenant"
   },
   "email": {
     "greeting": "Bonjour",

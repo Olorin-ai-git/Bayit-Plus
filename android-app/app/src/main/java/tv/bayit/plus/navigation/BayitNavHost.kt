@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import tv.bayit.plus.BuildConfig
+import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.common.result.BayitError
 import tv.bayit.plus.core.common.result.BayitResult
@@ -130,6 +132,7 @@ import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 fun BayitNavHost(
     navController: NavHostController,
     googleSignInHelper: GoogleSignInHelper,
+    biometricAuthService: BiometricAuthService,
     modifier: Modifier = Modifier,
     startRoute: Route? = null
 ) {
@@ -267,6 +270,17 @@ fun BayitNavHost(
                         }
                     }
                 },
+                onRequestBiometricSignIn = { onResult ->
+                    coroutineScope.launch {
+                        val activity = context as? FragmentActivity ?: run { onResult(false); return@launch }
+                        val result = biometricAuthService.authenticate(
+                            activity = activity,
+                            title = "Bayit+",
+                            subtitle = "Sign in with biometric",
+                        )
+                        onResult(result is BayitResult.Success)
+                    }
+                },
             )
         }
         composable<Route.Register> {
@@ -308,7 +322,14 @@ fun BayitNavHost(
             )
         }
         composable<Route.Profile> {
-            ProfileRoute(onNavigateBack = { navController.popBackStack() })
+            ProfileRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onSignOut = {
+                    navController.navigate(Route.Login) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
         }
         composable<Route.Favorites> {
             FavoritesRoute(

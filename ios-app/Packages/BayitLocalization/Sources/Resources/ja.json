@@ -2865,7 +2865,12 @@
     "login": "ログイン",
     "signUp": "新規登録",
     "signInRequired": "ログインが必要です",
-    "signInRequiredTitle": "続行するにはログインしてください"
+    "signInRequiredTitle": "続行するにはログインしてください",
+    "biometricSignIn": "指紋でサインイン",
+    "biometricEnrollTitle": "生体認証サインインを有効にする",
+    "biometricEnrollMessage": "次回から指紋や顔を使って素早くサインインできます",
+    "biometricEnrollEnable": "有効にする",
+    "biometricEnrollSkip": "後で"
   },
   "avatar": {
     "dialogue": {
@@ -6968,7 +6973,7 @@
     "releaseDate": "配信日",
     "host": "ホスト",
     "guests": "ゲスト",
-    "subscribe": "登録",
+    "subscribe": "登録する",
     "unsubscribe": "登録解除",
     "download": "ダウンロード",
     "removeDownload": "ダウンロードを削除",
@@ -7072,9 +7077,7 @@
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
-    "playLatest": "最新を再生",
-    "subscribe": "登録する",
-    "unsubscribe": "登録解除"
+    "playLatest": "最新を再生"
   },
   "miniPlayer": {
     "skipBackward": "15秒戻る",

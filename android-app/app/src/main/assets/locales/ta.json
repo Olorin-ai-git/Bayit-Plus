@@ -13,6 +13,7 @@
     "watchNow": "இப்போது பாருங்கள்",
     "playNow": "இப்போது இயக்கு",
     "play": "இயக்கு",
+    "pause": "இடைநிறுத்து",
     "moreInfo": "மேலும் தகவல்",
     "seeAll": "அனைத்தையும் காண்",
     "new": "புதிய",
@@ -54,6 +55,18 @@
     "collapse": "சுருக்கு",
     "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
     "skip": "தவிர்"
+  },
+  "auth": {
+    "loginRequired": "உள்நுழைவு தேவை",
+    "loginToWatch": "{{title}} பார்க்க உள்நுழையவும்",
+    "login": "உள்நுழைவு",
+    "signUp": "பதிவு செய்யவும்",
+    "biometricSignIn": "கைரேகையில் உள்நுழைக",
+    "biometricEnrollTitle": "பயோமெட்ரிக் உள்நுழைவை இயக்கு",
+    "biometricEnrollMessage": "அடுத்த முறை விரைவாக உள்நுழைய உங்கள் கைரேகை அல்லது முகத்தைப் பயன்படுத்தவும்",
+    "biometricEnrollEnable": "இயக்கு",
+    "biometricEnrollSkip": "இப்போது வேண்டாம்",
+    "signOut": "வெளியேறு"
   },
   "demo": {
     "banner": "டெமோ பயன்முறை",
@@ -238,7 +251,7 @@
       "history": "வரலாறு",
       "educational": "கல்வி"
     },
-    "playLatest": "சமீபத்தியதை இயக்கு",
+    "playLatest": "இயக்கு",
     "subscribe": "சந்தா செய்",
     "unsubscribe": "சந்தா நீக்கு"
   },

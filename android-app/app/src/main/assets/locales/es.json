@@ -41,6 +41,7 @@
     "noResults": "No se encontraron resultados",
     "tryDifferentSearch": "Prueba con otro término de búsqueda",
     "play": "Reproducir",
+    "pause": "Pausa",
     "moreInfo": "Más Información",
     "seeAll": "Ver Todo",
     "deleting": "Eliminando...",
@@ -411,7 +412,7 @@
     },
     "noPodcasts": "Sin podcasts disponibles",
     "tryLater": "Intenta de nuevo más tarde",
-    "playLatest": "Reproducir ultimo",
+    "playLatest": "Reproducir",
     "subscribe": "Suscribirse",
     "unsubscribe": "Cancelar suscripcion"
   },
@@ -3823,7 +3824,13 @@
     "loginRequired": "Inicio de sesión requerido",
     "loginToWatch": "Por favor inicia sesión para ver {{title}}",
     "login": "Iniciar sesión",
-    "signUp": "Registrarse"
+    "signUp": "Registrarse",
+    "biometricSignIn": "Iniciar sesión con huella dactilar",
+    "biometricEnrollTitle": "Activar inicio de sesión biométrico",
+    "biometricEnrollMessage": "Usa tu huella o cara para iniciar sesión más rápido la próxima vez",
+    "biometricEnrollEnable": "Activar",
+    "biometricEnrollSkip": "Ahora no",
+    "signOut": "Cerrar sesión"
   },
   "recording": {
     "stop": "Detener Grabación",

@@ -14,14 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.media.AudioPlaybackState
+import tv.bayit.plus.core.model.PodcastEpisodeItem
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
-/**
- * Navigation entry-point for the Podcast Detail screen.
- */
 @Composable
 fun PodcastDetailRoute(
     onNavigateToPlayer: (String, String) -> Unit,
@@ -30,12 +29,13 @@ fun PodcastDetailRoute(
     viewModel: PodcastDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val audioState by viewModel.audioState.collectAsStateWithLifecycle()
 
     PodcastDetailScreen(
         uiState = uiState,
-        onEpisodePlay = { episodeId -> onNavigateToPlayer(episodeId, "podcast_episode") },
-        onPlayLatest = viewModel::playLatestEpisode,
-        onSubscribeToggle = viewModel::toggleSubscription,
+        audioState = audioState,
+        onToggleLatest = viewModel::toggleLatestPlayback,
+        onToggleEpisode = viewModel::toggleEpisodePlayback,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
         onRefresh = viewModel::refresh,
@@ -46,9 +46,9 @@ fun PodcastDetailRoute(
 @Composable
 internal fun PodcastDetailScreen(
     uiState: PodcastDetailUiState,
-    onEpisodePlay: (String) -> Unit,
-    onPlayLatest: () -> Unit,
-    onSubscribeToggle: () -> Unit,
+    audioState: AudioPlaybackState,
+    onToggleLatest: () -> Unit,
+    onToggleEpisode: (PodcastEpisodeItem) -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
@@ -64,9 +64,9 @@ internal fun PodcastDetailScreen(
             is PodcastDetailUiState.Error -> PodcastErrorContent(uiState.message, onBack, onRetry)
             is PodcastDetailUiState.Success -> PodcastSuccessContent(
                 state = uiState,
-                onEpisodePlay = onEpisodePlay,
-                onPlayLatest = onPlayLatest,
-                onSubscribeToggle = onSubscribeToggle,
+                audioState = audioState,
+                onToggleLatest = onToggleLatest,
+                onToggleEpisode = onToggleEpisode,
                 onBack = onBack,
                 onRefresh = onRefresh,
             )
@@ -77,12 +77,16 @@ internal fun PodcastDetailScreen(
 @Composable
 private fun PodcastSuccessContent(
     state: PodcastDetailUiState.Success,
-    onEpisodePlay: (String) -> Unit,
-    onPlayLatest: () -> Unit,
-    onSubscribeToggle: () -> Unit,
+    audioState: AudioPlaybackState,
+    onToggleLatest: () -> Unit,
+    onToggleEpisode: (PodcastEpisodeItem) -> Unit,
     onBack: () -> Unit,
     onRefresh: () -> Unit,
 ) {
+    val isShowPlaying = audioState.isActive &&
+        audioState.contentId == state.showId &&
+        audioState.isPlaying
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh,
@@ -91,7 +95,7 @@ private fun PodcastSuccessContent(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item { PodcastHeroSection(state, onBack) }
             item { PodcastMetadataSection(state) }
-            item { PodcastActionSection(state.isSubscribed, onPlayLatest, onSubscribeToggle) }
+            item { PodcastPlaySection(isPlaying = isShowPlaying, onToggle = onToggleLatest) }
             if (state.isLoadingEpisodes) {
                 item {
                     Box(
@@ -105,7 +109,14 @@ private fun PodcastSuccessContent(
                 }
             } else {
                 items(items = state.episodes, key = { it.id }) { episode ->
-                    PodcastEpisodeRow(episode = episode, onPlay = { onEpisodePlay(episode.id) })
+                    val isEpisodePlaying = audioState.isActive &&
+                        audioState.contentId == episode.id &&
+                        audioState.isPlaying
+                    PodcastEpisodeRow(
+                        episode = episode,
+                        isPlaying = isEpisodePlaying,
+                        onTogglePlayback = { onToggleEpisode(episode) },
+                    )
                 }
             }
         }

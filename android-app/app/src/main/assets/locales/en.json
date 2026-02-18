@@ -13,6 +13,7 @@
     "watchNow": "Watch Now",
     "playNow": "Play Now",
     "play": "Play",
+    "pause": "Pause",
     "moreInfo": "More Info",
     "seeAll": "See All",
     "new": "New",
@@ -412,7 +413,7 @@
     },
     "noPodcasts": "No podcasts available",
     "tryLater": "Try again later",
-    "playLatest": "Play Latest",
+    "playLatest": "Play",
     "subscribe": "Subscribe",
     "unsubscribe": "Unsubscribe"
   },
@@ -3923,7 +3924,13 @@
     "loginRequired": "Login Required",
     "loginToWatch": "Please sign in to watch {{title}}",
     "login": "Login",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "biometricSignIn": "Sign in with Fingerprint",
+    "biometricEnrollTitle": "Enable Biometric Sign-In",
+    "biometricEnrollMessage": "Use your fingerprint or face to sign in faster next time",
+    "biometricEnrollEnable": "Enable",
+    "biometricEnrollSkip": "Not Now",
+    "signOut": "Sign Out"
   },
   "recording": {
     "stop": "Stop Recording",

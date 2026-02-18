@@ -1,29 +1,40 @@
 package tv.bayit.plus.core.auth
 
+import dagger.Lazy
+import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.result.BayitResult
 import tv.bayit.plus.core.network.AuthTokenProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Provides RS256 backend tokens from secure storage for API Bearer header injection.
- *
- * RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
- * When a token expires, users must re-authenticate.
+ * Provides access tokens from secure storage for API Bearer header injection.
+ * Uses Lazy<OlorinAuthService> to break the circular dependency:
+ * OlorinAuthService -> BayitApiClient -> TokenAuthenticator -> AuthTokenProviderImpl -> OlorinAuthService.
  */
 @Singleton
 class AuthTokenProviderImpl @Inject constructor(
     private val secureStorage: SecureStorageService,
+    private val olorinAuthService: Lazy<OlorinAuthService>,
+    private val logger: BayitLogger,
 ) : AuthTokenProvider {
 
     override suspend fun getToken(): String? = secureStorage.getAccessToken()
 
     override suspend fun refreshToken(): String? {
-        // RS256 tokens from auth.olorin.ai cannot be refreshed client-side.
-        // Return null to signal that re-authentication is required.
-        return null
+        val refreshToken = secureStorage.getRefreshToken() ?: run {
+            logger.warning("No refresh token available — re-auth required")
+            return null
+        }
+        return when (val result = olorinAuthService.get().refreshAccessToken(refreshToken)) {
+            is BayitResult.Success -> result.data
+            is BayitResult.Failure -> {
+                logger.warning("Token refresh returned failure — clearing tokens")
+                secureStorage.clearAuthTokens()
+                null
+            }
+        }
     }
 
-    override suspend fun clearToken() {
-        secureStorage.clearAuthTokens()
-    }
+    override suspend fun clearToken() = secureStorage.clearAuthTokens()
 }

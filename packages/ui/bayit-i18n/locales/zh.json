@@ -7570,7 +7570,12 @@
     "login": "登录",
     "signUp": "注册",
     "signInRequired": "需要登录",
-    "signInRequiredTitle": "请登录以继续"
+    "signInRequiredTitle": "请登录以继续",
+    "biometricSignIn": "使用指纹登录",
+    "biometricEnrollTitle": "启用生物识别登录",
+    "biometricEnrollMessage": "使用指纹或面部识别更快速地登录",
+    "biometricEnrollEnable": "启用",
+    "biometricEnrollSkip": "稍后"
   },
   "email": {
     "greeting": "您好",

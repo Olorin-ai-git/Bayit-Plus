@@ -5,19 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,55 +29,58 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.navigation.BreadcrumbEntry
 import tv.bayit.plus.navigation.isTabRootPattern
 import tv.bayit.plus.navigation.routeLabelFromPattern
 
 @Composable
-fun BreadcrumbBar(
+fun BreadcrumbRow(
     entries: List<BreadcrumbEntry>,
     onEntryClick: (BreadcrumbEntry) -> Unit,
+    showBack: Boolean = false,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    if (entries.size < 2) return
+    if (entries.isEmpty() && !showBack) return
 
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .glassMorphism(
-                cornerRadius = DesignTokens.Radius.sm,
-                backgroundColor = DesignTokens.Colors.Glass.bg,
-            )
-            .windowInsetsPadding(WindowInsets.statusBars),
+            .horizontalScroll(rememberScrollState())
+            .padding(
+                start = if (showBack) DesignTokens.Spacing.xs else DesignTokens.Spacing.md,
+                end = DesignTokens.Spacing.md,
+                top = DesignTokens.Spacing.xs,
+                bottom = DesignTokens.Spacing.xs,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(
-                    horizontal = DesignTokens.Spacing.md,
-                    vertical = DesignTokens.Spacing.xs,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-        ) {
-            entries.forEachIndexed { index, entry ->
-                val isLast = index == entries.lastIndex
-                BreadcrumbItem(
-                    label = entry.label,
-                    isActive = isLast,
-                    onClick = if (isLast) null else { { onEntryClick(entry) } },
+        if (showBack) {
+            IconButton(onClick = onBack, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = DesignTokens.Colors.Text.primary,
+                    modifier = Modifier.size(20.dp),
                 )
-                if (!isLast) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = DesignTokens.Colors.Text.muted,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
+            }
+        }
+        entries.forEachIndexed { index, entry ->
+            val isLast = index == entries.lastIndex
+            BreadcrumbItem(
+                label = entry.label,
+                isActive = isLast,
+                onClick = if (isLast) null else { { onEntryClick(entry) } },
+            )
+            if (!isLast) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = DesignTokens.Colors.Text.muted,
+                    modifier = Modifier.size(16.dp),
+                )
             }
         }
     }
@@ -146,7 +147,7 @@ fun rememberBreadcrumbTrail(
             entry.destination.navigatorName == "composable"
         }
 
-        if (screenEntries.size <= 1) return@remember emptyList()
+        if (screenEntries.isEmpty()) return@remember emptyList()
 
         val tabRootIndex = screenEntries.indexOfLast { entry ->
             val route = entry.destination.route ?: return@indexOfLast false
@@ -156,7 +157,6 @@ fun rememberBreadcrumbTrail(
         if (tabRootIndex < 0) return@remember emptyList()
 
         val trailEntries = screenEntries.subList(tabRootIndex, screenEntries.size)
-        if (trailEntries.size <= 1) return@remember emptyList()
 
         trailEntries.mapIndexedNotNull { index, entry ->
             val route = entry.destination.route ?: return@mapIndexedNotNull null

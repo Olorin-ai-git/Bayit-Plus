@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import tv.bayit.plus.core.auth.AuthState
+import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var googleSignInHelper: GoogleSignInHelper
+
+    @Inject
+    lateinit var biometricAuthService: BiometricAuthService
 
     @Inject
     lateinit var stringProvider: BayitStringProvider
@@ -83,6 +87,7 @@ class MainActivity : ComponentActivity() {
                         BayitNavHost(
                             navController = navController,
                             googleSignInHelper = googleSignInHelper,
+                            biometricAuthService = biometricAuthService,
                             modifier = Modifier.fillMaxSize()
                         )
                     } }

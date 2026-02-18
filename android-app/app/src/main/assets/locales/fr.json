@@ -13,6 +13,7 @@
     "watchNow": "Regarder maintenant",
     "playNow": "Lire maintenant",
     "play": "Lire",
+    "pause": "Pause",
     "moreInfo": "Plus d'infos",
     "seeAll": "Voir tout",
     "new": "Nouveau",
@@ -55,6 +56,18 @@
     "collapse": "Réduire",
     "upgrade": "Passer à Premium",
     "skip": "Passer"
+  },
+  "auth": {
+    "loginRequired": "Connexion requise",
+    "loginToWatch": "Veuillez vous connecter pour regarder {{title}}",
+    "login": "Connexion",
+    "signUp": "Inscription",
+    "biometricSignIn": "Se connecter avec l'empreinte digitale",
+    "biometricEnrollTitle": "Activer la connexion biométrique",
+    "biometricEnrollMessage": "Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement",
+    "biometricEnrollEnable": "Activer",
+    "biometricEnrollSkip": "Pas maintenant",
+    "signOut": "Se déconnecter"
   },
   "demo": {
     "banner": "MODE DÉMO",
@@ -409,7 +422,7 @@
     },
     "noPodcasts": "Aucun podcast disponible",
     "tryLater": "Réessayez plus tard",
-    "playLatest": "Lire le dernier",
+    "playLatest": "Lire",
     "subscribe": "S'abonner",
     "unsubscribe": "Se desabonner"
   },

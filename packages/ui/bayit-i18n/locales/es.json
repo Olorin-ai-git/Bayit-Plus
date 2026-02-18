@@ -7680,7 +7680,12 @@
     "login": "Iniciar sesión",
     "signUp": "Registrarse",
     "signInRequired": "Inicio de sesión requerido",
-    "signInRequiredTitle": "Por favor inicia sesión para continuar"
+    "signInRequiredTitle": "Por favor inicia sesión para continuar",
+    "biometricSignIn": "Iniciar sesión con huella dactilar",
+    "biometricEnrollTitle": "Activar inicio de sesión biométrico",
+    "biometricEnrollMessage": "Usa tu huella o cara para iniciar sesión más rápido la próxima vez",
+    "biometricEnrollEnable": "Activar",
+    "biometricEnrollSkip": "Ahora no"
   },
   "email": {
     "greeting": "Hola",

@@ -13,6 +13,7 @@
     "watchNow": "立即观看",
     "playNow": "立即播放",
     "play": "播放",
+    "pause": "暂停",
     "moreInfo": "更多信息",
     "seeAll": "查看全部",
     "new": "新",
@@ -55,6 +56,18 @@
     "collapse": "收起",
     "upgrade": "升级到高级版",
     "skip": "跳过"
+  },
+  "auth": {
+    "loginRequired": "需要登录",
+    "loginToWatch": "请登录以观看 {{title}}",
+    "login": "登录",
+    "signUp": "注册",
+    "biometricSignIn": "使用指纹登录",
+    "biometricEnrollTitle": "启用生物识别登录",
+    "biometricEnrollMessage": "使用指纹或面部识别更快速地登录",
+    "biometricEnrollEnable": "启用",
+    "biometricEnrollSkip": "稍后",
+    "signOut": "退出登录"
   },
   "demo": {
     "banner": "演示模式",
@@ -408,7 +421,7 @@
     },
     "noPodcasts": "无可用播客",
     "tryLater": "请稍后重试",
-    "playLatest": "播放最新",
+    "playLatest": "播放",
     "subscribe": "订阅",
     "unsubscribe": "取消订阅"
   },

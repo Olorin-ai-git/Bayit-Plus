@@ -3124,7 +3124,12 @@
     "login": "Login",
     "signUp": "Sign Up",
     "signInRequired": "Sign In Required",
-    "signInRequiredTitle": "Please sign in to continue"
+    "signInRequiredTitle": "Please sign in to continue",
+    "biometricSignIn": "Sign in with Fingerprint",
+    "biometricEnrollTitle": "Enable Biometric Sign-In",
+    "biometricEnrollMessage": "Use your fingerprint or face to sign in faster next time",
+    "biometricEnrollEnable": "Enable",
+    "biometricEnrollSkip": "Not Now"
   },
   "avatar": {
     "dialogue": {

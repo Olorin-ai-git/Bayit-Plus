@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.QueueMusic
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -25,6 +25,7 @@ import tv.bayit.plus.designsystem.component.LanguageSelector
 import tv.bayit.plus.designsystem.component.ProfileAvatar
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.navigation.BreadcrumbEntry
 
 @Composable
 fun TopAppBar(
@@ -34,6 +35,10 @@ fun TopAppBar(
     onProfileClick: () -> Unit,
     onLanguageSelected: (String) -> Unit,
     onPlaylistClick: () -> Unit,
+    showBack: Boolean = false,
+    onBack: () -> Unit = {},
+    breadcrumbs: List<BreadcrumbEntry> = emptyList(),
+    onBreadcrumbClick: (BreadcrumbEntry) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -67,7 +72,7 @@ fun TopAppBar(
 
             IconButton(onClick = onPlaylistClick) {
                 Icon(
-                    imageVector = Icons.Default.QueueMusic,
+                    imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                     contentDescription = "Playlist",
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(28.dp),
@@ -80,5 +85,12 @@ fun TopAppBar(
                 onClick = onProfileClick,
             )
         }
+
+        BreadcrumbRow(
+            entries = breadcrumbs,
+            onEntryClick = onBreadcrumbClick,
+            showBack = showBack,
+            onBack = onBack,
+        )
     }
 }

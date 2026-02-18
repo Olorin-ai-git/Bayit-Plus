@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.UserRepository
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val olorinAuthService: OlorinAuthService,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -80,6 +82,10 @@ class ProfileViewModel @Inject constructor(
                 is BayitResult.Loading -> Unit
             }
         }
+    }
+
+    fun signOut() {
+        olorinAuthService.signOut()
     }
 
     fun retry() {

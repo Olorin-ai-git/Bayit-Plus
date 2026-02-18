@@ -106,6 +106,22 @@ class OlorinAuthService @Inject constructor(
         }
     }
 
+    suspend fun refreshAccessToken(refreshToken: String): BayitResult<String> {
+        return try {
+            val response = apiClient.safeApiCall {
+                authApi.refresh(TokenRefreshRequest(refreshToken = refreshToken))
+            }
+            secureStorage.saveAccessToken(response.accessToken)
+            secureStorage.saveRefreshToken(response.refreshToken)
+            _authState.value = AuthState.Authenticated
+            logger.info("Access token refreshed successfully")
+            BayitResult.success(response.accessToken)
+        } catch (e: Exception) {
+            logger.error("Token refresh failed", error = e)
+            BayitResult.failure(BayitError.Authentication("Token refresh failed", e))
+        }
+    }
+
     private interface OlorinAuthApi {
         @POST("api/v1/auth/v2/register")
         suspend fun register(@Body request: RegisterRequest): AuthResponse
@@ -118,6 +134,9 @@ class OlorinAuthService @Inject constructor(
 
         @POST("api/v1/auth/password-reset/request")
         suspend fun requestPasswordReset(@Body request: PasswordResetRequest)
+
+        @POST("api/v1/auth/token/refresh")
+        suspend fun refresh(@Body request: TokenRefreshRequest): TokenRefreshResponse
     }
 
     @Serializable
@@ -133,6 +152,19 @@ class OlorinAuthService @Inject constructor(
 
     @Serializable
     private data class PasswordResetRequest(val email: String)
+
+    @Serializable
+    private data class TokenRefreshRequest(
+        @SerialName("refresh_token") val refreshToken: String,
+    )
+
+    @Serializable
+    private data class TokenRefreshResponse(
+        @SerialName("access_token") val accessToken: String,
+        @SerialName("refresh_token") val refreshToken: String,
+        @SerialName("token_type") val tokenType: String,
+        @SerialName("expires_in") val expiresIn: Int,
+    )
 
     @Serializable
     data class AuthResponse(

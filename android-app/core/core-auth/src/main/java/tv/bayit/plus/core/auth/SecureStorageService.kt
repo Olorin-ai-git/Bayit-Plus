@@ -151,25 +151,34 @@ class SecureStorageService @Inject constructor(
         BayitResult.failure(BayitError.Unknown("Failed to $operation: ${e.message}", e))
     }
 
-    // MARK: - Auth Token Convenience Methods
+    private fun getStoredToken(key: String, expiryKey: String, label: String): String? {
+        val token = storagePrefs.getString(key, null) ?: return null
+        val exp = storagePrefs.getLong(expiryKey, 0L)
+        if (exp > 0L && System.currentTimeMillis() >= exp) {
+            storagePrefs.edit().remove(key).remove(expiryKey).apply()
+            logger.warning("$label expired on retrieval — cleared")
+            return null
+        }
+        return token
+    }
 
     fun saveAccessToken(token: String) {
-        storagePrefs.edit().putString(ACCESS_TOKEN_KEY, token).apply()
+        storagePrefs.edit().putString(ACCESS_TOKEN_KEY, token)
+            .putLong(ACCESS_TOKEN_EXPIRY_KEY, System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_MS).apply()
     }
 
-    fun getAccessToken(): String? = storagePrefs.getString(ACCESS_TOKEN_KEY, null)
+    fun getAccessToken(): String? = getStoredToken(ACCESS_TOKEN_KEY, ACCESS_TOKEN_EXPIRY_KEY, "Access token")
 
     fun saveRefreshToken(token: String) {
-        storagePrefs.edit().putString(REFRESH_TOKEN_KEY, token).apply()
+        storagePrefs.edit().putString(REFRESH_TOKEN_KEY, token)
+            .putLong(REFRESH_TOKEN_EXPIRY_KEY, System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY_MS).apply()
     }
 
-    fun getRefreshToken(): String? = storagePrefs.getString(REFRESH_TOKEN_KEY, null)
+    fun getRefreshToken(): String? = getStoredToken(REFRESH_TOKEN_KEY, REFRESH_TOKEN_EXPIRY_KEY, "Refresh token")
 
     fun clearAuthTokens() {
-        storagePrefs.edit()
-            .remove(ACCESS_TOKEN_KEY)
-            .remove(REFRESH_TOKEN_KEY)
-            .apply()
+        storagePrefs.edit().remove(ACCESS_TOKEN_KEY).remove(ACCESS_TOKEN_EXPIRY_KEY)
+            .remove(REFRESH_TOKEN_KEY).remove(REFRESH_TOKEN_EXPIRY_KEY).apply()
     }
 
     companion object {
@@ -183,6 +192,10 @@ class SecureStorageService @Inject constructor(
         private const val REFRESH_WINDOW_SECONDS = 300L
         private const val MS_PER_SEC = 1000L
         private const val ACCESS_TOKEN_KEY = "bayit_access_token"
+        private const val ACCESS_TOKEN_EXPIRY_KEY = "bayit_access_token_expiry"
         private const val REFRESH_TOKEN_KEY = "bayit_refresh_token"
+        private const val REFRESH_TOKEN_EXPIRY_KEY = "bayit_refresh_token_expiry"
+        private const val ACCESS_TOKEN_VALIDITY_MS = 30L * 24 * 60 * 60 * 1000L
+        private const val REFRESH_TOKEN_VALIDITY_MS = 7L * 24 * 60 * 60 * 1000L
     }
 }

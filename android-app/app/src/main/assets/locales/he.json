@@ -13,6 +13,7 @@
     "watchNow": "צפה עכשיו",
     "playNow": "נגן עכשיו",
     "play": "נגן",
+    "pause": "השהה",
     "moreInfo": "מידע נוסף",
     "seeAll": "הכל",
     "new": "חדש",
@@ -407,7 +408,7 @@
     },
     "noPodcasts": "אין פודקאסטים זמינים",
     "tryLater": "נסה שוב מאוחר יותר",
-    "playLatest": "נגן אחרון",
+    "playLatest": "נגן",
     "subscribe": "הירשם",
     "unsubscribe": "בטל הרשמה"
   },
@@ -3922,7 +3923,13 @@
     "loginRequired": "נדרשת התחברות",
     "loginToWatch": "אנא התחבר כדי לצפות ב{{title}}",
     "login": "התחבר",
-    "signUp": "הרשם"
+    "signUp": "הרשם",
+    "biometricSignIn": "כניסה עם טביעת אצבע",
+    "biometricEnrollTitle": "הפעל כניסה ביומטרית",
+    "biometricEnrollMessage": "השתמש בטביעת האצבע או הפנים שלך לכניסה מהירה יותר",
+    "biometricEnrollEnable": "הפעל",
+    "biometricEnrollSkip": "לא עכשיו",
+    "signOut": "התנתק"
   },
   "recording": {
     "stop": "עצור הקלטה",

@@ -13,6 +13,7 @@
     "watchNow": "এখনই দেখুন",
     "playNow": "এখনই চালান",
     "play": "চালান",
+    "pause": "বিরতি",
     "moreInfo": "আরও তথ্য",
     "seeAll": "সব দেখুন",
     "new": "নতুন",
@@ -54,6 +55,18 @@
     "collapse": "সংক্ষিপ্ত করুন",
     "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
     "skip": "এড়িয়ে যান"
+  },
+  "auth": {
+    "loginRequired": "লগইন প্রয়োজন",
+    "loginToWatch": "{{title}} দেখতে সাইন ইন করুন",
+    "login": "লগইন",
+    "signUp": "সাইন আপ",
+    "biometricSignIn": "আঙুলের ছাপ দিয়ে সাইন ইন করুন",
+    "biometricEnrollTitle": "বায়োমেট্রিক সাইন-ইন সক্ষম করুন",
+    "biometricEnrollMessage": "পরের বার দ্রুত সাইন ইন করতে আঙুলের ছাপ বা মুখ ব্যবহার করুন",
+    "biometricEnrollEnable": "সক্ষম করুন",
+    "biometricEnrollSkip": "এখন নয়",
+    "signOut": "সাইন আউট"
   },
   "demo": {
     "banner": "ডেমো মোড",
@@ -238,7 +251,7 @@
       "history": "ইতিহাস",
       "educational": "শিক্ষামূলক"
     },
-    "playLatest": "সর্বশেষ চালান",
+    "playLatest": "চালান",
     "subscribe": "সাবস্ক্রাইব",
     "unsubscribe": "আনসাবস্ক্রাইব"
   },

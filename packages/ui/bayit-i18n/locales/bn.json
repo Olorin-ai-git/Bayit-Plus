@@ -7549,7 +7549,12 @@
     "login": "লগইন",
     "signUp": "সাইন আপ",
     "signInRequired": "সাইন ইন প্রয়োজন",
-    "signInRequiredTitle": "চালিয়ে যেতে অনুগ্রহ করে সাইন ইন করুন"
+    "signInRequiredTitle": "চালিয়ে যেতে অনুগ্রহ করে সাইন ইন করুন",
+    "biometricSignIn": "আঙুলের ছাপ দিয়ে সাইন ইন করুন",
+    "biometricEnrollTitle": "বায়োমেট্রিক সাইন-ইন সক্ষম করুন",
+    "biometricEnrollMessage": "পরের বার দ্রুত সাইন ইন করতে আঙুলের ছাপ বা মুখ ব্যবহার করুন",
+    "biometricEnrollEnable": "সক্ষম করুন",
+    "biometricEnrollSkip": "এখন নয়"
   },
   "email": {
     "greeting": "নমস্কার",

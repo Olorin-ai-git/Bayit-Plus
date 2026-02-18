@@ -13,6 +13,7 @@
     "watchNow": "अभी देखें",
     "playNow": "अभी चलाएं",
     "play": "चलाएं",
+    "pause": "रोकें",
     "moreInfo": "अधिक जानकारी",
     "seeAll": "सभी देखें",
     "new": "नया",
@@ -55,6 +56,18 @@
     "collapse": "संक्षिप्त करें",
     "upgrade": "प्रीमियम में अपग्रेड करें",
     "skip": "छोड़ें"
+  },
+  "auth": {
+    "loginRequired": "लॉगिन आवश्यक",
+    "loginToWatch": "{{title}} देखने के लिए कृपया साइन इन करें",
+    "login": "लॉगिन",
+    "signUp": "साइन अप",
+    "biometricSignIn": "फिंगरप्रिंट से साइन इन करें",
+    "biometricEnrollTitle": "बायोमेट्रिक साइन-इन सक्षम करें",
+    "biometricEnrollMessage": "अगली बार तेज़ साइन इन के लिए अपनी उंगली या चेहरे का उपयोग करें",
+    "biometricEnrollEnable": "सक्षम करें",
+    "biometricEnrollSkip": "अभी नहीं",
+    "signOut": "साइन आउट"
   },
   "demo": {
     "banner": "डेमो मोड",
@@ -303,7 +316,7 @@
       "history": "इतिहास",
       "educational": "शैक्षिक"
     },
-    "playLatest": "नवीनतम चलाएं",
+    "playLatest": "चलाएं",
     "subscribe": "सदस्यता लें",
     "unsubscribe": "सदस्यता रद्द करें"
   },

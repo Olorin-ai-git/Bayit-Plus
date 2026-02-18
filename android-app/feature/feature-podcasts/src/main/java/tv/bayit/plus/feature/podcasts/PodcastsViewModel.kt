@@ -11,7 +11,9 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
 import tv.bayit.plus.core.media.AudioPlaybackManager
+import tv.bayit.plus.core.media.AudioPlaybackState
 import tv.bayit.plus.core.model.PodcastDetail
+import tv.bayit.plus.core.model.PodcastEpisodeItem
 import tv.bayit.plus.core.model.PodcastShow
 import javax.inject.Inject
 
@@ -25,37 +27,70 @@ class PodcastsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PodcastsUiState>(PodcastsUiState.Loading)
     val uiState: StateFlow<PodcastsUiState> = _uiState.asStateFlow()
 
+    val audioState: StateFlow<AudioPlaybackState> = audioPlaybackManager.state
+
     init {
         audioPlaybackManager.attachScope(viewModelScope)
         loadPodcasts()
+    }
+
+    fun togglePlayback(showId: String) {
+        val current = audioPlaybackManager.state.value
+        if (current.isActive && current.contentId == showId) {
+            audioPlaybackManager.togglePlayPause()
+        } else {
+            playLatestEpisode(showId)
+        }
     }
 
     fun playLatestEpisode(showId: String) {
         viewModelScope.launch {
             logger.debug("Playing latest episode", mapOf("showId" to showId))
 
-            when (val result = podcastRepository.getPodcast(showId)) {
-                is BayitResult.Success -> {
-                    val detail = result.data as? PodcastDetail ?: return@launch
-                    val audioUrl = detail.latestEpisode?.audioUrl
-                        ?: detail.episodes?.firstOrNull()?.audioUrl
-                        ?: return@launch
-
-                    audioPlaybackManager.playDirectUrl(
-                        url = audioUrl,
-                        title = detail.title,
-                        subtitle = detail.author,
-                        artworkUrl = detail.cover,
-                        contentId = showId,
-                    )
-                }
+            val detail = when (val result = podcastRepository.getPodcast(showId)) {
+                is BayitResult.Success -> result.data as? PodcastDetail
                 is BayitResult.Error -> {
                     logger.error("Failed to fetch podcast for playback", result.exception, mapOf(
                         "showId" to showId,
                     ))
+                    null
                 }
-                is BayitResult.Loading -> Unit
+                is BayitResult.Loading -> null
+            } ?: return@launch
+
+            var audioUrl = detail.latestEpisode?.audioUrl
+                ?: detail.episodes?.firstOrNull()?.audioUrl
+
+            if (audioUrl == null) {
+                audioUrl = when (val epResult = podcastRepository.getEpisodes(showId)) {
+                    is BayitResult.Success -> {
+                        @Suppress("UNCHECKED_CAST")
+                        val episodes = (epResult.data as List<Any>)
+                            .filterIsInstance<PodcastEpisodeItem>()
+                        episodes.firstOrNull()?.audioUrl
+                    }
+                    is BayitResult.Error -> {
+                        logger.error("Failed to fetch episodes for playback", epResult.exception, mapOf(
+                            "showId" to showId,
+                        ))
+                        null
+                    }
+                    is BayitResult.Loading -> null
+                }
             }
+
+            if (audioUrl == null) {
+                logger.warning("No audio URL found for podcast", mapOf("showId" to showId))
+                return@launch
+            }
+
+            audioPlaybackManager.playDirectUrl(
+                url = audioUrl,
+                title = detail.title,
+                subtitle = detail.author,
+                artworkUrl = detail.cover,
+                contentId = showId,
+            )
         }
     }
 

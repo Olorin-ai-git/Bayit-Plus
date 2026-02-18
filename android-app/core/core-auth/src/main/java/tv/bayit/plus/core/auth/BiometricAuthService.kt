@@ -102,6 +102,18 @@ class BiometricAuthService @Inject constructor(
         return if (secs > 0) secs else 0
     }
 
+    fun isBiometricSignInEnabled(): Boolean = prefs.getBoolean(KEY_SIGNIN_ENROLLED, false)
+
+    fun enableBiometricSignIn() {
+        prefs.edit().putBoolean(KEY_SIGNIN_ENROLLED, true).apply()
+        logger.info("Biometric sign-in enabled")
+    }
+
+    fun disableBiometricSignIn() {
+        prefs.edit().putBoolean(KEY_SIGNIN_ENROLLED, false).apply()
+        logger.info("Biometric sign-in disabled")
+    }
+
     fun logout() {
         prefs.edit().clear().apply()
         _state.value = BiometricAuthState.Idle
@@ -172,6 +184,7 @@ class BiometricAuthService @Inject constructor(
 
     companion object {
         private const val PREF_NAME = "bayit_biometric_sessions"
+        private const val KEY_SIGNIN_ENROLLED = "biometric_signin_enrolled"
         private const val KEY_TOKEN = "session_token"
         private const val KEY_EXPIRES = "token_expires_at"
         private const val KEY_ATTEMPTS = "failed_attempts"

@@ -3124,7 +3124,12 @@
     "login": "התחבר",
     "signUp": "הרשם",
     "signInRequired": "נדרשת כניסה",
-    "signInRequiredTitle": "אנא התחבר כדי להמשיך"
+    "signInRequiredTitle": "אנא התחבר כדי להמשיך",
+    "biometricSignIn": "כניסה עם טביעת אצבע",
+    "biometricEnrollTitle": "הפעל כניסה ביומטרית",
+    "biometricEnrollMessage": "השתמש בטביעת האצבע או הפנים שלך לכניסה מהירה יותר",
+    "biometricEnrollEnable": "הפעל",
+    "biometricEnrollSkip": "לא עכשיו"
   },
   "avatar": {
     "dialogue": {
