@@ -32,10 +32,12 @@ struct PlaylistMediumView: View {
 
                     // Play All button
                     if #available(iOS 17.0, *) {
-                        Button(intent: PlayPlaylistIntent(
-                            playlistID: playlist.id,
-                            playlistName: playlist.name
-                        )) {
+                        Button(intent: {
+                            var intent = PlayPlaylistIntent()
+                            intent.playlistID = playlist.id
+                            intent.playlistName = playlist.name
+                            return intent
+                        }()) {
                             HStack(spacing: DesignTokens.Spacing.xs) {
                                 Image(systemName: "play.fill")
                                 Text("Play All")
@@ -45,7 +47,7 @@ struct PlaylistMediumView: View {
                             .padding(.horizontal, DesignTokens.Spacing.sm)
                             .padding(.vertical, DesignTokens.Spacing.xs)
                             .background(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                                     .fill(DesignTokens.Primary.p500)
                             )
                         }
@@ -63,7 +65,7 @@ struct PlaylistMediumView: View {
                             .padding(.horizontal, DesignTokens.Spacing.sm)
                             .padding(.vertical, DesignTokens.Spacing.xs)
                             .background(
-                                RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                                RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                                     .fill(DesignTokens.Primary.p500)
                             )
                         }

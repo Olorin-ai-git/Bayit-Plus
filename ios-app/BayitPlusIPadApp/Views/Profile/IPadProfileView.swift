@@ -102,12 +102,8 @@ struct IPadProfileView: View {
     private func avatarView(_ url: String?) -> some View {
         Group {
             if let urlStr = url, let imageURL = URL(string: urlStr) {
-                AsyncImage(url: imageURL) { phase in
-                    switch phase {
-                    case .success(let image): image.resizable().aspectRatio(contentMode: .fill)
-                    default: avatarPlaceholder
-                    }
-                }
+                CachedAsyncImage(url: imageURL) { avatarPlaceholder }
+                    .aspectRatio(contentMode: .fill)
             } else {
                 avatarPlaceholder
             }

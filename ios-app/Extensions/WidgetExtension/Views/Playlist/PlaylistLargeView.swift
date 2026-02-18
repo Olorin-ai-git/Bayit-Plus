@@ -32,10 +32,12 @@ struct PlaylistLargeView: View {
 
                     // Play All button
                     if #available(iOS 17.0, *) {
-                        Button(intent: PlayPlaylistIntent(
-                            playlistID: playlist.id,
-                            playlistName: playlist.name
-                        )) {
+                        Button(intent: {
+                            var intent = PlayPlaylistIntent()
+                            intent.playlistID = playlist.id
+                            intent.playlistName = playlist.name
+                            return intent
+                        }()) {
                             HStack(spacing: DesignTokens.Spacing.xs) {
                                 Image(systemName: "play.fill")
                                 Text("Play All")
@@ -128,7 +130,7 @@ struct PlaylistLargeView: View {
                         )
                 }
                 .frame(width: 56, height: 32)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xs))
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
 
                 // Play icon
                 Image(systemName: "play.fill")
