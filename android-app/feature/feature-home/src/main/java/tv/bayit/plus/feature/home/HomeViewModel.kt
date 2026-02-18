@@ -3,7 +3,6 @@ package tv.bayit.plus.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,9 +45,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val hiddenChannelKeywords = listOf("king 5", "king5", "cnn", "abc")
-    private val hiddenCategoryKeywords = listOf(
-        "movie", "series", "audiobook", "kid", "children", "music", "documentar"
-    )
+    private val hiddenCategoryKeywords = emptyList<String>()
 
     init {
         loadHomeFeed()
@@ -91,59 +88,46 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadAdditionalSections(featured: FeaturedResponse) {
-        val liveChannelsDeferred = viewModelScope.async { loadLiveChannels() }
-        val radioStationsDeferred = viewModelScope.async { loadRadioStations() }
-        val continueWatchingDeferred = viewModelScope.async { loadContinueWatching() }
-        val collectionsDeferred = viewModelScope.async { loadFeaturedCollections() }
-        val trendingDeferred = viewModelScope.async { loadTrending() }
-        val youngstersDeferred = viewModelScope.async { loadYoungsters() }
-        val telAvivDeferred = viewModelScope.async { loadTelAvivContent() }
-        val jerusalemDeferred = viewModelScope.async { loadJerusalemContent() }
-        val israelisDeferred = viewModelScope.async { loadIsraelisInCity() }
-        val businessesDeferred = viewModelScope.async { loadIsraeliBusinesses() }
-        val shabbatDeferred = viewModelScope.async { loadShabbatInfo() }
-
-        val liveChannels = liveChannelsDeferred.await()
-        val radioStations = radioStationsDeferred.await()
-        val continueWatching = continueWatchingDeferred.await()
-        val featuredCollections = collectionsDeferred.await()
-        val trending = trendingDeferred.await()
-        val youngsters = youngstersDeferred.await()
-        val telAviv = telAvivDeferred.await()
-        val jerusalem = jerusalemDeferred.await()
-        val israelisInCity = israelisDeferred.await()
-        val israeliBusinesses = businessesDeferred.await()
-        val shabbatInfo = shabbatDeferred.await()
-
-        logger.info(
-            "Home feed loaded",
-            mapOf(
-                "spotlightCount" to featured.spotlight.size.toString(),
-                "categoriesCount" to featured.categories.size.toString(),
-                "liveChannelsCount" to liveChannels.size.toString(),
-                "radioStationsCount" to radioStations.size.toString(),
-            ),
-        )
-
+    private fun loadAdditionalSections(featured: FeaturedResponse) {
+        // Show featured content immediately so the user sees the home screen fast
         _uiState.value = HomeUiState.Success(
             hero = featured.hero,
             spotlight = featured.spotlight,
             categories = filterCategories(featured.categories),
-            liveChannels = liveChannels,
-            radioStations = radioStations,
-            continueWatching = continueWatching,
-            featuredCollections = featuredCollections,
-            trendingContent = trending,
-            youngstersTrending = youngsters,
-            telAvivContent = telAviv,
-            jerusalemContent = jerusalem,
-            israelisInCity = israelisInCity,
-            israeliBusinesses = israeliBusinesses,
-            shabbatInfo = shabbatInfo,
-            isShabbatBannerDismissed = false,
             isRefreshing = false,
         )
+
+        logger.info(
+            "Home feed featured loaded",
+            mapOf(
+                "spotlightCount" to featured.spotlight.size.toString(),
+                "categoriesCount" to featured.categories.size.toString(),
+            ),
+        )
+
+        // Load remaining sections in parallel, updating UI as each completes
+        launchSection { loadLiveChannels().let { data -> updateState { copy(liveChannels = data) } } }
+        launchSection { loadRadioStations().let { data -> updateState { copy(radioStations = data) } } }
+        launchSection { loadContinueWatching().let { data -> updateState { copy(continueWatching = data) } } }
+        launchSection { loadFeaturedCollections().let { data -> updateState { copy(featuredCollections = data) } } }
+        launchSection { loadTrending().let { data -> updateState { copy(trendingContent = data) } } }
+        launchSection { loadYoungsters().let { data -> updateState { copy(youngstersTrending = data) } } }
+        launchSection { loadTelAvivContent().let { data -> updateState { copy(telAvivContent = data) } } }
+        launchSection { loadJerusalemContent().let { data -> updateState { copy(jerusalemContent = data) } } }
+        launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }
+        launchSection { loadIsraeliBusinesses().let { data -> updateState { copy(israeliBusinesses = data) } } }
+        launchSection { loadShabbatInfo().let { data -> updateState { copy(shabbatInfo = data) } } }
+    }
+
+    private fun launchSection(block: suspend () -> Unit) {
+        viewModelScope.launch { block() }
+    }
+
+    private fun updateState(transform: HomeUiState.Success.() -> HomeUiState.Success) {
+        val current = _uiState.value
+        if (current is HomeUiState.Success) {
+            _uiState.value = current.transform()
+        }
     }
 
     fun dismissShabbatBanner() {

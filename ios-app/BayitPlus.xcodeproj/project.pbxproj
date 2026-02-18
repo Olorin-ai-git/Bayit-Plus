@@ -499,6 +499,7 @@
 		75BD7E4E15D5A869F2B073D3 /* IPadSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0226B9FE4FE822F74CB5A1EE /* IPadSearchView.swift */; };
 		75C5DF04FA62CB7E3B206629 /* SubtitlePaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C102D35AE0C411A1E79CD2DE /* SubtitlePaneView.swift */; };
 		75E191B0DBC33AE00641E6D3 /* ChapterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E6AADE5531BF7FFEE6BCFB /* ChapterRepository.swift */; };
+		0CB415960D374929B3C82E20 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8F8852884F66410B3CD376 /* PlayerPreferencesService.swift */; };
 		75FF03EC03DB62B7303E98B7 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8F8852884F66410B3CD376 /* PlayerPreferencesService.swift */; };
 		7610BE32E52A7E7E743945ED /* PodcastDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7177389F6DC66B311117A98 /* PodcastDetailViewModel.swift */; };
 		764F4925B9D90D155ECBE003 /* AudiobookCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6C147EBA97DD4572A3EC92 /* AudiobookCardView.swift */; };
@@ -724,7 +725,6 @@
 		AA10C3D50905801EB99970E9 /* SubscriptionGateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 363A6C0652B4351A75EE13B5 /* SubscriptionGateViewModel.swift */; };
 		AA7D1A0FEC42DD01F688C7F9 /* RadioRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50860641612CDFA93109CA56 /* RadioRepository.swift */; };
 		AA8C5A2F1D958A0C61B3869F /* PronunciationFeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C57D9AF1CB3370612132C927 /* PronunciationFeedbackView.swift */; };
-		AAC58B58A208B6C2ADCA9F25 /* AvatarDialogueViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99FAEDED944C92B57B51A4FC /* AvatarDialogueViewModel.swift */; };
 		AADCA7F4B59411DF3B320906 /* AvatarWardrobeSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055F71348938A70338E03CC8 /* AvatarWardrobeSubviews.swift */; };
 		AB1EDABD0E45ED1D5B57E0C4 /* AICompanionSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3727A30736ACB8C8F3F40EE3 /* AICompanionSidebarView.swift */; };
 		AB23496E02482319BABC7DCF /* ProactiveVoiceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59B7A2E93FB96C869BDCE8 /* ProactiveVoiceModels.swift */; };
@@ -873,7 +873,6 @@
 		CC217925A791AB5DEAA740E0 /* SubtitleFlagsPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9D4E3FE6779CDE7F7677FD /* SubtitleFlagsPill.swift */; };
 		CC675134704FBC4D524E6BEC /* Bayit_Intro_English.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E787ED7BBE96DD993D5035D7 /* Bayit_Intro_English.mp4 */; };
 		CC9AA7F91733AB91EDD56979 /* TVSeriesDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66ADC3046A61489926C56DB /* TVSeriesDetailView.swift */; };
-		CCA9B73721CF5C45018BB7C6 /* TVTriviaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F81E318AB4091104EED948 /* TVTriviaSettingsView.swift */; };
 		CCADA72B33D276F81172D607 /* StarStoryHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA3711199804001D1DF60D6 /* StarStoryHomeView.swift */; };
 		CCBA1693A2EF44EE6F89B844 /* AudioSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 012037BAEECB60BCCE4EDD4C /* AudioSettingsViewModel.swift */; };
 		CCC56AC8BE3CD1C9FA4A98D6 /* RewardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDAD1155E274E3172C60FF2 /* RewardRepository.swift */; };
@@ -1033,7 +1032,6 @@
 		F1F24EBD5D5AB56688858AF5 /* PlaylistWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45843B774CA86E2E55B0EDEB /* PlaylistWidgetView.swift */; };
 		F223BF96F060CB41E95CB017 /* LiveTVModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92D637C5E217203AF8C1194 /* LiveTVModels.swift */; };
 		F22D8180A6BA209655039A91 /* PodcastDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7177389F6DC66B311117A98 /* PodcastDetailViewModel.swift */; };
-		F25F1C46373428758B0DB711 /* VODInteractionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69628A26076458AA46273651 /* VODInteractionViewModel.swift */; };
 		F29B311147E411CBE771271F /* WidgetNetworkSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9413C9B4D8E12A1300922699 /* WidgetNetworkSetup.swift */; };
 		F29DBA10C2D7ED17EF0B39FA /* TVPhoneticMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F63F50D4A6718BCB267C51E /* TVPhoneticMirrorView.swift */; };
 		F2E0CF532C74BB87AA288A3D /* Bayit_Intro_Hebrew.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 01A01BA5A93E00107B1516C2 /* Bayit_Intro_Hebrew.mp4 */; };
@@ -1855,7 +1853,6 @@
 		E17C07695AED8E91E7559B9F /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
 		E2116E4A81AB1A6AF175B99B /* ChannelChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelChatModels.swift; sourceTree = "<group>"; };
 		E2D94C483BF3C7FC06A4ED75 /* TimeRangePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePickerView.swift; sourceTree = "<group>"; };
-		E2F81E318AB4091104EED948 /* TVTriviaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVTriviaSettingsView.swift; sourceTree = "<group>"; };
 		E3DEF3047D99A02DF48D84BF /* HapticFeedbackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbackService.swift; sourceTree = "<group>"; };
 		E400B3920D7AED83835AD3D1 /* NowPlayingWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingWidgetView.swift; sourceTree = "<group>"; };
 		E435E7D81985761842B46FC2 /* JerusalemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JerusalemRowView.swift; sourceTree = "<group>"; };
@@ -2253,7 +2250,6 @@
 				FDEAAD56083AEC0884C974A9 /* TVSettingsView.swift */,
 				E50E1E7026063BD2701D432F /* TVSplashView.swift */,
 				A2719158ECDD69EC4831A3DC /* TVSplitSubtitleOverlay.swift */,
-				E2F81E318AB4091104EED948 /* TVTriviaSettingsView.swift */,
 				80E7CC20238D32DB6CB2C61B /* TVTriviaView.swift */,
 				9F470DFCC581F94E00B2D6BD /* TVVODView.swift */,
 				82921033A6EB60FDFED39D93 /* TVWatchlistView.swift */,
@@ -4048,7 +4044,6 @@
 				D9A7371B189A1C4976182293 /* AudiobookRepository.swift in Sources */,
 				2DB840AD1D63C28F50F7DF21 /* AudiobooksViewModel.swift in Sources */,
 				F56B39D92C97D136C03B6F86 /* AvatarDialogueViewModel.swift in Sources */,
-				AAC58B58A208B6C2ADCA9F25 /* AvatarDialogueViewModel.swift in Sources */,
 				431D4A7F723C5354D9044279 /* AvatarMeshModels.swift in Sources */,
 				96D8FA470F8B193344F63061 /* AvatarMeshRepository.swift in Sources */,
 				ABF6C1672350EBC70CF12115 /* AvatarModels.swift in Sources */,
@@ -4150,6 +4145,7 @@
 				672D08A98178D4F77D7FC347 /* LocationModels.swift in Sources */,
 				6D7F1BE1363156329FBA1A8D /* MediaModels.swift in Sources */,
 				3CB9C186846D755D14603934 /* MediaPlayerViewModel.swift in Sources */,
+				0CB415960D374929B3C82E20 /* PlayerPreferencesService.swift in Sources */,
 				08CA70D5B7675A1D012AC8BD /* MediaRepository.swift in Sources */,
 				F5A46FE9DD204259468C186D /* MissionsModels.swift in Sources */,
 				D3AAF38E609E97DD0883A45E /* MissionsRepository.swift in Sources */,
@@ -4419,7 +4415,6 @@
 				DDD31EAE8E72602A6AAEFCFD /* TVTranslationPopoverView.swift in Sources */,
 				9E647E8E197846F8F33D78E2 /* TVTrendingRow.swift in Sources */,
 				892E9AC3ADFA5456E4CAD34E /* TVTriviaFactsOverlayView.swift in Sources */,
-				CCA9B73721CF5C45018BB7C6 /* TVTriviaSettingsView.swift in Sources */,
 				F42C00124BB4BE30256CBCDF /* TVTriviaSettingsView.swift in Sources */,
 				B494B0722B4385493DA9BA3F /* TVTriviaView.swift in Sources */,
 				514AD3004EEB00ECABC9BF33 /* TVUserAvatarRow.swift in Sources */,
@@ -4467,7 +4462,6 @@
 				02D7CD8F45CD99AB5A4E5B1F /* V2VModels.swift in Sources */,
 				59823F8E71A71851ED5B6C50 /* V2VPracticeViewModel.swift in Sources */,
 				9179A8C268F7ABBE0A28EFBC /* VODInteractionViewModel.swift in Sources */,
-				F25F1C46373428758B0DB711 /* VODInteractionViewModel.swift in Sources */,
 				C6288B47F317291FCABF0C3F /* VODViewModel.swift in Sources */,
 				F1053BA6C705760CCEE2BB4E /* VoiceOnboardingViewModel.swift in Sources */,
 				C524BAB42EAB4FD37681F004 /* VoiceRepository.swift in Sources */,

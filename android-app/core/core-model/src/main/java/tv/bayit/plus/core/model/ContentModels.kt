@@ -3,6 +3,14 @@ package tv.bayit.plus.core.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** Localized label used by trending topics and city endpoints. */
+@Serializable
+data class LocalizedLabel(
+    val he: String? = null,
+    val en: String? = null,
+    val es: String? = null,
+)
+
 /** Response from GET /api/v1/content/featured */
 @Serializable
 data class FeaturedResponse(
@@ -136,13 +144,20 @@ data class RelatedItem(
 /** Trending content item (What's Hot in Israel). */
 @Serializable
 data class CultureTrendingItem(
-    val id: String,
     val title: String? = null,
-    val description: String? = null,
-    val thumbnail: String? = null,
-    val duration: String? = null,
-    val type: String? = null,
-)
+    @SerialName("title_en") val titleEn: String? = null,
+    val category: String? = null,
+    @SerialName("category_label") val categoryLabel: LocalizedLabel? = null,
+    val sentiment: String? = null,
+    val importance: Int? = null,
+    val summary: String? = null,
+    val keywords: List<String> = emptyList(),
+) {
+    /** Stable identifier derived from title for LazyColumn keys. */
+    val id: String get() = title ?: titleEn ?: hashCode().toString()
+    val type: String? get() = category
+    val thumbnail: String? get() = null
+}
 
 /** Generic section content item (used for youngsters, city content, etc.). */
 @Serializable
@@ -178,5 +193,49 @@ data class LocationContent(
 /** Response from city-specific content endpoints (Jerusalem, Tel Aviv). */
 @Serializable
 data class CityContentResponse(
-    val items: List<SectionContentItem> = emptyList(),
+    val featured: List<CityFeaturedItem> = emptyList(),
+    @SerialName("kotel_live") val kotelLive: CityWebcam? = null,
+    @SerialName("beach_webcam") val beachWebcam: CityWebcam? = null,
+    @SerialName("upcoming_events") val upcomingEvents: List<CityFeaturedItem> = emptyList(),
+    @SerialName("last_updated") val lastUpdated: String? = null,
+) {
+    /** Flattened items for UI display. */
+    val items: List<SectionContentItem>
+        get() = featured.map { it.toSectionContentItem() }
+}
+
+/** A featured item from a city endpoint (Jerusalem/Tel Aviv). */
+@Serializable
+data class CityFeaturedItem(
+    val id: String,
+    val title: String? = null,
+    @SerialName("title_he") val titleHe: String? = null,
+    @SerialName("title_en") val titleEn: String? = null,
+    val url: String? = null,
+    @SerialName("image_url") val imageUrl: String? = null,
+    val category: String? = null,
+    @SerialName("category_label") val categoryLabel: LocalizedLabel? = null,
+    val summary: String? = null,
+    @SerialName("summary_he") val summaryHe: String? = null,
+    @SerialName("summary_en") val summaryEn: String? = null,
+    @SerialName("source_name") val sourceName: String? = null,
+    @SerialName("published_at") val publishedAt: String? = null,
+    @SerialName("relevance_score") val relevanceScore: Double? = null,
+    val tags: List<String> = emptyList(),
+) {
+    fun toSectionContentItem(): SectionContentItem = SectionContentItem(
+        id = id,
+        title = titleHe ?: title ?: titleEn,
+        thumbnail = imageUrl,
+        type = category,
+    )
+}
+
+/** Webcam / live stream link within city responses. */
+@Serializable
+data class CityWebcam(
+    val name: String? = null,
+    @SerialName("name_he") val nameHe: String? = null,
+    val url: String? = null,
+    val icon: String? = null,
 )

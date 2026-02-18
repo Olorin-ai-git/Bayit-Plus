@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassCarousel
 import tv.bayit.plus.designsystem.component.GlassContentCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -198,9 +199,13 @@ internal fun CategoryRow(
 ) {
     if (category.items.isEmpty()) return
 
+    val localizedName = category.nameKey?.let { bayitString(it) }
+        .takeIf { it != category.nameKey }
+        ?: category.name
+
     Column(modifier = modifier) {
         Text(
-            text = category.name,
+            text = localizedName,
             style = MaterialTheme.typography.titleLarge,
             color = DesignTokens.Colors.Text.primary,
             fontWeight = FontWeight.Bold,

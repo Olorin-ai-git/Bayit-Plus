@@ -41,7 +41,7 @@ struct TVSplitSubtitleOverlay: View {
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                             Text(translatedLanguage.uppercased())
                                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
-                                .foregroundStyle(DesignTokens.Primary.light)
+                                .foregroundStyle(DesignTokens.Colors.Primary.light)
 
                             Text(translatedText)
                                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))

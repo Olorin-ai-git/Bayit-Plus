@@ -20,7 +20,7 @@ struct TVDubbingMixerView: View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
                 Text(String(localized: "dubbing.mixer.title"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
 
                 TVVolumeRow(
                     label: String(localized: "dubbing.mixer.originalAudio"),
@@ -43,7 +43,7 @@ struct TVDubbingMixerView: View {
                         Spacer()
                         Text(String(localized: "dubbing.mixer.latency \(latencyMs)"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
+                            .foregroundStyle(DesignTokens.Colors.Text.muted)
                     }
                 }
             }
@@ -64,26 +64,26 @@ private struct TVVolumeRow: View {
                 Image(systemName: iconName)
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(
-                        isFocused ? DesignTokens.Primary.light : DesignTokens.Text.secondary
+                        isFocused ? DesignTokens.Colors.Primary.light : DesignTokens.Colors.Text.secondary
                     )
 
                 Text(label)
                     .font(.system(size: TVDesignTokens.FontSize.base))
-                    .foregroundStyle(DesignTokens.Text.primary)
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
 
                 Spacer()
 
                 Text("\(Int(value * 100))%")
                     .font(.system(size: TVDesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.muted)
+                    .foregroundStyle(DesignTokens.Colors.Text.muted)
                     .monospacedDigit()
             }
 
-            GlassProgressBar(progress: value)
+            GlassProgressBar(progress: Double(value))
                 .overlay(
                     isFocused
                         ? RoundedRectangle(cornerRadius: DesignTokens.Radius.full)
-                        .stroke(DesignTokens.Primary.light, lineWidth: 2)
+                        .stroke(DesignTokens.Colors.Primary.light, lineWidth: 2)
                         : nil
                 )
         }

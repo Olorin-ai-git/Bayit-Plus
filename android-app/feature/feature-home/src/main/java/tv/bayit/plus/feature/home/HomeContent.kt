@@ -179,6 +179,7 @@ internal fun HomeSuccessContent(
                         items = uiState.jerusalemContent.items,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
                         onShowAllClick = onJerusalemClick,
+                        backgroundRes = R.drawable.bg_jerusalem,
                     )
                 }
             }
@@ -190,6 +191,7 @@ internal fun HomeSuccessContent(
                         items = uiState.telAvivContent.items,
                         onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
                         onShowAllClick = onTelAvivClick,
+                        backgroundRes = R.drawable.bg_telaviv,
                     )
                 }
             }
