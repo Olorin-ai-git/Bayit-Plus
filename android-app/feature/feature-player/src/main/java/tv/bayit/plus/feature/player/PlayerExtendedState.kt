@@ -35,6 +35,7 @@ data class PlayerExtendedState(
     val vodTriviaFact: TriviaFact? = null,
     val isVodTriviaEnabled: Boolean = true,
     val vodTriviaLanguage: String = "en",
+    val volume: Float = 1.0f,
     val isSpecialUser: Boolean = false,
     val showOmriOverlay: Boolean = false,
     val hasTriggeredOmriOverlay: Boolean = false,

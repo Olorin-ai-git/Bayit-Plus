@@ -116,6 +116,14 @@ class BayitMediaPlayer @Inject constructor(
     /** Returns the current playback speed. */
     fun getPlaybackSpeed(): Float = exoPlayer?.playbackParameters?.speed ?: 1.0f
 
+    /** Sets the player volume (0.0 = muted, 1.0 = full). */
+    fun setVolume(volume: Float) {
+        exoPlayer?.volume = volume.coerceIn(0f, 1f)
+    }
+
+    /** Returns the current player volume. */
+    fun getVolume(): Float = exoPlayer?.volume ?: 1f
+
     /** Returns available video quality variants from the current HLS manifest. */
     fun getAvailableQualities(): List<QualityVariant> {
         val player = exoPlayer ?: return emptyList()

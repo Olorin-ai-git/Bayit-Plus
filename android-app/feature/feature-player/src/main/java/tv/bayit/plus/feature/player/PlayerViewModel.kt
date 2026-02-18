@@ -353,6 +353,23 @@ class PlayerViewModel @Inject constructor(
     fun dismissVodTrivia() = vodTriviaManager.dismissFact()
     fun requestVodTriviaFollowUp() = vodTriviaManager.requestFollowUp(viewModelScope)
 
+    fun seekBackward() = mediaPlayer.seekTo(
+        (mediaPlayer.getCurrentPosition() - SKIP_INTERVAL_MS).coerceAtLeast(0L)
+    )
+
+    fun seekForward() {
+        val duration = mediaPlayer.getDuration()
+        val target = mediaPlayer.getCurrentPosition() + SKIP_INTERVAL_MS
+        mediaPlayer.seekTo(if (duration > 0) target.coerceAtMost(duration) else target)
+    }
+
+    fun restartContent() = mediaPlayer.seekTo(0L)
+
+    fun setVolume(volume: Float) {
+        mediaPlayer.setVolume(volume)
+        _extendedState.value = _extendedState.value.copy(volume = volume)
+    }
+
     fun hideOmriOverlay() {
         _extendedState.value = _extendedState.value.copy(showOmriOverlay = false)
     }
@@ -493,5 +510,6 @@ class PlayerViewModel @Inject constructor(
         private const val POSITION_POLL_INTERVAL_MS = 250L
         private const val PROGRESS_SAVE_INTERVAL_MS = 15_000L
         private val SPECIAL_USER_EMAILS = setOf("oklainert@gmail.com", "admin@olorin.ai")
+        private const val SKIP_INTERVAL_MS = 30_000L
     }
 }

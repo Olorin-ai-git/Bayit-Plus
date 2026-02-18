@@ -132,6 +132,11 @@ fun PlayerRoute(
         },
         onToggleVodTrivia = viewModel::toggleVodTrivia,
         onHideOmriOverlay = viewModel::hideOmriOverlay,
+        onSkipBackward = viewModel::seekBackward,
+        onSkipForward = viewModel::seekForward,
+        onRestart = viewModel::restartContent,
+        onVolumeChange = viewModel::setVolume,
+        onSpeedChange = viewModel::setPlaybackSpeed,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -183,6 +188,11 @@ private fun PlayerScreen(
     onTriviaFollowUp: () -> Unit,
     onToggleVodTrivia: () -> Unit,
     onHideOmriOverlay: () -> Unit,
+    onSkipBackward: () -> Unit,
+    onSkipForward: () -> Unit,
+    onRestart: () -> Unit,
+    onVolumeChange: (Float) -> Unit,
+    onSpeedChange: (Float) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -219,6 +229,11 @@ private fun PlayerScreen(
                     onTriviaFollowUp = onTriviaFollowUp,
                     onToggleVodTrivia = onToggleVodTrivia,
                     onHideOmriOverlay = onHideOmriOverlay,
+                    onSkipBackward = onSkipBackward,
+                    onSkipForward = onSkipForward,
+                    onRestart = onRestart,
+                    onVolumeChange = onVolumeChange,
+                    onSpeedChange = onSpeedChange,
                     onBack = onBack,
                 )
 
