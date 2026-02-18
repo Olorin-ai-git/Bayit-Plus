@@ -3,7 +3,7 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Small Playlist widget: first playlist + play button.
+/// Small Playlist widget: first item with thumbnail + play overlay, title, playlist name.
 struct PlaylistSmallView: View {
     let entry: PlaylistEntry
 
@@ -11,23 +11,21 @@ struct PlaylistSmallView: View {
         if let playlist = entry.playlists.first {
             Link(destination: WidgetDeepLinks.playlist(id: playlist.id)) {
                 VStack(spacing: DesignTokens.Spacing.sm) {
-                    // Thumbnail
+                    // Thumbnail with play overlay
                     ZStack {
-                        AsyncImage(url: playlist.thumbnailURL) { image in
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
-                                .fill(DesignTokens.Glass.bg)
-                                .overlay(
-                                    Image(systemName: "music.note.list")
-                                        .font(.system(size: DesignTokens.FontSize.xxl))
-                                        .foregroundStyle(DesignTokens.Text.muted)
-                                )
+                        if let firstItem = playlist.items.first {
+                            AsyncImage(url: firstItem.thumbnailURL) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                thumbnailPlaceholder
+                            }
+                        } else {
+                            AsyncImage(url: playlist.thumbnailURL) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                thumbnailPlaceholder
+                            }
                         }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 70)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-                        .accessibilityLabel("Playlist thumbnail for \(playlist.name)")
 
                         // Play overlay
                         Image(systemName: "play.fill")
@@ -37,22 +35,27 @@ struct PlaylistSmallView: View {
                             .background(Circle().fill(Color.black.opacity(0.6)))
                             .accessibilityLabel("Play")
                     }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 70)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                    .accessibilityLabel("Playlist thumbnail")
 
-                    // Playlist name
-                    Text(playlist.name)
+                    // First item title (or playlist name)
+                    Text(playlist.items.first?.title ?? playlist.name)
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .lineLimit(1)
 
-                    // Item count
-                    Text(itemCountText(playlist.itemCount))
+                    // Playlist name
+                    Text(playlist.name)
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
+                        .lineLimit(1)
                 }
                 .padding(DesignTokens.Spacing.md)
                 .frame(minWidth: 44, minHeight: 44)
             }
-            .accessibilityLabel("Playlist: \(playlist.name), \(itemCountText(playlist.itemCount))")
+            .accessibilityLabel("Playlist: \(playlist.name)")
             .accessibilityHint("Opens and plays \(playlist.name)")
             .containerBackground(for: .widget) {
                 LinearGradient(
@@ -66,8 +69,14 @@ struct PlaylistSmallView: View {
         }
     }
 
-    private func itemCountText(_ count: Int) -> String {
-        count == 1 ? "1 item" : "\(count) items"
+    private var thumbnailPlaceholder: some View {
+        RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
+            .fill(DesignTokens.Glass.bg)
+            .overlay(
+                Image(systemName: "music.note.list")
+                    .font(.system(size: DesignTokens.FontSize.xxl))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            )
     }
 
     private var emptyState: some View {

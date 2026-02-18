@@ -8,9 +8,7 @@ struct BayitWidgetsBundle: WidgetBundle {
         TestWidget()
         NowPlayingWidget()
         ContinueWatchingWidget()
-        TrendingNewsWidget()
         QuickActionsWidget()
-        ShabbatModeWidget()
         PlaylistWidget()
 
         // Configurable widgets (iOS 17+)

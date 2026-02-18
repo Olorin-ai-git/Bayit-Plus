@@ -3,7 +3,7 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Large Continue Watching widget: 4-6 items in a grid layout.
+/// Large Continue Watching widget: header + See All + 6 items in 3-column grid with resume.
 struct ContinueWatchingLargeView: View {
     let entry: ContinueWatchingEntry
 
@@ -43,16 +43,19 @@ struct ContinueWatchingLargeView: View {
             } else {
                 LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.sm) {
                     ForEach(displayItems) { item in
-                        Link(destination: WidgetDeepLinks.content(
+                        Link(destination: WidgetDeepLinks.resume(
                             id: item.contentID,
                             type: item.contentType
                         )) {
                             itemCell(item)
                         }
                         .frame(minWidth: 44, minHeight: 44)
-                        .accessibilityLabel("Continue watching \(item.title)")
-                        .accessibilityHint("Opens \(item.title) where you left off")
-                        .accessibilityValue("\(Int(item.progress * 100)) percent complete, \(remainingText(item))")
+                        .accessibilityLabel("Resume \(item.title)")
+                        .accessibilityHint("Resumes \(item.title) where you left off")
+                        .accessibilityValue(ContinueWatchingWidgetHelpers.remainingText(
+                            progress: item.progress,
+                            durationSeconds: item.durationSeconds
+                        ))
                     }
                 }
             }
@@ -69,7 +72,7 @@ struct ContinueWatchingLargeView: View {
 
     private func itemCell(_ item: SharedContinueWatchingItem) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            // Thumbnail with progress overlay
+            // Thumbnail with play overlay + progress overlay
             ZStack(alignment: .bottomLeading) {
                 AsyncImage(url: item.thumbnailURL) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -93,16 +96,9 @@ struct ContinueWatchingLargeView: View {
                     .padding(DesignTokens.Spacing.xs)
 
                 // Progress bar at bottom
-                GeometryReader { geo in
-                    VStack {
-                        Spacer()
-                        Capsule()
-                            .fill(DesignTokens.Primary.default)
-                            .frame(
-                                width: max(0, geo.size.width * CGFloat(min(max(item.progress, 0), 1))),
-                                height: 2
-                            )
-                    }
+                VStack {
+                    Spacer()
+                    WidgetProgressBar(progress: item.progress, height: 2)
                 }
             }
 
@@ -112,21 +108,20 @@ struct ContinueWatchingLargeView: View {
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(2)
 
-            // Duration remaining
-            Text(remainingText(item))
+            // Resume label + remaining time
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Text("Resume")
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                Text(ContinueWatchingWidgetHelpers.remainingText(
+                    progress: item.progress,
+                    durationSeconds: item.durationSeconds
+                ))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
-                .lineLimit(1)
+            }
+            .lineLimit(1)
         }
-    }
-
-    private func remainingText(_ item: SharedContinueWatchingItem) -> String {
-        let remaining = Int(Double(item.durationSeconds) * (1.0 - item.progress))
-        let minutes = remaining / 60
-        if minutes > 60 {
-            return "\(minutes / 60)h \(minutes % 60)m left"
-        }
-        return "\(minutes)m left"
     }
 
     private var emptyState: some View {

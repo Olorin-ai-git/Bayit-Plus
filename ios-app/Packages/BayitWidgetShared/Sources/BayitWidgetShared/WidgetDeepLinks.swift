@@ -35,16 +35,6 @@ public enum WidgetDeepLinks {
         buildURL(path: "search")
     }
 
-    /// Deep link to the Trending section.
-    public static var trending: URL {
-        buildURL(path: "trending")
-    }
-
-    /// Deep link to Shabbat Mode.
-    public static var shabbatMode: URL {
-        buildURL(path: "shabbatMode")
-    }
-
     /// Deep link to the Home tab.
     public static var home: URL {
         buildURL(path: "")
@@ -55,6 +45,14 @@ public enum WidgetDeepLinks {
     /// Deep link to a specific content item (movie, series, episode).
     public static func content(id: String, type: SharedContentType) -> URL {
         buildURL(path: "play/\(id)", queryItems: [URLQueryItem(name: "type", value: type.rawValue)])
+    }
+
+    /// Deep link to resume a specific content item from where the user left off.
+    public static func resume(id: String, type: SharedContentType) -> URL {
+        buildURL(path: "play/\(id)", queryItems: [
+            URLQueryItem(name: "type", value: type.rawValue),
+            URLQueryItem(name: "resume", value: "true"),
+        ])
     }
 
     /// Deep link to a specific playlist.

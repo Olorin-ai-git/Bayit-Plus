@@ -18,6 +18,8 @@ struct PlaylistWidgetView: View {
                 PlaylistSmallView(entry: entry)
             case .systemMedium:
                 PlaylistMediumView(entry: entry)
+            case .systemLarge:
+                PlaylistLargeView(entry: entry)
             default:
                 PlaylistSmallView(entry: entry)
             }

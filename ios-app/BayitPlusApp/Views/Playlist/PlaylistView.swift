@@ -34,13 +34,36 @@ struct PlaylistView: View {
 
     private func syncPlaylistWidget() async {
         guard let items = viewModel?.items else { return }
+        let contentItems = Array(items.prefix(6)).map { item in
+            SharedPlaylistContentItem(
+                id: item.contentId,
+                contentID: item.contentId,
+                title: item.title ?? "",
+                thumbnailURL: item.thumbnail.flatMap { URL(string: $0) },
+                durationSeconds: parseDurationToSeconds(item.duration),
+                contentType: SharedContentType(rawValue: item.contentType ?? "vod") ?? .vod,
+                progress: 0
+            )
+        }
         let sharedItem = SharedPlaylistItem(
             id: "my_playlist",
             name: localization.t("profile.playlist"),
             itemCount: items.count,
-            thumbnailURL: items.first.flatMap { URL(string: $0.thumbnail ?? "") }
+            thumbnailURL: items.first.flatMap { URL(string: $0.thumbnail ?? "") },
+            items: contentItems
         )
         await widgetSync.syncPlaylists([sharedItem])
+    }
+
+    private func parseDurationToSeconds(_ duration: String?) -> Int {
+        guard let duration else { return 0 }
+        let parts = duration.split(separator: ":").compactMap { Int($0) }
+        switch parts.count {
+        case 3: return parts[0] * 3600 + parts[1] * 60 + parts[2]
+        case 2: return parts[0] * 60 + parts[1]
+        case 1: return parts[0]
+        default: return 0
+        }
     }
 
     @ViewBuilder

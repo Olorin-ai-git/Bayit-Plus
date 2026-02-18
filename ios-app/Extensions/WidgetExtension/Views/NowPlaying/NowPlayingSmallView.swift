@@ -3,26 +3,27 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Small Now Playing widget: channel logo + show title + play indicator.
+/// Small Now Playing widget: artwork fills space, play/pause overlay, progress at bottom.
 struct NowPlayingSmallView: View {
     let entry: NowPlayingEntry
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             if let data = entry.nowPlaying {
-                // Channel logo and content (tappable to open app)
-                Link(destination: deepLink) {
+                Link(destination: deepLink(for: data)) {
                     VStack(spacing: DesignTokens.Spacing.sm) {
-                        // Channel logo
-                        AsyncImage(url: data.logoURL) { image in
-                            image.resizable().aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            Image(systemName: contentIcon(for: data.contentType))
-                                .font(.system(size: DesignTokens.FontSize.xxl))
-                                .foregroundStyle(DesignTokens.Primary.p400)
+                        // Artwork with play overlay
+                        ZStack {
+                            AsyncImage(url: data.logoURL) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Image(systemName: contentIcon(for: data.contentType))
+                                    .font(.system(size: DesignTokens.FontSize.xxl))
+                                    .foregroundStyle(DesignTokens.Primary.p400)
+                            }
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                         }
-                        .frame(width: 40, height: 40)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
 
                         // Show title
                         Text(data.showTitle)
@@ -56,11 +57,13 @@ struct NowPlayingSmallView: View {
                     .accessibilityLabel(data.isPlaying ? "Pause" : "Play")
                     .accessibilityHint("Toggles playback")
                 } else {
-                    // Fallback for iOS 16 - just show icon
                     Image(systemName: data.isPlaying ? "pause.fill" : "play.fill")
                         .font(.system(size: DesignTokens.FontSize.lg))
                         .foregroundStyle(DesignTokens.Primary.p400)
                 }
+
+                // Progress bar at bottom
+                WidgetProgressBar(progress: data.progress, height: 3)
             } else {
                 Link(destination: WidgetDeepLinks.liveTV) {
                     emptyState
@@ -92,9 +95,8 @@ struct NowPlayingSmallView: View {
         }
     }
 
-    private var deepLink: URL {
-        guard let data = entry.nowPlaying else { return WidgetDeepLinks.liveTV }
-        return data.contentType == .radio ? WidgetDeepLinks.radio : WidgetDeepLinks.liveTV
+    private func deepLink(for data: SharedNowPlayingData) -> URL {
+        WidgetDeepLinks.content(id: data.channelID, type: data.contentType)
     }
 
     private func contentIcon(for type: SharedContentType) -> String {

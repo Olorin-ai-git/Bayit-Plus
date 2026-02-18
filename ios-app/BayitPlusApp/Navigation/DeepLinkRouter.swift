@@ -30,7 +30,8 @@ public enum DeepLink {
                   let sanitized = sanitizeContentID(contentId) else { return nil }
             let typeString = url.queryValue(for: "type") ?? "movie"
             let contentType = ContentType(rawValue: typeString) ?? .movie
-            return .player(contentId: sanitized, contentType: contentType)
+            let resume = url.queryValue(for: "resume") == "true"
+            return .player(contentId: sanitized, contentType: contentType, resume: resume)
 
         case "movie":
             guard let movieId = pathComponents.dropFirst().first,

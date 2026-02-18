@@ -93,13 +93,16 @@ struct PlayerView: View {
 
     let contentId: String
     let contentType: ContentType
+    let resume: Bool
 
-    init(contentId: String, contentType: ContentType, player: MediaPlayer,
+    init(contentId: String, contentType: ContentType, resume: Bool = false,
+         player: MediaPlayer,
          repository: any MediaRepository, contentRepository: any ContentRepository,
          liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository,
          podcastRepository: any PodcastRepository, widgetSync: WidgetDataSyncService) {
         self.contentId = contentId
         self.contentType = contentType
+        self.resume = resume
         _viewModel = State(initialValue: MediaPlayerViewModel(
             contentId: contentId,
             contentType: contentType,

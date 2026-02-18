@@ -73,33 +73,6 @@ final class WidgetDataStoreTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    // MARK: - Shabbat Data
-
-    func testWriteReadShabbatDataRoundTrip() async {
-        let data = SharedShabbatData(
-            isShabbat: false,
-            isErevShabbat: true,
-            candleLighting: "18:32",
-            havdalah: nil,
-            countdown: "2h 15m",
-            countdownLabel: "Candle Lighting",
-            parashaHebrew: "Beshalach",
-            parashaEnglish: "Beshalach",
-            city: "Jerusalem"
-        )
-
-        await store.writeShabbatData(data)
-        let result = await store.readShabbatData()
-
-        XCTAssertNotNil(result)
-        XCTAssertEqual(result?.isShabbat, false)
-        XCTAssertEqual(result?.isErevShabbat, true)
-        XCTAssertEqual(result?.candleLighting, "18:32")
-        XCTAssertNil(result?.havdalah)
-        XCTAssertEqual(result?.parashaHebrew, "Beshalach")
-        XCTAssertEqual(result?.city, "Jerusalem")
-    }
-
     // MARK: - Playlists
 
     func testWriteReadPlaylistsRoundTrip() async {
@@ -133,38 +106,6 @@ final class WidgetDataStoreTests: XCTestCase {
     func testReadPlaylistsReturnsEmptyArrayWhenNoData() async {
         let result = await store.readPlaylists()
         XCTAssertTrue(result.isEmpty)
-    }
-
-    // MARK: - Trending Summary
-
-    func testWriteReadTrendingSummaryRoundTrip() async {
-        let summary = SharedTrendingSummary(
-            topStory: "Major diplomatic event in Jerusalem",
-            overallMood: "Hopeful",
-            topics: [
-                SharedTrendingTopic(
-                    title: "Diplomacy",
-                    category: "Politics",
-                    importance: 1
-                ),
-                SharedTrendingTopic(
-                    title: "Technology",
-                    category: "Science",
-                    importance: 2
-                ),
-            ],
-            lastUpdated: Date(timeIntervalSince1970: 1_700_000_000)
-        )
-
-        await store.writeTrendingSummary(summary)
-        let result = await store.readTrendingSummary()
-
-        XCTAssertNotNil(result)
-        XCTAssertEqual(result?.topStory, summary.topStory)
-        XCTAssertEqual(result?.overallMood, "Hopeful")
-        XCTAssertEqual(result?.topics.count, 2)
-        XCTAssertEqual(result?.topics[0].title, "Diplomacy")
-        XCTAssertEqual(result?.topics[1].importance, 2)
     }
 
     // MARK: - Test Data Builders

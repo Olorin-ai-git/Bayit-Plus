@@ -3,7 +3,7 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Large Now Playing widget: full EPG snippet + channel info.
+/// Large Now Playing widget: full EPG snippet + channel info + interactive controls.
 struct NowPlayingLargeView: View {
     let entry: NowPlayingEntry
 
@@ -11,7 +11,7 @@ struct NowPlayingLargeView: View {
         Link(destination: deepLink) {
             if let data = entry.nowPlaying {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                    // Header: logo + channel name + live badge
+                    // Header: logo + channel name + live badge + play/pause
                     HStack(spacing: DesignTokens.Spacing.md) {
                         AsyncImage(url: data.logoURL) { image in
                             image.resizable().aspectRatio(contentMode: .fit)
@@ -54,8 +54,7 @@ struct NowPlayingLargeView: View {
                             .foregroundStyle(DesignTokens.Text.primary)
                             .lineLimit(2)
 
-                        // Progress
-                        progressBar(progress: data.progress)
+                        WidgetProgressBar(progress: data.progress, height: 4)
                     }
                     .padding(DesignTokens.Spacing.md)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,18 +110,6 @@ struct NowPlayingLargeView: View {
         }
     }
 
-    private func progressBar(progress: Double) -> some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Capsule().fill(DesignTokens.Glass.bgMedium)
-                Capsule()
-                    .fill(DesignTokens.Primary.default)
-                    .frame(width: max(0, geometry.size.width * CGFloat(min(max(progress, 0), 1))))
-            }
-        }
-        .frame(height: 4)
-    }
-
     private var emptyState: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             Spacer()
@@ -143,7 +130,7 @@ struct NowPlayingLargeView: View {
 
     private var deepLink: URL {
         guard let data = entry.nowPlaying else { return WidgetDeepLinks.liveTV }
-        return data.contentType == .radio ? WidgetDeepLinks.radio : WidgetDeepLinks.liveTV
+        return WidgetDeepLinks.content(id: data.channelID, type: data.contentType)
     }
 
     private func contentIcon(for type: SharedContentType) -> String {

@@ -59,8 +59,6 @@ final class WidgetConfigurationKeysTests: XCTestCase {
         [
             WidgetConfigurationKeys.DefaultsKey.nowPlaying,
             WidgetConfigurationKeys.DefaultsKey.continueWatching,
-            WidgetConfigurationKeys.DefaultsKey.trendingSummary,
-            WidgetConfigurationKeys.DefaultsKey.shabbatData,
             WidgetConfigurationKeys.DefaultsKey.playlists,
             WidgetConfigurationKeys.DefaultsKey.lastSyncTimestamp,
         ]
@@ -70,9 +68,7 @@ final class WidgetConfigurationKeysTests: XCTestCase {
         [
             WidgetConfigurationKeys.WidgetKind.nowPlaying,
             WidgetConfigurationKeys.WidgetKind.continueWatching,
-            WidgetConfigurationKeys.WidgetKind.trendingNews,
             WidgetConfigurationKeys.WidgetKind.quickActions,
-            WidgetConfigurationKeys.WidgetKind.shabbatMode,
             WidgetConfigurationKeys.WidgetKind.playlist,
         ]
     }

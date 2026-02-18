@@ -75,72 +75,32 @@ public struct SharedContinueWatchingItem: Codable, Sendable, Identifiable {
     }
 }
 
-/// Summary data for the trending news widget.
-public struct SharedTrendingSummary: Codable, Sendable {
-    public let topStory: String
-    public let overallMood: String
-    public let topics: [SharedTrendingTopic]
-    public let lastUpdated: Date
-
-    public init(
-        topStory: String,
-        overallMood: String,
-        topics: [SharedTrendingTopic],
-        lastUpdated: Date
-    ) {
-        self.topStory = topStory
-        self.overallMood = overallMood
-        self.topics = topics
-        self.lastUpdated = lastUpdated
-    }
-}
-
-/// A single trending topic.
-public struct SharedTrendingTopic: Codable, Sendable, Identifiable {
-    public var id: String { title }
+/// A single content item within a playlist for widget display.
+public struct SharedPlaylistContentItem: Codable, Sendable, Identifiable {
+    public let id: String
+    public let contentID: String
     public let title: String
-    public let category: String
-    public let importance: Int
-
-    public init(title: String, category: String, importance: Int) {
-        self.title = title
-        self.category = category
-        self.importance = importance
-    }
-}
-
-/// Shabbat times and parasha data for the widget.
-public struct SharedShabbatData: Codable, Sendable {
-    public let isShabbat: Bool
-    public let isErevShabbat: Bool
-    public let candleLighting: String?
-    public let havdalah: String?
-    public let countdown: String?
-    public let countdownLabel: String?
-    public let parashaHebrew: String?
-    public let parashaEnglish: String?
-    public let city: String?
+    public let thumbnailURL: URL?
+    public let durationSeconds: Int
+    public let contentType: SharedContentType
+    public let progress: Double
 
     public init(
-        isShabbat: Bool,
-        isErevShabbat: Bool,
-        candleLighting: String?,
-        havdalah: String?,
-        countdown: String?,
-        countdownLabel: String?,
-        parashaHebrew: String?,
-        parashaEnglish: String?,
-        city: String?
+        id: String,
+        contentID: String,
+        title: String,
+        thumbnailURL: URL?,
+        durationSeconds: Int,
+        contentType: SharedContentType,
+        progress: Double
     ) {
-        self.isShabbat = isShabbat
-        self.isErevShabbat = isErevShabbat
-        self.candleLighting = candleLighting
-        self.havdalah = havdalah
-        self.countdown = countdown
-        self.countdownLabel = countdownLabel
-        self.parashaHebrew = parashaHebrew
-        self.parashaEnglish = parashaEnglish
-        self.city = city
+        self.id = id
+        self.contentID = contentID
+        self.title = title
+        self.thumbnailURL = thumbnailURL
+        self.durationSeconds = durationSeconds
+        self.contentType = contentType
+        self.progress = progress
     }
 }
 
@@ -150,16 +110,32 @@ public struct SharedPlaylistItem: Codable, Sendable, Identifiable {
     public let name: String
     public let itemCount: Int
     public let thumbnailURL: URL?
+    public let items: [SharedPlaylistContentItem]
 
     public init(
         id: String,
         name: String,
         itemCount: Int,
-        thumbnailURL: URL?
+        thumbnailURL: URL?,
+        items: [SharedPlaylistContentItem] = []
     ) {
         self.id = id
         self.name = name
         self.itemCount = itemCount
         self.thumbnailURL = thumbnailURL
+        self.items = items
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        itemCount = try container.decode(Int.self, forKey: .itemCount)
+        thumbnailURL = try container.decodeIfPresent(URL.self, forKey: .thumbnailURL)
+        items = try container.decodeIfPresent([SharedPlaylistContentItem].self, forKey: .items) ?? []
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, itemCount, thumbnailURL, items
     }
 }

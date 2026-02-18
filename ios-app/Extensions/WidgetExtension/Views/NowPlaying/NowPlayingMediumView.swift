@@ -10,8 +10,8 @@ struct NowPlayingMediumView: View {
     var body: some View {
         if let data = entry.nowPlaying {
             HStack(spacing: DesignTokens.Spacing.md) {
-                // Channel logo (tappable to open app)
-                Link(destination: deepLink) {
+                // Channel logo (tappable to open content)
+                Link(destination: deepLink(for: data)) {
                     AsyncImage(url: data.logoURL) { image in
                         image.resizable().aspectRatio(contentMode: .fit)
                     } placeholder: {
@@ -23,8 +23,8 @@ struct NowPlayingMediumView: View {
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                 }
 
-                // Content info (tappable to open app)
-                Link(destination: deepLink) {
+                // Content info (tappable to open content)
+                Link(destination: deepLink(for: data)) {
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                         // Channel name + live indicator
                         HStack(spacing: DesignTokens.Spacing.xs) {
@@ -43,8 +43,8 @@ struct NowPlayingMediumView: View {
                             .foregroundStyle(DesignTokens.Text.primary)
                             .lineLimit(1)
 
-                        // Progress bar
-                        WidgetProgressBarView(progress: data.progress)
+                        // Shared progress bar
+                        WidgetProgressBar(progress: data.progress, height: 3)
 
                         // Next show
                         if let nextTitle = data.nextShowTitle {
@@ -78,7 +78,6 @@ struct NowPlayingMediumView: View {
                     .accessibilityLabel(data.isPlaying ? "Pause" : "Play")
                     .accessibilityHint("Toggles playback of \(data.channelName)")
                 } else {
-                    // Fallback for iOS 16 - just show icon
                     Image(systemName: data.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: DesignTokens.FontSize.xxxl))
                         .foregroundStyle(DesignTokens.Primary.p400)
@@ -135,9 +134,8 @@ struct NowPlayingMediumView: View {
         .padding(DesignTokens.Spacing.md)
     }
 
-    private var deepLink: URL {
-        guard let data = entry.nowPlaying else { return WidgetDeepLinks.liveTV }
-        return data.contentType == .radio ? WidgetDeepLinks.radio : WidgetDeepLinks.liveTV
+    private func deepLink(for data: SharedNowPlayingData) -> URL {
+        WidgetDeepLinks.content(id: data.channelID, type: data.contentType)
     }
 
     private func contentIcon(for type: SharedContentType) -> String {
@@ -148,23 +146,5 @@ struct NowPlayingMediumView: View {
         case .audiobook: return "book.fill"
         case .vod: return "film"
         }
-    }
-}
-
-/// Simple non-interactive progress bar for widget context.
-private struct WidgetProgressBarView: View {
-    let progress: Double
-
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(DesignTokens.Glass.bgMedium)
-                Capsule()
-                    .fill(DesignTokens.Primary.default)
-                    .frame(width: max(0, geometry.size.width * CGFloat(min(max(progress, 0), 1))))
-            }
-        }
-        .frame(height: 3)
     }
 }

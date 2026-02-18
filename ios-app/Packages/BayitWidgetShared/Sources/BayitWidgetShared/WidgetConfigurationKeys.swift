@@ -27,8 +27,6 @@ public enum WidgetConfigurationKeys {
     public enum DefaultsKey {
         public static let nowPlaying = "tv.bayit.widget.nowPlaying"
         public static let continueWatching = "tv.bayit.widget.continueWatching"
-        public static let trendingSummary = "tv.bayit.widget.trendingSummary"
-        public static let shabbatData = "tv.bayit.widget.shabbatData"
         public static let playlists = "tv.bayit.widget.playlists"
         public static let lastSyncTimestamp = "tv.bayit.widget.lastSync"
         public static let pendingIntent = "tv.bayit.widget.pendingIntent"
@@ -40,9 +38,7 @@ public enum WidgetConfigurationKeys {
     public enum WidgetKind {
         public static let nowPlaying = "BayitNowPlaying"
         public static let continueWatching = "BayitContinueWatching"
-        public static let trendingNews = "BayitTrendingNews"
         public static let quickActions = "BayitQuickActions"
-        public static let shabbatMode = "BayitShabbatMode"
         public static let playlist = "BayitPlaylist"
         public static let configurablePlaylist = "BayitConfigurablePlaylist"
     }

@@ -46,31 +46,6 @@ public actor WidgetDataStore {
         ) ?? []
     }
 
-    // MARK: - Trending Summary
-
-    public func writeTrendingSummary(_ summary: SharedTrendingSummary) {
-        defaults.encode(summary, forKey: WidgetConfigurationKeys.DefaultsKey.trendingSummary)
-        logger.debug("Wrote trending summary", context: ["topics": String(summary.topics.count)])
-    }
-
-    public func readTrendingSummary() -> SharedTrendingSummary? {
-        defaults.decode(SharedTrendingSummary.self, forKey: WidgetConfigurationKeys.DefaultsKey.trendingSummary)
-    }
-
-    // MARK: - Shabbat Data
-
-    public func writeShabbatData(_ data: SharedShabbatData) {
-        defaults.encode(data, forKey: WidgetConfigurationKeys.DefaultsKey.shabbatData)
-        logger.debug(
-            "Wrote shabbat data",
-            context: ["isShabbat": String(data.isShabbat)]
-        )
-    }
-
-    public func readShabbatData() -> SharedShabbatData? {
-        defaults.decode(SharedShabbatData.self, forKey: WidgetConfigurationKeys.DefaultsKey.shabbatData)
-    }
-
     // MARK: - Playlists
 
     public func writePlaylists(_ items: [SharedPlaylistItem]) {

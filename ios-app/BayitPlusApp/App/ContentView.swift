@@ -89,10 +89,11 @@ struct ContentView: View {
     @ViewBuilder
     private func fullscreenView(for route: Route) -> some View {
         switch route {
-        case .player(let contentId, let contentType):
+        case .player(let contentId, let contentType, let resume):
             PlayerView(
                 contentId: contentId,
                 contentType: contentType,
+                resume: resume,
                 player: mediaPlayer,
                 repository: repositories.media,
                 contentRepository: repositories.content,

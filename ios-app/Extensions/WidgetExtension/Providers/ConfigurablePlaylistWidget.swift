@@ -19,7 +19,7 @@ struct ConfigurablePlaylistWidget: Widget {
         }
         .configurationDisplayName("My Playlist")
         .description("Choose a playlist to display and control.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()
     }
 }

@@ -3,30 +3,46 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Small Continue Watching widget: single item thumbnail + progress.
+/// Small Continue Watching widget: single item with play overlay + progress + remaining time.
 struct ContinueWatchingSmallView: View {
     let entry: ContinueWatchingEntry
 
     var body: some View {
         if let item = entry.items.first {
-            Link(destination: WidgetDeepLinks.content(id: item.contentID, type: item.contentType)) {
+            Link(destination: WidgetDeepLinks.resume(id: item.contentID, type: item.contentType)) {
                 VStack(spacing: DesignTokens.Spacing.sm) {
-                    // Thumbnail
-                    AsyncImage(url: item.thumbnailURL) { image in
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
-                            .fill(DesignTokens.Glass.bg)
-                            .overlay(
-                                Image(systemName: "play.rectangle")
-                                    .font(.system(size: DesignTokens.FontSize.xxl))
-                                    .foregroundStyle(DesignTokens.Text.muted)
-                            )
+                    // Thumbnail with play overlay and progress bar
+                    ZStack(alignment: .bottomLeading) {
+                        AsyncImage(url: item.thumbnailURL) { image in
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
+                                .fill(DesignTokens.Glass.bg)
+                                .overlay(
+                                    Image(systemName: "play.rectangle")
+                                        .font(.system(size: DesignTokens.FontSize.xxl))
+                                        .foregroundStyle(DesignTokens.Text.muted)
+                                )
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                        .accessibilityLabel("Thumbnail for \(item.title)")
+
+                        // Play overlay
+                        Image(systemName: "play.fill")
+                            .font(.system(size: DesignTokens.FontSize.lg))
+                            .foregroundStyle(.white)
+                            .padding(DesignTokens.Spacing.xs)
+                            .background(Circle().fill(Color.black.opacity(0.6)))
+                            .padding(DesignTokens.Spacing.xs)
+
+                        // Progress bar at bottom
+                        VStack {
+                            Spacer()
+                            WidgetProgressBar(progress: item.progress, height: 3)
+                        }
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 80)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-                    .accessibilityLabel("Thumbnail for \(item.title)")
 
                     // Title
                     Text(item.title)
@@ -35,15 +51,20 @@ struct ContinueWatchingSmallView: View {
                         .lineLimit(1)
                         .accessibilityLabel("Continue watching \(item.title)")
 
-                    // Progress bar
-                    progressBar(progress: item.progress)
-                        .accessibilityLabel("\(Int(item.progress * 100)) percent complete")
+                    // Remaining time
+                    Text(ContinueWatchingWidgetHelpers.remainingText(
+                        progress: item.progress,
+                        durationSeconds: item.durationSeconds
+                    ))
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                    .lineLimit(1)
                 }
                 .padding(DesignTokens.Spacing.md)
                 .frame(minWidth: 44, minHeight: 44)
             }
             .accessibilityLabel("Continue watching \(item.title)")
-            .accessibilityHint("Opens \(item.title) where you left off")
+            .accessibilityHint("Resumes \(item.title) where you left off")
             .containerBackground(for: .widget) {
                 LinearGradient(
                     colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
@@ -79,17 +100,5 @@ struct ContinueWatchingSmallView: View {
                 endPoint: .bottomTrailing
             )
         }
-    }
-
-    private func progressBar(progress: Double) -> some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Capsule().fill(DesignTokens.Glass.bgMedium)
-                Capsule()
-                    .fill(DesignTokens.Primary.default)
-                    .frame(width: max(0, geometry.size.width * CGFloat(min(max(progress, 0), 1))))
-            }
-        }
-        .frame(height: 3)
     }
 }

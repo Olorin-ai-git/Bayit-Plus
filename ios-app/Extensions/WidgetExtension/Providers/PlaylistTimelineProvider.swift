@@ -65,7 +65,7 @@ struct PlaylistWidget: Widget {
         }
         .configurationDisplayName("My Playlists")
         .description("Quick access to your playlists.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()
     }
 }

@@ -75,30 +75,6 @@ final class WidgetDataSyncService {
         ])
     }
 
-    // MARK: - Trending Summary
-
-    func syncTrendingSummary(_ summary: SharedTrendingSummary) async {
-        await store.writeTrendingSummary(summary)
-        WidgetCenter.shared.reloadTimelines(
-            ofKind: WidgetConfigurationKeys.WidgetKind.trendingNews
-        )
-        logger.info("Synced trending summary", context: [
-            "topicCount": String(summary.topics.count)
-        ])
-    }
-
-    // MARK: - Shabbat Data
-
-    func syncShabbatData(_ data: SharedShabbatData) async {
-        await store.writeShabbatData(data)
-        WidgetCenter.shared.reloadTimelines(
-            ofKind: WidgetConfigurationKeys.WidgetKind.shabbatMode
-        )
-        logger.info("Synced shabbat data", context: [
-            "isShabbat": String(data.isShabbat)
-        ])
-    }
-
     // MARK: - Playlists
 
     func syncPlaylists(_ items: [SharedPlaylistItem]) async {

@@ -12,8 +12,6 @@ final class WidgetDeepLinksTests: XCTestCase {
             WidgetDeepLinks.podcasts,
             WidgetDeepLinks.audiobooks,
             WidgetDeepLinks.search,
-            WidgetDeepLinks.trending,
-            WidgetDeepLinks.shabbatMode,
             WidgetDeepLinks.home,
             WidgetDeepLinks.login,
         ]
@@ -64,20 +62,30 @@ final class WidgetDeepLinksTests: XCTestCase {
         )
     }
 
-    func testShabbatModePathContainsShabbatMode() {
-        let url = WidgetDeepLinks.shabbatMode
-        XCTAssertTrue(
-            url.path.contains("shabbatMode"),
-            "shabbatMode path should contain 'shabbatMode', got: \(url.path)"
+    // MARK: - Resume Deep Link
+
+    func testResumeIncludesResumeQueryParam() {
+        let url = WidgetDeepLinks.resume(id: "ep-789", type: .vod)
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let resumeParam = components?.queryItems?.first(where: { $0.name == "resume" })
+        XCTAssertEqual(
+            resumeParam?.value,
+            "true",
+            "resume URL should include resume=true query parameter"
         )
     }
 
-    func testTrendingPathContainsTrending() {
-        let url = WidgetDeepLinks.trending
+    func testResumeIncludesContentIDInPath() {
+        let url = WidgetDeepLinks.resume(id: "movie-456", type: .vod)
         XCTAssertTrue(
-            url.path.contains("trending"),
-            "trending path should contain 'trending', got: \(url.path)"
+            url.path.contains("movie-456"),
+            "resume URL path should contain the content ID, got: \(url.path)"
         )
+    }
+
+    func testResumeUsesCorrectScheme() {
+        let url = WidgetDeepLinks.resume(id: "abc", type: .podcast)
+        XCTAssertEqual(url.scheme, "bayitplus")
     }
 
     // MARK: - Content Deep Link

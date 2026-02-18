@@ -22,6 +22,8 @@ struct PlaylistIntentView: View {
                 PlaylistIntentSmallView(entry: entry)
             case .systemMedium:
                 PlaylistIntentMediumView(entry: entry)
+            case .systemLarge:
+                ConfigurablePlaylistIntentLargeView(entry: entry)
             default:
                 PlaylistIntentSmallView(entry: entry)
             }

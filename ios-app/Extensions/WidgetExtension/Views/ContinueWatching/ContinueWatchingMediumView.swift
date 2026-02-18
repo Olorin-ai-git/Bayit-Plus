@@ -3,7 +3,7 @@ import WidgetKit
 import BayitDesignSystem
 import BayitWidgetShared
 
-/// Medium Continue Watching widget: 2-3 items in a horizontal row.
+/// Medium Continue Watching widget: header + 3 items with play icon + progress + remaining time.
 struct ContinueWatchingMediumView: View {
     let entry: ContinueWatchingEntry
 
@@ -30,13 +30,19 @@ struct ContinueWatchingMediumView: View {
             } else {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     ForEach(displayItems) { item in
-                        Link(destination: WidgetDeepLinks.content(id: item.contentID, type: item.contentType)) {
+                        Link(destination: WidgetDeepLinks.resume(
+                            id: item.contentID,
+                            type: item.contentType
+                        )) {
                             itemCard(item)
                         }
                         .frame(minWidth: 44, minHeight: 44)
                         .accessibilityLabel("Continue watching \(item.title)")
-                        .accessibilityHint("Opens \(item.title) where you left off")
-                        .accessibilityValue("\(Int(item.progress * 100)) percent complete")
+                        .accessibilityHint("Resumes \(item.title) where you left off")
+                        .accessibilityValue(ContinueWatchingWidgetHelpers.remainingText(
+                            progress: item.progress,
+                            durationSeconds: item.durationSeconds
+                        ))
                     }
                 }
             }
@@ -53,7 +59,7 @@ struct ContinueWatchingMediumView: View {
 
     private func itemCard(_ item: SharedContinueWatchingItem) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            // Thumbnail
+            // Thumbnail with play icon + progress overlay
             ZStack(alignment: .bottomLeading) {
                 AsyncImage(url: item.thumbnailURL) { image in
                     image.resizable().aspectRatio(contentMode: .fill)
@@ -69,17 +75,18 @@ struct ContinueWatchingMediumView: View {
                 .frame(height: 60)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
 
+                // Play icon overlay
+                Image(systemName: "play.fill")
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(.white)
+                    .padding(DesignTokens.Spacing.xs)
+                    .background(Circle().fill(Color.black.opacity(0.6)))
+                    .padding(DesignTokens.Spacing.xs)
+
                 // Progress overlay at bottom
-                GeometryReader { geo in
-                    VStack {
-                        Spacer()
-                        Capsule()
-                            .fill(DesignTokens.Primary.default)
-                            .frame(
-                                width: max(0, geo.size.width * CGFloat(min(max(item.progress, 0), 1))),
-                                height: 2
-                            )
-                    }
+                VStack {
+                    Spacer()
+                    WidgetProgressBar(progress: item.progress, height: 2)
                 }
             }
 
@@ -88,6 +95,15 @@ struct ContinueWatchingMediumView: View {
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(1)
+
+            // Remaining time
+            Text(ContinueWatchingWidgetHelpers.remainingText(
+                progress: item.progress,
+                durationSeconds: item.durationSeconds
+            ))
+            .font(.system(size: DesignTokens.FontSize.sm))
+            .foregroundStyle(DesignTokens.Text.muted)
+            .lineLimit(1)
         }
         .frame(maxWidth: .infinity)
     }
