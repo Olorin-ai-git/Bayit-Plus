@@ -3,67 +3,71 @@ package tv.bayit.plus.feature.player.live.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import tv.bayit.plus.feature.player.live.LiveSubtitleUiState
+import tv.bayit.plus.designsystem.modifier.glassMorphism
+import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
- * Overlay displaying live translated subtitles with original text
+ * Overlay displaying live translated subtitles with original text.
  */
 @Composable
 fun LiveSubtitleOverlay(
     state: LiveSubtitleUiState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = state.showOverlay && state.translatedText.isNotEmpty(),
         enter = fadeIn(),
         exit = fadeOut(),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 96.dp),
-            contentAlignment = Alignment.BottomCenter
+                .padding(
+                    horizontal = DesignTokens.Spacing.xl,
+                    vertical = DesignTokens.Spacing.xxxl,
+                ),
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Column(
                 modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                        shape = RoundedCornerShape(12.dp)
+                    .glassMorphism(
+                        cornerRadius = DesignTokens.Radius.md,
+                        backgroundColor = DesignTokens.Colors.Glass.bgStrong,
                     )
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(DesignTokens.Spacing.md),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
                     text = state.translatedText,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontSize = DesignTokens.FontSize.md,
+                    fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 if (state.originalText.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
                     Text(
                         text = state.originalText,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        color = DesignTokens.Colors.Text.muted,
+                        fontSize = DesignTokens.FontSize.sm,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp)
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }

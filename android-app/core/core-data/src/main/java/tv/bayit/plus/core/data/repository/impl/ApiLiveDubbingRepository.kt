@@ -10,6 +10,8 @@ import retrofit2.http.Path
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.LiveDubbingRepository
+import tv.bayit.plus.core.model.DubbingAvailability
+import tv.bayit.plus.core.model.DubbingVoice
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,6 +46,27 @@ class ApiLiveDubbingRepository @Inject constructor(
             )
         }
     }
+
+    override suspend fun getAvailability(
+        channelId: String,
+    ): BayitResult<DubbingAvailability> = runCatchingResult {
+        val response = client.safeApiCall {
+            service.getDubbingAvailability(channelId)
+        }
+        DubbingAvailability(
+            channelId = channelId,
+            supportedLanguages = response.supportedTargetLanguages,
+            isAvailable = response.available,
+            defaultVoiceId = response.defaultVoiceId,
+            defaultSyncDelayMs = response.defaultSyncDelayMs,
+        )
+    }
+
+    override suspend fun getVoices(): BayitResult<List<DubbingVoice>> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getVoices() }
+            response.voices
+        }
 
     override suspend fun startDubbing(
         channelId: String,
@@ -91,6 +114,9 @@ private interface LiveDubbingService {
         @Path("channelId") channelId: String,
     ): DubbingAvailabilityResponse
 
+    @GET("api/v1/live/dubbing/voices")
+    suspend fun getVoices(): VoicesListResponse
+
     @POST("api/v1/live-dubbing/start")
     suspend fun startDubbing(
         @Body body: StartDubbingBody,
@@ -106,6 +132,12 @@ private interface LiveDubbingService {
         @Body body: VolumeMixBody,
     ): DubbingVolumeResponse
 }
+
+/** Response from the voices endpoint. */
+@Serializable
+private data class VoicesListResponse(
+    val voices: List<DubbingVoice> = emptyList(),
+)
 
 /** Response from the dubbing availability check endpoint. */
 @Serializable

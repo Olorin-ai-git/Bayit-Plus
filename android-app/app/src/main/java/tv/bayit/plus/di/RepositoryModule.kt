@@ -11,6 +11,7 @@ import tv.bayit.plus.core.data.repository.AudiobookRepository
 import tv.bayit.plus.core.data.repository.AvatarMeshRepository
 import tv.bayit.plus.core.data.repository.AvatarOutfitRepository
 import tv.bayit.plus.core.data.repository.BetaCreditsRepository
+import tv.bayit.plus.core.data.repository.CatchupRepository
 import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ChatRepository
 import tv.bayit.plus.core.data.repository.ChessRepository
@@ -61,6 +62,7 @@ import tv.bayit.plus.core.data.repository.impl.ApiAudiobookRepository
 import tv.bayit.plus.core.data.repository.impl.ApiAvatarMeshRepository
 import tv.bayit.plus.core.data.repository.impl.ApiAvatarOutfitRepository
 import tv.bayit.plus.core.data.repository.impl.ApiBetaCreditsRepository
+import tv.bayit.plus.core.data.repository.impl.ApiCatchupRepository
 import tv.bayit.plus.core.data.repository.impl.ApiCategoryRepository
 import tv.bayit.plus.core.data.repository.impl.ApiChapterRepository
 import tv.bayit.plus.core.data.repository.impl.ApiChatRepository
@@ -198,6 +200,11 @@ object RepositoryModule {
     @Singleton
     fun provideLiveDubbingRepository(client: BayitApiClient): LiveDubbingRepository =
         ApiLiveDubbingRepository(client)
+
+    @Provides
+    @Singleton
+    fun provideCatchupRepository(client: BayitApiClient): CatchupRepository =
+        ApiCatchupRepository(client)
 
     @Provides
     @Singleton

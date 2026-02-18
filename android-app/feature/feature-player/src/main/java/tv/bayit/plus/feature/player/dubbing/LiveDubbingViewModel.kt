@@ -4,148 +4,92 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
-import tv.bayit.plus.core.model.LiveDubbingMessage
-import tv.bayit.plus.core.network.NetworkConfig
-import java.net.URLEncoder
-import tv.bayit.plus.core.network.websocket.ChannelType
-import tv.bayit.plus.core.network.websocket.ConnectionState
-import tv.bayit.plus.core.network.websocket.WebSocketConnection
-import tv.bayit.plus.core.network.websocket.WebSocketManager
+import tv.bayit.plus.core.data.repository.LiveDubbingRepository
+import tv.bayit.plus.core.media.DubbingMixer
+import tv.bayit.plus.core.model.DubbingVoice
+import tv.bayit.plus.feature.player.live.LiveDubbingManager
+import tv.bayit.plus.feature.player.live.LiveDubbingUiState
 import javax.inject.Inject
 
-/**
- * Manages live dubbing via WebSocket for real-time audio translation.
- *
- * Connects to the LIVE_DUBBING WebSocket channel, processes incoming audio
- * URL messages, and coordinates language/voice selection. Enforces mutual
- * exclusivity with live subtitles (when dubbing is on, subtitles are off).
- */
 @HiltViewModel
 class LiveDubbingViewModel @Inject constructor(
-    private val webSocketManager: WebSocketManager,
-    private val networkConfig: NetworkConfig,
+    private val dubbingManager: LiveDubbingManager,
+    private val dubbingRepository: LiveDubbingRepository,
+    private val dubbingMixer: DubbingMixer,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
-    private val _isEnabled = MutableStateFlow(false)
-    val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
+    val uiState: StateFlow<LiveDubbingUiState> = dubbingManager.state
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), LiveDubbingUiState())
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CLOSED)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    private val _voices = MutableStateFlow<List<DubbingVoice>>(emptyList())
+    val voices: StateFlow<List<DubbingVoice>> = _voices.asStateFlow()
 
-    private val _currentMessage = MutableStateFlow<LiveDubbingMessage?>(null)
-    val currentMessage: StateFlow<LiveDubbingMessage?> = _currentMessage.asStateFlow()
+    private val _selectedVoiceId = MutableStateFlow<String?>(null)
+    val selectedVoiceId: StateFlow<String?> = _selectedVoiceId.asStateFlow()
 
-    private val _targetLanguage = MutableStateFlow("en")
-    val targetLanguage: StateFlow<String> = _targetLanguage.asStateFlow()
+    private val _isLoadingVoices = MutableStateFlow(false)
+    val isLoadingVoices: StateFlow<Boolean> = _isLoadingVoices.asStateFlow()
 
-    private val _voiceId = MutableStateFlow<String?>(null)
-    val voiceId: StateFlow<String?> = _voiceId.asStateFlow()
+    val originalVolume: StateFlow<Float> = dubbingMixer.originalVolume
+    val dubbingVolume: StateFlow<Float> = dubbingMixer.dubbingVolume
 
-    private val _dubbingVolume = MutableStateFlow(0.8f)
-    val dubbingVolume: StateFlow<Float> = _dubbingVolume.asStateFlow()
-
-    private var connection: WebSocketConnection? = null
-    private val json = Json { ignoreUnknownKeys = true }
-
-    fun toggleDubbing(channelId: String) {
-        if (_isEnabled.value) {
-            disconnect()
-        } else {
-            connect(channelId)
+    init {
+        dubbingManager.onAudioSegmentReceived = { segment ->
+            segment.data?.let { base64 ->
+                dubbingMixer.playBase64Segment(base64)
+            }
         }
     }
 
-    fun setTargetLanguage(language: String, channelId: String) {
-        _targetLanguage.value = language
-        if (_isEnabled.value) {
-            disconnect()
-            connect(channelId)
+    fun toggleDubbing(channelId: String, targetLanguage: String) {
+        viewModelScope.launch {
+            if (uiState.value.isEnabled) {
+                dubbingManager.stop()
+                dubbingMixer.stopCurrentSegment()
+            } else {
+                dubbingManager.start(channelId, targetLanguage, viewModelScope)
+            }
         }
     }
 
-    fun setVoiceId(voiceId: String) {
-        _voiceId.value = voiceId
-        sendPreferencesUpdate()
+    fun loadVoices() {
+        viewModelScope.launch {
+            _isLoadingVoices.value = true
+            when (val result = dubbingRepository.getVoices()) {
+                is BayitResult.Success -> {
+                    _voices.value = result.data
+                }
+                is BayitResult.Error -> {
+                    logger.error("Failed to load dubbing voices", result.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+            _isLoadingVoices.value = false
+        }
+    }
+
+    fun selectVoice(voice: DubbingVoice) {
+        _selectedVoiceId.value = voice.id
+    }
+
+    fun setOriginalVolume(volume: Float) {
+        dubbingMixer.setOriginalVolume(volume)
     }
 
     fun setDubbingVolume(volume: Float) {
-        _dubbingVolume.value = volume.coerceIn(0f, 1f)
-    }
-
-    private fun connect(channelId: String) {
-        viewModelScope.launch {
-            val encodedChannel = URLEncoder.encode(channelId, "UTF-8")
-            val encodedLang = URLEncoder.encode(_targetLanguage.value, "UTF-8")
-            val url = "${networkConfig.webSocketBaseUrl}/ws/dubbing/$encodedChannel" +
-                "?language=$encodedLang"
-
-            logger.debug("Connecting live dubbing", mapOf(
-                "channelId" to channelId,
-                "targetLanguage" to _targetLanguage.value,
-            ))
-
-            try {
-                val conn = webSocketManager.connect(url, ChannelType.LIVE_DUBBING)
-                connection = conn
-                _isEnabled.value = true
-
-                conn.state.onEach { state ->
-                    _connectionState.value = state
-                }.launchIn(viewModelScope)
-
-                conn.messages.onEach { raw ->
-                    handleMessage(raw)
-                }.launchIn(viewModelScope)
-            } catch (e: Exception) {
-                logger.error("Live dubbing connection failed", e)
-                _isEnabled.value = false
-            }
-        }
-    }
-
-    private fun disconnect() {
-        connection?.let { conn ->
-            webSocketManager.disconnect(conn.id)
-        }
-        connection = null
-        _isEnabled.value = false
-        _currentMessage.value = null
-        _connectionState.value = ConnectionState.CLOSED
-        logger.debug("Live dubbing disconnected")
-    }
-
-    private fun handleMessage(raw: String) {
-        try {
-            val message = json.decodeFromString<LiveDubbingMessage>(raw)
-            if (message.type == "dubbing_audio") {
-                _currentMessage.value = message
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to parse dubbing message", e)
-        }
-    }
-
-    private fun sendPreferencesUpdate() {
-        val msg = buildJsonObject {
-            put("type", "preferences")
-            _voiceId.value?.let { put("voice_id", it) }
-            put("volume", _dubbingVolume.value)
-        }.toString()
-        connection?.send(msg)
+        dubbingMixer.setDubbingVolume(volume)
     }
 
     override fun onCleared() {
-        disconnect()
+        dubbingManager.onAudioSegmentReceived = null
         super.onCleared()
     }
 }

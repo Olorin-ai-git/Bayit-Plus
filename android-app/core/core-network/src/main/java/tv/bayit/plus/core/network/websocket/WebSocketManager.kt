@@ -46,6 +46,12 @@ class WebSocketManager @Inject constructor(
         val token = authTokenProvider.getToken()
         val connection = WebSocketConnection(connectionId, url, channelType)
 
+        // Set auth token for first-message authentication (backend expects
+        // {"type":"authenticate","token":"..."} as the first WebSocket message)
+        if (token != null) {
+            connection.pendingAuthToken = token
+        }
+
         val requestBuilder = Request.Builder().url(url)
         if (token != null) {
             requestBuilder.header("Authorization", "Bearer $token")

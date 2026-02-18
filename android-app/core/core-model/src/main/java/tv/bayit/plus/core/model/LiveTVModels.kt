@@ -26,6 +26,15 @@ data class LiveChannelItem(
     @SerialName("is_ai_enhanced") val isAiEnhanced: Boolean? = null,
     @SerialName("ai_features") val aiFeatures: List<String>? = null,
     @SerialName("supports_pip_widget") val supportsPipWidget: Boolean? = null,
+    @SerialName("dubbing_enabled") val dubbingEnabled: Boolean? = null,
+    @SerialName("subtitles_enabled") val subtitlesEnabled: Boolean? = null,
+    @SerialName("trivia_enabled") val triviaEnabled: Boolean? = null,
+    @SerialName("catchup_enabled") val catchupEnabled: Boolean? = null,
+    @SerialName("catchup_days") val catchupDays: Int? = null,
+    @SerialName("supported_subtitle_languages")
+    val supportedSubtitleLanguages: List<String>? = null,
+    @SerialName("supported_dubbing_languages")
+    val supportedDubbingLanguages: List<String>? = null,
 )
 
 /** Response from GET /api/v1/live/{channel_id} */
@@ -78,6 +87,10 @@ data class EPGEntry(
     val category: String? = null,
     val thumbnail: String? = null,
     @SerialName("is_now") val isNow: Boolean? = null,
+    @SerialName("has_catch_up") val hasCatchUp: Boolean? = null,
+    @SerialName("has_dubbing") val hasDubbing: Boolean? = null,
+    @SerialName("has_subtitles") val hasSubtitles: Boolean? = null,
+    val rating: String? = null,
 ) {
     /** Stable identifier derived from title and start time. */
     val stableId: String get() = "${title.orEmpty()}-${start.orEmpty()}"

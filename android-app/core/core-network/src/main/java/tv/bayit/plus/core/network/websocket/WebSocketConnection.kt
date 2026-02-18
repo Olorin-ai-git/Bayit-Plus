@@ -22,9 +22,19 @@ class WebSocketConnection(
     private val _state = MutableSharedFlow<ConnectionState>(replay = 1, extraBufferCapacity = 1)
     val state: SharedFlow<ConnectionState> = _state
 
+    /** Pending auth token to send as first message once connection opens. */
+    @Volatile
+    var pendingAuthToken: String? = null
+
     val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             reconnectAttempt.set(0)
+            pendingAuthToken?.let { token ->
+                val authMsg = """{"type":"authenticate","token":"$token"}"""
+                webSocket.send(authMsg)
+                pendingAuthToken = null
+                Timber.d("WebSocket auth message sent: %s", id)
+            }
             _state.tryEmit(ConnectionState.CONNECTED)
             Timber.d("WebSocket open: %s", id)
         }

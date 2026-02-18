@@ -135,6 +135,14 @@ abstract class LiveFeatureManager<S>(
     }
 
     /**
+     * Send a message through the active WebSocket connection.
+     * Returns false if no connection is active.
+     */
+    fun sendMessage(message: String): Boolean {
+        return connection?.send(message) ?: false
+    }
+
+    /**
      * Stop the live feature and disconnect
      */
     open suspend fun stop() {

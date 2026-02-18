@@ -3,43 +3,45 @@ package tv.bayit.plus.feature.player.live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
+import tv.bayit.plus.core.model.LiveSubtitleEnvelope
+import tv.bayit.plus.core.model.WebSocketPongMessage
 import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
 import tv.bayit.plus.core.network.websocket.WebSocketManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Serializable
-private data class LiveSubtitleMessage(
-    val type: String,
-    val text: String? = null,
-    val translatedText: String? = null,
-    val timestamp: Long? = null
-)
-
 /**
- * Manages live subtitle WebSocket connection and state
+ * Manages live subtitle WebSocket connection and state.
+ *
+ * Parses backend messages:
+ * - "connected"         -> connection confirmed with language info
+ * - "final_subtitle"    -> complete translated cue (nested data)
+ * - "partial_subtitle"  -> in-progress cue (nested data)
+ * - "ping"              -> server heartbeat, respond with pong
+ * - "quota_exceeded"    -> usage limit reached
+ * - "error"             -> recoverable/non-recoverable error
  */
 @Singleton
 class LiveSubtitlesManager @Inject constructor(
     webSocketManager: WebSocketManager,
-    networkConfig: NetworkConfig
+    networkConfig: NetworkConfig,
 ) : LiveFeatureManager<LiveSubtitleUiState>(
     webSocketManager,
     networkConfig,
-    ChannelType.LIVE_SUBTITLES
+    ChannelType.LIVE_SUBTITLES,
 ) {
     override fun createInitialState() = LiveSubtitleUiState()
 
-    override fun buildWebSocketUrl(channelId: String, targetLanguage: String): String {
-        return LiveAIConfig.buildSubtitlesWebSocketUrl(
-            baseWsUrl = networkConfig.webSocketBaseUrl,
-            channelId = channelId,
-            sourceLang = "he",
-            targetLang = targetLanguage
-        )
-    }
+    override fun buildWebSocketUrl(
+        channelId: String,
+        targetLanguage: String,
+    ): String = LiveAIConfig.buildSubtitlesWebSocketUrl(
+        baseWsUrl = networkConfig.webSocketBaseUrl,
+        channelId = channelId,
+        sourceLang = "he",
+        targetLang = targetLanguage,
+    )
 
     override fun isEnabled(state: LiveSubtitleUiState) = state.isEnabled
 
@@ -54,57 +56,85 @@ class LiveSubtitlesManager @Inject constructor(
             it.copy(
                 isEnabled = isEnabled,
                 isConnecting = false,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
             )
         }
     }
 
     override fun handleMessage(text: String, scope: CoroutineScope) {
         try {
-            val msg = json.decodeFromString<LiveSubtitleMessage>(text)
-            when (msg.type) {
+            val envelope = json.decodeFromString<LiveSubtitleEnvelope>(text)
+            when (envelope.type) {
                 "final_subtitle" -> {
+                    val cue = envelope.data ?: return
                     scope.launch {
                         updateState {
                             it.copy(
-                                translatedText = msg.translatedText.orEmpty(),
-                                originalText = msg.text.orEmpty(),
-                                showOverlay = true
+                                translatedText = cue.text.orEmpty(),
+                                originalText = cue.originalText.orEmpty(),
+                                confidence = cue.confidence,
+                                showOverlay = true,
                             )
                         }
                     }
                     scheduleCueDismiss(scope)
                 }
+
                 "partial_subtitle" -> {
+                    val cue = envelope.data ?: return
                     scope.launch {
                         updateState {
                             it.copy(
-                                translatedText = msg.translatedText.orEmpty(),
-                                originalText = msg.text.orEmpty(),
-                                showOverlay = true
+                                translatedText = cue.text.orEmpty(),
+                                originalText = cue.originalText.orEmpty(),
+                                confidence = cue.confidence,
+                                showOverlay = true,
                             )
                         }
                     }
                 }
+
                 "connected" -> {
-                    // Connection acknowledged
+                    scope.launch {
+                        updateState {
+                            it.copy(
+                                sourceLang = envelope.sourceLang,
+                                targetLang = envelope.targetLang,
+                            )
+                        }
+                    }
                 }
+
+                "ping" -> {
+                    val pong = json.encodeToString(
+                        WebSocketPongMessage.serializer(),
+                        WebSocketPongMessage(
+                            timestamp = envelope.timestamp ?: 0.0,
+                        ),
+                    )
+                    sendMessage(pong)
+                }
+
                 "quota_exceeded" -> {
                     scope.launch {
                         updateState {
                             it.copy(
                                 isQuotaExceeded = true,
                                 isEnabled = false,
-                                errorMessage = "player.ai.errors.quotaExceeded"
+                                errorMessage = "player.ai.errors.quotaExceeded",
                             )
                         }
                         stop()
                     }
                 }
+
                 "error" -> {
                     scope.launch {
                         updateState {
-                            it.copy(errorMessage = msg.text ?: "player.ai.errors.serviceError")
+                            it.copy(
+                                errorMessage = envelope.message
+                                    ?: "player.ai.errors.serviceError",
+                            )
                         }
                     }
                 }
