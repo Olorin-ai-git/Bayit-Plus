@@ -75,8 +75,7 @@ final class ChameleonAvatarProvider {
     private func startPolling(cacheId: String) {
         stopPolling()
         pollTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            Task { await self.checkStatus(cacheId: cacheId) }
+            Task { [weak self] in await self?.checkStatus(cacheId: cacheId) }
         }
     }
 

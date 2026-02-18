@@ -170,7 +170,7 @@ final class VoiceInteractionService {
                 guard let ws = self?.webSocketTask else { break }
                 do {
                     let message = try await ws.receive()
-                    await self?.handleMessage(message)
+                    self?.handleMessage(message)
                 } catch {
                     await MainActor.run {
                         self?.isConnected = false

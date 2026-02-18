@@ -212,7 +212,7 @@ struct WakeWordSettingsView: View {
 
     private func testMicrophone() {
         Task {
-            let status = await AVAudioApplication.shared.recordPermission
+            let status = AVAudioApplication.shared.recordPermission
             await MainActor.run {
                 switch status {
                 case .granted:

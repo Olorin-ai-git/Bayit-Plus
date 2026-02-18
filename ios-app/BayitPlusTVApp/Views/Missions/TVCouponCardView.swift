@@ -71,8 +71,6 @@ struct TVCouponCardView: View {
                             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                     case .failure:
                         placeholderImage
-                    case .empty:
-                        placeholderImage
                     @unknown default:
                         placeholderImage
                     }

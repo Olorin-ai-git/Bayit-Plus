@@ -112,7 +112,7 @@ final class APISearchRepository: SearchRepository, @unchecked Sendable {
     }
 
     func saveSearchHistory(query: String) async throws {
-        try await client.post(
+        _ = try await client.post(
             "/api/v1/search/history",
             body: SaveSearchHistoryRequest(query: query),
             as: EmptySuccessResponse.self
@@ -124,7 +124,7 @@ final class APISearchRepository: SearchRepository, @unchecked Sendable {
         if let query {
             queryItems.append(URLQueryItem(name: "q", value: query))
         }
-        try await client.delete(
+        _ = try await client.delete(
             "/api/v1/search/history",
             queryItems: queryItems,
             as: EmptySuccessResponse.self

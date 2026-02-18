@@ -29,7 +29,7 @@ final class MovieDetailViewModel {
 
         do {
             async let detailTask = repository.fetchContentDetail(id: movieId)
-            async let favoriteTask = loadFavoriteStatus()
+            async let favoriteTask: Void = loadFavoriteStatus()
             detail = try await detailTask
             await favoriteTask
         } catch {

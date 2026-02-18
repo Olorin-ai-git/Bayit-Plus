@@ -33,6 +33,8 @@ final class BiometricAuthService: Sendable {
             return .touchID
         case .opticID:
             return .faceID
+        case .none:
+            return .none
         @unknown default:
             return .none
         }

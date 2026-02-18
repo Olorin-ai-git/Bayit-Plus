@@ -6,7 +6,7 @@ import Observation
 /// WebSocket service for real-time live dubbing audio and translation streams.
 /// Implements auth-first protocol with token refresh and sync status reporting.
 @Observable
-final class LiveDubbingWebSocketService {
+final class LiveDubbingWebSocketService: @unchecked Sendable {
     private(set) var isConnected = false
     private(set) var latency: DubbingLatencyMessage?
     private(set) var currentAudio: DubbingAudioMessage?

@@ -3,7 +3,7 @@ import BayitNetworking
 import Foundation
 
 /// WebSocket service for receiving live trivia facts during live channel playback
-final class LiveTriviaWebSocketService {
+final class LiveTriviaWebSocketService: @unchecked Sendable {
     private var webSocket: URLSessionWebSocketTask?
     private let configuration: any EnvironmentConfiguration
     private let authTokenProvider: AuthTokenProvider

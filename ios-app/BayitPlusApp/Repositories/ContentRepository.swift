@@ -180,6 +180,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         )
     }
 
+    @available(*, deprecated, message: "Use SearchRepository.unifiedSearch() instead")
     func searchContent(
         query: String,
         type: String?,

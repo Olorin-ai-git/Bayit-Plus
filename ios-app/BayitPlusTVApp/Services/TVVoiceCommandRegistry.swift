@@ -13,7 +13,7 @@ final class TVVoiceCommandRegistry {
 
     // MARK: - Types
 
-    struct VoiceCommand: Sendable {
+    struct VoiceCommand: @unchecked Sendable {
         let pattern: Regex<AnyRegexOutput>
         let intentType: VoiceIntentType
         let actionType: String

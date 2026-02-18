@@ -35,10 +35,16 @@ final class TVQRAuthViewModel {
     private let authManager: AuthManager
     private let logger: APILogger
     private let config: AppConfiguration
-    nonisolated(unsafe) private var webSocketTask: URLSessionWebSocketTask?
-    nonisolated(unsafe) private var refreshTask: Task<Void, Never>?
-    nonisolated(unsafe) private var initTask: Task<Void, Never>?
+    nonisolated private var webSocketTask: URLSessionWebSocketTask?
+    nonisolated private var refreshTask: Task<Void, Never>?
+    nonisolated private var initTask: Task<Void, Never>?
+    nonisolated private var pollingTask: Task<Void, Never>?
+    nonisolated private var pingTask: Task<Void, Never>?
     private var lastInitTime: Date?
+
+    /// When true, a WebSocket message has already updated the state;
+    /// polling becomes a no-op until the next session.
+    private var wsDeliveredUpdate = false
 
     // MARK: - Response Models
 
@@ -67,6 +73,28 @@ final class TVQRAuthViewModel {
             case refreshToken = "refresh_token"
             case user
             case message
+        }
+    }
+
+    private struct PollStatusResponse: Decodable {
+        let sessionId: String
+        let status: String
+        let isExpired: Bool
+        let expiresAt: String
+        let hasCompanion: Bool
+        let accessToken: String?
+        let authenticatedUserId: String?
+        let user: BayitUser?
+
+        private enum CodingKeys: String, CodingKey {
+            case sessionId = "session_id"
+            case status
+            case isExpired = "is_expired"
+            case expiresAt = "expires_at"
+            case hasCompanion = "has_companion"
+            case accessToken = "access_token"
+            case authenticatedUserId = "authenticated_user_id"
+            case user
         }
     }
 
@@ -132,6 +160,7 @@ final class TVQRAuthViewModel {
             sessionId = decoded.sessionId
             qrCodeData = decoded.pairingCode
             status = .waitingForScan
+            wsDeliveredUpdate = false
 
             logger.debug(
                 "Device pairing session initialized",
@@ -142,6 +171,7 @@ final class TVQRAuthViewModel {
             )
 
             connectWebSocket(sessionId: decoded.sessionId)
+            startPolling(sessionId: decoded.sessionId)
             scheduleRefreshOnExpiry(expiresAt: decoded.expiresAt)
         } catch let authError as AuthError {
             status = .failed
@@ -207,6 +237,7 @@ final class TVQRAuthViewModel {
         )
 
         listenForMessages()
+        startPing()
     }
 
     private var isTerminalStatus: Bool {
@@ -281,6 +312,7 @@ final class TVQRAuthViewModel {
             )
 
         case "companion_connected":
+            wsDeliveredUpdate = true
             status = .companionConnected
             logger.info(
                 "Companion device connected for pairing",
@@ -292,6 +324,7 @@ final class TVQRAuthViewModel {
             )
 
         case "authenticating":
+            wsDeliveredUpdate = true
             status = .authenticating
             logger.info(
                 "Companion device authenticating",
@@ -303,6 +336,7 @@ final class TVQRAuthViewModel {
             )
 
         case "pairing_success":
+            wsDeliveredUpdate = true
             handlePairingSuccess(decoded)
 
         case "session_expired":
@@ -378,6 +412,171 @@ final class TVQRAuthViewModel {
         }
     }
 
+    // MARK: - Polling Fallback
+
+    /// Interval between status polls (seconds).
+    private static let pollingInterval: TimeInterval = 3.0
+
+    /// Starts a background polling loop that calls GET /status/{sessionId}
+    /// every 3 seconds. Acts as a fallback when WebSocket messages are lost
+    /// (e.g., due to multi-worker deployment or network issues).
+    private func startPolling(sessionId: String) {
+        pollingTask?.cancel()
+
+        let url = config.apiBaseURL
+            .appendingPathComponent("auth/device-pairing/status/\(sessionId)")
+
+        pollingTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(Self.pollingInterval))
+                guard let self, !Task.isCancelled, !self.isTerminalStatus else { return }
+
+                // Skip if WebSocket already delivered the update
+                if self.wsDeliveredUpdate { continue }
+
+                do {
+                    var request = URLRequest(url: url)
+                    request.setValue(
+                        "tvos", forHTTPHeaderField: "X-Client-Platform"
+                    )
+                    request.timeoutInterval = self.config.apiTimeout
+
+                    let (data, response) = try await URLSession.shared.data(
+                        for: request
+                    )
+
+                    guard let httpResponse = response as? HTTPURLResponse,
+                          httpResponse.statusCode == 200 else { continue }
+
+                    // Re-check after await in case WS delivered meanwhile
+                    if self.wsDeliveredUpdate || self.isTerminalStatus { continue }
+
+                    let poll = try JSONDecoder().decode(
+                        PollStatusResponse.self, from: data
+                    )
+
+                    self.handlePollResponse(poll)
+                } catch {
+                    self.logger.debug(
+                        "Polling status check failed",
+                        metadata: ["error": error.localizedDescription]
+                    )
+                }
+            }
+        }
+    }
+
+    private func handlePollResponse(_ poll: PollStatusResponse) {
+        switch poll.status {
+        case "scanning" where status == .waitingForScan:
+            status = .companionConnected
+            logger.info(
+                "Companion connected (detected via polling)",
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
+
+        case "authenticating"
+            where status == .waitingForScan || status == .companionConnected:
+            status = .authenticating
+            logger.info(
+                "Authenticating (detected via polling)",
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
+
+        case "success":
+            handlePollSuccess(poll)
+
+        case "failed":
+            status = .failed
+            error = AuthError.devicePairingFailed(
+                underlying: "Authentication failed"
+            ).userFacingMessage
+            cleanup()
+
+        case "expired":
+            status = .expired
+            error = AuthError.sessionExpired.userFacingMessage
+            cleanup()
+
+        default:
+            break
+        }
+    }
+
+    private func handlePollSuccess(_ poll: PollStatusResponse) {
+        guard let accessToken = poll.accessToken,
+              let user = poll.user else {
+            // Token/user not yet available in status response; keep polling
+            logger.debug(
+                "Poll returned success but missing credentials; retrying",
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
+            return
+        }
+
+        status = .authenticating
+
+        do {
+            try authManager.signInFromDevicePairing(
+                accessToken: accessToken,
+                refreshToken: nil,
+                user: user
+            )
+            status = .authenticated
+            cleanup()
+        } catch {
+            status = .failed
+            self.error = AuthError.devicePairingFailed(
+                underlying: error.localizedDescription
+            ).userFacingMessage
+            cleanup()
+        }
+    }
+
+    // MARK: - WebSocket Keepalive
+
+    /// Interval between WebSocket pings (seconds).
+    private static let pingInterval: TimeInterval = 15.0
+
+    /// Sends periodic ping messages to keep the WebSocket connection alive
+    /// and detect dead connections early.
+    private func startPing() {
+        pingTask?.cancel()
+
+        pingTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(Self.pingInterval))
+                guard let self, !Task.isCancelled, !self.isTerminalStatus else { return }
+                guard let ws = self.webSocketTask else { return }
+
+                let pingMessage = URLSessionWebSocketTask.Message.string(
+                    "{\"type\":\"ping\"}"
+                )
+                do {
+                    try await ws.send(pingMessage)
+                } catch {
+                    self.logger.debug(
+                        "WebSocket ping failed; connection may be dead",
+                        metadata: ["error": error.localizedDescription]
+                    )
+                    // Don't set failed status -- polling fallback will handle it
+                }
+            }
+        }
+    }
+
     // MARK: - Expiry Refresh
 
     private func scheduleRefreshOnExpiry(expiresAt: String) {
@@ -423,6 +622,10 @@ final class TVQRAuthViewModel {
         initTask = nil
         refreshTask?.cancel()
         refreshTask = nil
+        pollingTask?.cancel()
+        pollingTask = nil
+        pingTask?.cancel()
+        pingTask = nil
         webSocketTask?.cancel(with: .goingAway, reason: nil)
         webSocketTask = nil
     }

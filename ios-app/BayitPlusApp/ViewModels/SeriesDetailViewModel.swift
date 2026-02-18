@@ -41,8 +41,8 @@ final class SeriesDetailViewModel {
 
         do {
             async let detailTask = seriesRepository.fetchSeriesDetail(id: seriesId)
-            async let progressTask = loadWatchProgress()
-            async let favoriteTask = loadFavoriteStatus()
+            async let progressTask: Void = loadWatchProgress()
+            async let favoriteTask: Void = loadFavoriteStatus()
             detail = try await detailTask
             await progressTask
             await favoriteTask

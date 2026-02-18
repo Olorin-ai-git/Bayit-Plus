@@ -6,7 +6,7 @@ import Observation
 /// WebSocket service for receiving real-time live subtitle translations.
 /// Uses auth-first protocol with server-side audio capture (no client audio sending).
 @Observable
-final class LiveSubtitlesWebSocketService {
+final class LiveSubtitlesWebSocketService: @unchecked Sendable {
     private(set) var isConnected = false
     private(set) var currentCue: LiveSubtitleCueData?
     private(set) var connectionInfo: LiveSubtitleConnectionMessage?
