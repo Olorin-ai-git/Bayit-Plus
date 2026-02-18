@@ -3,6 +3,7 @@ package tv.bayit.plus.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,8 @@ fun GlassContentCard(
     title: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    badge: String? = null,
     progress: Float? = null,
     cardWidth: Dp = DesignTokens.Spacing.xxxxl * 3,
     contentDescription: String? = title,
@@ -53,6 +56,26 @@ fun GlassContentCard(
             contentScale = ContentScale.Crop,
         )
 
+        badge?.let { badgeText ->
+            Text(
+                text = badgeText,
+                color = DesignTokens.Colors.Text.primary,
+                fontSize = DesignTokens.FontSize.xs,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(DesignTokens.Spacing.sm)
+                    .background(
+                        DesignTokens.Colors.Semantic.error,
+                        RoundedCornerShape(DesignTokens.Radius.sm),
+                    )
+                    .padding(
+                        horizontal = DesignTokens.Spacing.sm,
+                        vertical = DesignTokens.Spacing.xxs,
+                    ),
+            )
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,15 +93,26 @@ fun GlassContentCard(
                     vertical = DesignTokens.Spacing.xs,
                 ),
         ) {
-            title?.let { displayTitle ->
-                Text(
-                    text = displayTitle,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontSize = DesignTokens.FontSize.sm,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            Column {
+                title?.let { displayTitle ->
+                    Text(
+                        text = displayTitle,
+                        color = DesignTokens.Colors.Text.primary,
+                        fontSize = DesignTokens.FontSize.sm,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                subtitle?.let { subtitleText ->
+                    Text(
+                        text = subtitleText,
+                        color = DesignTokens.Colors.Text.secondary,
+                        fontSize = DesignTokens.FontSize.xs,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
 

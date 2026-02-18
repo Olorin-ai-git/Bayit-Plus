@@ -69,7 +69,7 @@ fun DubbingMixerControls(
         if (latencyMs != null) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
             Text(
-                text = bayitString("dubbing.mixer.latency", latencyMs),
+                text = bayitString("dubbing.mixer.latency", mapOf("ms" to latencyMs.toString())),
                 color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.xs,
             )

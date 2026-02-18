@@ -55,7 +55,7 @@ struct TVAboutView: View {
             infoRow(
                 icon: "calendar",
                 label: localization.t("settings.about.environment"),
-                value: repos.configuration.environmentName
+                value: repos.configuration.environment.rawValue
             )
         }
     }

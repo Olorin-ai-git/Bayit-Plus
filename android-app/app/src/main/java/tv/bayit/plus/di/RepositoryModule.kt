@@ -32,6 +32,7 @@ import tv.bayit.plus.core.data.repository.InteractiveMissionRepository
 import tv.bayit.plus.core.data.repository.LLMSearchRepository
 import tv.bayit.plus.core.data.repository.LiveDubbingRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
+import tv.bayit.plus.core.data.repository.LocationRepository
 import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.data.repository.MissionsRepository
 import tv.bayit.plus.core.data.repository.NewsRepository
@@ -58,6 +59,7 @@ import tv.bayit.plus.core.data.repository.VoiceRepository
 import tv.bayit.plus.core.data.repository.WatchPartyRepository
 import tv.bayit.plus.core.data.repository.WidgetRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.voice.VoiceApiService
 import tv.bayit.plus.core.data.repository.impl.ApiAudiobookRepository
 import tv.bayit.plus.core.data.repository.impl.ApiAvatarMeshRepository
 import tv.bayit.plus.core.data.repository.impl.ApiAvatarOutfitRepository
@@ -82,6 +84,7 @@ import tv.bayit.plus.core.data.repository.impl.ApiHouseholdRepository
 import tv.bayit.plus.core.data.repository.impl.ApiInteractiveMissionRepository
 import tv.bayit.plus.core.data.repository.impl.ApiLiveDubbingRepository
 import tv.bayit.plus.core.data.repository.impl.ApiLiveTVRepository
+import tv.bayit.plus.core.data.repository.impl.ApiLocationRepository
 import tv.bayit.plus.core.data.repository.impl.ApiLLMSearchRepository
 import tv.bayit.plus.core.data.repository.impl.ApiMediaRepository
 import tv.bayit.plus.core.data.repository.impl.ApiMissionsRepository
@@ -379,4 +382,14 @@ object RepositoryModule {
     @Singleton
     fun provideZehAniRepository(client: BayitApiClient): ZehAniRepository =
         ApiZehAniRepository(client)
+
+    @Provides
+    @Singleton
+    fun provideLocationRepository(client: BayitApiClient): LocationRepository =
+        ApiLocationRepository(client)
+
+    @Provides
+    @Singleton
+    fun provideVoiceApiService(client: BayitApiClient): VoiceApiService =
+        client.createService()
 }

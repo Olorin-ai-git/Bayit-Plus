@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.voice.di.VoiceScope
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +29,7 @@ class VoiceOrchestrator @Inject constructor(
     private val webSocketClient: VoiceWebSocketClient,
     private val voiceApiService: VoiceApiService,
     private val logger: BayitLogger,
-    private val scope: CoroutineScope,
+    @VoiceScope private val scope: CoroutineScope,
     private val config: VoiceConfig,
 ) {
     private val _state = MutableStateFlow(VoiceState.IDLE)

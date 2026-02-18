@@ -48,13 +48,13 @@ struct SettingsView: View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             sectionHeader(localization.t("settings.preferences"))
             toggleRow(icon: "globe", title: localization.t("settings.autoTranslate"),
-                      isOn: vm.autoTranslate) { Task { await vm.updateAutoTranslate($0) } }
+                      isOn: vm.autoTranslate) { v in Task { await vm.updateAutoTranslate(v) } }
             toggleRow(icon: "captions.bubble", title: localization.t("settings.subtitles"),
-                      isOn: vm.subtitles) { Task { await vm.updateSubtitles($0) } }
+                      isOn: vm.subtitles) { v in Task { await vm.updateSubtitles(v) } }
             toggleRow(icon: "play.circle", title: localization.t("settings.autoplay"),
-                      isOn: vm.autoplay) { Task { await vm.updateAutoplay($0) } }
+                      isOn: vm.autoplay) { v in Task { await vm.updateAutoplay(v) } }
             toggleRow(icon: "bell", title: localization.t("settings.notifications"),
-                      isOn: vm.notifications) { Task { await vm.updateNotifications($0) } }
+                      isOn: vm.notifications) { v in Task { await vm.updateNotifications(v) } }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

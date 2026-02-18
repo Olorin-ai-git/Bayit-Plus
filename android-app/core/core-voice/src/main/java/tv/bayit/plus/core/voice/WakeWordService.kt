@@ -22,10 +22,16 @@ import kotlin.math.min
 
 /** Configuration for wake word detection: sensitivity (0-1), cooldown, and phrase. */
 data class WakeWordConfig(
-    val sensitivity: Float = DEFAULT_SENSITIVITY,
-    val cooldownMs: Long = DEFAULT_COOLDOWN_MS,
-    val wakePhrase: String = DEFAULT_WAKE_PHRASE,
+    val sensitivity: Float = WakeWordDefaults.SENSITIVITY,
+    val cooldownMs: Long = WakeWordDefaults.COOLDOWN_MS,
+    val wakePhrase: String = WakeWordDefaults.WAKE_PHRASE,
 )
+
+internal object WakeWordDefaults {
+    const val SENSITIVITY = 0.5f
+    const val COOLDOWN_MS = 3000L
+    const val WAKE_PHRASE = "hey bayit"
+}
 
 /**
  * Background wake word detection service ("Hey Bayit").
@@ -163,9 +169,6 @@ class WakeWordService @Inject constructor(
     }
 
     companion object {
-        private const val DEFAULT_SENSITIVITY = 0.5f
-        private const val DEFAULT_COOLDOWN_MS = 3000L
-        private const val DEFAULT_WAKE_PHRASE = "hey bayit"
         private const val RESTART_DELAY_MS = 500L
         private val WAKE_VARIANTS = listOf("hey bayit", "hey bayit plus", "\u05d4\u05d9 \u05d1\u05d9\u05ea")
 

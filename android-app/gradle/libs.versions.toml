@@ -49,6 +49,7 @@ crashlytics-plugin = "3.0.2"
 credential-manager = "1.3.0"
 google-id = "1.1.1"
 play-services-auth = "21.3.0"
+play-services-location = "21.3.0"
 
 # Logging
 timber = "5.0.1"
@@ -156,6 +157,7 @@ credential-manager = { module = "androidx.credentials:credentials", version.ref 
 credential-manager-play = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credential-manager" }
 google-id = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "google-id" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 
 # Logging
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

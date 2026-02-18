@@ -276,7 +276,7 @@ struct TVSettingsView: View {
                 title: localization.t("settings.connectedAccounts"),
                 detail: nil
             ) {
-                TVConnectedAccountsView()
+                TVConnectedAccountsView(onDismiss: {})
             }
         } header: {
             sectionHeader(localization.t("settings.about"))

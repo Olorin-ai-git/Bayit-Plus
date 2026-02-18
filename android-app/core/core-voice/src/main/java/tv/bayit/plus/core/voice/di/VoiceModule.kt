@@ -7,6 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import tv.bayit.plus.core.voice.VoiceConfig
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -44,4 +45,13 @@ object VoiceModule {
     @VoiceScope
     fun provideVoiceCoroutineScope(): CoroutineScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    @Provides
+    @Singleton
+    fun provideVoiceConfig(): VoiceConfig = VoiceConfig(
+        speakingTimeoutMs = 10_000L,
+        errorRecoveryMs = 2_000L,
+        platform = "android",
+        defaultLanguage = "en",
+    )
 }

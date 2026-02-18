@@ -454,7 +454,7 @@ fun BayitNavHost(
         composable<Route.VoiceSearch> {
             VoiceSearchRoute(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
+                onNavigateToContent = { id -> navController.navigateToContent(id, "vod") },
             )
         }
         composable<Route.VoiceSettings> {

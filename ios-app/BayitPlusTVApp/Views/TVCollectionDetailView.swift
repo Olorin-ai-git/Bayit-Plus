@@ -62,8 +62,8 @@ struct TVCollectionDetailView: View {
                     promoCard(promoText)
                 }
 
-                if !collection.movies.isEmpty {
-                    moviesGrid(collection.movies)
+                if let movies = collection.movies, !movies.isEmpty {
+                    moviesGrid(movies)
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -96,9 +96,9 @@ struct TVCollectionDetailView: View {
                     .foregroundStyle(DesignTokens.Text.muted)
             }
 
-            if !collection.movies.isEmpty {
+            if let movies = collection.movies, !movies.isEmpty {
                 Button {
-                    Task { await playAll(collection.movies) }
+                    Task { await playAll(movies) }
                 } label: {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "play.fill")

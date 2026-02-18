@@ -85,7 +85,7 @@ private fun CatchUpAutoPrompt(
         if (remainingCredits != null) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = bayitString("player.catchup.creditsRemaining", remainingCredits),
+                text = bayitString("player.catchup.creditsRemaining", mapOf("count" to remainingCredits.toString())),
                 color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.sm,
             )
@@ -114,7 +114,7 @@ private fun CatchUpSummaryView(
     ) {
         if (summary?.programInfo?.title != null) {
             Text(
-                text = summary.programInfo.title,
+                text = summary.programInfo.title ?: "",
                 color = DesignTokens.Colors.Primary.light,
                 fontSize = DesignTokens.FontSize.lg,
                 fontWeight = FontWeight.Bold,
@@ -167,8 +167,10 @@ private fun CatchUpSummaryView(
             Text(
                 text = bayitString(
                     "player.catchup.creditsInfo",
-                    summary.creditsUsed,
-                    summary.remainingCredits ?: 0,
+                    mapOf(
+                        "used" to summary.creditsUsed.toString(),
+                        "remaining" to (summary.remainingCredits ?: 0).toString(),
+                    ),
                 ),
                 color = DesignTokens.Colors.Text.muted,
                 fontSize = DesignTokens.FontSize.xs,
@@ -248,7 +250,7 @@ private fun TranscriptSegmentRow(
         Column(modifier = Modifier.weight(1f)) {
             if (segment.speaker != null) {
                 Text(
-                    text = segment.speaker,
+                    text = segment.speaker ?: "",
                     color = DesignTokens.Colors.Text.secondary,
                     fontSize = DesignTokens.FontSize.xs,
                     fontWeight = FontWeight.Bold,

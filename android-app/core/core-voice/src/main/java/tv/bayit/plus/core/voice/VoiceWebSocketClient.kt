@@ -120,21 +120,21 @@ class VoiceWebSocketClient @Inject constructor(
     }
 
     private fun routeMessage(type: String, obj: JsonObject): VoiceWSIncoming? = when (type) {
-        "transcript_partial" -> obj.str("text")?.let { VoiceWSIncoming.TranscriptPartial(it) }
-        "transcript_final" -> obj.str("text")?.let { VoiceWSIncoming.TranscriptFinal(it) }
-        "llm_chunk" -> obj.str("text")?.let { VoiceWSIncoming.LlmChunk(it) }
-        "tts_audio" -> obj.decodeBase64("data")?.let { VoiceWSIncoming.TtsAudio(it) }
+        "transcript_partial" -> strVal(obj, "text")?.let { VoiceWSIncoming.TranscriptPartial(it) }
+        "transcript_final" -> strVal(obj, "text")?.let { VoiceWSIncoming.TranscriptFinal(it) }
+        "llm_chunk" -> strVal(obj, "text")?.let { VoiceWSIncoming.LlmChunk(it) }
+        "tts_audio" -> decodeBase64Val(obj, "data")?.let { VoiceWSIncoming.TtsAudio(it) }
         "intent_action" -> parseIntentAction(obj)
-        "complete" -> VoiceWSIncoming.Complete(obj.str("conversation_id"))
+        "complete" -> VoiceWSIncoming.Complete(strVal(obj, "conversation_id"))
         "cancelled" -> VoiceWSIncoming.Cancelled
-        "error" -> VoiceWSIncoming.Error(obj.str("message") ?: "Unknown server error")
+        "error" -> VoiceWSIncoming.Error(strVal(obj, "message") ?: "Unknown server error")
         "pong" -> VoiceWSIncoming.Pong
         else -> { logger.warning("Unknown WebSocket message type", mapOf("type" to type)); null }
     }
 
     private fun parseIntentAction(obj: JsonObject): VoiceWSIncoming.IntentAction? {
-        val intentStr = obj.str("intent") ?: return null
-        val text = obj.str("text") ?: return null
+        val intentStr = strVal(obj, "intent") ?: return null
+        val text = strVal(obj, "text") ?: return null
         val actionObj = obj["action"]?.jsonObject ?: return null
         val actionType = actionObj["type"]?.jsonPrimitive?.contentOrNull ?: return null
         val intent = runCatching { json.decodeFromString<VoiceIntentType>("\"$intentStr\"") }
@@ -150,10 +150,11 @@ class VoiceWebSocketClient @Inject constructor(
         )
     }
 
-    private fun JsonObject.str(key: String): String? = this[key]?.jsonPrimitive?.contentOrNull
+    private fun strVal(obj: JsonObject, key: String): String? =
+        obj[key]?.jsonPrimitive?.contentOrNull
 
-    private fun JsonObject.decodeBase64(key: String): ByteArray? {
-        val b64 = str(key) ?: return null
+    private fun decodeBase64Val(obj: JsonObject, key: String): ByteArray? {
+        val b64 = strVal(obj, key) ?: return null
         return runCatching { android.util.Base64.decode(b64, android.util.Base64.DEFAULT) }.getOrNull()
     }
 

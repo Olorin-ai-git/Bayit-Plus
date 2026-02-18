@@ -22,6 +22,17 @@ data class LiveSubtitleEnvelope(
     val timestamp: Double? = null,
 )
 
+/** Flat message model for live subtitle overlay display. */
+@Serializable
+data class LiveSubtitleMessage(
+    val type: String? = null,
+    @SerialName("is_final") val isFinal: Boolean = false,
+    val text: String? = null,
+    @SerialName("original_language") val originalLanguage: String? = null,
+    @SerialName("translated_text") val translatedText: String? = null,
+    @SerialName("target_language") val targetLanguage: String? = null,
+)
+
 /** Nested data payload for subtitle cues (final_subtitle / partial_subtitle). */
 @Serializable
 data class LiveSubtitleCueData(

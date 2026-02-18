@@ -6,10 +6,16 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.model.CityContentResponse
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.ContentDetail
 import tv.bayit.plus.core.model.ContentItem
+import tv.bayit.plus.core.model.CultureTrendingItem
 import tv.bayit.plus.core.model.FeaturedResponse
+import tv.bayit.plus.core.model.IsraeliBusinessesResponse
+import tv.bayit.plus.core.model.IsraelisInCityResponse
+import tv.bayit.plus.core.model.SectionContentItem
+import tv.bayit.plus.core.model.WatchHistoryItem
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 /**
@@ -77,6 +83,47 @@ class ApiContentRepository(
             client.safeApiCall { service.removeFavorite(contentId) }
             Unit
         }
+
+    override suspend fun getContinueWatching(): BayitResult<List<WatchHistoryItem>> =
+        runCatchingResult {
+            client.safeApiCall { service.getContinueWatching() }.items
+        }
+
+    override suspend fun getTrending(): BayitResult<List<CultureTrendingItem>> =
+        runCatchingResult {
+            client.safeApiCall { service.getTrending() }.topics
+        }
+
+    override suspend fun getYoungstersTrending(): BayitResult<List<SectionContentItem>> =
+        runCatchingResult {
+            client.safeApiCall { service.getYoungstersFeatured() }.items
+        }
+
+    override suspend fun getJerusalemContent(): BayitResult<CityContentResponse> =
+        runCatchingResult {
+            client.safeApiCall { service.getJerusalemFeatured() }
+        }
+
+    override suspend fun getTelAvivContent(): BayitResult<CityContentResponse> =
+        runCatchingResult {
+            client.safeApiCall { service.getTelAvivFeatured() }
+        }
+
+    override suspend fun getIsraelisInCity(
+        city: String,
+        state: String,
+        county: String?
+    ): BayitResult<IsraelisInCityResponse> = runCatchingResult {
+        client.safeApiCall { service.getIsraelisInCity(city, state, county) }
+    }
+
+    override suspend fun getIsraeliBusinesses(
+        city: String,
+        state: String,
+        county: String?
+    ): BayitResult<IsraeliBusinessesResponse> = runCatchingResult {
+        client.safeApiCall { service.getIsraeliBusinesses(city, state, county) }
+    }
 }
 
 private interface ContentService {
@@ -114,6 +161,35 @@ private interface ContentService {
 
     @retrofit2.http.DELETE("api/v1/user/favorites/{contentId}")
     suspend fun removeFavorite(@Path("contentId") contentId: String): ContentRemoveResponse
+
+    @GET("api/v1/history")
+    suspend fun getContinueWatching(): ContinueWatchingResponse
+
+    @GET("api/v1/trending/topics")
+    suspend fun getTrending(): TrendingTopicsResponse
+
+    @GET("api/v1/youngsters/featured")
+    suspend fun getYoungstersFeatured(): YoungstersFeaturedResponse
+
+    @GET("api/v1/jerusalem/featured")
+    suspend fun getJerusalemFeatured(): CityContentResponse
+
+    @GET("api/v1/tel-aviv/featured")
+    suspend fun getTelAvivFeatured(): CityContentResponse
+
+    @GET("api/v1/content/israelis-in-city")
+    suspend fun getIsraelisInCity(
+        @Query("city") city: String,
+        @Query("state") state: String,
+        @Query("county") county: String?,
+    ): IsraelisInCityResponse
+
+    @GET("api/v1/content/israeli-businesses-in-city")
+    suspend fun getIsraeliBusinesses(
+        @Query("city") city: String,
+        @Query("state") state: String,
+        @Query("county") county: String?,
+    ): IsraeliBusinessesResponse
 }
 
 @kotlinx.serialization.Serializable
@@ -134,4 +210,22 @@ private data class ContentAllResponse(
 @kotlinx.serialization.Serializable
 private data class ContentCategoryResponse(
     val items: List<ContentItem> = emptyList(),
+)
+
+/** Wrapper for GET api/v1/history — backend returns {"items":[...], "total":N, ...}. */
+@kotlinx.serialization.Serializable
+private data class ContinueWatchingResponse(
+    val items: List<WatchHistoryItem> = emptyList(),
+)
+
+/** Wrapper for GET api/v1/trending/topics — backend returns {"topics":[...], ...}. */
+@kotlinx.serialization.Serializable
+private data class TrendingTopicsResponse(
+    val topics: List<CultureTrendingItem> = emptyList(),
+)
+
+/** Wrapper for GET api/v1/youngsters/featured — backend returns {"items":[...], ...}. */
+@kotlinx.serialization.Serializable
+private data class YoungstersFeaturedResponse(
+    val items: List<SectionContentItem> = emptyList(),
 )

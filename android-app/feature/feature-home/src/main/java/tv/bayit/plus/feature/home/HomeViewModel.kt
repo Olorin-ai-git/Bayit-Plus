@@ -13,7 +13,10 @@ import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
+import tv.bayit.plus.core.data.repository.LocationRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
+import tv.bayit.plus.core.data.repository.ShabbatRepository
+import tv.bayit.plus.core.location.LocationManager
 import tv.bayit.plus.core.model.CityContentResponse
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.CultureTrendingItem
@@ -23,6 +26,7 @@ import tv.bayit.plus.core.model.IsraelisInCityResponse
 import tv.bayit.plus.core.model.LiveChannelItem
 import tv.bayit.plus.core.model.RadioStationItem
 import tv.bayit.plus.core.model.SectionContentItem
+import tv.bayit.plus.core.model.ShabbatInfo
 import tv.bayit.plus.core.model.WatchHistoryItem
 import javax.inject.Inject
 
@@ -32,6 +36,9 @@ class HomeViewModel @Inject constructor(
     private val liveTVRepository: LiveTVRepository,
     private val radioRepository: RadioRepository,
     private val categoryRepository: CategoryRepository,
+    private val shabbatRepository: ShabbatRepository,
+    private val locationRepository: LocationRepository,
+    private val locationManager: LocationManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -95,6 +102,7 @@ class HomeViewModel @Inject constructor(
         val jerusalemDeferred = viewModelScope.async { loadJerusalemContent() }
         val israelisDeferred = viewModelScope.async { loadIsraelisInCity() }
         val businessesDeferred = viewModelScope.async { loadIsraeliBusinesses() }
+        val shabbatDeferred = viewModelScope.async { loadShabbatInfo() }
 
         val liveChannels = liveChannelsDeferred.await()
         val radioStations = radioStationsDeferred.await()
@@ -106,6 +114,7 @@ class HomeViewModel @Inject constructor(
         val jerusalem = jerusalemDeferred.await()
         val israelisInCity = israelisDeferred.await()
         val israeliBusinesses = businessesDeferred.await()
+        val shabbatInfo = shabbatDeferred.await()
 
         logger.info(
             "Home feed loaded",
@@ -131,8 +140,17 @@ class HomeViewModel @Inject constructor(
             jerusalemContent = jerusalem,
             israelisInCity = israelisInCity,
             israeliBusinesses = israeliBusinesses,
+            shabbatInfo = shabbatInfo,
+            isShabbatBannerDismissed = false,
             isRefreshing = false,
         )
+    }
+
+    fun dismissShabbatBanner() {
+        val currentState = _uiState.value
+        if (currentState is HomeUiState.Success) {
+            _uiState.value = currentState.copy(isShabbatBannerDismissed = true)
+        }
     }
 
     private suspend fun loadFeaturedCollections(): List<CollectionDetail> {
@@ -183,31 +201,148 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadContinueWatching(): List<WatchHistoryItem> {
-        return emptyList()
+        return try {
+            when (val result = contentRepository.getContinueWatching()) {
+                is BayitResult.Success -> {
+                    (result.data as? List<*>)?.filterIsInstance<WatchHistoryItem>() ?: emptyList()
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load continue watching (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
     }
 
     private suspend fun loadTrending(): List<CultureTrendingItem> {
-        return emptyList()
+        return try {
+            when (val result = contentRepository.getTrending()) {
+                is BayitResult.Success -> {
+                    (result.data as? List<*>)?.filterIsInstance<CultureTrendingItem>() ?: emptyList()
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load trending (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
     }
 
     private suspend fun loadYoungsters(): List<SectionContentItem> {
-        return emptyList()
+        return try {
+            when (val result = contentRepository.getYoungstersTrending()) {
+                is BayitResult.Success -> {
+                    (result.data as? List<*>)?.filterIsInstance<SectionContentItem>() ?: emptyList()
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load youngsters (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
     }
 
     private suspend fun loadTelAvivContent(): CityContentResponse? {
-        return null
+        return try {
+            when (val result = contentRepository.getTelAvivContent()) {
+                is BayitResult.Success -> result.data as? CityContentResponse
+                else -> null
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load Tel Aviv content (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            null
+        }
     }
 
     private suspend fun loadJerusalemContent(): CityContentResponse? {
-        return null
+        return try {
+            when (val result = contentRepository.getJerusalemContent()) {
+                is BayitResult.Success -> result.data as? CityContentResponse
+                else -> null
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load Jerusalem content (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            null
+        }
     }
 
     private suspend fun loadIsraelisInCity(): IsraelisInCityResponse? {
-        return null
+        val userLocation = getUserLocation() ?: return null
+
+        return try {
+            when (val result = contentRepository.getIsraelisInCity(
+                city = userLocation.city,
+                state = userLocation.state,
+                county = userLocation.county,
+            )) {
+                is BayitResult.Success -> result.data as? IsraelisInCityResponse
+                else -> null
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load Israelis in city (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            null
+        }
     }
 
     private suspend fun loadIsraeliBusinesses(): IsraeliBusinessesResponse? {
-        return null
+        val userLocation = getUserLocation() ?: return null
+
+        return try {
+            when (val result = contentRepository.getIsraeliBusinesses(
+                city = userLocation.city,
+                state = userLocation.state,
+                county = userLocation.county,
+            )) {
+                is BayitResult.Success -> result.data as? IsraeliBusinessesResponse
+                else -> null
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load Israeli businesses (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            null
+        }
+    }
+
+    private suspend fun getUserLocation(): tv.bayit.plus.core.model.UserLocation? {
+        locationManager.getCachedLocation()?.let { cached ->
+            logger.debug("Using cached location", mapOf("city" to cached.city, "state" to cached.state))
+            return cached
+        }
+
+        if (!locationManager.hasLocationPermission()) {
+            logger.debug("Location permission not granted")
+            return null
+        }
+
+        val deviceLocation = locationManager.getCurrentLocation() ?: run {
+            logger.debug("Could not get device location")
+            return null
+        }
+
+        val userLocation = locationManager.reverseGeocode(
+            latitude = deviceLocation.latitude,
+            longitude = deviceLocation.longitude,
+        ) { lat, lon ->
+            when (val result = locationRepository.reverseGeocode(lat, lon)) {
+                is BayitResult.Success -> result.data
+                else -> null
+            }
+        } ?: return null
+
+        locationManager.cacheLocation(userLocation)
+
+        return userLocation
+    }
+
+    private suspend fun loadShabbatInfo(): ShabbatInfo? {
+        return try {
+            when (val result = shabbatRepository.getShabbatTimes(32.0853, 34.7818)) {
+                is BayitResult.Success -> result.data as? ShabbatInfo
+                else -> null
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load Shabbat info (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            null
+        }
     }
 
     private fun filterCategories(categories: List<tv.bayit.plus.core.model.ContentCategory>): List<tv.bayit.plus.core.model.ContentCategory> {
@@ -240,6 +375,8 @@ sealed interface HomeUiState {
         val jerusalemContent: CityContentResponse? = null,
         val israelisInCity: IsraelisInCityResponse? = null,
         val israeliBusinesses: IsraeliBusinessesResponse? = null,
+        val shabbatInfo: ShabbatInfo? = null,
+        val isShabbatBannerDismissed: Boolean = false,
         val isRefreshing: Boolean = false,
     ) : HomeUiState
 

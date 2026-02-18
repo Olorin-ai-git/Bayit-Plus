@@ -115,7 +115,7 @@ private fun LanguageStep(selected: String, onSelect: (String) -> Unit) {
                 val sel = lang == selected
                 GlassCard(modifier = Modifier.fillMaxWidth().clickable { onSelect(lang) }.glassMorphism(
                     cornerRadius = DesignTokens.Radius.md,
-                    backgroundColor = if (sel) DesignTokens.Colors.Primary.base else DesignTokens.Colors.Surface.elevated)
+                    backgroundColor = if (sel) DesignTokens.Colors.Primary.base else DesignTokens.Colors.Background.elevated)
                 ) {
                     Text(bayitString("voiceWizard.language.$lang"), style = MaterialTheme.typography.bodyLarge,
                         color = if (sel) DesignTokens.Colors.Text.primary else DesignTokens.Colors.Text.secondary,

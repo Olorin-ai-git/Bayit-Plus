@@ -57,7 +57,7 @@ class ApiTrendingRepository(
 private interface TrendingService {
 
     @GET("api/v1/trending/topics")
-    suspend fun getTrendingTopics(): TrendingTopicsResponse
+    suspend fun getTrendingTopics(): TrendingTopicsFullResponse
 
     @GET("api/v1/trending/category/{categoryId}")
     suspend fun getTrendingByCategory(
@@ -75,7 +75,7 @@ private interface TrendingService {
 
 /** Response from GET /api/v1/trending/topics. */
 @Serializable
-private data class TrendingTopicsResponse(
+private data class TrendingTopicsFullResponse(
     val topics: List<TrendingTopicItem> = emptyList(),
     @SerialName("overall_mood") val overallMood: String? = null,
     @SerialName("top_story") val topStory: String? = null,

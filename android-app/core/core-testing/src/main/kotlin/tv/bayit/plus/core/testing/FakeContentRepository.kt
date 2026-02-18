@@ -2,10 +2,16 @@ package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.model.CityContentResponse
 import tv.bayit.plus.core.model.CollectionDetail
+import tv.bayit.plus.core.model.CultureTrendingItem
 import tv.bayit.plus.core.model.FeaturedResponse
 import tv.bayit.plus.core.model.ContentDetail
 import tv.bayit.plus.core.model.ContentItem
+import tv.bayit.plus.core.model.IsraeliBusinessesResponse
+import tv.bayit.plus.core.model.IsraelisInCityResponse
+import tv.bayit.plus.core.model.SectionContentItem
+import tv.bayit.plus.core.model.WatchHistoryItem
 
 /**
  * Fake implementation of ContentRepository for testing.
@@ -111,6 +117,30 @@ class FakeContentRepository : ContentRepository {
             BayitResult.Success(Unit)
         }
     }
+
+    override suspend fun getContinueWatching(): BayitResult<List<WatchHistoryItem>> =
+        if (shouldReturnError) BayitResult.Error(Exception(errorMessage))
+        else BayitResult.Success(emptyList())
+
+    override suspend fun getTrending(): BayitResult<List<CultureTrendingItem>> =
+        if (shouldReturnError) BayitResult.Error(Exception(errorMessage))
+        else BayitResult.Success(emptyList())
+
+    override suspend fun getYoungstersTrending(): BayitResult<List<SectionContentItem>> =
+        if (shouldReturnError) BayitResult.Error(Exception(errorMessage))
+        else BayitResult.Success(emptyList())
+
+    override suspend fun getJerusalemContent(): BayitResult<CityContentResponse> =
+        BayitResult.Error(Exception(errorMessage))
+
+    override suspend fun getTelAvivContent(): BayitResult<CityContentResponse> =
+        BayitResult.Error(Exception(errorMessage))
+
+    override suspend fun getIsraelisInCity(city: String, state: String, county: String?): BayitResult<IsraelisInCityResponse> =
+        BayitResult.Error(Exception(errorMessage))
+
+    override suspend fun getIsraeliBusinesses(city: String, state: String, county: String?): BayitResult<IsraeliBusinessesResponse> =
+        BayitResult.Error(Exception(errorMessage))
 
     suspend fun getContent(contentId: String): BayitResult<ContentDetail> {
         return if (shouldReturnError) {
