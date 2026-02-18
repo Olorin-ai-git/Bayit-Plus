@@ -1,5 +1,6 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Focus-aware countdown banner for tvOS sleep timer.

@@ -432,7 +432,7 @@ struct TVHighlightsView: View {
     }
 
     private func shareReel(_ reel: HighlightReelItem) {
-        guard let reelId = reel.id else { return }
+        let reelId = reel.id
         isSending = true
         Task {
             do {

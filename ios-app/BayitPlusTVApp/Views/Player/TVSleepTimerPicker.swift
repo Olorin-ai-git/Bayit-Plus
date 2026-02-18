@@ -1,5 +1,6 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Focus-compatible picker for selecting sleep timer duration on tvOS.
