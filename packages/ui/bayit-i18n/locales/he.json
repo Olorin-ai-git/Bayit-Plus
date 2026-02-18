@@ -5123,7 +5123,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "חדש/ה ב-Bayit+?"
   },
   "nav": {
     "home": "ראשי",
@@ -5869,7 +5870,9 @@
       "daysAgo_other": "לפני {{count}} ימים",
       "disconnectDevice": "נתק מכשיר"
     },
-    "unknown": "נגן לא ידוע"
+    "unknown": "נגן לא ידוע",
+    "myDownloads": "ההורדות שלי",
+    "offlineContent": "תוכן אופליין"
   },
   "profiles": {
     "addProfile": "הוסף פרופיל",

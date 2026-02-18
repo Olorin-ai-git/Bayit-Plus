@@ -3855,7 +3855,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Bayit+-ல் புதியவரா?"
   },
   "nav": {
     "home": "முகப்பு",
@@ -4496,7 +4497,9 @@
     "imageTooLarge": "படம் மிகவும் பெரியது. அதிகபட்ச அளவு 5MB.",
     "uploadSuccess": "அவதார் வெற்றிகரமாகப் புதுப்பிக்கப்பட்டது!",
     "uploadFailed": "அவதாரைப் பதிவேற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
-    "unknown": "அறியாத வீரர்"
+    "unknown": "அறியாத வீரர்",
+    "myDownloads": "என் பதிவிறக்கங்கள்",
+    "offlineContent": "ஆஃப்லைன் உள்ளடக்கம்"
   },
   "radio": {
     "title": "வானொலி",

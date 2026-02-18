@@ -19,6 +19,8 @@ struct TVProfileView: View {
     @State private var showingViewingHistory = false
     @State private var showingFavorites = false
     @State private var showingRecordings = false
+    @State private var showingWatchlist = false
+    @State private var showingDownloads = false
     @State private var showingFriends = false
     @State private var showingMessages = false
     @State private var showingSettings = false
@@ -96,6 +98,12 @@ struct TVProfileView: View {
             .fullScreenCover(isPresented: $showingRecordings) {
                 TVRecordingsView()
             }
+            .fullScreenCover(isPresented: $showingWatchlist) {
+                TVWatchlistView()
+            }
+            .fullScreenCover(isPresented: $showingDownloads) {
+                TVDownloadsView()
+            }
             .fullScreenCover(isPresented: $showingFriends) {
                 TVFriendsView()
             }
@@ -132,6 +140,9 @@ struct TVProfileView: View {
             socialSection
             accountManagementSection(profile)
             advancedSection
+            if authManager.user?.role.isAdmin == true {
+                adminSection
+            }
             signOutSection
         }
         .listStyle(.grouped)
@@ -491,12 +502,21 @@ struct TVProfileView: View {
             }
 
             actionRow(
+                icon: "arrow.down.circle.fill",
+                title: localization.t("profile.myDownloads"),
+                subtitle: localization.t("profile.offlineContent"),
+                color: DesignTokens.Success.default
+            ) {
+                showingDownloads = true
+            }
+
+            actionRow(
                 icon: "list.bullet",
                 title: localization.t("profile.myPlaylists"),
                 subtitle: localization.t("profile.organizeContent"),
                 color: DesignTokens.Secondary.s400
             ) {
-                // Navigate to playlists
+                showingWatchlist = true
             }
 
             actionRow(
@@ -654,6 +674,37 @@ struct TVProfileView: View {
             }
         } header: {
             sectionHeader(localization.t("profile.socialSettings"))
+        }
+    }
+
+    // MARK: - Admin
+
+    private var adminSection: some View {
+        Section {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: "shield.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(DesignTokens.Warning.default)
+                    .frame(width: 44)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(localization.t("profile.admin"))
+                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    if let role = authManager.user?.role.rawValue
+                        .replacingOccurrences(of: "_", with: " ")
+                        .capitalized {
+                        Text(role)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Warning.default)
+                    }
+                }
+                Spacer()
+                Image(systemName: "checkmark.shield.fill")
+                    .font(.system(size: 20))
+                    .foregroundStyle(DesignTokens.Success.default)
+            }
+        } header: {
+            sectionHeader(localization.t("profile.role"))
         }
     }
 

@@ -127,6 +127,18 @@ final class TVNavigationCoordinator {
         fullscreenRoute = nil
     }
 
+    /// Push a route onto the current tab's navigation stack.
+    func navigate(to route: TVRoute) {
+        paths[selectedTab]?.append(route)
+    }
+
+    /// Open web content URL on tvOS.
+    /// tvOS has no browser; this attempts to open via URL scheme handling.
+    func presentWebView(url: URL, title: String) {
+        logger.info("Web content: \(url.absoluteString) - \(title)")
+        UIApplication.shared.open(url)
+    }
+
     /// Handle a `bayitplus://` deep link URL.
     func handleDeepLink(_ url: URL) {
         logger.info("Handling deep link: \(url.absoluteString)")

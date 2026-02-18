@@ -4952,7 +4952,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "¿Nuevo en Bayit+?"
   },
   "nav": {
     "home": "Inicio",
@@ -5699,7 +5700,9 @@
     "noHistory": "Sin historial de visualización",
     "continueWatching": "Continuar Viendo",
     "removeFromHistory": "Eliminar del historial",
-    "unknown": "Jugador desconocido"
+    "unknown": "Jugador desconocido",
+    "myDownloads": "Mis Descargas",
+    "offlineContent": "Contenido Sin Conexión"
   },
   "profiles": {
     "addProfile": "Añadir perfil",

@@ -22,6 +22,7 @@ final class HomeViewModel {
     private(set) var israeliBusinesses: IsraeliBusinessesResponse?
     private(set) var telAvivContent: CityContentResponse?
     private(set) var jerusalemContent: CityContentResponse?
+    private(set) var cultureCities: [CultureCityWithContent] = []
     private(set) var trendingContent: [CultureTrendingItem] = []
     private(set) var youngstersTrending: [SectionContentItem] = []
     private(set) var radioStations: [RadioStationItem] = []
@@ -134,6 +135,7 @@ final class HomeViewModel {
         async let collectionsTask: Void = loadFeaturedCollections()
         async let telAvivTask: Void = loadTelAvivContent()
         async let jerusalemTask: Void = loadJerusalemContent()
+        async let citiesTask: Void = loadCultureCities()
         async let trendingTask: Void = loadTrending()
         async let locationTask: Void = loadLocationContent()
         async let youngstersTask: Void = loadYoungstersTrending()
@@ -144,6 +146,7 @@ final class HomeViewModel {
         await collectionsTask
         await telAvivTask
         await jerusalemTask
+        await citiesTask
         await trendingTask
         await locationTask
         await youngstersTask
@@ -299,6 +302,28 @@ final class HomeViewModel {
         }
     }
 
+    @MainActor
+    private func loadCultureCities() async {
+        guard let catRepo = categoryRepository else { return }
+        do {
+            let cities = try await catRepo.fetchCultureCities(cultureId: "israeli", featuredOnly: true)
+
+            var citiesWithContent: [CultureCityWithContent] = []
+            for city in cities where city.cityId != "jerusalem" && city.cityId != "tel-aviv" {
+                if let content = try? await catRepo.fetchCityContent(
+                    cultureId: "israeli",
+                    cityId: city.cityId,
+                    limit: 10
+                ), !content.items.isEmpty {
+                    citiesWithContent.append(CultureCityWithContent(city: city, content: content))
+                }
+            }
+            cultureCities = citiesWithContent
+        } catch {
+            cultureCities = []
+        }
+    }
+
     // MARK: - Helper Methods
 
     /// Check if an error is a cancellation error (user navigated away, task was cancelled, etc.)
@@ -322,4 +347,14 @@ final class HomeViewModel {
 
         return false
     }
+}
+
+// MARK: - Supporting Types
+
+/// Culture city with its featured content for dynamic city rows.
+struct CultureCityWithContent: Sendable, Identifiable {
+    let city: CultureCity
+    let content: CultureContentResponse
+
+    var id: String { city.id }
 }

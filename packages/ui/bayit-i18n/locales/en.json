@@ -5114,7 +5114,8 @@
       "signingIn": "Signing you in...",
       "signedIn": "Signed in successfully",
       "expired": "QR code expired"
-    }
+    },
+    "newToBayitPlus": "New to Bayit+?"
   },
   "nav": {
     "home": "Home",
@@ -5876,7 +5877,9 @@
     "completeVerification": "Complete verification to unlock all features",
     "unlockPremium": "Unlock Premium Features",
     "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features",
-    "unknown": "Unknown Player"
+    "unknown": "Unknown Player",
+    "myDownloads": "My Downloads",
+    "offlineContent": "Offline Content"
   },
   "profiles": {
     "addProfile": "Add Profile",

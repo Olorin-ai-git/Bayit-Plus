@@ -86,6 +86,18 @@ protocol CategoryRepository: Sendable {
     func updateRitualPreferences(
         request: RitualPreferencesUpdate
     ) async throws -> RitualPreferences
+
+    // MARK: - Culture Cities
+
+    /// Fetch cities for a culture, optionally filtered to featured cities only.
+    func fetchCultureCities(cultureId: String, featuredOnly: Bool) async throws -> [CultureCity]
+
+    /// Fetch content for a specific city within a culture.
+    func fetchCityContent(
+        cultureId: String,
+        cityId: String,
+        limit: Int?
+    ) async throws -> CultureContentResponse
 }
 
 /// Production implementation of `CategoryRepository` using `APIClient`.
@@ -280,6 +292,35 @@ final class APICategoryRepository: CategoryRepository, @unchecked Sendable {
             "/api/v1/ritual/preferences",
             body: request,
             as: RitualPreferences.self
+        )
+    }
+
+    // MARK: - Culture Cities
+
+    func fetchCultureCities(cultureId: String, featuredOnly: Bool) async throws -> [CultureCity] {
+        let queryItems = [
+            URLQueryItem(name: "featured_only", value: String(featuredOnly))
+        ]
+        return try await client.get(
+            "/api/v1/cultures/\(cultureId)/cities",
+            queryItems: queryItems,
+            as: [CultureCity].self
+        )
+    }
+
+    func fetchCityContent(
+        cultureId: String,
+        cityId: String,
+        limit: Int?
+    ) async throws -> CultureContentResponse {
+        var queryItems: [URLQueryItem] = []
+        if let limit {
+            queryItems.append(URLQueryItem(name: "limit", value: String(limit)))
+        }
+        return try await client.get(
+            "/api/v1/cultures/\(cultureId)/cities/\(cityId)/content",
+            queryItems: queryItems,
+            as: CultureContentResponse.self
         )
     }
 }

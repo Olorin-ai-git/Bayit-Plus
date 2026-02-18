@@ -4093,7 +4093,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Nuovo su Bayit+?"
   },
   "nav": {
     "home": "Home",
@@ -4722,7 +4723,9 @@
     "imageTooLarge": "L'immagine è troppo grande. La dimensione massima è 5MB.",
     "uploadSuccess": "Avatar aggiornato con successo!",
     "uploadFailed": "Impossibile caricare l'avatar. Riprova.",
-    "unknown": "Giocatore sconosciuto"
+    "unknown": "Giocatore sconosciuto",
+    "myDownloads": "I Miei Download",
+    "offlineContent": "Contenuto Offline"
   },
   "radio": {
     "title": "Radio",

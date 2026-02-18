@@ -44,6 +44,12 @@ enum TVRoute: Hashable, Identifiable {
     case catchUpSummary(contentId: String)
     /// Show trivia quiz for content.
     case quiz(contentId: String)
+    /// Show user's watchlist / playlist.
+    case watchlist
+    /// Show downloaded content for offline viewing.
+    case downloads
+    /// Navigate to Judaism content with an optional category filter.
+    case judaism(category: String)
 
     // MARK: - Hashable
 
@@ -99,6 +105,13 @@ enum TVRoute: Hashable, Identifiable {
         case .quiz(let contentId):
             hasher.combine("quiz")
             hasher.combine(contentId)
+        case .watchlist:
+            hasher.combine("watchlist")
+        case .downloads:
+            hasher.combine("downloads")
+        case .judaism(let category):
+            hasher.combine("judaism")
+            hasher.combine(category)
         }
     }
 
@@ -142,6 +155,12 @@ enum TVRoute: Hashable, Identifiable {
             return lId == rId
         case let (.quiz(lId), .quiz(rId)):
             return lId == rId
+        case (.watchlist, .watchlist):
+            return true
+        case (.downloads, .downloads):
+            return true
+        case let (.judaism(lCat), .judaism(rCat)):
+            return lCat == rCat
         default:
             return false
         }

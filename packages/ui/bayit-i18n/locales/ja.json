@@ -4758,7 +4758,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Bayit+は初めてですか?"
   },
   "nav": {
     "home": "ホーム",
@@ -5574,7 +5575,9 @@
     "uploadFailed": "アバターのアップロードに失敗しました。もう一度お試しください。",
     "email": "メール",
     "notifications": "通知",
-    "unknown": "不明なプレイヤー"
+    "unknown": "不明なプレイヤー",
+    "myDownloads": "ダウンロード",
+    "offlineContent": "オフラインコンテンツ"
   },
   "radio": {
     "title": "ラジオ",

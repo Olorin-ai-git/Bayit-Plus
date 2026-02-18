@@ -4273,7 +4273,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Bayit+新用户？"
   },
   "nav": {
     "home": "首页",
@@ -4940,7 +4941,9 @@
       "daysAgo_one": "1天前",
       "daysAgo_other": "{{count}}天前"
     },
-    "unknown": "未知播放器"
+    "unknown": "未知播放器",
+    "myDownloads": "我的下载",
+    "offlineContent": "离线内容"
   },
   "profiles": {
     "addProfile": "添加档案",

@@ -3923,7 +3923,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Bayit+ पर नए हैं?"
   },
   "nav": {
     "home": "होम",
@@ -4563,7 +4564,9 @@
     "imageTooLarge": "छवि बहुत बड़ी है। अधिकतम आकार 5MB है।",
     "uploadSuccess": "अवतार सफलतापूर्वक अपडेट हो गया!",
     "uploadFailed": "अवतार अपलोड करने में विफल। कृपया पुनः प्रयास करें।",
-    "unknown": "अज्ञात खिलाड़ी"
+    "unknown": "अज्ञात खिलाड़ी",
+    "myDownloads": "मेरे डाउनलोड",
+    "offlineContent": "ऑफ़लाइन सामग्री"
   },
   "radio": {
     "title": "रेडियो",

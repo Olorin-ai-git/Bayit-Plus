@@ -18,10 +18,11 @@ struct TVCredentialPanel: View {
     @State private var password = ""
     @State private var isPasswordVisible = false
     @State private var isLoading = false
+    @State private var showingRegister = false
     @FocusState private var focusedField: Field?
 
     enum Field: Hashable {
-        case email, password, submit, apple
+        case email, password, submit, apple, createAccount
     }
 
     var body: some View {
@@ -222,9 +223,30 @@ struct TVCredentialPanel: View {
                 .scaleEffect(focusedField == .apple ? 1.05 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.7), value: focusedField)
             }
+                Button(action: { showingRegister = true }) {
+                    (
+                        Text(localization.t("login.newToBayitPlus") + " ")
+                            .foregroundStyle(DesignTokens.Text.muted)
+                        + Text(localization.t("login.createAccount"))
+                            .foregroundStyle(DesignTokens.Colors.Primary.light)
+                            .bold()
+                    )
+                }
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .buttonStyle(.plain)
+                .focused($focusedField, equals: .createAccount)
+            }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .padding(.vertical, TVDesignTokens.Spacing.md)
+        .fullScreenCover(isPresented: $showingRegister) {
+            TVRegisterView(
+                onSuccess: {
+                    showingRegister = false
+                    onAuthSuccess()
+                },
+                onBack: { showingRegister = false }
+            )
         }
     }
 

@@ -3772,7 +3772,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "Bayit+-এ নতুন?"
   },
   "nav": {
     "home": "হোম",
@@ -4408,7 +4409,9 @@
     "imageTooLarge": "ছবি অনেক বড়। সর্বোচ্চ আকার 5MB।",
     "uploadSuccess": "অবতার সফলভাবে আপডেট হয়েছে!",
     "uploadFailed": "অবতার আপলোড ব্যর্থ। আবার চেষ্টা করুন।",
-    "unknown": "অজানা প্লেয়ার"
+    "unknown": "অজানা প্লেয়ার",
+    "myDownloads": "আমার ডাউনলোড",
+    "offlineContent": "অফলাইন কন্টেন্ট"
   },
   "radio": {
     "title": "রেডিও",

@@ -40,3 +40,37 @@ struct CultureTime: Decodable, Sendable {
     let localTime: String?
     let isShabbat: Bool?
 }
+
+/// A city within a culture.
+struct CultureCity: Decodable, Sendable, Identifiable {
+    let id: String
+    let cityId: String
+    let cultureId: String
+    let name: String
+    let nameLocalized: [String: String]?
+    let nameNative: String?
+    let timezone: String
+    let coordinates: CityCoordinates?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case cityId = "city_id"
+        case cultureId = "culture_id"
+        case name
+        case nameLocalized = "name_localized"
+        case nameNative = "name_native"
+        case timezone
+        case coordinates
+    }
+}
+
+/// City coordinates for geolocation.
+struct CityCoordinates: Decodable, Sendable {
+    let latitude: Double?
+    let longitude: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case latitude = "lat"
+        case longitude = "lon"
+    }
+}

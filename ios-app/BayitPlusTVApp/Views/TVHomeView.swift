@@ -16,7 +16,7 @@ struct TVHomeView: View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
                 if vm.isLoading && vm.categories.isEmpty {
-                    loadingState
+                    TVSkeletonHomeView()
                 } else if let error = vm.error, vm.categories.isEmpty {
                     tvErrorState(error, retryLabel: localization.t("common.retry")) {
                         Task { await vm.refresh() }
@@ -54,6 +54,27 @@ struct TVHomeView: View {
     @ViewBuilder
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
+            // Culture clocks (dual timezone)
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                TVCultureClock(
+                    flagEmoji: "🇮🇱",
+                    locationLabel: "Time in Israel",
+                    timezone: TimeZone(identifier: "Asia/Jerusalem")!,
+                    isIsraeli: true
+                )
+
+                Spacer()
+
+                TVCultureClock(
+                    flagEmoji: "🇺🇸",
+                    locationLabel: "Time in New York, NY",
+                    timezone: TimeZone(identifier: "America/New_York")!,
+                    isIsraeli: false
+                )
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.top, TVDesignTokens.Spacing.lg)
+
             // Hero carousel with auto-rotation
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
@@ -83,6 +104,9 @@ struct TVHomeView: View {
             TVShabbatBannerView()
                 .withAutoLoad()
 
+            // Shabbat Eve section (Friday before candle lighting)
+            TVShabbatEveView()
+
             // Radio stations
             if !vm.radioStations.isEmpty {
                 radioStationsSection(vm.radioStations)
@@ -93,6 +117,14 @@ struct TVHomeView: View {
                 if section.hasData(in: vm) {
                     renderSection(section, vm: vm)
                 }
+            }
+
+            // Dynamic culture city rows (beyond Jerusalem and Tel Aviv)
+            ForEach(vm.cultureCities) { cityWithContent in
+                dynamicCitySection(
+                    cityName: cityWithContent.city.name,
+                    items: cityWithContent.content.items
+                )
             }
         }
     }
@@ -175,6 +207,28 @@ struct TVHomeView: View {
     @ViewBuilder
     private func citySection(_ cityName: String, items: [CityContentItem]) -> some View {
         TVCityContentRow(title: cityName, items: items)
+    }
+
+    @ViewBuilder
+    private func dynamicCitySection(cityName: String, items: [CultureItem]) -> some View {
+        TVContentSection(
+            title: cityName,
+            icon: "building.2",
+            items: items,
+            maxItems: 4
+        ) { item in
+            TVContentCard(
+                imageURL: item.imageUrl,
+                title: item.title ?? cityName,
+                subtitle: item.category,
+                aspectRatio: 16.0/9.0,
+                placeholderIcon: "photo"
+            ) {
+                if let urlString = item.contentUrl, let url = URL(string: urlString) {
+                    coordinator.presentWebView(url: url, title: item.title ?? cityName)
+                }
+            }
+        }
     }
 
     @ViewBuilder
