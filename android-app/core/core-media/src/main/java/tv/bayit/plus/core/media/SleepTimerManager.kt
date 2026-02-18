@@ -1,4 +1,4 @@
-package tv.bayit.plus.feature.player.sleeptimer
+package tv.bayit.plus.core.media
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

@@ -73,6 +73,7 @@ export default defineConfig({
         text: 'Features',
         items: [
           { text: 'AI Features Overview', link: '/features/AI_FEATURES_OVERVIEW' },
+          { text: 'VOD Avatar Interaction', link: '/features/VOD_AVATAR_INTERACTION' },
           { text: 'Subtitle System Enhancements', link: '/features/SUBTITLE_SYSTEM_ENHANCEMENTS' },
           { text: 'Live Translation', link: '/features/LIVE_TRANSLATION_EXPANSION' },
         ]
@@ -239,9 +240,15 @@ export default defineConfig({
       ],
       '/features/': [
         {
-          text: 'Platform Features',
+          text: 'AI & Avatar',
           items: [
             { text: 'AI Features Overview', link: '/features/AI_FEATURES_OVERVIEW' },
+            { text: 'VOD Avatar Interaction', link: '/features/VOD_AVATAR_INTERACTION' },
+          ]
+        },
+        {
+          text: 'Platform Features',
+          items: [
             { text: 'Subtitle System Enhancements', link: '/features/SUBTITLE_SYSTEM_ENHANCEMENTS' },
             { text: 'Live Translation Expansion', link: '/features/LIVE_TRANSLATION_EXPANSION' },
             { text: 'Subscription Gate', link: '/features/SUBSCRIPTION_GATE_IMPLEMENTATION' },

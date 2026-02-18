@@ -55,8 +55,13 @@ struct PlayerView: View {
 
     // Free-form dialogue state
     @State var dialogueVM: AvatarDialogueViewModel?
+    @State var voiceService: VoiceInteractionService?
     @State var showCharacterSheet = false
     @State var showDialogueOverlay = false
+
+    // Shared interaction state (Phase 3 WS4)
+    @State var sharedVM: SharedInteractionViewModel?
+    @State var showSharedInteraction = false
 
     // Catch-up ViewModel (shared across overlays)
     @State var catchUpVM: CatchUpViewModel?
@@ -237,6 +242,9 @@ struct PlayerView: View {
 
             // Free-form dialogue overlay
             dialogueOverlay
+
+            // Shared interaction overlay (Phase 3 WS4)
+            sharedInteractionOverlay
 
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {

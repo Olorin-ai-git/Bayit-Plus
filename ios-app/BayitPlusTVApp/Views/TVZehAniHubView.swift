@@ -201,7 +201,9 @@ struct TVHighlightsView: View {
     @State private var reels: [HighlightReelItem] = []
     @State private var isLoading = false
     @State private var isGenerating = false
+    @State private var isSending = false
     @State private var error: String?
+    @State private var sentConfirmation: String?
     @FocusState private var generateButtonFocused: Bool
 
     var body: some View {
@@ -217,6 +219,21 @@ struct TVHighlightsView: View {
 
                 if isGenerating {
                     generatingFeedback
+                }
+
+                if let confirmation = sentConfirmation {
+                    HStack(spacing: TVDesignTokens.Spacing.md) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(DesignTokens.Success.default)
+                        Text(confirmation)
+                            .font(.system(size: TVDesignTokens.FontSize.base))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                    }
+                    .padding(TVDesignTokens.Spacing.lg)
+                    .background(DesignTokens.Success.default.opacity(0.12))
+                    .cornerRadius(TVDesignTokens.Radius.md)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                    .transition(.opacity)
                 }
 
                 if isLoading {
@@ -363,15 +380,21 @@ struct TVHighlightsView: View {
                     shareReel(reel)
                 } label: {
                     VStack(spacing: TVDesignTokens.Spacing.xs) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: TVDesignTokens.FontSize.xxl))
-                        Text(localization.t("common.share"))
+                        if isSending {
+                            ProgressView().tint(DesignTokens.Primary.default)
+                                .frame(width: TVDesignTokens.FontSize.xxl, height: TVDesignTokens.FontSize.xxl)
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                                .font(.system(size: TVDesignTokens.FontSize.xxl))
+                        }
+                        Text(localization.t("zehAni.highlights.sendToFamily"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                     }
                     .foregroundStyle(DesignTokens.Primary.default)
                     .padding(TVDesignTokens.Spacing.md)
                 }
                 .buttonStyle(.card)
+                .disabled(isSending)
             }
         }
         .padding(TVDesignTokens.Spacing.xl)
@@ -409,9 +432,25 @@ struct TVHighlightsView: View {
     }
 
     private func shareReel(_ reel: HighlightReelItem) {
-        guard let shareToken = reel.shareToken else { return }
-        let webHost = repos.configuration.environment == .production ? "bayit.tv" : "staging.bayit.tv"
-        _ = "https://\(webHost)/zeh-ani/reels/\(shareToken)"
+        guard let reelId = reel.id else { return }
+        isSending = true
+        Task {
+            do {
+                let sentCount = try await repos.zehAniRepository
+                    .sendHighlightReelToContacts(reelId: reelId)
+                sentConfirmation = localization.t(
+                    "zehAni.highlights.sentToContacts",
+                    ["count": "\(sentCount)"]
+                )
+            } catch {
+                self.error = error.localizedDescription
+            }
+            isSending = false
+            if sentConfirmation != nil {
+                try? await Task.sleep(for: .seconds(4))
+                sentConfirmation = nil
+            }
+        }
     }
 
     private func statusText(_ status: String) -> String {

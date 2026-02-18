@@ -130,6 +130,9 @@ class AudioPlaybackManager @Inject constructor(
         ))
     }
 
+    fun setVolume(volume: Float) { player.setVolume(volume) }
+    fun getVolume(): Float = player.getVolume()
+
     private fun stopInternal() {
         pollingJob?.cancel()
         pollingJob = null

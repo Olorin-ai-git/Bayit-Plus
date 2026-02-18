@@ -10,6 +10,7 @@ import SwiftUI
 struct IPadPlayerView: View {
     let contentId: String
     let contentType: ContentType
+    let resume: Bool
 
     @Environment(MediaPlayer.self) private var mediaPlayer
     @Environment(RepositoryProvider.self) private var repos
@@ -24,6 +25,7 @@ struct IPadPlayerView: View {
                 PlayerView(
                     contentId: contentId,
                     contentType: contentType,
+                    resume: resume,
                     player: mediaPlayer,
                     repository: repos.media,
                     contentRepository: repos.content,

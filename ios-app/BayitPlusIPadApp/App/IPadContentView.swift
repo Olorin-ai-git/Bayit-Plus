@@ -1,6 +1,5 @@
 import BayitAuth
 import BayitDesignSystem
-import BayitMedia
 import BayitNetworking
 import SwiftUI
 
@@ -9,8 +8,6 @@ struct IPadContentView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
     @Environment(RepositoryProvider.self) private var repositories
-    @Environment(MediaPlayer.self) private var mediaPlayer
-    @Environment(WidgetDataSyncService.self) private var widgetSync
 
     @State private var showingSplash = true
 
@@ -79,17 +76,10 @@ struct IPadContentView: View {
     private func fullscreenView(for route: Route) -> some View {
         switch route {
         case .player(let contentId, let contentType, let resume):
-            PlayerView(
+            IPadPlayerView(
                 contentId: contentId,
                 contentType: contentType,
-                resume: resume,
-                player: mediaPlayer,
-                repository: repositories.media,
-                contentRepository: repositories.content,
-                liveTVRepository: repositories.liveTV,
-                radioRepository: repositories.radio,
-                podcastRepository: repositories.podcasts,
-                widgetSync: widgetSync
+                resume: resume
             )
         case .search:
             IPadSearchView()

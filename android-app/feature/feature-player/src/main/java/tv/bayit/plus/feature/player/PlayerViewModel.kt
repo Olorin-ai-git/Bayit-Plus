@@ -22,7 +22,7 @@ import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 import tv.bayit.plus.feature.player.live.LiveAICoordinator
-import tv.bayit.plus.feature.player.sleeptimer.SleepTimerManager
+import tv.bayit.plus.core.media.SleepTimerManager
 import tv.bayit.plus.feature.player.trivia.VodTriviaManager
 import javax.inject.Inject
 

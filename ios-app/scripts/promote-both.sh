@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 Promoting iOS + tvOS Builds${NC}"
+echo -e "${BLUE}🚀 Promoting iOS + iPadOS + tvOS Builds${NC}"
 echo ""
 
 # Set correct GCP project for Bayit+
@@ -27,10 +27,16 @@ echo -e "${BLUE}========================================${NC}"
 
 echo ""
 echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}        iPadOS Build Promotion${NC}"
+echo -e "${BLUE}========================================${NC}"
+"$SCRIPT_DIR/promote-ipad.sh"
+
+echo ""
+echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}         tvOS Build Promotion${NC}"
 echo -e "${BLUE}========================================${NC}"
 "$SCRIPT_DIR/promote-tvos.sh"
 
 echo ""
-echo -e "${GREEN}🎉🎉🎉 Both platforms promoted successfully! 🎉🎉🎉${NC}"
-echo -e "${BLUE}📱 iOS and 📺 tvOS builds are now processing in App Store Connect${NC}"
+echo -e "${GREEN}🎉🎉🎉 All platforms promoted successfully! 🎉🎉🎉${NC}"
+echo -e "${BLUE}📱 iOS, 📱 iPadOS, and 📺 tvOS builds are now processing in App Store Connect${NC}"

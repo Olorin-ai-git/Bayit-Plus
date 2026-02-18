@@ -43,8 +43,13 @@ struct TVPlayerView: View {
 
     // Free-form dialogue state
     @State private var dialogueVM: AvatarDialogueViewModel?
+    @State private var voiceService: TVVoiceInteractionService?
     @State private var showCharacterSelection = false
     @State private var showDialogueOverlay = false
+
+    // Shared interaction state (Phase 3 WS4)
+    @State private var sharedVM: SharedInteractionViewModel?
+    @State private var showSharedInteraction = false
 
     // MARK: - Panel Visibility
 
@@ -114,6 +119,7 @@ struct TVPlayerView: View {
                 catchUpAutoPromptOverlay
                 interactiveMomentOverlay
                 dialogueOverlay
+                sharedInteractionOverlay
 
                 // Transparent playback controls overlay (center)
                 if !isLive {
@@ -642,8 +648,8 @@ struct TVPlayerView: View {
                 avatarImageUrl: imgUrl,
                 character: character,
                 viewModel: vm,
-                voiceService: nil,
-                avatarPlacement: nil,
+                voiceService: voiceService,
+                avatarPlacement: interactionVM?.activeMoment?.avatarPlacement,
                 onDismiss: {
                     Task { await dismissDialogue() }
                 }
@@ -702,6 +708,19 @@ struct TVPlayerView: View {
 
         if showNoAvatarWarning {
             noAvatarWarningBanner
+        }
+    }
+
+    // MARK: - Shared Interaction Overlay (Phase 3 WS4)
+
+    @ViewBuilder
+    private var sharedInteractionOverlay: some View {
+        if showSharedInteraction, let vm = sharedVM {
+            TVSharedInteractionView(viewModel: vm) {
+                showSharedInteraction = false
+                Task { await sharedVM?.endSharedInteraction() }
+            }
+            .transition(.move(edge: .trailing).combined(with: .opacity))
         }
     }
 
@@ -1143,6 +1162,9 @@ struct TVPlayerView: View {
             return
         }
         interactionVM = vm
+        voiceService = TVVoiceInteractionService(
+            repository: repos.avatarMeshRepository
+        )
         logger.info(
             "Interactive moments enabled: \(vm.moments.count) moments"
         )
@@ -1160,10 +1182,16 @@ struct TVPlayerView: View {
         catchUpVM?.reset()
         catchUpVM = nil
         interactionVM = nil
+        voiceService = nil
         if dialogueVM?.isActive == true {
             Task { await dialogueVM?.endSession() }
         }
         dialogueVM = nil
+        if sharedVM?.isActive == true {
+            Task { await sharedVM?.endSharedInteraction() }
+        }
+        sharedVM = nil
+        showSharedInteraction = false
     }
 
     // MARK: - Progress Tracking

@@ -62,6 +62,32 @@ class WhatsAppBotService:
 
         return sent_ids
 
+    async def send_vod_reel_to_contacts(
+        self,
+        video_gcs_path: str,
+        share_token: str,
+        contacts: List[WhatsAppContact],
+    ) -> List[str]:
+        """Send a VOD interaction reel to approved WhatsApp contacts."""
+        from app.services.olorin.storage_service import storage_service
+        video_url = await storage_service.generate_signed_url(
+            video_gcs_path,
+            expiry_seconds=settings.WHATSAPP_SHARE_URL_EXPIRY_SECONDS,
+        )
+        sent_ids: List[str] = []
+        for contact in contacts:
+            success = await self._send_whatsapp_message(contact, video_url, share_token)
+            if success:
+                sent_ids.append(str(contact.id))
+                contact.last_sent_at = datetime.now(timezone.utc)
+                contact.total_reels_sent += 1
+                await contact.save()
+        logger.info(
+            "VOD reel sent to contacts",
+            extra={"share_token": share_token, "sent_count": len(sent_ids)},
+        )
+        return sent_ids
+
     async def _send_whatsapp_message(
         self,
         contact: WhatsAppContact,

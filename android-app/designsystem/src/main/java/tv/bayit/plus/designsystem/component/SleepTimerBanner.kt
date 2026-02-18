@@ -1,4 +1,4 @@
-package tv.bayit.plus.feature.player.sleeptimer
+package tv.bayit.plus.designsystem.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens

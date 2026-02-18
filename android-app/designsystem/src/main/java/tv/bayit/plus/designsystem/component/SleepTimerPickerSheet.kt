@@ -1,4 +1,4 @@
-package tv.bayit.plus.feature.player.sleeptimer
+package tv.bayit.plus.designsystem.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,15 +18,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import tv.bayit.plus.designsystem.component.GlassButton
-import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
+
+private const val TIMER_MIN_MINUTES = 5
+private const val TIMER_MAX_MINUTES = 60
+private const val TIMER_STEP_MINUTES = 5
 
 /**
  * Bottom sheet picker for sleep timer duration selection.
  * Displays a grid of duration chips (5-60 min in 5-min increments)
- * plus an "Off" option. Follows [SubtitleLanguagePicker] overlay pattern.
+ * plus an "Off" option. Follows SubtitleLanguagePicker overlay pattern.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -70,7 +72,7 @@ fun SleepTimerPickerSheet(
                 isSelected = activeDurationMinutes == null,
                 onClick = onCancel,
             )
-            for (minutes in SleepTimerManager.TIMER_MIN_MINUTES..SleepTimerManager.TIMER_MAX_MINUTES step SleepTimerManager.TIMER_STEP_MINUTES) {
+            for (minutes in TIMER_MIN_MINUTES..TIMER_MAX_MINUTES step TIMER_STEP_MINUTES) {
                 DurationChip(
                     label = bayitString(
                         "player.sleepTimer.minutesFormat",

@@ -13,6 +13,7 @@ import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PodcastRepository
 import tv.bayit.plus.core.media.AudioPlaybackManager
 import tv.bayit.plus.core.media.AudioPlaybackState
+import tv.bayit.plus.core.media.SleepTimerManager
 import tv.bayit.plus.core.model.PodcastDetail
 import tv.bayit.plus.core.model.PodcastEpisodeItem
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class PodcastDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val podcastRepository: PodcastRepository,
     private val audioPlaybackManager: AudioPlaybackManager,
+    private val sleepTimerManager: SleepTimerManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -32,9 +34,13 @@ class PodcastDetailViewModel @Inject constructor(
 
     val audioState: StateFlow<AudioPlaybackState> = audioPlaybackManager.state
 
+    private val _sleepTimerState = MutableStateFlow(PodcastSleepTimerState())
+    val sleepTimerState: StateFlow<PodcastSleepTimerState> = _sleepTimerState.asStateFlow()
+
     init {
         audioPlaybackManager.attachScope(viewModelScope)
         loadPodcastDetail()
+        observeSleepTimerState()
     }
 
     fun retry() {
@@ -79,6 +85,46 @@ class PodcastDetailViewModel @Inject constructor(
                 artworkUrl = episode.thumbnail ?: current.cover,
                 contentId = episode.id,
             )
+        }
+    }
+
+    fun startSleepTimer(minutes: Int) {
+        val originalVolume = audioPlaybackManager.getVolume()
+        sleepTimerManager.start(
+            durationMinutes = minutes,
+            scope = viewModelScope,
+            onFadeOut = { volume -> audioPlaybackManager.setVolume(volume) },
+            onComplete = {
+                audioPlaybackManager.togglePlayPause()
+                audioPlaybackManager.setVolume(originalVolume)
+            },
+        )
+    }
+
+    fun extendSleepTimer(minutes: Int) = sleepTimerManager.extend(minutes)
+
+    fun cancelSleepTimer() = sleepTimerManager.cancel()
+
+    override fun onCleared() {
+        sleepTimerManager.cancel()
+        super.onCleared()
+    }
+
+    private fun observeSleepTimerState() {
+        viewModelScope.launch {
+            sleepTimerManager.isActive.collect { active ->
+                _sleepTimerState.value = _sleepTimerState.value.copy(isActive = active)
+            }
+        }
+        viewModelScope.launch {
+            sleepTimerManager.remainingSeconds.collect { secs ->
+                _sleepTimerState.value = _sleepTimerState.value.copy(remainingSeconds = secs)
+            }
+        }
+        viewModelScope.launch {
+            sleepTimerManager.durationMinutes.collect { dur ->
+                _sleepTimerState.value = _sleepTimerState.value.copy(durationMinutes = dur)
+            }
         }
     }
 

@@ -197,6 +197,9 @@
 		2911CA448C70684DB847E950 /* CameraRecordingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0610463497078582DCFB4E /* CameraRecordingManager.swift */; };
 		296F5A10BD59DAC7209075E3 /* VideoProcessingStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79033183F6B6DFDA4A6AB59E /* VideoProcessingStepView.swift */; };
 		2996DA7AE994956352549139 /* TVMiniAudioPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860DF24850E52C37BB5A8D86 /* TVMiniAudioPlayerBar.swift */; };
+		2233445566778899001122BB /* TVSleepTimerBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1122334455667788990011AA /* TVSleepTimerBanner.swift */; };
+		4455667788990011223344DD /* TVSleepTimerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3344556677889900112233CC /* TVSleepTimerPicker.swift */; };
+		6677889900112233445566FF /* TVSleepTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5566778899001122334455EE /* TVSleepTimerManager.swift */; };
 		29A9499952132EA0529ADD2D /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A2951A64FD8406490820B6C /* AvatarMeshRepository.swift */; };
 		2A3DC1A55507B50AE68A33CB /* TVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D13E0342CB5D7C12B194A77 /* TVPlayerView.swift */; };
 		2AC5E1A5823E1A69FDF9E33A /* SplitSubtitleOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0E8DC6C24D80BB2D464836 /* SplitSubtitleOverlayView.swift */; };
@@ -756,6 +759,11 @@
 		B1354EFAFE070F9F96B8C386 /* DirectMessageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E67B6CB222E4F8F88AEBEF /* DirectMessageRepository.swift */; };
 		B136861DA3577A63760C059B /* SUBTITLE_FEATURES_IMPLEMENTATION.md in Resources */ = {isa = PBXBuildFile; fileRef = AA8878A1E58746FA9748C7E5 /* SUBTITLE_FEATURES_IMPLEMENTATION.md */; };
 		B141B35FC00BF1D1DA47EBB2 /* MiniAudioPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD67AA36BA6B8FA6EDEAD91 /* MiniAudioPlayerBar.swift */; };
+		BB22CC33DD44EE55FF66AA11 /* SleepTimerPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF66 /* SleepTimerPicker.swift */; };
+		DD44EE55FF66AA11BB22CC33 /* SleepTimerBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC33DD44EE55FF66AA11BB22 /* SleepTimerBanner.swift */; };
+		FF66AA11BB22CC33DD44EE55 /* SleepTimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE55FF66AA11BB22CC33DD44 /* SleepTimerManager.swift */; };
+		8899001122334455667788BC /* IPadVODCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7788990011223344556677AB /* IPadVODCard.swift */; };
+		1EBF36E2359048E190A551B1 /* IPadZehAniHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3ED3680CF454592BB53BB7F /* IPadZehAniHubView.swift */; };
 		B15D87B657D5D3A65088A684 /* TVQuizProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C10E2FF7DAC28919DF7B2BF /* TVQuizProgressView.swift */; };
 		B1902648EE9562E6C1D9FF6A /* ChessGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947C5C98003880872D8CD3C9 /* ChessGame.swift */; };
 		B20DC3DB2EFEC9907A28840A /* BayitNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 4061B6BF78A39FF68139749C /* BayitNetworking */; };
@@ -1291,6 +1299,8 @@
 		3BD298900D01619848D7B422 /* InteractiveMissionPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveMissionPlayerView.swift; sourceTree = "<group>"; };
 		3BD2C15C074CB98A73B0CB3B /* TVWidgetContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWidgetContainerView.swift; sourceTree = "<group>"; };
 		3BD67AA36BA6B8FA6EDEAD91 /* MiniAudioPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniAudioPlayerBar.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF66 /* SleepTimerPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerPicker.swift; sourceTree = "<group>"; };
+		CC33DD44EE55FF66AA11BB22 /* SleepTimerBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerBanner.swift; sourceTree = "<group>"; };
 		3BDCB223BE30E8EA4C9EADF4 /* UserSettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsRepository.swift; sourceTree = "<group>"; };
 		3C973410618C4870398FEABF /* TVFamilyPinModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVFamilyPinModalView.swift; sourceTree = "<group>"; };
 		3CC74248B7A9F03311FD41CB /* SubscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionViewModel.swift; sourceTree = "<group>"; };
@@ -1321,6 +1331,7 @@
 		42955C7E0E9253DE797EDF03 /* TVVoiceWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVoiceWaveformView.swift; sourceTree = "<group>"; };
 		4299F819816A7236D87A9025 /* PlaylistSmallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistSmallView.swift; sourceTree = "<group>"; };
 		429F74F9EE8A0CD4DA525C57 /* AudioPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackManager.swift; sourceTree = "<group>"; };
+		EE55FF66AA11BB22CC33DD44 /* SleepTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerManager.swift; sourceTree = "<group>"; };
 		42F36B12C39543EE87D4FB33 /* TVQuizOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVQuizOverlayView.swift; sourceTree = "<group>"; };
 		4303BA4914FD6A2E9CAC6502 /* TVLiveSubtitleOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVLiveSubtitleOverlayView.swift; sourceTree = "<group>"; };
 		437FAE8CB9ACB02E64719A96 /* EpisodeProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeProgressView.swift; sourceTree = "<group>"; };
@@ -1342,6 +1353,7 @@
 		470510E7E84F89629D9D34C6 /* TVWidgetSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWidgetSidebarView.swift; sourceTree = "<group>"; };
 		4762ECCA6DD1748C390F8955 /* WatchParty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchParty.swift; sourceTree = "<group>"; };
 		477BA8450DE6AAFAFDAFFC3A /* TVAudioPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAudioPlaybackManager.swift; sourceTree = "<group>"; };
+		5566778899001122334455EE /* TVSleepTimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSleepTimerManager.swift; sourceTree = "<group>"; };
 		47C732AD29F65D828A32CC70 /* V2VPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2VPracticeView.swift; sourceTree = "<group>"; };
 		48279CBBF2072DFD2034082A /* MagicMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicMirrorView.swift; sourceTree = "<group>"; };
 		486B6F8A540E6C18EE740189 /* VoiceWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceWaveformView.swift; sourceTree = "<group>"; };
@@ -1524,6 +1536,8 @@
 		8604D8BD47C5CE314EBA6650 /* TVChessBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVChessBoardView.swift; sourceTree = "<group>"; };
 		860AB3ED1C80B0C786EBD104 /* TVRadioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVRadioView.swift; sourceTree = "<group>"; };
 		860DF24850E52C37BB5A8D86 /* TVMiniAudioPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMiniAudioPlayerBar.swift; sourceTree = "<group>"; };
+		1122334455667788990011AA /* TVSleepTimerBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSleepTimerBanner.swift; sourceTree = "<group>"; };
+		3344556677889900112233CC /* TVSleepTimerPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSleepTimerPicker.swift; sourceTree = "<group>"; };
 		86652BE1A70A1F9AC856CB8C /* TVCredentialPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVCredentialPanel.swift; sourceTree = "<group>"; };
 		869DFBE5ADA7AF18F700BD59 /* MultipartFormData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartFormData.swift; sourceTree = "<group>"; };
 		86CF01A1B0331C03E3DEC042 /* PhoneVerificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneVerificationView.swift; sourceTree = "<group>"; };
@@ -1753,6 +1767,8 @@
 		C96B15B9ABA7BFAD5A60A8D5 /* ChessControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessControlsView.swift; sourceTree = "<group>"; };
 		C9F26D15017152A5941C93F6 /* ShoreshHighlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoreshHighlightView.swift; sourceTree = "<group>"; };
 		CA1D08B906EE1AED86DB6BCC /* IPadVODView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadVODView.swift; sourceTree = "<group>"; };
+		7788990011223344556677AB /* IPadVODCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadVODCard.swift; sourceTree = "<group>"; };
+		E3ED3680CF454592BB53BB7F /* IPadZehAniHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadZehAniHubView.swift; sourceTree = "<group>"; };
 		CADC123536DAC414E119AB73 /* QuizQuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizQuestionView.swift; sourceTree = "<group>"; };
 		CAE9E75504A7FA68EF50AD9D /* GlossaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryView.swift; sourceTree = "<group>"; };
 		CAF3C4288FBB9B2031B929AF /* TVShekelsWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVShekelsWalletView.swift; sourceTree = "<group>"; };
@@ -2584,6 +2600,8 @@
 				3ACDDC90125DD5386BED1B38 /* TVLiveDubbingOverlayView.swift */,
 				4303BA4914FD6A2E9CAC6502 /* TVLiveSubtitleOverlayView.swift */,
 				860DF24850E52C37BB5A8D86 /* TVMiniAudioPlayerBar.swift */,
+				1122334455667788990011AA /* TVSleepTimerBanner.swift */,
+				3344556677889900112233CC /* TVSleepTimerPicker.swift */,
 				A0FAB5C8B9E8FDA34BE10CA8 /* TVMultiCharacterCirclesView.swift */,
 				31B12B8370E793C801BD1722 /* TVOpenSubtitlesDownloadView.swift */,
 				27335D52B273A3E2841FADE0 /* TVPartyControlsView.swift */,
@@ -2659,9 +2677,18 @@
 		6826817E4088B15C17F622F4 /* VOD */ = {
 			isa = PBXGroup;
 			children = (
+				7788990011223344556677AB /* IPadVODCard.swift */,
 				CA1D08B906EE1AED86DB6BCC /* IPadVODView.swift */,
 			);
 			path = VOD;
+			sourceTree = "<group>";
+		};
+		640AF02043C245BAA9D6AF49 /* ZehAni */ = {
+			isa = PBXGroup;
+			children = (
+				E3ED3680CF454592BB53BB7F /* IPadZehAniHubView.swift */,
+			);
+			path = ZehAni;
 			sourceTree = "<group>";
 		};
 		6BCD611279BF8CFCAA82B6D6 /* PhoneticMirror */ = {
@@ -2723,6 +2750,8 @@
 				27061F8914EB6D43EB3044DC /* LiveDubbingOverlayView.swift */,
 				08E82B810649D5E0A6EC08D7 /* LiveSubtitleOverlayView.swift */,
 				3BD67AA36BA6B8FA6EDEAD91 /* MiniAudioPlayerBar.swift */,
+				CC33DD44EE55FF66AA11BB22 /* SleepTimerBanner.swift */,
+				AA11BB22CC33DD44EE55FF66 /* SleepTimerPicker.swift */,
 				2457D7182E43B35587FB1F11 /* MovieDetailLoadingView.swift */,
 				E7471B49A94173E891AC122C /* MovieDetailView.swift */,
 				630E8B4B28B18D8BD49879BE /* MultiCharacterCirclesView.swift */,
@@ -3247,6 +3276,7 @@
 				E11E607698FFB5080248C5F9 /* TopShelfDataProvider.swift */,
 				477BA8450DE6AAFAFDAFFC3A /* TVAudioPlaybackManager.swift */,
 				17FADA531E242227B7B813AD /* TVAvatarStateMachine.swift */,
+				5566778899001122334455EE /* TVSleepTimerManager.swift */,
 				7917366B4448D3FF1B088E26 /* TVVoiceCommandRegistry.swift */,
 				8861402F112B374BD683AE77 /* TVVoiceInteractionService.swift */,
 			);
@@ -3358,6 +3388,7 @@
 				E8431AF3061166204D24FC5D /* Search */,
 				9B440FD662E935A0BFA5E023 /* Settings */,
 				6826817E4088B15C17F622F4 /* VOD */,
+				640AF02043C245BAA9D6AF49 /* ZehAni */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3515,6 +3546,7 @@
 				FA1BF57C3D64AF9135AED229 /* ARFaceCaptureSession.swift */,
 				429F74F9EE8A0CD4DA525C57 /* AudioPlaybackManager.swift */,
 				DD46EF1945697C016F3A692B /* AvatarStateMachine.swift */,
+				EE55FF66AA11BB22CC33DD44 /* SleepTimerManager.swift */,
 				249DF2A99EE82078338543D2 /* BiometricAuthService.swift */,
 				75C5A538F971FFC6A49D8CB9 /* CatchUpPreferencesService.swift */,
 				8302E831A5154A329698F3CD /* CrashlyticsService.swift */,
@@ -4297,6 +4329,9 @@
 				7DE6FA81586A139D7DDC8F84 /* TVMessageBubble.swift in Sources */,
 				A90F72E724EC35939FEF6A93 /* TVMessageInputBar.swift in Sources */,
 				2996DA7AE994956352549139 /* TVMiniAudioPlayerBar.swift in Sources */,
+				2233445566778899001122BB /* TVSleepTimerBanner.swift in Sources */,
+				4455667788990011223344DD /* TVSleepTimerPicker.swift in Sources */,
+				6677889900112233445566FF /* TVSleepTimerManager.swift in Sources */,
 				91D67C8B669497E945DB9761 /* TVMissionLevelCardView.swift in Sources */,
 				6ADF28474A84C5BBE91C07A1 /* TVMissionPerksView.swift in Sources */,
 				B275518ECFEB198151CA68A1 /* TVMissionsDashboardView.swift in Sources */,
@@ -4781,6 +4816,11 @@
 				E088CDE3B9EBFC4AAB660A25 /* MessageBubble.swift in Sources */,
 				8927FB28357C613AD1FEB21C /* MessageInputBar.swift in Sources */,
 				B141B35FC00BF1D1DA47EBB2 /* MiniAudioPlayerBar.swift in Sources */,
+				BB22CC33DD44EE55FF66AA11 /* SleepTimerPicker.swift in Sources */,
+				DD44EE55FF66AA11BB22CC33 /* SleepTimerBanner.swift in Sources */,
+				FF66AA11BB22CC33DD44EE55 /* SleepTimerManager.swift in Sources */,
+				8899001122334455667788BC /* IPadVODCard.swift in Sources */,
+				1EBF36E2359048E190A551B1 /* IPadZehAniHubView.swift in Sources */,
 				064A06E4D0A80550FA288422 /* MissionProgressCard.swift in Sources */,
 				021F2C3E072B0B5646F2F24B /* MissionsDashboardView.swift in Sources */,
 				BCBA936990C45C576AFEBAF2 /* MissionsLeaderboardView.swift in Sources */,

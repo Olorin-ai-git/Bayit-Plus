@@ -124,3 +124,29 @@ async def get_reel_by_share_token(share_token: str):
         "moment_count": reel.moment_count,
         "created_at": reel.created_at.isoformat(),
     }
+
+
+@router.post("/reel/{reel_id}/send")
+async def send_reel_to_contacts(
+    reel_id: str,
+    current_user: User = Depends(get_current_user),
+):
+    """Re-send a ready highlight reel to the user's approved WhatsApp contacts."""
+    from app.models.whatsapp_contact import WhatsAppContact
+    from app.services.zeh_ani.whatsapp_bot_service import whatsapp_bot_service
+
+    reel = await highlight_reel_service.get_reel_by_id(reel_id)
+    if not reel or reel.user_id != str(current_user.id):
+        raise HTTPException(status_code=404, detail="Reel not found")
+    if not reel.is_ready:
+        raise HTTPException(status_code=400, detail="Reel is not ready")
+
+    contacts = await WhatsAppContact.find(
+        WhatsAppContact.profile_id == reel.profile_id,
+        WhatsAppContact.is_approved == True,  # noqa: E712
+    ).to_list()
+
+    sent_ids = await whatsapp_bot_service.send_highlight_to_contacts(
+        reel=reel, contacts=contacts,
+    )
+    return {"sent_count": len(sent_ids)}

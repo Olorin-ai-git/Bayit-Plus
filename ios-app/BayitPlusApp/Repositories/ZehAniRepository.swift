@@ -31,6 +31,10 @@ protocol ZehAniRepository: Sendable {
     func getFeedbackHistory(
         profileId: String
     ) async throws -> [FeedbackItem]
+
+    func sendHighlightReelToContacts(
+        reelId: String
+    ) async throws -> Int
 }
 
 final class APIZehAniRepository: ZehAniRepository, @unchecked Sendable {
@@ -139,5 +143,19 @@ final class APIZehAniRepository: ZehAniRepository, @unchecked Sendable {
             "/api/v1/zeh-ani/feedback?profile_id=\(profileId)",
             as: [FeedbackItem].self
         )
+    }
+
+    func sendHighlightReelToContacts(
+        reelId: String
+    ) async throws -> Int {
+        struct SendResponse: Decodable { let sentCount: Int
+            enum CodingKeys: String, CodingKey { case sentCount = "sent_count" }
+        }
+        let response = try await client.post(
+            "/api/v1/zeh-ani/highlights/reel/\(reelId)/send",
+            body: EmptyBody(),
+            as: SendResponse.self
+        )
+        return response.sentCount
     }
 }

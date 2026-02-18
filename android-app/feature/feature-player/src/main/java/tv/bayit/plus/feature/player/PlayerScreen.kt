@@ -31,8 +31,8 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
-import tv.bayit.plus.feature.player.sleeptimer.SleepTimerBanner
-import tv.bayit.plus.feature.player.sleeptimer.SleepTimerPickerSheet
+import tv.bayit.plus.designsystem.component.SleepTimerBanner
+import tv.bayit.plus.designsystem.component.SleepTimerPickerSheet
 import tv.bayit.plus.feature.player.ui.PlayerOverlay
 
 /**

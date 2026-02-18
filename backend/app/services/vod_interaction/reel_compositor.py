@@ -39,11 +39,11 @@ class ReelCompositorService:
         )
         await reel.insert()
         try:
-            video_path = await self._render_and_upload(
+            video_path, thumb_path = await self._render_and_upload(
                 str(reel.id), user_id, segments,
             )
             reel.video_gcs_path = video_path
-            reel.thumbnail_url = self._derive_thumbnail_path(video_path)
+            reel.thumbnail_url = thumb_path
             await reel.save()
             logger.info(
                 "VOD interaction reel generated",
@@ -60,6 +60,7 @@ class ReelCompositorService:
                 extra={"reel_id": str(reel.id), "error": str(exc)},
             )
             raise
+        await self._auto_send_to_contacts(reel)
         return reel
 
     async def generate_shared_reel(
@@ -150,19 +151,32 @@ class ReelCompositorService:
 
     async def _render_and_upload(
         self, reel_id: str, user_id: str, segments: List[VideoSegment],
-    ) -> str:
-        """Concatenate segments with FFmpeg and upload to GCS."""
-        from app.services.olorin.storage_service import storage_service
-        from app.services.zeh_ani.highlight_rendering import render_reel
-        video_path, _thumb = await render_reel(user_id, reel_id, segments)
-        gcs_path = f"vod-interaction-reels/{user_id}/{reel_id}.mp4"
-        await storage_service.upload_file(video_path, gcs_path)
-        return gcs_path
+    ) -> tuple[str, str]:
+        """Concatenate Creatify video clips with FFmpeg and upload to GCS."""
+        from app.services.vod_interaction.vod_reel_rendering import render_vod_reel
+        video_urls = [seg.path for seg in segments if seg.path]
+        return await render_vod_reel(video_urls, user_id, reel_id)
 
-    @staticmethod
-    def _derive_thumbnail_path(video_path: str) -> str:
-        """Derive thumbnail GCS path from video path."""
-        return video_path.replace(".mp4", "_thumb.jpg")
+    async def _auto_send_to_contacts(self, reel: VODInteractionReel) -> None:
+        """Fire-and-forget: send the reel to all approved WhatsApp contacts."""
+        try:
+            from app.models.whatsapp_contact import WhatsAppContact
+            from app.services.zeh_ani.whatsapp_bot_service import whatsapp_bot_service
+            contacts = await WhatsAppContact.find(
+                WhatsAppContact.profile_id == reel.profile_id,
+                WhatsAppContact.is_approved == True,  # noqa: E712
+            ).to_list()
+            if contacts:
+                await whatsapp_bot_service.send_vod_reel_to_contacts(
+                    video_gcs_path=reel.video_gcs_path,
+                    share_token=reel.share_token,
+                    contacts=contacts,
+                )
+        except Exception as exc:
+            logger.error(
+                "WhatsApp auto-send failed (non-fatal)",
+                extra={"reel_id": str(reel.id), "error": str(exc)},
+            )
 
 
 reel_compositor_service = ReelCompositorService()

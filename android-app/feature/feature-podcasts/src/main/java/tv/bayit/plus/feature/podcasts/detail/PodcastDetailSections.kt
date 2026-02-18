@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bedtime
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
@@ -98,15 +99,25 @@ internal fun PodcastMetadataSection(state: PodcastDetailUiState.Success) {
 internal fun PodcastPlaySection(
     isPlaying: Boolean,
     onToggle: () -> Unit,
+    onShowSleepTimerPicker: () -> Unit,
 ) {
-    Column(
+    Row(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassButton(
             text = if (isPlaying) bayitString("common.pause") else bayitString("podcasts.playLatest"),
             onClick = onToggle,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
         )
+        IconButton(onClick = onShowSleepTimerPicker) {
+            Icon(
+                imageVector = Icons.Default.Bedtime,
+                contentDescription = bayitString("player.sleepTimer.setTimer"),
+                tint = DesignTokens.Colors.Text.secondary,
+            )
+        }
     }
 }
 

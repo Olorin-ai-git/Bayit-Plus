@@ -87,7 +87,7 @@ extension PlayerView {
                 avatarImageUrl: imgUrl,
                 character: character,
                 viewModel: vm,
-                voiceService: nil,
+                voiceService: voiceService,
                 avatarPlacement: interactionVM?.activeMoment?.avatarPlacement,
                 onDismiss: {
                     Task { await dismissDialogue() }
@@ -181,9 +181,23 @@ extension PlayerView {
             return
         }
         interactionVM = vm
+        voiceService = VoiceInteractionService()
         logger.info(
             "Interactive moments enabled: \(vm.moments.count) moments"
         )
+    }
+
+    // MARK: - Shared Interaction Overlay (Phase 3 WS4)
+
+    @ViewBuilder
+    var sharedInteractionOverlay: some View {
+        if showSharedInteraction, let vm = sharedVM {
+            SharedInteractionOverlayView(viewModel: vm) {
+                showSharedInteraction = false
+                Task { await sharedVM?.endSharedInteraction() }
+            }
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        }
     }
 }
 #endif

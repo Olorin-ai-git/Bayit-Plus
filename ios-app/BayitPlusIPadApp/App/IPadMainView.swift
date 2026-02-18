@@ -118,7 +118,7 @@ struct IPadMainView: View {
         case .vod:
             IPadVODView()
         case .zehAni:
-            ZehAniHubView()
+            IPadZehAniHubView()
         case .podcasts:
             IPadPodcastsView()
         case .search:
