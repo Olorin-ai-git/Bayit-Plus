@@ -94,10 +94,19 @@ def is_series_type(content: Content) -> bool:
 
 async def connect_db() -> AsyncIOMotorClient:
     """Connect to MongoDB and return the client."""
+    from pymongo.errors import OperationFailure
+
     client = AsyncIOMotorClient(settings.MONGODB_URI)
     database = client[settings.MONGODB_DB_NAME]
 
-    await init_beanie(database=database, document_models=[Content])
+    try:
+        await init_beanie(database=database, document_models=[Content])
+    except OperationFailure as e:
+        if "IndexOptionsConflict" in str(e) or e.code == 85:
+            logger.warning("Index conflict (existing DB indexes differ) - continuing with existing indexes")
+        else:
+            raise
+
     logger.info("Connected to MongoDB")
     return client
 

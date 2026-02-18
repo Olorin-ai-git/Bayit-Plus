@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vod_filter_all">All</string>
+    <string name="vod_filter_collections">Collections</string>
+    <string name="vod_filter_movies">Movies</string>
+    <string name="vod_filter_series">Series</string>
+    <string name="vod_filter_israeli_movies">Israeli Movies</string>
+    <string name="vod_filter_israeli_series">Israeli Series</string>
+    <string name="vod_filter_music">Music</string>
+    <string name="vod_filter_documentary">Documentary</string>
+</resources>

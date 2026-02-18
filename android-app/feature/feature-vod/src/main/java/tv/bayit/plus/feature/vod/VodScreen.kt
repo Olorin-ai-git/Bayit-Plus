@@ -43,7 +43,7 @@ fun VodRoute(
         },
         onCollectionClick = { collectionId -> onNavigateToContent(collectionId, "collection") },
         onWatchNowClick = { movieId -> onNavigateToPlayer(movieId, "movie") },
-        onCategorySelected = viewModel::selectCategory,
+        onFilterSelected = viewModel::selectFilter,
         onRefresh = viewModel::refresh,
         modifier = modifier,
     )
@@ -55,7 +55,7 @@ internal fun VodScreen(
     onContentClick: (ContentItem) -> Unit,
     onCollectionClick: (String) -> Unit,
     onWatchNowClick: (String) -> Unit,
-    onCategorySelected: (String) -> Unit,
+    onFilterSelected: (VodFilter) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,14 +69,11 @@ internal fun VodScreen(
                 modifier = modifier,
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    if (uiState.categories.isNotEmpty()) {
-                        VodCategoryTabRow(
-                            categories = uiState.categories,
-                            selectedCategoryId = uiState.selectedCategoryId,
-                            onCategorySelected = onCategorySelected,
-                        )
-                    }
-                    if (uiState.featuredCollections.isNotEmpty() && uiState.selectedCategoryId == null && !isBannerDismissed) {
+                    VodFilterRow(
+                        selectedFilter = uiState.selectedFilter,
+                        onFilterSelected = onFilterSelected,
+                    )
+                    if (uiState.featuredCollections.isNotEmpty() && uiState.selectedFilter == VodFilter.ALL && !isBannerDismissed) {
                         CollectionBanner(
                             collections = uiState.featuredCollections,
                             onCollectionClick = onCollectionClick,

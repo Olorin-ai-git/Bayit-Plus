@@ -1,8 +1,8 @@
 package tv.bayit.plus.feature.vod
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,23 +15,33 @@ import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.ContentCategory
 import tv.bayit.plus.core.model.ContentItem
+import tv.bayit.plus.feature.vod.R
 import javax.inject.Inject
+
+enum class VodFilter(@StringRes val labelResId: Int) {
+    ALL(R.string.vod_filter_all),
+    COLLECTIONS(R.string.vod_filter_collections),
+    MOVIES(R.string.vod_filter_movies),
+    SERIES(R.string.vod_filter_series),
+    ISRAELI_MOVIES(R.string.vod_filter_israeli_movies),
+    ISRAELI_SERIES(R.string.vod_filter_israeli_series),
+    MUSIC(R.string.vod_filter_music),
+    DOCUMENTARY(R.string.vod_filter_documentary),
+}
 
 @HiltViewModel
 class VodViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val categoryRepository: CategoryRepository,
     private val contentRepository: ContentRepository,
+    private val categoryRepository: CategoryRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
-
-    /** Category pre-selected when entering from a home section "Show All" tap. */
-    private val initialCategoryId: String? = savedStateHandle.get<String>("categoryId")
 
     private val _uiState = MutableStateFlow<VodUiState>(VodUiState.Loading)
     val uiState: StateFlow<VodUiState> = _uiState.asStateFlow()
 
     private val _allItems = MutableStateFlow<List<ContentItem>>(emptyList())
+    private val _collections = MutableStateFlow<List<CollectionDetail>>(emptyList())
+    private val _sectionCategoryIds = MutableStateFlow<Map<String, String>>(emptyMap())
 
     init {
         loadAllContent()
@@ -49,12 +59,30 @@ class VodViewModel @Inject constructor(
         loadCollectionRecommendations()
     }
 
-    fun selectCategory(categoryId: String) {
+    fun selectFilter(filter: VodFilter) {
         val currentState = _uiState.value as? VodUiState.Success ?: return
-        _uiState.value = currentState.copy(
-            selectedCategoryId = categoryId,
-            contentItems = filterByCategory(_allItems.value, categoryId, currentState.categories),
-        )
+
+        if (filter == VodFilter.COLLECTIONS) {
+            _uiState.value = currentState.copy(
+                selectedFilter = filter,
+                contentItems = collectionsAsContentItems(),
+            )
+            return
+        }
+
+        val categoryId = resolveSectionCategoryId(filter)
+        if (categoryId != null) {
+            _uiState.value = currentState.copy(
+                selectedFilter = filter,
+                isLoadingContent = true,
+            )
+            loadSectionContent(filter, categoryId)
+        } else {
+            _uiState.value = currentState.copy(
+                selectedFilter = filter,
+                contentItems = applyLocalFilter(_allItems.value, filter),
+            )
+        }
     }
 
     private fun loadAllContent() {
@@ -65,38 +93,70 @@ class VodViewModel @Inject constructor(
 
             logger.debug("Loading all VOD content")
 
-            when (val result = contentRepository.getAllContent(1, 100)) {
+            val allItems = mutableListOf<ContentItem>()
+            var page = 1
+
+            while (true) {
+                when (val result = contentRepository.getAllContent(page, PAGE_SIZE)) {
+                    is BayitResult.Success -> {
+                        @Suppress("UNCHECKED_CAST")
+                        val items = (result.data as List<Any>).filterIsInstance<ContentItem>()
+                        allItems.addAll(items)
+                        if (items.size < PAGE_SIZE) break
+                        page++
+                    }
+                    is BayitResult.Error -> {
+                        if (allItems.isEmpty()) {
+                            logger.error(
+                                "VOD content load failed",
+                                result.exception,
+                                mapOf("errorMessage" to result.message.orEmpty()),
+                            )
+                            _uiState.value = VodUiState.Error(
+                                message = result.message ?: result.exception.message.orEmpty(),
+                            )
+                            return@launch
+                        }
+                        break
+                    }
+                    is BayitResult.Loading -> Unit
+                }
+            }
+
+            logger.info(
+                "VOD content loaded",
+                mapOf("itemCount" to allItems.size.toString()),
+            )
+
+            _allItems.value = allItems
+
+            val currentFilter = (_uiState.value as? VodUiState.Success)?.selectedFilter
+                ?: VodFilter.ALL
+            _uiState.value = VodUiState.Success(
+                selectedFilter = currentFilter,
+                contentItems = applyLocalFilter(allItems, currentFilter),
+                isRefreshing = false,
+                isLoadingContent = false,
+            )
+        }
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch {
+            when (val result = categoryRepository.getCategories()) {
                 is BayitResult.Success -> {
                     @Suppress("UNCHECKED_CAST")
-                    val items = (result.data as List<Any>).filterIsInstance<ContentItem>()
-
-                    logger.info(
-                        "VOD content loaded",
-                        mapOf("itemCount" to items.size.toString()),
-                    )
-
-                    _allItems.value = items
-
-                    val currentState = _uiState.value
-                    val categories = (currentState as? VodUiState.Success)?.categories ?: emptyList()
-                    val selectedId = (currentState as? VodUiState.Success)?.selectedCategoryId
-                        ?: initialCategoryId
-                    _uiState.value = VodUiState.Success(
-                        categories = categories,
-                        selectedCategoryId = selectedId,
-                        contentItems = filterByCategory(items, selectedId, categories),
-                        isRefreshing = false,
-                        isLoadingContent = false,
-                    )
+                    val categories = (result.data as List<Any>).filterIsInstance<ContentCategory>()
+                    val nameToId = mutableMapOf<String, String>()
+                    for (cat in categories) {
+                        nameToId[cat.name.lowercase()] = cat.id
+                    }
+                    _sectionCategoryIds.value = nameToId
                 }
                 is BayitResult.Error -> {
-                    logger.error(
-                        "VOD content load failed",
-                        result.exception,
+                    logger.debug(
+                        "VOD categories unavailable",
                         mapOf("errorMessage" to result.message.orEmpty()),
-                    )
-                    _uiState.value = VodUiState.Error(
-                        message = result.message ?: result.exception.message.orEmpty(),
                     )
                 }
                 is BayitResult.Loading -> Unit
@@ -104,37 +164,32 @@ class VodViewModel @Inject constructor(
         }
     }
 
-    private fun loadCategories() {
+    private fun loadSectionContent(filter: VodFilter, categoryId: String) {
         viewModelScope.launch {
-            logger.debug("Loading VOD categories")
-
-            when (val result = categoryRepository.getCategories()) {
+            when (val result = categoryRepository.getContentForCategory(categoryId, 1)) {
                 is BayitResult.Success -> {
                     @Suppress("UNCHECKED_CAST")
-                    val categories = (result.data as List<Any>).filterIsInstance<ContentCategory>()
-
-                    logger.info(
-                        "VOD categories loaded",
-                        mapOf("categoryCount" to categories.size.toString()),
-                    )
-
+                    val items = (result.data as List<Any>).filterIsInstance<ContentItem>()
                     val currentState = _uiState.value as? VodUiState.Success ?: return@launch
-                    val effectiveCategoryId = currentState.selectedCategoryId ?: initialCategoryId
-                    _uiState.value = currentState.copy(
-                        categories = categories,
-                        selectedCategoryId = effectiveCategoryId,
-                        contentItems = filterByCategory(
-                            _allItems.value,
-                            effectiveCategoryId,
-                            categories,
-                        ),
-                    )
+                    if (currentState.selectedFilter == filter) {
+                        _uiState.value = currentState.copy(
+                            contentItems = items,
+                            isLoadingContent = false,
+                        )
+                    }
                 }
                 is BayitResult.Error -> {
                     logger.debug(
-                        "VOD categories unavailable, proceeding without filter chips",
-                        mapOf("errorMessage" to result.message.orEmpty()),
+                        "Section content load failed",
+                        mapOf("categoryId" to categoryId),
                     )
+                    val currentState = _uiState.value as? VodUiState.Success ?: return@launch
+                    if (currentState.selectedFilter == filter) {
+                        _uiState.value = currentState.copy(
+                            contentItems = emptyList(),
+                            isLoadingContent = false,
+                        )
+                    }
                 }
                 is BayitResult.Loading -> Unit
             }
@@ -145,12 +200,13 @@ class VodViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = contentRepository.getCollectionRecommendations()) {
                 is BayitResult.Success -> {
+                    _collections.value = result.data
                     val currentState = _uiState.value as? VodUiState.Success ?: return@launch
                     _uiState.value = currentState.copy(featuredCollections = result.data)
                 }
                 is BayitResult.Error -> {
                     logger.debug(
-                        "Collection recommendations unavailable, hiding banner",
+                        "Collection recommendations unavailable",
                         mapOf("errorMessage" to result.message.orEmpty()),
                     )
                 }
@@ -159,14 +215,58 @@ class VodViewModel @Inject constructor(
         }
     }
 
-    private fun filterByCategory(
-        items: List<ContentItem>,
-        categoryId: String?,
-        categories: List<ContentCategory>,
-    ): List<ContentItem> {
-        if (categoryId == null) return items
-        val categoryName = categories.firstOrNull { it.id == categoryId }?.name ?: return items
-        return items.filter { it.category == categoryName }
+    private fun collectionsAsContentItems(): List<ContentItem> =
+        _collections.value.map { collection ->
+            ContentItem(
+                id = collection.id,
+                title = collection.title,
+                description = collection.description,
+                thumbnail = collection.thumbnail,
+                backdrop = collection.backdrop,
+                type = "collection",
+                isCollectionParent = true,
+                availableMovies = collection.availableMovies,
+                totalMovies = collection.totalMovies,
+            )
+        }
+
+    private fun resolveSectionCategoryId(filter: VodFilter): String? {
+        val catMap = _sectionCategoryIds.value
+        return when (filter) {
+            VodFilter.MUSIC -> catMap.firstMatchingKey("מוזיקה", "music")
+            VodFilter.DOCUMENTARY -> catMap.firstMatchingKey("תיעודי", "doc")
+            else -> null
+        }
+    }
+
+    internal companion object {
+        private const val PAGE_SIZE = 200
+
+        fun applyLocalFilter(items: List<ContentItem>, filter: VodFilter): List<ContentItem> {
+            return when (filter) {
+                VodFilter.ALL -> items
+                VodFilter.MOVIES -> items.filter { it.type == "movie" }
+                VodFilter.SERIES -> items.filter { it.type == "series" || it.isSeries == true }
+                VodFilter.ISRAELI_MOVIES -> items.filter {
+                    it.matchesCategoryTag("israeli") && it.type == "movie"
+                }
+                VodFilter.ISRAELI_SERIES -> items.filter {
+                    it.matchesCategoryTag("israeli") &&
+                        (it.type == "series" || it.isSeries == true)
+                }
+                VodFilter.COLLECTIONS,
+                VodFilter.MUSIC,
+                VodFilter.DOCUMENTARY,
+                -> items
+            }
+        }
+
+        private fun ContentItem.matchesCategoryTag(tag: String): Boolean =
+            categorySlug?.contains(tag, ignoreCase = true) == true ||
+                category?.contains(tag, ignoreCase = true) == true
+
+        private fun Map<String, String>.firstMatchingKey(vararg tags: String): String? =
+            entries.firstOrNull { entry -> tags.any { entry.key.contains(it) } }?.value
     }
 }
 
@@ -174,8 +274,7 @@ sealed interface VodUiState {
     data object Loading : VodUiState
 
     data class Success(
-        val categories: List<ContentCategory>,
-        val selectedCategoryId: String?,
+        val selectedFilter: VodFilter = VodFilter.ALL,
         val contentItems: List<ContentItem>,
         val featuredCollections: List<CollectionDetail> = emptyList(),
         val isRefreshing: Boolean = false,

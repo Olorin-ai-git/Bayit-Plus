@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.vod
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import tv.bayit.plus.core.model.ContentCategory
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -28,11 +29,12 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
+private val VOD_FILTERS = VodFilter.entries
+
 @Composable
-internal fun VodCategoryTabRow(
-    categories: List<ContentCategory>,
-    selectedCategoryId: String?,
-    onCategorySelected: (String) -> Unit,
+internal fun VodFilterRow(
+    selectedFilter: VodFilter,
+    onFilterSelected: (VodFilter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -40,11 +42,11 @@ internal fun VodCategoryTabRow(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         modifier = modifier.padding(vertical = DesignTokens.Spacing.sm),
     ) {
-        items(items = categories, key = { it.id }) { category ->
+        items(items = VOD_FILTERS, key = { it.name }) { filter ->
             GlassChip(
-                label = category.name,
-                isSelected = selectedCategoryId == category.id,
-                onClick = { onCategorySelected(category.id) },
+                label = stringResource(filter.labelResId),
+                isSelected = selectedFilter == filter,
+                onClick = { onFilterSelected(filter) },
             )
         }
     }
@@ -58,13 +60,18 @@ internal fun VodGridItem(
 ) {
     GlassCard(modifier = modifier.clickable(onClick = onClick)) {
         Column {
-            CachedAsyncImage(
-                url = item.thumbnail ?: item.backdrop,
-                contentDescription = item.title,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(2f / 3f),
-            )
+                    .aspectRatio(2f / 3f)
+                    .background(DesignTokens.Colors.Background.elevated),
+            ) {
+                CachedAsyncImage(
+                    url = item.thumbnail ?: item.backdrop,
+                    contentDescription = item.title,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             item.title?.let { title ->
                 Text(
