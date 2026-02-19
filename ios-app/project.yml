@@ -120,7 +120,7 @@ targets:
         product: BayitAnalytics
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus.tvos
+        PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus
         PRODUCT_NAME: BayitPlusTV
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: 1

@@ -5,7 +5,7 @@
 - **Xcode project**: `ios-app/BayitPlus.xcodeproj`
 - **Team ID**: `963B7732N5` (Olorin.ai LLC)
 - **iOS Bundle ID**: `tv.bayit.plus`
-- **tvOS Bundle ID**: `tv.bayit.plus.tvos`
+- **tvOS Bundle ID**: `tv.bayit.plus`
 - **Widget Bundle ID**: `tv.bayit.plus.widgets`
 - **Distribution Certificate**: `Apple Distribution: Gil Klainert (963B7732N5)`
 - **API Key**: `AuthKey_WT4D2SZ4KH.p8` in `~/private_keys/`
