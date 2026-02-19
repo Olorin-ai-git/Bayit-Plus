@@ -35,6 +35,7 @@ protocol ZehAniRepository: Sendable {
     func sendHighlightReelToContacts(
         reelId: String
     ) async throws -> Int
+
 }
 
 final class APIZehAniRepository: ZehAniRepository, @unchecked Sendable {
@@ -158,4 +159,5 @@ final class APIZehAniRepository: ZehAniRepository, @unchecked Sendable {
         )
         return response.sentCount
     }
+
 }

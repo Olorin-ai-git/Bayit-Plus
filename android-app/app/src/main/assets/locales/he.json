@@ -3976,5 +3976,39 @@
     "inputPlaceholder": "שאל את ה-AI כל דבר...",
     "sendButton": "שלח",
     "retryButton": "נסה שוב"
+  },
+  "movieInteractions": {
+    "title": "אינטראקציות עם סרטים",
+    "subtitle": "בחר סרט ודבר עם דמויות",
+    "tagMovie": "סמן סרט",
+    "tagging": "מחלץ דמויות...",
+    "tagged": "מוכן",
+    "noMovies": "אין סרטים מסומנים עדיין. סמן סרט כדי להתחיל לדבר עם דמויות.",
+    "characters": {
+      "title": "דמויות",
+      "subtitle": "בחר דמות לדבר איתה",
+      "playedBy": "בביצוע {{actorName}}",
+      "noCharacters": "אין דמויות זמינות"
+    },
+    "dialogue": {
+      "title": "דבר עם {{characterName}}",
+      "specificQuestions": "שאלות על הדמות",
+      "genericQuestions": "שאלות כלליות",
+      "customQuestion": "שאל שאלה משלך",
+      "placeholder": "הקלד שאלה...",
+      "generatingResponse": "חושב...",
+      "generatingAudio": "יוצר קול...",
+      "generatingVideo": "יוצר וידאו...",
+      "creditCost": "עולה {{credits}} קרדיטים",
+      "askAnother": "שאל שאלה נוספת",
+      "sending": "שולח..."
+    },
+    "errors": {
+      "fetchFailed": "טעינת הסרטים נכשלה",
+      "tagFailed": "סימון הסרט נכשל",
+      "charactersFailed": "טעינת הדמויות נכשלה",
+      "questionsFailed": "טעינת השאלות נכשלה",
+      "dialogueFailed": "שליחת ההודעה נכשלה"
+    }
   }
 }

@@ -130,7 +130,9 @@ public final class NavigationCoordinator {
              .zehAniMagicMirror, .zehAniV2V,
              .zehAniAvatar3D, .zehAniHighlights,
              .zehAniContacts, .zehAniFeedback,
-             .zehAniAvatarSettings:
+             .zehAniAvatarSettings,
+             .zehAniMovieInteractions, .zehAniMovieCharacters,
+             .zehAniCharacterDialogue:
             pushToCurrentTab(route)
         }
     }

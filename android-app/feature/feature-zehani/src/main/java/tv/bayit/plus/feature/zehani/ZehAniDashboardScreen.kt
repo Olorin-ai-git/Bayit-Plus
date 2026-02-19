@@ -33,7 +33,7 @@ private val menuCards = listOf(
     ZehAniMenuCard(ZehAniFeature.MAGIC_MIRROR, "Magic Mirror", "Daily greetings and face ID"),
     ZehAniMenuCard(ZehAniFeature.V2V_PRACTICE, "V2V Practice", "Voice-to-voice pronunciation"),
     ZehAniMenuCard(ZehAniFeature.AVATAR_3D, "3D Avatar", "Your personalized avatar mesh"),
-    ZehAniMenuCard(ZehAniFeature.HIGHLIGHTS, "Highlights", "Video highlight compilations"),
+    ZehAniMenuCard(ZehAniFeature.MOVIE_INTERACTIONS, "Movie Interactions", "Browse and talk to movie characters"),
     ZehAniMenuCard(ZehAniFeature.CONTACTS, "Contacts", "WhatsApp sharing contacts"),
     ZehAniMenuCard(ZehAniFeature.FEEDBACK, "Feedback", "Share your experience"),
     ZehAniMenuCard(ZehAniFeature.CONSENT, "Consent", "Biometric consent management"),
@@ -44,7 +44,7 @@ fun ZehAniDashboardRoute(
     onNavigateToMagicMirror: (profileId: String) -> Unit,
     onNavigateToV2V: (profileId: String) -> Unit,
     onNavigateToAvatar3D: (profileId: String) -> Unit,
-    onNavigateToHighlights: (profileId: String) -> Unit,
+    onNavigateToMovieInteractions: (profileId: String) -> Unit,
     onNavigateToContacts: (profileId: String) -> Unit,
     onNavigateToFeedback: (profileId: String) -> Unit,
     onNavigateToConsent: () -> Unit,
@@ -62,7 +62,7 @@ fun ZehAniDashboardRoute(
                     ZehAniFeature.MAGIC_MIRROR -> onNavigateToMagicMirror(profileId)
                     ZehAniFeature.V2V_PRACTICE -> onNavigateToV2V(profileId)
                     ZehAniFeature.AVATAR_3D -> onNavigateToAvatar3D(profileId)
-                    ZehAniFeature.HIGHLIGHTS -> onNavigateToHighlights(profileId)
+                    ZehAniFeature.MOVIE_INTERACTIONS -> onNavigateToMovieInteractions(profileId)
                     ZehAniFeature.CONTACTS -> onNavigateToContacts(profileId)
                     ZehAniFeature.FEEDBACK -> onNavigateToFeedback(profileId)
                     ZehAniFeature.CONSENT -> onNavigateToConsent()

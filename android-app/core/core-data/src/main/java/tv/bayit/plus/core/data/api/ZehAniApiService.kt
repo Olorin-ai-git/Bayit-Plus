@@ -28,6 +28,10 @@ import tv.bayit.plus.core.model.zehani.V2VTransformRequest
 import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import tv.bayit.plus.core.model.zehani.WhatsAppContact
 import tv.bayit.plus.core.model.zehani.AddWhatsAppContactRequest
+import tv.bayit.plus.core.model.zehani.CharacterQuestionsResponse
+import tv.bayit.plus.core.model.zehani.InteractableMovie
+import tv.bayit.plus.core.model.zehani.MovieTagRequest
+import tv.bayit.plus.core.model.zehani.MovieTagStatus
 
 /**
  * Retrofit service interface for all Zeh Ani API endpoints.
@@ -149,4 +153,25 @@ interface ZehAniApiService {
     suspend fun sendHighlightReelToContacts(
         @Path("reelId") reelId: String,
     ): tv.bayit.plus.core.model.zehani.SendToContactsResponse
+
+    // -- Movie Interactions --
+
+    @GET("api/v1/movie-interactions/movies")
+    suspend fun listInteractableMovies(): List<InteractableMovie>
+
+    @POST("api/v1/movie-interactions/tag")
+    suspend fun tagMovie(
+        @Body request: MovieTagRequest,
+    ): MovieTagStatus
+
+    @GET("api/v1/movie-interactions/tag/{contentId}")
+    suspend fun getMovieTagStatus(
+        @Path("contentId") contentId: String,
+    ): MovieTagStatus
+
+    @GET("api/v1/movie-interactions/characters/{contentId}/questions")
+    suspend fun getCharacterQuestions(
+        @Path("contentId") contentId: String,
+        @Query("character_name") characterName: String,
+    ): CharacterQuestionsResponse
 }

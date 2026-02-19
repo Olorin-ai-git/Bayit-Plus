@@ -3977,5 +3977,39 @@
     "inputPlaceholder": "Ask the AI anything...",
     "sendButton": "Send",
     "retryButton": "Retry"
+  },
+  "movieInteractions": {
+    "title": "Movie Interactions",
+    "subtitle": "Choose a movie and talk to characters",
+    "tagMovie": "Tag Movie",
+    "tagging": "Extracting characters...",
+    "tagged": "Ready",
+    "noMovies": "No movies tagged yet. Tag a movie to start talking to characters.",
+    "characters": {
+      "title": "Characters",
+      "subtitle": "Choose a character to talk to",
+      "playedBy": "Played by {{actorName}}",
+      "noCharacters": "No characters available"
+    },
+    "dialogue": {
+      "title": "Talk to {{characterName}}",
+      "specificQuestions": "Character Questions",
+      "genericQuestions": "General Questions",
+      "customQuestion": "Ask your own question",
+      "placeholder": "Type a question...",
+      "generatingResponse": "Thinking...",
+      "generatingAudio": "Creating voice...",
+      "generatingVideo": "Creating video...",
+      "creditCost": "Costs {{credits}} credits",
+      "askAnother": "Ask another question",
+      "sending": "Sending..."
+    },
+    "errors": {
+      "fetchFailed": "Failed to load movies",
+      "tagFailed": "Failed to tag movie",
+      "charactersFailed": "Failed to load characters",
+      "questionsFailed": "Failed to load questions",
+      "dialogueFailed": "Failed to send message"
+    }
   }
 }

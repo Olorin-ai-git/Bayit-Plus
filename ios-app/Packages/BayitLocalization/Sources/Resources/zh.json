@@ -9246,7 +9246,43 @@
       "feedback": "反馈收件箱",
       "feedbackDesc": "接收家人的语音和文字消息",
       "consent": "生物识别同意",
-      "consentDesc": "管理面部和语音数据的同意设置"
+      "consentDesc": "管理面部和语音数据的同意设置",
+      "movieInteractions": "电影互动",
+      "movieInteractionsDesc": "浏览电影并与你最喜欢的角色交谈"
+    },
+    "movieInteractions": {
+      "title": "电影互动",
+      "subtitle": "选择一部电影并与角色交谈",
+      "tagMovie": "标记电影",
+      "tagging": "正在提取角色...",
+      "tagged": "就绪",
+      "noMovies": "尚未标记任何电影。标记一部电影开始与角色交谈。",
+      "characters": {
+        "title": "角色",
+        "subtitle": "选择一个角色来交谈",
+        "playedBy": "由{{actorName}}饰演",
+        "noCharacters": "没有可用的角色"
+      },
+      "dialogue": {
+        "title": "与{{characterName}}交谈",
+        "specificQuestions": "角色问题",
+        "genericQuestions": "通用问题",
+        "customQuestion": "提出你自己的问题",
+        "placeholder": "输入问题...",
+        "generatingResponse": "思考中...",
+        "generatingAudio": "创建语音...",
+        "generatingVideo": "创建视频...",
+        "creditCost": "花费{{credits}}积分",
+        "askAnother": "问另一个问题",
+        "sending": "发送中..."
+      },
+      "errors": {
+        "fetchFailed": "加载电影失败",
+        "tagFailed": "标记电影失败",
+        "charactersFailed": "加载角色失败",
+        "questionsFailed": "加载问题失败",
+        "dialogueFailed": "发送消息失败"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

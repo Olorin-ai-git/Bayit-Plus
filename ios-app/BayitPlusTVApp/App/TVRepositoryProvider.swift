@@ -52,6 +52,7 @@ final class TVRepositoryProvider {
     let avatarMeshRepository: any AvatarRepository
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let zehAniRepository: any ZehAniRepository
+    let movieInteraction: any MovieInteractionRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -104,6 +105,7 @@ final class TVRepositoryProvider {
         self.avatarMeshRepository = APIAvatarRepository(client: client)
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
+        self.movieInteraction = APIMovieInteractionRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

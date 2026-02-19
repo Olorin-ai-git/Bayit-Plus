@@ -56,6 +56,7 @@ final class RepositoryProvider {
     let avatarMeshRepository: any AvatarRepository
     let talkBack: any TalkBackRepository
     let zehAniRepository: any ZehAniRepository
+    let movieInteraction: any MovieInteractionRepository
     let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
@@ -110,6 +111,7 @@ final class RepositoryProvider {
         self.avatarMeshRepository = APIAvatarRepository(client: client)
         self.talkBack = APITalkBackRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
+        self.movieInteraction = APIMovieInteractionRepository(client: client)
         self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration

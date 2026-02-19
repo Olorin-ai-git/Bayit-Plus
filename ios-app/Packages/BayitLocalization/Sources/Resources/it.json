@@ -9496,7 +9496,43 @@
       "feedback": "Posta dei commenti",
       "feedbackDesc": "Ricevi messaggi vocali e di testo dalla tua famiglia",
       "consent": "Consenso biometrico",
-      "consentDesc": "Gestisci le impostazioni di consenso per dati facciali e vocali"
+      "consentDesc": "Gestisci le impostazioni di consenso per dati facciali e vocali",
+      "movieInteractions": "Interazioni con i Film",
+      "movieInteractionsDesc": "Esplora i film e parla con i tuoi personaggi preferiti"
+    },
+    "movieInteractions": {
+      "title": "Interazioni con i Film",
+      "subtitle": "Scegli un film e parla con i personaggi",
+      "tagMovie": "Tagga Film",
+      "tagging": "Estrazione personaggi...",
+      "tagged": "Pronto",
+      "noMovies": "Nessun film taggato. Tagga un film per parlare con i personaggi.",
+      "characters": {
+        "title": "Personaggi",
+        "subtitle": "Scegli un personaggio",
+        "playedBy": "Interpretato da {{actorName}}",
+        "noCharacters": "Nessun personaggio disponibile"
+      },
+      "dialogue": {
+        "title": "Parla con {{characterName}}",
+        "specificQuestions": "Domande sul Personaggio",
+        "genericQuestions": "Domande Generali",
+        "customQuestion": "Fai la tua domanda",
+        "placeholder": "Scrivi una domanda...",
+        "generatingResponse": "Pensando...",
+        "generatingAudio": "Creazione voce...",
+        "generatingVideo": "Creazione video...",
+        "creditCost": "Costa {{credits}} crediti",
+        "askAnother": "Fai un'altra domanda",
+        "sending": "Invio..."
+      },
+      "errors": {
+        "fetchFailed": "Caricamento film fallito",
+        "tagFailed": "Tag film fallito",
+        "charactersFailed": "Caricamento personaggi fallito",
+        "questionsFailed": "Caricamento domande fallito",
+        "dialogueFailed": "Invio messaggio fallito"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

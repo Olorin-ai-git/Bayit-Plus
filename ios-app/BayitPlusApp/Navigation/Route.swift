@@ -138,6 +138,9 @@ public enum Route: Hashable {
     case zehAniContacts(profileId: String)
     case zehAniFeedback(profileId: String)
     case zehAniAvatarSettings(profileId: String, avatarId: String)
+    case zehAniMovieInteractions(profileId: String)
+    case zehAniMovieCharacters(profileId: String, contentId: String)
+    case zehAniCharacterDialogue(profileId: String, contentId: String, characterName: String)
 }
 
 // MARK: - Breadcrumb Labels
@@ -219,6 +222,9 @@ extension Route {
         case .zehAniContacts: return "Contacts"
         case .zehAniFeedback: return "Feedback"
         case .zehAniAvatarSettings: return "Avatar Settings"
+        case .zehAniMovieInteractions: return "Movie Interactions"
+        case .zehAniMovieCharacters: return "Characters"
+        case .zehAniCharacterDialogue: return "Dialogue"
         }
     }
 }

@@ -142,6 +142,12 @@ struct RouteDestinationResolver {
             FeedbackInboxView(profileId: profileId)
         case .zehAniAvatarSettings(let profileId, let avatarId):
             AvatarSettingsView(profileId: profileId, avatarId: avatarId)
+        case .zehAniMovieInteractions(let profileId):
+            MovieInteractionsView(profileId: profileId)
+        case .zehAniMovieCharacters(let profileId, let contentId):
+            MovieCharactersView(profileId: profileId, contentId: contentId)
+        case .zehAniCharacterDialogue(let profileId, let contentId, let characterName):
+            CharacterDialogueView(profileId: profileId, contentId: contentId, characterName: characterName)
         case .tvLogin(let sessionId, let token, let expires):
             TVLoginView(sessionId: sessionId, token: token, expires: expires)
         default:

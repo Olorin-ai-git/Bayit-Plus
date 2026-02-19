@@ -135,6 +135,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.zeh_ani import highlight_routes as za_highlights
     from app.api.routes.zeh_ani import whatsapp_routes as za_whatsapp
     from app.api.routes import websocket_live_layer
+    # Movie Interactions Hub (Zeh Ani Phase 4)
+    from app.api.routes import movie_interactions
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -698,7 +700,10 @@ def register_all_routers(app: FastAPI) -> None:
         websocket_live_layer.router, prefix=prefix,
         tags=["websocket", "zeh-ani"],
     )
-    logger.debug("Registered Zeh Ani routes (mesh, consent, v2v, triggers, mirror, highlights, whatsapp)")
+    app.include_router(
+        movie_interactions.router, prefix=prefix, tags=["movie-interactions"]
+    )
+    logger.debug("Registered Zeh Ani routes (mesh, consent, v2v, triggers, mirror, highlights, whatsapp, movie-interactions)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

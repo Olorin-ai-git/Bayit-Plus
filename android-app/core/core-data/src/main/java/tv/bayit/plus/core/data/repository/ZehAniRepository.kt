@@ -12,6 +12,9 @@ import tv.bayit.plus.core.model.zehani.V2VSessionListResponse
 import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import tv.bayit.plus.core.model.zehani.WhatsAppContact
 import tv.bayit.plus.core.model.zehani.FeedbackItem
+import tv.bayit.plus.core.model.zehani.CharacterQuestionsResponse
+import tv.bayit.plus.core.model.zehani.InteractableMovie
+import tv.bayit.plus.core.model.zehani.MovieTagStatus
 
 /**
  * Repository interface for all Zeh Ani feature operations.
@@ -74,4 +77,10 @@ interface ZehAniRepository {
     // -- Feedback --
     suspend fun getFeedback(profileId: String): BayitResult<List<FeedbackItem>>
     suspend fun submitFeedback(profileId: String, feedback: String, rating: Int): BayitResult<Unit>
+
+    // -- Movie Interactions --
+    suspend fun listInteractableMovies(): BayitResult<List<InteractableMovie>>
+    suspend fun tagMovie(contentId: String, profileId: String): BayitResult<MovieTagStatus>
+    suspend fun getMovieCharacters(contentId: String): BayitResult<MovieTagStatus>
+    suspend fun getCharacterQuestions(contentId: String, characterName: String): BayitResult<CharacterQuestionsResponse>
 }

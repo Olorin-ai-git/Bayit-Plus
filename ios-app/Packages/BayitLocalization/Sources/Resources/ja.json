@@ -10166,7 +10166,43 @@
       "feedback": "フィードバック受信箱",
       "feedbackDesc": "家族からの音声やテキストメッセージを受信",
       "consent": "生体認証の同意",
-      "consentDesc": "顔と音声データの同意設定を管理"
+      "consentDesc": "顔と音声データの同意設定を管理",
+      "movieInteractions": "映画インタラクション",
+      "movieInteractionsDesc": "映画を探索してお気に入りのキャラクターと話そう"
+    },
+    "movieInteractions": {
+      "title": "映画インタラクション",
+      "subtitle": "映画を選んでキャラクターと話そう",
+      "tagMovie": "映画をタグ付け",
+      "tagging": "キャラクターを抽出中...",
+      "tagged": "準備完了",
+      "noMovies": "タグ付けされた映画はまだありません。映画をタグ付けしてキャラクターと話しましょう。",
+      "characters": {
+        "title": "キャラクター",
+        "subtitle": "話したいキャラクターを選んでください",
+        "playedBy": "{{actorName}}が演じる",
+        "noCharacters": "利用可能なキャラクターはありません"
+      },
+      "dialogue": {
+        "title": "{{characterName}}と話す",
+        "specificQuestions": "キャラクターの質問",
+        "genericQuestions": "一般的な質問",
+        "customQuestion": "自分の質問をする",
+        "placeholder": "質問を入力...",
+        "generatingResponse": "考え中...",
+        "generatingAudio": "音声を作成中...",
+        "generatingVideo": "動画を作成中...",
+        "creditCost": "{{credits}}クレジットかかります",
+        "askAnother": "別の質問をする",
+        "sending": "送信中..."
+      },
+      "errors": {
+        "fetchFailed": "映画の読み込みに失敗",
+        "tagFailed": "映画のタグ付けに失敗",
+        "charactersFailed": "キャラクターの読み込みに失敗",
+        "questionsFailed": "質問の読み込みに失敗",
+        "dialogueFailed": "メッセージの送信に失敗"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

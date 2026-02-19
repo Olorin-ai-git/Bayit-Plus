@@ -2934,6 +2934,35 @@ class Settings(BaseSettings):
     )
 
     # ============================================
+    # MOVIE INTERACTIONS HUB (Zeh Ani Phase 4 - Browse & Talk to Characters)
+    # ============================================
+    MOVIE_INTERACTION_MAX_CHARACTERS: int = Field(
+        default=6, ge=1, le=20,
+        env="MOVIE_INTERACTION_MAX_CHARACTERS",
+        description="Max characters to extract per movie from TMDB cast",
+    )
+    MOVIE_INTERACTION_QUESTIONS_PER_CHARACTER: int = Field(
+        default=5, ge=1, le=10,
+        env="MOVIE_INTERACTION_QUESTIONS_PER_CHARACTER",
+        description="Number of AI-generated questions per character",
+    )
+    MOVIE_INTERACTION_DEFAULT_VOICE_MALE: str = Field(
+        default="",
+        env="MOVIE_INTERACTION_DEFAULT_VOICE_MALE",
+        description="ElevenLabs voice ID for male characters",
+    )
+    MOVIE_INTERACTION_DEFAULT_VOICE_FEMALE: str = Field(
+        default="",
+        env="MOVIE_INTERACTION_DEFAULT_VOICE_FEMALE",
+        description="ElevenLabs voice ID for female characters",
+    )
+    MOVIE_INTERACTION_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="MOVIE_INTERACTION_AI_MODEL",
+        description="Claude model for character profile generation",
+    )
+
+    # ============================================
     # ZEH ANI: GRANDPARENT LOOP (Phase 4 - Highlights + WhatsApp)
     # ============================================
     HIGHLIGHT_REEL_DURATION_SECONDS: int = Field(

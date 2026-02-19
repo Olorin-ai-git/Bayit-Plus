@@ -10127,7 +10127,43 @@
       "feedback": "Boite de commentaires",
       "feedbackDesc": "Recevez des messages vocaux et textuels de votre famille",
       "consent": "Consentement biometrique",
-      "consentDesc": "Gerez les parametres de consentement pour les donnees faciales et vocales"
+      "consentDesc": "Gerez les parametres de consentement pour les donnees faciales et vocales",
+      "movieInteractions": "Interactions avec les Films",
+      "movieInteractionsDesc": "Parcourez les films et parlez a vos personnages preferes"
+    },
+    "movieInteractions": {
+      "title": "Interactions avec les Films",
+      "subtitle": "Choisissez un film et parlez aux personnages",
+      "tagMovie": "Taguer le Film",
+      "tagging": "Extraction des personnages...",
+      "tagged": "Pret",
+      "noMovies": "Aucun film tague. Taguez un film pour commencer a parler aux personnages.",
+      "characters": {
+        "title": "Personnages",
+        "subtitle": "Choisissez un personnage",
+        "playedBy": "Joue par {{actorName}}",
+        "noCharacters": "Aucun personnage disponible"
+      },
+      "dialogue": {
+        "title": "Parler a {{characterName}}",
+        "specificQuestions": "Questions du Personnage",
+        "genericQuestions": "Questions Generales",
+        "customQuestion": "Posez votre propre question",
+        "placeholder": "Tapez une question...",
+        "generatingResponse": "Reflexion...",
+        "generatingAudio": "Creation de la voix...",
+        "generatingVideo": "Creation de la video...",
+        "creditCost": "Coute {{credits}} credits",
+        "askAnother": "Poser une autre question",
+        "sending": "Envoi..."
+      },
+      "errors": {
+        "fetchFailed": "Echec du chargement des films",
+        "tagFailed": "Echec du taguage du film",
+        "charactersFailed": "Echec du chargement des personnages",
+        "questionsFailed": "Echec du chargement des questions",
+        "dialogueFailed": "Echec de l'envoi du message"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

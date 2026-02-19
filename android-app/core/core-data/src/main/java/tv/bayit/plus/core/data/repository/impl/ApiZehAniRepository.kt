@@ -23,6 +23,10 @@ import tv.bayit.plus.core.model.zehani.V2VTransformRequest
 import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import tv.bayit.plus.core.model.zehani.WhatsAppContact
 import tv.bayit.plus.core.model.zehani.AddWhatsAppContactRequest
+import tv.bayit.plus.core.model.zehani.CharacterQuestionsResponse
+import tv.bayit.plus.core.model.zehani.InteractableMovie
+import tv.bayit.plus.core.model.zehani.MovieTagRequest
+import tv.bayit.plus.core.model.zehani.MovieTagStatus
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 private val TEXT_PLAIN = "text/plain".toMediaType()
@@ -168,4 +172,25 @@ class ApiZehAniRepository(
         }
         Unit
     }
+
+    // -- Movie Interactions --
+
+    override suspend fun listInteractableMovies(): BayitResult<List<InteractableMovie>> =
+        runCatchingResult { client.safeApiCall { service.listInteractableMovies() } }
+
+    override suspend fun tagMovie(contentId: String, profileId: String): BayitResult<MovieTagStatus> =
+        runCatchingResult {
+            client.safeApiCall { service.tagMovie(MovieTagRequest(contentId, profileId)) }
+        }
+
+    override suspend fun getMovieCharacters(contentId: String): BayitResult<MovieTagStatus> =
+        runCatchingResult { client.safeApiCall { service.getMovieTagStatus(contentId) } }
+
+    override suspend fun getCharacterQuestions(
+        contentId: String,
+        characterName: String,
+    ): BayitResult<CharacterQuestionsResponse> =
+        runCatchingResult {
+            client.safeApiCall { service.getCharacterQuestions(contentId, characterName) }
+        }
 }

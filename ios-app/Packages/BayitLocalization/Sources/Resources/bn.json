@@ -9231,7 +9231,43 @@
       "feedback": "প্রতিক্রিয়া ইনবক্স",
       "feedbackDesc": "পরিবার থেকে ভয়েস এবং পাঠ্য বার্তা গ্রহণ করুন",
       "consent": "বায়োমেট্রিক সম্মতি",
-      "consentDesc": "মুখ এবং কণ্ঠস্বর ডেটার জন্য সম্মতি সেটিংস পরিচালনা করুন"
+      "consentDesc": "মুখ এবং কণ্ঠস্বর ডেটার জন্য সম্মতি সেটিংস পরিচালনা করুন",
+      "movieInteractions": "সিনেমা ইন্টারঅ্যাকশন",
+      "movieInteractionsDesc": "সিনেমা ব্রাউজ করুন এবং আপনার প্রিয় চরিত্রগুলির সাথে কথা বলুন"
+    },
+    "movieInteractions": {
+      "title": "সিনেমা ইন্টারঅ্যাকশন",
+      "subtitle": "একটি সিনেমা বেছে নিন এবং চরিত্রগুলির সাথে কথা বলুন",
+      "tagMovie": "সিনেমা ট্যাগ করুন",
+      "tagging": "চরিত্র বের করা হচ্ছে...",
+      "tagged": "প্রস্তুত",
+      "noMovies": "এখনো কোনো সিনেমা ট্যাগ করা হয়নি। চরিত্রগুলির সাথে কথা বলতে একটি সিনেমা ট্যাগ করুন।",
+      "characters": {
+        "title": "চরিত্র",
+        "subtitle": "কথা বলার জন্য একটি চরিত্র বেছে নিন",
+        "playedBy": "{{actorName}} অভিনীত",
+        "noCharacters": "কোনো চরিত্র পাওয়া যায়নি"
+      },
+      "dialogue": {
+        "title": "{{characterName}} এর সাথে কথা বলুন",
+        "specificQuestions": "চরিত্রের প্রশ্ন",
+        "genericQuestions": "সাধারণ প্রশ্ন",
+        "customQuestion": "আপনার নিজের প্রশ্ন করুন",
+        "placeholder": "একটি প্রশ্ন লিখুন...",
+        "generatingResponse": "ভাবছে...",
+        "generatingAudio": "কণ্ঠ তৈরি হচ্ছে...",
+        "generatingVideo": "ভিডিও তৈরি হচ্ছে...",
+        "creditCost": "{{credits}} ক্রেডিট খরচ হবে",
+        "askAnother": "আরেকটি প্রশ্ন করুন",
+        "sending": "পাঠানো হচ্ছে..."
+      },
+      "errors": {
+        "fetchFailed": "সিনেমা লোড করতে ব্যর্থ",
+        "tagFailed": "সিনেমা ট্যাগ করতে ব্যর্থ",
+        "charactersFailed": "চরিত্র লোড করতে ব্যর্থ",
+        "questionsFailed": "প্রশ্ন লোড করতে ব্যর্থ",
+        "dialogueFailed": "বার্তা পাঠাতে ব্যর্থ"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

@@ -44,10 +44,10 @@ struct ZehAniHubView: View {
                 )
 
                 featureCard(
-                    icon: "film.fill",
-                    titleKey: "zehAni.hub.highlights",
-                    descKey: "zehAni.hub.highlightsDesc",
-                    destination: .zehAniHighlights(profileId: profileId)
+                    icon: "film.stack.fill",
+                    titleKey: "zehAni.hub.movieInteractions",
+                    descKey: "zehAni.hub.movieInteractionsDesc",
+                    destination: .zehAniMovieInteractions(profileId: profileId)
                 )
 
                 featureCard(

@@ -93,7 +93,7 @@ enum class ZehAniFeature {
     MAGIC_MIRROR,
     V2V_PRACTICE,
     AVATAR_3D,
-    HIGHLIGHTS,
+    MOVIE_INTERACTIONS,
     CONTACTS,
     FEEDBACK,
     CONSENT,

@@ -223,6 +223,12 @@ class ContentCharacter(BaseModel):
     frame_url: str = Field(..., description="GCS URL of character still frame")
     description: str = Field(..., description="Character personality description")
     movie_context: str = Field(..., description="Movie/scene context for AI prompt")
+    actor_name: Optional[str] = Field(None, description="Actor who plays this character")
+    gender: Optional[str] = Field(None, description="male/female for voice/persona assignment")
+    suggested_questions: List[str] = Field(
+        default_factory=list,
+        description="AI-generated character-specific questions",
+    )
 
 
 class CharacterResponse(BaseModel):

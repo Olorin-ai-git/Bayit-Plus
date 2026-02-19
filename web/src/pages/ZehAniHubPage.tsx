@@ -24,9 +24,9 @@ const features: FeatureCard[] = [
   },
   {
     icon: '🎬',
-    titleKey: 'zehAni.hub.highlights',
-    descKey: 'zehAni.hub.highlightsDesc',
-    route: '/zeh-ani/highlights',
+    titleKey: 'zehAni.hub.movieInteractions',
+    descKey: 'zehAni.hub.movieInteractionsDesc',
+    route: '/zeh-ani/movie-interactions',
     requiresAvatar: true,
   },
   {

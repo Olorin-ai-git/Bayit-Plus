@@ -9372,7 +9372,43 @@
       "feedback": "Bandeja de comentarios",
       "feedbackDesc": "Recibe mensajes de voz y texto de tu familia",
       "consent": "Consentimiento biometrico",
-      "consentDesc": "Administra la configuracion de consentimiento para datos faciales y de voz"
+      "consentDesc": "Administra la configuracion de consentimiento para datos faciales y de voz",
+      "movieInteractions": "Interacciones con Peliculas",
+      "movieInteractionsDesc": "Explora peliculas y habla con tus personajes favoritos"
+    },
+    "movieInteractions": {
+      "title": "Interacciones con Peliculas",
+      "subtitle": "Elige una pelicula y habla con personajes",
+      "tagMovie": "Etiquetar Pelicula",
+      "tagging": "Extrayendo personajes...",
+      "tagged": "Listo",
+      "noMovies": "No hay peliculas etiquetadas aun. Etiqueta una pelicula para empezar a hablar con personajes.",
+      "characters": {
+        "title": "Personajes",
+        "subtitle": "Elige un personaje para hablar",
+        "playedBy": "Interpretado por {{actorName}}",
+        "noCharacters": "No hay personajes disponibles"
+      },
+      "dialogue": {
+        "title": "Habla con {{characterName}}",
+        "specificQuestions": "Preguntas del Personaje",
+        "genericQuestions": "Preguntas Generales",
+        "customQuestion": "Haz tu propia pregunta",
+        "placeholder": "Escribe una pregunta...",
+        "generatingResponse": "Pensando...",
+        "generatingAudio": "Creando voz...",
+        "generatingVideo": "Creando video...",
+        "creditCost": "Cuesta {{credits}} creditos",
+        "askAnother": "Haz otra pregunta",
+        "sending": "Enviando..."
+      },
+      "errors": {
+        "fetchFailed": "Error al cargar peliculas",
+        "tagFailed": "Error al etiquetar pelicula",
+        "charactersFailed": "Error al cargar personajes",
+        "questionsFailed": "Error al cargar preguntas",
+        "dialogueFailed": "Error al enviar mensaje"
+      }
     },
     "avatar3d": {
       "errorTitle": "3D Avatar Error",

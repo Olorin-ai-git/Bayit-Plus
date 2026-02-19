@@ -175,6 +175,9 @@ const ContactsManagementPage = lazy(() => import('./pages/ContactsManagementPage
 const FeedbackInboxPage = lazy(() => import('./pages/FeedbackInboxPage'))
 const Avatar3DPage = lazy(() => import('./pages/Avatar3DPage'))
 const BiometricConsentPage = lazy(() => import('./pages/BiometricConsentPage'))
+const MovieInteractionsPage = lazy(() => import('./pages/MovieInteractionsPage'))
+const MovieCharactersPage = lazy(() => import('./pages/MovieCharactersPage'))
+const CharacterDialoguePage = lazy(() => import('./pages/CharacterDialoguePage'))
 
 // Auth hydration guard wrapper
 const AppContent = () => {
@@ -341,6 +344,9 @@ const AppContent = () => {
         <Route path="/zeh-ani/feedback" element={<FeedbackInboxPage />} />
         <Route path="/zeh-ani/avatar" element={<Avatar3DPage />} />
         <Route path="/zeh-ani/consent" element={<BiometricConsentPage />} />
+        <Route path="/zeh-ani/movie-interactions" element={<MovieInteractionsPage />} />
+        <Route path="/zeh-ani/movie-interactions/:contentId" element={<MovieCharactersPage />} />
+        <Route path="/zeh-ani/movie-interactions/:contentId/:characterName" element={<CharacterDialoguePage />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>
