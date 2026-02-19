@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Forward30
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
@@ -54,6 +56,7 @@ fun PlayerControlsOverlay(
     isLiveContent: Boolean,
     volume: Float,
     playbackSpeed: Float,
+    isFullscreen: Boolean,
     onPlayPause: () -> Unit,
     onSeek: (Float) -> Unit,
     onSkipBackward: () -> Unit,
@@ -61,6 +64,7 @@ fun PlayerControlsOverlay(
     onRestart: () -> Unit,
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
+    onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showVolume by remember { mutableStateOf(false) }
@@ -158,6 +162,16 @@ fun PlayerControlsOverlay(
                     contentDescription = bayitString("player.controls.volume"),
                     tint = if (showVolume) DesignTokens.Colors.Primary.light
                     else DesignTokens.Colors.Text.primary,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+
+            IconButton(onClick = onToggleFullscreen) {
+                Icon(
+                    imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                    contentDescription = if (isFullscreen) bayitString("player.controls.exitFullscreen")
+                    else bayitString("player.controls.fullscreen"),
+                    tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(24.dp),
                 )
             }

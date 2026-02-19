@@ -962,7 +962,9 @@
       "preview": "Vista previa",
       "selected": "Seleccionado",
       "send": "Enviar",
-      "skip": "Omitir"
+      "skip": "Omitir",
+      "fullscreen": "Pantalla completa",
+      "exitFullscreen": "Salir de pantalla completa"
     },
     "dubbing": {
       "notNow": "Ahora no",

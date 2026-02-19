@@ -1049,7 +1049,9 @@
       "preview": "תצוגה מקדימה",
       "selected": "נבחר",
       "send": "שלח",
-      "skip": "דלג"
+      "skip": "דלג",
+      "fullscreen": "מסך מלא",
+      "exitFullscreen": "יציאה ממסך מלא"
     },
     "dubbing": {
       "notNow": "לא עכשיו",

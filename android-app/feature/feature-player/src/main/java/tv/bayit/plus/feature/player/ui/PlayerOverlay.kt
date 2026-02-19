@@ -34,6 +34,7 @@ fun PlayerOverlay(
     isLiveContent: Boolean,
     volume: Float,
     playbackSpeed: Float,
+    isFullscreen: Boolean,
     onToggleControls: () -> Unit,
     onBack: () -> Unit,
     onPlayPause: () -> Unit,
@@ -43,6 +44,7 @@ fun PlayerOverlay(
     onRestart: () -> Unit,
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
+    onToggleFullscreen: () -> Unit,
     modifier: Modifier = Modifier,
     selectedSubtitleLanguage: String? = null,
     isSplitSubtitleMode: Boolean = false,
@@ -106,6 +108,7 @@ fun PlayerOverlay(
                     isLiveContent = isLiveContent,
                     volume = volume,
                     playbackSpeed = playbackSpeed,
+                    isFullscreen = isFullscreen,
                     onPlayPause = onPlayPause,
                     onSeek = onSeek,
                     onSkipBackward = onSkipBackward,
@@ -113,6 +116,7 @@ fun PlayerOverlay(
                     onRestart = onRestart,
                     onVolumeChange = onVolumeChange,
                     onSpeedChange = onSpeedChange,
+                    onToggleFullscreen = onToggleFullscreen,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }

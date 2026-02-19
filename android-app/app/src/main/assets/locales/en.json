@@ -1043,7 +1043,9 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "fullscreen": "Enter full screen",
+      "exitFullscreen": "Exit full screen"
     },
     "dubbing": {
       "notNow": "Not Now",

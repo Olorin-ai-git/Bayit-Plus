@@ -399,6 +399,12 @@ class PlayerViewModel @Inject constructor(
         _extendedState.value = _extendedState.value.copy(showOmriOverlay = false)
     }
 
+    fun toggleFullscreen() {
+        val current = _extendedState.value.isFullscreen
+        _extendedState.value = _extendedState.value.copy(isFullscreen = !current)
+        logger.debug("Toggled fullscreen", mapOf("isFullscreen" to (!current).toString()))
+    }
+
     private suspend fun checkSpecialUser() {
         val result = userRepository.getCurrentUser()
         if (result is BayitResult.Success) {

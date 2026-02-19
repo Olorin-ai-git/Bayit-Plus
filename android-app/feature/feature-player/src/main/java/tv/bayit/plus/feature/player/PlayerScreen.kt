@@ -1,5 +1,7 @@
 package tv.bayit.plus.feature.player
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
@@ -71,6 +77,25 @@ fun PlayerRoute(
     DisposableEffect(contentId) {
         viewModel.loadContent(contentId, contentType, resumePositionMs)
         onDispose { viewModel.release() }
+    }
+
+    val context = LocalContext.current
+    DisposableEffect(extendedState.isFullscreen) {
+        val activity = context as? Activity
+        val window = activity?.window
+        val controller = window?.let { WindowCompat.getInsetsController(it, it.decorView) }
+        if (extendedState.isFullscreen) {
+            controller?.hide(WindowInsetsCompat.Type.systemBars())
+            controller?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
+            controller?.show(WindowInsetsCompat.Type.systemBars())
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+        onDispose {
+            controller?.show(WindowInsetsCompat.Type.systemBars())
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
     }
 
     BackHandler {
@@ -150,6 +175,7 @@ fun PlayerRoute(
         },
         onExtendSleepTimer = viewModel::extendSleepTimer,
         onCancelSleepTimer = viewModel::cancelSleepTimer,
+        onToggleFullscreen = viewModel::toggleFullscreen,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()
@@ -212,6 +238,7 @@ private fun PlayerScreen(
     onStartSleepTimer: (Int) -> Unit,
     onExtendSleepTimer: (Int) -> Unit,
     onCancelSleepTimer: () -> Unit,
+    onToggleFullscreen: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -254,6 +281,7 @@ private fun PlayerScreen(
                     onVolumeChange = onVolumeChange,
                     onSpeedChange = onSpeedChange,
                     onBack = onBack,
+                    onToggleFullscreen = onToggleFullscreen,
                 )
 
                 if (!uiState.isLiveContent) {

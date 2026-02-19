@@ -42,4 +42,5 @@ data class PlayerExtendedState(
     val isSpecialUser: Boolean = false,
     val showOmriOverlay: Boolean = false,
     val hasTriggeredOmriOverlay: Boolean = false,
+    val isFullscreen: Boolean = false,
 )

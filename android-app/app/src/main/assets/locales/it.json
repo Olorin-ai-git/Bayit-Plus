@@ -509,7 +509,9 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "fullscreen": "Schermo intero",
+      "exitFullscreen": "Esci dallo schermo intero"
     },
     "dubbing": {
       "notNow": "Not Now",

@@ -62,6 +62,7 @@ internal fun ReadyContent(
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
     onBack: () -> Unit,
+    onToggleFullscreen: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -92,6 +93,7 @@ internal fun ReadyContent(
                 isLiveContent = state.isLiveContent,
                 volume = extendedState.volume,
                 playbackSpeed = extendedState.playbackSpeed,
+                isFullscreen = extendedState.isFullscreen,
                 selectedSubtitleLanguage = extendedState.selectedSubtitleLanguage,
                 isSplitSubtitleMode = extendedState.isSplitSubtitleMode,
                 primarySubtitleLanguage = extendedState.primarySubtitleLanguage,
@@ -105,6 +107,7 @@ internal fun ReadyContent(
                 onRestart = onRestart,
                 onVolumeChange = onVolumeChange,
                 onSpeedChange = onSpeedChange,
+                onToggleFullscreen = onToggleFullscreen,
                 onSubtitlePickerClick = onShowSubtitlePicker,
                 onAIFeaturesClick = if (state.isLiveContent) onToggleAIPanel else null,
                 isVodTriviaEnabled = extendedState.isVodTriviaEnabled,
@@ -169,7 +172,9 @@ internal fun ReadyContent(
             }
         }
 
-        MetadataSection(title = state.title, description = state.description)
+        if (!extendedState.isFullscreen) {
+            MetadataSection(title = state.title, description = state.description)
+        }
     }
 }
 

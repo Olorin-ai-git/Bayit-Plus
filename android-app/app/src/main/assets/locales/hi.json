@@ -497,7 +497,9 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "fullscreen": "पूर्ण स्क्रीन",
+      "exitFullscreen": "पूर्ण स्क्रीन से बाहर"
     },
     "dubbing": {
       "notNow": "Not Now",

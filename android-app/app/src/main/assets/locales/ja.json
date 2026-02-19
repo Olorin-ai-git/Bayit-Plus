@@ -48,7 +48,6 @@
     "pause": "一時停止",
     "resume": "再開",
     "play": "再生",
-    "pause": "一時停止",
     "more": "もっと見る",
     "less": "閉じる",
     "showMore": "もっと見る",
@@ -1179,7 +1178,9 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "fullscreen": "Enter full screen",
+      "exitFullscreen": "Exit full screen"
     },
     "dubbing": {
       "notNow": "Not Now",
