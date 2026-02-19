@@ -4,23 +4,52 @@ import SwiftUI
 
 /// iPad sidebar navigation replacing the bottom tab bar
 struct IPadSidebarView: View {
+    let isCollapsed: Bool
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
-        List {
-            mainTabsSection
-            browseSection
-            userSection
-        }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
-        .background(DesignTokens.Background.primary)
-        .navigationTitle("Bayit+")
-        .safeAreaInset(edge: .bottom) {
-            languagePicker
-                .padding(.horizontal, DesignTokens.Spacing.md)
-                .padding(.bottom, DesignTokens.Spacing.md)
+        if isCollapsed {
+            ScrollView {
+                LazyVStack(spacing: DesignTokens.Spacing.xs) {
+                    ForEach(AppTab.allCases) { tab in
+                        iconButton(
+                            coordinator.selectedTab == tab ? tab.selectedIconName : tab.iconName,
+                            isSelected: coordinator.selectedTab == tab
+                        ) {
+                            coordinator.selectedTab = tab
+                            coordinator.popToRoot()
+                        }
+                    }
+                    Divider().padding(.horizontal, DesignTokens.Spacing.sm)
+                    iconButton("radio") { coordinator.navigate(to: .radio) }
+                    iconButton("book") { coordinator.navigate(to: .audiobooks) }
+                    iconButton("figure.and.child.holdinghands") { coordinator.navigate(to: .children) }
+                    iconButton("flame") { coordinator.navigate(to: .trending) }
+                    Divider().padding(.horizontal, DesignTokens.Spacing.sm)
+                    iconButton("person.circle") { coordinator.navigate(to: .profile) }
+                    iconButton("heart") { coordinator.navigate(to: .favorites) }
+                    iconButton("arrow.down.circle") { coordinator.navigate(to: .downloads) }
+                    iconButton("gearshape") { coordinator.navigate(to: .settings) }
+                }
+                .padding(.vertical, DesignTokens.Spacing.md)
+            }
+            .background(DesignTokens.Background.primary)
+        } else {
+            List {
+                mainTabsSection
+                browseSection
+                userSection
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(DesignTokens.Background.primary)
+            .navigationTitle("Bayit+")
+            .safeAreaInset(edge: .bottom) {
+                languagePicker
+                    .padding(.horizontal, DesignTokens.Spacing.md)
+                    .padding(.bottom, DesignTokens.Spacing.md)
+            }
         }
     }
 
@@ -126,12 +155,7 @@ struct IPadSidebarView: View {
 
     // MARK: - Sidebar Button
 
-    private func sidebarButton(
-        icon: String,
-        title: String,
-        isSelected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
+    private func sidebarButton(icon: String, title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Label {
                 Text(title)
@@ -156,5 +180,19 @@ struct IPadSidebarView: View {
                 ? DesignTokens.Glass.bgMedium
                 : Color.clear
         )
+    }
+
+    // MARK: - Icon Button (compact mode)
+
+    private func iconButton(_ icon: String, isSelected: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(isSelected ? DesignTokens.Primary.default : DesignTokens.Text.secondary)
+                .frame(width: 44, height: 44)
+                .background(isSelected ? DesignTokens.Glass.bgMedium : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+        }
+        .buttonStyle(.plain)
     }
 }

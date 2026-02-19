@@ -11,13 +11,19 @@ struct IPadMainView: View {
     @State private var isVoiceModalPresented = false
     @State private var dockViewModel: WidgetDockViewModel?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var sidebarCollapsed = false
 
     private let resolver = RouteDestinationResolver()
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            IPadSidebarView()
-                .navigationSplitViewColumnWidth(min: 220, ideal: 260, max: 300)
+            IPadSidebarView(isCollapsed: sidebarCollapsed)
+                .navigationSplitViewColumnWidth(
+                    min: sidebarCollapsed ? 64 : 200,
+                    ideal: sidebarCollapsed ? 64 : 210,
+                    max: sidebarCollapsed ? 64 : 220
+                )
+                .id(sidebarCollapsed)
         } detail: {
             ZStack(alignment: .bottom) {
                 detailContent(for: coordinator.selectedTab)
@@ -74,6 +80,15 @@ struct IPadMainView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .onChange(of: columnVisibility) { _, newValue in
+            guard newValue == .detailOnly else { return }
+            Task { @MainActor in
+                columnVisibility = .all
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    sidebarCollapsed.toggle()
+                }
+            }
+        }
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)
