@@ -141,7 +141,7 @@ private fun DialogueContent(
 private fun DialogueMessageCard(message: DialogueMessage) {
     Box(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = if (message.isUser) Alignment.End else Alignment.Start,
+        contentAlignment = if (message.isUser) Alignment.CenterEnd else Alignment.CenterStart,
     ) {
         GlassCard {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xxs)) {

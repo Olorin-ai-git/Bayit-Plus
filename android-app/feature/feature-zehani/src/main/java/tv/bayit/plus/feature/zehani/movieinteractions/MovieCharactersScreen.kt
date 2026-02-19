@@ -139,9 +139,9 @@ private fun CharacterTile(character: InteractiveCharacter, onClick: () -> Unit) 
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            if (character.actorName != null) {
+            character.actorName?.let { actorName ->
                 Text(
-                    text = character.actorName,
+                    text = actorName,
                     style = MaterialTheme.typography.bodySmall,
                     color = DesignTokens.Colors.Text.secondary,
                     textAlign = TextAlign.Center,
