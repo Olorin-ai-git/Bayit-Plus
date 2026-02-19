@@ -162,7 +162,7 @@ private interface ContentService {
     @retrofit2.http.DELETE("api/v1/user/favorites/{contentId}")
     suspend fun removeFavorite(@Path("contentId") contentId: String): ContentRemoveResponse
 
-    @GET("api/v1/history")
+    @GET("api/v1/history/continue")
     suspend fun getContinueWatching(): ContinueWatchingResponse
 
     @GET("api/v1/trending/topics")
@@ -212,7 +212,7 @@ private data class ContentCategoryResponse(
     val items: List<ContentItem> = emptyList(),
 )
 
-/** Wrapper for GET api/v1/history — backend returns {"items":[...], "total":N, ...}. */
+/** Wrapper for GET api/v1/history/continue — backend returns {"items":[...]}. */
 @kotlinx.serialization.Serializable
 private data class ContinueWatchingResponse(
     val items: List<WatchHistoryItem> = emptyList(),

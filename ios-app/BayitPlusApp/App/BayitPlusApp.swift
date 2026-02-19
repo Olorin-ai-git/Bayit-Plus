@@ -306,4 +306,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             AppDelegate.pushNotificationService?.didFailToRegisterForRemoteNotifications(withError: error)
         }
     }
+
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        return .allButUpsideDown
+    }
 }

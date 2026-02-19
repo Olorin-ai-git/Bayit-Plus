@@ -184,16 +184,16 @@ export default function FullscreenVideoOverlay() {
 
     historyService
       .getContinueWatching()
-      .then((items) => {
+      .then((response) => {
+        const items = Array.isArray(response) ? response : response?.items
         logger.info('Watch history received in overlay', 'FullscreenVideoOverlay', {
           itemsCount: items?.length || 0,
         })
-        // Ensure items is an array
         if (!Array.isArray(items)) {
           logger.info('No watch history items found in overlay', 'FullscreenVideoOverlay')
           return
         }
-        const saved = items.find((i) => i.content_id === content.id)
+        const saved = items.find((i) => i.id === content.id)
         if (saved?.position > 0) {
           setSavedPosition(saved.position)
           logger.info('Set saved watch position in overlay', 'FullscreenVideoOverlay', {

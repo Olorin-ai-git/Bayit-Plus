@@ -1211,6 +1211,13 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'Message with Quote / Comprehension / Question',
     usage: ['comprehension_quiz', 'questions', 'dialog', 'quotes'],
   },
+  avatar: {
+    name: 'avatar',
+    lucideName: 'UserCircle',
+    category: 'navigation',
+    description: 'Avatar / User Identity',
+    usage: ['profile', 'zeh_ani', 'avatar_studio'],
+  },
 };
 
 /**

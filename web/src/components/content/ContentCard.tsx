@@ -18,6 +18,7 @@ import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 import { isSeriesContent } from '@/utils/contentHelpers';
+import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 
 const log = logger.scope('ContentCard');
 
@@ -30,6 +31,7 @@ interface Content {
   is_series?: boolean;
   duration?: string;
   progress?: number;
+  position?: number;
   year?: string;
   category?: string;
   category_name_en?: string;
@@ -74,6 +76,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   const { isMobile } = responsive;
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
+  const openPlayer = useFullscreenPlayerStore((s) => s.openPlayer);
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [iframeLoading, setIframeLoading] = useState(true);
 
@@ -449,7 +452,7 @@ export default function ContentCard({ content, showProgress = false, showActions
             )}
 
             {/* Progress Bar */}
-            {showProgress && content.progress && content.progress > 0 && (
+            {content.progress != null && content.progress > 0 && (
               <View style={styles.progressContainer}>
                 <View style={[styles.progressBar, { width: `${content.progress}%` }]} />
               </View>
@@ -571,6 +574,38 @@ export default function ContentCard({ content, showProgress = false, showActions
       >
         {CardContent}
         {articleModal}
+      </div>
+    );
+  }
+
+  // Continue Watching: Open player directly with saved position
+  const isContinueWatching = content.progress != null && content.progress > 0
+    && content.type !== 'live' && content.type !== 'series' && !isSeriesContent(content as any);
+
+  if (isUIInteractionEnabled && isContinueWatching) {
+    const handleResumePlay = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openPlayer({
+        id: content.id,
+        title: content.title,
+        src: '',
+        poster: content.thumbnail,
+        type: (content.type as any) || 'movie',
+      }, content.position || 0);
+    };
+    return (
+      <div
+        onMouseDown={handleResumePlay}
+        style={{
+          flexShrink: 0,
+          cursor: 'pointer',
+          WebkitTapHighlightColor: 'transparent',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
+      >
+        {CardContent}
       </div>
     );
   }

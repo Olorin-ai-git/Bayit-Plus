@@ -35,10 +35,6 @@ struct VODView: View {
 
                 contentTypeFilters(vm)
 
-                if !vm.categories.isEmpty {
-                    categoryFilters(vm)
-                }
-
                 if !vm.availableGenres.isEmpty {
                     genreFilters(vm)
                 }
