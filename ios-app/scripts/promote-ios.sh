@@ -58,9 +58,6 @@ plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/
 echo -e "${GREEN}✅ Updated BayitPlusApp/Info.plist${NC}"
 echo -e "${GREEN}✅ Updated Extensions/WidgetExtension/Info.plist${NC}"
 
-# Update project.pbxproj (iOS app configurations only)
-sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
-
 echo -e "${BLUE}🏗️  Archiving iOS app...${NC}"
 
 # Archive (temporarily relax strict concurrency for archiving)

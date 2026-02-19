@@ -165,6 +165,7 @@ fun BayitNavHost(
             HomeRoute(
                 onNavigateToContent = { id, type -> navController.navigateToContent(id, type) },
                 onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+                onNavigateToContinueWatchingItem = { id, type, posMs -> navController.navigate(Route.Player(contentId = id, contentType = type, resumePositionMs = posMs)) },
                 onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
                 onNavigateToRadio = { radioId -> navController.navigate(Route.Player(contentId = radioId, contentType = "radio")) },
                 onNavigateToYoungsters = { navController.navigate(Route.Youngsters) },
@@ -205,7 +206,7 @@ fun BayitNavHost(
         }
         composable<Route.Player> { entry ->
             val route = entry.toRoute<Route.Player>()
-            PlayerRoute(contentId = route.contentId, contentType = route.contentType, onNavigateBack = { navController.popBackStack() })
+            PlayerRoute(contentId = route.contentId, contentType = route.contentType, resumePositionMs = route.resumePositionMs, onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.MovieDetail> {
             MovieDetailRoute(

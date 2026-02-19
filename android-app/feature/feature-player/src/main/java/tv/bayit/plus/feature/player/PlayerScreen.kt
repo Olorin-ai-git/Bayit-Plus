@@ -45,6 +45,7 @@ import tv.bayit.plus.feature.player.ui.PlayerOverlay
 fun PlayerRoute(
     contentId: String,
     contentType: String,
+    resumePositionMs: Long = 0L,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlayerViewModel = hiltViewModel(),
@@ -68,7 +69,7 @@ fun PlayerRoute(
     var showSleepTimerPicker by remember { mutableStateOf(false) }
 
     DisposableEffect(contentId) {
-        viewModel.loadContent(contentId, contentType)
+        viewModel.loadContent(contentId, contentType, resumePositionMs)
         onDispose { viewModel.release() }
     }
 

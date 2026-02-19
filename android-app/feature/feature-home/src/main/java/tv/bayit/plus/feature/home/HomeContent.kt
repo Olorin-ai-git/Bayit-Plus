@@ -29,6 +29,7 @@ internal fun HomeSuccessContent(
     uiState: HomeUiState.Success,
     onSpotlightClick: (SpotlightItem) -> Unit,
     onContentClick: (ContentItem) -> Unit,
+    onContinueWatchingItemClick: (String, String, Long) -> Unit,
     onChannelClick: (String) -> Unit,
     onRadioClick: (String) -> Unit,
     onCollectionClick: (String) -> Unit = {},
@@ -116,7 +117,13 @@ internal fun HomeSuccessContent(
                 item(key = "continue") {
                     ContinueWatchingRow(
                         items = uiState.continueWatching,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onItemClick = { item ->
+                            onContinueWatchingItemClick(
+                                item.id,
+                                item.type.orEmpty(),
+                                ((item.position ?: 0.0) * 1000).toLong(),
+                            )
+                        },
                         onShowAllClick = onContinueWatchingShowAll,
                     )
                 }

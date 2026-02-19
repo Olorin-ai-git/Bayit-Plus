@@ -61,9 +61,6 @@ plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/
 echo -e "${GREEN}✅ Updated BayitPlusApp/Info.plist${NC}"
 echo -e "${GREEN}✅ Updated Extensions/WidgetExtension/Info.plist${NC}"
 
-# Update project.pbxproj
-sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
-
 echo -e "${BLUE}🏗️  Archiving iPadOS app...${NC}"
 
 # Archive using the same universal BayitPlusApp scheme (covers iPhone + iPad)

@@ -322,10 +322,12 @@ class HomeViewModel @Inject constructor(
             return null
         }
 
-        val deviceLocation = locationManager.getCurrentLocation() ?: run {
-            logger.debug("Could not get device location")
-            return null
-        }
+        val deviceLocation = locationManager.getLastKnownLocation()
+            ?: locationManager.getCurrentLocation()
+            ?: run {
+                logger.debug("Could not get device location")
+                return null
+            }
 
         val userLocation = locationManager.reverseGeocode(
             latitude = deviceLocation.latitude,

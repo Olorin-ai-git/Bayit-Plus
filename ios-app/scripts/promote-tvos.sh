@@ -23,7 +23,7 @@ cd "$PROJECT_DIR"
 # Validate Info.plist contains production values only
 echo -e "${BLUE}🔍 Validating Info.plist for production values...${NC}"
 
-API_BASE_URL=$(plutil -extract API_BASE_URL raw -o - BayitPlusApp/Info.plist)
+API_BASE_URL=$(plutil -extract API_BASE_URL raw -o - BayitPlusTVApp/Info.plist)
 
 # Check for localhost or any non-production URLs
 if [[ "$API_BASE_URL" == *"localhost"* ]] || [[ "$API_BASE_URL" == *"127.0.0.1"* ]] || [[ "$API_BASE_URL" =~ ^http://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+ ]]; then
@@ -31,7 +31,7 @@ if [[ "$API_BASE_URL" == *"localhost"* ]] || [[ "$API_BASE_URL" == *"127.0.0.1"*
   echo -e "${RED}   Found: $API_BASE_URL${NC}"
   echo -e "${RED}   Expected: https://api.bayit.tv/api/v1${NC}"
   echo ""
-  echo -e "${BLUE}Fix with: plutil -replace API_BASE_URL -string 'https://api.bayit.tv/api/v1' BayitPlusApp/Info.plist${NC}"
+  echo -e "${BLUE}Fix with: plutil -replace API_BASE_URL -string 'https://api.bayit.tv/api/v1' BayitPlusTVApp/Info.plist${NC}"
   exit 1
 fi
 
@@ -45,20 +45,19 @@ fi
 
 echo -e "${GREEN}✅ Info.plist validation passed - production values confirmed${NC}"
 
-# Get current build number from Info.plist (shared with iOS - same bundle)
-CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusApp/Info.plist)
+# Get current build number from tvOS Info.plist
+CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusTVApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))
 
-echo -e "${BLUE}Bumping build number: $CURRENT_BUILD -> $NEW_BUILD${NC}"
+echo -e "${BLUE}Bumping tvOS build number: $CURRENT_BUILD -> $NEW_BUILD${NC}"
 
-# Update Info.plist files (shared bundle with iOS)
-plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusApp/Info.plist
-plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/Info.plist
+# Update tvOS Info.plist only (not iOS or widget extension)
+plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusTVApp/Info.plist
 
-echo -e "${GREEN}Updated BayitPlusApp/Info.plist${NC}"
-echo -e "${GREEN}Updated Extensions/WidgetExtension/Info.plist${NC}"
+echo -e "${GREEN}Updated BayitPlusTVApp/Info.plist${NC}"
 
-# Update project.pbxproj (all configurations)
+# Update CURRENT_PROJECT_VERSION in project.pbxproj for tvOS target only
+# (tvOS uses GENERATE_INFOPLIST_FILE = YES, so this is the authoritative build number)
 sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
 
 echo -e "${BLUE}Archiving tvOS app...${NC}"

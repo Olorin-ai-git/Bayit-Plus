@@ -27,7 +27,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.BayitPlus.Splash"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

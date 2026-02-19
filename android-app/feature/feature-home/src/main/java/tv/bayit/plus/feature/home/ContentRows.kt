@@ -42,7 +42,7 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 @Composable
 internal fun ContinueWatchingRow(
     items: List<WatchHistoryItem>,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (WatchHistoryItem) -> Unit,
     onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,7 +58,7 @@ internal fun ContinueWatchingRow(
                     imageUrl = item.thumbnail,
                     title = item.title,
                     progress = item.progress?.toFloat(),
-                    onClick = { onItemClick(item.id, item.type.orEmpty()) },
+                    onClick = { onItemClick(item) },
                 )
             }
         }

@@ -71,7 +71,7 @@ class PlayerViewModel @Inject constructor(
         observeSleepTimerState()
     }
 
-    fun loadContent(contentId: String, contentType: String) {
+    fun loadContent(contentId: String, contentType: String, resumePositionMs: Long = 0L) {
         if (currentContentId == contentId) return
         currentContentId = contentId
         currentContentType = contentType
@@ -91,6 +91,10 @@ class PlayerViewModel @Inject constructor(
                         streamUrl = streamResult.data, contentId = contentId,
                         title = metadata.first, isLive = isLive,
                     ))
+                    if (resumePositionMs > 0L) {
+                        mediaPlayer.seekTo(resumePositionMs)
+                        logger.debug("Resuming from position", mapOf("positionMs" to resumePositionMs.toString()))
+                    }
                     _uiState.value = PlayerUiState.Ready(
                         contentId = contentId, title = metadata.first,
                         description = metadata.second, exoPlayer = mediaPlayer.getPlayer(),

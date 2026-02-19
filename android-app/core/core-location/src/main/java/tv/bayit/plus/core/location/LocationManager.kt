@@ -78,6 +78,25 @@ class LocationManager @Inject constructor(
     }
 
     /**
+     * Gets the last known location (fast, may be stale).
+     * Returns null if permission denied or no prior fix exists.
+     */
+    suspend fun getLastKnownLocation(): Location? {
+        if (!hasLocationPermission()) return null
+
+        return try {
+            suspendCancellableCoroutine { continuation ->
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location -> continuation.resume(location) }
+                    .addOnFailureListener { continuation.resume(null) }
+            }
+        } catch (e: Exception) {
+            logger.error("Last location fetch failed", e)
+            null
+        }
+    }
+
+    /**
      * Gets device location with timeout.
      * Returns null if permission denied or location unavailable.
      */
