@@ -3238,7 +3238,22 @@
     "empty": "कोई डाउनलोड नहीं",
     "emptyHint": "ऑफ़लाइन देखने के लिए सामग्री डाउनलोड करें",
     "paused": "रुका हुआ",
-    "loading": "डाउनलोड लोड हो रहे हैं..."
+    "loading": "डाउनलोड लोड हो रहे हैं...",
+    "downloading": "डाउनलोड हो रहा है",
+    "completed": "पूर्ण",
+    "failed": "विफल",
+    "queued": "कतार में",
+    "retry": "पुनः प्रयास",
+    "retryAll": "सभी पुनः प्रयास",
+    "clearAll": "सभी हटाएं",
+    "clearCompleted": "पूर्ण हटाएं",
+    "resume": "जारी रखें",
+    "pause": "रोकें",
+    "download": "डाउनलोड",
+    "downloaded": "डाउनलोड किया",
+    "offlineMessage": "आप ऑफ़लाइन हैं। डाउनलोड उपलब्ध नहीं हैं।",
+    "deleteConfirm": "क्या आप वाकई इस डाउनलोड को हटाना चाहते हैं?",
+    "storageUsed": "उपयोग किया गया स्टोरेज"
   },
   "empty": {
     "noContent": "No content available",

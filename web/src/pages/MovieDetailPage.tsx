@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, StyleSheet, Pressable, Modal } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star, ChevronRight, X, ArrowLeft } from 'lucide-react';
+import { Play, Plus, Check, Share2, Star, ChevronRight, X, ArrowLeft, Download } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { Icon } from '@olorin/shared-icons/web';
 import Hls from 'hls.js';
@@ -15,6 +15,8 @@ import { SubtitleTrack } from '@/types/subtitle';
 import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
 import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
+import { useDownloadStore, selectIsDownloaded, selectIsDownloading } from '@/stores/downloadStore';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import logger from '@/utils/logger';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -67,6 +69,10 @@ export default function MovieDetailPage() {
   const [dualMode, setDualMode] = useState(false);
   const [dualLanguages, setDualLanguages] = useState<[string, string] | null>(null);
   const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
+  const { startDownload } = useDownloadStore();
+  const isDownloaded = useDownloadStore(selectIsDownloaded(movieId || ''));
+  const isDownloadingNow = useDownloadStore(selectIsDownloading(movieId || ''));
+  const { isOnline } = useOnlineStatus();
 
   // Video preview state
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
@@ -563,6 +569,17 @@ export default function MovieDetailPage() {
                   size="lg"
                   icon={inPlaylist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
                   title={inPlaylist ? t('content.inList') : t('content.addToList')}
+                />
+
+                <GlassButton
+                  onPress={() => startDownload(movie.id, 'movie')}
+                  variant="ghost"
+                  size="lg"
+                  icon={isDownloaded
+                    ? <Check size={20} color={colors.text} />
+                    : <Download size={20} color={colors.text} />}
+                  title={isDownloaded ? t('downloads.downloaded') : t('downloads.download')}
+                  disabled={!isOnline || isDownloadingNow || isDownloaded}
                 />
 
                 {movie.trailer_url ? (

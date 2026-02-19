@@ -4111,7 +4111,22 @@
     "empty": "אין הורדות",
     "emptyHint": "הורד תוכן לצפייה במצב לא מקוון",
     "paused": "מושהה",
-    "loading": "טוען הורדות..."
+    "loading": "טוען הורדות...",
+    "downloading": "מוריד",
+    "completed": "הושלם",
+    "failed": "נכשל",
+    "queued": "בתור",
+    "retry": "נסה שוב",
+    "retryAll": "נסה שוב הכל",
+    "clearAll": "נקה הכל",
+    "clearCompleted": "נקה שהושלמו",
+    "resume": "המשך",
+    "pause": "השהה",
+    "download": "הורד",
+    "downloaded": "הורד",
+    "offlineMessage": "אתה במצב לא מקוון. הורדות אינן זמינות.",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק הורדה זו?",
+    "storageUsed": "אחסון בשימוש"
   },
   "dubbing": {
     "title": "דיבוב חי",

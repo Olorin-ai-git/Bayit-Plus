@@ -3356,7 +3356,22 @@
     "empty": "Aucun téléchargement",
     "emptyHint": "Téléchargez du contenu pour le regarder hors ligne",
     "paused": "En pause",
-    "loading": "Chargement des téléchargements..."
+    "loading": "Chargement des téléchargements...",
+    "downloading": "En cours",
+    "completed": "Terminé",
+    "failed": "Échoué",
+    "queued": "En attente",
+    "retry": "Réessayer",
+    "retryAll": "Tout réessayer",
+    "clearAll": "Tout effacer",
+    "clearCompleted": "Effacer les terminés",
+    "resume": "Reprendre",
+    "pause": "Pause",
+    "download": "Télécharger",
+    "downloaded": "Téléchargé",
+    "offlineMessage": "Vous êtes hors ligne. Les téléchargements ne sont pas disponibles.",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce téléchargement ?",
+    "storageUsed": "Stockage utilisé"
   },
   "empty": {
     "noContent": "No content available",

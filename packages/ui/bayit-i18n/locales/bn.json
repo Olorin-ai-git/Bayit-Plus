@@ -3238,7 +3238,22 @@
     "emptyHint": "অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করুন",
     "storage": "স্টোরেজ",
     "paused": "বিরতি",
-    "loading": "ডাউনলোড লোড হচ্ছে..."
+    "loading": "ডাউনলোড লোড হচ্ছে...",
+    "downloading": "ডাউনলোড হচ্ছে",
+    "completed": "সম্পন্ন",
+    "failed": "ব্যর্থ",
+    "queued": "সারিতে",
+    "retry": "পুনরায় চেষ্টা",
+    "retryAll": "সব পুনরায় চেষ্টা",
+    "clearAll": "সব মুছুন",
+    "clearCompleted": "সম্পন্ন মুছুন",
+    "resume": "পুনরায় শুরু",
+    "pause": "বিরতি",
+    "download": "ডাউনলোড",
+    "downloaded": "ডাউনলোড হয়েছে",
+    "offlineMessage": "আপনি অফলাইনে আছেন। ডাউনলোড উপলব্ধ নয়।",
+    "deleteConfirm": "আপনি কি নিশ্চিত যে আপনি এই ডাউনলোডটি মুছতে চান?",
+    "storageUsed": "ব্যবহৃত স্টোরেজ"
   },
   "empty": {
     "noContent": "No content available",

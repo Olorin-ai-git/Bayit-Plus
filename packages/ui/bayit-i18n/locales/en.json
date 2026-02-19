@@ -4114,7 +4114,22 @@
     "empty": "No downloads",
     "emptyHint": "Download content for offline viewing",
     "paused": "Paused",
-    "loading": "Loading downloads..."
+    "loading": "Loading downloads...",
+    "downloading": "Downloading",
+    "completed": "Completed",
+    "failed": "Failed",
+    "queued": "Queued",
+    "retry": "Retry",
+    "retryAll": "Retry All",
+    "clearAll": "Clear All",
+    "clearCompleted": "Clear Completed",
+    "resume": "Resume",
+    "pause": "Pause",
+    "download": "Download",
+    "downloaded": "Downloaded",
+    "offlineMessage": "You are offline. Downloads are unavailable.",
+    "deleteConfirm": "Are you sure you want to delete this download?",
+    "storageUsed": "Storage Used"
   },
   "dubbing": {
     "title": "Live Dubbing",

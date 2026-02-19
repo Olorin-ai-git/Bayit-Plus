@@ -3978,7 +3978,15 @@
     "items": "アイテム",
     "empty": "ダウンロードがありません",
     "emptyHint": "オフライン視聴用にコンテンツをダウンロード",
-    "loading": "ダウンロードを読み込み中..."
+    "loading": "ダウンロードを読み込み中...",
+    "completed": "完了",
+    "retryAll": "すべて再試行",
+    "clearAll": "すべてクリア",
+    "clearCompleted": "完了をクリア",
+    "download": "ダウンロード",
+    "offlineMessage": "オフラインです。ダウンロードは利用できません。",
+    "deleteConfirm": "このダウンロードを削除してもよろしいですか？",
+    "storageUsed": "使用中のストレージ"
   },
   "empty": {
     "noContent": "No content available",

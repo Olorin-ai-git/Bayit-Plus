@@ -3559,7 +3559,22 @@
     "empty": "Nessun download",
     "emptyHint": "Scarica contenuti per la visione offline",
     "paused": "In pausa",
-    "loading": "Caricamento download..."
+    "loading": "Caricamento download...",
+    "downloading": "In corso",
+    "completed": "Completato",
+    "failed": "Fallito",
+    "queued": "In coda",
+    "retry": "Riprova",
+    "retryAll": "Riprova tutto",
+    "clearAll": "Cancella tutto",
+    "clearCompleted": "Cancella completati",
+    "resume": "Riprendi",
+    "pause": "Pausa",
+    "download": "Scarica",
+    "downloaded": "Scaricato",
+    "offlineMessage": "Sei offline. I download non sono disponibili.",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo download?",
+    "storageUsed": "Spazio utilizzato"
   },
   "empty": {
     "noContent": "No content available",

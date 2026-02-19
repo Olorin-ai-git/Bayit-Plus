@@ -5,12 +5,13 @@
 
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Play, Bookmark } from 'lucide-react';
+import { Play, Bookmark, Download, Check } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { SubtitleFlags } from '@bayit/shared/components';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useEpisodePlaylistToggle } from '@/hooks/useEpisodePlaylistToggle';
+import { useDownloadStore, selectIsDownloaded, selectIsDownloading } from '@/stores/downloadStore';
 import type { Episode } from '../types/series.types';
 
 interface EpisodeCardProps {
@@ -31,6 +32,9 @@ export function EpisodeCard({
   const { t } = useTranslation();
   const { isMobile } = useResponsive();
   const { inPlaylist, handleTogglePlaylist } = useEpisodePlaylistToggle(episode.id, 'vod');
+  const { startDownload } = useDownloadStore();
+  const isEpDownloaded = useDownloadStore(selectIsDownloaded(episode.id));
+  const isEpDownloading = useDownloadStore(selectIsDownloading(episode.id));
 
   return (
     <View
@@ -86,6 +90,20 @@ export function EpisodeCard({
             <Text style={styles.description} numberOfLines={isMobile ? 1 : 2}>{episode.description}</Text>
           )}
         </View>
+
+        <Pressable
+          style={[styles.bookmarkButton, isMobile && styles.bookmarkButtonMobile]}
+          onPress={(e) => {
+            e.stopPropagation();
+            if (!isEpDownloaded && !isEpDownloading) startDownload(episode.id, 'episode');
+          }}
+          accessibilityLabel={isEpDownloaded ? t('downloads.downloaded') : t('downloads.download')}
+        >
+          {isEpDownloaded
+            ? <Check size={18} color="#a855f7" />
+            : <Download size={18} color={isEpDownloading ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)'} />
+          }
+        </Pressable>
 
         <Pressable
           style={[styles.bookmarkButton, isMobile && styles.bookmarkButtonMobile]}

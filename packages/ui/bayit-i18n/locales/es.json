@@ -3933,7 +3933,22 @@
     "empty": "Sin descargas",
     "emptyHint": "Descarga contenido para ver sin conexion",
     "paused": "Pausado",
-    "loading": "Cargando descargas..."
+    "loading": "Cargando descargas...",
+    "downloading": "Descargando",
+    "completed": "Completado",
+    "failed": "Fallido",
+    "queued": "En cola",
+    "retry": "Reintentar",
+    "retryAll": "Reintentar todo",
+    "clearAll": "Borrar todo",
+    "clearCompleted": "Borrar completados",
+    "resume": "Reanudar",
+    "pause": "Pausar",
+    "download": "Descargar",
+    "downloaded": "Descargado",
+    "offlineMessage": "No tienes conexion. Las descargas no estan disponibles.",
+    "deleteConfirm": "Estas seguro de que deseas eliminar esta descarga?",
+    "storageUsed": "Almacenamiento utilizado"
   },
   "dubbing": {
     "title": "Doblaje en Directo",
