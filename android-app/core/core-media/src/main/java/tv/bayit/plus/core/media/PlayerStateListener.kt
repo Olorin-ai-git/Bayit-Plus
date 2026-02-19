@@ -41,6 +41,8 @@ internal fun createPlayerStateListener(
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         if (isPlaying) {
             stateFlow.value = PlayerState.Playing
+        } else if (!getPlayWhenReady()) {
+            stateFlow.value = PlayerState.Paused
         }
     }
 

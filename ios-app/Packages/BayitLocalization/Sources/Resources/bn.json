@@ -7394,7 +7394,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "সাজান",
+      "relevance": "প্রাসঙ্গিকতা",
+      "newest": "সর্বশেষ",
+      "oldest": "সর্বপ্রথম",
+      "titleAsc": "শিরোনাম A-Z",
+      "titleDesc": "শিরোনাম Z-A",
+      "popularity": "সর্বাধিক জনপ্রিয়"
+    }
   },
   "security": {
     "changePassword": "পাসওয়ার্ড পরিবর্তন",

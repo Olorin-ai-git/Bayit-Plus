@@ -28,6 +28,7 @@ import tv.bayit.plus.feature.vod.components.CollectionBanner
 internal fun HomeSuccessContent(
     uiState: HomeUiState.Success,
     onSpotlightClick: (SpotlightItem) -> Unit,
+    onSpotlightMoreInfoClick: (SpotlightItem) -> Unit,
     onContentClick: (ContentItem) -> Unit,
     onContinueWatchingItemClick: (String, String, Long) -> Unit,
     onChannelClick: (String) -> Unit,
@@ -110,7 +111,11 @@ internal fun HomeSuccessContent(
 
             if (uiState.spotlight.isNotEmpty()) {
                 item(key = "carousel") {
-                    HeroCarousel(items = uiState.spotlight, onItemClick = onSpotlightClick)
+                    HeroCarousel(
+                        items = uiState.spotlight,
+                        onItemClick = onSpotlightClick,
+                        onMoreInfoClick = onSpotlightMoreInfoClick,
+                    )
                 }
             }
 

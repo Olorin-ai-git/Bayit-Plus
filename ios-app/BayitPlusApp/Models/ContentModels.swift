@@ -307,7 +307,6 @@ struct CollectionMovie: Decodable, Sendable, Identifiable {
     let year: Int?
     let duration: String?
     let collectionOrder: Int?
-    let streamUrl: String?
 }
 
 // MARK: - Search

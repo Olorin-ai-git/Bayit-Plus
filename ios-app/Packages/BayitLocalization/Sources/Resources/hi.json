@@ -7416,7 +7416,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "क्रमबद्ध करें",
+      "relevance": "प्रासंगिकता",
+      "newest": "नवीनतम",
+      "oldest": "सबसे पुराना",
+      "titleAsc": "शीर्षक A-Z",
+      "titleDesc": "शीर्षक Z-A",
+      "popularity": "सबसे लोकप्रिय"
+    }
   },
   "security": {
     "changePassword": "पासवर्ड बदलें",

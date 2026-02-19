@@ -79,6 +79,16 @@ fun HomeRoute(
     HomeScreen(
         uiState = uiState,
         onSpotlightClick = { item -> onNavigateToPlayer(item.id, item.type.orEmpty()) },
+        onSpotlightMoreInfoClick = { item ->
+            val type = item.type?.lowercase().orEmpty()
+            val cat = item.category?.lowercase().orEmpty()
+            when {
+                item.isSeries == true -> onNavigateToContent(item.id, "series")
+                type.contains("podcast") || cat.contains("podcast") -> onNavigateToContent(item.id, "podcast")
+                type.contains("audiobook") || cat.contains("audiobook") -> onNavigateToContent(item.id, "audiobook")
+                else -> onNavigateToContent(item.id, if (type == "movie") "movie" else type.ifEmpty { "vod" })
+            }
+        },
         onContentClick = { item ->
             val type = item.type?.lowercase().orEmpty()
             val cat = item.category?.lowercase().orEmpty()
@@ -131,6 +141,7 @@ fun HomeRoute(
 internal fun HomeScreen(
     uiState: HomeUiState,
     onSpotlightClick: (SpotlightItem) -> Unit,
+    onSpotlightMoreInfoClick: (SpotlightItem) -> Unit,
     onContentClick: (ContentItem) -> Unit,
     onContinueWatchingItemClick: (String, String, Long) -> Unit,
     onCollectionClick: (String) -> Unit,
@@ -160,6 +171,7 @@ internal fun HomeScreen(
         is HomeUiState.Success -> HomeSuccessContent(
             uiState = uiState,
             onSpotlightClick = onSpotlightClick,
+            onSpotlightMoreInfoClick = onSpotlightMoreInfoClick,
             onContentClick = onContentClick,
             onContinueWatchingItemClick = onContinueWatchingItemClick,
             onCollectionClick = onCollectionClick,

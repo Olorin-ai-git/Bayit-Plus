@@ -7485,7 +7485,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "מיין לפי",
+      "relevance": "רלוונטיות",
+      "newest": "החדשים ביותר",
+      "oldest": "הישנים ביותר",
+      "titleAsc": "כותרת א-ת",
+      "titleDesc": "כותרת ת-א",
+      "popularity": "הפופולריים ביותר"
+    }
   },
   "security": {
     "changePassword": "שנה סיסמה",

@@ -48,7 +48,6 @@ struct SeriesDetailView: View {
             backdropSection(detail)
             metadataSection(detail)
             favoriteButton(vm)
-            downloadAllButton(vm)
 
             if !vm.seasons.isEmpty {
                 seasonPicker(vm)
@@ -202,36 +201,6 @@ struct SeriesDetailView: View {
         }
         .buttonStyle(.plain)
         .disabled(vm.isFavoriteLoading)
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    private func downloadAllButton(_ vm: SeriesDetailViewModel) -> some View {
-        Button {
-            let requests = vm.episodes.map { ep in
-                DownloadRequest(
-                    contentId: ep.id,
-                    title: ep.title ?? localization.t("player.episode"),
-                    thumbnail: ep.thumbnail,
-                    contentType: .episode,
-                    streamUrl: ep.directUrl ?? ep.streamUrl
-                )
-            }
-            downloadManager.downloadAll(requests)
-        } label: {
-            HStack(spacing: DesignTokens.Spacing.sm) {
-                Image(systemName: "arrow.down.circle")
-                    .font(.system(size: 16))
-                Text(localization.t("downloads.downloadAll"))
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-            }
-            .foregroundColor(DesignTokens.Text.primary)
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-            .padding(.vertical, DesignTokens.Spacing.sm)
-            .background(DesignTokens.Glass.bg)
-            .clipShape(Capsule())
-        }
-        .buttonStyle(.plain)
-        .disabled(vm.episodes.isEmpty)
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 

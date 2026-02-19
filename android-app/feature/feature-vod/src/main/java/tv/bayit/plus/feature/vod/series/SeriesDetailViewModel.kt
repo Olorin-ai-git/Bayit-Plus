@@ -10,10 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
-import tv.bayit.plus.core.data.repository.DownloadsRepository
+import tv.bayit.plus.core.data.download.BayitDownloadManager
+import tv.bayit.plus.core.data.repository.MediaRepository
 import tv.bayit.plus.core.data.repository.SeriesRepository
-import tv.bayit.plus.core.model.DownloadStartRequest
 import tv.bayit.plus.core.model.EpisodeItem
+import tv.bayit.plus.core.model.LocalDownloadRequest
 import tv.bayit.plus.core.model.RelatedItem
 import tv.bayit.plus.core.model.SeasonSummary
 import tv.bayit.plus.core.model.SeriesDetail
@@ -30,7 +31,8 @@ import javax.inject.Inject
 class SeriesDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val seriesRepository: SeriesRepository,
-    private val downloadsRepository: DownloadsRepository,
+    private val mediaRepository: MediaRepository,
+    private val downloadManager: BayitDownloadManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -48,22 +50,31 @@ class SeriesDetailViewModel @Inject constructor(
         loadSeriesDetail()
     }
 
-    fun downloadAllEpisodes() {
-        val episodes = (_uiState.value as? SeriesDetailUiState.Success)?.episodes ?: return
-        viewModelScope.launch {
-            episodes.forEach { episode ->
-                downloadsRepository.startDownload(DownloadStartRequest(contentId = episode.id, contentType = "vod"))
-                logger.info("Download started for episode", mapOf("episodeId" to episode.id))
-            }
-        }
-    }
-
     fun downloadEpisode(episode: EpisodeItem) {
         viewModelScope.launch {
-            downloadsRepository.startDownload(DownloadStartRequest(contentId = episode.id, contentType = "vod"))
+            val url = episode.directUrl ?: episode.streamUrl ?: resolveDownloadUrl(episode.id)
+            if (url == null) {
+                logger.warning("Could not resolve stream URL for episode", mapOf("episodeId" to episode.id))
+                return@launch
+            }
+            downloadManager.startDownload(
+                LocalDownloadRequest(
+                    contentId = episode.id,
+                    title = episode.title.orEmpty(),
+                    thumbnail = episode.thumbnail,
+                    contentType = "vod",
+                    streamUrl = url,
+                ),
+            )
             logger.info("Download started for episode", mapOf("episodeId" to episode.id))
         }
     }
+
+    private suspend fun resolveDownloadUrl(contentId: String): String? =
+        when (val result = mediaRepository.getDownloadUrl(contentId)) {
+            is BayitResult.Success -> result.data as? String
+            else -> null
+        }
 
     fun selectSeason(seasonNumber: Int) {
         val current = _uiState.value as? SeriesDetailUiState.Success ?: return

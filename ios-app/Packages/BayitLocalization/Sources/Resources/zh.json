@@ -7406,7 +7406,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "排序方式",
+      "relevance": "相关性",
+      "newest": "最新",
+      "oldest": "最旧",
+      "titleAsc": "标题 A-Z",
+      "titleDesc": "标题 Z-A",
+      "popularity": "最受欢迎"
+    }
   },
   "security": {
     "changePassword": "更改密码",

@@ -7486,7 +7486,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "வரிசைப்படுத்து",
+      "relevance": "பொருத்தம்",
+      "newest": "புதியது",
+      "oldest": "பழையது",
+      "titleAsc": "தலைப்பு A-Z",
+      "titleDesc": "தலைப்பு Z-A",
+      "popularity": "மிகவும் பிரபலமானது"
+    }
   },
   "security": {
     "changePassword": "கடவுச்சொல்லை மாற்று",

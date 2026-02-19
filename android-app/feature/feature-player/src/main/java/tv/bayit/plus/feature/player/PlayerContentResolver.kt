@@ -1,6 +1,8 @@
 package tv.bayit.plus.feature.player
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.download.BayitDownloadManager
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.data.repository.LiveTVRepository
 import tv.bayit.plus.core.data.repository.MediaRepository
@@ -23,15 +25,37 @@ class PlayerContentResolver @Inject constructor(
     private val liveTVRepository: LiveTVRepository,
     private val radioRepository: RadioRepository,
     private val podcastRepository: PodcastRepository,
+    private val downloadManager: BayitDownloadManager,
+    private val logger: BayitLogger,
 ) {
     suspend fun resolveStreamUrl(
         contentId: String,
         contentType: String,
-    ): BayitResult<String> = when {
-        contentType in LIVE_CONTENT_TYPES -> liveTVRepository.getStreamUrl(contentId)
-        contentType == CONTENT_TYPE_RADIO -> radioRepository.getStreamUrl(contentId)
-        contentType in PODCAST_CONTENT_TYPES -> resolvePodcastAudioUrl(contentId)
-        else -> mediaRepository.getPlaybackUrl(contentId)
+    ): BayitResult<String> {
+        if (contentType !in LIVE_CONTENT_TYPES &&
+            contentType != CONTENT_TYPE_RADIO &&
+            contentType !in PODCAST_CONTENT_TYPES
+        ) {
+            val localUri = downloadManager.localFileUri(contentId)
+            if (localUri != null) {
+                logger.info(
+                    "Playing from local download",
+                    mapOf("contentId" to contentId, "uri" to localUri),
+                )
+                return BayitResult.Success(localUri)
+            }
+            logger.debug(
+                "No local download, falling back to network",
+                mapOf("contentId" to contentId, "contentType" to contentType),
+            )
+        }
+
+        return when {
+            contentType in LIVE_CONTENT_TYPES -> liveTVRepository.getStreamUrl(contentId)
+            contentType == CONTENT_TYPE_RADIO -> radioRepository.getStreamUrl(contentId)
+            contentType in PODCAST_CONTENT_TYPES -> resolvePodcastAudioUrl(contentId)
+            else -> mediaRepository.getPlaybackUrl(contentId)
+        }
     }
 
     suspend fun resolveMetadata(

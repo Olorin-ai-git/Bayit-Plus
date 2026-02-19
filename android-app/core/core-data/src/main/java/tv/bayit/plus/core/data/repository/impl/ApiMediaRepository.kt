@@ -41,6 +41,17 @@ class ApiMediaRepository(
                 ?: throw IllegalStateException("No playback URL available for media $mediaId")
         }
 
+    override suspend fun getDownloadUrl(mediaId: String): BayitResult<String> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getStream(mediaId) }
+            val directUrl = response.directUrl
+            if (!directUrl.isNullOrEmpty() && !directUrl.contains(".m3u8")) {
+                directUrl
+            } else {
+                "${client.retrofit.baseUrl()}api/proxy/transcode/$mediaId"
+            }
+        }
+
     override suspend fun reportProgress(
         mediaId: String,
         contentType: String,

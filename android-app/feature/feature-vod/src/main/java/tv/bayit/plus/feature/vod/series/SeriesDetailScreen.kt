@@ -36,7 +36,6 @@ fun SeriesDetailRoute(
         uiState = uiState,
         onEpisodePlay = onNavigateToPlayer,
         onSeasonSelected = viewModel::selectSeason,
-        onDownloadAll = viewModel::downloadAllEpisodes,
         onEpisodeDownload = viewModel::downloadEpisode,
         onRelatedClick = onNavigateToRelated,
         onBack = onNavigateBack,
@@ -50,7 +49,6 @@ internal fun SeriesDetailScreen(
     uiState: SeriesDetailUiState,
     onEpisodePlay: (String) -> Unit,
     onSeasonSelected: (Int) -> Unit,
-    onDownloadAll: () -> Unit,
     onEpisodeDownload: (EpisodeItem) -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
@@ -69,7 +67,6 @@ internal fun SeriesDetailScreen(
                 state = uiState,
                 onEpisodePlay = onEpisodePlay,
                 onSeasonSelected = onSeasonSelected,
-                onDownloadAll = onDownloadAll,
                 onEpisodeDownload = onEpisodeDownload,
                 onRelatedClick = onRelatedClick,
                 onBack = onBack,
@@ -83,14 +80,13 @@ private fun SeriesSuccessContent(
     state: SeriesDetailUiState.Success,
     onEpisodePlay: (String) -> Unit,
     onSeasonSelected: (Int) -> Unit,
-    onDownloadAll: () -> Unit,
     onEpisodeDownload: (EpisodeItem) -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { SeriesHeroSection(state, onBack) }
-        item { SeriesMetadataSection(state, onDownloadAll) }
+        item { SeriesMetadataSection(state) }
         if (state.seasons.isNotEmpty()) {
             item {
                 SeasonTabRow(

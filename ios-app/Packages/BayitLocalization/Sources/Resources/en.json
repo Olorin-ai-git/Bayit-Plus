@@ -7452,7 +7452,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "Sort by",
+      "relevance": "Relevance",
+      "newest": "Newest First",
+      "oldest": "Oldest First",
+      "titleAsc": "Title A-Z",
+      "titleDesc": "Title Z-A",
+      "popularity": "Most Popular"
+    }
   },
   "security": {
     "changePassword": "Change Password",

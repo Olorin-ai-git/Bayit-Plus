@@ -7944,7 +7944,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "Trier par",
+      "relevance": "Pertinence",
+      "newest": "Plus récent",
+      "oldest": "Plus ancien",
+      "titleAsc": "Titre A-Z",
+      "titleDesc": "Titre Z-A",
+      "popularity": "Plus populaire"
+    }
   },
   "security": {
     "changePassword": "Changer le mot de passe",

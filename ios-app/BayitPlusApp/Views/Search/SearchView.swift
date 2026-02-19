@@ -13,6 +13,7 @@ struct SearchView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            PageHeader(icon: "magnifyingglass", title: localization.t("search.title"))
             if let vm = viewModel {
                 searchBar(vm)
                 filterPills(vm)

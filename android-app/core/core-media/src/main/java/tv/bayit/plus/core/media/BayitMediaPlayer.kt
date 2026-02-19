@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Rational
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -71,22 +72,25 @@ class BayitMediaPlayer @Inject constructor(
         }
 
         val mediaItem = MediaItem.Builder().setUri(mediaPlayback.streamUrl).build()
-        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+        val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
 
         // Detect stream type based on URL extension
         val isHls = mediaPlayback.streamUrl.contains(".m3u8", ignoreCase = true) ||
                     mediaPlayback.streamUrl.contains("/hls/", ignoreCase = true)
+        val isLocalFile = mediaPlayback.streamUrl.startsWith("file://")
 
         val mediaSource: MediaSource = if (isHls) {
             // HLS stream (live TV, HLS VOD)
             HlsMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         } else {
-            // Direct file (MP4, MKV, WebM, etc.)
+            // Direct file (MP4, MKV, WebM) or local download
             ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
         }
 
         logger.debug("Media source created", mapOf(
             "isHls" to isHls.toString(),
+            "isLocal" to isLocalFile.toString(),
             "url" to mediaPlayback.streamUrl,
         ))
 

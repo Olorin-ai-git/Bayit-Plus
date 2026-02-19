@@ -72,6 +72,14 @@ fun BayitMainScaffold(
         tab.route::class.qualifiedName == currentRoute
     }
 
+    val isContentDetailPage = currentRoute?.let { route ->
+        listOf(
+            Route.MovieDetail::class.qualifiedName,
+            Route.SeriesDetail::class.qualifiedName,
+            Route.CollectionDetail::class.qualifiedName,
+        ).any { qualifiedName -> qualifiedName != null && route.startsWith(qualifiedName) }
+    } == true
+
     val breadcrumbs = rememberBreadcrumbTrail(navController)
 
     val isAuthScreen = currentRoute?.let { isAuthRoutePattern(it) } == true
@@ -118,7 +126,7 @@ fun BayitMainScaffold(
                         onSkipForward = miniPlayerViewModel::skipForward,
                         onClose = miniPlayerViewModel::stop,
                     )
-                    if (isRootTab) {
+                    if (isRootTab || isContentDetailPage) {
                         GlassBottomNavBar(
                             selectedTab = selectedTab,
                             onTabSelected = { tab ->

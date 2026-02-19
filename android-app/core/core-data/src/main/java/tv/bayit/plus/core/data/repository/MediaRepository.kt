@@ -5,6 +5,7 @@ import tv.bayit.plus.core.model.RestartResponse
 
 interface MediaRepository {
     suspend fun getPlaybackUrl(mediaId: String): BayitResult<String>
+    suspend fun getDownloadUrl(mediaId: String): BayitResult<String>
     suspend fun reportProgress(
         mediaId: String,
         contentType: String,

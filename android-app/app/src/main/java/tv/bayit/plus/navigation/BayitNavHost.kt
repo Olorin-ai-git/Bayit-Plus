@@ -347,6 +347,7 @@ fun BayitNavHost(
         composable<Route.Downloads> {
             DownloadsRoute(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
             )
         }
         composable<Route.Recordings> {

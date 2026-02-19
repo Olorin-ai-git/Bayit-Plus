@@ -19,8 +19,16 @@ data class StreamInfo(
     val platform: String? = null,
     @SerialName("duration_hint") val durationHint: Double? = null,
 ) {
-    /** Resolved URL - checks url, stream_url, then direct_url. */
+    /** Resolved URL for streaming - checks url, stream_url, then direct_url. */
     val resolvedUrl: String? get() = url ?: streamUrl ?: directUrl
+
+    /** Resolved URL for downloading - prefers direct_url (actual file) over HLS manifest. */
+    val downloadUrl: String? get() {
+        val direct = directUrl
+        if (!direct.isNullOrEmpty()) return direct
+        val candidates = listOfNotNull(url, streamUrl)
+        return candidates.firstOrNull { !it.contains(".m3u8") } ?: candidates.firstOrNull()
+    }
 }
 
 /** Quality variant for stream selection. */

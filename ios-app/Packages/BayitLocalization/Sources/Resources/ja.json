@@ -8136,7 +8136,16 @@
     "clear": "Clear",
     "clearRecent": "Clear recent searches",
     "query": "Search query",
-    "search": "Search"
+    "search": "Search",
+    "sort": {
+      "title": "並べ替え",
+      "relevance": "関連性",
+      "newest": "最新",
+      "oldest": "最古",
+      "titleAsc": "タイトル昇順",
+      "titleDesc": "タイトル降順",
+      "popularity": "人気順"
+    }
   },
   "security": {
     "changePassword": "パスワードを変更",

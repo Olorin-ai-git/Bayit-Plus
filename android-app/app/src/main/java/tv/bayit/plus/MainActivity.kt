@@ -20,6 +20,7 @@ import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
 import tv.bayit.plus.core.auth.OlorinAuthService
+import tv.bayit.plus.core.common.NetworkMonitor
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.network.SessionEventBus
 import tv.bayit.plus.designsystem.i18n.ProvideBayitStrings
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var googleSignInHelper: GoogleSignInHelper
     @Inject lateinit var biometricAuthService: BiometricAuthService
     @Inject lateinit var stringProvider: BayitStringProvider
+    @Inject lateinit var networkMonitor: NetworkMonitor
 
     private val pendingDeepLink = MutableStateFlow<Route?>(null)
 
@@ -73,6 +75,16 @@ class MainActivity : ComponentActivity() {
 
                     LaunchedEffect(Unit) {
                         SessionEventBus.sessionExpired.collect { authService.signOut() }
+                    }
+
+                    LaunchedEffect(Unit) {
+                        networkMonitor.isOnline.collect { online ->
+                            if (!online && authState is AuthState.Authenticated) {
+                                navController.navigate(Route.Downloads) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        }
                     }
 
                     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

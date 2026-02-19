@@ -79,7 +79,7 @@ internal fun SeriesHeroSection(state: SeriesDetailUiState.Success, onBack: () ->
 }
 
 @Composable
-internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success, onDownloadAll: () -> Unit) {
+internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success) {
     Column(modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base)) {
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             state.year?.let { Text(it.toString(), style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary) }
@@ -94,12 +94,6 @@ internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success, onDownloa
             Text(desc, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
         }
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(
-            text = "Download All",
-            onClick = onDownloadAll,
-            isPrimary = false,
-            modifier = Modifier.fillMaxWidth(),
-        )
     }
 }
 
