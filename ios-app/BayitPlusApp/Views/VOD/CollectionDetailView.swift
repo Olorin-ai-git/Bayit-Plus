@@ -8,6 +8,7 @@ struct CollectionDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: CollectionDetailViewModel?
 
     private let logger = BayitLogger(category: "CollectionDetail")
@@ -108,21 +109,49 @@ struct CollectionDetailView: View {
             }
 
             if let movies = collection.movies, !movies.isEmpty {
-                Button {
-                    Task { await playAll(movies) }
-                } label: {
-                    HStack {
-                        Image(systemName: "play.fill")
-                        Text(localization.t("vod.collection.playAll"))
-                            .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Button {
+                        Task { await playAll(movies) }
+                    } label: {
+                        HStack {
+                            Image(systemName: "play.fill")
+                            Text(localization.t("vod.collection.playAll"))
+                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.md)
+                        .background(DesignTokens.Primary.default)
+                        .clipShape(Capsule())
                     }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.vertical, DesignTokens.Spacing.md)
-                    .background(DesignTokens.Primary.default)
-                    .clipShape(Capsule())
+                    .buttonStyle(.plain)
+
+                    Button {
+                        let requests = movies
+                            .sorted { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) }
+                            .map { movie in
+                                DownloadRequest(
+                                    contentId: movie.id,
+                                    title: movie.title ?? localization.t("vod.movie"),
+                                    thumbnail: movie.thumbnail,
+                                    contentType: .movie
+                                )
+                            }
+                        downloadManager.downloadAll(requests)
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.down.circle")
+                            Text(localization.t("downloads.downloadAll"))
+                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                        }
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.md)
+                        .background(DesignTokens.Glass.bg)
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
                 .padding(.top, DesignTokens.Spacing.sm)
             }
         }

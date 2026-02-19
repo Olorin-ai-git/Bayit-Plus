@@ -17,6 +17,7 @@ struct PlayerView: View {
     @Environment(RepositoryProvider.self) var repositories
     @Environment(AuthManager.self) var authManager
     @Environment(LocalizationManager.self) var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @Environment(\.scenePhase) private var scenePhase
 
     @State var viewModel: MediaPlayerViewModel
@@ -630,6 +631,10 @@ struct PlayerView: View {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel(localization.t("player.qualitySettings"))
+
+                if contentType != .radio {
+                    playerDownloadButton
+                }
             }
 
             // Free-form dialogue button (VOD only, when interactions enabled)
@@ -740,6 +745,31 @@ struct PlayerView: View {
                 }
         }
         .accessibilityLabel(isRecording ? localization.t("player.stopRecording") : localization.t("player.startRecording"))
+    }
+
+    // MARK: - Download Button
+
+    private var playerDownloadButton: some View {
+        let existing = downloadManager.downloads.first(where: { $0.contentId == contentId })
+        let isDownloaded = existing?.status == .completed
+        let isDownloading = existing?.status == .downloading || existing?.status == .queued
+        return Button {
+            guard !isDownloaded, !isDownloading else { return }
+            Task {
+                await downloadManager.startDownload(DownloadRequest(
+                    contentId: contentId,
+                    title: viewModel.title ?? "",
+                    thumbnail: viewModel.artworkURL?.absoluteString,
+                    contentType: contentType
+                ))
+            }
+        } label: {
+            Image(systemName: isDownloaded ? "checkmark.circle.fill" : (isDownloading ? "arrow.down.circle.fill" : "arrow.down.circle"))
+                .font(.system(size: 18))
+                .foregroundStyle(isDownloaded ? .green : (isDownloading ? DesignTokens.Primary.p400 : .white))
+                .frame(width: 44, height: 44)
+        }
+        .disabled(isDownloaded || isDownloading)
     }
 
     // MARK: - Subtitles

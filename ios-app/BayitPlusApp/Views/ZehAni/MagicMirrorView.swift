@@ -41,8 +41,6 @@ struct MagicMirrorView: View {
                     Spacer()
                 } else if let greeting = greeting {
                     greetingContent(greeting)
-                    reRecordButton
-                    refreshButton
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -105,6 +103,10 @@ struct MagicMirrorView: View {
                 avatarDisplayView(greeting)
                 greetingCard(greeting)
                 vocabularyCard(greeting)
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    reRecordButton
+                    refreshButton
+                }
             }
         }
     }
@@ -131,14 +133,14 @@ struct MagicMirrorView: View {
                 AsyncImage(url: imageUrl) { phase in
                     switch phase {
                     case .success(let image):
-                        image.resizable().scaledToFill()
+                        image.resizable().scaledToFit()
                     case .failure:
                         avatarPlaceholder
                     default:
                         ProgressView().tint(.white)
                     }
                 }
-                .frame(height: 280)
+                .frame(maxWidth: .infinity, maxHeight: 400)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)

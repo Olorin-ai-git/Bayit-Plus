@@ -33,6 +33,7 @@ struct BayitPlusApp: App {
     @State private var castSessionManager = CastSessionManager()
     @State private var mediaPlayerCastBridge: MediaPlayerCastBridge?
     @State private var audioPlaybackManager: AudioPlaybackManager
+    @State private var downloadManager: DownloadManager
 
     init() {
         if FirebaseApp.app() == nil {
@@ -91,6 +92,10 @@ struct BayitPlusApp: App {
         _audioPlaybackManager = State(initialValue: AudioPlaybackManager(
             mediaPlayer: mp,
             streamResolver: resolver
+        ))
+        _downloadManager = State(initialValue: DownloadManager(
+            userRepository: repos.user,
+            store: DownloadStore()
         ))
     }
 
@@ -219,11 +224,13 @@ struct BayitPlusApp: App {
                 .environment(featureFlags)
                 .environment(castSessionManager)
                 .environment(audioPlaybackManager)
+                .environment(downloadManager)
                 .task {
                     initializeWidgetBridge()
                     initializeCrashlyticsContext()
                     initializePushNotifications()
                     initializeCastSystem()
+                    await downloadManager.initialize()
 
                     // Process pending intents from widgets
                     await pendingIntentHandler?.processPendingIntents()

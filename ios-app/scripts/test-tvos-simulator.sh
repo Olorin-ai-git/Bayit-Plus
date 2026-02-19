@@ -21,7 +21,7 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PROJECT_FILE="$PROJECT_DIR/BayitPlus.xcodeproj"
 SCHEME="BayitPlusTVApp"
-BUNDLE_ID="tv.bayit.plus.tvos"
+BUNDLE_ID="tv.bayit.plus"
 SCREENSHOT_DIR="/tmp/bayit-testing-screenshots/tvos"
 DEFAULT_DEVICE_NAME="Apple TV 4K (3rd generation)"
 LOAD_WAIT=12

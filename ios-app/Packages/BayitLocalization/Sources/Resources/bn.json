@@ -4260,7 +4260,16 @@
     "storage": "স্টোরেজ",
     "paused": "বিরতি",
     "loading": "ডাউনলোড লোড হচ্ছে...",
-    "delete": "মুছুন"
+    "delete": "মুছুন",
+    "downloadAll": "সব ডাউনলোড করুন",
+    "downloading": "ডাউনলোড হচ্ছে",
+    "completed": "ডাউনলোড হয়েছে",
+    "failed": "ডাউনলোড ব্যর্থ",
+    "queued": "সারিতে",
+    "retry": "পুনরায় চেষ্টা করুন",
+    "play": "অফলাইনে চালান",
+    "deleteConfirm": "ডাউনলোড সরান",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "লাইভ ডাবিং",

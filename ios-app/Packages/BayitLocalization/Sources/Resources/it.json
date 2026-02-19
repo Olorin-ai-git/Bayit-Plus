@@ -4522,7 +4522,16 @@
     "emptyHint": "Scarica contenuti per la visione offline",
     "paused": "In pausa",
     "loading": "Caricamento download...",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "downloadAll": "Scarica tutto",
+    "downloading": "Download in corso",
+    "completed": "Scaricato",
+    "failed": "Download fallito",
+    "queued": "In coda",
+    "retry": "Riprova",
+    "play": "Riproduci offline",
+    "deleteConfirm": "Rimuovi download",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "Doppiaggio live",

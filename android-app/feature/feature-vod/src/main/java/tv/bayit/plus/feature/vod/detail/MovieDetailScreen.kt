@@ -30,6 +30,7 @@ fun MovieDetailRoute(
         onPlay = { movieId -> onNavigateToPlayer(movieId) },
         onRelatedClick = onNavigateToRelated,
         onFavoriteToggle = viewModel::toggleFavorite,
+        onDownload = viewModel::startDownload,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -42,6 +43,7 @@ internal fun MovieDetailScreen(
     onPlay: (String) -> Unit,
     onRelatedClick: (String) -> Unit,
     onFavoriteToggle: () -> Unit,
+    onDownload: () -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -59,6 +61,7 @@ internal fun MovieDetailScreen(
                 onPlay = onPlay,
                 onRelatedClick = onRelatedClick,
                 onFavoriteToggle = onFavoriteToggle,
+                onDownload = onDownload,
                 onBack = onBack,
             )
         }
@@ -71,12 +74,13 @@ private fun MovieSuccessContent(
     onPlay: (String) -> Unit,
     onRelatedClick: (String) -> Unit,
     onFavoriteToggle: () -> Unit,
+    onDownload: () -> Unit,
     onBack: () -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { MovieHeroSection(state, onBack, onFavoriteToggle) }
         item { MovieMetadataSection(state) }
-        item { MovieActionSection(state.movieId, onPlay) }
+        item { MovieActionSection(state.movieId, state.isDownloading, state.isDownloaded, onPlay, onDownload) }
         if (state.related.isNotEmpty()) {
             item {
                 RelatedContentShelf(

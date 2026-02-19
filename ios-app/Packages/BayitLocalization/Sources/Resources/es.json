@@ -4341,7 +4341,16 @@
     "emptyHint": "Descarga contenido para ver sin conexion",
     "paused": "Pausado",
     "loading": "Cargando descargas...",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "downloadAll": "Descargar todo",
+    "downloading": "Descargando",
+    "completed": "Descargado",
+    "failed": "Descarga fallida",
+    "queued": "En cola",
+    "retry": "Reintentar",
+    "play": "Reproducir sin conexion",
+    "deleteConfirm": "Eliminar descarga",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "Doblaje en Directo",

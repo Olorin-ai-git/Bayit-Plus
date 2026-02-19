@@ -4289,7 +4289,16 @@
     "emptyHint": "הורד תוכן לצפייה במצב לא מקוון",
     "paused": "מושהה",
     "loading": "טוען הורדות...",
-    "delete": "מחק"
+    "delete": "מחק",
+    "downloadAll": "הורד הכל",
+    "downloading": "מוריד",
+    "completed": "הורד",
+    "failed": "ההורדה נכשלה",
+    "queued": "ממתין",
+    "retry": "נסה שוב",
+    "play": "השמע במצב לא מקוון",
+    "deleteConfirm": "הסר הורדה",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "דיבוב חי",

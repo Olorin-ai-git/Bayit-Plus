@@ -7,6 +7,7 @@ struct SeriesDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: SeriesDetailViewModel?
 
     let seriesId: String
@@ -47,6 +48,7 @@ struct SeriesDetailView: View {
             backdropSection(detail)
             metadataSection(detail)
             favoriteButton(vm)
+            downloadAllButton(vm)
 
             if !vm.seasons.isEmpty {
                 seasonPicker(vm)
@@ -203,6 +205,35 @@ struct SeriesDetailView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
+    private func downloadAllButton(_ vm: SeriesDetailViewModel) -> some View {
+        Button {
+            let requests = vm.episodes.map { ep in
+                DownloadRequest(
+                    contentId: ep.id,
+                    title: ep.title ?? localization.t("player.episode"),
+                    thumbnail: ep.thumbnail,
+                    contentType: .episode
+                )
+            }
+            downloadManager.downloadAll(requests)
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                Image(systemName: "arrow.down.circle")
+                    .font(.system(size: 16))
+                Text(localization.t("downloads.downloadAll"))
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+            }
+            .foregroundColor(DesignTokens.Text.primary)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.vertical, DesignTokens.Spacing.sm)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .disabled(vm.episodes.isEmpty)
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
     private func seasonPicker(_ vm: SeriesDetailViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignTokens.Spacing.sm) {
@@ -228,14 +259,25 @@ struct SeriesDetailView: View {
                     .padding(.vertical, DesignTokens.Spacing.xl)
             } else {
                 ForEach(vm.episodes) { episode in
+                    let dlStatus = downloadManager.downloads.first(where: { $0.contentId == episode.id })?.status
                     EpisodeRow(
                         episode: episode,
-                        progress: vm.progress(for: episode.id)
+                        progress: vm.progress(for: episode.id),
+                        downloadStatus: dlStatus
                     ) {
                         coordinator.presentFullscreen(.player(
                             contentId: episode.id,
                             contentType: .episode
                         ))
+                    } onDownload: {
+                        Task {
+                            await downloadManager.startDownload(DownloadRequest(
+                                contentId: episode.id,
+                                title: episode.title ?? localization.t("player.episode"),
+                                thumbnail: episode.thumbnail,
+                                contentType: .episode
+                            ))
+                        }
                     }
                 }
             }
@@ -288,7 +330,9 @@ private struct EpisodeRow: View {
     @Environment(LocalizationManager.self) private var localization
     let episode: EpisodeItem
     let progress: Double?
+    let downloadStatus: DownloadStatus?
     let onTap: () -> Void
+    let onDownload: () -> Void
 
     var body: some View {
         Button(action: onTap) {
@@ -328,9 +372,12 @@ private struct EpisodeRow: View {
 
                     Spacer()
 
-                    Image(systemName: progress != nil ? "play.circle.fill" : "play.circle")
-                        .font(.system(size: 28))
-                        .foregroundColor(DesignTokens.Primary.default)
+                    HStack(spacing: DesignTokens.Spacing.sm) {
+                        downloadIcon
+                        Image(systemName: progress != nil ? "play.circle.fill" : "play.circle")
+                            .font(.system(size: 28))
+                            .foregroundColor(DesignTokens.Primary.default)
+                    }
                 }
 
                 if let progress, progress > 0 {
@@ -356,6 +403,18 @@ private struct EpisodeRow: View {
             .glassCard()
         }
         .buttonStyle(.plain)
+    }
+
+    private var downloadIcon: some View {
+        let isDownloaded = downloadStatus == .completed
+        let isActive = downloadStatus == .downloading || downloadStatus == .queued || downloadStatus == .paused
+        return Button(action: onDownload) {
+            Image(systemName: isDownloaded ? "checkmark.circle.fill" : "arrow.down.circle")
+                .font(.system(size: 22))
+                .foregroundColor(isDownloaded ? .green : (isActive ? DesignTokens.Primary.default : DesignTokens.Text.muted))
+        }
+        .buttonStyle(.plain)
+        .disabled(isActive || isDownloaded)
     }
 
     private var episodeThumbnail: some View {

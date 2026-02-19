@@ -4318,7 +4318,16 @@
     "emptyHint": "Download content for offline viewing",
     "paused": "Paused",
     "loading": "Loading downloads...",
-    "delete": "Delete"
+    "delete": "Delete",
+    "downloadAll": "Download All",
+    "downloading": "Downloading",
+    "completed": "Downloaded",
+    "failed": "Download Failed",
+    "queued": "Queued",
+    "retry": "Retry",
+    "play": "Play Offline",
+    "deleteConfirm": "Remove Download",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "Live Dubbing",

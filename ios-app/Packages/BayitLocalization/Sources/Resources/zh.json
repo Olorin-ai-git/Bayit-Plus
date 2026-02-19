@@ -4275,7 +4275,16 @@
     "emptyHint": "下载内容以供离线观看",
     "paused": "已暂停",
     "loading": "正在加载下载...",
-    "delete": "删除"
+    "delete": "删除",
+    "downloadAll": "全部下载",
+    "downloading": "下载中",
+    "completed": "已下载",
+    "failed": "下载失败",
+    "queued": "排队中",
+    "retry": "重试",
+    "play": "离线播放",
+    "deleteConfirm": "删除下载",
+    "size": "{{size}} MB"
   },
   "dubbing": {
     "title": "实时配音",

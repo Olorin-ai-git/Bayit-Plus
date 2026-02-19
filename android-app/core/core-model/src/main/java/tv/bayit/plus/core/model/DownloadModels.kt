@@ -33,10 +33,11 @@ data class DownloadStartResponse(
     @SerialName("stream_url") val streamUrl: String? = null,
 )
 
-/** Request body for POST /api/v1/downloads/start */
+/** Request body for POST /api/v1/user/downloads */
 @Serializable
 data class DownloadStartRequest(
     @SerialName("content_id") val contentId: String,
+    @SerialName("content_type") val contentType: String,
     val quality: String? = null,
 )
 

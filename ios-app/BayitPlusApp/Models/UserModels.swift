@@ -174,10 +174,17 @@ struct DownloadStartResponse: Decodable, Sendable {
     let streamUrl: String?
 }
 
-/// Request body for POST /api/v1/downloads/start
+/// Request body for POST /api/v1/user/downloads
 struct DownloadStartRequest: Encodable, Sendable {
     let contentId: String
+    let contentType: String
     let quality: String?
+
+    enum CodingKeys: String, CodingKey {
+        case contentId = "content_id"
+        case contentType = "content_type"
+        case quality
+    }
 }
 
 /// Response from GET /api/v1/downloads/check/{content_id}

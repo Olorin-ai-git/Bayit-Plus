@@ -14,6 +14,7 @@ struct IPadZehAniHubView: View {
     @State private var isLoading = true
     @State private var error: String?
     @State private var showConsent = false
+    @State private var avatarImageUrl: String?
 
     var body: some View {
         Group {
@@ -60,24 +61,17 @@ struct IPadZehAniHubView: View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             ZStack {
                 DesignTokens.Glass.bgMedium
-                LinearGradient(
-                    colors: [
-                        DesignTokens.Primary.p400.opacity(0.18),
-                        DesignTokens.Secondary.s400.opacity(0.18)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-
-                Image(systemName: "person.fill.viewfinder")
-                    .font(.system(size: 64))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                if let urlStr = avatarImageUrl, let url = URL(string: urlStr) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let img): img.resizable().scaledToFill()
+                        case .failure: avatarHeroPlaceholder
+                        default: ProgressView().tint(.white)
+                        }
+                    }
+                } else {
+                    avatarHeroPlaceholder
+                }
             }
             .frame(height: 180)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
@@ -101,6 +95,17 @@ struct IPadZehAniHubView: View {
             }
             .frame(maxWidth: .infinity)
         }
+    }
+
+    private var avatarHeroPlaceholder: some View {
+        LinearGradient(colors: [DesignTokens.Primary.p400.opacity(0.18), DesignTokens.Secondary.s400.opacity(0.18)],
+                       startPoint: .topLeading, endPoint: .bottomTrailing)
+            .overlay {
+                Image(systemName: "person.fill.viewfinder")
+                    .font(.system(size: 64))
+                    .foregroundStyle(LinearGradient(colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
+                                                   startPoint: .topLeading, endPoint: .bottomTrailing))
+            }
     }
 
     // MARK: - Right Column: Feature Grid
@@ -182,6 +187,11 @@ struct IPadZehAniHubView: View {
         do {
             let profile = try await repos.user.fetchProfile()
             profileId = profile.id
+            if let avatars = try? await repos.starStory.fetchAvatars(profileId: profile.id),
+               let avatarId = avatars.avatars.first?.avatarId,
+               let status = try? await repos.avatarMeshRepository.fetchAvatarStatus(avatarId: avatarId) {
+                avatarImageUrl = status.avatarImageUrl
+            }
         } catch {
             self.error = error.localizedDescription
         }

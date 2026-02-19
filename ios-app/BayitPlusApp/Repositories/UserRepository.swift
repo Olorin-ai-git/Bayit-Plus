@@ -222,7 +222,7 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
 
     func startDownload(request: DownloadStartRequest) async throws -> DownloadStartResponse {
         return try await client.post(
-            "/api/v1/downloads/start",
+            "/api/v1/user/downloads",
             body: request,
             as: DownloadStartResponse.self
         )

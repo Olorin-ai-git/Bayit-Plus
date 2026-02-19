@@ -1,70 +1,40 @@
 import Foundation
 import Observation
 
-/// ViewModel for the Downloads screen - manages offline downloaded content.
+/// ViewModel for the Downloads screen - groups downloads by status and exposes actions.
 @MainActor
 @Observable
 final class DownloadsViewModel {
-    private(set) var items: [DownloadItem] = []
-    private(set) var isLoading = false
-    private(set) var error: String?
 
-    private let repository: any UserRepository
+    private let downloadManager: DownloadManager
 
-    init(repository: any UserRepository) {
-        self.repository = repository
+    init(downloadManager: DownloadManager) {
+        self.downloadManager = downloadManager
     }
 
-    @MainActor
-    func load() async {
-        guard !isLoading else { return }
-        isLoading = true
-        error = nil
+    var downloads: [LocalDownload] { downloadManager.downloads }
 
-        do {
-            let response = try await repository.fetchDownloads()
-            items = response.items
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
-
-        isLoading = false
+    var activeDownloads: [LocalDownload] {
+        downloads.filter { $0.status == .downloading || $0.status == .queued || $0.status == .paused }
     }
 
-    @MainActor
-    func deleteDownload(downloadId: String) async {
-        do {
-            _ = try await repository.deleteDownload(downloadId: downloadId)
-            items.removeAll { $0.id == downloadId }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
+    var completedDownloads: [LocalDownload] {
+        downloads.filter { $0.status == .completed }
     }
 
-    @MainActor
-    func startDownload(contentId: String, quality: String?) async -> DownloadStartResponse? {
-        do {
-            let request = DownloadStartRequest(
-                contentId: contentId,
-                quality: quality
-            )
-            let response = try await repository.startDownload(request: request)
-            await load()
-            return response
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-            return nil
-        }
+    var failedDownloads: [LocalDownload] {
+        downloads.filter { $0.status == .failed }
     }
 
-    /// Total storage used by downloads in bytes.
-    var totalStorageUsed: Int {
-        items.compactMap(\.fileSize).reduce(0, +)
+    func deleteDownload(_ download: LocalDownload) {
+        Task { await downloadManager.deleteDownload(id: download.id) }
+    }
+
+    func retryDownload(_ download: LocalDownload) {
+        Task { await downloadManager.retryDownload(id: download.id) }
+    }
+
+    func localFileURL(for download: LocalDownload) -> URL? {
+        downloadManager.playLocalDownload(id: download.id)
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -113,11 +114,42 @@ internal fun MovieMetadataSection(state: MovieDetailUiState.Success) {
 }
 
 @Composable
-internal fun MovieActionSection(movieId: String, onPlay: (String) -> Unit) {
+internal fun MovieActionSection(
+    movieId: String,
+    isDownloading: Boolean,
+    isDownloaded: Boolean,
+    onPlay: (String) -> Unit,
+    onDownload: () -> Unit,
+) {
     Column(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassButton(text = "Play", onClick = { onPlay(movieId) }, modifier = Modifier.fillMaxWidth())
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            GlassButton(
+                text = when {
+                    isDownloaded -> "Downloaded"
+                    isDownloading -> "Downloading..."
+                    else -> "Download"
+                },
+                onClick = onDownload,
+                isPrimary = false,
+                modifier = Modifier.weight(1f),
+                enabled = !isDownloading && !isDownloaded,
+            )
+            if (isDownloading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = DesignTokens.Colors.Primary.base,
+                    strokeWidth = 2.dp,
+                )
+            }
+        }
     }
 }
 

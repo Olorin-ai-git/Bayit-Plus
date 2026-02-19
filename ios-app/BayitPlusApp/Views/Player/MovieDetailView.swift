@@ -7,6 +7,7 @@ struct MovieDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: MovieDetailViewModel?
 
     let movieId: String
@@ -64,7 +65,7 @@ struct MovieDetailView: View {
     private func backdropSection(_ detail: ContentDetail) -> some View {
         ZStack(alignment: .bottomLeading) {
             backdropImage(detail)
-                .frame(height: 280)
+                .frame(height: 280, alignment: .top)
                 .clipped()
 
             LinearGradient(
@@ -166,8 +167,35 @@ struct MovieDetailView: View {
             }
 
             favoriteButton
+            downloadButton(detail)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func downloadButton(_ detail: ContentDetail) -> some View {
+        let existing = downloadManager.downloads.first(where: { $0.contentId == detail.id })
+        let isDownloaded = existing?.status == .completed
+        let isActive = existing != nil && existing?.status != .completed && existing?.status != .failed
+        return Button {
+            guard !isActive && !isDownloaded else { return }
+            Task {
+                await downloadManager.startDownload(DownloadRequest(
+                    contentId: detail.id,
+                    title: detail.title ?? "",
+                    thumbnail: detail.thumbnail,
+                    contentType: .movie
+                ))
+            }
+        } label: {
+            Image(systemName: isDownloaded ? "checkmark.circle.fill" : (isActive ? "arrow.down.circle.fill" : "arrow.down.circle"))
+                .font(.system(size: 20))
+                .foregroundColor(isDownloaded ? .green : (isActive ? DesignTokens.Primary.default : DesignTokens.Text.secondary))
+                .frame(width: 44, height: 44)
+                .background(DesignTokens.Glass.bg)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .disabled(isActive || isDownloaded)
     }
 
     private var favoriteButton: some View {

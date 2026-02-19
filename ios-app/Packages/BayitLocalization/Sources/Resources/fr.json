@@ -4412,7 +4412,16 @@
     "emptyHint": "Téléchargez du contenu pour le regarder hors ligne",
     "paused": "En pause",
     "loading": "Chargement des téléchargements...",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "downloadAll": "Tout télécharger",
+    "downloading": "Téléchargement",
+    "completed": "Téléchargé",
+    "failed": "Téléchargement échoué",
+    "queued": "En attente",
+    "retry": "Réessayer",
+    "play": "Lire hors ligne",
+    "deleteConfirm": "Supprimer le téléchargement",
+    "size": "{{size}} Mo"
   },
   "dubbing": {
     "title": "Doublage en direct",

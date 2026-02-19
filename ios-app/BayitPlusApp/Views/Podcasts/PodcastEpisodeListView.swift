@@ -7,6 +7,7 @@ import UIKit
 struct PodcastEpisodeListView: View {
     @Environment(AudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
 
     let episodes: [PodcastEpisodeItem]
     let showTitle: String?
@@ -100,16 +101,19 @@ struct PodcastEpisodeListView: View {
                 Spacer()
 
                 if episode.audioUrl != nil {
-                    Button {
-                        let generator = UIImpactFeedbackGenerator(style: .light)
-                        generator.impactOccurred()
-                        playEpisode(episode)
-                    } label: {
-                        Image(systemName: episodePlayIcon(for: episode))
-                            .font(.system(size: 32))
-                            .foregroundColor(DesignTokens.Primary.default)
+                    HStack(spacing: DesignTokens.Spacing.sm) {
+                        podcastEpisodeDownloadButton(episode)
+                        Button {
+                            let generator = UIImpactFeedbackGenerator(style: .light)
+                            generator.impactOccurred()
+                            playEpisode(episode)
+                        } label: {
+                            Image(systemName: episodePlayIcon(for: episode))
+                                .font(.system(size: 32))
+                                .foregroundColor(DesignTokens.Primary.default)
+                        }
+                        .accessibilityLabel(isEpisodePlaying(episode) ? "Pause \(episode.title ?? "episode")" : "Play \(episode.title ?? "episode")")
                     }
-                    .accessibilityLabel(isEpisodePlaying(episode) ? "Pause \(episode.title ?? "episode")" : "Play \(episode.title ?? "episode")")
                 }
             }
             .padding(DesignTokens.Spacing.md)
@@ -128,6 +132,29 @@ struct PodcastEpisodeListView: View {
         isEpisodePlaying(episode) && audioManager.isPlaying
             ? "pause.circle.fill"
             : "play.circle.fill"
+    }
+
+    private func podcastEpisodeDownloadButton(_ episode: PodcastEpisodeItem) -> some View {
+        let dlStatus = downloadManager.downloads.first(where: { $0.contentId == episode.id })?.status
+        let isDownloaded = dlStatus == .completed
+        let isActive = dlStatus == .downloading || dlStatus == .queued || dlStatus == .paused
+        return Button {
+            guard !isDownloaded, !isActive else { return }
+            Task {
+                await downloadManager.startDownload(DownloadRequest(
+                    contentId: episode.id,
+                    title: episode.title ?? "Episode",
+                    thumbnail: showCover,
+                    contentType: .podcast
+                ))
+            }
+        } label: {
+            Image(systemName: isDownloaded ? "checkmark.circle.fill" : "arrow.down.circle")
+                .font(.system(size: 22))
+                .foregroundColor(isDownloaded ? .green : (isActive ? DesignTokens.Primary.default : DesignTokens.Text.muted))
+        }
+        .buttonStyle(.plain)
+        .disabled(isActive || isDownloaded)
     }
 
     private func playEpisode(_ episode: PodcastEpisodeItem) {
