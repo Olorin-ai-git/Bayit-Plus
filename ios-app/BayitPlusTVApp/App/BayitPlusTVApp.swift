@@ -65,7 +65,7 @@ struct BayitPlusTVApp: App {
         _localizationManager = State(initialValue: LocalizationManager())
         _apiClient = State(initialValue: client)
         _repositories = State(initialValue: repos)
-        _downloadManager = State(initialValue: DownloadManager(userRepository: repos.user, store: DownloadStore()))
+        _downloadManager = State(initialValue: DownloadManager(userRepository: repos.user, mediaRepository: repos.media, store: DownloadStore()))
 
         Self.configureTabBarAppearance()
     }
