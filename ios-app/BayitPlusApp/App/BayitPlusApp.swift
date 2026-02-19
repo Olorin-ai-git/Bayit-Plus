@@ -95,6 +95,7 @@ struct BayitPlusApp: App {
         ))
         _downloadManager = State(initialValue: DownloadManager(
             userRepository: repos.user,
+            mediaRepository: repos.media,
             store: DownloadStore()
         ))
     }

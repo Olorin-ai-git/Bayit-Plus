@@ -8239,7 +8239,11 @@
     "almostThere": "Almost there...",
     "tvSignedIn": "Your TV has been signed in successfully",
     "expired": "Session Expired",
-    "expiredMessage": "This QR code has expired. Please generate a new one on your TV."
+    "expiredMessage": "This QR code has expired. Please generate a new one on your TV.",
+    "fastestWayToSignIn": "Fastest way to sign in",
+    "scanToContinue": "Scan to continue",
+    "allMethodsSupported": "All sign-in methods supported",
+    "generateNewCode": "Generate New Code"
   },
   "uploads": {
     "status": {

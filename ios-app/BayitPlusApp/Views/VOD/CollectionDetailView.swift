@@ -134,7 +134,8 @@ struct CollectionDetailView: View {
                                     contentId: movie.id,
                                     title: movie.title ?? localization.t("vod.movie"),
                                     thumbnail: movie.thumbnail,
-                                    contentType: .movie
+                                    contentType: .movie,
+                                    streamUrl: movie.streamUrl
                                 )
                             }
                         downloadManager.downloadAll(requests)

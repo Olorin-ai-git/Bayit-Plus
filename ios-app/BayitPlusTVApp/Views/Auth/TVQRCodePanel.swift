@@ -90,7 +90,7 @@ struct TVQRCodePanel: View {
                 Image(systemName: "bolt.fill")
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Colors.Primary.light)
-                Text("Fastest way to sign in")
+                Text(localization.t("tvLogin.fastestWayToSignIn"))
                     .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }
@@ -174,14 +174,14 @@ struct TVQRCodePanel: View {
                 }
 
                 VStack(spacing: TVDesignTokens.Spacing.sm) {
-                    Text("Scan to continue")
+                    Text(localization.t("tvLogin.scanToContinue"))
                         .font(.system(
                             size: TVDesignTokens.FontSize.lg,
                             weight: .semibold
                         ))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text("All sign-in methods supported")
+                    Text(localization.t("tvLogin.allMethodsSupported"))
                         .font(.system(
                             size: TVDesignTokens.FontSize.base,
                             weight: .medium
@@ -299,7 +299,7 @@ struct TVQRCodePanel: View {
                 }
 
                 GlassButton(
-                    "Try Again",
+                    localization.t("tvLogin.tryAgain"),
                     variant: .primary,
                     size: .large,
                     icon: Image(systemName: "arrow.clockwise")
@@ -330,7 +330,7 @@ struct TVQRCodePanel: View {
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 GlassButton(
-                    "Generate New Code",
+                    localization.t("tvLogin.generateNewCode"),
                     variant: .primary,
                     size: .large,
                     icon: Image(systemName: "qrcode")
