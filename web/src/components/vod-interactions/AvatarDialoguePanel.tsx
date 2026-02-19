@@ -44,6 +44,53 @@ export interface AvatarDialoguePanelProps {
   voiceProcessingStage?: string | null
 }
 
+function CharacterVideoCircle({
+  videoUrl,
+  videoRef,
+  onEnded,
+  characterName,
+}: {
+  videoUrl: string
+  videoRef: React.RefObject<HTMLVideoElement>
+  onEnded: () => void
+  characterName: string
+}) {
+  const [isReady, setIsReady] = useState(false)
+  const [hasError, setHasError] = useState(false)
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {!hasError && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          style={{ ...webStyles.circleMedia, opacity: isReady ? 1 : 0 }}
+          onCanPlay={() => {
+            setIsReady(true)
+            videoRef.current?.play().catch((err) => {
+              log.error('Character video play failed', err)
+              setHasError(true)
+            })
+          }}
+          onError={() => {
+            log.error('Character video load error', { videoUrl, characterName })
+            setHasError(true)
+            onEnded()
+          }}
+          onEnded={onEnded}
+          playsInline
+          muted={false}
+        />
+      )}
+      {!isReady && !hasError && (
+        <div style={webStyles.videoLoading}>
+          <div style={webStyles.spinner} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 const PLACEMENT_STYLES: Record<AvatarPlacement, React.CSSProperties> = {
   'bottom-right': { bottom: 80, right: 24 },
   'bottom-left': { bottom: 80, left: 24 },
@@ -126,8 +173,12 @@ export function AvatarDialoguePanel({
           </View>
           <View style={styles.circleContainer}>
             {characterVideoUrl ? (
-              <video ref={characterVideoRef} src={characterVideoUrl} autoPlay
-                style={webStyles.circleMedia} onEnded={() => setCharacterVideoUrl(null)} />
+              <CharacterVideoCircle
+                videoUrl={characterVideoUrl}
+                videoRef={characterVideoRef}
+                onEnded={() => setCharacterVideoUrl(null)}
+                characterName={character.name}
+              />
             ) : (
               <img src={character.frame_url} alt={character.name} style={webStyles.circleMedia} />
             )}
@@ -189,5 +240,7 @@ const styles = StyleSheet.create({
 
 const webStyles: Record<string, React.CSSProperties> = {
   container: { position: 'absolute', width: 380, zIndex: 10005, backgroundColor: 'rgba(10, 10, 20, 0.92)', borderRadius: 16, border: '1px solid rgba(107, 33, 168, 0.4)', backdropFilter: 'blur(16px)' },
-  circleMedia: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' },
+  circleMedia: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', transition: 'opacity 0.3s ease' },
+  videoLoading: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%' },
+  spinner: { width: 24, height: 24, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.8)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
 }

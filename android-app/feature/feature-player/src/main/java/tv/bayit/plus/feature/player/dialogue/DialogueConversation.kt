@@ -2,6 +2,7 @@ package tv.bayit.plus.feature.player.dialogue
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,21 +120,58 @@ internal fun CharacterReplyBubble(
 @Composable
 internal fun CharacterVideoCircle(videoUrl: String) {
     val context = LocalContext.current
+    var isReady by remember { mutableStateOf(false) }
+    var hasError by remember { mutableStateOf(false) }
     val exoPlayer = remember(videoUrl) {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(state: Int) {
+                    when (state) {
+                        Player.STATE_READY -> isReady = true
+                        Player.STATE_ENDED -> {}
+                        Player.STATE_IDLE -> {}
+                        Player.STATE_BUFFERING -> {}
+                    }
+                }
+
+                override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                    hasError = true
+                }
+            })
             prepare()
             playWhenReady = true
             repeatMode = Player.REPEAT_MODE_OFF
         }
     }
     DisposableEffect(videoUrl) { onDispose { exoPlayer.release() } }
-    AndroidView(
-        factory = { ctx ->
-            PlayerView(ctx).apply { player = exoPlayer; useController = false }
-        },
+    Box(
         modifier = Modifier.size(AVATAR_CIRCLE_SIZE).clip(CircleShape),
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        if (hasError) {
+            Box(
+                modifier = Modifier.matchParentSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "!",
+                    color = DesignTokens.Colors.Text.muted,
+                    fontSize = DesignTokens.FontSize.lg,
+                )
+            }
+        } else {
+            AndroidView(
+                factory = { ctx ->
+                    PlayerView(ctx).apply { player = exoPlayer; useController = false }
+                },
+                modifier = Modifier.matchParentSize(),
+            )
+            if (!isReady) {
+                GlassSpinner(size = SpinnerSize.SMALL)
+            }
+        }
+    }
 }
 
 @Composable

@@ -411,6 +411,14 @@ public final class AuthManager {
 
     // MARK: - Internal State Mutation
 
+    /// Sets an auth error from outside the module.
+    ///
+    /// Used by the UI layer to report locally detected errors (e.g. expired
+    /// biometric credentials) that are not produced by an auth operation.
+    public func setError(_ error: AuthError) {
+        self.error = error
+    }
+
     /// Clears all local authentication state.
     func clearState() {
         user = nil

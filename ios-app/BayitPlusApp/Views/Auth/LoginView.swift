@@ -271,15 +271,21 @@ struct LoginView: View {
             if let refreshToken = KeychainHelper.retrieveBiometricRefreshToken() {
                 // Validate token before using it
                 if KeychainHelper.isJWTExpired(refreshToken) {
-                    // Token expired, clear it
                     KeychainHelper.deleteBiometricRefreshToken()
-                    // TODO: Show error to user about expired biometric credentials
+                    authManager.setError(.sessionExpired)
                     return
                 }
 
-                try await authManager.restoreWithRefreshToken(refreshToken)
-                persistRefreshTokenForBiometric()
-                onLoginSuccess()
+                do {
+                    try await authManager.restoreWithRefreshToken(refreshToken)
+                    persistRefreshTokenForBiometric()
+                    onLoginSuccess()
+                } catch {
+                    // Token was rejected by the server. Clear it so subsequent
+                    // Face ID attempts don't retry the same invalid token.
+                    KeychainHelper.deleteBiometricRefreshToken()
+                    // authManager.error is already set by restoreWithRefreshToken.
+                }
                 return
             }
         } catch {

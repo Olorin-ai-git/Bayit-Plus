@@ -11,14 +11,14 @@ import { InteractiveMoment } from '../../hooks/useVODInteraction';
 
 interface Props {
   moment: InteractiveMoment;
-  onStart: () => void;
-  onSkip: () => void;
+  onAccept: () => void;
+  onDismiss: () => void;
 }
 
 export const InteractiveMomentPrompt: React.FC<Props> = ({
   moment,
-  onStart,
-  onSkip
+  onAccept,
+  onDismiss,
 }) => {
   return (
     <div className="absolute inset-0 flex items-center justify-center z-10 bg-black bg-opacity-50">
@@ -36,10 +36,10 @@ export const InteractiveMomentPrompt: React.FC<Props> = ({
         </div>
 
         <div className="flex gap-3 justify-center">
-          <GlassButton onClick={onSkip} variant="secondary">
+          <GlassButton onClick={onDismiss} variant="secondary">
             Skip
           </GlassButton>
-          <GlassButton onClick={onStart} size="lg">
+          <GlassButton onClick={onAccept} size="lg">
             Start Interaction
           </GlassButton>
         </div>

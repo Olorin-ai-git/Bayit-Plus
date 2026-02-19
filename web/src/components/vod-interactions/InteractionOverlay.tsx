@@ -54,10 +54,6 @@ export const InteractionOverlay: React.FC<Props> = ({
 
       if (response.animated_video_url) {
         setCurrentVideo(response.animated_video_url);
-        if (videoRef.current) {
-          videoRef.current.load();
-          videoRef.current.play();
-        }
       }
     } catch (error) {
       log.error('Failed to send message:', error);
@@ -90,7 +86,17 @@ export const InteractionOverlay: React.FC<Props> = ({
                 ref={videoRef}
                 src={currentVideo}
                 className="w-full h-auto"
-                autoPlay
+                playsInline
+                onCanPlay={() => {
+                  videoRef.current?.play().catch((err) => {
+                    log.error('Character video play failed:', err);
+                    setCurrentVideo(null);
+                  });
+                }}
+                onError={() => {
+                  log.error('Character video load error:', { url: currentVideo });
+                  setCurrentVideo(null);
+                }}
                 onEnded={() => setCurrentVideo(null)}
               />
             </GlassCard>
