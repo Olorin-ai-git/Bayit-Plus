@@ -9,11 +9,12 @@ from typing import Optional
 
 from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
                      WebSocketDisconnect, status)
+from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.security import (create_access_token, get_current_user,
-                                verify_password)
+                                security, verify_password)
 from app.models.user import TokenResponse, User
 from app.services.pairing_manager import pairing_manager
 
@@ -242,6 +243,49 @@ async def complete_oauth(request: CompleteOAuthRequest):
 
 class CompleteAuthTokenRequest(BaseModel):
     session_id: str
+
+
+@router.post("/v2/complete-token")
+async def complete_auth_token_v2(
+    request: CompleteAuthTokenRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Complete device pairing using RS256 authentication token.
+    Called by the companion iOS/Android app after the user authenticates.
+
+    Forwards the companion's RS256 token to the TV via WebSocket so the TV
+    can authenticate as the same user without requiring credentials on the TV.
+    """
+    session = await pairing_manager.get_session(request.session_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found or expired",
+        )
+
+    await pairing_manager.start_authentication(request.session_id)
+
+    if not current_user.is_active:
+        await pairing_manager.fail_pairing(request.session_id, "Account inactive")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user",
+        )
+
+    current_user.last_login = datetime.utcnow()
+    await current_user.save()
+
+    user_response = current_user.to_response()
+    await pairing_manager.complete_pairing(
+        request.session_id,
+        str(current_user.id),
+        credentials.credentials,
+        user_response.model_dump(mode="json"),
+    )
+
+    return {"status": "success"}
 
 
 @router.post("/complete-token", response_model=TokenResponse)
