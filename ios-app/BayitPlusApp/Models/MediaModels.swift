@@ -45,12 +45,49 @@ struct WatchHistoryItem: Decodable, Sendable, Identifiable {
     let id: String
     let title: String?
     let thumbnail: String?
-    let duration: Double?
     let type: String?
     let progress: Double?
     let position: Double?
     let completed: Bool?
     let lastWatched: String?
+
+    /// Duration may be a numeric value (seconds) or formatted string ("1:42:00")
+    let duration: Double?
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        thumbnail = try container.decodeIfPresent(String.self, forKey: .thumbnail)
+        type = try container.decodeIfPresent(String.self, forKey: .type)
+        progress = try container.decodeIfPresent(Double.self, forKey: .progress)
+        position = try container.decodeIfPresent(Double.self, forKey: .position)
+        completed = try container.decodeIfPresent(Bool.self, forKey: .completed)
+        lastWatched = try container.decodeIfPresent(String.self, forKey: .lastWatched)
+
+        if let numeric = try? container.decodeIfPresent(Double.self, forKey: .duration) {
+            duration = numeric
+        } else if let formatted = try? container.decodeIfPresent(String.self, forKey: .duration) {
+            duration = Self.parseFormattedDuration(formatted)
+        } else {
+            duration = nil
+        }
+    }
+
+    private static func parseFormattedDuration(_ value: String) -> Double? {
+        let parts = value.split(separator: ":").compactMap { Double($0) }
+        switch parts.count {
+        case 3: return parts[0] * 3600 + parts[1] * 60 + parts[2]
+        case 2: return parts[0] * 60 + parts[1]
+        case 1: return parts[0]
+        default: return nil
+        }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, thumbnail, duration, type, progress, position, completed
+        case lastWatched = "last_watched"
+    }
 }
 
 /// Response from GET /api/v1/history

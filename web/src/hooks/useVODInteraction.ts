@@ -86,6 +86,7 @@ export const useVODInteraction = ({
   }, [currentTime, moments]);
 
   const loadInteractiveMoments = async () => {
+    if (!contentId) return;
     try {
       const content = await api.get(`/content/${contentId}`);
       if (content.supports_avatar_interaction && content.interactive_moments) {

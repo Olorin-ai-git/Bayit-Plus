@@ -57,36 +57,23 @@ enum BackendTokenExchangeClient {
         }
     }
 
-    // MARK: - Auth Service URL
-
-    /// Olorin Auth Service URL resolved from environment or production default.
-    /// Same pattern as PasswordResetClient.
-    private static var authServiceURL: URL {
-        if let urlString = ProcessInfo.processInfo.environment["AUTH_SERVICE_URL"],
-           let url = URL(string: urlString) {
-            return url
-        }
-        return URL(string: "https://auth.olorin.ai")!
-    }
-
-    /// Tenant ID for Bayit+
-    private static let tenantID = "bayit_plus"
-
     // MARK: - Token Refresh
 
-    /// Refreshes an access token using a refresh token via the Olorin Auth Service.
+    /// Refreshes an access token using a refresh token via the backend proxy.
     ///
-    /// Calls `POST /api/v1/token/refresh` on auth.olorin.ai directly
-    /// (same direct-call pattern as PasswordResetClient).
+    /// Routes through `POST /api/v1/auth/v2/refresh` on the Bayit+ backend,
+    /// which proxies to the auth service. This ensures the same auth service
+    /// is used for both login and refresh (critical for dev environments
+    /// where local and production auth services have different signing keys).
     static func refreshAccessToken(
         refreshToken: String,
         logger: APILogger
     ) async throws -> TokenExchangeResponse {
-        let url = authServiceURL.appendingPathComponent("api/v1/token/refresh")
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("auth/v2/refresh")
 
         let body: [String: String] = [
             "refresh_token": refreshToken,
-            "tenant_id": tenantID,
         ]
 
         let bodyData = try JSONEncoder().encode(body)
@@ -95,9 +82,10 @@ enum BackendTokenExchangeClient {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
-        logger.debug("Refreshing access token via Olorin Auth", metadata: [:])
+        logger.debug("Refreshing access token via backend proxy", metadata: [:])
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -119,7 +107,7 @@ enum BackendTokenExchangeClient {
             )
         }
 
-        logger.info("Token refresh succeeded via Olorin Auth", metadata: [:])
+        logger.info("Token refresh succeeded via backend proxy", metadata: [:])
 
         return try JSONDecoder().decode(TokenExchangeResponse.self, from: data)
     }

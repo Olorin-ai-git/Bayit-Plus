@@ -389,9 +389,7 @@ export default function FullscreenVideoOverlay() {
   const handleCloseDialogue = useCallback(async () => {
     await vodInteraction.endFreeInteraction()
     setShowDialoguePanel(false)
-    setDialogueExchanges([])
-    setDialogueSessionId(null)
-  }, [dialogueSessionId])
+  }, [vodInteraction.endFreeInteraction])
 
   // Get video element for volume ducking in dialogue panel
   const getVideoElement = useCallback((): HTMLVideoElement | null => {

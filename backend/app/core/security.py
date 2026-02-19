@@ -12,8 +12,11 @@ from passlib.context import CryptContext
 
 from app.core.config import settings
 from app.core.auth_client import get_auth_client
+from app.core.logging_config import get_logger
 from app.models.passkey_credential import PasskeySession
 from app.models.user import User
+
+logger = get_logger(__name__)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -286,11 +289,6 @@ async def verify_content_access(
 import hmac
 import hashlib
 from datetime import datetime, timezone
-
-from app.core.logging_config import get_logger
-
-logger = get_logger(__name__)
-
 
 def generate_session_token(user_id: str, plan_id: str, secret_key: str) -> str:
     """Generate HMAC-signed token to bind checkout session to user.

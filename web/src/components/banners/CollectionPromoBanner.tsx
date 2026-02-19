@@ -269,14 +269,13 @@ export const CollectionPromoBanner: React.FC<CollectionPromoBannerProps> = ({
 
         <GlassButton
           variant="primary"
-          onClick={handleWatchNow}
+          title={t('vod.collection.watchNow')}
+          onPress={handleWatchNow}
           style={{
             alignSelf: 'flex-start',
-            marginTop: '8px',
+            marginTop: 8,
           }}
-        >
-          {t('vod.collection.watchNow')}
-        </GlassButton>
+        />
       </div>
     </div>
   );
