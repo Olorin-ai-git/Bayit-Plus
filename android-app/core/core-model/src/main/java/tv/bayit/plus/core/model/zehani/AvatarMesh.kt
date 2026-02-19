@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class AvatarMesh(
-    val id: String,
+    val id: String = "",
     @SerialName("avatar_id") val avatarId: String,
     @SerialName("user_id") val userId: String,
     val status: String,

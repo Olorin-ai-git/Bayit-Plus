@@ -159,8 +159,24 @@ struct CategoryRow: View {
     }
 
     private func navigateToItem(_ item: ContentItem) {
+        let type = item.type?.lowercased() ?? ""
+        let catName = category.name.lowercased()
+
         if item.isSeries == true {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if item.isCollectionParent == true {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else if type.contains("podcast") || catName.contains("podcast") {
+            coordinator.navigate(to: .podcastDetail(showId: item.id))
+        } else if type.contains("audiobook") || catName.contains("audiobook") {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
+        } else if type == "movie" || type == "vod"
+                    || catName.contains("movie") || catName.contains("film") {
+            coordinator.navigate(to: .movieDetail(movieId: item.id))
+        } else if type.contains("radio") || catName.contains("radio") {
+            coordinator.navigate(to: .radio)
+        } else if type.contains("live") || catName.contains("live") {
+            coordinator.selectedTab = .liveTV
         } else {
             let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
             coordinator.presentFullscreen(.player(contentId: item.id, contentType: contentType))

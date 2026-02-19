@@ -4279,7 +4279,8 @@
     "retry": "पुनः प्रयास करें",
     "play": "ऑफ़लाइन चलाएं",
     "deleteConfirm": "डाउनलोड हटाएं",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "सभी हटाएं"
   },
   "dubbing": {
     "title": "लाइव डबिंग",

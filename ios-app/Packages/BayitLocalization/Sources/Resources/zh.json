@@ -4284,7 +4284,8 @@
     "retry": "重试",
     "play": "离线播放",
     "deleteConfirm": "删除下载",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "清除全部"
   },
   "dubbing": {
     "title": "实时配音",

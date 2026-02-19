@@ -220,16 +220,21 @@ export default function ContentCard({ content, showProgress = false, showActions
         return null; // No navigation for articles
       }
 
-      if (content.type === 'live') return { pathname: `/live/${content.id}` };
-      if (content.type === 'radio') return { pathname: `/radio/${content.id}` };
-      if (content.type === 'podcast') return { pathname: `/podcasts/${content.id}` };
+      const type = content.type?.toLowerCase() ?? '';
+      const cat = content.category?.toLowerCase() ?? '';
+
+      if (type === 'live' || cat.includes('live')) return { pathname: `/live/${content.id}` };
+      if (type === 'radio' || cat.includes('radio')) return { pathname: `/radio/${content.id}` };
+      if (type === 'podcast' || cat.includes('podcast')) return { pathname: `/podcasts/${content.id}` };
+      if (type === 'audiobook' || cat.includes('audiobook')) return { pathname: `/audiobooks/${content.id}` };
 
       // Collection parent (movie collection)
       if (content.is_collection_parent) return { pathname: `/vod/collection/${content.id}` };
 
-      if (content.type === 'series' || isSeriesContent(content as any)) return { pathname: `/vod/series/${content.id}` };
+      if (type === 'series' || isSeriesContent(content as any)) return { pathname: `/vod/series/${content.id}` };
+      if (type === 'movie' || type === 'vod' || cat.includes('movie') || cat.includes('film')) return { pathname: `/vod/movie/${content.id}` };
 
-      // Default to movie/VOD page
+      // Fallback: player via VOD detail
       return { pathname: `/vod/movie/${content.id}` };
     } catch (error) {
       logger.error('Error determining link destination', 'ContentCard', { error, contentType: content.type });

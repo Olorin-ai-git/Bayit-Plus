@@ -105,7 +105,8 @@ struct PlayerView: View {
          player: MediaPlayer,
          repository: any MediaRepository, contentRepository: any ContentRepository,
          liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository,
-         podcastRepository: any PodcastRepository, widgetSync: WidgetDataSyncService) {
+         podcastRepository: any PodcastRepository, widgetSync: WidgetDataSyncService,
+         downloadManager: DownloadManager? = nil) {
         self.contentId = contentId
         self.contentType = contentType
         self.resume = resume
@@ -118,7 +119,8 @@ struct PlayerView: View {
             liveTVRepository: liveTVRepository,
             radioRepository: radioRepository,
             podcastRepository: podcastRepository,
-            widgetSync: widgetSync
+            widgetSync: widgetSync,
+            downloadManager: downloadManager
         ))
     }
 

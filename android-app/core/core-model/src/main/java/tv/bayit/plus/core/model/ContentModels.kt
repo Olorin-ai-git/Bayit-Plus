@@ -152,6 +152,9 @@ data class CultureTrendingItem(
     val importance: Int? = null,
     val summary: String? = null,
     val keywords: List<String> = emptyList(),
+    val url: String? = null,
+    @SerialName("source_name") val sourceName: String? = null,
+    @SerialName("relevance_score") val relevanceScore: Double? = null,
 ) {
     /** Stable identifier derived from title for LazyColumn keys. */
     val id: String get() = title ?: titleEn ?: hashCode().toString()

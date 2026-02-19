@@ -7,11 +7,13 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.StarStoryRepository
 import tv.bayit.plus.core.model.MessageResponse
 import tv.bayit.plus.core.model.StarStory
+import tv.bayit.plus.core.model.zehani.ChildAvatarSummary
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -64,6 +66,12 @@ class ApiStarStoryRepository @Inject constructor(
             val response = client.safeApiCall { service.getStarProfiles() }
             response.profiles
         }
+
+    override suspend fun listAvatarsForProfile(profileId: String): BayitResult<List<ChildAvatarSummary>> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getAvatarsForProfile(profileId) }
+            response.avatars
+        }
 }
 
 private interface StarStoryService {
@@ -85,6 +93,11 @@ private interface StarStoryService {
 
     @GET("api/v1/star-stories/profiles")
     suspend fun getStarProfiles(): StarProfilesResponse
+
+    @GET("api/v1/star-story/avatars")
+    suspend fun getAvatarsForProfile(
+        @Query("profile_id") profileId: String,
+    ): AvatarsForProfileResponse
 }
 
 /** Response wrapper for the star stories list endpoint. */
@@ -126,4 +139,10 @@ private data class StarProfileItem(
     val name: String,
     @SerialName("avatar_url") val avatarUrl: String? = null,
     @SerialName("story_count") val storyCount: Int = 0,
+)
+
+/** Response wrapper for GET /api/v1/star-story/avatars. */
+@Serializable
+private data class AvatarsForProfileResponse(
+    val avatars: List<ChildAvatarSummary> = emptyList(),
 )

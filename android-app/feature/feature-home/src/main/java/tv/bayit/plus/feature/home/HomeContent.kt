@@ -44,6 +44,7 @@ internal fun HomeSuccessContent(
     onCategoryShowAll: (String) -> Unit,
     onIsraelisCityShowAll: () -> Unit,
     onIsraeliBusinessesShowAll: () -> Unit,
+    onOpenUrl: (String) -> Unit,
     onRequestLocationPermission: () -> Unit,
     onOpenLocationSettings: () -> Unit,
     isLocationPermissionPermanentlyDenied: Boolean,
@@ -197,7 +198,7 @@ internal fun HomeSuccessContent(
                 item(key = "trending") {
                     TrendingRow(
                         items = uiState.trendingContent,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
+                        onItemClick = { item -> item.url?.let(onOpenUrl) },
                         onShowAllClick = onTrendingShowAll,
                     )
                 }

@@ -41,6 +41,7 @@ final class MediaPlayerViewModel {
     private let widgetBridge: MediaPlayerWidgetBridge
     #endif
     private let repository: any MediaRepository
+    private let downloadManager: DownloadManager?
     let preferences = PlayerPreferencesService()
 
     // MARK: - Init
@@ -55,12 +56,14 @@ final class MediaPlayerViewModel {
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
         podcastRepository: any PodcastRepository,
-        widgetSync: WidgetDataSyncService? = nil
+        widgetSync: WidgetDataSyncService? = nil,
+        downloadManager: DownloadManager? = nil
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.player = player
         self.repository = repository
+        self.downloadManager = downloadManager
         self.streamResolver = StreamResolver(
             mediaRepository: repository,
             contentRepository: contentRepository,
@@ -90,12 +93,14 @@ final class MediaPlayerViewModel {
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
-        podcastRepository: any PodcastRepository
+        podcastRepository: any PodcastRepository,
+        downloadManager: DownloadManager? = nil
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.player = player
         self.repository = repository
+        self.downloadManager = downloadManager
         self.streamResolver = StreamResolver(
             mediaRepository: repository,
             contentRepository: contentRepository,
@@ -120,6 +125,22 @@ final class MediaPlayerViewModel {
     func load() async {
         isLoading = true
         errorMessage = nil
+
+        // Offline-first: use locally downloaded asset when available (no network needed).
+        if let download = downloadManager?.localDownload(for: contentId),
+           let localURL = downloadManager?.playLocalDownload(id: download.id) {
+            title = download.title
+            if let thumbStr = download.thumbnail { artworkURL = URL(string: thumbStr) }
+            let mediaType = mapContentType(contentType)
+            player.load(url: localURL, contentType: mediaType)
+            isLoading = false
+            await progressTracker.loadResumePosition()
+            initialPosition = progressTracker.initialPosition
+            player.play()
+            if initialPosition > 0 { await player.seek(to: initialPosition) }
+            if mediaType.isSeekable { progressTracker.startTracking() }
+            return
+        }
 
         do {
             // Resolve stream URL and metadata

@@ -6,6 +6,7 @@ import SwiftUI
 /// Uses VStack with background image, fixed card row, and focus navigation.
 struct TVCityContentRow: View {
     @Environment(LocalizationManager.self) private var localization
+    @Environment(TVNavigationCoordinator.self) private var coordinator
 
     let title: String
     let items: [CityContentItem]
@@ -114,7 +115,9 @@ struct TVCityContentRow: View {
         HStack(spacing: TVDesignTokens.Spacing.focusGap) {
             ForEach(Array(items.prefix(Self.maxVisibleCards))) { item in
                 Button {
-                    // City news card tapped -- read-only
+                    if let urlString = item.url, let url = URL(string: urlString) {
+                        coordinator.presentWebView(url: url, title: item.title ?? title)
+                    }
                 } label: {
                     TVCityTopicCard(item: item, accentColor: accentColor)
                 }

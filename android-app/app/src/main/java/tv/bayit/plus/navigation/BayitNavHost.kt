@@ -601,12 +601,12 @@ fun BayitNavHost(
         }
         composable<Route.ZehAni> {
             ZehAniDashboardRoute(
-                onNavigateToMagicMirror = { navController.navigate(Route.ZehAniMagicMirror(profileId = "current", avatarId = "current")) },
-                onNavigateToV2V = { navController.navigate(Route.ZehAniV2V(avatarId = "default", profileId = "current")) },
-                onNavigateToAvatar3D = { navController.navigate(Route.ZehAniAvatar3D(avatarId = "default")) },
-                onNavigateToHighlights = { navController.navigate(Route.ZehAniHighlights(profileId = "current")) },
-                onNavigateToContacts = { navController.navigate(Route.ZehAniContacts(profileId = "current")) },
-                onNavigateToFeedback = { navController.navigate(Route.ZehAniFeedback(profileId = "current")) },
+                onNavigateToMagicMirror = { profileId -> navController.navigate(Route.ZehAniMagicMirror(profileId = profileId, avatarId = "")) },
+                onNavigateToV2V = { profileId -> navController.navigate(Route.ZehAniV2V(avatarId = "", profileId = profileId)) },
+                onNavigateToAvatar3D = { profileId -> navController.navigate(Route.ZehAniAvatar3D(avatarId = profileId)) },
+                onNavigateToHighlights = { profileId -> navController.navigate(Route.ZehAniHighlights(profileId = profileId)) },
+                onNavigateToContacts = { profileId -> navController.navigate(Route.ZehAniContacts(profileId = profileId)) },
+                onNavigateToFeedback = { profileId -> navController.navigate(Route.ZehAniFeedback(profileId = profileId)) },
                 onNavigateToConsent = { navController.navigate(Route.ZehAniConsent) },
                 onNavigateBack = { navController.popBackStack() },
             )
@@ -715,6 +715,7 @@ private fun NavController.navigateToContent(contentId: String, contentType: Stri
         "series" -> navigate(Route.SeriesDetail(seriesId = contentId))
         "collection" -> navigate(Route.CollectionDetail(collectionId = contentId))
         "podcast" -> navigate(Route.PodcastDetail(showId = contentId))
+        "audiobook" -> navigate(Route.AudiobookDetail(audiobookId = contentId))
         else -> navigate(Route.MovieDetail(movieId = contentId))
     }
 }

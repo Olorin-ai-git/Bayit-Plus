@@ -41,6 +41,7 @@ interface CultureTrendingTopic {
   keywords?: string[];
   source?: string;
   published_at?: string;
+  url?: string;
 }
 
 interface CultureTrendingData {
@@ -167,6 +168,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
           keywords: item.tags || [],
           source: item.source_name,
           published_at: item.published_at,
+          url: item.url,
         }));
 
         // Extract unique sources

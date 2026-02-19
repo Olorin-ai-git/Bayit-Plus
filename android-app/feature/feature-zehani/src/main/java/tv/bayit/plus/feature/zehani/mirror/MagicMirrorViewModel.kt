@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.StarStoryRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import tv.bayit.plus.core.model.zehani.MagicMirrorGreeting
 import javax.inject.Inject
@@ -18,11 +19,12 @@ import javax.inject.Inject
 class MagicMirrorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
+    private val starStoryRepository: StarStoryRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
     val profileId: String = checkNotNull(savedStateHandle["profileId"])
-    private val avatarId: String = savedStateHandle["avatarId"] ?: ""
+    private val avatarIdFromRoute: String = savedStateHandle["avatarId"] ?: ""
 
     private val _uiState = MutableStateFlow<MagicMirrorUiState>(MagicMirrorUiState.Loading)
     val uiState: StateFlow<MagicMirrorUiState> = _uiState.asStateFlow()
@@ -35,7 +37,7 @@ class MagicMirrorViewModel @Inject constructor(
 
     init {
         loadGreeting()
-        if (avatarId.isNotBlank()) loadAvatarImage()
+        resolveAndLoadAvatar()
     }
 
     fun refreshGreeting() {
@@ -78,21 +80,43 @@ class MagicMirrorViewModel @Inject constructor(
         }
     }
 
-    private fun loadAvatarImage() {
+    private fun resolveAndLoadAvatar() {
         viewModelScope.launch {
-            logger.debug("Loading avatar image", mapOf("avatarId" to avatarId))
-            when (val result = zehAniRepository.getMeshStatus(avatarId)) {
-                is BayitResult.Success -> {
-                    _avatarImageUrl.value = result.data.avatarImageUrl
-                    _noAvatar.value = result.data.avatarImageUrl == null
-                    logger.info("Avatar image loaded", mapOf("hasImage" to (result.data.avatarImageUrl != null).toString()))
+            val resolvedAvatarId = if (avatarIdFromRoute.isNotBlank()) {
+                avatarIdFromRoute
+            } else {
+                logger.debug("No avatarId in route, fetching avatars for profile", mapOf("profileId" to profileId))
+                when (val result = starStoryRepository.listAvatarsForProfile(profileId)) {
+                    is BayitResult.Success -> result.data.firstOrNull()?.avatarId
+                    is BayitResult.Error -> {
+                        logger.debug("Avatar list fetch failed", mapOf("profileId" to profileId))
+                        null
+                    }
+                    is BayitResult.Loading -> null
                 }
-                is BayitResult.Error -> {
-                    _noAvatar.value = true
-                    logger.debug("No avatar found", mapOf("avatarId" to avatarId))
-                }
-                is BayitResult.Loading -> Unit
             }
+
+            if (resolvedAvatarId == null) {
+                _noAvatar.value = true
+                return@launch
+            }
+            loadAvatarImage(resolvedAvatarId)
+        }
+    }
+
+    private suspend fun loadAvatarImage(avatarId: String) {
+        logger.debug("Loading avatar image", mapOf("avatarId" to avatarId))
+        when (val result = zehAniRepository.getMeshStatus(avatarId)) {
+            is BayitResult.Success -> {
+                _avatarImageUrl.value = result.data.avatarImageUrl
+                _noAvatar.value = result.data.avatarImageUrl == null
+                logger.info("Avatar image loaded", mapOf("hasImage" to (result.data.avatarImageUrl != null).toString()))
+            }
+            is BayitResult.Error -> {
+                _noAvatar.value = true
+                logger.debug("No avatar image found", mapOf("avatarId" to avatarId))
+            }
+            is BayitResult.Loading -> Unit
         }
     }
 }

@@ -4327,7 +4327,8 @@
     "retry": "Retry",
     "play": "Play Offline",
     "deleteConfirm": "Remove Download",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "Clear All"
   },
   "dubbing": {
     "title": "Live Dubbing",

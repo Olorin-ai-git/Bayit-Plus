@@ -41,12 +41,12 @@ private val menuCards = listOf(
 
 @Composable
 fun ZehAniDashboardRoute(
-    onNavigateToMagicMirror: () -> Unit,
-    onNavigateToV2V: () -> Unit,
-    onNavigateToAvatar3D: () -> Unit,
-    onNavigateToHighlights: () -> Unit,
-    onNavigateToContacts: () -> Unit,
-    onNavigateToFeedback: () -> Unit,
+    onNavigateToMagicMirror: (profileId: String) -> Unit,
+    onNavigateToV2V: (profileId: String) -> Unit,
+    onNavigateToAvatar3D: (profileId: String) -> Unit,
+    onNavigateToHighlights: (profileId: String) -> Unit,
+    onNavigateToContacts: (profileId: String) -> Unit,
+    onNavigateToFeedback: (profileId: String) -> Unit,
     onNavigateToConsent: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,14 +57,16 @@ fun ZehAniDashboardRoute(
     ZehAniDashboardScreen(
         uiState = uiState,
         onFeatureSelected = { feature ->
-            when (feature) {
-                ZehAniFeature.MAGIC_MIRROR -> onNavigateToMagicMirror()
-                ZehAniFeature.V2V_PRACTICE -> onNavigateToV2V()
-                ZehAniFeature.AVATAR_3D -> onNavigateToAvatar3D()
-                ZehAniFeature.HIGHLIGHTS -> onNavigateToHighlights()
-                ZehAniFeature.CONTACTS -> onNavigateToContacts()
-                ZehAniFeature.FEEDBACK -> onNavigateToFeedback()
-                ZehAniFeature.CONSENT -> onNavigateToConsent()
+            (uiState as? ZehAniDashboardUiState.Success)?.profileId?.let { profileId ->
+                when (feature) {
+                    ZehAniFeature.MAGIC_MIRROR -> onNavigateToMagicMirror(profileId)
+                    ZehAniFeature.V2V_PRACTICE -> onNavigateToV2V(profileId)
+                    ZehAniFeature.AVATAR_3D -> onNavigateToAvatar3D(profileId)
+                    ZehAniFeature.HIGHLIGHTS -> onNavigateToHighlights(profileId)
+                    ZehAniFeature.CONTACTS -> onNavigateToContacts(profileId)
+                    ZehAniFeature.FEEDBACK -> onNavigateToFeedback(profileId)
+                    ZehAniFeature.CONSENT -> onNavigateToConsent()
+                }
             }
         },
         onRetry = viewModel::retry,

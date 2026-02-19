@@ -6,6 +6,7 @@ import SwiftUI
 /// Optimized for 10-foot UI with focus navigation
 struct TVLocationContentRow: View {
     @Environment(LocalizationManager.self) private var localization
+    @Environment(TVNavigationCoordinator.self) private var coordinator
 
     let title: String
     let items: [LocationItem]
@@ -18,13 +19,20 @@ struct TVLocationContentRow: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(items) { item in
-                        GlassFocusPoster(
-                            thumbnailURL: item.imageUrl,
-                            title: item.title ?? "Untitled",
-                            subtitle: locationSubtitle(for: item),
-                            aspectRatio: 1.0  // Square
-                        )
-                        .frame(width: 280)
+                        Button {
+                            if let urlString = item.url, let url = URL(string: urlString) {
+                                coordinator.presentWebView(url: url, title: item.title ?? title)
+                            }
+                        } label: {
+                            GlassFocusPoster(
+                                thumbnailURL: item.imageUrl,
+                                title: item.title ?? "Untitled",
+                                subtitle: locationSubtitle(for: item),
+                                aspectRatio: 1.0
+                            )
+                            .frame(width: 280)
+                        }
+                        .buttonStyle(.card)
                         .tvFocusStyle()
                     }
                 }

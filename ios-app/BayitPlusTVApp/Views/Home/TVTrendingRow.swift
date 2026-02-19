@@ -6,6 +6,7 @@ import SwiftUI
 /// Optimized for 10-foot UI with focus navigation
 struct TVTrendingRow: View {
     @Environment(LocalizationManager.self) private var localization
+    @Environment(TVNavigationCoordinator.self) private var coordinator
 
     let items: [CultureTrendingItem]
 
@@ -73,7 +74,9 @@ struct TVTrendingRow: View {
         HStack(spacing: TVDesignTokens.Spacing.focusGap) {
             ForEach(Array(items.prefix(Self.maxVisibleCards))) { item in
                 Button {
-                    // Topic card tapped -- no-op for now (news cards are read-only)
+                    if let urlString = item.url, let url = URL(string: urlString) {
+                        coordinator.presentWebView(url: url, title: item.title)
+                    }
                 } label: {
                     TVTrendingTopicCard(item: item)
                 }

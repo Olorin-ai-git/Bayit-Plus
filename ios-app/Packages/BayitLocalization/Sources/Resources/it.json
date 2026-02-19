@@ -4531,7 +4531,8 @@
     "retry": "Riprova",
     "play": "Riproduci offline",
     "deleteConfirm": "Rimuovi download",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "Cancella tutto"
   },
   "dubbing": {
     "title": "Doppiaggio live",

@@ -4421,7 +4421,8 @@
     "retry": "Réessayer",
     "play": "Lire hors ligne",
     "deleteConfirm": "Supprimer le téléchargement",
-    "size": "{{size}} Mo"
+    "size": "{{size}} Mo",
+    "clearAll": "Tout effacer"
   },
   "dubbing": {
     "title": "Doublage en direct",

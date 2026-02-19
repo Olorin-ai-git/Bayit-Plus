@@ -68,7 +68,14 @@ struct TrendingRow: View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: DesignTokens.Spacing.md) {
                 ForEach(items) { item in
-                    TrendingTopicCard(item: item)
+                    Button {
+                        if let urlString = item.url, let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        TrendingTopicCard(item: item)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)

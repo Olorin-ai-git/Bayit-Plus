@@ -75,10 +75,25 @@ fun HomeRoute(
         successState.locationPermissionPreviouslyDenied &&
         activity?.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) == false
 
+    val context = LocalContext.current
     HomeScreen(
         uiState = uiState,
         onSpotlightClick = { item -> onNavigateToPlayer(item.id, item.type.orEmpty()) },
-        onContentClick = { item -> onNavigateToContent(item.id, item.type.orEmpty()) },
+        onContentClick = { item ->
+            val type = item.type?.lowercase().orEmpty()
+            val cat = item.category?.lowercase().orEmpty()
+            when {
+                item.isSeries == true -> onNavigateToContent(item.id, "series")
+                item.isCollectionParent == true -> onNavigateToContent(item.id, "collection")
+                type.contains("podcast") || cat.contains("podcast") -> onNavigateToContent(item.id, "podcast")
+                type.contains("audiobook") || cat.contains("audiobook") -> onNavigateToContent(item.id, "audiobook")
+                type == "movie" || type == "vod"
+                    || cat.contains("movie") || cat.contains("film") -> onNavigateToContent(item.id, "movie")
+                type.contains("radio") || cat.contains("radio") -> onNavigateToRadioBrowse()
+                type.contains("live") || cat.contains("live") -> onNavigateToLiveTV()
+                else -> onNavigateToPlayer(item.id, type.ifEmpty { "vod" })
+            }
+        },
         onContinueWatchingItemClick = onNavigateToContinueWatchingItem,
         onCollectionClick = { id -> onNavigateToContent(id, "collection") },
         onWatchNowClick = { movieId -> onNavigateToPlayer(movieId, "movie") },
@@ -94,6 +109,7 @@ fun HomeRoute(
         onCategoryShowAll = onNavigateToCategoryBrowse,
         onIsraelisCityShowAll = onNavigateToIsraelisCity,
         onIsraeliBusinessesShowAll = onNavigateToIsraeliBusinesses,
+        onOpenUrl = { url -> context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) },
         isLocationPermissionPermanentlyDenied = isPermanentlyDenied,
         onRequestLocationPermission = {
             viewModel.markLocationPermissionRequested()
@@ -131,6 +147,7 @@ internal fun HomeScreen(
     onCategoryShowAll: (String) -> Unit,
     onIsraelisCityShowAll: () -> Unit,
     onIsraeliBusinessesShowAll: () -> Unit,
+    onOpenUrl: (String) -> Unit,
     isLocationPermissionPermanentlyDenied: Boolean,
     onRequestLocationPermission: () -> Unit,
     onOpenLocationSettings: () -> Unit,
@@ -159,6 +176,7 @@ internal fun HomeScreen(
             onCategoryShowAll = onCategoryShowAll,
             onIsraelisCityShowAll = onIsraelisCityShowAll,
             onIsraeliBusinessesShowAll = onIsraeliBusinessesShowAll,
+            onOpenUrl = onOpenUrl,
             isLocationPermissionPermanentlyDenied = isLocationPermissionPermanentlyDenied,
             onRequestLocationPermission = onRequestLocationPermission,
             onOpenLocationSettings = onOpenLocationSettings,

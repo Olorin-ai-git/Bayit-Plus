@@ -124,7 +124,7 @@ internal fun RadioStationsRow(
 @Composable
 internal fun TrendingRow(
     items: List<CultureTrendingItem>,
-    onItemClick: (String, String) -> Unit,
+    onItemClick: (CultureTrendingItem) -> Unit,
     onShowAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -143,7 +143,7 @@ internal fun TrendingRow(
                     title = item.title.orEmpty(),
                     subtitle = item.categoryLabel?.he ?: item.category,
                     summary = item.summary,
-                    onClick = { onItemClick(item.id, item.type.orEmpty()) },
+                    onClick = { onItemClick(item) },
                 )
             }
         }

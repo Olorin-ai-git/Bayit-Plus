@@ -4579,7 +4579,8 @@
     "completed": "ダウンロード済み",
     "play": "オフラインで再生",
     "deleteConfirm": "ダウンロードを削除",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "すべて削除"
   },
   "dubbing": {
     "title": "ライブ吹き替え",

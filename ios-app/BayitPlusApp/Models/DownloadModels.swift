@@ -21,11 +21,17 @@ struct LocalDownload: Identifiable, Codable, Sendable {
     var contentType: ContentType
     var status: DownloadStatus
     var progress: Double
+    /// For HLS downloads: absolute path to .movpkg bundle.
+    /// For MP4 downloads: path relative to Documents directory.
     var filePath: String?
     var fileSize: Int64?
     var serverDownloadId: String?
     let createdAt: Date
     var error: String?
+    /// Original stream URL preserved for retry.
+    var sourceUrl: String?
+    /// True when filePath is an absolute path (HLS .movpkg).
+    var isHLSDownload: Bool
 
     init(contentId: String, title: String, thumbnail: String?, contentType: ContentType) {
         self.id = UUID().uuidString
@@ -36,18 +42,19 @@ struct LocalDownload: Identifiable, Codable, Sendable {
         self.status = .queued
         self.progress = 0
         self.createdAt = Date()
+        self.isHLSDownload = false
     }
 }
 
 // MARK: - Download Request
 
-/// Describes a single item to be downloaded, used by downloadAll.
+/// Describes a single item to be downloaded.
 struct DownloadRequest: Sendable {
     let contentId: String
     let title: String
     let thumbnail: String?
     let contentType: ContentType
-    /// Direct file URL for the actual content download. Nil results in a failed download.
+    /// Stream URL for the content. For HLS (.m3u8) the AVAssetDownloadURLSession is used.
     let streamUrl: String?
 
     init(contentId: String, title: String, thumbnail: String?, contentType: ContentType, streamUrl: String? = nil) {

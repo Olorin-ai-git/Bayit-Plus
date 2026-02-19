@@ -278,6 +278,27 @@ struct TVHomeView: View {
                 placeholderIcon: placeholderIcon(for: section),
                 availableSubtitleLanguages: item.availableSubtitleLanguages
             ) {
+                navigateToCategoryItem(item, section: section)
+            }
+        }
+    }
+
+    private func navigateToCategoryItem(_ item: ContentItem, section: TVHomeSection) {
+        if item.isSeries == true {
+            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if item.isCollectionParent == true {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else {
+            switch section {
+            case .podcasts:
+                coordinator.navigate(to: .podcastDetail(showId: item.id))
+            case .audiobooks:
+                coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
+            case .series, .israeliSeries:
+                coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+            case .movies, .israeliMovies, .kids, .youngsters, .music, .documentary:
+                coordinator.navigate(to: .movieDetail(movieId: item.id))
+            default:
                 coordinator.presentPlayer(
                     contentId: item.id,
                     contentType: TVContentTypeMapper.map(item.type)

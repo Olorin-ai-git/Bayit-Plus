@@ -113,14 +113,14 @@ async def start_download(
             "status": existing.status,
         }
 
-    # Create download record
+    # Create download record with pending status; the client tracks actual progress locally.
     download = Download(
         user_id=str(current_user.id),
         content_id=data.content_id,
         content_type=data.content_type,
         quality=data.quality,
-        status="completed",  # In a real app, this would start as "pending"
-        progress=100,
+        status="pending",
+        progress=0,
     )
     await download.insert()
 
@@ -157,15 +157,11 @@ async def check_download(
     """Check if content is downloaded."""
     download = await Download.find_one(
         {
-
             "user_id": str(current_user.id),
-
             "content_id": content_id,
-
-            "status": "completed"
-
+            "status": {"$in": ["pending", "completed"]},
         }
-)
+    )
     return {
         "is_downloaded": download is not None,
         "download_id": str(download.id) if download else None,

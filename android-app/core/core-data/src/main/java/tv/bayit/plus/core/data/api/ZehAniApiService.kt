@@ -44,7 +44,7 @@ interface ZehAniApiService {
         @Body request: MeshGenerationRequest,
     ): AvatarMesh
 
-    @GET("api/v1/zeh-ani/mesh/{avatarId}")
+    @GET("api/v1/zeh-ani/avatar/{avatarId}")
     suspend fun getMeshStatus(
         @Path("avatarId") avatarId: String,
     ): AvatarMesh

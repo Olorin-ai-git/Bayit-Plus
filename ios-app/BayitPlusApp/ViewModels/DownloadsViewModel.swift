@@ -34,6 +34,10 @@ final class DownloadsViewModel {
         Task { await downloadManager.retryDownload(id: download.id) }
     }
 
+    func clearAllDownloads() {
+        Task { await downloadManager.clearAllDownloads() }
+    }
+
     func localFileURL(for download: LocalDownload) -> URL? {
         downloadManager.playLocalDownload(id: download.id)
     }

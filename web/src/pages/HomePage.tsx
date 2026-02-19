@@ -452,7 +452,14 @@ export default function HomePage() {
 
           {/* 1. What's Hot in Israel (Trending) */}
           <View style={styles.section}>
-            <CultureTrendingRow cultureId={currentCulture?.culture_id} />
+            <CultureTrendingRow
+              cultureId={currentCulture?.culture_id}
+              onTopicPress={(topic) => {
+                if (topic.url) {
+                  window.open(topic.url, '_blank', 'noopener,noreferrer');
+                }
+              }}
+            />
           </View>
 
           {/* Youngsters Section */}

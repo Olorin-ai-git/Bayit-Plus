@@ -4269,7 +4269,8 @@
     "retry": "পুনরায় চেষ্টা করুন",
     "play": "অফলাইনে চালান",
     "deleteConfirm": "ডাউনলোড সরান",
-    "size": "{{size}} MB"
+    "size": "{{size}} MB",
+    "clearAll": "সব মুছুন"
   },
   "dubbing": {
     "title": "লাইভ ডাবিং",
