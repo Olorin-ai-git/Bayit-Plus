@@ -129,6 +129,19 @@ class CharacterAnimatorService:
             duration=duration
         )
 
+    def _get_creatify_persona(self, character_name: str) -> str:
+        """
+        Get Creatify stock persona UUID for a character.
+
+        Uses gender-based mapping with configurable persona IDs.
+        """
+        female_characters = {
+            "Jennifer Parker", "Lorraine Baines", "Miriam", "Esther"
+        }
+        if character_name in female_characters:
+            return settings.CREATIFY_PERSONA_FEMALE
+        return settings.CREATIFY_PERSONA_MALE
+
     async def _animate_with_creatify(
         self,
         character_name: str,
@@ -151,10 +164,11 @@ class CharacterAnimatorService:
         audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
         duration = await self._get_audio_duration(audio_url)
 
+        creator_id = self._get_creatify_persona(character_name)
         animated_video_url = await creatify_client.create_lipsync(
-            image_url=character_frame_url,
             audio_url=audio_url,
-            aspect_ratio="1:1"
+            creator_id=creator_id,
+            aspect_ratio="1x1"
         )
 
         logger.info(
@@ -217,7 +231,8 @@ class CharacterAnimatorService:
 
                 import hashlib
                 text_hash = hashlib.md5(text.encode()).hexdigest()[:8]
-                gcs_path = f"vod-interactions/character-audio/{character_name}_{text_hash}.mp3"
+                safe_name = character_name.replace(" ", "_").lower()
+                gcs_path = f"vod-interactions/character-audio/{safe_name}_{text_hash}.mp3"
 
                 audio_url = await storage_service.upload_bytes(
                     audio_bytes,

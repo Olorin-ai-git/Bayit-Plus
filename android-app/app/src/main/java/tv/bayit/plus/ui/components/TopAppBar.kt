@@ -1,9 +1,10 @@
 package tv.bayit.plus.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ fun TopAppBar(
     onLanguageSelected: (String) -> Unit,
     onPlaylistClick: () -> Unit,
     onZehAniClick: () -> Unit,
+    onHomeClick: () -> Unit = {},
     showBack: Boolean = false,
     onBack: () -> Unit = {},
     breadcrumbs: List<BreadcrumbEntry> = emptyList(),
@@ -57,15 +59,16 @@ fun TopAppBar(
                 .fillMaxWidth()
                 .height(52.dp)
                 .padding(horizontal = DesignTokens.Spacing.sm),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.splash_logo),
                 contentDescription = "Bayit+",
-                modifier = Modifier.height(30.dp),
+                modifier = Modifier
+                    .height(30.dp)
+                    .clickable { onHomeClick() },
             )
-
-            Spacer(modifier = Modifier.weight(1f))
 
             LanguageSelector(
                 currentLanguage = currentLanguage,

@@ -728,6 +728,16 @@ class Settings(BaseSettings):
         description="Creatify API key for authentication"
     )
 
+    # Creatify Stock Persona IDs (character animation fallbacks)
+    CREATIFY_PERSONA_MALE: str = Field(
+        default="0251876f-0da4-4c61-8320-8955d8be1f98",
+        description="Creatify stock male persona UUID"
+    )
+    CREATIFY_PERSONA_FEMALE: str = Field(
+        default="009f502d-3649-4624-a438-80b126f1fa30",
+        description="Creatify stock female persona UUID"
+    )
+
     # Character Voice IDs (ElevenLabs voices for VOD interaction characters)
     CHARACTER_VOICE_MOSHE: str = Field(
         default="ashjVK50jp28G73AUTnb",

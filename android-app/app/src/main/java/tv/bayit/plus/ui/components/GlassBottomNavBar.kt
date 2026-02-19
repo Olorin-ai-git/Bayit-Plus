@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -35,11 +36,13 @@ fun GlassBottomNavBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(72.dp)
             .glassMorphism(
                 cornerRadius = DesignTokens.Radius.xl,
                 backgroundColor = DesignTokens.Colors.Glass.bgStrong,
             )
+            .navigationBarsPadding()
+            .padding(bottom = 12.dp)
+            .height(72.dp)
             .padding(horizontal = DesignTokens.Spacing.sm),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,

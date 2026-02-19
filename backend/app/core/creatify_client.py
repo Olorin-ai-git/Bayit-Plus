@@ -22,7 +22,7 @@ class CreatifyClient:
         self.api_url = settings.CREATIFY_API_URL
         self.api_id = settings.CREATIFY_API_ID
         self.api_key = settings.CREATIFY_API_KEY
-        self.timeout = httpx.Timeout(60.0, connect=10.0)
+        self.timeout = httpx.Timeout(120.0, connect=10.0)
 
     def _get_headers(self) -> dict:
         """Get authentication headers for API requests"""
@@ -34,29 +34,38 @@ class CreatifyClient:
 
     async def create_persona(
         self,
-        name: str,
-        image_url: str,
+        creator_name: str,
+        lipsync_input: str,
+        gender: str = "m",
+        video_scene: str = "indoor",
     ) -> dict:
         """
-        Create a Creatify persona from an avatar image.
+        Create a Creatify BYOA persona from a video URL.
 
         Args:
-            name: Display name for the persona
-            image_url: Public/signed URL of the avatar image
+            creator_name: Display name for the persona
+            lipsync_input: Public URL of MP4 video for lipsync training
+            gender: Gender designation ('m' or 'f')
+            video_scene: Background category (e.g. 'office', 'indoor')
 
         Returns:
-            Persona dict with id, image_url, status
+            Persona dict with id, creator_name, is_active, process_status
         """
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 payload = {
-                    "name": name,
-                    "image_url": image_url,
+                    "creator_name": creator_name,
+                    "lipsync_input": lipsync_input,
+                    "gender": gender,
+                    "video_scene": video_scene,
                 }
 
                 logger.info(
                     "Creating Creatify persona",
-                    extra={"name": name, "image_url": image_url}
+                    extra={
+                        "creator_name": creator_name,
+                        "gender": gender,
+                    }
                 )
 
                 response = await client.post(
@@ -126,35 +135,39 @@ class CreatifyClient:
 
     async def create_lipsync(
         self,
-        image_url: str,
         audio_url: str,
-        aspect_ratio: str = "1:1"
+        creator_id: str,
+        aspect_ratio: str = "1x1"
     ) -> str:
         """
-        Create lip-synced video from image and audio
+        Create lip-synced video from persona and audio
 
         Args:
-            image_url: Public URL of character still image
             audio_url: Public URL of audio file
-            aspect_ratio: Video aspect ratio (1:1, 16:9, 9:16)
+            creator_id: Creatify persona UUID from /api/personas
+            aspect_ratio: Video aspect ratio (1x1, 16x9, 9x16)
 
         Returns:
             GCS URL of final animated video
         """
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            async with httpx.AsyncClient(
+                timeout=self.timeout, follow_redirects=True
+            ) as client:
                 payload = {
-                    "image_url": image_url,
-                    "audio_url": audio_url,
+                    "audio": audio_url,
+                    "creator": creator_id,
                     "aspect_ratio": aspect_ratio,
-                    "model": "aurora_v2",
-                    "green_screen": True
+                    "model_version": "aurora_v1",
+                    "green_screen": True,
+                    "no_caption": True,
+                    "no_music": True,
                 }
 
                 logger.info(
                     "Creating Creatify lip-sync animation",
                     extra={
-                        "image_url": image_url,
+                        "creator_id": creator_id,
                         "audio_url": audio_url,
                         "aspect_ratio": aspect_ratio
                     }
@@ -215,7 +228,7 @@ class CreatifyClient:
         for attempt in range(max_attempts):
             try:
                 response = await client.get(
-                    f"{self.api_url}/api/lipsyncs/{lipsync_id}",
+                    f"{self.api_url}/api/lipsyncs/{lipsync_id}/",
                     headers=self._get_headers()
                 )
                 response.raise_for_status()
