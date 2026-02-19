@@ -53,7 +53,7 @@ protocol UserRepository: Sendable {
     // MARK: - Downloads
 
     /// Fetch the user's download list.
-    func fetchDownloads() async throws -> DownloadsResponse
+    func fetchDownloads() async throws -> [DownloadItem]
 
     /// Start downloading a content item.
     func startDownload(request: DownloadStartRequest) async throws -> DownloadStartResponse
@@ -213,16 +213,16 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
 
     // MARK: - Downloads
 
-    func fetchDownloads() async throws -> DownloadsResponse {
+    func fetchDownloads() async throws -> [DownloadItem] {
         return try await client.get(
             "/api/v1/downloads",
-            as: DownloadsResponse.self
+            as: [DownloadItem].self
         )
     }
 
     func startDownload(request: DownloadStartRequest) async throws -> DownloadStartResponse {
         return try await client.post(
-            "/api/v1/user/downloads",
+            "/api/v1/downloads",
             body: request,
             as: DownloadStartResponse.self
         )

@@ -121,6 +121,8 @@ struct MainTabView: View {
             PodcastsView()
         case .search:
             SearchView()
+        case .downloads:
+            DownloadsView()
         }
     }
 

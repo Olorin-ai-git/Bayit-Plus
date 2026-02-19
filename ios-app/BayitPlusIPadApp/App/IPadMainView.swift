@@ -138,6 +138,8 @@ struct IPadMainView: View {
             IPadPodcastsView()
         case .search:
             IPadSearchView()
+        case .downloads:
+            DownloadsView()
         }
     }
 

@@ -183,7 +183,8 @@ struct MovieDetailView: View {
                     contentId: detail.id,
                     title: detail.title ?? "",
                     thumbnail: detail.thumbnail,
-                    contentType: .movie
+                    contentType: .movie,
+                    streamUrl: detail.directUrl ?? detail.streamUrl
                 ))
             }
         } label: {

@@ -6,9 +6,9 @@ import SwiftUI
 /// tvOS Downloads screen showing offline-available content in a 5-column grid.
 /// Uses DownloadsViewModel (shared with iOS) backed by DownloadManager + DownloadStore.
 struct TVDownloadsView: View {
-    @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: DownloadsViewModel?
     @State private var itemToDelete: LocalDownload?
 
@@ -46,10 +46,7 @@ struct TVDownloadsView: View {
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                let store = DownloadStore()
-                let manager = DownloadManager(userRepository: repos.user, store: store)
-                await manager.initialize()
-                viewModel = DownloadsViewModel(downloadManager: manager)
+                viewModel = DownloadsViewModel(downloadManager: downloadManager)
             }
         }
         .confirmationDialog(

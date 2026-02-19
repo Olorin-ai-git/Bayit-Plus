@@ -212,7 +212,8 @@ struct SeriesDetailView: View {
                     contentId: ep.id,
                     title: ep.title ?? localization.t("player.episode"),
                     thumbnail: ep.thumbnail,
-                    contentType: .episode
+                    contentType: .episode,
+                    streamUrl: ep.directUrl ?? ep.streamUrl
                 )
             }
             downloadManager.downloadAll(requests)
@@ -275,7 +276,8 @@ struct SeriesDetailView: View {
                                 contentId: episode.id,
                                 title: episode.title ?? localization.t("player.episode"),
                                 thumbnail: episode.thumbnail,
-                                contentType: .episode
+                                contentType: .episode,
+                                streamUrl: episode.directUrl ?? episode.streamUrl
                             ))
                         }
                     }

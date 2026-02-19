@@ -47,4 +47,14 @@ struct DownloadRequest: Sendable {
     let title: String
     let thumbnail: String?
     let contentType: ContentType
+    /// Direct file URL for the actual content download. Nil results in a failed download.
+    let streamUrl: String?
+
+    init(contentId: String, title: String, thumbnail: String?, contentType: ContentType, streamUrl: String? = nil) {
+        self.contentId = contentId
+        self.title = title
+        self.thumbnail = thumbnail
+        self.contentType = contentType
+        self.streamUrl = streamUrl
+    }
 }

@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.DownloadsRepository
 import tv.bayit.plus.core.data.repository.SeriesRepository
+import tv.bayit.plus.core.model.DownloadStartRequest
 import tv.bayit.plus.core.model.EpisodeItem
 import tv.bayit.plus.core.model.RelatedItem
 import tv.bayit.plus.core.model.SeasonSummary
@@ -28,6 +30,7 @@ import javax.inject.Inject
 class SeriesDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val seriesRepository: SeriesRepository,
+    private val downloadsRepository: DownloadsRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -43,6 +46,23 @@ class SeriesDetailViewModel @Inject constructor(
     fun retry() {
         _uiState.value = SeriesDetailUiState.Loading
         loadSeriesDetail()
+    }
+
+    fun downloadAllEpisodes() {
+        val episodes = (_uiState.value as? SeriesDetailUiState.Success)?.episodes ?: return
+        viewModelScope.launch {
+            episodes.forEach { episode ->
+                downloadsRepository.startDownload(DownloadStartRequest(contentId = episode.id, contentType = "vod"))
+                logger.info("Download started for episode", mapOf("episodeId" to episode.id))
+            }
+        }
+    }
+
+    fun downloadEpisode(episode: EpisodeItem) {
+        viewModelScope.launch {
+            downloadsRepository.startDownload(DownloadStartRequest(contentId = episode.id, contentType = "vod"))
+            logger.info("Download started for episode", mapOf("episodeId" to episode.id))
+        }
     }
 
     fun selectSeason(seasonNumber: Int) {

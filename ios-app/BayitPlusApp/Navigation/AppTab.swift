@@ -8,6 +8,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
     case zehAni
     case podcasts
     case search
+    case downloads
 
     public var id: String { rawValue }
 
@@ -20,6 +21,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "Zeh Ani"
         case .podcasts: return "Listen"
         case .search: return "Search"
+        case .downloads: return "Downloads"
         }
     }
 
@@ -32,13 +34,14 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "nav.zehAni"
         case .podcasts: return "listen.title"
         case .search: return "nav.search"
+        case .downloads: return "downloads.title"
         }
     }
 
     /// Whether the tab has a valid i18n key. Tabs without a key use `title`.
     public var hasLocalizationKey: Bool {
         switch self {
-        case .home, .vod, .search, .podcasts: return true
+        case .home, .vod, .search, .podcasts, .downloads: return true
         case .liveTV, .zehAni: return false
         }
     }
@@ -51,6 +54,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
         case .search: return "magnifyingglass"
+        case .downloads: return "arrow.down.circle"
         }
     }
 
@@ -62,6 +66,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
         case .search: return "magnifyingglass"
+        case .downloads: return "arrow.down.circle.fill"
         }
     }
 }

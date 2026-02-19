@@ -12,7 +12,6 @@ import tv.bayit.plus.core.data.repository.DownloadsRepository
 import tv.bayit.plus.core.model.DownloadItem
 import tv.bayit.plus.core.model.DownloadStartRequest
 import tv.bayit.plus.core.model.DownloadStartResponse
-import tv.bayit.plus.core.model.DownloadsResponse
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 class ApiDownloadsRepository(
@@ -23,8 +22,7 @@ class ApiDownloadsRepository(
 
     override suspend fun getDownloads(): BayitResult<List<DownloadItem>> =
         runCatchingResult {
-            val response = client.safeApiCall { service.getDownloads() }
-            response.items
+            client.safeApiCall { service.getDownloads() }
         }
 
     override suspend fun deleteDownload(downloadId: String): BayitResult<Unit> =
@@ -40,13 +38,13 @@ class ApiDownloadsRepository(
 }
 
 private interface DownloadsService {
-    @GET("api/v1/user/downloads")
-    suspend fun getDownloads(): DownloadsResponse
+    @GET("api/v1/downloads")
+    suspend fun getDownloads(): List<DownloadItem>
 
-    @DELETE("api/v1/user/downloads/{download_id}")
+    @DELETE("api/v1/downloads/{download_id}")
     suspend fun deleteDownload(@Path("download_id") downloadId: String): DeleteDownloadResponse
 
-    @POST("api/v1/user/downloads")
+    @POST("api/v1/downloads")
     suspend fun startDownload(@Body request: DownloadStartRequest): DownloadStartResponse
 }
 

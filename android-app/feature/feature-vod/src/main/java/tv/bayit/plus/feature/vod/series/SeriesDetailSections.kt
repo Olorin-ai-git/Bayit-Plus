@@ -79,7 +79,7 @@ internal fun SeriesHeroSection(state: SeriesDetailUiState.Success, onBack: () ->
 }
 
 @Composable
-internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success) {
+internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success, onDownloadAll: () -> Unit) {
     Column(modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base)) {
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             state.year?.let { Text(it.toString(), style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary) }
@@ -93,6 +93,13 @@ internal fun SeriesMetadataSection(state: SeriesDetailUiState.Success) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             Text(desc, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
         }
+        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+        GlassButton(
+            text = "Download All",
+            onClick = onDownloadAll,
+            isPrimary = false,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -110,7 +117,7 @@ internal fun SeasonTabRow(seasons: List<SeasonSummary>, selectedSeason: Int, onS
 }
 
 @Composable
-internal fun EpisodeRow(episode: EpisodeItem, onPlay: () -> Unit, modifier: Modifier = Modifier) {
+internal fun EpisodeRow(episode: EpisodeItem, onPlay: () -> Unit, onDownload: () -> Unit, modifier: Modifier = Modifier) {
     GlassCard(
         modifier = modifier.fillMaxWidth().padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.xs),
     ) {
@@ -124,7 +131,13 @@ internal fun EpisodeRow(episode: EpisodeItem, onPlay: () -> Unit, modifier: Modi
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
                     Text(duration, style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Text.muted)
                 }
-                GlassButton(text = "Play", onClick = onPlay, modifier = Modifier.padding(top = DesignTokens.Spacing.sm))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+                    modifier = Modifier.padding(top = DesignTokens.Spacing.sm),
+                ) {
+                    GlassButton(text = "Play", onClick = onPlay)
+                    GlassButton(text = "Download", onClick = onDownload, isPrimary = false)
+                }
             }
         }
     }

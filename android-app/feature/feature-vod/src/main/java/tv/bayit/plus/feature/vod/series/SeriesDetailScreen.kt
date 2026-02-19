@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.EpisodeItem
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
@@ -35,6 +36,8 @@ fun SeriesDetailRoute(
         uiState = uiState,
         onEpisodePlay = onNavigateToPlayer,
         onSeasonSelected = viewModel::selectSeason,
+        onDownloadAll = viewModel::downloadAllEpisodes,
+        onEpisodeDownload = viewModel::downloadEpisode,
         onRelatedClick = onNavigateToRelated,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
@@ -47,6 +50,8 @@ internal fun SeriesDetailScreen(
     uiState: SeriesDetailUiState,
     onEpisodePlay: (String) -> Unit,
     onSeasonSelected: (Int) -> Unit,
+    onDownloadAll: () -> Unit,
+    onEpisodeDownload: (EpisodeItem) -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
@@ -64,6 +69,8 @@ internal fun SeriesDetailScreen(
                 state = uiState,
                 onEpisodePlay = onEpisodePlay,
                 onSeasonSelected = onSeasonSelected,
+                onDownloadAll = onDownloadAll,
+                onEpisodeDownload = onEpisodeDownload,
                 onRelatedClick = onRelatedClick,
                 onBack = onBack,
             )
@@ -76,12 +83,14 @@ private fun SeriesSuccessContent(
     state: SeriesDetailUiState.Success,
     onEpisodePlay: (String) -> Unit,
     onSeasonSelected: (Int) -> Unit,
+    onDownloadAll: () -> Unit,
+    onEpisodeDownload: (EpisodeItem) -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { SeriesHeroSection(state, onBack) }
-        item { SeriesMetadataSection(state) }
+        item { SeriesMetadataSection(state, onDownloadAll) }
         if (state.seasons.isNotEmpty()) {
             item {
                 SeasonTabRow(
@@ -104,7 +113,11 @@ private fun SeriesSuccessContent(
             }
         } else {
             items(items = state.episodes, key = { it.id }) { episode ->
-                EpisodeRow(episode = episode, onPlay = { onEpisodePlay(episode.id) })
+                EpisodeRow(
+                    episode = episode,
+                    onPlay = { onEpisodePlay(episode.id) },
+                    onDownload = { onEpisodeDownload(episode) },
+                )
             }
         }
         if (state.related.isNotEmpty()) {

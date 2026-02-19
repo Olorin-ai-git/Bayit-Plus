@@ -51,6 +51,14 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
         downloads.append(download)
         await store.upsert(download)
 
+        guard let urlString = request.streamUrl, let downloadURL = URL(string: urlString) else {
+            download.status = .failed
+            download.error = "No download URL available for this content"
+            upsertLocal(download)
+            logger.error("No stream URL for download", context: ["contentId": request.contentId])
+            return
+        }
+
         do {
             let response = try await userRepository.startDownload(
                 request: DownloadStartRequest(
@@ -60,9 +68,11 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
                 )
             )
             download.serverDownloadId = response.downloadId
-            download.status = .completed
-            download.progress = 1.0
+            download.status = .downloading
             upsertLocal(download)
+            let task = urlSession.downloadTask(with: downloadURL)
+            registerTask(task, for: download.id)
+            task.resume()
         } catch {
             download.status = .failed
             download.error = error.localizedDescription

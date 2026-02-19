@@ -25,12 +25,12 @@ data class DownloadItem(
     val progress: Double? = null,
 )
 
-/** Response from POST /api/v1/downloads/start */
+/** Response from POST /api/v1/downloads */
 @Serializable
 data class DownloadStartResponse(
-    @SerialName("download_id") val downloadId: String? = null,
+    @SerialName("id") val downloadId: String? = null,
     val message: String? = null,
-    @SerialName("stream_url") val streamUrl: String? = null,
+    val status: String? = null,
 )
 
 /** Request body for POST /api/v1/user/downloads */

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -43,7 +44,7 @@ fun GlassBottomNavBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AppTab.entries.forEach { tab ->
+        AppTab.entries.filter { it != AppTab.ZEH_ANI }.forEach { tab ->
             BottomNavItem(
                 label = bayitString(tab.labelKey),
                 icon = getTabIcon(tab),
@@ -99,6 +100,7 @@ private fun getTabIcon(tab: AppTab): ImageVector {
         "person" -> Icons.Default.Person
         "headphones" -> BayitIcons.Headphones
         "search" -> Icons.Default.Search
+        "download" -> Icons.Default.Download
         else -> Icons.Default.Home
     }
 }

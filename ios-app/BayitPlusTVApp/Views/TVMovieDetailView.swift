@@ -8,6 +8,7 @@ struct TVMovieDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: MovieDetailViewModel?
 
     let movieId: String
@@ -119,7 +120,11 @@ struct TVMovieDetailView: View {
     }
 
     private func actionButtons(_ detail: ContentDetail, vm: MovieDetailViewModel) -> some View {
-        HStack(spacing: TVDesignTokens.Spacing.xl) {
+        let dlStatus = downloadManager.downloads.first(where: { $0.contentId == movieId })?.status
+        let isDownloaded = dlStatus == .completed
+        let isDownloading = dlStatus == .downloading || dlStatus == .queued || dlStatus == .paused
+
+        return HStack(spacing: TVDesignTokens.Spacing.xl) {
             GlassButton(
                 "Play",
                 variant: .primary,
@@ -149,6 +154,28 @@ struct TVMovieDetailView: View {
                 .buttonStyle(.card)
                 .tvFocusStyle()
             }
+
+            GlassButton(
+                isDownloaded ? "Downloaded" : (isDownloading ? "Downloading..." : "Download"),
+                variant: .secondary,
+                size: .large,
+                action: {
+                    guard !isDownloaded, !isDownloading else { return }
+                    logger.info("Downloading movie", context: ["movieId": movieId])
+                    Task {
+                        await downloadManager.startDownload(DownloadRequest(
+                            contentId: movieId,
+                            title: detail.title ?? "Movie",
+                            thumbnail: detail.thumbnail ?? detail.backdrop,
+                            contentType: .movie
+                        ))
+                    }
+                }
+            )
+            .frame(width: 300)
+            .buttonStyle(.card)
+            .tvFocusStyle()
+            .disabled(isDownloaded || isDownloading)
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }

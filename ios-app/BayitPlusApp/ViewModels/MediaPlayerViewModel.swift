@@ -1,3 +1,4 @@
+import AVFoundation
 import BayitMedia
 #if os(iOS)
 import BayitWidgetShared
@@ -22,6 +23,11 @@ final class MediaPlayerViewModel {
     private(set) var availableQualities: [QualityVariant] = []
     private(set) var currentQuality: String?
     private(set) var availableSubtitleLanguages: [String] = []
+
+    /// The URL currently loaded in the AVPlayer, used to initiate an offline download.
+    var currentStreamURL: URL? {
+        (player.avPlayer.currentItem?.asset as? AVURLAsset)?.url
+    }
 
     let player: MediaPlayer
     let contentId: String

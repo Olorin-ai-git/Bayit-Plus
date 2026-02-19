@@ -7,6 +7,7 @@ struct TVContentCard: View {
     let title: String
     let subtitle: String?
     let badge: String?
+    let progress: Double?
     let aspectRatio: CGFloat
     let placeholderIcon: String
     let availableSubtitleLanguages: [String]?
@@ -22,6 +23,7 @@ struct TVContentCard: View {
         title: String,
         subtitle: String? = nil,
         badge: String? = nil,
+        progress: Double? = nil,
         aspectRatio: CGFloat = 2.0/3.0,
         placeholderIcon: String = "photo",
         availableSubtitleLanguages: [String]? = nil,
@@ -31,6 +33,7 @@ struct TVContentCard: View {
         self.title = title
         self.subtitle = subtitle
         self.badge = badge
+        self.progress = progress
         self.aspectRatio = aspectRatio
         self.placeholderIcon = placeholderIcon
         self.availableSubtitleLanguages = availableSubtitleLanguages
@@ -50,6 +53,9 @@ struct TVContentCard: View {
                     }
                     .overlay(alignment: .bottomLeading) {
                         subtitleFlagsOverlay
+                    }
+                    .overlay(alignment: .bottom) {
+                        progressBarOverlay
                     }
 
                 // Title
@@ -112,6 +118,24 @@ struct TVContentCard: View {
                 .background(DesignTokens.Primary.default.opacity(0.9))
                 .clipShape(Capsule())
                 .padding(TVDesignTokens.Spacing.sm)
+        }
+    }
+
+    @ViewBuilder
+    private var progressBarOverlay: some View {
+        if let progress = progress, progress > 0 {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.black.opacity(0.5))
+                        .frame(height: 6)
+
+                    Rectangle()
+                        .fill(DesignTokens.Primary.default)
+                        .frame(width: geo.size.width * CGFloat(min(progress / 100.0, 1.0)), height: 6)
+                }
+            }
+            .frame(height: 6)
         }
     }
 

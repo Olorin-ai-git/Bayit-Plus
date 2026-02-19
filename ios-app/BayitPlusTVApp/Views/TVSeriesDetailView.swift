@@ -7,6 +7,7 @@ struct TVSeriesDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: SeriesDetailViewModel?
 
     let seriesId: String
@@ -46,6 +47,7 @@ struct TVSeriesDetailView: View {
     private func detailContent(_ detail: SeriesDetail, vm: SeriesDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxl) {
             backdropSection(detail)
+            downloadAllButton(vm)
 
             if !vm.seasons.isEmpty {
                 seasonPicker(vm)
@@ -57,6 +59,31 @@ struct TVSeriesDetailView: View {
                 relatedSection(vm.relatedItems)
             }
         }
+    }
+
+    private func downloadAllButton(_ vm: SeriesDetailViewModel) -> some View {
+        HStack {
+            GlassButton(
+                "Download All Episodes",
+                variant: .secondary,
+                size: .large,
+                action: {
+                    logger.info("Downloading all episodes", context: ["seriesId": seriesId])
+                    downloadManager.downloadAll(vm.episodes.map { ep in
+                        DownloadRequest(
+                            contentId: ep.id,
+                            title: ep.title ?? "Episode \(ep.episodeNumber ?? 0)",
+                            thumbnail: ep.thumbnail,
+                            contentType: .episode
+                        )
+                    })
+                }
+            )
+            .frame(width: 500)
+            .buttonStyle(.card)
+            .tvFocusStyle()
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
     private func backdropSection(_ detail: SeriesDetail) -> some View {

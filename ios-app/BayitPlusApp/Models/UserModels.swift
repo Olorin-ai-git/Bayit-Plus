@@ -167,11 +167,17 @@ struct DownloadItem: Decodable, Sendable, Identifiable {
     let progress: Double?
 }
 
-/// Response from POST /api/v1/downloads/start
+/// Response from POST /api/v1/downloads
 struct DownloadStartResponse: Decodable, Sendable {
     let downloadId: String?
     let message: String?
-    let streamUrl: String?
+    let status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case downloadId = "id"
+        case message
+        case status
+    }
 }
 
 /// Request body for POST /api/v1/user/downloads

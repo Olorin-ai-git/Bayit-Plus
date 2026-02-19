@@ -18,6 +18,7 @@ struct BayitPlusTVApp: App {
     @State private var localizationManager: LocalizationManager
     @State private var apiClient: APIClient
     @State private var repositories: TVRepositoryProvider
+    @State private var downloadManager: DownloadManager
     @State private var mediaPlayer = MediaPlayer()
     @State private var audioPlaybackManager: TVAudioPlaybackManager?
     @State private var featureFlags = FeatureFlags()
@@ -53,15 +54,18 @@ struct BayitPlusTVApp: App {
 
         let wsManager = WebSocketManager(configuration: networkConfig, logger: apiLogger)
 
-        _authManager = State(initialValue: authMgr)
-        _localizationManager = State(initialValue: LocalizationManager())
-        _apiClient = State(initialValue: client)
-        _repositories = State(initialValue: TVRepositoryProvider(
+        let repos = TVRepositoryProvider(
             client: client,
             webSocketManager: wsManager,
             authTokenProvider: authMgr.authTokenProvider,
             configuration: appConfig
-        ))
+        )
+
+        _authManager = State(initialValue: authMgr)
+        _localizationManager = State(initialValue: LocalizationManager())
+        _apiClient = State(initialValue: client)
+        _repositories = State(initialValue: repos)
+        _downloadManager = State(initialValue: DownloadManager(userRepository: repos.user, store: DownloadStore()))
 
         Self.configureTabBarAppearance()
     }
@@ -121,11 +125,15 @@ struct BayitPlusTVApp: App {
                 .environment(authManager)
                 .environment(localizationManager)
                 .environment(repositories)
+                .environment(downloadManager)
                 .environment(mediaPlayer)
                 .environment(featureFlags)
                 .environment(resolvedAudioPlaybackManager)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
+                .task {
+                    await downloadManager.initialize()
+                }
                 .task {
                     if ProcessInfo.processInfo.arguments.contains("-autoLogin") {
                         await loginWithCredentials()

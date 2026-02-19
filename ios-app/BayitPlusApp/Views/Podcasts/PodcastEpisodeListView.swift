@@ -145,7 +145,8 @@ struct PodcastEpisodeListView: View {
                     contentId: episode.id,
                     title: episode.title ?? "Episode",
                     thumbnail: showCover,
-                    contentType: .podcast
+                    contentType: .podcast,
+                    streamUrl: episode.audioUrl
                 ))
             }
         } label: {

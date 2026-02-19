@@ -54,27 +54,6 @@ struct TVHomeView: View {
     @ViewBuilder
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
-            // Culture clocks (dual timezone)
-            HStack(spacing: TVDesignTokens.Spacing.lg) {
-                TVCultureClock(
-                    flagEmoji: "🇮🇱",
-                    locationLabel: "Time in Israel",
-                    timezone: TimeZone(identifier: "Asia/Jerusalem")!,
-                    isIsraeli: true
-                )
-
-                Spacer()
-
-                TVCultureClock(
-                    flagEmoji: "🇺🇸",
-                    locationLabel: "Time in New York, NY",
-                    timezone: TimeZone(identifier: "America/New_York")!,
-                    isIsraeli: false
-                )
-            }
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-            .padding(.top, TVDesignTokens.Spacing.lg)
-
             // Hero carousel with auto-rotation
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
@@ -164,6 +143,7 @@ struct TVHomeView: View {
                 imageURL: item.thumbnail,
                 title: item.title ?? localization.t("common.untitled"),
                 subtitle: item.type,
+                progress: item.progress,
                 aspectRatio: 2.0/3.0,
                 placeholderIcon: "play.circle.fill"
             ) {

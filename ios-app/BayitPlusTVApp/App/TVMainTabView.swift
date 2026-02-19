@@ -64,18 +64,6 @@ struct TVMainTabView: View {
             .overlay(alignment: .bottom) {
                 TVMiniAudioPlayerBar()
             }
-            // Widget dock floats above content (overlay avoids focus trapping)
-            .overlay(alignment: .bottom) {
-                if let vm = dockViewModel, vm.isDockVisible, !vm.minimizedWidgets.isEmpty {
-                    TVWidgetDockView(
-                        widgets: vm.minimizedWidgets,
-                        isDockVisible: vm.isDockVisible,
-                        onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
-                        onCloseDock: { vm.hideDock() }
-                    )
-                    .padding(.bottom, TVDesignTokens.Spacing.lg)
-                }
-            }
             .fullScreenCover(isPresented: $showLanguagePicker) {
                 languagePickerSheet
             }
@@ -89,6 +77,19 @@ struct TVMainTabView: View {
             }
         }
         .ignoresSafeArea(.all, edges: .trailing)
+        // Widget dock placed on the outer HStack so the tvOS focus engine can reach it.
+        // Overlays nested inside TabView are outside the focus scope and receive no focus.
+        .overlay(alignment: .bottom) {
+            if let vm = dockViewModel, vm.isDockVisible, !vm.minimizedWidgets.isEmpty {
+                TVWidgetDockView(
+                    widgets: vm.minimizedWidgets,
+                    isDockVisible: vm.isDockVisible,
+                    onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
+                    onCloseDock: { vm.hideDock() }
+                )
+                .padding(.bottom, TVDesignTokens.Spacing.xs)
+            }
+        }
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)

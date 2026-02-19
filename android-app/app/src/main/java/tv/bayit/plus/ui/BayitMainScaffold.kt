@@ -94,6 +94,16 @@ fun BayitMainScaffold(
                     onProfileClick = { navigateWithAuthGuard(Route.Profile) },
                     onLanguageSelected = { code -> navBarViewModel.setLanguage(code) },
                     onPlaylistClick = { navigateWithAuthGuard(Route.Playlist) },
+                    onZehAniClick = {
+                        selectedTab = AppTab.ZEH_ANI
+                        navController.navigate(AppTab.ZEH_ANI.route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                 )
             }
         },

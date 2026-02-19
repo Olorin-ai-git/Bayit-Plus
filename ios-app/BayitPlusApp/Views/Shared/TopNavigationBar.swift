@@ -48,6 +48,18 @@ struct TopNavigationBar: View {
             .accessibilityLabel(localization.t("common.playlist"))
 
             Button {
+                coordinator.selectedTab = .zehAni
+            } label: {
+                Image(systemName: "person.fill.viewfinder")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+            .accessibilityLabel("Zeh Ani")
+
+            Button {
                 coordinator.navigate(to: .profile)
             } label: {
                 profileAvatar

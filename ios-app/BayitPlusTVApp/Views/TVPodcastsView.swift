@@ -223,8 +223,12 @@ struct TVPodcastsView: View {
 
     // MARK: - Radio
 
-    /// Radio station card width matches podcast poster width for visual consistency
-    private let radioCardWidth: CGFloat = TVDesignTokens.MinSize.posterWidth
+    private let radioColumns = [
+        GridItem(.adaptive(
+            minimum: TVDesignTokens.MinSize.posterWidth,
+            maximum: TVDesignTokens.MinSize.posterWidth + 60
+        ), spacing: TVDesignTokens.Spacing.focusGap),
+    ]
 
     private var radioSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
@@ -233,26 +237,23 @@ struct TVPodcastsView: View {
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                    ForEach(radioStations) { station in
-                        GlassFocusPoster(
-                            thumbnailURL: station.logo,
-                            title: station.name ?? "Station",
-                            subtitle: station.currentSong ?? station.currentShow,
-                            width: radioCardWidth,
-                            aspectRatio: 1.0,
-                            onSelect: {
-                                audioManager.play(
-                                    contentId: station.id,
-                                    contentType: .radio
-                                )
-                            }
-                        )
-                    }
+            LazyVGrid(columns: radioColumns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(radioStations) { station in
+                    GlassFocusPoster(
+                        thumbnailURL: station.logo,
+                        title: station.name ?? "Station",
+                        subtitle: station.currentSong ?? station.currentShow,
+                        aspectRatio: 1.0,
+                        onSelect: {
+                            audioManager.play(
+                                contentId: station.id,
+                                contentType: .radio
+                            )
+                        }
+                    )
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
     }
 

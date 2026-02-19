@@ -559,7 +559,7 @@ struct PlayerView: View {
                 onSkipBackward: { Task { await viewModel.player.skipBackward() } },
                 onSeek: { time in Task { await viewModel.player.seek(to: time) } }
             )
-            .padding(.bottom, DesignTokens.Spacing.base)
+            .padding(.bottom, DesignTokens.Spacing.xs)
         }
         .background(controlsGradient)
         .transition(.opacity)
@@ -698,7 +698,7 @@ struct PlayerView: View {
                 colors: [.clear, .black.opacity(0.7)],
                 startPoint: .top, endPoint: .bottom
             )
-            .frame(height: 120)
+            .frame(height: 80)
         }
         .ignoresSafeArea()
     }
@@ -760,7 +760,8 @@ struct PlayerView: View {
                     contentId: contentId,
                     title: viewModel.title ?? "",
                     thumbnail: viewModel.artworkURL?.absoluteString,
-                    contentType: contentType
+                    contentType: contentType,
+                    streamUrl: viewModel.currentStreamURL?.absoluteString
                 ))
             }
         } label: {

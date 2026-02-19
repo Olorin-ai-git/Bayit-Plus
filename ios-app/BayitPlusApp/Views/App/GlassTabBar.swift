@@ -10,7 +10,7 @@ struct GlassTabBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(AppTab.allCases) { tab in
+            ForEach(AppTab.allCases.filter { $0 != .zehAni }) { tab in
                 tabBarButton(for: tab)
             }
         }

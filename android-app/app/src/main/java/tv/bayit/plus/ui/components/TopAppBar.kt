@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ fun TopAppBar(
     onProfileClick: () -> Unit,
     onLanguageSelected: (String) -> Unit,
     onPlaylistClick: () -> Unit,
+    onZehAniClick: () -> Unit,
     showBack: Boolean = false,
     onBack: () -> Unit = {},
     breadcrumbs: List<BreadcrumbEntry> = emptyList(),
@@ -74,6 +76,15 @@ fun TopAppBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                     contentDescription = "Playlist",
+                    tint = DesignTokens.Colors.Text.primary,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+
+            IconButton(onClick = onZehAniClick) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Zeh Ani",
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(28.dp),
                 )
