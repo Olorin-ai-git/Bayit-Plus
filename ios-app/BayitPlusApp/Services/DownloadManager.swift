@@ -11,7 +11,6 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
     private(set) var downloads: [LocalDownload] = []
 
     private let userRepository: any UserRepository
-    private let mediaRepository: any MediaRepository
     private let store: DownloadStore
     private let logger = BayitLogger(category: "DownloadManager")
     private var urlSession: URLSession!
@@ -23,9 +22,8 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
     private var tasksByDownloadId: [String: URLSessionTask] = [:]
     private var downloadIdByTaskId: [Int: String] = [:]
 
-    init(userRepository: any UserRepository, mediaRepository: any MediaRepository, store: DownloadStore) {
+    init(userRepository: any UserRepository, store: DownloadStore) {
         self.userRepository = userRepository
-        self.mediaRepository = mediaRepository
         self.store = store
         super.init()
         let bgConfig = URLSessionConfiguration.background(withIdentifier: "tv.bayit.plus.downloads")
@@ -62,35 +60,19 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
             thumbnail: request.thumbnail,
             contentType: request.contentType
         )
+        download.sourceUrl = request.streamUrl
         downloads.append(download)
         await store.upsert(download)
 
-        do {
-            // Resolve stream URL: use pre-provided URL or fetch from media endpoint.
-            let resolvedUrlString: String
-            if let provided = request.streamUrl, !provided.isEmpty {
-                resolvedUrlString = provided
-            } else {
-                let stream = try await mediaRepository.fetchStream(
-                    contentId: request.contentId,
-                    quality: nil
-                )
-                guard let fetched = stream.url ?? stream.streamUrl ?? stream.directUrl else {
-                    throw NSError(
-                        domain: "DownloadManager", code: -2,
-                        userInfo: [NSLocalizedDescriptionKey: "Stream endpoint returned no URL"]
-                    )
-                }
-                resolvedUrlString = fetched
-            }
-            guard let downloadURL = URL(string: resolvedUrlString) else {
-                throw NSError(
-                    domain: "DownloadManager", code: -3,
-                    userInfo: [NSLocalizedDescriptionKey: "Invalid stream URL: \(resolvedUrlString)"]
-                )
-            }
-            download.sourceUrl = resolvedUrlString
+        guard let urlString = request.streamUrl, let downloadURL = URL(string: urlString) else {
+            download.status = .failed
+            download.error = "No download URL available for this content"
+            upsertLocal(download)
+            logger.error("No stream URL for download", context: ["contentId": request.contentId])
+            return
+        }
 
+        do {
             let response = try await userRepository.startDownload(
                 request: DownloadStartRequest(
                     contentId: request.contentId,
@@ -136,8 +118,8 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
 
     @MainActor
     func downloadAll(_ requests: [DownloadRequest]) {
-        for request in requests {
-            Task { await startDownload(request) }
+        Task { @MainActor in
+            for request in requests { await startDownload(request) }
         }
     }
 
