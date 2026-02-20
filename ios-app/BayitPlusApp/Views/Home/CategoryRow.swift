@@ -117,7 +117,7 @@ struct CategoryRow: View {
     }
 
     private func itemBadge(for item: ContentItem) -> String? {
-        if item.isSeries == true {
+        if item.type?.lowercased() == "series" {
             if let count = item.totalEpisodes {
                 return "\(count) Ep"
             }
@@ -140,7 +140,7 @@ struct CategoryRow: View {
     }
 
     private func placeholderIcon(for item: ContentItem) -> ContentPlaceholderIcon {
-        if item.isSeries == true {
+        if item.type?.lowercased() == "series" {
             return .series
         }
         if let type = item.type?.lowercased() {
@@ -162,9 +162,10 @@ struct CategoryRow: View {
         let type = item.type?.lowercased() ?? ""
         let catName = category.name.lowercased()
 
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
-        } else if item.isCollectionParent == true {
+        } else if ct == "collection" || item.isCollectionParent == true {
             coordinator.navigate(to: .collectionDetail(collectionId: item.id))
         } else if type.contains("podcast") || catName.contains("podcast") {
             coordinator.navigate(to: .podcastDetail(showId: item.id))

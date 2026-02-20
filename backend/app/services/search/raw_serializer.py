@@ -8,7 +8,30 @@ which handles Beanie document model conversions.
 
 from typing import Any, Dict
 
-from app.api.routes.content.utils import is_series_content
+from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
+
+_COLLECTION_TITLE_SUFFIX = "collection"
+
+
+def _derive_vod_content_type(raw: dict) -> str:
+    """Derive content_type from content_format, category_name, title, and structure fields."""
+    if raw.get("content_format") == "audiobook":
+        return "audiobook"
+
+    category = (raw.get("category_name") or "").lower()
+    title = (raw.get("title") or "").lower()
+
+    if any(kw in category for kw in SERIES_CATEGORY_KEYWORDS):
+        return "series"
+    if raw.get("series_id") or raw.get("total_episodes"):
+        return "series"
+    if raw.get("season_number") is not None or raw.get("episode_number") is not None:
+        return "series"
+
+    if title.endswith(_COLLECTION_TITLE_SUFFIX) or "collection" in category:
+        return "collection"
+
+    return "movie"
 
 
 def raw_doc_to_dict(raw: dict, content_type: str) -> Dict[str, Any]:
@@ -105,7 +128,7 @@ def _raw_podcast(raw: dict, doc_id: str) -> Dict[str, Any]:
 
 
 def _raw_vod(raw: dict, doc_id: str) -> Dict[str, Any]:
-    is_series = is_series_content(raw)
+    derived_type = _derive_vod_content_type(raw)
     return {
         "id": doc_id,
         "title": raw.get("title"),
@@ -124,8 +147,8 @@ def _raw_vod(raw: dict, doc_id: str) -> Dict[str, Any]:
         "director": raw.get("director"),
         "author": raw.get("author"),
         "narrator": raw.get("narrator"),
-        "content_type": raw.get("content_type"),
-        "is_series": is_series,
+        "content_type": derived_type,
+        "is_series": False,
         "requires_subscription": raw.get("requires_subscription"),
         "is_kids_content": raw.get("is_kids_content"),
         "age_rating": raw.get("age_rating"),

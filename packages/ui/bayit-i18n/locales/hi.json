@@ -4870,7 +4870,11 @@
     "poweredByAI": "🤖 Claude AI द्वारा संचालित। परिणाम प्रश्न व्याख्या के आधार पर भिन्न हो सकते हैं।",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "परिणाम",
+    "previousPage": "पिछला",
+    "nextPage": "अगला",
+    "pageIndicator": "पृष्ठ {{current}} / {{total}}"
   },
   "settings": {
     "title": "सेटिंग्स",

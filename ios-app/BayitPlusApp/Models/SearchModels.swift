@@ -24,7 +24,6 @@ struct UnifiedSearchResult: Decodable, Sendable, Identifiable {
     let rating: FlexibleRating?
     let genres: [String]?
     let contentType: String?
-    let isSeries: Bool?
     let requiresSubscription: String?
     let isKidsContent: Bool?
     let availableSubtitleLanguages: [String]?
@@ -45,6 +44,7 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     case live
     case radio
     case podcasts
+    case audiobooks
     case kids
 
     var localizationKey: String {
@@ -56,6 +56,7 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
         case .live: return "search.filters.channels"
         case .radio: return "search.filters.radio"
         case .podcasts: return "search.filters.podcasts"
+        case .audiobooks: return "audiobooks.title"
         case .kids: return "vod.categories.kids"
         }
     }
@@ -63,32 +64,24 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     /// Content type strings sent to the API `content_types` query param
     var apiContentTypes: [String] {
         switch self {
-        case .all: return ["live", "radio", "podcast", "vod"]
-        case .movies: return ["vod"]
-        case .series: return ["vod"]
-        case .collections: return ["vod"]
+        case .all: return ["live", "radio", "podcast", "vod", "audiobook"]
+        case .movies: return ["movie"]
+        case .series: return ["series"]
+        case .collections: return ["collection"]
         case .live: return ["live"]
         case .radio: return ["radio"]
         case .podcasts: return ["podcast"]
+        case .audiobooks: return ["audiobook"]
         case .kids: return ["vod", "live", "podcast"]
         }
     }
 
-    /// Applies client-side filtering for content type sub-categories the API cannot distinguish.
+    /// Client-side filtering only needed for cross-type filters like kids.
+    /// All other filtering is handled server-side via content_types param.
     func applyClientFilter(_ results: [UnifiedSearchResult]) -> [UnifiedSearchResult] {
         switch self {
-        case .all: return results
-        case .movies:
-            return results.filter { r in
-                let ct = r.contentType?.lowercased() ?? ""
-                return (ct == "vod" || ct == "movie") && r.isSeries != true && !ct.contains("collection")
-            }
-        case .series: return results.filter { $0.isSeries == true }
-        case .collections: return results.filter { ($0.contentType?.lowercased() ?? "").contains("collection") }
-        case .live: return results.filter { ($0.contentType?.lowercased() ?? "") == "live" }
-        case .radio: return results.filter { ($0.contentType?.lowercased() ?? "") == "radio" }
-        case .podcasts: return results.filter { ($0.contentType?.lowercased() ?? "") == "podcast" }
         case .kids: return results.filter { $0.isKidsContent == true }
+        default: return results
         }
     }
 }

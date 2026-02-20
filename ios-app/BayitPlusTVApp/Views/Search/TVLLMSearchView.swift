@@ -196,12 +196,14 @@ struct TVLLMSearchView: View {
             coordinator.presentPlayer(contentId: item.id, contentType: .liveTV)
         case "radio":
             coordinator.presentPlayer(contentId: item.id, contentType: .radio)
+        case "series":
+            coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
+        case "collection":
+            coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
+        case "audiobook":
+            coordinator.fullscreenRoute = .audiobookDetail(audiobookId: item.id)
         default:
-            if item.isSeries == true {
-                coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
-            } else {
-                coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
-            }
+            coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
         }
     }
 }

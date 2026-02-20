@@ -6208,7 +6208,11 @@
     "poweredByAI": "🤖 מופעל על ידי Claude AI. התוצאות עשויות להשתנות בהתאם לפרשנות השאילתה.",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "תוצאות",
+    "previousPage": "הקודם",
+    "nextPage": "הבא",
+    "pageIndicator": "עמוד {{current}} מתוך {{total}}"
   },
   "settings": {
     "title": "הגדרות",

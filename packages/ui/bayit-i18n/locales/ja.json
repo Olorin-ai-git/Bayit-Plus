@@ -5942,7 +5942,11 @@
     "poweredByAI": "🤖 Claude AIを搭載。結果はクエリの解釈によって異なる場合があります。",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "結果",
+    "previousPage": "前へ",
+    "nextPage": "次へ",
+    "pageIndicator": "{{current}} / {{total}} ページ"
   },
   "settings": {
     "title": "設定",

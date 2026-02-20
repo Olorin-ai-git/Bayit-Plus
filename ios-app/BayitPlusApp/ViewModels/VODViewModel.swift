@@ -214,7 +214,7 @@ final class VODViewModel {
         case .movies:
             filtered = filtered.filter { $0.type == "movie" }
         case .series:
-            filtered = filtered.filter { $0.isSeries == true }
+            filtered = filtered.filter { $0.type?.lowercased() == "series" }
         case .collections:
             filtered = filtered.filter { $0.isCollectionParent == true }
         }
@@ -244,7 +244,7 @@ final class VODViewModel {
         case .movies:
             return items.filter { $0.type == "movie" }
         case .series:
-            return items.filter { $0.isSeries == true }
+            return items.filter { $0.type?.lowercased() == "series" }
         case .collections:
             return items.filter { $0.isCollectionParent == true }
         }

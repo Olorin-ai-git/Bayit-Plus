@@ -4715,7 +4715,11 @@
     "poweredByAI": "🤖 Claude AI দ্বারা চালিত। ফলাফল প্রশ্ন ব্যাখ্যার উপর ভিত্তি করে পরিবর্তিত হতে পারে।",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "ফলাফল",
+    "previousPage": "আগের",
+    "nextPage": "পরের",
+    "pageIndicator": "পৃষ্ঠা {{current}} / {{total}}"
   },
   "settings": {
     "title": "সেটিংস",

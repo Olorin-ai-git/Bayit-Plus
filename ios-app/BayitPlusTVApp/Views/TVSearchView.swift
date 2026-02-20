@@ -111,8 +111,10 @@ struct TVSearchView: View {
             TVSearchResultsGridView(
                 results: vm.results, totalResults: vm.totalResults,
                 query: searchText,
+                currentPage: vm.currentPage, totalPages: vm.totalPages,
                 hasMore: vm.hasMore, isLoadingMore: vm.isLoadingMore,
                 onLoadMore: { vm.loadMore() },
+                onGoToPage: { vm.goToPage($0) },
                 onSelect: { handleResultSelection($0) }
             )
         } else {
@@ -201,14 +203,14 @@ struct TVSearchView: View {
             coordinator.presentPlayer(contentId: result.id, contentType: .radio)
         case "podcast":
             coordinator.fullscreenRoute = .podcastDetail(showId: result.id)
-        case let ct where ct.contains("collection"):
+        case "collection":
             coordinator.fullscreenRoute = .collectionDetail(collectionId: result.id)
+        case "series":
+            coordinator.fullscreenRoute = .seriesDetail(seriesId: result.id)
+        case "audiobook":
+            coordinator.fullscreenRoute = .audiobookDetail(audiobookId: result.id)
         default:
-            if result.isSeries == true {
-                coordinator.fullscreenRoute = .seriesDetail(seriesId: result.id)
-            } else {
-                coordinator.fullscreenRoute = .movieDetail(movieId: result.id)
-            }
+            coordinator.fullscreenRoute = .movieDetail(movieId: result.id)
         }
     }
 }

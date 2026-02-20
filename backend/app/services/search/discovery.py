@@ -99,7 +99,10 @@ async def get_filter_options() -> Dict[str, Any]:
         "genres": genres,
         "year_range": {"min": year_min, "max": year_max},
         "subtitle_languages": subtitle_languages,
-        "content_types": ["vod", "live", "radio", "podcast"],
+        "content_types": [
+            "vod", "live", "radio", "podcast",
+            "audiobook", "series", "movie", "collection",
+        ],
         "subscription_tiers": ["basic", "premium", "family"],
     }
 
@@ -129,6 +132,9 @@ def _default_filter_options() -> Dict[str, Any]:
         "genres": [],
         "year_range": {"min": 1900, "max": 2026},
         "subtitle_languages": [],
-        "content_types": ["vod", "live", "radio", "podcast"],
+        "content_types": [
+            "vod", "live", "radio", "podcast",
+            "audiobook", "series", "movie", "collection",
+        ],
         "subscription_tiers": ["basic", "premium", "family"],
     }

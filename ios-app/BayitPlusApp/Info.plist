@@ -42,7 +42,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>146</string>
+	<string>149</string>
+	<key>FEATURE_CARPLAY</key>
+	<string>true</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
 	<key>FirebaseCrashlyticsCollectionEnabled</key>
@@ -85,8 +87,6 @@
 	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
-	<key>FEATURE_CARPLAY</key>
-	<string>true</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

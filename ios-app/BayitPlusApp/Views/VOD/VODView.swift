@@ -272,10 +272,13 @@ struct VODView: View {
     }
 
     private func navigateToItem(_ item: ContentItem) {
-        if item.isCollectionParent == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "collection" || item.isCollectionParent == true {
             coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if item.isSeries == true {
+        } else if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if ct == "audiobook" {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
         }
@@ -355,7 +358,7 @@ private struct VODCard: View {
     private var posterPlaceholder: some View {
         ZStack {
             DesignTokens.Glass.bgMedium
-            Image(systemName: item.isSeries == true ? "tv" : "film")
+            Image(systemName: item.type?.lowercased() == "series" ? "tv" : "film")
                 .font(.system(size: 28))
                 .foregroundColor(DesignTokens.Text.muted)
         }
@@ -375,7 +378,7 @@ private struct VODCard: View {
 
     @ViewBuilder
     private var seriesBadge: some View {
-        if item.isSeries == true {
+        if item.type?.lowercased() == "series" {
             Text(localization.t("vod.series"))
                 .font(.system(
                     size: DesignTokens.FontSize.xs,

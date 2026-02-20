@@ -4895,7 +4895,11 @@
     "poweredByAI": "🤖 Propulsé par Claude AI. Les résultats peuvent varier selon l'interprétation de la requête.",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "Resultats",
+    "previousPage": "Precedent",
+    "nextPage": "Suivant",
+    "pageIndicator": "Page {{current}} sur {{total}}"
   },
   "settings": {
     "title": "Paramètres",

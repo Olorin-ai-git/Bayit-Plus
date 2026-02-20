@@ -13,7 +13,7 @@ struct SpotlightSection: View {
                     thumbnailURL: item.backdrop ?? item.thumbnail,
                     title: item.title,
                     subtitle: spotlightSubtitle(for: item),
-                    badge: item.isSeries == true ? "Series" : nil,
+                    badge: item.type?.lowercased() == "series" ? "Series" : nil,
                     subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                     aspectRatio: 16 / 9,
                     width: 300,
@@ -54,8 +54,13 @@ struct SpotlightSection: View {
     }
 
     private func navigateToItem(_ item: SpotlightItem) {
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if ct == "collection" {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else if ct == "audiobook" {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
             coordinator.presentFullscreen(.player(contentId: item.id, contentType: contentType))

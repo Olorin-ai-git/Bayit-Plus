@@ -8,14 +8,13 @@ across the search pipeline and voice handlers.
 
 from typing import Any, Dict
 
-from app.api.routes.content.utils import is_series_content
 from app.models.content import Content, LiveChannel, Podcast, RadioStation
-from app.services.search.raw_serializer import raw_doc_to_dict  # noqa: F401
+from app.services.search.raw_serializer import _derive_vod_content_type, raw_doc_to_dict  # noqa: F401
 
 
 def content_to_dict(content: Content) -> Dict[str, Any]:
     """Convert Content document to search result dictionary."""
-    is_series = is_series_content(content.model_dump())
+    derived_type = _derive_vod_content_type(content.model_dump())
     return {
         "id": str(content.id),
         "title": content.title,
@@ -34,8 +33,8 @@ def content_to_dict(content: Content) -> Dict[str, Any]:
         "director": content.director,
         "author": content.author,
         "narrator": content.narrator,
-        "content_type": content.content_type,
-        "is_series": is_series,
+        "content_type": derived_type,
+        "is_series": False,
         "requires_subscription": content.requires_subscription,
         "is_kids_content": content.is_kids_content,
         "age_rating": content.age_rating,

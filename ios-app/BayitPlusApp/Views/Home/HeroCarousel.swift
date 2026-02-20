@@ -237,8 +237,13 @@ struct HeroCarousel: View {
     }
 
     private func navigateToItem(_ item: SpotlightItem) {
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if ct == "collection" {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else if ct == "audiobook" {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
             coordinator.navigate(to: .player(contentId: item.id, contentType: contentType))
@@ -246,8 +251,13 @@ struct HeroCarousel: View {
     }
 
     private func navigateToDetailPage(_ item: SpotlightItem) {
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if ct == "collection" {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else if ct == "audiobook" {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
         }

@@ -92,7 +92,11 @@ final class CarPlayContentProvider {
                 item.accessoryType = .disclosureIndicator
                 item.handler = { [weak self] _, completion in
                     Task { @MainActor [weak self] in
-                        await self?.pushPodcastEpisodes(showId: show.id, showTitle: show.title)
+                        await self?.pushPodcastEpisodes(
+                            showId: show.id,
+                            showTitle: show.title,
+                            showCover: show.cover
+                        )
                         completion()
                     }
                 }
@@ -109,7 +113,7 @@ final class CarPlayContentProvider {
         return template
     }
 
-    private func pushPodcastEpisodes(showId: String, showTitle: String?) async {
+    private func pushPodcastEpisodes(showId: String, showTitle: String?, showCover: String?) async {
         var items: [CPListItem] = []
 
         do {
@@ -125,10 +129,7 @@ final class CarPlayContentProvider {
                 )
                 item.handler = { [weak self] _, completion in
                     Task { @MainActor [weak self] in
-                        await self?.playbackController.play(
-                            contentId: episode.id,
-                            contentType: .podcast
-                        )
+                        self?.playEpisode(episode, showTitle: showTitle, showCover: showCover)
                         completion()
                     }
                 }
@@ -142,6 +143,24 @@ final class CarPlayContentProvider {
         let section = CPListSection(items: items)
         let template = CPListTemplate(title: showTitle ?? "Episodes", sections: [section])
         interfaceController?.pushTemplate(template, animated: true, completion: nil)
+    }
+
+    private func playEpisode(_ episode: PodcastEpisodeItem, showTitle: String?, showCover: String?) {
+        if let urlStr = episode.audioUrl, let url = URL(string: urlStr) {
+            let coverURL: URL? = showCover.flatMap { URL(string: $0) }
+            playbackController.playDirectURL(
+                url: url,
+                title: episode.title ?? "Episode",
+                subtitle: showTitle,
+                artworkURL: coverURL,
+                contentId: episode.id,
+                contentType: .podcast
+            )
+        } else {
+            Task {
+                await playbackController.play(contentId: episode.id, contentType: .podcast)
+            }
+        }
     }
 
     // MARK: - Audiobooks Tab

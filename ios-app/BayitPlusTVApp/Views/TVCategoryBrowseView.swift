@@ -56,7 +56,7 @@ struct TVCategoryBrowseView: View {
                 TVContentCard(
                     imageURL: item.thumbnail,
                     title: item.title ?? localization.t("common.untitled"),
-                    badge: item.isSeries == true
+                    badge: item.type?.lowercased() == "series"
                         ? localization.t("home.series") : nil,
                     aspectRatio: 2.0 / 3.0,
                     placeholderIcon: "film",
@@ -69,12 +69,15 @@ struct TVCategoryBrowseView: View {
     }
 
     private func navigateToItem(_ item: ContentItem) {
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
-        } else if item.isCollectionParent == true {
+        } else if ct == "collection" || item.isCollectionParent == true {
             coordinator.fullscreenRoute = .collectionDetail(
                 collectionId: item.id
             )
+        } else if ct == "audiobook" {
+            coordinator.fullscreenRoute = .audiobookDetail(audiobookId: item.id)
         } else {
             coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
         }

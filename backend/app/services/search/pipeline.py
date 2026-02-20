@@ -113,7 +113,11 @@ class SearchPipelineService:
 
         # Stage 4: Format response
         elapsed_ms = int((time.monotonic_ns() - start_ns) / 1_000_000)
-        result = self._formatter.format(merged, page, limit, elapsed_ms)
+        total_override = self._atlas._browse_total
+        result = self._formatter.format(
+            merged, page, limit, elapsed_ms,
+            total_override=total_override,
+        )
 
         # Cache
         self._cache.cache_results(query, cache_key_data, result.model_dump())

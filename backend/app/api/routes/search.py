@@ -30,7 +30,7 @@ _pipeline = create_search_pipeline()
 async def unified_search_endpoint(
     query: str = Query("", description="Search query text"),
     content_types: List[str] = Query(
-        ["vod"], description="Content types: vod, live, radio, podcast"
+        ["vod"], description="Content types: vod, live, radio, podcast, audiobook, series, movie, collection"
     ),
     genres: Optional[List[str]] = Query(None, description="Filter by genres"),
     year_min: Optional[int] = Query(None, ge=1900, le=2100, description="Minimum year"),

@@ -3,15 +3,18 @@ import BayitLocalization
 import BayitMedia
 import SwiftUI
 
-/// Grid of search results with subtitle flag overlays and pagination trigger for tvOS.
+/// Grid of search results with subtitle flag overlays and page navigation for tvOS.
 struct TVSearchResultsGridView: View {
     @Environment(LocalizationManager.self) private var localization
     let results: [UnifiedSearchResult]
     let totalResults: Int
     let query: String
+    let currentPage: Int
+    let totalPages: Int
     let hasMore: Bool
     let isLoadingMore: Bool
     let onLoadMore: () -> Void
+    let onGoToPage: (Int) -> Void
     let onSelect: (UnifiedSearchResult) -> Void
 
     private let columns = [
@@ -35,19 +38,69 @@ struct TVSearchResultsGridView: View {
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
-            if hasMore {
-                if isLoadingMore {
-                    ProgressView()
-                        .tint(DesignTokens.Primary.default)
-                        .frame(maxWidth: .infinity)
-                        .padding(TVDesignTokens.Spacing.xl)
-                } else {
-                    Color.clear.frame(height: 1).onAppear { onLoadMore() }
-                }
+            if totalPages > 1 {
+                paginationControls
+            } else if hasMore {
+                loadMoreTrigger
             }
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
     }
+
+    // MARK: - Pagination
+
+    private var paginationControls: some View {
+        HStack(spacing: TVDesignTokens.Spacing.xl) {
+            Spacer()
+
+            GlassButton(
+                localization.t("search.previousPage"),
+                variant: .secondary,
+                size: .medium,
+                isDisabled: currentPage <= 1 || isLoadingMore,
+                icon: Image(systemName: "chevron.left")
+            ) {
+                onGoToPage(currentPage - 1)
+            }
+            .tvFocusStyle()
+
+            Text(localization.t("search.pageIndicator", [
+                "current": String(currentPage), "total": String(totalPages),
+            ]))
+            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
+            .foregroundStyle(DesignTokens.Text.secondary)
+            .frame(minWidth: 120)
+
+            GlassButton(
+                localization.t("search.nextPage"),
+                variant: .secondary,
+                size: .medium,
+                isDisabled: currentPage >= totalPages || isLoadingMore,
+                icon: Image(systemName: "chevron.right")
+            ) {
+                onGoToPage(currentPage + 1)
+            }
+            .tvFocusStyle()
+
+            Spacer()
+        }
+        .padding(.vertical, TVDesignTokens.Spacing.xl)
+    }
+
+    private var loadMoreTrigger: some View {
+        Group {
+            if isLoadingMore {
+                ProgressView()
+                    .tint(DesignTokens.Primary.default)
+                    .frame(maxWidth: .infinity)
+                    .padding(TVDesignTokens.Spacing.xl)
+            } else {
+                Color.clear.frame(height: 1).onAppear { onLoadMore() }
+            }
+        }
+    }
+
+    // MARK: - Result Card
 
     private func resultPoster(_ result: UnifiedSearchResult) -> some View {
         ZStack(alignment: .topTrailing) {
@@ -69,6 +122,8 @@ struct TVSearchResultsGridView: View {
             }
         }
     }
+
+    // MARK: - Helpers
 
     private var resultsHeaderText: String {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)

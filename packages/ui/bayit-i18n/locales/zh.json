@@ -5279,7 +5279,11 @@
     "poweredByAI": "🤖 由Claude AI提供支持。结果可能因查询解读而异。",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "结果",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "pageIndicator": "第 {{current}} 页，共 {{total}} 页"
   },
   "settings": {
     "title": "设置",

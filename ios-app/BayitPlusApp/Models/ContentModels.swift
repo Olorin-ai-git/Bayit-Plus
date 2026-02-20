@@ -52,7 +52,6 @@ struct SpotlightItem: Decodable, Sendable, Identifiable {
     let year: Int?
     let duration: String?
     let rating: FlexibleRating?
-    let isSeries: Bool?
     let totalEpisodes: Int?
     let availableSubtitleLanguages: [String]?
     let hasSubtitles: Bool?
@@ -109,7 +108,6 @@ struct ContentItem: Decodable, Sendable, Identifiable, Hashable {
     let categoryNameEn: String?
     let categoryNameEs: String?
     let type: String?
-    let isSeries: Bool?
     let totalEpisodes: Int?
     let availableSubtitleLanguages: [String]?
     let hasSubtitles: Bool?
@@ -162,7 +160,6 @@ struct ContentDetail: Decodable, Sendable, Identifiable {
     let genre: String?
     let cast: [String]?
     let director: String?
-    let isSeries: Bool?
     let type: String?
     let availableSubtitleLanguages: [String]?
     let hasSubtitles: Bool?
@@ -227,7 +224,6 @@ struct CollectionListItem: Decodable, Sendable, Identifiable {
             categoryNameEn: nil,
             categoryNameEs: nil,
             type: "collection",
-            isSeries: nil,
             totalEpisodes: nil,
             availableSubtitleLanguages: nil,
             hasSubtitles: nil,

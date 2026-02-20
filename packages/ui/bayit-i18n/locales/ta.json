@@ -4803,7 +4803,11 @@
     "poweredByAI": "🤖 Claude AI ஆல் இயக்கப்படுகிறது. வினவல் விளக்கத்தின் அடிப்படையில் முடிவுகள் மாறுபடலாம்.",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "முடிவுகள்",
+    "previousPage": "முந்தையது",
+    "nextPage": "அடுத்தது",
+    "pageIndicator": "பக்கம் {{current}} / {{total}}"
   },
   "settings": {
     "title": "அமைப்புகள்",

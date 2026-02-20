@@ -6215,7 +6215,11 @@
     "exampleQuery2": "Find comedies starring Sacha Baron Cohen",
     "exampleQuery3": "What documentaries about the Holocaust are available?",
     "exampleQuery4": "Kids shows in Hebrew for ages 5-7",
-    "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation."
+    "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation.",
+    "results": "Results",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "pageIndicator": "Page {{current}} of {{total}}"
   },
   "settings": {
     "title": "Settings",

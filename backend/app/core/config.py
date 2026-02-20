@@ -710,8 +710,23 @@ class Settings(BaseSettings):
 
     # Character Animation Provider Selection
     CHARACTER_ANIMATION_PROVIDER: str = Field(
-        default="elevenlabs",
-        description="Provider for character animation: 'elevenlabs' or 'creatify'"
+        default="aurora",
+        description="Provider for character animation: 'aurora', 'elevenlabs', or 'creatify'"
+    )
+
+    TEMP_FILE_HOST_URL: str = Field(
+        default="https://tmpfiles.org/api/v1/upload",
+        description="Temp file hosting API for bridging local files to external APIs",
+    )
+
+    # fal.ai Aurora (direct image+audio lip-sync via Creatify Aurora model)
+    FAL_KEY: str = Field(
+        default="",
+        description="fal.ai API key for Aurora lip-sync generation",
+    )
+    FAL_AURORA_RESOLUTION: str = Field(
+        default="480p",
+        description="Aurora output resolution: 480p or 720p",
     )
 
     # Creatify Aurora (Character animation and lip-sync - Alternative provider)
@@ -786,7 +801,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_animation_provider(cls, v: str) -> str:
         """Validate CHARACTER_ANIMATION_PROVIDER is a supported provider."""
-        valid_providers = ["elevenlabs", "creatify"]
+        valid_providers = ["aurora", "elevenlabs", "creatify"]
         if v.lower() not in valid_providers:
             raise ValueError(
                 f"CHARACTER_ANIMATION_PROVIDER must be one of {valid_providers}, got '{v}'"

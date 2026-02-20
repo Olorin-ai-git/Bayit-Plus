@@ -72,7 +72,7 @@ class ScoredResult(BaseModel):
     source: str = "atlas"
 
 
-_VALID_CONTENT_TYPES = {"vod", "live", "radio", "podcast"}
+_VALID_CONTENT_TYPES = {"vod", "live", "radio", "podcast", "audiobook", "series", "movie", "collection"}
 _VALID_TIERS = {"basic", "premium", "family"}
 
 

@@ -24,6 +24,7 @@ class ResponseFormatter:
         limit: int,
         execution_time_ms: int,
         cache_hit: bool = False,
+        total_override: int | None = None,
     ) -> SearchResults:
         """
         Slice results for the requested page and build response.
@@ -34,11 +35,15 @@ class ResponseFormatter:
             limit: Results per page.
             execution_time_ms: Total pipeline execution time.
             cache_hit: Whether this was served from cache.
+            total_override: If provided, use this as the total count
+                instead of len(scored_results). Used by browse queries
+                that fetch a pool of results but know the true total.
 
         Returns:
             SearchResults matching the existing API contract.
         """
-        total = len(scored_results)
+        pool_size = len(scored_results)
+        total = total_override if total_override is not None else pool_size
         start_idx = (page - 1) * limit
         end_idx = start_idx + limit
         page_results = scored_results[start_idx:end_idx]

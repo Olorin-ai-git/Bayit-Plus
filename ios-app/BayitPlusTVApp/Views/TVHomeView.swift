@@ -297,7 +297,7 @@ struct TVHomeView: View {
             TVContentCard(
                 imageURL: item.thumbnail,
                 title: item.title ?? localization.t("common.untitled"),
-                badge: item.isSeries == true ? localization.t("home.series") : nil,
+                badge: item.type?.lowercased() == "series" ? localization.t("home.series") : nil,
                 aspectRatio: section.aspectRatio,
                 placeholderIcon: placeholderIcon(for: section),
                 availableSubtitleLanguages: item.availableSubtitleLanguages
@@ -308,9 +308,10 @@ struct TVHomeView: View {
     }
 
     private func navigateToCategoryItem(_ item: ContentItem, section: TVHomeSection) {
-        if item.isSeries == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "series" {
             coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
-        } else if item.isCollectionParent == true {
+        } else if ct == "collection" || item.isCollectionParent == true {
             coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
         } else {
             switch section {

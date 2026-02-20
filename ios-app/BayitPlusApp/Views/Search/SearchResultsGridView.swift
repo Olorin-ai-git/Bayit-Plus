@@ -85,12 +85,14 @@ struct SearchResultsGridView: View {
             return .player(contentId: result.id, contentType: .radio)
         case "podcast":
             return .podcastDetail(showId: result.id)
+        case "series":
+            return .seriesDetail(seriesId: result.id)
+        case "collection":
+            return .collectionDetail(collectionId: result.id)
+        case "audiobook":
+            return .audiobookDetail(audiobookId: result.id)
         default:
-            if result.isSeries == true {
-                return .seriesDetail(seriesId: result.id)
-            } else {
-                return .movieDetail(movieId: result.id)
-            }
+            return .movieDetail(movieId: result.id)
         }
     }
 }

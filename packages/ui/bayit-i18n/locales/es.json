@@ -6038,7 +6038,11 @@
     "poweredByAI": "🤖 Impulsado por Claude AI. Los resultados pueden variar según la interpretación de la consulta.",
     "noResultsFound": "No results found",
     "trendingSearches": "Trending Searches",
-    "tryDifferentSearch": "Try a different search term"
+    "tryDifferentSearch": "Try a different search term",
+    "results": "Resultados",
+    "previousPage": "Anterior",
+    "nextPage": "Siguiente",
+    "pageIndicator": "Pagina {{current}} de {{total}}"
   },
   "settings": {
     "title": "Configuración",

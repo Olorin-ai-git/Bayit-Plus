@@ -118,6 +118,17 @@ final class SearchViewModel {
         searchTask = Task { await performSearch(page: currentPage + 1, append: true) }
     }
 
+    func goToPage(_ page: Int) {
+        guard page >= 1, !isSearching else { return }
+        searchTask?.cancel()
+        searchTask = Task { await performSearch(page: page, append: false) }
+    }
+
+    var totalPages: Int {
+        guard totalResults > 0 else { return 1 }
+        return max(1, (totalResults + searchPageSize - 1) / searchPageSize)
+    }
+
     // MARK: - Private
 
     private func fetchSuggestions(for query: String) async {
@@ -150,7 +161,8 @@ final class SearchViewModel {
             let filteredResults = selectedFilter.applyClientFilter(response.results)
             if append { results.append(contentsOf: filteredResults) }
             else { results = filteredResults }
-            totalResults = response.total
+            let clientFilterActive = filteredResults.count != response.results.count
+            totalResults = clientFilterActive ? results.count : response.total
             currentPage = page
             hasMore = response.hasMore
             hasSearched = true

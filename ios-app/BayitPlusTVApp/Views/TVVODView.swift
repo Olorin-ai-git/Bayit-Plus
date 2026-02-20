@@ -101,9 +101,10 @@ struct TVVODView: View {
                         badge: badgeText(for: item),
                         aspectRatio: 2 / 3,
                         onSelect: {
-                            if item.isCollectionParent == true {
+                            let ct = item.type?.lowercased() ?? ""
+                            if ct == "collection" || item.isCollectionParent == true {
                                 coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
-                            } else if item.isSeries == true {
+                            } else if ct == "series" {
                                 coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
                             } else {
                                 coordinator.presentPlayer(
@@ -173,7 +174,7 @@ struct TVVODView: View {
                 return "\(available) \(movies)"
             }
             return localization.t("home.collection")
-        } else if item.isSeries == true {
+        } else if item.type?.lowercased() == "series" {
             return localization.t("vod.series")
         }
         return nil

@@ -172,10 +172,13 @@ struct IPadVODView: View {
     }
 
     private func navigateToItem(_ item: ContentItem) {
-        if item.isCollectionParent == true {
+        let ct = item.type?.lowercased() ?? ""
+        if ct == "collection" || item.isCollectionParent == true {
             coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if item.isSeries == true {
+        } else if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+        } else if ct == "audiobook" {
+            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
         }

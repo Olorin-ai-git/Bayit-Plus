@@ -38,42 +38,78 @@ final class CarPlayPlaybackController {
                 contentId: contentId,
                 contentType: contentType
             )
-
-            let mediaContentType = mediaContentType(from: contentType)
-            mediaPlayer.load(url: resolved.url, contentType: mediaContentType)
-            mediaPlayer.play()
-
-            remoteCommandService.configureForContentType(mediaContentType)
-
-            let metadata = NowPlayingMetadata(
+            startPlayback(
+                url: resolved.url,
                 title: resolved.title,
-                artist: resolved.subtitle,
+                subtitle: resolved.subtitle,
                 artworkURL: resolved.artworkURL,
-                contentType: mediaContentType,
-                isLiveStream: mediaContentType.isLive
+                contentType: contentType,
+                contentId: contentId
             )
-
-            nowPlayingService.update(
-                metadata: metadata,
-                currentTime: mediaPlayer.currentTime,
-                duration: mediaPlayer.duration,
-                rate: 1.0
-            )
-
-            let nowPlayingTemplate = CPNowPlayingTemplate.shared
-            interfaceController?.pushTemplate(nowPlayingTemplate, animated: true, completion: nil)
-
-            logger.info("Playback started", context: [
-                "contentId": contentId,
-                "type": contentType.rawValue,
-                "title": resolved.title
-            ])
         } catch {
             logger.error("Failed to start playback", error: error, context: [
                 "contentId": contentId,
                 "type": contentType.rawValue
             ])
         }
+    }
+
+    /// Play a direct URL when the stream URL is already known (e.g., podcast episode with audioUrl).
+    func playDirectURL(
+        url: URL,
+        title: String,
+        subtitle: String?,
+        artworkURL: URL?,
+        contentId: String,
+        contentType: ContentType
+    ) {
+        startPlayback(
+            url: url,
+            title: title,
+            subtitle: subtitle,
+            artworkURL: artworkURL,
+            contentType: contentType,
+            contentId: contentId
+        )
+    }
+
+    private func startPlayback(
+        url: URL,
+        title: String,
+        subtitle: String?,
+        artworkURL: URL?,
+        contentType: ContentType,
+        contentId: String
+    ) {
+        let mediaContentType = mediaContentType(from: contentType)
+        mediaPlayer.load(url: url, contentType: mediaContentType)
+        mediaPlayer.play()
+
+        remoteCommandService.configureForContentType(mediaContentType)
+
+        let metadata = NowPlayingMetadata(
+            title: title,
+            artist: subtitle,
+            artworkURL: artworkURL,
+            contentType: mediaContentType,
+            isLiveStream: mediaContentType.isLive
+        )
+
+        nowPlayingService.update(
+            metadata: metadata,
+            currentTime: mediaPlayer.currentTime,
+            duration: mediaPlayer.duration,
+            rate: 1.0
+        )
+
+        let nowPlayingTemplate = CPNowPlayingTemplate.shared
+        interfaceController?.pushTemplate(nowPlayingTemplate, animated: true, completion: nil)
+
+        logger.info("Playback started", context: [
+            "contentId": contentId,
+            "type": contentType.rawValue,
+            "title": title
+        ])
     }
 
     /// Stop playback and clear Now Playing info.

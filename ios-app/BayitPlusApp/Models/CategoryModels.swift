@@ -26,7 +26,6 @@ struct SectionContentItem: Decodable, Sendable, Identifiable {
     let ageGroup: String?
     let rating: String?
     let availableSubtitleLanguages: [String]?
-    let isSeries: Bool?
 }
 
 /// Featured content for a section

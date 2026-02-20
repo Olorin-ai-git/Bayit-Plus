@@ -127,6 +127,12 @@ export default defineConfig({
           ]
         },
         {
+          text: 'Operations',
+          items: [
+            { text: 'Regenerate Interaction Videos', link: '/guides/REGENERATE_INTERACTION_VIDEOS' },
+          ]
+        },
+        {
           text: 'AI Integration',
           items: [
             { text: 'Web AI Integration', link: '/guides/AI_INTEGRATION_WEB' },
@@ -244,6 +250,7 @@ export default defineConfig({
           items: [
             { text: 'AI Features Overview', link: '/features/AI_FEATURES_OVERVIEW' },
             { text: 'VOD Avatar Interaction', link: '/features/VOD_AVATAR_INTERACTION' },
+            { text: 'Regenerate Interaction Videos', link: '/guides/REGENERATE_INTERACTION_VIDEOS' },
           ]
         },
         {
