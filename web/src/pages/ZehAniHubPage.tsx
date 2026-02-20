@@ -60,14 +60,13 @@ const features: FeatureCard[] = [
 export default function ZehAniHubPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     hubLogger.info('Zeh Ani Hub page loaded', {
       userId: user?.id,
-      profileId: currentProfile?.id,
     });
-  }, [user?.id, currentProfile?.id]);
+  }, [user?.id]);
 
   const handleFeatureClick = (route: string) => {
     hubLogger.info('Feature card clicked', { route });

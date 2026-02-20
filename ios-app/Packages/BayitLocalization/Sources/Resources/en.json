@@ -6312,6 +6312,10 @@
       "endDialogue": "End Dialogue",
       "noCharactersAvailable": "No characters available for dialogue"
     },
+    "interaction": {
+      "previous": "Previous Interaction",
+      "next": "Next Interaction"
+    },
     "premiumRequiredRecording": "Premium subscription required",
     "sleepTimer": {
       "title": "Sleep Timer",

@@ -133,7 +133,7 @@ export const useVODInteraction = ({
         character_name: currentMoment.character_name,
         scene_context: currentMoment.scene_context,
         character_frame_url: currentMoment.character_frame_url
-      });
+      }) as InteractionSession;
 
       setActiveSession(session);
     } catch (error) {
@@ -214,7 +214,7 @@ export const useVODInteraction = ({
         avatar_id: avatarId,
         character_name: character.name,
         current_timestamp: currentTime,
-      });
+      }) as InteractionSession;
 
       setActiveSession(session);
       setIsFreeDialogueActive(true);

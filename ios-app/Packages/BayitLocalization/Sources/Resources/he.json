@@ -6376,6 +6376,10 @@
       "endDialogue": "סיים שיחה",
       "noCharactersAvailable": "אין דמויות זמינות לשיחה"
     },
+    "interaction": {
+      "previous": "אינטראקציה קודמת",
+      "next": "אינטראקציה הבאה"
+    },
     "premiumRequiredRecording": "נדרש מנוי פרימיום",
     "sleepTimer": {
       "title": "טיימר שינה",

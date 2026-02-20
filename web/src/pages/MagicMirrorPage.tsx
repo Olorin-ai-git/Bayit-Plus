@@ -13,14 +13,14 @@ const mmLogger = logger.scope('MagicMirrorPage');
 export default function MagicMirrorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
   const { mesh, fetchMeshStatus, fetchGlbUrl, glbUrl } = useAvatarMeshStore();
   const [loading, setLoading] = useState(true);
   const [avatarId, setAvatarId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadAvatarData = async () => {
-      if (!currentProfile?.id) {
+      if (!user?.id) {
         mmLogger.warn('No profile selected');
         setLoading(false);
         return;
@@ -28,7 +28,7 @@ export default function MagicMirrorPage() {
 
       try {
         // Fetch avatar ID from profile's StarStory avatars
-        const response = await fetch(`/api/v1/star-story/avatars/${currentProfile.id}`);
+        const response = await fetch(`/api/v1/star-story/avatars/${user!.id}`);
         if (response.ok) {
           const data = await response.json();
           if (data.avatars && data.avatars.length > 0) {
@@ -48,9 +48,9 @@ export default function MagicMirrorPage() {
     };
 
     loadAvatarData();
-  }, [currentProfile?.id, fetchMeshStatus, fetchGlbUrl]);
+  }, [user?.id, fetchMeshStatus, fetchGlbUrl]);
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -85,7 +85,7 @@ export default function MagicMirrorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Magic Mirror Widget */}
           <div className="lg:col-span-2">
-            <MagicMirrorWidget profileId={currentProfile.id} />
+            <MagicMirrorWidget profileId={user!.id} />
           </div>
 
           {/* 3D Avatar Viewer */}
@@ -99,7 +99,6 @@ export default function MagicMirrorPage() {
                   <Avatar3DViewer
                     avatarId={avatarId}
                     glbUrl={glbUrl.signed_url}
-                    autoRotate
                   />
                 </div>
               </GlassCard>

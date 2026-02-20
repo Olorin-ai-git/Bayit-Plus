@@ -2,8 +2,8 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Sheet view listing available subtitle languages with emoji flags, AI indicators, and mode selection.
-/// Enhanced with OpenSubtitles download integration.
+/// Sheet view listing available subtitle languages where each AI-generated
+/// variation (Heblish, Engrew, etc.) is an independent selectable row.
 struct SubtitleLanguagePickerView: View {
     let availableLanguages: [String]
     let aiLanguages: Set<String>
@@ -27,11 +27,51 @@ struct SubtitleLanguagePickerView: View {
     var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
     var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?
 
-    @State private var showModePickerForLanguage: String?
     @State private var selectedModeForGeneration: ModeSelectionItem?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(LocalizationManager.self) private var localization
+
+    // MARK: - Picker Item
+
+    private struct PickerItem: Identifiable {
+        let languageInfo: SubtitleLanguageInfo
+        let hebrewMode: SubtitleHebrewMode?
+        let englishMode: SubtitleEnglishMode?
+
+        var id: String {
+            var key = languageInfo.code
+            if let hm = hebrewMode { key += "_\(hm.rawValue)" }
+            if let em = englishMode { key += "_\(em.rawValue)" }
+            return key
+        }
+
+        var isAI: Bool {
+            if let hm = hebrewMode, hm != .standard { return true }
+            if let em = englishMode, em != .standard { return true }
+            return false
+        }
+
+        var displayLabel: String {
+            if let hm = hebrewMode, hm != .standard {
+                return "\(languageInfo.nativeName) (\(hm.displayName))"
+            }
+            if let em = englishMode, em != .standard {
+                return "\(languageInfo.nativeName) (\(em.displayName))"
+            }
+            return languageInfo.nativeName
+        }
+
+        var secondaryLabel: String {
+            if let hm = hebrewMode, hm != .standard {
+                return hm.description
+            }
+            if let em = englishMode, em != .standard {
+                return em.description
+            }
+            return languageInfo.name
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -39,50 +79,12 @@ struct SubtitleLanguagePickerView: View {
                 VStack(spacing: DesignTokens.Spacing.sm) {
                     offRow
 
-                    ForEach(languageRows, id: \.code) { info in
-                        languageRow(info)
+                    ForEach(pickerItems) { item in
+                        languageRow(item)
                     }
 
-                    // Split display option (dual subtitles side-by-side)
                     if let onSplitTap, availableLanguages.count >= 2 {
-                        Divider()
-                            .background(DesignTokens.Text.muted.opacity(0.3))
-                            .padding(.vertical, DesignTokens.Spacing.sm)
-
-                        Button {
-                            onSplitTap()
-                        } label: {
-                            HStack(spacing: DesignTokens.Spacing.md) {
-                                Image(systemName: "text.line.first.and.arrowtriangle.forward")
-                                    .font(.system(size: 22))
-                                    .foregroundStyle(DesignTokens.Primary.p400)
-
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(localization.t("subtitles.splitDisplay"))
-                                        .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                                        .foregroundStyle(DesignTokens.Text.primary)
-
-                                    Text(localization.t("subtitles.splitDisplayDescription"))
-                                        .font(.system(size: DesignTokens.FontSize.sm))
-                                        .foregroundStyle(DesignTokens.Text.muted)
-                                }
-
-                                Spacer()
-
-                                if isSplitEnabled {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(DesignTokens.Primary.p400)
-                                }
-
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14))
-                                    .foregroundStyle(DesignTokens.Text.muted)
-                            }
-                            .padding(DesignTokens.Spacing.md)
-                            .background(rowBackground(isSelected: isSplitEnabled))
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-                        }
-                        .buttonStyle(.plain)
+                        splitRow(onSplitTap: onSplitTap)
                     }
 
                     Divider()
@@ -92,9 +94,7 @@ struct SubtitleLanguagePickerView: View {
                     OpenSubtitlesDownloadView(
                         contentId: contentId,
                         repository: repository,
-                        onSuccess: {
-                            onRefresh()
-                        }
+                        onSuccess: { onRefresh() }
                     )
                 }
                 .padding(DesignTokens.Spacing.lg)
@@ -105,11 +105,7 @@ struct SubtitleLanguagePickerView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        if let onDismiss {
-                            onDismiss()
-                        } else {
-                            dismiss()
-                        }
+                        dismissPicker()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(DesignTokens.Text.secondary)
@@ -122,146 +118,9 @@ struct SubtitleLanguagePickerView: View {
         .environment(\.layoutDirection, localization.layoutDirection)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-    }
-
-    // MARK: - Off Row
-
-    private var offRow: some View {
-        Button {
-            onSelect(nil)
-            if let onDismiss {
-                onDismiss()
-            } else {
-                dismiss()
-            }
-        } label: {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Image(systemName: "slash.circle")
-                    .font(.system(size: 24))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                Text(localization.t("player.subtitlesOff"))
-                    .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                Spacer()
-
-                if selectedLanguage == nil {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(DesignTokens.Primary.p400)
-                }
-            }
-            .padding(DesignTokens.Spacing.md)
-            .background(rowBackground(isSelected: selectedLanguage == nil))
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(localization.t("player.subtitlesOff"))
-        .accessibilityValue(selectedLanguage == nil ? "Selected" : "")
-    }
-
-    // MARK: - Language Row
-
-    private func languageRow(_ info: SubtitleLanguageInfo) -> some View {
-        let isSelected = selectedLanguage == info.code
-        let hasAI = aiLanguages.contains(info.code)
-        let hasModePicker = info.code == "he" || info.code == "en"
-
-        return VStack(spacing: 0) {
-            Button {
-                onSelect(info.code)
-                // For Hebrew/English, stay open so user can interact with mode chips
-                // Only dismiss for other languages or if language was already selected
-                if !hasModePicker || isSelected {
-                    if let onDismiss {
-                        onDismiss()
-                    } else {
-                        dismiss()
-                    }
-                }
-            } label: {
-                HStack(spacing: DesignTokens.Spacing.md) {
-                    // Emoji flag
-                    Text(info.emojiFlag)
-                        .font(.system(size: 24))
-
-                    // Badge
-                    Text(info.badge)
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 32, height: 24)
-                        .background(DesignTokens.Primary.p700)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: DesignTokens.Spacing.xs) {
-                            Text(info.nativeName)
-                                .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                                .foregroundStyle(DesignTokens.Text.primary)
-
-                            if hasAI {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(DesignTokens.Primary.p400)
-                            }
-                        }
-
-                        Text(info.name)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                    }
-
-                    Spacer()
-
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(DesignTokens.Primary.p400)
-                    }
-                }
-                .padding(DesignTokens.Spacing.md)
-                .background(rowBackground(isSelected: isSelected))
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-            }
-            .buttonStyle(.plain)
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(info.name) subtitles\(hasAI ? " with AI modes" : "")")
-            .accessibilityValue(isSelected ? "Selected" : "")
-
-            // Mode chips for selected language
-            if isSelected && (info.code == "he" || info.code == "en") {
-                modeChips(for: info.code)
-                    .padding(.top, DesignTokens.Spacing.sm)
-            }
-        }
-    }
-
-    // MARK: - Mode Chips
-
-    private func modeChips(for language: String) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text(localization.t("subtitles.aiModes"))
-                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                .foregroundStyle(DesignTokens.Primary.p400)
-                .padding(.leading, DesignTokens.Spacing.xs)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: DesignTokens.Spacing.md) {
-                    if language == "he" {
-                        ForEach(SubtitleHebrewMode.allCases, id: \.self) { mode in
-                            hebrewModeChip(mode: mode)
-                        }
-                    } else if language == "en" {
-                        ForEach(SubtitleEnglishMode.allCases, id: \.self) { mode in
-                            englishModeChip(mode: mode)
-                        }
-                    }
-                }
-                .padding(.horizontal, DesignTokens.Spacing.xs)
-            }
-        }
-        .padding(.horizontal, DesignTokens.Spacing.md)
         .sheet(item: $selectedModeForGeneration) { selection in
-            if selection.language == "he", let mode = selection.mode as? SubtitleHebrewMode {
+            if selection.language == "he",
+               let mode = selection.mode as? SubtitleHebrewMode {
                 AISubtitlesPickerView(
                     contentId: contentId,
                     currentMode: mode,
@@ -285,94 +144,233 @@ struct SubtitleLanguagePickerView: View {
         }
     }
 
-    private func hebrewModeChip(mode: SubtitleHebrewMode) -> some View {
-        let isSelected = mode == currentHebrewMode
-        let isAvailable = isModeAvailable(mode, language: "he")
-        let isAI = mode != .standard
+    // MARK: - Off Row
 
-        return Button {
-            if isAvailable {
-                // Mode is available - select it directly
-                onHebrewModeSelect?(mode)
-                dismiss()
-            } else {
-                // Mode not available - show generation modal
-                selectedModeForGeneration = ModeSelectionItem(language: "he", mode: mode)
-            }
+    private var offRow: some View {
+        Button {
+            onSelect(nil)
+            dismissPicker()
         } label: {
-            HStack(spacing: DesignTokens.Spacing.xs) {
-                if isAI {
-                    Image(systemName: isAvailable ? "sparkles" : "lock.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(isSelected ? .white : DesignTokens.Primary.p400)
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Image(systemName: "slash.circle")
+                    .font(.system(size: 24))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+
+                Text(localization.t("player.subtitlesOff"))
+                    .font(.system(
+                        size: DesignTokens.FontSize.md, weight: .medium
+                    ))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                Spacer()
+
+                if selectedLanguage == nil {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(DesignTokens.Primary.p400)
                 }
-                Text(mode.displayName)
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                    .foregroundStyle(isSelected ? .white : (isAvailable ? .white : .gray))
             }
-            .padding(.horizontal, DesignTokens.Spacing.md)
-            .padding(.vertical, DesignTokens.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .fill(isSelected ? DesignTokens.Primary.p500 : (isAI ? Color.purple.opacity(0.25) : Color.white.opacity(0.1)))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .stroke(
-                        isSelected ? DesignTokens.Primary.p400 : (isAI ? Color.purple.opacity(0.5) : Color.white.opacity(0.2)),
-                        lineWidth: isSelected ? 2 : 1
-                    )
-            )
+            .padding(DesignTokens.Spacing.md)
+            .background(rowBackground(isSelected: selectedLanguage == nil))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .buttonStyle(.plain)
-        .disabled(!isAvailable && !isAI) // Only allow interaction with standard and AI modes
+        .accessibilityLabel(localization.t("player.subtitlesOff"))
+        .accessibilityValue(selectedLanguage == nil ? "Selected" : "")
     }
 
-    private func englishModeChip(mode: SubtitleEnglishMode) -> some View {
-        let isSelected = mode == currentEnglishMode
-        let isAvailable = isModeAvailable(mode, language: "en")
-        let isAI = mode != .standard
+    // MARK: - Language Row
+
+    private func languageRow(_ item: PickerItem) -> some View {
+        let isSelected = isItemSelected(item)
+        let isAvailable = isItemAvailable(item)
 
         return Button {
-            if isAvailable {
-                // Mode is available - select it directly
-                onEnglishModeSelect?(mode)
-                dismiss()
-            } else {
-                // Mode not available - would show generation modal (when implemented)
-                // For now, just select standard
+            handleItemTap(item, isAvailable: isAvailable)
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Text(item.languageInfo.emojiFlag)
+                    .font(.system(size: 24))
+
+                Text(item.languageInfo.badge)
+                    .font(.system(
+                        size: DesignTokens.FontSize.sm, weight: .bold
+                    ))
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 24)
+                    .background(DesignTokens.Primary.p700)
+                    .clipShape(RoundedRectangle(
+                        cornerRadius: DesignTokens.Radius.sm
+                    ))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
+                        Text(item.displayLabel)
+                            .font(.system(
+                                size: DesignTokens.FontSize.md,
+                                weight: .medium
+                            ))
+                            .foregroundStyle(DesignTokens.Text.primary)
+
+                        if item.isAI {
+                            Image(
+                                systemName: isAvailable
+                                    ? "sparkles" : "lock.fill"
+                            )
+                            .font(.system(size: 12))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                        }
+                    }
+
+                    Text(item.secondaryLabel)
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(DesignTokens.Primary.p400)
+                }
+            }
+            .padding(DesignTokens.Spacing.md)
+            .background(rowBackground(isSelected: isSelected))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "\(item.displayLabel) subtitles\(item.isAI ? ", AI generated" : "")"
+        )
+        .accessibilityValue(isSelected ? "Selected" : "")
+    }
+
+    private func handleItemTap(_ item: PickerItem, isAvailable: Bool) {
+        if item.isAI && !isAvailable {
+            if let hm = item.hebrewMode, hm != .standard {
+                selectedModeForGeneration = ModeSelectionItem(
+                    language: "he", mode: hm
+                )
+            } else if item.englishMode == .engrew {
                 onEnglishModeSelect?(.standard)
-                dismiss()
+                dismissPicker()
             }
-        } label: {
-            HStack(spacing: DesignTokens.Spacing.xs) {
-                if isAI {
-                    Image(systemName: isAvailable ? "sparkles" : "lock.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(isSelected ? .white : DesignTokens.Primary.p400)
-                }
-                Text(mode.displayName)
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                    .foregroundStyle(isSelected ? .white : (isAvailable ? .white : .gray))
-            }
-            .padding(.horizontal, DesignTokens.Spacing.md)
-            .padding(.vertical, DesignTokens.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .fill(isSelected ? DesignTokens.Primary.p500 : (isAI ? Color.purple.opacity(0.25) : Color.white.opacity(0.1)))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .stroke(
-                        isSelected ? DesignTokens.Primary.p400 : (isAI ? Color.purple.opacity(0.5) : Color.white.opacity(0.2)),
-                        lineWidth: isSelected ? 2 : 1
-                    )
-            )
+            return
         }
-        .buttonStyle(.plain)
+
+        onSelect(item.languageInfo.code)
+        if let hm = item.hebrewMode { onHebrewModeSelect?(hm) }
+        if let em = item.englishMode { onEnglishModeSelect?(em) }
+        dismissPicker()
     }
 
-    private func isModeAvailable(_ mode: SubtitleHebrewMode, language: String) -> Bool {
+    // MARK: - Split Row
+
+    private func splitRow(onSplitTap: @escaping () -> Void) -> some View {
+        Group {
+            Divider()
+                .background(DesignTokens.Text.muted.opacity(0.3))
+                .padding(.vertical, DesignTokens.Spacing.sm)
+
+            Button {
+                onSplitTap()
+            } label: {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Image(
+                        systemName: "text.line.first.and.arrowtriangle.forward"
+                    )
+                    .font(.system(size: 22))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(localization.t("subtitles.splitDisplay"))
+                            .font(.system(
+                                size: DesignTokens.FontSize.md,
+                                weight: .medium
+                            ))
+                            .foregroundStyle(DesignTokens.Text.primary)
+
+                        Text(localization.t(
+                            "subtitles.splitDisplayDescription"
+                        ))
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                    }
+
+                    Spacer()
+
+                    if isSplitEnabled {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                .padding(DesignTokens.Spacing.md)
+                .background(rowBackground(isSelected: isSplitEnabled))
+                .clipShape(RoundedRectangle(
+                    cornerRadius: DesignTokens.Radius.md
+                ))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private var pickerItems: [PickerItem] {
+        var items: [PickerItem] = []
+        for code in availableLanguages {
+            guard let info = SubtitleLanguages.info(for: code) else { continue }
+            switch code {
+            case "he":
+                for mode in SubtitleHebrewMode.allCases {
+                    items.append(PickerItem(
+                        languageInfo: info,
+                        hebrewMode: mode,
+                        englishMode: nil
+                    ))
+                }
+            case "en":
+                for mode in SubtitleEnglishMode.allCases {
+                    items.append(PickerItem(
+                        languageInfo: info,
+                        hebrewMode: nil,
+                        englishMode: mode
+                    ))
+                }
+            default:
+                items.append(PickerItem(
+                    languageInfo: info,
+                    hebrewMode: nil,
+                    englishMode: nil
+                ))
+            }
+        }
+        return items
+    }
+
+    private func isItemSelected(_ item: PickerItem) -> Bool {
+        guard selectedLanguage == item.languageInfo.code else { return false }
+        if let hm = item.hebrewMode { return currentHebrewMode == hm }
+        if let em = item.englishMode { return currentEnglishMode == em }
+        return true
+    }
+
+    private func isItemAvailable(_ item: PickerItem) -> Bool {
+        if isAdmin { return true }
+        if let hm = item.hebrewMode {
+            return hebrewModeAvailable(hm)
+        }
+        if let em = item.englishMode {
+            return englishModeAvailable(em)
+        }
+        return true
+    }
+
+    private func hebrewModeAvailable(_ mode: SubtitleHebrewMode) -> Bool {
         switch mode {
         case .standard: return true
         case .nikud: return hasNikud
@@ -381,17 +379,19 @@ struct SubtitleLanguagePickerView: View {
         }
     }
 
-    private func isModeAvailable(_ mode: SubtitleEnglishMode, language: String) -> Bool {
+    private func englishModeAvailable(_ mode: SubtitleEnglishMode) -> Bool {
         switch mode {
         case .standard: return true
         case .engrew: return hasEngrew
         }
     }
 
-    // MARK: - Helpers
-
-    private var languageRows: [SubtitleLanguageInfo] {
-        availableLanguages.compactMap { SubtitleLanguages.info(for: $0) }
+    private func dismissPicker() {
+        if let onDismiss {
+            onDismiss()
+        } else {
+            dismiss()
+        }
     }
 
     private func rowBackground(isSelected: Bool) -> some View {

@@ -86,12 +86,12 @@ export const useEnhancedAvatarStore = create<AvatarStoreState>()(
   persist(
     (set, get) => {
       // Subscribe to avatar state manager changes
-      avatarStateManager.addListener((state) => {
+      avatarStateManager.addListener((state: AvatarState) => {
         set({ avatarState: state });
       });
 
       // Subscribe to preferences changes
-      avatarPreferencesManager.addListener((preferences) => {
+      avatarPreferencesManager.addListener((preferences: AvatarPreferences) => {
         set({ preferences });
       });
 
@@ -120,7 +120,7 @@ export const useEnhancedAvatarStore = create<AvatarStoreState>()(
             });
 
             // Subscribe to progress updates
-            const unsubscribe = avatarGenerationService.onProgress(result.avatarId, (progress) => {
+            const unsubscribe = avatarGenerationService.onProgress(result.avatarId, (progress: AvatarGenerationProgress) => {
               set({ generationProgress: progress });
 
               if (progress.status === 'completed') {

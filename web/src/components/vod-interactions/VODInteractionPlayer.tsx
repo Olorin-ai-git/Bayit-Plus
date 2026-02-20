@@ -9,12 +9,12 @@
  * Video never pauses. Volume ducks to 15% while dialogue is active.
  */
 
-import { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useAuthStore } from '@bayit/shared-stores/authStore'
 import { GlassButton } from '@bayit/glass'
 import { Mic } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useVODInteraction } from '../../hooks/useVODInteraction'
+import { useVODInteraction, ContentCharacter } from '../../hooks/useVODInteraction'
 import { useVoiceInteractionWS } from '../../hooks/useVoiceInteractionWS'
 import { useSharedInteraction } from '../../hooks/useSharedInteraction'
 import { InteractiveMomentPrompt } from './InteractiveMomentPrompt'
@@ -37,30 +37,32 @@ export function VODInteractionPlayer({
   avatarImageUrl,
 }: Props) {
   const { t } = useTranslation()
-  const interaction = useVODInteraction(contentId)
+  const { user } = useAuthStore()
+  const profileId = user?.id ?? ''
+  const avatarId = user?.id ?? ''
+
+  const interaction = useVODInteraction({
+    contentId,
+    profileId,
+    avatarId,
+    currentTime: currentTimestamp,
+    onPauseRequested: () => { if (playerRef.current) playerRef.current.pause() },
+    onResumeRequested: () => { if (playerRef.current) playerRef.current.play() },
+  })
   const voiceWS = useVoiceInteractionWS()
   const shared = useSharedInteraction()
-  const currentUserId = useAuthStore.getState().user?.id ?? null
-
-  // Wire player ref so the hook can duck/restore volume
-  useEffect(() => {
-    interaction.setPlayerRef(playerRef.current)
-  }, [playerRef, interaction.setPlayerRef])
-
-  // Detect interactive moments on every timestamp tick
-  useEffect(() => {
-    interaction.checkForMoment(currentTimestamp)
-  }, [currentTimestamp, interaction.checkForMoment])
+  const currentUserId = user?.id ?? null
 
   // Connect / disconnect voice WS with the active session
   useEffect(() => {
-    if (interaction.isSessionActive && interaction.sessionId) {
-      voiceWS.connect(interaction.sessionId)
+    const sessionId = interaction.activeSession?.id
+    if (interaction.isInteracting && sessionId) {
+      voiceWS.connect(sessionId)
     } else {
       voiceWS.disconnect()
     }
     return () => { voiceWS.disconnect() }
-  }, [interaction.isSessionActive, interaction.sessionId])
+  }, [interaction.isInteracting, interaction.activeSession?.id])
 
   const handleSendAudio = useCallback(
     (data: ArrayBuffer) => { voiceWS.sendAudioData(data) },
@@ -75,46 +77,47 @@ export function VODInteractionPlayer({
   const handleEndSession = useCallback(async () => {
     voiceWS.endSession()
     voiceWS.disconnect()
-    await interaction.endSession()
-  }, [voiceWS.endSession, voiceWS.disconnect, interaction.endSession])
+    await interaction.completeInteraction()
+  }, [voiceWS.endSession, voiceWS.disconnect, interaction.completeInteraction])
+
+  const handleSelectCharacter = useCallback(
+    (char: ContentCharacter) => { interaction.startFreeInteraction(char) },
+    [interaction.startFreeInteraction]
+  )
 
   return (
     <div className="absolute inset-0 pointer-events-none">
 
       {/* Phase 1: Curated moment prompt */}
-      {interaction.isShowingPrompt && interaction.currentMoment && (
+      {interaction.currentMoment && !interaction.isInteracting && (
         <div className="pointer-events-auto absolute bottom-24 left-1/2 -translate-x-1/2">
           <InteractiveMomentPrompt
             moment={interaction.currentMoment}
-            onAccept={() =>
-              interaction.startInteraction(interaction.currentMoment!._id)
-            }
-            onDismiss={interaction.dismissPrompt}
+            onAccept={interaction.startInteraction}
+            onDismiss={interaction.skipInteraction}
           />
         </div>
       )}
 
       {/* Phase 2: Character selection bar */}
-      {interaction.isShowingCharacterSelect && (
+      {!interaction.isInteracting && interaction.availableCharacters.length > 0 && (
         <div className="pointer-events-auto absolute bottom-0 left-0 right-0">
           <CharacterSelectBar
-            characters={interaction.characters}
-            onSelect={(char) =>
-              interaction.startFreeInteraction(char._id, currentTimestamp)
-            }
-            onClose={interaction.hideCharacterSelect}
+            characters={interaction.availableCharacters}
+            onSelect={handleSelectCharacter}
+            onClose={interaction.endFreeInteraction}
           />
         </div>
       )}
 
       {/* Phase 2/3: Active dialogue panel + voice input */}
-      {interaction.isSessionActive && (
+      {interaction.isInteracting && (
         <div className="pointer-events-auto absolute top-0 right-0 flex h-full flex-col">
           <AvatarDialoguePanel
-            characterName={interaction.characterName}
-            messages={interaction.messages}
-            isLoading={interaction.isLoading || voiceWS.isProcessing}
-            onSendMessage={interaction.sendMessage}
+            characterName={interaction.activeSession?.character_name ?? interaction.selectedCharacter?.name ?? ''}
+            messages={interaction.activeSession?.dialogue_exchanges ?? interaction.freeDialogueExchanges}
+            isLoading={interaction.isSending || voiceWS.isProcessing}
+            onSendMessage={interaction.isFreeDialogueActive ? interaction.sendFreeMessage : interaction.sendMessage}
             onClose={handleEndSession}
             avatarImageUrl={avatarImageUrl}
           />
@@ -128,11 +131,11 @@ export function VODInteractionPlayer({
       )}
 
       {/* Phase 2: Talk-to-character button (shown when characters available) */}
-      {interaction.showTalkButton && (
+      {!interaction.isInteracting && (
         <div className="pointer-events-auto absolute bottom-8 right-8">
           <GlassButton
             variant="floating"
-            onClick={interaction.showCharacterSelect}
+            onClick={interaction.loadCharacters}
             aria-label={t('player.talkToCharacter')}
           >
             <Mic size={18} />

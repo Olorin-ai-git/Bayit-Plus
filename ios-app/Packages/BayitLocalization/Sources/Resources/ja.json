@@ -6870,6 +6870,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "前のインタラクション",
+      "next": "次のインタラクション"
+    },
     "sleepTimer": {
       "title": "スリープタイマー",
       "setTimer": "タイマーを設定",

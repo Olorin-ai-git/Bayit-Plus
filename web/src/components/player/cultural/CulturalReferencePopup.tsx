@@ -42,9 +42,9 @@ const CulturalReferencePopup: React.FC<CulturalReferencePopupProps> = ({
         setLoading(true);
         setError(null);
 
-        const response = await api.get<ReferenceExplanation>(
+        const response = await api.get(
           `/cultural/explain/${referenceId}`
-        );
+        ) as ReferenceExplanation;
 
         setExplanation(response);
         logger.debug('Cultural reference explanation fetched', { referenceId });

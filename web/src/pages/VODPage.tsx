@@ -260,7 +260,7 @@ export default function VODPage() {
             limit: itemsPerPage,
             published_only: true,
           }
-        });
+        }) as ContentItem[];
         items = data || [];
         total = items.length; // API returns full list, we paginate client-side
         setAllContent(items);

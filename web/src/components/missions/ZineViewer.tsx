@@ -38,7 +38,7 @@ export function ZineViewer({ profileId }: Props) {
 
   const loadCurrentZine = async () => {
     setLoading(true);
-    const data = await api.get('/zine/current', { params: { profile_id: profileId } });
+    const data = await api.get('/zine/current', { params: { profile_id: profileId } }) as Zine;
     setZine(data);
     setCurrentPage(0);
     setLoading(false);
@@ -48,7 +48,7 @@ export function ZineViewer({ profileId }: Props) {
   };
 
   const loadArchive = async () => {
-    const data = await api.get('/zine/archive', { params: { profile_id: profileId } });
+    const data = await api.get('/zine/archive', { params: { profile_id: profileId } }) as Zine[];
     setArchive(data);
     setShowArchive(true);
   };

@@ -4,7 +4,7 @@ import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-t
 import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle';
 import { InteractiveWord } from './InteractiveWord';
 import { TranslationPopup } from './TranslationPopup';
-import { api } from '@/services/api';
+import { subtitlesService } from '@/services/api';
 import { logger } from '@bayit/shared-utils/logger';
 
 interface InteractiveSubtitleOverlayProps {
@@ -37,10 +37,10 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
   const [isLoading, setIsLoading] = useState(false);
 
   const languageInfo = getLanguageInfo(language);
-  const isRTL = languageInfo?.isRTL || false;
+  const isRTL = languageInfo?.rtl || false;
 
   const activeCues = subtitles.filter(
-    (cue) => currentTime >= cue.startTime && currentTime <= cue.endTime
+    (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
   );
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export const InteractiveSubtitleOverlay: React.FC<InteractiveSubtitleOverlayProp
 
     setIsLoading(true);
     try {
-      const result = await api.subtitlesService.translateWord(word, language);
+      const result = await subtitlesService.translateWord(word, language) as { translation: string; transliteration: string; example?: string };
 
       const rect = event.target.getBoundingClientRect();
       setTranslation({

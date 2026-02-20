@@ -41,7 +41,9 @@ final class MediaPlayerViewModel {
     private let widgetBridge: MediaPlayerWidgetBridge
     #endif
     private let repository: any MediaRepository
+    #if os(iOS)
     private let downloadManager: DownloadManager?
+    #endif
     let preferences = PlayerPreferencesService()
 
     // MARK: - Init
@@ -93,14 +95,12 @@ final class MediaPlayerViewModel {
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
-        podcastRepository: any PodcastRepository,
-        downloadManager: DownloadManager? = nil
+        podcastRepository: any PodcastRepository
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.player = player
         self.repository = repository
-        self.downloadManager = downloadManager
         self.streamResolver = StreamResolver(
             mediaRepository: repository,
             contentRepository: contentRepository,
@@ -126,6 +126,7 @@ final class MediaPlayerViewModel {
         isLoading = true
         errorMessage = nil
 
+        #if os(iOS)
         // Offline-first: use locally downloaded asset when available (no network needed).
         if let download = downloadManager?.localDownload(for: contentId),
            let localURL = downloadManager?.playLocalDownload(id: download.id) {
@@ -141,6 +142,7 @@ final class MediaPlayerViewModel {
             if mediaType.isSeekable { progressTracker.startTracking() }
             return
         }
+        #endif
 
         do {
             // Resolve stream URL and metadata

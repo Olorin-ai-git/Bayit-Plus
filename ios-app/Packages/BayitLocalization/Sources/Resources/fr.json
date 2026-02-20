@@ -6706,6 +6706,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "Interaction precedente",
+      "next": "Interaction suivante"
+    },
     "sleepTimer": {
       "title": "Minuterie de sommeil",
       "setTimer": "Régler la minuterie",

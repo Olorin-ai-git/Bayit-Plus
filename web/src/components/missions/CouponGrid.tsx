@@ -17,7 +17,8 @@ interface Coupon {
 }
 
 export function CouponGrid() {
-  const { balance, fetchBalance } = useMissionsStore();
+  const { walletBalance, fetchBalance } = useMissionsStore();
+  const balance = walletBalance?.balance ?? 0;
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [redeeming, setRedeeming] = useState<string | null>(null);
@@ -29,7 +30,7 @@ export function CouponGrid() {
 
   const loadCoupons = async () => {
     setLoading(true);
-    const data = await api.get('/coupons/available');
+    const data = await api.get('/coupons/available') as Coupon[];
     setCoupons(data);
     setLoading(false);
   };

@@ -74,7 +74,7 @@ export const useAvatarStudioStore = create<AvatarStudioStore>((set, get) => ({
       if (statusFilter) params.status_filter = statusFilter
       if (searchQuery) params.search = searchQuery
 
-      const movies = await api.get('/admin/avatar-studio/movies', { params })
+      const movies = await api.get('/admin/avatar-studio/movies', { params }) as Movie[]
       set({ movies, isLoading: false })
     } catch (error: any) {
       set({ error: error.message || 'Failed to load movies', isLoading: false })
@@ -147,7 +147,7 @@ export const useAvatarStudioStore = create<AvatarStudioStore>((set, get) => ({
       const updatedMoment = await api.patch(
         `/admin/avatar-studio/moments/${momentId}`,
         { ...data, content_id: selectedMovie.id }
-      )
+      ) as InteractiveMoment
 
       set({
         moments: moments.map((m) => (m.id === momentId ? { ...m, ...updatedMoment } : m)),

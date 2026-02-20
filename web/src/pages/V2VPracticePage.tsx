@@ -9,9 +9,9 @@ import { V2VWaveformCompare } from '@/components/zeh-ani/V2VWaveformCompare';
 export default function V2VPracticePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -43,7 +43,7 @@ export default function V2VPracticePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Practice Panel */}
           <div className="lg:col-span-2">
-            <V2VPracticePanel profileId={currentProfile.id} />
+            <V2VPracticePanel profileId={user.id} avatarId={user.id} />
           </div>
 
           {/* Waveform Comparison */}
@@ -53,7 +53,7 @@ export default function V2VPracticePage() {
                 <h3 className="text-lg font-semibold text-white mb-4">
                   {t('zehAni.v2v.comparison')}
                 </h3>
-                <V2VWaveformCompare />
+                <V2VWaveformCompare scoreBefore={0} scoreAfter={0} scoreDelta={0} />
               </div>
             </GlassCard>
           </div>

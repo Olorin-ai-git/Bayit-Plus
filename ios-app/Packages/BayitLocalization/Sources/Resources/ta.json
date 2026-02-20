@@ -6373,6 +6373,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "முந்தைய தொடர்பு",
+      "next": "அடுத்த தொடர்பு"
+    },
     "sleepTimer": {
       "title": "தூக்க டைமர்",
       "setTimer": "டைமர் அமைக்கவும்",

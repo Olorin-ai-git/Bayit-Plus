@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SubtitleCue } from '@/types/subtitle';
-import { api } from '@/services/api';
+import { subtitlesService } from '@/services/api';
 import { logger } from '@bayit/shared-utils/logger';
 
 interface UseInteractiveSubtitlesOptions {
@@ -50,12 +50,12 @@ export const useInteractiveSubtitles = ({
     }
 
     const active = subtitles.filter(
-      (cue) => currentTime >= cue.startTime && currentTime <= cue.endTime
+      (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
     );
 
     setActiveCues(active);
 
-    const currentCueId = active.length > 0 ? active[0].id : null;
+    const currentCueId = active.length > 0 ? (active[0].id ?? null) : null;
     if (currentCueId !== lastCueId) {
       clearSelection();
       setLastCueId(currentCueId);
@@ -72,7 +72,7 @@ export const useInteractiveSubtitles = ({
       setIsTranslating(true);
 
       try {
-        const result = await api.subtitlesService.translateWord(word, language);
+        const result = await subtitlesService.translateWord(word, language) as { translation: string; transliteration: string; example?: string };
 
         setTranslation({
           word,

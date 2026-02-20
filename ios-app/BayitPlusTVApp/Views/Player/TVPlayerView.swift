@@ -60,7 +60,6 @@ struct TVPlayerView: View {
     @State private var showAudioTracks = false
     @State private var showSpeedControl = false
     @State private var showControlButtons = true
-    @State private var showPlaybackOverlay = true
     @State private var overlayHideTask: Task<Void, Never>?
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
@@ -82,8 +81,6 @@ struct TVPlayerView: View {
     @State private var progressTrackingTask: Task<Void, Never>? = nil
     private let progressIntervalSeconds: TimeInterval = 15
 
-    // Focus management
-    @FocusState private var controlBarFocused: Bool
     @State private var seekPreviewPosition: TimeInterval?
 
     // MARK: - Split Subtitle State
@@ -99,6 +96,7 @@ struct TVPlayerView: View {
     @State private var availableSubtitleLanguages: [String] = []
     @State private var hasChapters = false
 
+    @Namespace private var playerFocus
     private var isLive: Bool { contentType == .liveTV }
 
     var body: some View {
@@ -112,22 +110,22 @@ struct TVPlayerView: View {
                     .ignoresSafeArea()
 
                 triviaOverlay
+                    .allowsHitTesting(false)
                 subtitleOverlay
+                    .allowsHitTesting(false)
                 splitSubtitleOverlay
+                    .allowsHitTesting(false)
                 liveSubtitleOverlay
+                    .allowsHitTesting(false)
                 translationOverlay
                 catchUpAutoPromptOverlay
                 interactiveMomentOverlay
+                    .allowsHitTesting(false)
                 dialogueOverlay
                 sharedInteractionOverlay
 
-                // Transparent playback controls overlay (center)
-                if !isLive {
-                    playbackControlsOverlay
-                }
-
                 if showControlButtons {
-                    // Gradient scrim for readability
+                    // Gradient scrim for readability (non-focusable)
                     VStack {
                         Spacer()
                         LinearGradient(
@@ -140,8 +138,17 @@ struct TVPlayerView: View {
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
 
-                    // Progress bar + controls anchored to bottom
+                    // All focusable content in a single VStack for vertical focus path
                     VStack(spacing: TVDesignTokens.Spacing.lg) {
+                        Spacer()
+
+                        // Playback controls overlay (center) - VOD only
+                        if !isLive {
+                            playbackControlsOverlay
+                                .focusSection()
+                                .prefersDefaultFocus(in: playerFocus)
+                        }
+
                         Spacer()
 
                         if !isLive {
@@ -165,7 +172,6 @@ struct TVPlayerView: View {
                                 onLanguageTap: { showAILanguagePicker = true }
                             )
                         } else {
-                            HStack(spacing: TVDesignTokens.Spacing.lg) {
                             TVPlayerControlBar(
                                 contentType: contentType,
                                 onSubtitles: { showSubtitleLanguagePicker = true },
@@ -173,37 +179,27 @@ struct TVPlayerView: View {
                                 onChapters: { showChapterList = true },
                                 onAudioTracks: { showAudioTracks = true },
                                 onSpeed: { showSpeedControl = true },
+                                onPreviousInteraction: previousInteractionAction,
+                                onNextInteraction: nextInteractionAction,
                                 selectedSubtitleLanguage: selectedSubtitleLanguage,
                                 isSplitEnabled: splitModeEnabled,
                                 splitLanguages: splitLanguages
                             )
-
-                            if interactionVM != nil {
-                                Button {
-                                    Task { await openCharacterSelection() }
-                                } label: {
-                                    Image(systemName: showDialogueOverlay
-                                        ? "bubble.left.and.bubble.right.fill"
-                                        : "bubble.left.and.bubble.right")
-                                        .font(.system(size: TVDesignTokens.FontSize.lg))
-                                        .foregroundStyle(
-                                            showDialogueOverlay
-                                                ? DesignTokens.Primary.p400 : .white
-                                        )
-                                }
-                                .accessibilityLabel(
-                                    localization.t("player.dialogue.talkToCharacter")
-                                )
-                            }
-                        }
-                        .focused($controlBarFocused)
-                        .defaultFocus($controlBarFocused, true)
                         }
                     }
                     .padding(.bottom, 40)
+                } else {
+                    // Invisible focus catcher -- any directional input re-shows controls
+                    Color.clear
+                        .focusable()
+                        .onMoveCommand { _ in
+                            showControlButtons = true
+                            resetOverlayTimer()
+                        }
                 }
             }
         }
+        .focusScope(playerFocus)
         .onDisappear { cleanup() }
         .task { await resolveAndPlay() }
         .task { initializeViewModels() }
@@ -215,24 +211,9 @@ struct TVPlayerView: View {
                 _ = vm.checkForMoment(currentTime: newTime)
             }
         }
-        .onChange(of: showControlButtons) { _, isVisible in
-            if isVisible {
-                controlBarFocused = true
-            }
-        }
         .onPlayPauseCommand {
             mediaPlayer.togglePlayPause()
             resetOverlayTimer()
-        }
-        .onMoveCommand { direction in
-            resetOverlayTimer()
-            switch direction {
-            case .up: showControlButtons = true
-            case .down: showControlButtons = false
-            case .left: Task { await mediaPlayer.skipBackward(seconds: 10) }
-            case .right: Task { await mediaPlayer.skipForward(seconds: 10) }
-            @unknown default: break
-            }
         }
         .task {
             resetOverlayTimer()
@@ -405,7 +386,6 @@ struct TVPlayerView: View {
             isPlaying: mediaPlayer.state == .playing,
             hasChapters: hasChapters,
             currentPosition: mediaPlayer.currentTime,
-            isVisible: showPlaybackOverlay,
             onPlayPause: { mediaPlayer.togglePlayPause() },
             onSkipBackward30: { Task { await mediaPlayer.skipBackward(seconds: 30) } },
             onSkipForward30: { Task { await mediaPlayer.skipForward(seconds: 30) } },
@@ -418,11 +398,11 @@ struct TVPlayerView: View {
 
     private func resetOverlayTimer() {
         overlayHideTask?.cancel()
-        showPlaybackOverlay = true
+        showControlButtons = true
         overlayHideTask = Task {
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else { return }
-            await MainActor.run { showPlaybackOverlay = false }
+            await MainActor.run { showControlButtons = false }
         }
     }
 
@@ -430,6 +410,35 @@ struct TVPlayerView: View {
         Task {
             await mediaPlayer.seek(to: 0)
             mediaPlayer.play()
+        }
+    }
+
+    // MARK: - Interaction Navigation
+
+    private let interactionRewindThreshold: TimeInterval = 3
+    private let interactionSeekOffset: TimeInterval = 5
+
+    private var sortedMoments: [InteractiveMoment] {
+        interactionVM?.moments.sorted { $0.timestamp < $1.timestamp } ?? []
+    }
+
+    private var previousInteractionAction: (() -> Void)? {
+        guard let moment = sortedMoments.last(where: {
+            $0.timestamp < mediaPlayer.currentTime - interactionRewindThreshold
+        }) else { return nil }
+        return {
+            let target = max(0, moment.timestamp - interactionSeekOffset)
+            Task { await mediaPlayer.seek(to: target) }
+        }
+    }
+
+    private var nextInteractionAction: (() -> Void)? {
+        guard let moment = sortedMoments.first(where: {
+            $0.timestamp > mediaPlayer.currentTime
+        }) else { return nil }
+        return {
+            let target = max(0, moment.timestamp - interactionSeekOffset)
+            Task { await mediaPlayer.seek(to: target) }
         }
     }
 
@@ -513,6 +522,7 @@ struct TVPlayerView: View {
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .focusSection()
     }
 
     private var progressFraction: CGFloat {

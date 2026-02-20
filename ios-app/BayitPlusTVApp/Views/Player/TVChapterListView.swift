@@ -30,7 +30,6 @@ struct TVChapterListView: View {
                             }
                             .buttonStyle(TVChapterButtonStyle())
                             .id(chapter.stableId)
-                            .focusable()
                         }
                     }
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)
@@ -151,21 +150,43 @@ struct TVChapterListView: View {
 
 // MARK: - tvOS Focus Button Style
 
-/// Custom button style that removes default tvOS button chrome,
-/// preserving the glass card appearance and adding a subtle focus scale.
+/// Custom button style for chapter rows. Delegates to TVChapterButtonContent
+/// (a View) so @Environment(\.isFocused) resolves correctly on tvOS.
 private struct TVChapterButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        TVChapterButtonContent(
+            configuration: configuration,
+            isPressed: configuration.isPressed
+        )
+    }
+}
+
+private struct TVChapterButtonContent: View {
+    let configuration: ButtonStyleConfiguration
+    let isPressed: Bool
     @Environment(\.isFocused) private var isFocused
 
-    func makeBody(configuration: Configuration) -> some View {
+    var body: some View {
         configuration.label
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+            )
             .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+            .scaleEffect(isPressed ? 0.97 : 1.0)
             .shadow(
-                color: isFocused ? DesignTokens.Primary.default.opacity(0.3) : .clear,
+                color: isFocused
+                    ? DesignTokens.Primary.default.opacity(0.3)
+                    : .clear,
                 radius: isFocused ? TVDesignTokens.Focus.shadowRadius : 0
             )
             .animation(
-                .easeInOut(duration: TVDesignTokens.Focus.animationDuration),
+                .spring(duration: TVDesignTokens.Focus.animationDuration, bounce: 0.2),
                 value: isFocused
             )
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
     }
 }

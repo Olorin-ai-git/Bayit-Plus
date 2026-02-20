@@ -8,9 +8,9 @@ import { FeedbackInbox } from '@/components/zeh-ani/FeedbackInbox';
 export default function FeedbackInboxPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -40,7 +40,7 @@ export default function FeedbackInboxPage() {
         </div>
 
         {/* Feedback Inbox Component */}
-        <FeedbackInbox profileId={currentProfile.id} />
+        <FeedbackInbox profileId={user.id} />
       </div>
     </div>
   );

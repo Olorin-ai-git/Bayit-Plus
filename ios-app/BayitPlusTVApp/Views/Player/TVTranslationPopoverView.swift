@@ -27,6 +27,7 @@ struct TVTranslationPopoverView: View {
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         }
         .transition(.opacity)
+        .focusSection()
         .onExitCommand { onDismiss() }
     }
 

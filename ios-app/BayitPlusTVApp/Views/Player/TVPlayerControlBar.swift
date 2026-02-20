@@ -18,6 +18,8 @@ struct TVPlayerControlBar: View {
     var onCatchUp: (() -> Void)?
     var onSceneSearch: (() -> Void)?
     var onChat: (() -> Void)?
+    var onPreviousInteraction: (() -> Void)?
+    var onNextInteraction: (() -> Void)?
 
     // Subtitle state for flag display
     var selectedSubtitleLanguage: String? = nil
@@ -46,6 +48,22 @@ struct TVPlayerControlBar: View {
 
             if let onChat {
                 controlButton(icon: "bubble.left.and.bubble.right", label: "Chat", action: onChat)
+            }
+
+            if let onPreviousInteraction {
+                controlButton(
+                    icon: "backward.end.fill",
+                    label: localization.t("player.interaction.previous"),
+                    action: onPreviousInteraction
+                )
+            }
+
+            if let onNextInteraction {
+                controlButton(
+                    icon: "forward.end.fill",
+                    label: localization.t("player.interaction.next"),
+                    action: onNextInteraction
+                )
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

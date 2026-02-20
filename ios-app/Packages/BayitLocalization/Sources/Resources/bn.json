@@ -6286,6 +6286,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "পূর্ববর্তী ইন্টারঅ্যাকশন",
+      "next": "পরবর্তী ইন্টারঅ্যাকশন"
+    },
     "sleepTimer": {
       "title": "স্লিপ টাইমার",
       "setTimer": "টাইমার সেট করুন",

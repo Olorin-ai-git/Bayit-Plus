@@ -6300,6 +6300,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "पिछला इंटरैक्शन",
+      "next": "अगला इंटरैक्शन"
+    },
     "sleepTimer": {
       "title": "स्लीप टाइमर",
       "setTimer": "टाइमर सेट करें",

@@ -6396,6 +6396,10 @@
       "endDialogue": "Terminar dialogo",
       "noCharactersAvailable": "No hay personajes disponibles para dialogo"
     },
+    "interaction": {
+      "previous": "Interaccion anterior",
+      "next": "Siguiente interaccion"
+    },
     "premiumRequiredRecording": "Se requiere suscripcion premium",
     "sleepTimer": {
       "title": "Temporizador de sueño",

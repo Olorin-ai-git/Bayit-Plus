@@ -16,7 +16,7 @@ export default function CharacterDialoguePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { contentId, characterName } = useParams<{ contentId: string; characterName: string }>();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
   const { characters, questions, loading, fetchCharacters, fetchQuestions } = useMovieInteractionStore();
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -36,20 +36,20 @@ export default function CharacterDialoguePage() {
 
   const ensureSession = useCallback(async (): Promise<string> => {
     if (sessionId) return sessionId;
-    if (!contentId || !currentProfile?.id || !decodedName) {
+    if (!contentId || !user?.id || !decodedName) {
       throw new Error('Missing required session parameters');
     }
     const session = await api.post('/vod-interactions/sessions/start-free', {
       content_id: contentId,
-      profile_id: currentProfile.id,
-      avatar_id: currentProfile.id,
+      profile_id: user!.id,
+      avatar_id: user!.id,
       character_name: decodedName,
       current_timestamp: 0,
     }) as { id: string };
     pageLogger.info('Free interaction session started', { sessionId: session.id });
     setSessionId(session.id);
     return session.id;
-  }, [sessionId, contentId, currentProfile?.id, decodedName]);
+  }, [sessionId, contentId, user?.id, decodedName]);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isSending) return;

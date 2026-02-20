@@ -1,26 +1,36 @@
-import AVKit
+import AVFoundation
 import SwiftUI
 
-/// UIViewControllerRepresentable wrapping AVPlayerViewController for tvOS.
-/// Enables native tvOS transport bar, Siri Remote gestures, and info panel.
-struct TVVideoPlayerRepresentable: UIViewControllerRepresentable {
+/// UIViewRepresentable using a raw AVPlayerLayer instead of AVPlayerViewController.
+/// AVPlayerViewController periodically reclaims focus on tvOS even with
+/// showsPlaybackControls=false, breaking SwiftUI focus navigation.
+/// AVPlayerLayer has zero focus machinery -- all input goes to SwiftUI.
+struct TVVideoPlayerRepresentable: UIViewRepresentable {
     let player: AVPlayer
 
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
-        let controller = AVPlayerViewController()
-        controller.player = player
-        controller.showsPlaybackControls = false
-        controller.allowsPictureInPicturePlayback = true
-        controller.videoGravity = .resizeAspect
-        return controller
+    func makeUIView(context: Context) -> PlayerLayerView {
+        let view = PlayerLayerView()
+        view.playerLayer.player = player
+        view.playerLayer.videoGravity = .resizeAspect
+        return view
     }
 
-    func updateUIViewController(
-        _ uiViewController: AVPlayerViewController,
-        context: Context
-    ) {
-        if uiViewController.player !== player {
-            uiViewController.player = player
+    func updateUIView(_ uiView: PlayerLayerView, context: Context) {
+        if uiView.playerLayer.player !== player {
+            uiView.playerLayer.player = player
         }
     }
+}
+
+/// UIView backed by AVPlayerLayer for video rendering only.
+final class PlayerLayerView: UIView {
+
+    override class var layerClass: AnyClass { AVPlayerLayer.self }
+
+    var playerLayer: AVPlayerLayer {
+        // swiftlint:disable:next force_cast
+        layer as! AVPlayerLayer
+    }
+
+    override var canBecomeFocused: Bool { false }
 }

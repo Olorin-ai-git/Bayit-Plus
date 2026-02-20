@@ -36,16 +36,16 @@ const CONSENT_TYPES = [
 export default function BiometricConsentPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
   const { consentStatus, checkConsent } = useAvatarMeshStore();
   const [showDialog, setShowDialog] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentProfile?.id) {
-      checkConsent(currentProfile.id);
+    if (user?.id) {
+      checkConsent(user.id);
     }
-  }, [currentProfile?.id, checkConsent]);
+  }, [user?.id, checkConsent]);
 
   const getConsentStatus = (type: string) => {
     if (!consentStatus?.consents) return false;
@@ -62,12 +62,12 @@ export default function BiometricConsentPage() {
   const handleConsentSuccess = () => {
     setShowDialog(false);
     setSelectedType(null);
-    if (currentProfile?.id) {
-      checkConsent(currentProfile.id);
+    if (user?.id) {
+      checkConsent(user.id);
     }
   };
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -180,10 +180,8 @@ export default function BiometricConsentPage() {
         {/* Consent Dialog */}
         {showDialog && selectedType && (
           <BiometricConsentDialog
-            profileId={currentProfile.id}
-            consentType={selectedType}
-            onSuccess={handleConsentSuccess}
-            onCancel={() => setShowDialog(false)}
+            profileId={user.id}
+            onConsentGranted={handleConsentSuccess}
           />
         )}
       </div>

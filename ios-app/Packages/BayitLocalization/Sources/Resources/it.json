@@ -6551,6 +6551,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "Interazione precedente",
+      "next": "Prossima interazione"
+    },
     "sleepTimer": {
       "title": "Timer di spegnimento",
       "setTimer": "Imposta timer",

@@ -29,7 +29,7 @@ struct TVTriviaFactsOverlayView: View {
                 if let fact = viewModel.activeFact {
                     factBanner(fact)
                         .frame(maxWidth: bannerMaxWidth)
-                        .padding(.trailing, TVDesignTokens.Spacing.xl)
+                        .padding(.trailing, TVDesignTokens.Spacing.md)
                         .transition(
                             .asymmetric(
                                 insertion: .move(edge: .trailing)
@@ -44,6 +44,7 @@ struct TVTriviaFactsOverlayView: View {
             Spacer()
         }
         .animation(.spring(duration: 0.5, bounce: 0.12), value: viewModel.activeFact?.id)
+        .focusable(false)
         .allowsHitTesting(viewModel.activeFact != nil)
         .onChange(of: currentTime) { _, newTime in
             viewModel.updateActiveFact(currentTime: newTime)
@@ -129,17 +130,6 @@ struct TVTriviaFactsOverlayView: View {
             }
 
             Spacer()
-
-            Button {
-                viewModel.dismissFact()
-                onDismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 22))
-                    .foregroundStyle(DesignTokens.Text.muted)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(localization.t("common.dismiss"))
         }
     }
 
@@ -167,7 +157,7 @@ struct TVTriviaFactsOverlayView: View {
         )
     }
 
-    // MARK: - Bottom Row (Related Person + Follow-Up)
+    // MARK: - Bottom Row (Related Person)
 
     private func bottomRow(_ fact: TriviaFact) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -185,38 +175,7 @@ struct TVTriviaFactsOverlayView: View {
             }
 
             Spacer()
-
-            if fact.hasFollowUp == true {
-                followUpButton
-            }
         }
-    }
-
-    private var followUpButton: some View {
-        Button {
-            viewModel.requestFollowUp()
-        } label: {
-            HStack(spacing: TVDesignTokens.Spacing.xxs) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 16))
-                    .foregroundStyle(DesignTokens.Secondary.s400)
-
-                Text(localization.t("trivia.more"))
-                    .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundStyle(DesignTokens.Text.muted)
-            }
-            .padding(.horizontal, TVDesignTokens.Spacing.sm)
-            .padding(.vertical, TVDesignTokens.Spacing.xxs)
-            .background(
-                Capsule().fill(Color.white.opacity(0.1))
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(localization.t("trivia.wantToKnowMore"))
     }
 
     // MARK: - Progress Bar
@@ -279,10 +238,9 @@ struct TVTriviaFactsOverlayView: View {
         return label
     }
 
-    /// Position banner in upper third of TV screen.
+    /// Position banner near top-right of TV screen.
     private var bannerTopOffset: CGFloat {
-        // tvOS screen is 1080p - position at ~15% from top
-        180
+        60
     }
 
     /// Compact width for tvOS - roughly 40% of 1920px screen.

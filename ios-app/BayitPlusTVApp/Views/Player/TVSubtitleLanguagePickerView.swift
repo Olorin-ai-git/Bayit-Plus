@@ -2,8 +2,8 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// tvOS subtitle language picker with AI mode chips, split display, and OpenSubtitles.
-/// Uses focusable card buttons for Siri Remote navigation.
+/// tvOS subtitle language picker where each AI-generated variation
+/// (Heblish, Engrew, etc.) is an independent selectable row.
 struct TVSubtitleLanguagePickerView: View {
     @Environment(LocalizationManager.self) private var localization
     let availableLanguages: [String]
@@ -34,6 +34,47 @@ struct TVSubtitleLanguagePickerView: View {
     @State private var pollingTask: Task<Void, Never>?
     @State private var isCancelling = false
 
+    // MARK: - Picker Item
+
+    private struct PickerItem: Identifiable {
+        let languageInfo: SubtitleLanguageInfo
+        let hebrewMode: SubtitleHebrewMode?
+        let englishMode: SubtitleEnglishMode?
+
+        var id: String {
+            var key = languageInfo.code
+            if let hm = hebrewMode { key += "_\(hm.rawValue)" }
+            if let em = englishMode { key += "_\(em.rawValue)" }
+            return key
+        }
+
+        var isAI: Bool {
+            if let hm = hebrewMode, hm != .standard { return true }
+            if let em = englishMode, em != .standard { return true }
+            return false
+        }
+
+        var displayLabel: String {
+            if let hm = hebrewMode, hm != .standard {
+                return "\(languageInfo.nativeName) (\(hm.displayName))"
+            }
+            if let em = englishMode, em != .standard {
+                return "\(languageInfo.nativeName) (\(em.displayName))"
+            }
+            return languageInfo.nativeName
+        }
+
+        var secondaryLabel: String {
+            if let hm = hebrewMode, hm != .standard {
+                return hm.description
+            }
+            if let em = englishMode, em != .standard {
+                return em.description
+            }
+            return languageInfo.name
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             Text(localization.t("subtitles.title"))
@@ -44,28 +85,16 @@ struct TVSubtitleLanguagePickerView: View {
                 VStack(spacing: TVDesignTokens.Spacing.md) {
                     offButton
 
-                    ForEach(languageRows, id: \.code) { info in
-                        VStack(spacing: 0) {
-                            languageButton(info: info)
-
-                            // AI mode chips for selected Hebrew
-                            if selectedLanguage == info.code && info.code == "he" {
-                                hebrewModeChips
-                            }
-
-                            // AI mode chips for selected English
-                            if selectedLanguage == info.code && info.code == "en" {
-                                englishModeChips
-                            }
-                        }
+                    ForEach(pickerItems) { item in
+                        languageButton(item: item)
                     }
 
-                    // Split display
+                    generationErrorView
+
                     if availableLanguages.count >= 2 {
                         splitButton
                     }
 
-                    // OpenSubtitles download
                     if let repo = repository, !contentId.isEmpty {
                         Divider()
                             .background(DesignTokens.Text.muted.opacity(0.3))
@@ -122,47 +151,55 @@ struct TVSubtitleLanguagePickerView: View {
 
     // MARK: - Language Button
 
-    private func languageButton(info: SubtitleLanguageInfo) -> some View {
-        let isSelected = selectedLanguage == info.code
-        let hasAI = info.code == "he" || info.code == "en"
+    private func languageButton(item: PickerItem) -> some View {
+        let isSelected = isItemSelected(item)
+        let isAvailable = isItemAvailable(item)
+        let isGenerating = isItemGenerating(item)
 
         return Button {
-            onSelect(info.code)
-            // Stay open for Hebrew/English so user can see mode chips
-            if !hasAI || isSelected {
-                onDismiss()
-            }
+            handleItemTap(
+                item, isAvailable: isAvailable, isGenerating: isGenerating
+            )
         } label: {
             HStack(spacing: TVDesignTokens.Spacing.md) {
-                Text(info.emojiFlag)
+                Text(item.languageInfo.emojiFlag)
                     .font(.system(size: 28))
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: TVDesignTokens.Spacing.xs) {
-                        Text(info.nativeName)
+                        Text(item.displayLabel)
                             .font(.system(
                                 size: TVDesignTokens.FontSize.md,
                                 weight: .medium
                             ))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        if hasAI {
-                            Image(systemName: "sparkles")
+                        if item.isAI {
+                            if isGenerating {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                    .tint(DesignTokens.Primary.p400)
+                                    .scaleEffect(0.6)
+
+                                Text("\(jobProgress)%")
+                                    .font(.system(
+                                        size: TVDesignTokens.FontSize.sm
+                                    ))
+                                    .foregroundStyle(
+                                        DesignTokens.Primary.p400
+                                    )
+                            } else {
+                                Image(
+                                    systemName: isAvailable
+                                        ? "sparkles" : "lock.fill"
+                                )
                                 .font(.system(size: 14))
                                 .foregroundStyle(DesignTokens.Primary.p400)
-                        }
-
-                        if isSelected, let modeText = activeModeName(for: info.code) {
-                            Text("(\(modeText))")
-                                .font(.system(
-                                    size: TVDesignTokens.FontSize.sm,
-                                    weight: .medium
-                                ))
-                                .foregroundStyle(DesignTokens.Primary.p400)
+                            }
                         }
                     }
 
-                    Text(info.name)
+                    Text(item.secondaryLabel)
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
@@ -181,162 +218,27 @@ struct TVSubtitleLanguagePickerView: View {
         .buttonStyle(.card)
     }
 
-    // MARK: - Hebrew Mode Chips
-
-    private var hebrewModeChips: some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            Text(localization.t("subtitles.aiModes"))
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm, weight: .medium
-                ))
-                .foregroundStyle(DesignTokens.Primary.p400)
-                .padding(.leading, TVDesignTokens.Spacing.lg)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                    ForEach(SubtitleHebrewMode.allCases, id: \.self) { mode in
-                        hebrewModeChip(mode)
-                    }
-                }
-                .padding(.horizontal, TVDesignTokens.Spacing.lg)
-            }
-
-            generationErrorView
+    private func handleItemTap(
+        _ item: PickerItem, isAvailable: Bool, isGenerating: Bool
+    ) {
+        if item.isAI && isGenerating {
+            Task { await handleCancelJob() }
+            return
         }
-        .padding(.vertical, TVDesignTokens.Spacing.sm)
-    }
 
-    private func hebrewModeChip(_ mode: SubtitleHebrewMode) -> some View {
-        let isSelected = mode == currentHebrewMode
-        let isAvailable = hebrewModeAvailable(mode)
-        let isAI = mode != .standard
-        let isGenerating = isAI && generatingMode == mode.rawValue
-
-        return Button {
-            if isAvailable {
-                onHebrewModeSelect?(mode)
-                onDismiss()
-            } else if isGenerating {
-                Task { await handleCancelJob() }
-            } else if isAI {
-                Task { await triggerHebrewGeneration(mode: mode) }
-            }
-        } label: {
-            HStack(spacing: TVDesignTokens.Spacing.xs) {
-                if isAI {
-                    if isGenerating {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .tint(DesignTokens.Primary.p400)
-                            .scaleEffect(0.6)
-                    } else {
-                        Image(
-                            systemName: isAvailable
-                                ? "sparkles" : "lock.fill"
-                        )
-                        .font(.system(size: 14))
-                        .foregroundStyle(
-                            isSelected
-                                ? .white : DesignTokens.Primary.p400
-                        )
-                    }
-                }
-                Text(
-                    isGenerating
-                        ? "\(mode.displayName) \(jobProgress)%"
-                        : mode.displayName
-                )
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm, weight: .semibold
-                ))
-                .foregroundStyle(
-                    isSelected ? .white :
-                        (isAvailable || isGenerating ? .white : .gray)
-                )
-            }
-            .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
-            .padding(.horizontal, TVDesignTokens.Spacing.lg)
-        }
-        .buttonStyle(.card)
-    }
-
-    // MARK: - English Mode Chips
-
-    private var englishModeChips: some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            Text(localization.t("subtitles.aiModes"))
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm, weight: .medium
-                ))
-                .foregroundStyle(DesignTokens.Primary.p400)
-                .padding(.leading, TVDesignTokens.Spacing.lg)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                    ForEach(SubtitleEnglishMode.allCases, id: \.self) { mode in
-                        englishModeChip(mode)
-                    }
-                }
-                .padding(.horizontal, TVDesignTokens.Spacing.lg)
-            }
-
-            generationErrorView
-        }
-        .padding(.vertical, TVDesignTokens.Spacing.sm)
-    }
-
-    private func englishModeChip(_ mode: SubtitleEnglishMode) -> some View {
-        let isSelected = mode == currentEnglishMode
-        let isAvailable = englishModeAvailable(mode)
-        let isAI = mode != .standard
-        let isGenerating = isAI && generatingMode == mode.rawValue
-
-        return Button {
-            if isAvailable {
-                onEnglishModeSelect?(mode)
-                onDismiss()
-            } else if isGenerating {
-                Task { await handleCancelJob() }
-            } else if isAI {
+        if item.isAI && !isAvailable {
+            if let hm = item.hebrewMode, hm != .standard {
+                Task { await triggerHebrewGeneration(mode: hm) }
+            } else if item.englishMode == .engrew {
                 Task { await triggerEngrewGeneration() }
             }
-        } label: {
-            HStack(spacing: TVDesignTokens.Spacing.xs) {
-                if isAI {
-                    if isGenerating {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .tint(DesignTokens.Primary.p400)
-                            .scaleEffect(0.6)
-                    } else {
-                        Image(
-                            systemName: isAvailable
-                                ? "sparkles" : "lock.fill"
-                        )
-                        .font(.system(size: 14))
-                        .foregroundStyle(
-                            isSelected
-                                ? .white : DesignTokens.Primary.p400
-                        )
-                    }
-                }
-                Text(
-                    isGenerating
-                        ? "\(mode.displayName) \(jobProgress)%"
-                        : mode.displayName
-                )
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm, weight: .semibold
-                ))
-                .foregroundStyle(
-                    isSelected ? .white :
-                        (isAvailable || isGenerating ? .white : .gray)
-                )
-            }
-            .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
-            .padding(.horizontal, TVDesignTokens.Spacing.lg)
+            return
         }
-        .buttonStyle(.card)
+
+        onSelect(item.languageInfo.code)
+        if let hm = item.hebrewMode { onHebrewModeSelect?(hm) }
+        if let em = item.englishMode { onEnglishModeSelect?(em) }
+        onDismiss()
     }
 
     // MARK: - Split Button
@@ -405,8 +307,54 @@ struct TVSubtitleLanguagePickerView: View {
 
     // MARK: - Helpers
 
-    private var languageRows: [SubtitleLanguageInfo] {
-        availableLanguages.compactMap { SubtitleLanguages.info(for: $0) }
+    private var pickerItems: [PickerItem] {
+        var items: [PickerItem] = []
+        for code in availableLanguages {
+            guard let info = SubtitleLanguages.info(for: code) else { continue }
+            switch code {
+            case "he":
+                for mode in SubtitleHebrewMode.allCases {
+                    items.append(PickerItem(
+                        languageInfo: info, hebrewMode: mode, englishMode: nil
+                    ))
+                }
+            case "en":
+                for mode in SubtitleEnglishMode.allCases {
+                    items.append(PickerItem(
+                        languageInfo: info, hebrewMode: nil, englishMode: mode
+                    ))
+                }
+            default:
+                items.append(PickerItem(
+                    languageInfo: info, hebrewMode: nil, englishMode: nil
+                ))
+            }
+        }
+        return items
+    }
+
+    private func isItemSelected(_ item: PickerItem) -> Bool {
+        guard selectedLanguage == item.languageInfo.code else { return false }
+        if let hm = item.hebrewMode { return currentHebrewMode == hm }
+        if let em = item.englishMode { return currentEnglishMode == em }
+        return true
+    }
+
+    private func isItemAvailable(_ item: PickerItem) -> Bool {
+        if isAdmin { return true }
+        if let hm = item.hebrewMode { return hebrewModeAvailable(hm) }
+        if let em = item.englishMode { return englishModeAvailable(em) }
+        return true
+    }
+
+    private func isItemGenerating(_ item: PickerItem) -> Bool {
+        if let hm = item.hebrewMode, hm != .standard {
+            return generatingMode == hm.rawValue
+        }
+        if let em = item.englishMode, em != .standard {
+            return generatingMode == em.rawValue
+        }
+        return false
     }
 
     private func hebrewModeAvailable(_ mode: SubtitleHebrewMode) -> Bool {
@@ -422,17 +370,6 @@ struct TVSubtitleLanguagePickerView: View {
         switch mode {
         case .standard: return true
         case .engrew: return hasEngrew
-        }
-    }
-
-    private func activeModeName(for code: String) -> String? {
-        switch code {
-        case "he" where currentHebrewMode != .standard:
-            return currentHebrewMode.displayName
-        case "en" where currentEnglishMode != .standard:
-            return currentEnglishMode.displayName
-        default:
-            return nil
         }
     }
 

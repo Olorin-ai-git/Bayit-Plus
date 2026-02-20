@@ -11,7 +11,7 @@ const pageLogger = logger.scope('MovieInteractionsPage');
 export default function MovieInteractionsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
   const { movies, loading, error, fetchMovies, tagMovie, clearError } = useMovieInteractionStore();
   const [tagInputVisible, setTagInputVisible] = useState(false);
   const [tagContentId, setTagContentId] = useState('');
@@ -27,9 +27,9 @@ export default function MovieInteractionsPage() {
   };
 
   const handleTagSubmit = async () => {
-    if (!tagContentId.trim() || !currentProfile?.id) return;
+    if (!tagContentId.trim() || !user?.id) return;
     pageLogger.info('Tagging movie', { contentId: tagContentId });
-    await tagMovie(tagContentId.trim(), currentProfile.id);
+    await tagMovie(tagContentId.trim(), user!.id);
     setTagContentId('');
     setTagInputVisible(false);
     fetchMovies();

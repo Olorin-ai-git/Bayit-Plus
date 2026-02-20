@@ -8,9 +8,9 @@ import { ContactsManager } from '@/components/zeh-ani/ContactsManager';
 export default function ContactsManagementPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -40,7 +40,7 @@ export default function ContactsManagementPage() {
         </div>
 
         {/* Contacts Manager Component */}
-        <ContactsManager profileId={currentProfile.id} />
+        <ContactsManager profileId={user.id} />
       </div>
     </div>
   );

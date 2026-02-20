@@ -14,7 +14,7 @@ export default function Avatar3DPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { currentProfile } = useAuthStore();
+  const { user } = useAuthStore();
   const { mesh, glbUrl, fetchMeshStatus, fetchGlbUrl } = useAvatarMeshStore();
   const [loading, setLoading] = useState(true);
   const [avatarId, setAvatarId] = useState<string | null>(null);
@@ -33,13 +33,13 @@ export default function Avatar3DPage() {
       }
 
       // Fetch from profile's StarStory avatars
-      if (!currentProfile?.id) {
+      if (!user?.id) {
         setLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(`/api/v1/star-story/avatars/${currentProfile.id}`);
+        const response = await fetch(`/api/v1/star-story/avatars/${user!.id}`);
         if (response.ok) {
           const data = await response.json();
           if (data.avatars && data.avatars.length > 0) {
@@ -57,9 +57,9 @@ export default function Avatar3DPage() {
     };
 
     loadAvatar();
-  }, [searchParams, currentProfile?.id, fetchMeshStatus, fetchGlbUrl]);
+  }, [searchParams, user?.id, fetchMeshStatus, fetchGlbUrl]);
 
-  if (!currentProfile) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <GlassCard className="p-8 text-center">
@@ -113,11 +113,9 @@ export default function Avatar3DPage() {
                 <Avatar3DViewer
                   avatarId={avatarId}
                   glbUrl={glbUrl.signed_url}
-                  autoRotate
-                  showControls
                 />
               ) : (
-                <MeshGenerationProgress avatarId={avatarId} />
+                <MeshGenerationProgress avatarId={avatarId} profileId={user.id} onReady={() => fetchMeshStatus(avatarId)} />
               )}
             </div>
 

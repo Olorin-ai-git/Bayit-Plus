@@ -57,8 +57,8 @@ export default function TalkBackDashboard({ profileId }: TalkBackDashboardProps)
           api.get('/talk-back/dashboard/overview', { params: { profile_id: profileId } }),
           api.get('/talk-back/dashboard/history', { params: { profile_id: profileId, limit: 20 } }),
         ]);
-        setStats(statsData as DashboardStats);
-        setHistory((historyData as { attempts: AttemptRecord[] }).attempts || []);
+        setStats(statsData as unknown as DashboardStats);
+        setHistory(((historyData as unknown as { attempts: AttemptRecord[] }).attempts) || []);
       } catch (error) {
         logger.error('Failed to fetch Talk Back dashboard', 'TalkBackDashboard', error);
       }

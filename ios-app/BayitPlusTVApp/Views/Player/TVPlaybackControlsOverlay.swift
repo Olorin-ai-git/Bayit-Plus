@@ -8,7 +8,6 @@ struct TVPlaybackControlsOverlay: View {
     let isPlaying: Bool
     let hasChapters: Bool
     let currentPosition: TimeInterval
-    let isVisible: Bool
     let onPlayPause: () -> Void
     let onSkipBackward30: () -> Void
     let onSkipForward30: () -> Void
@@ -68,16 +67,12 @@ struct TVPlaybackControlsOverlay: View {
                 )
             }
         }
-        .focusSection()
         .padding(TVDesignTokens.Spacing.xl)
         .background(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .fill(.ultraThinMaterial)
                 .opacity(0.3)
         )
-        .opacity(isVisible ? 1.0 : 0.0)
-        .allowsHitTesting(isVisible)
-        .animation(.easeInOut(duration: 0.3), value: isVisible)
     }
 }
 

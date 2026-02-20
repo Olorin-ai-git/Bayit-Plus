@@ -6298,6 +6298,10 @@
     "translate": "Translate",
     "split": "Split",
     "dubbing": "Dubbing",
+    "interaction": {
+      "previous": "上一个互动",
+      "next": "下一个互动"
+    },
     "sleepTimer": {
       "title": "睡眠定时器",
       "setTimer": "设置定时器",

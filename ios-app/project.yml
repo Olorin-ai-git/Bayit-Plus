@@ -52,6 +52,7 @@ targets:
         product: BayitCast
       - package: BayitPlus
         product: BayitNotifications
+      - sdk: CarPlay.framework
       - target: BayitWidgets
         embed: true
     settings:
@@ -80,6 +81,8 @@ targets:
         type: group
       - path: BayitPlusApp/Helpers/MultipartFormData.swift
       - path: BayitPlusApp/Helpers/HTMLSanitizer.swift
+      - path: BayitPlusApp/Services/DownloadManager.swift
+      - path: BayitPlusApp/Services/DownloadStore.swift
       - path: BayitPlusApp/Services/ShabbatModeService.swift
       - path: BayitPlusApp/Services/RecentSearchesService.swift
       - path: BayitPlusApp/Services/OfflineCacheService.swift
@@ -94,6 +97,7 @@ targets:
       - path: BayitPlusApp/Services/AvatarStateMachine.swift
       - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
+      - path: BayitPlusApp/Services/PlayerPreferencesService.swift
       - path: BayitPlusApp/App/FeatureFlags.swift
       - path: BayitPlusApp/Resources/Bayit_Intro_Hebrew.mp4
         buildPhase: resources

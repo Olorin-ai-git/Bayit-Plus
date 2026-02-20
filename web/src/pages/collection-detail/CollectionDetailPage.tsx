@@ -60,7 +60,7 @@ export default function CollectionDetailPage() {
     setError(null);
 
     try {
-      const data = await api.get(`/content/collections/${collectionId}`);
+      const data = await api.get(`/content/collections/${collectionId}`) as CollectionDetail;
       setCollection(data);
       logger.info(`Loaded collection: ${data.title}`);
     } catch (err) {
@@ -87,9 +87,10 @@ export default function CollectionDetailPage() {
 
       // Play first movie
       openPlayer({
-        contentId: movieIds[0],
-        contentType: 'vod',
+        id: movieIds[0],
+        type: 'vod',
         title: collection.movies[0].title,
+        src: collection.movies[0].stream_url,
       });
 
       logger.info(`Playing all ${movieIds.length} movies from collection`);
@@ -100,9 +101,10 @@ export default function CollectionDetailPage() {
 
   const handleMovieClick = (movie: MovieInCollection) => {
     openPlayer({
-      contentId: movie.id,
-      contentType: 'vod',
+      id: movie.id,
+      type: 'vod',
       title: movie.title,
+      src: movie.stream_url,
     });
   };
 
