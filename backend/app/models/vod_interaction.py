@@ -225,6 +225,12 @@ class ContentCharacter(BaseModel):
     movie_context: str = Field(..., description="Movie/scene context for AI prompt")
     actor_name: Optional[str] = Field(None, description="Actor who plays this character")
     gender: Optional[str] = Field(None, description="male/female for voice/persona assignment")
+    voice_clone_status: Optional[str] = Field(
+        None, description="Voice cloning status: cloned, skipped, failed",
+    )
+    voice_clone_audio_url: Optional[str] = Field(
+        None, description="GCS URL of the audio sample used for cloning",
+    )
     suggested_questions: List[str] = Field(
         default_factory=list,
         description="AI-generated character-specific questions",

@@ -17,6 +17,7 @@ from fastapi import (
     status,
 )
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
@@ -64,6 +65,20 @@ async def _run_extraction(content_id: str) -> None:
         content.interactive_characters = characters
         content.supports_avatar_interaction = True
         await content.save()
+
+        if settings.VOICE_CLONE_AUTO_AFTER_EXTRACTION:
+            from app.services.vod_interaction.voice_cloner import (
+                character_voice_cloner_service,
+            )
+            try:
+                await character_voice_cloner_service.clone_character_voices(
+                    content,
+                )
+            except Exception:
+                logger.exception(
+                    "Auto voice cloning failed",
+                    extra={"content_id": content_id},
+                )
 
         _TAG_JOBS[content_id] = "ready"
         logger.info(

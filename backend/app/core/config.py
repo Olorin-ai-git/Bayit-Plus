@@ -2963,6 +2963,50 @@ class Settings(BaseSettings):
     )
 
     # ============================================
+    # VOICE CLONING (Character Voice Matching)
+    # ============================================
+    VOICE_CLONE_MIN_AUDIO_DURATION_SEC: float = Field(
+        default=30.0, ge=5.0, le=120.0,
+        env="VOICE_CLONE_MIN_AUDIO_DURATION_SEC",
+        description="Minimum audio duration (seconds) required for voice cloning",
+    )
+    VOICE_CLONE_TARGET_AUDIO_DURATION_SEC: float = Field(
+        default=90.0, ge=30.0, le=300.0,
+        env="VOICE_CLONE_TARGET_AUDIO_DURATION_SEC",
+        description="Target audio duration (seconds) per character sample",
+    )
+    VOICE_CLONE_MAX_CHARACTERS_PER_CONTENT: int = Field(
+        default=4, ge=1, le=10,
+        env="VOICE_CLONE_MAX_CHARACTERS_PER_CONTENT",
+        description="Maximum characters to clone voices for per content item",
+    )
+    VOICE_CLONE_TARGET_CUE_COUNT: int = Field(
+        default=25, ge=5, le=100,
+        env="VOICE_CLONE_TARGET_CUE_COUNT",
+        description="Target subtitle cues to collect per character",
+    )
+    VOICE_CLONE_AUTO_AFTER_EXTRACTION: bool = Field(
+        default=False,
+        env="VOICE_CLONE_AUTO_AFTER_EXTRACTION",
+        description="Auto-trigger voice cloning after character extraction",
+    )
+    VOICE_CLONE_AUDIO_FILTER: str = Field(
+        default="highpass=f=200,lowpass=f=3000",
+        env="VOICE_CLONE_AUDIO_FILTER",
+        description="FFmpeg audio filter for isolating speech frequencies",
+    )
+    VOICE_CLONE_FFMPEG_TIMEOUT: int = Field(
+        default=300, ge=30, le=1800,
+        env="VOICE_CLONE_FFMPEG_TIMEOUT",
+        description="FFmpeg extraction timeout in seconds",
+    )
+    VOICE_CLONE_SUBTITLE_LANG_PRIORITY: str = Field(
+        default="en,he",
+        env="VOICE_CLONE_SUBTITLE_LANG_PRIORITY",
+        description="Comma-separated subtitle language priority for cue matching",
+    )
+
+    # ============================================
     # ZEH ANI: GRANDPARENT LOOP (Phase 4 - Highlights + WhatsApp)
     # ============================================
     HIGHLIGHT_REEL_DURATION_SECONDS: int = Field(
