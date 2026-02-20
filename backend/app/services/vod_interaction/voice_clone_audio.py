@@ -14,6 +14,8 @@ from app.models.subtitles import SubtitleCueModel
 
 logger = get_logger(__name__)
 
+_MIN_VALID_FILE_BYTES = 4096
+
 
 async def run_ffmpeg(args: List[str], timeout: int) -> bytes:
     """Run an FFmpeg command and return stdout bytes."""
@@ -30,8 +32,24 @@ async def run_ffmpeg(args: List[str], timeout: int) -> bytes:
         proc.kill()
         raise TimeoutError("FFmpeg timed out")
     if proc.returncode != 0:
-        raise RuntimeError(f"FFmpeg failed: {stderr.decode()[:500]}")
+        raise RuntimeError(f"FFmpeg failed: {stderr.decode()[-500:]}")
     return stdout
+
+
+async def _probe_duration(file_path: str) -> float:
+    """Get audio duration via ffprobe. Returns 0.0 on failure."""
+    proc = await asyncio.create_subprocess_exec(
+        "ffprobe", "-i", file_path,
+        "-show_entries", "format=duration",
+        "-v", "quiet", "-of", "csv=p=0",
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=30)
+    try:
+        return float(stdout.decode().strip())
+    except (ValueError, TypeError):
+        return 0.0
 
 
 async def extract_cue_audio(
@@ -43,7 +61,7 @@ async def extract_cue_audio(
 ) -> bool:
     """Extract a single cue's audio from the stream. Returns True on success."""
     duration = cue.end_time - cue.start_time
-    if duration <= 0.1:
+    if duration <= 0.5:
         return False
     args = [
         "-ss", f"{cue.start_time:.3f}",
@@ -57,7 +75,11 @@ async def extract_cue_audio(
     ]
     try:
         await run_ffmpeg(args, timeout)
-        return Path(output_path).stat().st_size > 0
+        path = Path(output_path)
+        if not path.exists() or path.stat().st_size < _MIN_VALID_FILE_BYTES:
+            return False
+        probe_dur = await _probe_duration(output_path)
+        return probe_dur > 0.5
     except Exception:
         logger.warning(
             "Cue audio extraction failed",
@@ -79,19 +101,4 @@ async def concat_audio_files(
         "-c", "copy", "-y", output_path,
     ]
     await run_ffmpeg(args, timeout)
-
-    probe_args = [
-        "-i", output_path,
-        "-show_entries", "format=duration",
-        "-v", "quiet", "-of", "csv=p=0",
-    ]
-    proc = await asyncio.create_subprocess_exec(
-        "ffprobe", *probe_args,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-    stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=30)
-    try:
-        return float(stdout.decode().strip())
-    except (ValueError, TypeError):
-        return 0.0
+    return await _probe_duration(output_path)
