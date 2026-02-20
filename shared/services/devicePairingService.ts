@@ -25,6 +25,7 @@ api.interceptors.response.use(
 
 export interface InitPairingResponse {
   session_id: string;
+  pairing_code: string;
   qr_code_data: string;
   expires_at: string;
   ws_url: string;
@@ -47,6 +48,10 @@ export interface SessionStatus {
     device_type: string;
     browser: string;
   } | null;
+  access_token?: string;
+  refresh_token?: string;
+  authenticated_user_id?: string;
+  user?: CompleteAuthResponse['user'];
 }
 
 export interface CompleteAuthResponse {

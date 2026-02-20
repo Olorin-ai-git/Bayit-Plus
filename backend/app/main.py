@@ -91,6 +91,21 @@ def _validate_configuration() -> None:
             "FERNET_ENCRYPTION_KEY not configured - avatar encryption will not work"
         )
 
+    # Check VOD interaction dependencies when features are enabled
+    if settings.VOD_INTERACTION_VOICE_ENABLED or settings.VOD_INTERACTION_MULTI_CHARACTER_ENABLED:
+        if not settings.ANTHROPIC_API_KEY:
+            warnings.append(
+                "ANTHROPIC_API_KEY not configured - VOD character AI will not work"
+            )
+    if not settings.CREATIFY_API_URL or not settings.CREATIFY_API_KEY:
+        warnings.append(
+            "CREATIFY_API_URL/CREATIFY_API_KEY not configured - character animation will not work"
+        )
+    if not settings.ELEVENLABS_API_KEY:
+        warnings.append(
+            "ELEVENLABS_API_KEY not configured - character voice TTS will not work"
+        )
+
     # Log all warnings
     if warnings:
         logger.warning("\n" + "=" * 60)

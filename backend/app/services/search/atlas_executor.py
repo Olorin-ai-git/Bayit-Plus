@@ -154,28 +154,72 @@ class AtlasSearchExecutor:
 
         return await self._run_pipeline(model, pipeline, content_type, fetch_limit)
 
+    _BROWSE_MODEL_MAP: Dict[str, Any] = {
+        "vod": (Content, "is_published", "vod"),
+        "live": (LiveChannel, "is_active", "livechannel"),
+        "podcast": (Podcast, "is_active", "podcast"),
+        "radio": (RadioStation, "is_active", "radiostation"),
+    }
+
     async def _browse_query(
         self, filters: SearchFilters, sort_by: SortField,
         sort_order: SortOrder, page: int, limit: int,
     ) -> List[ScoredResult]:
-        match: Dict[str, Any] = {"is_published": True}
-        if filters.genres:
-            match["genres"] = {"$in": filters.genres}
-        if filters.year_min is not None:
-            match.setdefault("year", {})["$gte"] = filters.year_min
-        if filters.year_max is not None:
-            match.setdefault("year", {})["$lte"] = filters.year_max
-
         sort_field = _SORT_FIELD_MAP.get(sort_by, "created_at")
         direction = -1 if sort_order == SortOrder.DESC else 1
 
-        collection = Content.get_pymongo_collection()
+        tasks = []
+        for ct in filters.content_types:
+            entry = self._BROWSE_MODEL_MAP.get(ct)
+            if entry:
+                tasks.append(self._browse_collection(
+                    model=entry[0], active_field=entry[1], source=entry[2],
+                    filters=filters, sort_field=sort_field, direction=direction,
+                    page=page, limit=limit, is_vod=(ct == "vod"),
+                ))
+
+        if not tasks:
+            return []
+
+        results_lists = await asyncio.gather(*tasks, return_exceptions=True)
+        combined: List[ScoredResult] = []
+        for result in results_lists:
+            if isinstance(result, Exception):
+                logger.error("Browse query failed", extra={"error": str(result)})
+                continue
+            combined.extend(result)
+
+        combined.sort(
+            key=lambda r: r.content_dict.get(sort_field, ""),
+            reverse=(direction == -1),
+        )
+        return combined[:limit]
+
+    @staticmethod
+    async def _browse_collection(
+        model, active_field: str, source: str, filters: SearchFilters,
+        sort_field: str, direction: int, page: int, limit: int, is_vod: bool,
+    ) -> List[ScoredResult]:
+        match: Dict[str, Any] = {active_field: True}
+        if filters.is_beta_user is False:
+            match["is_beta_content"] = {"$ne": True}
+        if is_vod:
+            if filters.genres:
+                match["genres"] = {"$in": filters.genres}
+            if filters.year_min is not None:
+                match.setdefault("year", {})["$gte"] = filters.year_min
+            if filters.year_max is not None:
+                match.setdefault("year", {})["$lte"] = filters.year_max
+            if filters.is_kids_content is True:
+                match["is_kids_content"] = True
+
+        collection = model.get_pymongo_collection()
         cursor = (collection.find(match)
                   .sort(sort_field, direction)
                   .skip((page - 1) * limit)
                   .limit(limit))
         docs = await cursor.to_list(length=limit)
-        return docs_to_scored(docs, "vod")
+        return docs_to_scored(docs, source)
 
     @staticmethod
     async def _run_pipeline(

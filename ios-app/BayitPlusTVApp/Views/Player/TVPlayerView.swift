@@ -101,6 +101,9 @@ struct TVPlayerView: View {
 
     var body: some View {
         ZStack {
+            Color.black
+                .ignoresSafeArea()
+
             if isResolvingStream {
                 streamLoadingView
             } else if let error = streamError {
@@ -177,6 +180,8 @@ struct TVPlayerView: View {
                                 onSubtitles: { showSubtitleLanguagePicker = true },
                                 onDubbing: { showDubbingControls = true },
                                 onChapters: { showChapterList = true },
+                                onStartOver: mediaPlayer.currentTime > 30
+                                    ? { startOver() } : nil,
                                 onAudioTracks: { showAudioTracks = true },
                                 onSpeed: { showSpeedControl = true },
                                 onPreviousInteraction: previousInteractionAction,
@@ -385,13 +390,11 @@ struct TVPlayerView: View {
         TVPlaybackControlsOverlay(
             isPlaying: mediaPlayer.state == .playing,
             hasChapters: hasChapters,
-            currentPosition: mediaPlayer.currentTime,
             onPlayPause: { mediaPlayer.togglePlayPause() },
             onSkipBackward30: { Task { await mediaPlayer.skipBackward(seconds: 30) } },
             onSkipForward30: { Task { await mediaPlayer.skipForward(seconds: 30) } },
             onPreviousChapter: { skipToPreviousChapter() },
             onNextChapter: { skipToNextChapter() },
-            onStartOver: { startOver() },
             onInteraction: { resetOverlayTimer() }
         )
     }
@@ -408,7 +411,17 @@ struct TVPlayerView: View {
 
     private func startOver() {
         Task {
-            await mediaPlayer.seek(to: 0)
+            // HLS streams may have a non-zero seekable start time.
+            // Seek to the actual start of the seekable range rather
+            // than CMTime.zero which can fall outside it and silently fail.
+            let startSeconds: TimeInterval
+            if let range = mediaPlayer.avPlayer.currentItem?
+                .seekableTimeRanges.first?.timeRangeValue {
+                startSeconds = range.start.seconds
+            } else {
+                startSeconds = 0
+            }
+            await mediaPlayer.seek(to: startSeconds)
             mediaPlayer.play()
         }
     }
@@ -426,9 +439,14 @@ struct TVPlayerView: View {
         guard let moment = sortedMoments.last(where: {
             $0.timestamp < mediaPlayer.currentTime - interactionRewindThreshold
         }) else { return nil }
-        return {
+        return { [self] in
             let target = max(0, moment.timestamp - interactionSeekOffset)
-            Task { await mediaPlayer.seek(to: target) }
+            resetOverlayTimer()
+            seekPreviewPosition = target
+            Task {
+                await mediaPlayer.seek(to: target)
+                seekPreviewPosition = nil
+            }
         }
     }
 
@@ -436,9 +454,14 @@ struct TVPlayerView: View {
         guard let moment = sortedMoments.first(where: {
             $0.timestamp > mediaPlayer.currentTime
         }) else { return nil }
-        return {
+        return { [self] in
             let target = max(0, moment.timestamp - interactionSeekOffset)
-            Task { await mediaPlayer.seek(to: target) }
+            resetOverlayTimer()
+            seekPreviewPosition = target
+            Task {
+                await mediaPlayer.seek(to: target)
+                seekPreviewPosition = nil
+            }
         }
     }
 
@@ -1028,17 +1051,27 @@ struct TVPlayerView: View {
             }
             return url
 
-        case .vod, .audiobook:
+        case .vod:
             let detail = try await repos.content.fetchContentDetail(
                 id: contentId
             )
             let stream = try await repos.media.fetchStream(
                 contentId: contentId, quality: nil
             )
-            // Match iOS: fall back to content detail streamUrl/directUrl
             guard let url = stream.url ?? detail.streamUrl ?? detail.directUrl
                     ?? stream.streamUrl ?? stream.directUrl,
                   !url.isEmpty else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .audiobook:
+            let audiobook = try await repos.audiobook.fetchWithChapters(
+                id: contentId
+            )
+            let url = audiobook.chapters?.first?.streamUrl
+                ?? audiobook.streamUrl
+            guard let url, !url.isEmpty else {
                 throw StreamResolutionError.noURL
             }
             return url

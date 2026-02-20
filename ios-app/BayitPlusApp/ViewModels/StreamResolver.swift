@@ -10,19 +10,22 @@ struct StreamResolver {
     private let liveTVRepository: any LiveTVRepository
     private let radioRepository: any RadioRepository
     private let podcastRepository: any PodcastRepository
+    private let audiobookRepository: any AudiobookRepository
 
     init(
         mediaRepository: any MediaRepository,
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
-        podcastRepository: any PodcastRepository
+        podcastRepository: any PodcastRepository,
+        audiobookRepository: any AudiobookRepository
     ) {
         self.mediaRepository = mediaRepository
         self.contentRepository = contentRepository
         self.liveTVRepository = liveTVRepository
         self.radioRepository = radioRepository
         self.podcastRepository = podcastRepository
+        self.audiobookRepository = audiobookRepository
     }
 
     /// Load content metadata and resolve stream URL for the given content type.
@@ -137,20 +140,23 @@ struct StreamResolver {
     }
 
     private func resolveAudiobookStream(contentId: String) async throws -> ResolvedStream {
-        let detail = try await contentRepository.fetchContentDetail(id: contentId)
-        let stream = try await mediaRepository.fetchStream(contentId: contentId, quality: nil)
+        let audiobook = try await audiobookRepository.fetchWithChapters(id: contentId)
 
-        guard let streamURLStr = stream.url ?? detail.streamUrl,
-              !streamURLStr.isEmpty,
-              let url = URL(string: streamURLStr) else {
+        // Use first chapter's stream URL, or fall back to parent audiobook's stream URL
+        let streamURLStr = audiobook.chapters?.first?.streamUrl
+            ?? audiobook.streamUrl
+
+        guard let urlStr = streamURLStr,
+              !urlStr.isEmpty,
+              let url = URL(string: urlStr) else {
             throw StreamResolutionError.invalidURL
         }
 
         return ResolvedStream(
             url: url,
-            title: detail.title ?? "",
-            subtitle: detail.category,
-            artworkURL: artworkURL(from: detail.backdrop),
+            title: audiobook.title ?? "",
+            subtitle: audiobook.author,
+            artworkURL: artworkURL(from: audiobook.thumbnail ?? audiobook.backdrop),
             quality: nil,
             availableQualities: [],
             availableSubtitles: []

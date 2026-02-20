@@ -107,6 +107,7 @@ struct ContentView: View {
                 liveTVRepository: repositories.liveTV,
                 radioRepository: repositories.radio,
                 podcastRepository: repositories.podcasts,
+                audiobookRepository: repositories.audiobook,
                 widgetSync: widgetSync,
                 downloadManager: downloadManager
             )

@@ -120,6 +120,7 @@ async def get_clone_status(
             "name": c.name, "voice_id": c.voice_id,
             "voice_clone_status": c.voice_clone_status,
             "voice_clone_audio_url": c.voice_clone_audio_url,
+            "voice_clone_preview_url": c.voice_clone_preview_url,
         }
         for c in content.interactive_characters
     ]

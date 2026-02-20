@@ -249,10 +249,12 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
     let title: String?
     let titleEn: String?
     let description: String?
+    let descriptionEn: String?
     let thumbnail: String?
     let backdrop: String?
     let availableMovies: Int?
     let totalMovies: Int?
+    let tmdbCollectionId: Int?
     let promoText: String?
     let promoTextEn: String?
     let promoTextEs: String?
@@ -272,6 +274,16 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
             return titleEn ?? title
         default:
             return title ?? titleEn
+        }
+    }
+
+    /// Returns localized description for the given language code.
+    func localizedDescription(for lang: String) -> String? {
+        switch lang {
+        case "en":
+            return descriptionEn ?? description
+        default:
+            return description ?? descriptionEn
         }
     }
 
@@ -297,16 +309,38 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
         }
         return localized ?? promoTextEn ?? promoText
     }
+
+    /// Average rating across movies that have ratings.
+    var averageRating: String? {
+        guard let movies = movies else { return nil }
+        let ratings = movies.compactMap { $0.rating?.value }.compactMap { Double($0) }
+        guard !ratings.isEmpty else { return nil }
+        let avg = ratings.reduce(0, +) / Double(ratings.count)
+        return String(format: "%.1f", avg)
+    }
 }
 
 /// Movie within a collection
 struct CollectionMovie: Decodable, Sendable, Identifiable {
     let id: String
     let title: String?
+    let titleEn: String?
     let thumbnail: String?
     let year: Int?
     let duration: String?
     let collectionOrder: Int?
+    let rating: FlexibleRating?
+    let streamUrl: String?
+
+    /// Returns localized title for the given language code.
+    func localizedTitle(for lang: String) -> String? {
+        switch lang {
+        case "en":
+            return titleEn ?? title
+        default:
+            return title ?? titleEn
+        }
+    }
 }
 
 // MARK: - Search

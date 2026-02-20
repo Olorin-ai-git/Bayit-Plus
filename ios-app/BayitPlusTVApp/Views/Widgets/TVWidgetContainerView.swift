@@ -47,7 +47,8 @@ struct TVWidgetContainerView: View {
                     contentRepo: repos.content,
                     liveTVRepo: repos.liveTV,
                     radioRepo: repos.radio,
-                    podcastRepo: repos.podcasts
+                    podcastRepo: repos.podcasts,
+                    audiobookRepo: repos.audiobook
                 )
             }
             await playerVM?.resolveCover(for: widget)

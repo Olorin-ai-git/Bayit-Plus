@@ -75,7 +75,7 @@ struct TVSearchSuggestionsView: View {
                 Spacer()
 
                 GlassButton(
-                    "Clear",
+                    localization.t("search.clear"),
                     variant: .ghost,
                     size: .small
                 ) {

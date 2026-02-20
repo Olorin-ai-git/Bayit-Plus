@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Live TV screen showing a grid of live channels with status badges
@@ -6,6 +7,7 @@ struct LiveTVView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(FeatureFlags.self) private var featureFlags
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: LiveTVViewModel?
 
     private let columns = [
@@ -14,38 +16,32 @@ struct LiveTVView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            GlassNavigationBar(
-                title: "Live TV",
-                trailing: {
-                    Button {
-                        coordinator.navigate(to: .epg)
-                    } label: {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 20))
-                            .foregroundColor(DesignTokens.Text.primary)
-                            .frame(width: 44, height: 44)
-                            .background(DesignTokens.Glass.bgMedium)
-                            .clipShape(Circle())
-                    }
-                    .accessibilityLabel("TV Guide")
+        ScrollView(.vertical, showsIndicators: false) {
+            HStack {
+                PageHeader(icon: "tv", title: localization.t("liveTV.title"))
+                Button {
+                    coordinator.navigate(to: .epg)
+                } label: {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 24))
+                        .foregroundStyle(DesignTokens.Primary.default)
                 }
-            )
+                .accessibilityLabel("TV Guide")
+                .padding(.trailing, DesignTokens.Spacing.lg)
+            }
 
-            ScrollView(.vertical, showsIndicators: false) {
-                if let vm = viewModel {
-                    if vm.isLoading && vm.channels.isEmpty {
-                        loadingGrid
-                    } else if let error = vm.error, vm.channels.isEmpty {
-                        ErrorStateView(message: error) {
-                            Task { await vm.refresh() }
-                        }
-                    } else {
-                        channelGrid(vm.channels)
+            if let vm = viewModel {
+                if vm.isLoading && vm.channels.isEmpty {
+                    loadingGrid
+                } else if let error = vm.error, vm.channels.isEmpty {
+                    ErrorStateView(message: error) {
+                        Task { await vm.refresh() }
                     }
                 } else {
-                    ScreenLoadingView()
+                    channelGrid(vm.channels)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

@@ -13,6 +13,7 @@ struct TVPlayerControlBar: View {
     let onSubtitles: () -> Void
     let onDubbing: () -> Void
     let onChapters: () -> Void
+    var onStartOver: (() -> Void)?
     let onAudioTracks: () -> Void
     let onSpeed: () -> Void
     var onCatchUp: (() -> Void)?
@@ -35,6 +36,15 @@ struct TVPlayerControlBar: View {
             }
 
             controlButton(icon: "list.bullet", label: "Chapters", action: onChapters)
+
+            if let onStartOver {
+                controlButton(
+                    icon: "arrow.counterclockwise",
+                    label: "Start Over",
+                    action: onStartOver
+                )
+            }
+
             controlButton(icon: "speaker.wave.2", label: "Audio", action: onAudioTracks)
             controlButton(icon: "gauge.medium", label: "Speed", action: onSpeed)
 

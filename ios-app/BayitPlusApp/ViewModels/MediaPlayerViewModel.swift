@@ -58,6 +58,7 @@ final class MediaPlayerViewModel {
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
         podcastRepository: any PodcastRepository,
+        audiobookRepository: any AudiobookRepository,
         widgetSync: WidgetDataSyncService? = nil,
         downloadManager: DownloadManager? = nil
     ) {
@@ -71,7 +72,8 @@ final class MediaPlayerViewModel {
             contentRepository: contentRepository,
             liveTVRepository: liveTVRepository,
             radioRepository: radioRepository,
-            podcastRepository: podcastRepository
+            podcastRepository: podcastRepository,
+            audiobookRepository: audiobookRepository
         )
         self.progressTracker = ProgressTracker(
             repository: repository,
@@ -95,7 +97,8 @@ final class MediaPlayerViewModel {
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
-        podcastRepository: any PodcastRepository
+        podcastRepository: any PodcastRepository,
+        audiobookRepository: any AudiobookRepository
     ) {
         self.contentId = contentId
         self.contentType = contentType
@@ -106,7 +109,8 @@ final class MediaPlayerViewModel {
             contentRepository: contentRepository,
             liveTVRepository: liveTVRepository,
             radioRepository: radioRepository,
-            podcastRepository: podcastRepository
+            podcastRepository: podcastRepository,
+            audiobookRepository: audiobookRepository
         )
         self.progressTracker = ProgressTracker(
             repository: repository,

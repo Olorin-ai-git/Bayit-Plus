@@ -53,7 +53,7 @@ struct TVSearchResultsGridView: View {
         ZStack(alignment: .topTrailing) {
             GlassFocusPoster(
                 thumbnailURL: result.thumbnail,
-                title: result.title ?? "Untitled",
+                title: result.title ?? localization.t("common.untitled"),
                 subtitle: resultSubtitle(result),
                 badge: result.contentType,
                 aspectRatio: 2 / 3,
@@ -82,6 +82,9 @@ struct TVSearchResultsGridView: View {
         var parts: [String] = []
         if let year = result.year { parts.append(String(year)) }
         if let duration = result.duration { parts.append(duration) }
+        if let genres = result.genres, let firstGenre = genres.first {
+            parts.append(firstGenre)
+        }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
     }
 

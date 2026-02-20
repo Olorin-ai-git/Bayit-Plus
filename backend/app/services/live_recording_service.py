@@ -112,7 +112,7 @@ class LiveRecordingService:
 
     async def stop_recording(self, session_id: str, user_id: str) -> Recording:
         """Stop recording, upload files, and create Recording document."""
-        session = await RecordingSession.get(session_id)
+        session = await RecordingSession.find_one({"recording_id": session_id})
         if not session:
             raise Exception(f"Recording session {session_id} not found")
         if session.user_id != user_id:

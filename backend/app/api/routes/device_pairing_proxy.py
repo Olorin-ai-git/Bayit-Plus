@@ -139,6 +139,7 @@ async def complete_auth_v2(request: Request, auth_request: CompleteAuthRequest):
             str(user.id),
             auth_response["access_token"],
             user.to_response().model_dump(mode="json"),
+            refresh_token=auth_response.get("refresh_token"),
         )
 
         logger.info(
@@ -265,6 +266,7 @@ async def complete_google_v2(request: Request, auth_request: CompleteGoogleReque
             str(user.id),
             auth_response["access_token"],
             user.to_response().model_dump(mode="json"),
+            refresh_token=auth_response.get("refresh_token"),
         )
 
         logger.info(
@@ -397,6 +399,7 @@ async def complete_apple_v2(request: Request, auth_request: CompleteAppleRequest
             str(user.id),
             auth_response["access_token"],
             user.to_response().model_dump(mode="json"),
+            refresh_token=auth_response.get("refresh_token"),
         )
 
         logger.info(

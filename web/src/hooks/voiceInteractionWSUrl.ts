@@ -15,5 +15,5 @@ export const buildVoiceWsUrl = (sessionId: string): string => {
   } else {
     base = API_BASE_URL.replace(/^https?/, wsProtocol.replace(':', ''))
   }
-  return `${base}/ws/vod-interactions/${sessionId}/voice`
+  return `${base}/ws/vod-interaction/${sessionId}`
 }

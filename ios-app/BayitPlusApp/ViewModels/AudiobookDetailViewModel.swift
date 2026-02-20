@@ -30,7 +30,7 @@ final class AudiobookDetailViewModel {
         error = nil
 
         do {
-            audiobook = try await repository.fetchDetail(id: audiobookId)
+            audiobook = try await repository.fetchWithChapters(id: audiobookId)
             currentChapter = audiobook?.chapters?.first
         } catch {
             if let message = error.userFriendlyMessage {

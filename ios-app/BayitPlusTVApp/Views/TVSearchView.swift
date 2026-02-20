@@ -34,7 +34,7 @@ struct TVSearchView: View {
                         .padding(.bottom, TVDesignTokens.Spacing.sm)
                     }
                     TVSearchFilterPillsView(
-                        selectedFilter: Binding(get: { vm.selectedFilter }, set: { _ in }),
+                        selectedFilter: vm.selectedFilter,
                         onFilterChanged: { vm.onFilterChanged($0) }
                     )
                     TVSearchToolbarView(
@@ -46,8 +46,9 @@ struct TVSearchView: View {
                     searchContent(vm)
                 }
             }
-            .searchable(text: $searchText, prompt: "Search movies, series, podcasts...")
+            .searchable(text: $searchText, prompt: localization.t("tvos.search.placeholder"))
             .onChange(of: searchText) { _, newValue in
+                guard viewModel?.query != newValue else { return }
                 viewModel?.query = newValue
                 viewModel?.onQueryChanged()
             }
@@ -193,15 +194,21 @@ struct TVSearchView: View {
 
     private func handleResultSelection(_ result: UnifiedSearchResult) {
         let contentType = result.contentType?.lowercased() ?? ""
-        if contentType.contains("collection") {
+        switch contentType {
+        case "live":
+            coordinator.presentPlayer(contentId: result.id, contentType: .liveTV)
+        case "radio":
+            coordinator.presentPlayer(contentId: result.id, contentType: .radio)
+        case "podcast":
+            coordinator.fullscreenRoute = .podcastDetail(showId: result.id)
+        case let ct where ct.contains("collection"):
             coordinator.fullscreenRoute = .collectionDetail(collectionId: result.id)
-        } else if contentType == "series" {
-            coordinator.fullscreenRoute = .seriesDetail(seriesId: result.id)
-        } else {
-            coordinator.presentPlayer(
-                contentId: result.id,
-                contentType: TVContentTypeMapper.map(result.contentType)
-            )
+        default:
+            if result.isSeries == true {
+                coordinator.fullscreenRoute = .seriesDetail(seriesId: result.id)
+            } else {
+                coordinator.fullscreenRoute = .movieDetail(movieId: result.id)
+            }
         }
     }
 }

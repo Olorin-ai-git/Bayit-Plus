@@ -19,6 +19,7 @@ final class WidgetPlayerViewModel {
     private let liveTVRepo: any LiveTVRepository
     private let radioRepo: any RadioRepository
     private let podcastRepo: any PodcastRepository
+    private let audiobookRepo: any AudiobookRepository
     private let logger = BayitLogger(category: "WidgetPlayer")
 
     init(
@@ -26,13 +27,15 @@ final class WidgetPlayerViewModel {
         contentRepo: any ContentRepository,
         liveTVRepo: any LiveTVRepository,
         radioRepo: any RadioRepository,
-        podcastRepo: any PodcastRepository
+        podcastRepo: any PodcastRepository,
+        audiobookRepo: any AudiobookRepository
     ) {
         self.mediaRepo = mediaRepo
         self.contentRepo = contentRepo
         self.liveTVRepo = liveTVRepo
         self.radioRepo = radioRepo
         self.podcastRepo = podcastRepo
+        self.audiobookRepo = audiobookRepo
     }
 
     var isPlaying: Bool { player.state == .playing }
@@ -150,8 +153,8 @@ final class WidgetPlayerViewModel {
             guard let id = content.audiobookId ?? content.contentId else {
                 throw WidgetStreamError.missingId("audiobook_id")
             }
-            let detail = try await contentRepo.fetchContentDetail(id: id)
-            return detail.thumbnail ?? detail.backdrop ?? ""
+            let audiobook = try await audiobookRepo.fetchDetail(id: id)
+            return audiobook.thumbnail ?? audiobook.backdrop ?? ""
 
         case .iframe, .custom:
             return ""
@@ -210,8 +213,10 @@ final class WidgetPlayerViewModel {
             guard let id = content.audiobookId ?? content.contentId else {
                 throw WidgetStreamError.missingId("audiobook_id")
             }
-            let stream = try await mediaRepo.fetchStream(contentId: id, quality: nil)
-            return (stream.resolvedURL ?? "", .audiobook)
+            let audiobook = try await audiobookRepo.fetchWithChapters(id: id)
+            let url = audiobook.chapters?.first?.streamUrl
+                ?? audiobook.streamUrl ?? ""
+            return (url, .audiobook)
 
         case .iframe, .custom:
             throw WidgetStreamError.nonPlayable

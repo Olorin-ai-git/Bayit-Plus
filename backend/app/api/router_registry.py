@@ -80,6 +80,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 vod_interactions, vod_interaction_reels,
                                 vod_interaction_multi, vod_interaction_shared,
                                 admin_interactive_moments,
+                                admin_voice_clone_preview,
                                 admin_voice_cloning,
                                 websocket_vod_interaction,
                                 vod_interaction_admin)
@@ -507,6 +508,11 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         admin_voice_cloning.router, prefix=prefix, tags=["admin-voice-cloning"]
+    )
+    app.include_router(
+        admin_voice_clone_preview.router,
+        prefix=prefix,
+        tags=["admin-voice-clone-preview"],
     )
     app.include_router(
         vod_interaction_admin.router, prefix=prefix, tags=["vod-interaction-admin"]

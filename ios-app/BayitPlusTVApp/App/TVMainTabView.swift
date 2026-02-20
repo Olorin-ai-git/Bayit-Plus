@@ -90,6 +90,10 @@ struct TVMainTabView: View {
                 .padding(.bottom, TVDesignTokens.Spacing.xs)
             }
         }
+        .onExitCommand {
+            // Prevent Menu/Back button from navigating past the main tab view
+            // to the login screen. At the tab bar root, this is a no-op.
+        }
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)

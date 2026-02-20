@@ -80,7 +80,8 @@ struct BayitPlusApp: App {
             contentRepository: repos.content,
             liveTVRepository: repos.liveTV,
             radioRepository: repos.radio,
-            podcastRepository: repos.podcasts
+            podcastRepository: repos.podcasts,
+            audiobookRepository: repos.audiobook
         )
 
         _authManager = State(initialValue: authMgr)

@@ -133,10 +133,15 @@ export function useSharedInteraction(): UseSharedInteractionResult {
   const startSharedInteraction = useCallback(async (
     partyId: string, contentId: string, momentTimestamp: number, characterName: string
   ): Promise<void> => {
+    const authState = useAuthStore.getState()
     try {
-      await api.post('/vod-interactions/sessions/start-shared', {
-        party_id: partyId, content_id: contentId,
-        moment_timestamp: momentTimestamp, character_name: characterName,
+      await api.post(`/parties/${partyId}/interaction/start`, {
+        content_id: contentId,
+        moment_timestamp: momentTimestamp,
+        character_name: characterName,
+        profile_id: authState.activeProfileId ?? '',
+        avatar_id: authState.activeAvatarId ?? '',
+        display_name: authState.user?.name ?? '',
       })
     } catch (err) {
       log.error('Failed to start shared interaction', err)
@@ -157,8 +162,8 @@ export function useSharedInteraction(): UseSharedInteractionResult {
     }
     setConversation((prev) => [...prev, userExchange])
     try {
-      await api.post(`/vod-interactions/sessions/${session.session_id}/message`, {
-        message_text: text,
+      await api.post(`/parties/${session.party_id}/interaction/${session.session_id}/message`, {
+        message: text,
         addressed_character: addressedCharacter,
       })
     } catch (err) {
@@ -172,7 +177,7 @@ export function useSharedInteraction(): UseSharedInteractionResult {
   const endSharedInteraction = useCallback(async (): Promise<void> => {
     if (!session) return
     try {
-      await api.post(`/vod-interactions/sessions/${session.session_id}/complete`)
+      await api.post(`/parties/${session.party_id}/interaction/${session.session_id}/end`)
     } catch (err) {
       log.error('Failed to end shared interaction', err)
     }

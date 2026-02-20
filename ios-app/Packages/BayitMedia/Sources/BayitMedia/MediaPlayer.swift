@@ -36,6 +36,13 @@ public final class MediaPlayer {
     private var timeControlObservation: NSKeyValueObservation?
     private var durationObservation: NSKeyValueObservation?
     private var loadedRangesObservation: NSKeyValueObservation?
+    private var seekableRangesObservation: NSKeyValueObservation?
+
+    /// Set once the asset reports a finite duration via its own property
+    /// or via AVPlayerItem.duration. Prevents seekableTimeRanges (which
+    /// grow incrementally as HLS segments arrive) from overriding the
+    /// authoritative value with a smaller, partial one.
+    private var hasDefinitiveDuration = false
 
     // MARK: - Init
 
@@ -54,15 +61,24 @@ public final class MediaPlayer {
     public func load(url: URL, contentType: MediaContentType) {
         self.contentType = contentType
         state = .loading
+        hasDefinitiveDuration = false
 
         audioSession.configure(for: contentType)
         audioSession.activate()
 
         let asset = AVURLAsset(url: url)
-        let item = AVPlayerItem(asset: asset)
+        // Pre-load duration and playable keys so the full HLS manifest
+        // is parsed before the item reports readyToPlay. Without this,
+        // AVPlayerItem can become ready after only a partial manifest
+        // parse, causing the duration to show a fraction of the real length.
+        let item = AVPlayerItem(
+            asset: asset,
+            automaticallyLoadedAssetKeys: ["duration", "playable"]
+        )
 
-        // Configure buffering for better seek performance
-        item.preferredForwardBufferDuration = 30.0  // Preload 30 seconds
+        // VOD uses automatic buffer management (0) for smoother long-form
+        // playback; live streams cap at 30s to limit delay behind the edge.
+        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 0
         item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
         tearDownItemObservers()
@@ -73,12 +89,19 @@ public final class MediaPlayer {
 
         setupItemObservers(for: item)
 
+        // Asynchronously load the asset duration as a fallback. For HLS
+        // VOD the manifest may not be fully parsed when the item becomes
+        // ready; loading the asset property directly forces a complete
+        // parse and gives us the authoritative total duration.
+        Task { @MainActor [weak self] in
+            await self?.loadAssetDuration(asset)
+        }
+
         logger.info(
             "Media loaded",
             context: [
                 "contentType": contentType.rawValue,
-                "url": url.lastPathComponent,
-                "bufferDuration": "30s"
+                "url": url.lastPathComponent
             ]
         )
     }
@@ -140,6 +163,7 @@ public final class MediaPlayer {
         currentTime = 0
         duration = 0
         bufferedTime = 0
+        hasDefinitiveDuration = false
         state = .idle
         audioSession.deactivate()
     }
@@ -187,6 +211,7 @@ extension MediaPlayer {
                 let seconds = item.duration.seconds
                 if seconds.isFinite && seconds > 0 {
                     self?.duration = seconds
+                    self?.hasDefinitiveDuration = true
                 }
             }
         }
@@ -198,6 +223,17 @@ extension MediaPlayer {
                 self?.updateBufferedTime(from: item)
             }
         }
+
+        // HLS streams may report AVPlayerItem.duration as indefinite
+        // until the full manifest loads. Observe seekableTimeRanges
+        // which provides the actual content extent as segments arrive.
+        seekableRangesObservation = item.observe(
+            \.seekableTimeRanges, options: [.new]
+        ) { [weak self] item, _ in
+            Task { @MainActor in
+                self?.updateDurationFromSeekableRanges(item)
+            }
+        }
     }
 
     private func tearDownItemObservers() {
@@ -207,6 +243,8 @@ extension MediaPlayer {
         durationObservation = nil
         loadedRangesObservation?.invalidate()
         loadedRangesObservation = nil
+        seekableRangesObservation?.invalidate()
+        seekableRangesObservation = nil
     }
 
     private func tearDownObservers() {
@@ -226,6 +264,10 @@ extension MediaPlayer {
             let seconds = item.duration.seconds
             if seconds.isFinite && seconds > 0 {
                 duration = seconds
+                hasDefinitiveDuration = true
+            } else {
+                // HLS fallback: derive from seekable ranges
+                updateDurationFromSeekableRanges(item)
             }
             if state == .loading {
                 state = .ready
@@ -266,7 +308,70 @@ extension MediaPlayer {
 
     @MainActor
     private func updateBufferedTime(from item: AVPlayerItem) {
-        guard let range = item.loadedTimeRanges.first?.timeRangeValue else { return }
+        // Use the loaded range that contains the current playback position.
+        // After seeks, the first range may cover an earlier portion of the
+        // stream, so picking it would underreport available buffer.
+        let current = CMTime(seconds: currentTime, preferredTimescale: 600)
+        let matching = item.loadedTimeRanges
+            .map(\.timeRangeValue)
+            .first { CMTimeRangeContainsTime($0, time: current) }
+
+        let range = matching ?? item.loadedTimeRanges.last?.timeRangeValue
+        guard let range else { return }
         bufferedTime = range.start.seconds + range.duration.seconds
+    }
+
+    /// Derive duration from seekableTimeRanges for HLS content where
+    /// AVPlayerItem.duration may report indefinite or a partial value
+    /// until the full manifest is parsed.
+    @MainActor
+    private func updateDurationFromSeekableRanges(_ item: AVPlayerItem) {
+        guard let range = item.seekableTimeRanges.last?.timeRangeValue else { return }
+        let seekableEnd = range.start.seconds + range.duration.seconds
+        guard seekableEnd.isFinite, seekableEnd > 0 else { return }
+
+        // Once we have an authoritative duration from AVPlayerItem.duration,
+        // only allow seekable ranges to INCREASE it (never decrease).
+        // This prevents partial HLS segment lists from shrinking the
+        // displayed duration below the real content length.
+        if hasDefinitiveDuration {
+            if seekableEnd > duration {
+                duration = seekableEnd
+            }
+        } else {
+            let itemDuration = item.duration.seconds
+            if !itemDuration.isFinite || itemDuration <= 0 || seekableEnd > itemDuration {
+                duration = seekableEnd
+            }
+        }
+    }
+
+    /// Load the asset's own duration property, which forces AVFoundation
+    /// to fully parse an HLS manifest (including all variant playlists).
+    /// This gives the authoritative total length for VOD content.
+    @MainActor
+    private func loadAssetDuration(_ asset: AVURLAsset) async {
+        do {
+            let assetDuration = try await asset.load(.duration)
+            let seconds = assetDuration.seconds
+            guard seconds.isFinite, seconds > 0 else { return }
+
+            // Only adopt the asset duration when it is larger than what
+            // we already have, to avoid overwriting a correct value with
+            // a stale one if the user switched content in the meantime.
+            if seconds > duration || !hasDefinitiveDuration {
+                duration = seconds
+                hasDefinitiveDuration = true
+                logger.info(
+                    "Asset duration loaded",
+                    context: ["duration": String(format: "%.1f", seconds)]
+                )
+            }
+        } catch {
+            logger.warning(
+                "Asset duration load failed, relying on item/seekable ranges",
+                context: ["error": error.localizedDescription]
+            )
+        }
     }
 }

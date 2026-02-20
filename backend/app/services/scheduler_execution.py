@@ -91,7 +91,7 @@ async def stop_scheduled_recording(schedule_id: str) -> None:
         from app.services.live_recording_service import live_recording_service
 
         await live_recording_service.stop_recording(
-            str(session.id), schedule.user_id
+            session.recording_id, schedule.user_id
         )
 
         schedule.status = "completed"

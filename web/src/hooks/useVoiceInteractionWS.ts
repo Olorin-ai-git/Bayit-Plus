@@ -165,7 +165,7 @@ export function useVoiceInteractionWS(): UseVoiceInteractionWSResult {
     }
     setIsProcessing(true)
     setProcessingStage('thinking')
-    wsRef.current.send(JSON.stringify({ type: 'text_input', text }))
+    wsRef.current.send(JSON.stringify({ type: 'text_message', message: text }))
   }, [])
 
   const endSession = useCallback(() => {

@@ -54,7 +54,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
             contentRepository: repos.content,
             liveTVRepository: repos.liveTV,
             radioRepository: repos.radio,
-            podcastRepository: repos.podcasts
+            podcastRepository: repos.podcasts,
+            audiobookRepository: repos.audiobook
         )
 
         let mediaPlayer = MediaPlayer()

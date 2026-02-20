@@ -41,6 +41,7 @@ class DevicePairingSession(Document):
     companion_device_info: Optional[Dict[str, Any]] = None
     authenticated_user_id: Optional[str] = None
     authenticated_token: Optional[str] = None
+    authenticated_refresh_token: Optional[str] = None
 
     class Settings:
         name = "device_pairing_sessions"

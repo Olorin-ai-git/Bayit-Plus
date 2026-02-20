@@ -6,7 +6,7 @@ import UIKit
 /// Detail screen for an audiobook showing cover art, metadata, chapters, and playback controls
 struct AudiobookDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(AudioPlaybackManager.self) private var audioManager
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: AudiobookDetailViewModel?
 
@@ -45,8 +45,8 @@ struct AudiobookDetailView: View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             coverSection(audiobook)
             metadataSection(audiobook)
-            playbackControls(vm)
-            chapterList(audiobook, vm: vm)
+            playbackControls(audiobook)
+            chapterList(audiobook)
         }
         .padding(.vertical, DesignTokens.Spacing.lg)
     }
@@ -78,7 +78,7 @@ struct AudiobookDetailView: View {
     private var coverPlaceholder: some View {
         RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
             .fill(DesignTokens.Glass.bgMedium)
-            .frame(width: 200, height: 200)
+            .frame(width: 200, height: 280)
             .overlay {
                 Image(systemName: "book.fill")
                     .font(.system(size: 48))
@@ -137,55 +137,43 @@ struct AudiobookDetailView: View {
 
     // MARK: - Playback Controls
 
-    private func playbackControls(_ vm: AudiobookDetailViewModel) -> some View {
+    private func playbackControls(_ audiobook: Audiobook) -> some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             GlassButton(
-                vm.isPlaying ? "Pause" : "Play",
+                isAudiobookPlaying(audiobook) ? "Pause" : "Play",
                 variant: .primary,
                 size: .large
             ) {
-                vm.togglePlayback()
-                if vm.isPlaying, let audiobook = vm.audiobook {
-                    coordinator.navigate(to: .player(
-                        contentId: audiobook.id,
-                        contentType: .audiobook
-                    ))
-                }
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                playAudiobook(audiobook)
             }
-
-            PlaybackSpeedControlView(
-                currentSpeed: vm.playbackSpeed,
-                onSpeedSelected: { speed in vm.setSpeed(speed) }
-            )
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
     // MARK: - Chapter List
 
-    private func chapterList(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
+    private func chapterList(_ audiobook: Audiobook) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text(localization.t("audiobooks.chapters"))
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .padding(.horizontal, DesignTokens.Spacing.lg)
+            if let chapters = audiobook.chapters, !chapters.isEmpty {
+                Text(localization.t("audiobooks.chapters"))
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .padding(.horizontal, DesignTokens.Spacing.lg)
 
-            if let chapters = audiobook.chapters {
                 ForEach(chapters, id: \.stableId) { chapter in
-                    chapterRow(chapter, isActive: chapter.stableId == vm.currentChapter?.stableId)
-                        .onTapGesture {
-                            let generator = UIImpactFeedbackGenerator(style: .light)
-                            generator.impactOccurred()
-                            vm.selectChapter(chapter)
-                        }
+                    chapterRow(chapter, audiobook: audiobook)
                 }
             }
         }
     }
 
-    private func chapterRow(_ chapter: AudiobookChapter, isActive: Bool) -> some View {
-        GlassCard {
-            HStack {
+    private func chapterRow(_ chapter: AudiobookChapter, audiobook: Audiobook) -> some View {
+        let isActive = isChapterPlaying(chapter)
+
+        return GlassCard {
+            HStack(spacing: DesignTokens.Spacing.md) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(chapter.title ?? "Chapter")
                         .font(.system(
@@ -196,7 +184,11 @@ struct AudiobookDetailView: View {
                             isActive ? DesignTokens.Primary.default : DesignTokens.Text.primary
                         )
 
-                    if let start = chapter.startTime, let end = chapter.endTime {
+                    if let duration = chapter.duration {
+                        Text(duration)
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundColor(DesignTokens.Text.muted)
+                    } else if let start = chapter.startTime, let end = chapter.endTime {
                         let durationMinutes = Int((end - start) / 60)
                         Text("\(durationMinutes) min")
                             .font(.system(size: DesignTokens.FontSize.xs))
@@ -206,7 +198,19 @@ struct AudiobookDetailView: View {
 
                 Spacer()
 
-                if isActive {
+                if chapter.streamUrl != nil {
+                    Button {
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
+                        playChapter(chapter, audiobook: audiobook)
+                    } label: {
+                        Image(systemName: isActive && audioManager.isPlaying
+                              ? "pause.circle.fill"
+                              : "play.circle.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(DesignTokens.Primary.default)
+                    }
+                } else if isActive {
                     Image(systemName: "speaker.wave.2.fill")
                         .font(.system(size: 14))
                         .foregroundColor(DesignTokens.Primary.default)
@@ -215,5 +219,60 @@ struct AudiobookDetailView: View {
             .padding(DesignTokens.Spacing.md)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Playback Helpers
+
+    private func isAudiobookPlaying(_ audiobook: Audiobook) -> Bool {
+        audioManager.activeContentId == audiobook.id && audioManager.isActive
+    }
+
+    private func isChapterPlaying(_ chapter: AudiobookChapter) -> Bool {
+        guard let chapterId = chapter.id else { return false }
+        return audioManager.activeContentId == chapterId && audioManager.isActive
+    }
+
+    private func playAudiobook(_ audiobook: Audiobook) {
+        if isAudiobookPlaying(audiobook) {
+            audioManager.togglePlayPause()
+            return
+        }
+
+        // Play first chapter if available, otherwise play the audiobook itself
+        if let firstChapter = audiobook.chapters?.first,
+           let urlStr = firstChapter.streamUrl,
+           let url = URL(string: urlStr) {
+            let coverURL = audiobook.thumbnail.flatMap { URL(string: $0) }
+            audioManager.playDirectURL(
+                url: url,
+                title: firstChapter.title ?? audiobook.title ?? "",
+                subtitle: audiobook.author,
+                artworkURL: coverURL,
+                contentId: firstChapter.id ?? audiobook.id,
+                contentType: .audiobook
+            )
+        } else {
+            audioManager.play(contentId: audiobook.id, contentType: .audiobook)
+        }
+    }
+
+    private func playChapter(_ chapter: AudiobookChapter, audiobook: Audiobook) {
+        if isChapterPlaying(chapter) {
+            audioManager.togglePlayPause()
+            return
+        }
+
+        guard let urlStr = chapter.streamUrl,
+              let url = URL(string: urlStr) else { return }
+
+        let coverURL = audiobook.thumbnail.flatMap { URL(string: $0) }
+        audioManager.playDirectURL(
+            url: url,
+            title: chapter.title ?? "Chapter",
+            subtitle: audiobook.title,
+            artworkURL: coverURL,
+            contentId: chapter.id ?? audiobook.id,
+            contentType: .audiobook
+        )
     }
 }

@@ -68,6 +68,12 @@ final class TVNavigationCoordinator {
     /// Route for the fullscreen player modal. Set to non-nil to present.
     var fullscreenRoute: TVRoute?
 
+    /// Transient state for the category browse grid (shown within the Home tab).
+    var categoryBrowseActive: Bool = false
+    var categoryBrowseTitle: String = ""
+    var categoryBrowseIcon: String = ""
+    var categoryBrowseItems: [ContentItem] = []
+
     /// Breadcrumb trail per tab (tracks labels for the navigation stack).
     var breadcrumbTrails: [TVTab: [TVBreadcrumbEntry]] = [:]
 
@@ -125,6 +131,19 @@ final class TVNavigationCoordinator {
     /// Dismiss the current fullscreen modal.
     func dismissFullscreen() {
         fullscreenRoute = nil
+    }
+
+    /// Present the category browse grid within the Home tab (preserves tab bar).
+    func presentCategoryBrowse(title: String, icon: String, items: [ContentItem]) {
+        categoryBrowseTitle = title
+        categoryBrowseIcon = icon
+        categoryBrowseItems = items
+        categoryBrowseActive = true
+    }
+
+    /// Dismiss the category browse grid and return to the Home scroll view.
+    func dismissCategoryBrowse() {
+        categoryBrowseActive = false
     }
 
     /// Push a route onto the current tab's navigation stack.

@@ -32,6 +32,7 @@ struct IPadPlayerView: View {
                     liveTVRepository: repos.liveTV,
                     radioRepository: repos.radio,
                     podcastRepository: repos.podcasts,
+                    audiobookRepository: repos.audiobook,
                     widgetSync: widgetSync
                 )
                 .frame(width: geometry.size.width * 0.7)

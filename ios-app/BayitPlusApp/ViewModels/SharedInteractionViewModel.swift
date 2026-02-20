@@ -44,7 +44,10 @@ final class SharedInteractionViewModel {
         contentId: String,
         momentTimestamp: Double,
         characterName: String,
-        userId: String
+        userId: String,
+        profileId: String,
+        avatarId: String,
+        displayName: String
     ) async {
         self.partyId = partyId
         self.currentUserId = userId
@@ -55,7 +58,10 @@ final class SharedInteractionViewModel {
                 partyId: partyId,
                 contentId: contentId,
                 momentTimestamp: momentTimestamp,
-                characterName: characterName
+                characterName: characterName,
+                profileId: profileId,
+                avatarId: avatarId,
+                displayName: displayName
             )
             sessionId = response.id
             isActive = true

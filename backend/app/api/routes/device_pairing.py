@@ -13,9 +13,8 @@ from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 from app.core.config import settings
-from app.core.security import (create_access_token, get_current_user,
-                                security, verify_password)
-from app.models.user import TokenResponse, User
+from app.core.security import get_current_user, security
+from app.models.user import User
 from app.services.pairing_manager import pairing_manager
 
 router = APIRouter()
@@ -57,11 +56,6 @@ class CompleteAuthRequest(BaseModel):
     email: str
     password: str
 
-
-class CompleteOAuthRequest(BaseModel):
-    session_id: str
-    provider: str  # "google"
-    token: str  # OAuth access token
 
 
 # ============================================================================
@@ -154,90 +148,19 @@ async def companion_connect(request: CompanionConnectRequest):
     }
 
 
-@router.post("/complete", response_model=TokenResponse)
+@router.post("/complete")
 async def complete_auth(request: CompleteAuthRequest):
     """
     DEPRECATED: Legacy HS256 device pairing endpoint.
-
-    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
-    Device pairing now requires RS256 tokens.
-
-    Migration completed: 2026-02-16
-    Deprecated since: RS256-only enforcement
+    Replaced by v2 RS256 endpoints under /v2/complete*.
     """
     raise HTTPException(
         status_code=status.HTTP_410_GONE,
         detail={
             "error": "endpoint_deprecated",
-            "message": "Device pairing no longer supported with HS256 tokens. Please update your TV app",
-            "migration_guide": "https://docs.bayit.tv/auth-migration#device-pairing",
+            "message": "Use /v2/complete instead. HS256 device pairing removed.",
             "deprecated_since": "2026-02-16",
-            "action_required": "update_tv_app",
         }
-    )
-
-    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
-    # Verify session exists
-    session = await pairing_manager.get_session(request.session_id)
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found or expired",
-        )
-
-    # Mark as authenticating
-    await pairing_manager.start_authentication(request.session_id)
-
-    # Authenticate user
-    user = await User.find_one({"email": request.email})
-
-    if not user or not verify_password(request.password, user.hashed_password):
-        await pairing_manager.fail_pairing(request.session_id, "Invalid credentials")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
-
-    if not user.is_active:
-        await pairing_manager.fail_pairing(request.session_id, "Account inactive")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user",
-        )
-
-    # Update last login
-    user.last_login = datetime.utcnow()
-    await user.save()
-
-    # Create token
-    access_token = create_access_token(data={"sub": str(user.id)})
-    user_response = user.to_response()
-
-    # Complete pairing - notify TV
-    await pairing_manager.complete_pairing(
-        request.session_id,
-        str(user.id),
-        access_token,
-        user_response.model_dump(mode="json"),
-    )
-
-    return TokenResponse(
-        access_token=access_token,
-        user=user_response,
-    )
-
-
-@router.post("/complete-oauth", response_model=TokenResponse)
-async def complete_oauth(request: CompleteOAuthRequest):
-    """
-    Complete authentication via OAuth on companion device.
-    Called after OAuth flow completes on companion.
-    """
-    # This would integrate with Google OAuth similar to auth.py
-    # For MVP, we'll focus on password auth
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="OAuth pairing not yet implemented",
     )
 
 
@@ -288,69 +211,19 @@ async def complete_auth_token_v2(
     return {"status": "success"}
 
 
-@router.post("/complete-token", response_model=TokenResponse)
-async def complete_auth_token(
-    request: CompleteAuthTokenRequest,
-    current_user: User = Depends(get_current_user),
-):
+@router.post("/complete-token")
+async def complete_auth_token(request: CompleteAuthTokenRequest):
     """
     DEPRECATED: Legacy HS256 device pairing with token endpoint.
-
-    This endpoint has been replaced by RS256 authentication from auth.olorin.ai.
-    Device pairing now requires RS256 tokens.
-
-    Migration completed: 2026-02-16
-    Deprecated since: RS256-only enforcement
+    Replaced by v2 RS256 endpoints under /v2/complete-token.
     """
     raise HTTPException(
         status_code=status.HTTP_410_GONE,
         detail={
             "error": "endpoint_deprecated",
-            "message": "Device pairing with token no longer supported with HS256 tokens. Please update your TV app",
-            "migration_guide": "https://docs.bayit.tv/auth-migration#device-pairing",
+            "message": "Use /v2/complete-token instead. HS256 device pairing removed.",
             "deprecated_since": "2026-02-16",
-            "action_required": "update_tv_app",
         }
-    )
-
-    # ORIGINAL IMPLEMENTATION REMOVED - Keep for reference in git history
-    # Verify session exists
-    session = await pairing_manager.get_session(request.session_id)
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Session not found or expired",
-        )
-
-    # Mark as authenticating
-    await pairing_manager.start_authentication(request.session_id)
-
-    if not current_user.is_active:
-        await pairing_manager.fail_pairing(request.session_id, "Account inactive")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user",
-        )
-
-    # Update last login
-    current_user.last_login = datetime.utcnow()
-    await current_user.save()
-
-    # Create token
-    access_token = create_access_token(data={"sub": str(current_user.id)})
-    user_response = current_user.to_response()
-
-    # Complete pairing - notify TV
-    await pairing_manager.complete_pairing(
-        request.session_id,
-        str(current_user.id),
-        access_token,
-        user_response.model_dump(mode="json"),
-    )
-
-    return TokenResponse(
-        access_token=access_token,
-        user=user_response,
     )
 
 

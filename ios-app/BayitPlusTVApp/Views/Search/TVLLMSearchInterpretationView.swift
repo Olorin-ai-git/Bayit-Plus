@@ -26,7 +26,7 @@ struct TVLLMSearchInterpretationView: View {
         .background(DesignTokens.Glass.bgLight)
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("AI interpretation: \(interpretation.text ?? "")")
+        .accessibilityLabel("\(localization.t("aiSearch.aiInterpretation")): \(interpretation.text ?? "")")
     }
 
     // MARK: - Header
@@ -37,7 +37,7 @@ struct TVLLMSearchInterpretationView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
                 .accessibilityHidden(true)
 
-            Text("AI Interpretation")
+            Text(localization.t("aiSearch.aiInterpretation"))
                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -69,7 +69,7 @@ struct TVLLMSearchInterpretationView: View {
                 .frame(width: 50, alignment: .trailing)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Confidence: \(Int(confidence * 100)) percent")
+        .accessibilityLabel("\(localization.t("aiSearch.confidence")): \(Int(confidence * 100)) \(localization.t("common.percent"))")
     }
 
     private func confidenceColor(_ confidence: Double) -> Color {

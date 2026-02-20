@@ -13,10 +13,13 @@ struct Audiobook: Decodable, Sendable, Identifiable {
     let backdrop: String?
     let duration: String?
     let chapters: [AudiobookChapter]?
+    let totalChapters: Int?
     let genreIds: [String]?
     let audioQuality: String?
     let requiresSubscription: String?
     let contentFormat: String?
+    let streamUrl: String?
+    let streamType: String?
     let viewCount: Int?
     let avgRating: Double?
     let isFeatured: Bool?
@@ -28,10 +31,16 @@ struct Audiobook: Decodable, Sendable, Identifiable {
 struct AudiobookChapter: Decodable, Sendable, Identifiable {
     let id: String?
     let title: String?
+    let chapterNumber: Int?
+    let duration: String?
+    let progress: Double?
+    let thumbnail: String?
+    let streamUrl: String?
+    let streamType: String?
     let startTime: Double?
     let endTime: Double?
 
-    var stableId: String { id ?? "\(startTime ?? 0)" }
+    var stableId: String { id ?? "\(chapterNumber ?? 0)" }
 }
 
 /// Paginated response from GET /api/v1/audiobooks

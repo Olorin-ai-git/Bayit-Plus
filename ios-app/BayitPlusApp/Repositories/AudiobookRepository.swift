@@ -5,6 +5,7 @@ import Foundation
 protocol AudiobookRepository: Sendable {
     func fetchAll(page: Int?, limit: Int?, genre: String?, author: String?) async throws -> AudiobookListResponse
     func fetchDetail(id: String) async throws -> Audiobook
+    func fetchWithChapters(id: String) async throws -> Audiobook
 }
 
 /// Production implementation of `AudiobookRepository` using `APIClient`.
@@ -45,6 +46,13 @@ final class APIAudiobookRepository: AudiobookRepository, @unchecked Sendable {
     func fetchDetail(id: String) async throws -> Audiobook {
         return try await client.get(
             "/api/v1/audiobooks/\(id)",
+            as: Audiobook.self
+        )
+    }
+
+    func fetchWithChapters(id: String) async throws -> Audiobook {
+        return try await client.get(
+            "/api/v1/audiobooks/\(id)/chapters",
             as: Audiobook.self
         )
     }

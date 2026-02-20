@@ -83,6 +83,7 @@ final class TVQRAuthViewModel {
         let expiresAt: String
         let hasCompanion: Bool
         let accessToken: String?
+        let refreshToken: String?
         let authenticatedUserId: String?
         let user: BayitUser?
 
@@ -93,6 +94,7 @@ final class TVQRAuthViewModel {
             case expiresAt = "expires_at"
             case hasCompanion = "has_companion"
             case accessToken = "access_token"
+            case refreshToken = "refresh_token"
             case authenticatedUserId = "authenticated_user_id"
             case user
         }
@@ -259,16 +261,13 @@ final class TVQRAuthViewModel {
                     }
 
                 case .failure(let wsError):
+                    // Don't set failed status -- polling fallback will
+                    // continue checking session state and can still
+                    // complete authentication if the companion finishes.
                     self.logger.warning(
-                        "WebSocket error in device pairing",
+                        "WebSocket disconnected; polling fallback active",
                         metadata: ["error": wsError.localizedDescription]
                     )
-                    if !self.isTerminalStatus {
-                        self.status = .failed
-                        self.error = AuthError.devicePairingFailed(
-                            underlying: wsError.localizedDescription
-                        ).userFacingMessage
-                    }
                 }
             }
         }
@@ -531,7 +530,7 @@ final class TVQRAuthViewModel {
         do {
             try authManager.signInFromDevicePairing(
                 accessToken: accessToken,
-                refreshToken: nil,
+                refreshToken: poll.refreshToken,
                 user: user
             )
             status = .authenticated
@@ -609,7 +608,8 @@ final class TVQRAuthViewModel {
                         ),
                     ]
                 )
-                self.status = .expired
+                // Skip .expired state to avoid flash; go straight to retry
+                // which sets .loading then .waitingForScan with a new QR code.
                 await self.retry()
             }
         }

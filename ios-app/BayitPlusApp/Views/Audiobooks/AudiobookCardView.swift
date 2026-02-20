@@ -10,7 +10,7 @@ struct AudiobookCardView: View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                 coverImage
-                    .aspectRatio(1, contentMode: .fill)
+                    .aspectRatio(2 / 3, contentMode: .fill)
                     .clipped()
                     .overlay(alignment: .bottomTrailing) {
                         durationBadge

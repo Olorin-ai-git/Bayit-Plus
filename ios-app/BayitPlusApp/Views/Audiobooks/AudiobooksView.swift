@@ -73,7 +73,7 @@ struct AudiobooksView: View {
             ForEach(0..<6, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
-                    .aspectRatio(1, contentMode: .fit)
+                    .aspectRatio(2 / 3, contentMode: .fit)
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)

@@ -66,7 +66,7 @@ struct TVLLMSearchView: View {
         if let vm = viewModel {
             VStack(spacing: TVDesignTokens.Spacing.lg) {
                 TextField(
-                    "Ask anything about our content...",
+                    localization.t("tvos.aiSearch.placeholder"),
                     text: Binding(
                         get: { vm.query },
                         set: { newValue in
@@ -81,7 +81,7 @@ struct TVLLMSearchView: View {
                 .onSubmit { Task { await vm.search(language: nil) } }
 
                 GlassButton(
-                    "Search",
+                    localization.t("search.search"),
                     variant: .primary,
                     size: .medium,
                     isDisabled: vm.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
@@ -127,7 +127,7 @@ struct TVLLMSearchView: View {
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Example search queries")
+        .accessibilityLabel(localization.t("search.exampleQueries"))
     }
 
     // MARK: - Suggestions
@@ -180,17 +180,28 @@ struct TVLLMSearchView: View {
 
     private var sampleQueries: [String] {
         [
-            "Family-friendly Israeli comedies",
-            "Documentaries about Jerusalem",
-            "Hebrew music podcasts",
-            "Drama series from 2024",
+            localization.t("search.exampleQuery1"),
+            localization.t("search.exampleQuery2"),
+            localization.t("search.exampleQuery3"),
+            localization.t("search.exampleQuery4"),
         ]
     }
 
     private func navigateToItem(_ item: ContentItem) {
-        coordinator.presentPlayer(
-            contentId: item.id,
-            contentType: TVContentTypeMapper.map(item.type)
-        )
+        let itemType = item.type?.lowercased() ?? ""
+        switch itemType {
+        case "podcast":
+            coordinator.fullscreenRoute = .podcastDetail(showId: item.id)
+        case "live":
+            coordinator.presentPlayer(contentId: item.id, contentType: .liveTV)
+        case "radio":
+            coordinator.presentPlayer(contentId: item.id, contentType: .radio)
+        default:
+            if item.isSeries == true {
+                coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
+            } else {
+                coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
+            }
+        }
     }
 }

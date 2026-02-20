@@ -100,7 +100,7 @@ async def stop_recording(
 ):
     """Stop active recording. Requires premium subscription and session ownership."""
     try:
-        session = await RecordingSession.get(session_id)
+        session = await RecordingSession.find_one({"recording_id": session_id})
         if not session:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -114,7 +114,7 @@ async def stop_recording(
             )
 
         recording = await live_recording_service.stop_recording(
-            session_id, str(current_user.id)
+            session.recording_id, str(current_user.id)
         )
 
         return recording_to_response(recording)

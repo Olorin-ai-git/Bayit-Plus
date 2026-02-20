@@ -240,6 +240,7 @@ class PairingManager:
         user_id: str,
         access_token: str,
         user_data: dict,
+        refresh_token: str | None = None,
     ) -> bool:
         """Complete the pairing process with authentication"""
         session = await self.get_session(session_id)
@@ -250,18 +251,21 @@ class PairingManager:
         session.status = "success"
         session.authenticated_user_id = user_id
         session.authenticated_token = access_token
+        session.authenticated_refresh_token = refresh_token
         await session.save()
 
         # Notify TV with auth credentials via WebSocket
         if session_id in self._tv_websockets:
+            ws_payload = {
+                "type": "pairing_success",
+                "user": user_data,
+                "access_token": access_token,
+            }
+            if refresh_token:
+                ws_payload["refresh_token"] = refresh_token
+
             try:
-                await self._tv_websockets[session_id].send_json(
-                    {
-                        "type": "pairing_success",
-                        "user": user_data,
-                        "access_token": access_token,
-                    }
-                )
+                await self._tv_websockets[session_id].send_json(ws_payload)
             except Exception as exc:
                 logger.warning(
                     "Failed to notify TV via WebSocket for pairing_success",
@@ -304,8 +308,14 @@ class PairingManager:
         return True
 
     async def _expire_session(self, session_id: str) -> None:
-        """Handle session expiration"""
-        session = await self.get_session(session_id)
+        """Handle session expiration.
+
+        Queries MongoDB directly (not via get_session) to avoid infinite
+        recursion, since get_session calls _expire_session for expired sessions.
+        """
+        session = await DevicePairingSession.find_one(
+            DevicePairingSession.session_id == session_id
+        )
         if not session:
             return
 
@@ -425,6 +435,8 @@ class PairingManager:
         if session.status == "success" and session.authenticated_token:
             result["access_token"] = session.authenticated_token
             result["authenticated_user_id"] = session.authenticated_user_id
+            if session.authenticated_refresh_token:
+                result["refresh_token"] = session.authenticated_refresh_token
 
         return result
 

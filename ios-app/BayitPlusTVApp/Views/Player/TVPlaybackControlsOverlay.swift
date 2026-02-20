@@ -7,63 +7,47 @@ import SwiftUI
 struct TVPlaybackControlsOverlay: View {
     let isPlaying: Bool
     let hasChapters: Bool
-    let currentPosition: TimeInterval
     let onPlayPause: () -> Void
     let onSkipBackward30: () -> Void
     let onSkipForward30: () -> Void
     let onPreviousChapter: () -> Void
     let onNextChapter: () -> Void
-    let onStartOver: () -> Void
     let onInteraction: () -> Void
 
-    private var showStartOver: Bool { currentPosition > 30 }
-
     var body: some View {
-        VStack(spacing: TVDesignTokens.Spacing.lg) {
-            HStack(spacing: TVDesignTokens.Spacing.xxl) {
-                if hasChapters {
-                    TVOverlayButton(
-                        icon: "backward.end.fill",
-                        accessibilityLabel: "Previous chapter",
-                        action: { onInteraction(); onPreviousChapter() }
-                    )
-                }
-
+        HStack(spacing: TVDesignTokens.Spacing.xxl) {
+            if hasChapters {
                 TVOverlayButton(
-                    icon: "gobackward.30",
-                    accessibilityLabel: "Skip backward 30 seconds",
-                    action: { onInteraction(); onSkipBackward30() }
+                    icon: "backward.end.fill",
+                    accessibilityLabel: "Previous chapter",
+                    action: { onInteraction(); onPreviousChapter() }
                 )
-
-                TVOverlayButton(
-                    icon: isPlaying ? "pause.fill" : "play.fill",
-                    isLarge: true,
-                    accessibilityLabel: isPlaying ? "Pause" : "Play",
-                    action: { onInteraction(); onPlayPause() }
-                )
-
-                TVOverlayButton(
-                    icon: "goforward.30",
-                    accessibilityLabel: "Skip forward 30 seconds",
-                    action: { onInteraction(); onSkipForward30() }
-                )
-
-                if hasChapters {
-                    TVOverlayButton(
-                        icon: "forward.end.fill",
-                        accessibilityLabel: "Next chapter",
-                        action: { onInteraction(); onNextChapter() }
-                    )
-                }
             }
-            .focusSection()
 
-            if showStartOver {
+            TVOverlayButton(
+                icon: "gobackward.30",
+                accessibilityLabel: "Skip backward 30 seconds",
+                action: { onInteraction(); onSkipBackward30() }
+            )
+
+            TVOverlayButton(
+                icon: isPlaying ? "pause.fill" : "play.fill",
+                isLarge: true,
+                accessibilityLabel: isPlaying ? "Pause" : "Play",
+                action: { onInteraction(); onPlayPause() }
+            )
+
+            TVOverlayButton(
+                icon: "goforward.30",
+                accessibilityLabel: "Skip forward 30 seconds",
+                action: { onInteraction(); onSkipForward30() }
+            )
+
+            if hasChapters {
                 TVOverlayButton(
-                    icon: "arrow.counterclockwise",
-                    label: "Start Over",
-                    accessibilityLabel: "Start over from beginning",
-                    action: { onInteraction(); onStartOver() }
+                    icon: "forward.end.fill",
+                    accessibilityLabel: "Next chapter",
+                    action: { onInteraction(); onNextChapter() }
                 )
             }
         }

@@ -77,6 +77,7 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     /// Applies client-side filtering for content type sub-categories the API cannot distinguish.
     func applyClientFilter(_ results: [UnifiedSearchResult]) -> [UnifiedSearchResult] {
         switch self {
+        case .all: return results
         case .movies:
             return results.filter { r in
                 let ct = r.contentType?.lowercased() ?? ""
@@ -84,8 +85,10 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
             }
         case .series: return results.filter { $0.isSeries == true }
         case .collections: return results.filter { ($0.contentType?.lowercased() ?? "").contains("collection") }
+        case .live: return results.filter { ($0.contentType?.lowercased() ?? "") == "live" }
+        case .radio: return results.filter { ($0.contentType?.lowercased() ?? "") == "radio" }
+        case .podcasts: return results.filter { ($0.contentType?.lowercased() ?? "") == "podcast" }
         case .kids: return results.filter { $0.isKidsContent == true }
-        default: return results
         }
     }
 }

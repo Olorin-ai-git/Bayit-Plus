@@ -280,8 +280,12 @@ struct TVCredentialPanel: View {
                     password: password
                 )
                 onAuthSuccess()
+            } catch let authError as AuthError {
+                errorMessage = authError.userFacingMessage
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = AuthError.networkError(
+                    underlying: error.localizedDescription
+                ).userFacingMessage
             }
             isLoading = false
         }
@@ -295,8 +299,12 @@ struct TVCredentialPanel: View {
             do {
                 try await authManager.signInWithApple()
                 onAuthSuccess()
+            } catch let authError as AuthError {
+                errorMessage = authError.userFacingMessage
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = AuthError.networkError(
+                    underlying: error.localizedDescription
+                ).userFacingMessage
             }
             isLoading = false
         }

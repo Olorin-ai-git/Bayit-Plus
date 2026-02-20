@@ -13,17 +13,15 @@ struct TVHomeView: View {
     @State private var featuredCollections: [CollectionDetail] = []
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                if vm.isLoading && vm.categories.isEmpty {
-                    TVSkeletonHomeView()
-                } else if let error = vm.error, vm.categories.isEmpty {
-                    tvErrorState(error, retryLabel: localization.t("common.retry")) {
-                        Task { await vm.refresh() }
-                    }
-                } else {
-                    contentSections(vm)
-                }
+        Group {
+            if coordinator.categoryBrowseActive {
+                TVCategoryBrowseView(
+                    title: coordinator.categoryBrowseTitle,
+                    icon: coordinator.categoryBrowseIcon,
+                    items: coordinator.categoryBrowseItems
+                )
+            } else {
+                homeScrollView
             }
         }
         .background(DesignTokens.Background.primary)
@@ -44,9 +42,29 @@ struct TVHomeView: View {
             cacheTopShelfData()
         }
         .onAppear {
-            // Refresh continue watching when returning to home
             Task {
                 await viewModel?.refresh()
+            }
+        }
+        .onExitCommand {
+            if coordinator.categoryBrowseActive {
+                coordinator.dismissCategoryBrowse()
+            }
+        }
+    }
+
+    private var homeScrollView: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                if vm.isLoading && vm.categories.isEmpty {
+                    TVSkeletonHomeView()
+                } else if let error = vm.error, vm.categories.isEmpty {
+                    tvErrorState(error, retryLabel: localization.t("common.retry")) {
+                        Task { await vm.refresh() }
+                    }
+                } else {
+                    contentSections(vm)
+                }
             }
         }
     }
@@ -268,7 +286,13 @@ struct TVHomeView: View {
             icon: section.icon,
             items: category.items,
             maxItems: 15,
-            seeAllAction: { coordinator.selectedTab = seeAllTab(for: section) }
+            seeAllAction: {
+                coordinator.presentCategoryBrowse(
+                    title: section.localizedTitle(localization),
+                    icon: section.icon,
+                    items: category.items
+                )
+            }
         ) { item in
             TVContentCard(
                 imageURL: item.thumbnail,
@@ -285,36 +309,25 @@ struct TVHomeView: View {
 
     private func navigateToCategoryItem(_ item: ContentItem, section: TVHomeSection) {
         if item.isSeries == true {
-            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+            coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
         } else if item.isCollectionParent == true {
-            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+            coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
         } else {
             switch section {
             case .podcasts:
-                coordinator.navigate(to: .podcastDetail(showId: item.id))
+                coordinator.fullscreenRoute = .podcastDetail(showId: item.id)
             case .audiobooks:
-                coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
+                coordinator.fullscreenRoute = .audiobookDetail(audiobookId: item.id)
             case .series, .israeliSeries:
-                coordinator.navigate(to: .seriesDetail(seriesId: item.id))
+                coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
             case .movies, .israeliMovies, .kids, .youngsters, .music, .documentary:
-                coordinator.navigate(to: .movieDetail(movieId: item.id))
+                coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
             default:
                 coordinator.presentPlayer(
                     contentId: item.id,
                     contentType: TVContentTypeMapper.map(item.type)
                 )
             }
-        }
-    }
-
-    /// Routes "Show All" to the correct tab based on section type.
-    private func seeAllTab(for section: TVHomeSection) -> TVTab {
-        switch section {
-        case .podcasts, .audiobooks: return .podcasts
-        case .kids, .youngsters: return .kids
-        case .liveTV: return .liveTV
-        case .continueWatching: return .profile
-        default: return .vod
         }
     }
 

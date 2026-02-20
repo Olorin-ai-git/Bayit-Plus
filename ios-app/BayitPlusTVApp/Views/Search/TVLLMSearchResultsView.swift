@@ -47,7 +47,7 @@ struct TVLLMSearchResultsView: View {
                 ForEach(results) { item in
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
-                        title: item.title ?? "Untitled",
+                        title: item.title ?? localization.t("common.untitled"),
                         subtitle: resultSubtitle(item),
                         badge: item.type,
                         aspectRatio: 2 / 3,

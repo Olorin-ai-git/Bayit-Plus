@@ -231,6 +231,9 @@ class ContentCharacter(BaseModel):
     voice_clone_audio_url: Optional[str] = Field(
         None, description="GCS URL of the audio sample used for cloning",
     )
+    voice_clone_preview_url: Optional[str] = Field(
+        None, description="GCS URL of lip-synced preview clip verifying voice+face",
+    )
     suggested_questions: List[str] = Field(
         default_factory=list,
         description="AI-generated character-specific questions",

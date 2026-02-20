@@ -199,8 +199,12 @@ struct TVAudiobookDetailView: View {
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    if let startTime = chapter.startTime,
-                       let endTime = chapter.endTime {
+                    if let duration = chapter.duration {
+                        Text(duration)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                    } else if let startTime = chapter.startTime,
+                              let endTime = chapter.endTime {
                         Text(formatTimeRange(start: startTime, end: endTime))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)

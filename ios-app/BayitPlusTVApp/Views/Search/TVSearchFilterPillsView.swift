@@ -5,7 +5,7 @@ import SwiftUI
 /// Horizontal row of content type filter pills for tvOS search.
 struct TVSearchFilterPillsView: View {
     @Environment(LocalizationManager.self) private var localization
-    @Binding var selectedFilter: SearchContentTypeFilter
+    let selectedFilter: SearchContentTypeFilter
     let onFilterChanged: (SearchContentTypeFilter) -> Void
 
     var body: some View {
