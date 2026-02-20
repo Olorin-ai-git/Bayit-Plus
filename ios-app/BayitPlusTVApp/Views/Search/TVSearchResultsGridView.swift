@@ -8,6 +8,7 @@ struct TVSearchResultsGridView: View {
     @Environment(LocalizationManager.self) private var localization
     let results: [UnifiedSearchResult]
     let totalResults: Int
+    let query: String
     let hasMore: Bool
     let isLoadingMore: Bool
     let onLoadMore: () -> Void
@@ -22,7 +23,7 @@ struct TVSearchResultsGridView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("\(totalResults) \(localization.t("search.resultsFor"))")
+            Text(resultsHeaderText)
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -67,6 +68,14 @@ struct TVSearchResultsGridView: View {
                 .padding(TVDesignTokens.Spacing.sm)
             }
         }
+    }
+
+    private var resultsHeaderText: String {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return "\(totalResults) \(localization.t("search.results"))"
+        }
+        return "\(totalResults) \(localization.t("search.resultsFor")) \"\(trimmed)\""
     }
 
     private func resultSubtitle(_ result: UnifiedSearchResult) -> String? {

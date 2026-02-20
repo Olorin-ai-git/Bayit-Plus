@@ -20,6 +20,19 @@ struct TVSearchView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {
+                    if !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        HStack(spacing: TVDesignTokens.Spacing.md) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: TVDesignTokens.FontSize.lg))
+                                .foregroundStyle(DesignTokens.Text.muted)
+                            Text(searchText)
+                                .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .semibold))
+                                .foregroundStyle(DesignTokens.Text.primary)
+                        }
+                        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                        .padding(.top, TVDesignTokens.Spacing.lg)
+                        .padding(.bottom, TVDesignTokens.Spacing.sm)
+                    }
                     TVSearchFilterPillsView(
                         selectedFilter: Binding(get: { vm.selectedFilter }, set: { _ in }),
                         onFilterChanged: { vm.onFilterChanged($0) }
@@ -33,7 +46,6 @@ struct TVSearchView: View {
                     searchContent(vm)
                 }
             }
-            .background(DesignTokens.Background.primary)
             .searchable(text: $searchText, prompt: "Search movies, series, podcasts...")
             .onChange(of: searchText) { _, newValue in
                 viewModel?.query = newValue
@@ -69,6 +81,7 @@ struct TVSearchView: View {
                 }
             }
         }
+        .background(DesignTokens.Background.primary)
     }
 
     // MARK: - Content Router
@@ -96,6 +109,7 @@ struct TVSearchView: View {
         } else if !vm.results.isEmpty {
             TVSearchResultsGridView(
                 results: vm.results, totalResults: vm.totalResults,
+                query: searchText,
                 hasMore: vm.hasMore, isLoadingMore: vm.isLoadingMore,
                 onLoadMore: { vm.loadMore() },
                 onSelect: { handleResultSelection($0) }

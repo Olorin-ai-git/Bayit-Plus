@@ -45,8 +45,8 @@ struct TVSearchToolbarView: View {
 
     private var filterLabel: String {
         if activeFilterCount > 0 {
-            return "\(localization.t("search.filter.title")) (\(activeFilterCount))"
+            return "\(localization.t("search.filters.title")) (\(activeFilterCount))"
         }
-        return localization.t("search.filter.title")
+        return localization.t("search.filters.title")
     }
 }
