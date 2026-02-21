@@ -1,3 +1,4 @@
+import AVFoundation
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -9,6 +10,8 @@ struct MovieDetailView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: MovieDetailViewModel?
+    @State private var resolvedTrailerUrl: String?
+    @State private var showTrailer = false
 
     let movieId: String
 
@@ -30,6 +33,14 @@ struct MovieDetailView: View {
         }
         .background(DesignTokens.Background.primary)
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(isPresented: $showTrailer) {
+            if let streamUrl = resolvedTrailerUrl {
+                DirectTrailerPlayerView(
+                    url: streamUrl,
+                    onDismiss: { showTrailer = false }
+                )
+            }
+        }
         .task {
             if viewModel == nil {
                 viewModel = MovieDetailViewModel(
@@ -93,10 +104,11 @@ struct MovieDetailView: View {
     private func backdropImage(_ detail: ContentDetail) -> some View {
         Group {
             if let urlStr = detail.backdrop ?? detail.thumbnail,
-               let url = URL(string: urlStr) {
+               let url = URL(string: urlStr)
+            {
                 AsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable().aspectRatio(contentMode: .fill)
                     default:
                         DesignTokens.Glass.bgMedium
@@ -149,20 +161,19 @@ struct MovieDetailView: View {
     private func actionButtons(_ detail: ContentDetail) -> some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             GlassButton(localization.t("content.play"), variant: .primary, size: .large,
-                         icon: Image(systemName: "play.fill")) {
+                        icon: Image(systemName: "play.fill"))
+            {
                 coordinator.presentFullscreen(.player(
                     contentId: detail.id,
                     contentType: .movie
                 ))
             }
 
-            if viewModel?.hasTrailer == true, let trailerUrl = detail.trailerUrl {
+            if viewModel?.hasTrailer == true {
                 GlassButton(localization.t("content.trailer"), variant: .secondary, size: .large,
-                             icon: Image(systemName: "film")) {
-                    coordinator.presentFullscreen(.player(
-                        contentId: trailerUrl,
-                        contentType: .movie
-                    ))
+                            icon: Image(systemName: "film"))
+                {
+                    Task { await resolveAndShowTrailer(contentId: detail.id) }
                 }
             }
 
@@ -286,5 +297,23 @@ struct MovieDetailView: View {
         return aiLangs
     }
 
-    private var loadingState: some View { MovieDetailLoadingView() }
+    private func resolveAndShowTrailer(contentId: String) async {
+        if resolvedTrailerUrl != nil {
+            showTrailer = true
+            return
+        }
+        do {
+            let response = try await repos.content.fetchTrailerStream(contentId: contentId)
+            if let streamUrl = response.streamUrl {
+                resolvedTrailerUrl = streamUrl
+                showTrailer = true
+            }
+        } catch {
+            // Trailer resolution failed silently; button tap had no effect
+        }
+    }
+
+    private var loadingState: some View {
+        MovieDetailLoadingView()
+    }
 }

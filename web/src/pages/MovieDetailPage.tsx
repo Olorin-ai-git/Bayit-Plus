@@ -1,30 +1,64 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, Image, Dimensions, StyleSheet, Pressable, Modal } from 'react-native';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star, ChevronRight, X, ArrowLeft, Download } from 'lucide-react';
-import { NativeIcon } from '@olorin/shared-icons/native';
-import { Icon } from '@olorin/shared-icons/web';
-import Hls from 'hls.js';
-import LinearGradient from 'react-native-linear-gradient';
-import { useDirection } from '@/hooks/useDirection';
-import ContentCarousel from '@/components/content/ContentCarousel';
-import { contentService, playlistService, favoritesService, subtitlesService } from '@/services/api';
-import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { SubtitleTrack } from '@/types/subtitle';
-import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
-import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
-import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
-import { useDownloadStore, selectIsDownloaded, selectIsDownloading } from '@/stores/downloadStore';
-import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import logger from '@/utils/logger';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Dimensions,
+  StyleSheet,
+  Pressable,
+  Modal,
+} from "react-native";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  Play,
+  Plus,
+  Check,
+  Share2,
+  Star,
+  ChevronRight,
+  X,
+  ArrowLeft,
+  Download,
+} from "lucide-react";
+import { NativeIcon } from "@olorin/shared-icons/native";
+import { Icon } from "@olorin/shared-icons/web";
+import Hls from "hls.js";
+import LinearGradient from "react-native-linear-gradient";
+import { useDirection } from "@/hooks/useDirection";
+import ContentCarousel from "@/components/content/ContentCarousel";
+import {
+  contentService,
+  playlistService,
+  favoritesService,
+  subtitlesService,
+} from "@/services/api";
+import { colors, spacing, fontSize, borderRadius } from "@olorin/design-tokens";
+import { SubtitleTrack } from "@/types/subtitle";
+import { FlagWithSparkle } from "@/components/common/FlagWithSparkle";
+import {
+  GlassCard,
+  GlassButton,
+  GlassView,
+  GlassBadge,
+  GlassTooltip,
+} from "@bayit/shared/ui";
+import { useFullscreenPlayerStore } from "@/stores/fullscreenPlayerStore";
+import {
+  useDownloadStore,
+  selectIsDownloaded,
+  selectIsDownloading,
+} from "@/stores/downloadStore";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import logger from "@/utils/logger";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const IS_MOBILE = SCREEN_WIDTH < 768;
 
 // IMDB brand colors
-const IMDB_YELLOW = '#f5c518';
-const IMDB_TEXT = '#000000';
+const IMDB_YELLOW = "#f5c518";
+const IMDB_TEXT = "#000000";
 
 interface MovieData {
   id: string;
@@ -40,6 +74,7 @@ interface MovieData {
   cast?: string[];
   director?: string;
   trailer_url?: string;
+  trailer_stream_url?: string;
   preview_url?: string;
   stream_url?: string;
   tmdb_id?: number;
@@ -63,15 +98,21 @@ export default function MovieDetailPage() {
   const [loading, setLoading] = useState(true);
   const [inPlaylist, setInPlaylist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([]);
+  const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>(
+    [],
+  );
   const [showSubtitleModal, setShowSubtitleModal] = useState(false);
-  const [selectedSubtitleLang, setSelectedSubtitleLang] = useState<string | null>(null);
+  const [selectedSubtitleLang, setSelectedSubtitleLang] = useState<
+    string | null
+  >(null);
   const [dualMode, setDualMode] = useState(false);
-  const [dualLanguages, setDualLanguages] = useState<[string, string] | null>(null);
+  const [dualLanguages, setDualLanguages] = useState<[string, string] | null>(
+    null,
+  );
   const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
   const { startDownload } = useDownloadStore();
-  const isDownloaded = useDownloadStore(selectIsDownloaded(movieId || ''));
-  const isDownloadingNow = useDownloadStore(selectIsDownloading(movieId || ''));
+  const isDownloaded = useDownloadStore(selectIsDownloaded(movieId || ""));
+  const isDownloadingNow = useDownloadStore(selectIsDownloading(movieId || ""));
   const { isOnline } = useOnlineStatus();
 
   // Video preview state
@@ -94,7 +135,8 @@ export default function MovieDetailPage() {
   // Load available subtitles
   useEffect(() => {
     if (movieId) {
-      subtitlesService.getTracks(movieId)
+      subtitlesService
+        .getTracks(movieId)
         .then((response) => {
           if (response?.tracks) {
             setAvailableSubtitles(response.tracks);
@@ -109,14 +151,19 @@ export default function MovieDetailPage() {
   // Check initial playlist status
   useEffect(() => {
     if (movieId) {
-      playlistService.checkItem(movieId)
+      playlistService
+        .checkItem(movieId)
         .then((result) => {
-          if (result && typeof result.in_playlist === 'boolean') {
+          if (result && typeof result.in_playlist === "boolean") {
             setInPlaylist(result.in_playlist);
           }
         })
         .catch((error) => {
-          logger.error('Failed to check playlist status', 'MovieDetailPage', error);
+          logger.error(
+            "Failed to check playlist status",
+            "MovieDetailPage",
+            error,
+          );
         });
     }
   }, [movieId]);
@@ -124,8 +171,9 @@ export default function MovieDetailPage() {
   // Get preview URL with stream fallback
   const getPreviewUrl = useCallback((): string | null => {
     if (movie?.preview_url) return movie.preview_url;
+    if (movie?.trailer_stream_url) return movie.trailer_stream_url;
     if (movie?.trailer_url) return movie.trailer_url;
-    if (movie?.stream_url) return movie.stream_url;  // Fallback to first 5 sec of movie
+    if (movie?.stream_url) return movie.stream_url; // Fallback to first 5 sec of movie
     return null;
   }, [movie]);
 
@@ -157,7 +205,7 @@ export default function MovieDetailPage() {
       const data = await contentService.getMovieDetails(movieId!);
       setMovie(data as any);
     } catch (error) {
-      logger.error('Failed to load movie details', 'MovieDetailPage', error);
+      logger.error("Failed to load movie details", "MovieDetailPage", error);
     } finally {
       setLoading(false);
     }
@@ -166,7 +214,11 @@ export default function MovieDetailPage() {
   // Check if URL is a YouTube URL (can't be previewed inline)
   const isYouTubeUrl = useCallback((url: string | null): boolean => {
     if (!url) return false;
-    return url.includes('youtube.com/embed/') || url.includes('youtu.be/') || url.includes('youtube.com/watch');
+    return (
+      url.includes("youtube.com/embed/") ||
+      url.includes("youtu.be/") ||
+      url.includes("youtube.com/watch")
+    );
   }, []);
 
   // Video preview functions
@@ -192,7 +244,7 @@ export default function MovieDetailPage() {
     video.muted = true;
     video.playsInline = true;
 
-    if (previewUrl.includes('.m3u8') && Hls.isSupported()) {
+    if (previewUrl.includes(".m3u8") && Hls.isSupported()) {
       if (hlsRef.current) {
         hlsRef.current.destroy();
       }
@@ -209,7 +261,10 @@ export default function MovieDetailPage() {
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) stopPreview();
       });
-    } else if (previewUrl.includes('.m3u8') && video.canPlayType('application/vnd.apple.mpegurl')) {
+    } else if (
+      previewUrl.includes(".m3u8") &&
+      video.canPlayType("application/vnd.apple.mpegurl")
+    ) {
       video.src = previewUrl;
       video.load();
       video.play().catch(() => stopPreview());
@@ -245,19 +300,23 @@ export default function MovieDetailPage() {
 
   const handlePlay = () => {
     if (movie) {
-      logger.info('Opening player with pre-selected subtitle', 'MovieDetailPage', {
-        movieId: movie.id,
-        selectedSubtitle: selectedSubtitleLang,
-        dualMode,
-        dualLanguages,
-      });
+      logger.info(
+        "Opening player with pre-selected subtitle",
+        "MovieDetailPage",
+        {
+          movieId: movie.id,
+          selectedSubtitle: selectedSubtitleLang,
+          dualMode,
+          dualLanguages,
+        },
+      );
 
       openPlayer({
         id: movie.id,
         title: movie.title,
-        src: '', // Will be fetched by the overlay
+        src: "", // Will be fetched by the overlay
         poster: movie.backdrop || movie.thumbnail,
-        type: 'movie',
+        type: "movie",
         is_kids_content: movie.is_kids_content,
         initialSubtitleLang: dualMode ? null : selectedSubtitleLang,
         initialSplitMode: dualMode,
@@ -288,7 +347,7 @@ export default function MovieDetailPage() {
     }
     setSelectedSubtitleLang(language);
     setShowSubtitleModal(false);
-    logger.info('Pre-selected subtitle', 'MovieDetailPage', { language });
+    logger.info("Pre-selected subtitle", "MovieDetailPage", { language });
   };
 
   const handleDualModeToggle = () => {
@@ -314,7 +373,9 @@ export default function MovieDetailPage() {
   const handleDualConfirm = () => {
     if (dualLanguages && dualLanguages[0] !== dualLanguages[1]) {
       setShowSubtitleModal(false);
-      logger.info('Pre-selected dual subtitles', 'MovieDetailPage', { languages: dualLanguages });
+      logger.info("Pre-selected dual subtitles", "MovieDetailPage", {
+        languages: dualLanguages,
+      });
     }
   };
 
@@ -327,21 +388,22 @@ export default function MovieDetailPage() {
   const togglePlaylist = async () => {
     if (!movie) return;
     try {
-      const result = await playlistService.toggleItem(movie.id, 'movie');
+      const result = await playlistService.toggleItem(movie.id, "movie");
       setInPlaylist(result.in_playlist);
     } catch (error) {
-      logger.error('Failed to toggle playlist', 'MovieDetailPage', error);
+      logger.error("Failed to toggle playlist", "MovieDetailPage", error);
     }
   };
 
   // Format IMDB votes
   // Deduplicate subtitle tracks by language
   const deduplicatedSubtitles = availableSubtitles.filter(
-    (track, index, self) => self.findIndex(t => t.language === track.language) === index
+    (track, index, self) =>
+      self.findIndex((t) => t.language === track.language) === index,
   );
 
   const formatVotes = (votes?: number): string => {
-    if (!votes) return '';
+    if (!votes) return "";
     if (votes >= 1000000) {
       return `${(votes / 1000000).toFixed(1)}M`;
     }
@@ -354,7 +416,7 @@ export default function MovieDetailPage() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>{t('common.loading')}</Text>
+        <Text style={styles.loadingText}>{t("common.loading")}</Text>
       </View>
     );
   }
@@ -362,7 +424,7 @@ export default function MovieDetailPage() {
   if (!movie) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.notFoundText}>{t('content.notFound')}</Text>
+        <Text style={styles.notFoundText}>{t("content.notFound")}</Text>
       </View>
     );
   }
@@ -372,7 +434,12 @@ export default function MovieDetailPage() {
   return (
     <ScrollView style={styles.scrollView}>
       {/* Hero Section */}
-      <View style={[styles.heroSection, { width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.7 }]}>
+      <View
+        style={[
+          styles.heroSection,
+          { width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.7 },
+        ]}
+      >
         {/* Background Poster */}
         <View
           style={[
@@ -380,7 +447,7 @@ export default function MovieDetailPage() {
             {
               opacity: isPreviewPlaying ? 0 : 1,
               // @ts-ignore - Web CSS transition
-              transition: 'opacity 0.5s ease-in-out',
+              transition: "opacity 0.5s ease-in-out",
             },
           ]}
         >
@@ -398,7 +465,7 @@ export default function MovieDetailPage() {
             {
               opacity: isPreviewPlaying ? 1 : 0,
               // @ts-ignore - Web CSS transition
-              transition: 'opacity 0.5s ease-in-out',
+              transition: "opacity 0.5s ease-in-out",
               zIndex: isPreviewPlaying ? 5 : 1,
             },
           ]}
@@ -407,9 +474,9 @@ export default function MovieDetailPage() {
           <video
             ref={videoRef}
             style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
             }}
             muted
             autoPlay
@@ -419,12 +486,12 @@ export default function MovieDetailPage() {
 
         {/* Gradients */}
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.95)']}
+          colors={["transparent", "rgba(0,0,0,0.4)", "rgba(0,0,0,0.95)"]}
           style={styles.bottomGradient}
           pointerEvents="none"
         />
         <LinearGradient
-          colors={['rgba(0,0,0,0.6)', 'transparent']}
+          colors={["rgba(0,0,0,0.6)", "transparent"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.leftGradient}
@@ -445,7 +512,9 @@ export default function MovieDetailPage() {
         )}
 
         {/* Content */}
-        <View style={[styles.heroContent, IS_MOBILE && styles.heroContentMobile]}>
+        <View
+          style={[styles.heroContent, IS_MOBILE && styles.heroContentMobile]}
+        >
           {/* Category Badge - hidden on mobile */}
           {!IS_MOBILE && movie.category && (
             <GlassView style={styles.categoryBadge}>
@@ -454,17 +523,29 @@ export default function MovieDetailPage() {
           )}
 
           {/* Title */}
-          <Text style={[styles.movieTitle, IS_MOBILE && styles.movieTitleMobile]}>{movie.title}</Text>
+          <Text
+            style={[styles.movieTitle, IS_MOBILE && styles.movieTitleMobile]}
+          >
+            {movie.title}
+          </Text>
 
           {/* Metadata Row - hidden on mobile */}
           {!IS_MOBILE && (
             <View style={[styles.metadataRow, { flexDirection }]}>
-              {movie.year && <Text style={styles.metadataText}>{movie.year}</Text>}
-              {(movie.age_rating || movie.rating) && (
-                <GlassBadge variant="default" size="sm">{movie.age_rating || movie.rating}</GlassBadge>
+              {movie.year && (
+                <Text style={styles.metadataText}>{movie.year}</Text>
               )}
-              {movie.duration && <Text style={styles.metadataText}>{movie.duration}</Text>}
-              {movie.genre && <Text style={styles.metadataText}>{movie.genre}</Text>}
+              {(movie.age_rating || movie.rating) && (
+                <GlassBadge variant="default" size="sm">
+                  {movie.age_rating || movie.rating}
+                </GlassBadge>
+              )}
+              {movie.duration && (
+                <Text style={styles.metadataText}>{movie.duration}</Text>
+              )}
+              {movie.genre && (
+                <Text style={styles.metadataText}>{movie.genre}</Text>
+              )}
             </View>
           )}
 
@@ -483,7 +564,7 @@ export default function MovieDetailPage() {
               </View>
               {movie.imdb_votes && (
                 <Text style={styles.imdbVotes}>
-                  ({formatVotes(movie.imdb_votes)} {t('content.votes')})
+                  ({formatVotes(movie.imdb_votes)} {t("content.votes")})
                 </Text>
               )}
             </View>
@@ -491,16 +572,23 @@ export default function MovieDetailPage() {
 
           {/* Available Subtitles */}
           {availableSubtitles.length > 0 && (
-            <Pressable onPress={handleSubtitlePanelClick} style={({ pressed }) => [
-              styles.subtitlesContainer,
-              pressed && styles.subtitlesContainerPressed
-            ]}>
-              <Text style={styles.subtitlesLabel}>{t('subtitles.available', 'Subtitles')}:</Text>
+            <Pressable
+              onPress={handleSubtitlePanelClick}
+              style={({ pressed }) => [
+                styles.subtitlesContainer,
+                pressed && styles.subtitlesContainerPressed,
+              ]}
+            >
+              <Text style={styles.subtitlesLabel}>
+                {t("subtitles.available", "Subtitles")}:
+              </Text>
               <View style={styles.subtitlesFlagRow}>
                 {/* Deduplicate tracks by language, keeping first occurrence */}
                 {availableSubtitles
-                  .filter((track, index, self) =>
-                    self.findIndex(t => t.language === track.language) === index
+                  .filter(
+                    (track, index, self) =>
+                      self.findIndex((t) => t.language === track.language) ===
+                      index,
                   )
                   .slice(0, 5)
                   .map((track) => {
@@ -513,10 +601,16 @@ export default function MovieDetailPage() {
                       track.has_slang_synthesis_version
                     );
                     const isSelected = dualMode
-                      ? dualLanguages?.includes(track.language) ?? false
+                      ? (dualLanguages?.includes(track.language) ?? false)
                       : selectedSubtitleLang === track.language;
                     return (
-                      <View key={track.id} style={[styles.subtitleFlag, isSelected && styles.subtitleFlagSelected]}>
+                      <View
+                        key={track.id}
+                        style={[
+                          styles.subtitleFlag,
+                          isSelected && styles.subtitleFlagSelected,
+                        ]}
+                      >
                         <FlagWithSparkle
                           language={track.language}
                           hasAI={hasAI}
@@ -527,11 +621,16 @@ export default function MovieDetailPage() {
                     );
                   })}
                 {availableSubtitles.length > 5 && (
-                  <Text style={styles.moreSubtitlesText}>+{availableSubtitles.length - 5}</Text>
+                  <Text style={styles.moreSubtitlesText}>
+                    +{availableSubtitles.length - 5}
+                  </Text>
                 )}
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
-              {(selectedSubtitleLang || (dualMode && dualLanguages && dualLanguages[0] !== dualLanguages[1])) && (
+              {(selectedSubtitleLang ||
+                (dualMode &&
+                  dualLanguages &&
+                  dualLanguages[0] !== dualLanguages[1])) && (
                 <View style={styles.selectedIndicator}>
                   <Check size={14} color={colors.primary.DEFAULT} />
                 </View>
@@ -541,23 +640,28 @@ export default function MovieDetailPage() {
 
           {/* Description - hidden on mobile */}
           {!IS_MOBILE && movie.description && (
-            <Text style={[styles.heroDescription, { textAlign }]} numberOfLines={4}>
+            <Text
+              style={[styles.heroDescription, { textAlign }]}
+              numberOfLines={4}
+            >
               {movie.description}
             </Text>
           )}
 
           {/* Action Buttons */}
-          <View style={[
-            styles.actionButtonsRow,
-            { flexDirection },
-            IS_MOBILE && styles.actionButtonsRowMobile,
-          ]}>
+          <View
+            style={[
+              styles.actionButtonsRow,
+              { flexDirection },
+              IS_MOBILE && styles.actionButtonsRowMobile,
+            ]}
+          >
             <GlassButton
               onPress={handlePlay}
               variant="primary"
               size="lg"
               icon={<Play size={20} color={colors.text} fill={colors.text} />}
-              title={t('content.play')}
+              title={t("content.play")}
             />
 
             {/* Hide Add to List and Watch Trailer on mobile */}
@@ -567,43 +671,64 @@ export default function MovieDetailPage() {
                   onPress={togglePlaylist}
                   variant="ghost"
                   size="lg"
-                  icon={inPlaylist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
-                  title={inPlaylist ? t('content.inList') : t('content.addToList')}
+                  icon={
+                    inPlaylist ? (
+                      <Check size={20} color={colors.text} />
+                    ) : (
+                      <Plus size={20} color={colors.text} />
+                    )
+                  }
+                  title={
+                    inPlaylist ? t("content.inList") : t("content.addToList")
+                  }
                 />
 
                 <GlassButton
-                  onPress={() => startDownload(movie.id, 'movie')}
+                  onPress={() => startDownload(movie.id, "movie")}
                   variant="ghost"
                   size="lg"
-                  icon={isDownloaded
-                    ? <Check size={20} color={colors.text} />
-                    : <Download size={20} color={colors.text} />}
-                  title={isDownloaded ? t('downloads.downloaded') : t('downloads.download')}
+                  icon={
+                    isDownloaded ? (
+                      <Check size={20} color={colors.text} />
+                    ) : (
+                      <Download size={20} color={colors.text} />
+                    )
+                  }
+                  title={
+                    isDownloaded
+                      ? t("downloads.downloaded")
+                      : t("downloads.download")
+                  }
                   disabled={!isOnline || isDownloadingNow || isDownloaded}
                 />
 
-                {movie.trailer_url ? (
+                {movie.trailer_stream_url || movie.trailer_url ? (
                   <GlassButton
                     onPress={() => {
-                      // Open trailer in fullscreen player
+                      // Open trailer in fullscreen player; prefer GCS MP4 over YouTube URL
                       openPlayer({
                         id: `${movie.id}-trailer`,
-                        title: `${movie.title} - ${t('content.trailer')}`,
-                        src: movie.trailer_url!,
+                        title: `${movie.title} - ${t("content.trailer")}`,
+                        src: movie.trailer_stream_url ?? movie.trailer_url!,
                         poster: movie.backdrop || movie.thumbnail,
-                        type: 'vod',
+                        type: "vod",
                       });
                     }}
                     variant="ghost"
                     size="lg"
-                    title={t('content.watchTrailer')}
+                    title={t("content.watchTrailer")}
                   />
                 ) : (
-                  <GlassTooltip content={t('content.trailerNotAvailable', 'Trailer not available for this title')}>
+                  <GlassTooltip
+                    content={t(
+                      "content.trailerNotAvailable",
+                      "Trailer not available for this title",
+                    )}
+                  >
                     <GlassButton
                       variant="ghost"
                       size="lg"
-                      title={t('content.watchTrailer')}
+                      title={t("content.watchTrailer")}
                       disabled
                       style={styles.disabledButton}
                     />
@@ -617,7 +742,9 @@ export default function MovieDetailPage() {
           {isPreviewPlaying && (
             <View style={styles.previewIndicator}>
               <View style={styles.liveIndicatorDot} />
-              <Text style={styles.previewIndicatorText}>{t('content.trailerPlaying')}</Text>
+              <Text style={styles.previewIndicatorText}>
+                {t("content.trailerPlaying")}
+              </Text>
             </View>
           )}
         </View>
@@ -626,38 +753,38 @@ export default function MovieDetailPage() {
       {/* Movie Facts Section - hidden on mobile */}
       {!IS_MOBILE && (
         <View style={styles.factsSection}>
-          <Text style={styles.sectionTitle}>{t('content.details')}</Text>
+          <Text style={styles.sectionTitle}>{t("content.details")}</Text>
 
           <GlassCard style={styles.factsCard}>
             {movie.director && (
               <View style={styles.factRow}>
-                <Text style={styles.factLabel}>{t('content.director')}</Text>
+                <Text style={styles.factLabel}>{t("content.director")}</Text>
                 <Text style={styles.factValue}>{movie.director}</Text>
               </View>
             )}
             {movie.cast && movie.cast.length > 0 && (
               <View style={styles.factRow}>
-                <Text style={styles.factLabel}>{t('content.starring')}</Text>
+                <Text style={styles.factLabel}>{t("content.starring")}</Text>
                 <Text style={styles.factValue} numberOfLines={2}>
-                  {movie.cast.slice(0, 5).join(', ')}
+                  {movie.cast.slice(0, 5).join(", ")}
                 </Text>
               </View>
             )}
             {movie.genre && (
               <View style={styles.factRow}>
-                <Text style={styles.factLabel}>{t('content.genre')}</Text>
+                <Text style={styles.factLabel}>{t("content.genre")}</Text>
                 <Text style={styles.factValue}>{movie.genre}</Text>
               </View>
             )}
             {movie.duration && (
               <View style={styles.factRow}>
-                <Text style={styles.factLabel}>{t('content.runtime')}</Text>
+                <Text style={styles.factLabel}>{t("content.runtime")}</Text>
                 <Text style={styles.factValue}>{movie.duration}</Text>
               </View>
             )}
             {movie.year && (
               <View style={styles.factRow}>
-                <Text style={styles.factLabel}>{t('content.released')}</Text>
+                <Text style={styles.factLabel}>{t("content.released")}</Text>
                 <Text style={styles.factValue}>{movie.year}</Text>
               </View>
             )}
@@ -668,7 +795,7 @@ export default function MovieDetailPage() {
       {/* Synopsis Section - hidden on mobile */}
       {!IS_MOBILE && movie.description && (
         <View style={styles.synopsisSection}>
-          <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
+          <Text style={styles.sectionTitle}>{t("content.synopsis")}</Text>
           <Text style={[styles.synopsisText, { textAlign }]}>
             {movie.description}
           </Text>
@@ -678,7 +805,7 @@ export default function MovieDetailPage() {
       {/* Related Content */}
       {movie.related && movie.related.length > 0 && (
         <ContentCarousel
-          title={t('content.youMayAlsoLike')}
+          title={t("content.youMayAlsoLike")}
           items={movie.related}
         />
       )}
@@ -701,7 +828,9 @@ export default function MovieDetailPage() {
             <GlassView style={styles.subtitleModal}>
               {/* Header */}
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{t('subtitles.selectLanguage')}</Text>
+                <Text style={styles.modalTitle}>
+                  {t("subtitles.selectLanguage")}
+                </Text>
                 <Pressable
                   onPress={() => setShowSubtitleModal(false)}
                   style={styles.closeButton}
@@ -714,25 +843,48 @@ export default function MovieDetailPage() {
               {deduplicatedSubtitles.length >= 2 && (
                 <Pressable
                   onPress={handleDualModeToggle}
-                  style={[styles.dualModeToggle, dualMode && styles.dualModeToggleActive]}
+                  style={[
+                    styles.dualModeToggle,
+                    dualMode && styles.dualModeToggleActive,
+                  ]}
                 >
                   <View style={styles.dualModeIconContainer}>
                     <Icon
                       name="splitScreen"
                       size="md"
-                      color={dualMode ? colors.primary.DEFAULT : colors.textSecondary}
+                      color={
+                        dualMode ? colors.primary.DEFAULT : colors.textSecondary
+                      }
                     />
                   </View>
                   <View style={styles.dualModeTextContainer}>
-                    <Text style={[styles.dualModeTitle, dualMode && styles.dualModeTitleActive]}>
-                      {t('subtitles.splitScreen.toggle', 'Dual Subtitles')}
+                    <Text
+                      style={[
+                        styles.dualModeTitle,
+                        dualMode && styles.dualModeTitleActive,
+                      ]}
+                    >
+                      {t("subtitles.splitScreen.toggle", "Dual Subtitles")}
                     </Text>
                     <Text style={styles.dualModeDescription}>
-                      {t('subtitles.splitScreen.description', 'Show two languages at once')}
+                      {t(
+                        "subtitles.splitScreen.description",
+                        "Show two languages at once",
+                      )}
                     </Text>
                   </View>
-                  <View style={[styles.dualModeSwitch, dualMode && styles.dualModeSwitchActive]}>
-                    <View style={[styles.dualModeSwitchKnob, dualMode && styles.dualModeSwitchKnobActive]} />
+                  <View
+                    style={[
+                      styles.dualModeSwitch,
+                      dualMode && styles.dualModeSwitchActive,
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.dualModeSwitchKnob,
+                        dualMode && styles.dualModeSwitchKnobActive,
+                      ]}
+                    />
                   </View>
                 </Pressable>
               )}
@@ -740,9 +892,16 @@ export default function MovieDetailPage() {
               {/* Casting warning for dual mode */}
               {dualMode && (
                 <View style={styles.dualModeCastingWarning}>
-                  <NativeIcon name="warning" size="sm" color={colors.warning.DEFAULT} />
+                  <NativeIcon
+                    name="warning"
+                    size="sm"
+                    color={colors.warning.DEFAULT}
+                  />
                   <Text style={styles.dualModeCastingWarningText}>
-                    {t('subtitles.splitScreen.castingNotSupported', 'Not supported while casting')}
+                    {t(
+                      "subtitles.splitScreen.castingNotSupported",
+                      "Not supported while casting",
+                    )}
                   </Text>
                 </View>
               )}
@@ -760,11 +919,15 @@ export default function MovieDetailPage() {
                     }}
                     style={({ pressed }) => [
                       styles.subtitleItem,
-                      !selectedSubtitleLang && !dualMode && styles.subtitleItemSelected,
-                      pressed && styles.subtitleItemPressed
+                      !selectedSubtitleLang &&
+                        !dualMode &&
+                        styles.subtitleItemSelected,
+                      pressed && styles.subtitleItemPressed,
                     ]}
                   >
-                    <Text style={styles.subtitleItemText}>{t('subtitles.off', 'Off')}</Text>
+                    <Text style={styles.subtitleItemText}>
+                      {t("subtitles.off", "Off")}
+                    </Text>
                     {!selectedSubtitleLang && !dualMode && (
                       <Check size={20} color={colors.primary.DEFAULT} />
                     )}
@@ -775,61 +938,72 @@ export default function MovieDetailPage() {
                 {dualMode && (
                   <View style={styles.dualModeInstruction}>
                     <Text style={styles.dualModeInstructionText}>
-                      {t('subtitles.splitScreen.selectTwo', 'Select 2 languages')}
+                      {t(
+                        "subtitles.splitScreen.selectTwo",
+                        "Select 2 languages",
+                      )}
                     </Text>
                   </View>
                 )}
 
                 {/* Language Options */}
                 {deduplicatedSubtitles.map((track) => {
-                    const hasAI = !!(
-                      track.has_nikud_version ||
-                      track.has_shoresh_version ||
-                      track.has_heblish_version ||
-                      track.has_grammar_flip_version ||
-                      track.has_slang_synthesis_version
-                    );
-                    const isSelected = dualMode
-                      ? dualLanguages?.includes(track.language) ?? false
-                      : selectedSubtitleLang === track.language;
+                  const hasAI = !!(
+                    track.has_nikud_version ||
+                    track.has_shoresh_version ||
+                    track.has_heblish_version ||
+                    track.has_grammar_flip_version ||
+                    track.has_slang_synthesis_version
+                  );
+                  const isSelected = dualMode
+                    ? (dualLanguages?.includes(track.language) ?? false)
+                    : selectedSubtitleLang === track.language;
 
-                    return (
-                      <Pressable
-                        key={track.id}
-                        onPress={() => handleSubtitleSelect(track.language)}
-                        style={({ pressed }) => [
-                          styles.subtitleItem,
-                          isSelected && styles.subtitleItemSelected,
-                          pressed && styles.subtitleItemPressed
-                        ]}
-                      >
-                        <View style={styles.subtitleItemContent}>
-                          <FlagWithSparkle
-                            language={track.language}
-                            hasAI={hasAI}
-                            size="medium"
-                            showTooltip={false}
-                          />
-                          <Text style={styles.subtitleItemText}>
-                            {track.language_name || track.language.toUpperCase()}
-                          </Text>
-                        </View>
-                        {isSelected && (
-                          <Check size={20} color={colors.primary.DEFAULT} />
-                        )}
-                      </Pressable>
-                    );
-                  })}
+                  return (
+                    <Pressable
+                      key={track.id}
+                      onPress={() => handleSubtitleSelect(track.language)}
+                      style={({ pressed }) => [
+                        styles.subtitleItem,
+                        isSelected && styles.subtitleItemSelected,
+                        pressed && styles.subtitleItemPressed,
+                      ]}
+                    >
+                      <View style={styles.subtitleItemContent}>
+                        <FlagWithSparkle
+                          language={track.language}
+                          hasAI={hasAI}
+                          size="medium"
+                          showTooltip={false}
+                        />
+                        <Text style={styles.subtitleItemText}>
+                          {track.language_name || track.language.toUpperCase()}
+                        </Text>
+                      </View>
+                      {isSelected && (
+                        <Check size={20} color={colors.primary.DEFAULT} />
+                      )}
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
 
               {/* Dual mode confirm button */}
-              {dualMode && dualLanguages && dualLanguages[0] !== dualLanguages[1] && (
-                <Pressable onPress={handleDualConfirm} style={styles.dualConfirmButton}>
-                  <Text style={styles.dualConfirmText}>
-                    {t('subtitles.splitScreen.confirm', 'Apply Dual Subtitles')}
-                  </Text>
-                </Pressable>
-              )}
+              {dualMode &&
+                dualLanguages &&
+                dualLanguages[0] !== dualLanguages[1] && (
+                  <Pressable
+                    onPress={handleDualConfirm}
+                    style={styles.dualConfirmButton}
+                  >
+                    <Text style={styles.dualConfirmText}>
+                      {t(
+                        "subtitles.splitScreen.confirm",
+                        "Apply Dual Subtitles",
+                      )}
+                    </Text>
+                  </Pressable>
+                )}
             </GlassView>
           </Pressable>
         </Pressable>
@@ -845,8 +1019,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
   },
   loadingText: {
@@ -858,42 +1032,42 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
   },
   heroSection: {
-    position: 'relative',
+    position: "relative",
   },
   posterContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
   backdropImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   videoContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
   bottomGradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    height: '75%',
+    height: "75%",
   },
   leftGradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
-    width: '60%',
+    width: "60%",
   },
   heroContent: {
-    position: 'absolute',
+    position: "absolute",
     left: spacing.xl * 3,
     right: spacing.xl * 3,
     bottom: spacing.xl * 3,
@@ -903,25 +1077,25 @@ const styles = StyleSheet.create({
     left: spacing.lg,
     right: spacing.lg,
     bottom: spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   mobileBackButton: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.xl,
     left: spacing.lg,
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 10,
   },
   mobileBackButtonPressed: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   categoryBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
@@ -930,23 +1104,23 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: fontSize.sm,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   movieTitle: {
     fontSize: 42,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginBottom: spacing.sm,
   },
   movieTitleMobile: {
     fontSize: 28,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.md,
   },
   metadataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
     gap: spacing.md,
     marginBottom: spacing.md,
   },
@@ -955,15 +1129,15 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   imdbContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   imdbBadge: {
     backgroundColor: IMDB_YELLOW,
@@ -973,18 +1147,18 @@ const styles = StyleSheet.create({
   },
   imdbLogoText: {
     fontSize: fontSize.sm,
-    fontWeight: '900',
+    fontWeight: "900",
     color: IMDB_TEXT,
     letterSpacing: -0.5,
   },
   imdbRatingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   imdbRating: {
     fontSize: fontSize.xl,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: IMDB_YELLOW,
   },
   imdbMaxRating: {
@@ -996,31 +1170,31 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   subtitlesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginBottom: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
-    alignSelf: 'flex-start',
-    cursor: 'pointer',
+    alignSelf: "flex-start",
+    cursor: "pointer",
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   subtitlesContainerPressed: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     borderColor: colors.primary.DEFAULT,
   },
   subtitlesLabel: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   subtitlesFlagRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
   },
   subtitleFlag: {
@@ -1030,48 +1204,48 @@ const styles = StyleSheet.create({
   subtitleFlagSelected: {
     opacity: 1,
     // @ts-ignore
-    transform: 'scale(1.1)',
+    transform: "scale(1.1)",
   },
   moreSubtitlesText: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   selectedIndicator: {
     width: 18,
     height: 18,
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(139, 92, 246, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(139, 92, 246, 0.3)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   heroDescription: {
     fontSize: fontSize.base,
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: "rgba(255, 255, 255, 0.85)",
     lineHeight: 24,
     marginBottom: spacing.lg,
   },
   actionButtonsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.md,
     marginBottom: spacing.lg,
   },
   actionButtonsRowMobile: {
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   disabledButton: {
     opacity: 0.5,
   },
   previewIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.full,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   liveIndicatorDot: {
     width: 8,
@@ -1082,7 +1256,7 @@ const styles = StyleSheet.create({
   previewIndicatorText: {
     fontSize: fontSize.sm,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   factsSection: {
     paddingHorizontal: spacing.xl * 3,
@@ -1090,7 +1264,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontSize.lg,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
     marginBottom: spacing.md,
   },
@@ -1098,7 +1272,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   factRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: spacing.sm,
   },
   factLabel: {
@@ -1110,7 +1284,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontSize.base,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   synopsisSection: {
     paddingHorizontal: spacing.xl * 3,
@@ -1123,14 +1297,14 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalContent: {
-    width: '90%',
+    width: "90%",
     maxWidth: 500,
-    maxHeight: '80%',
+    maxHeight: "80%",
   },
   subtitleModal: {
     borderRadius: borderRadius.xl,
@@ -1138,88 +1312,88 @@ const styles = StyleSheet.create({
     maxHeight: 600,
   },
   modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing.md,
     paddingBottom: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(139, 92, 246, 0.3)',
+    borderBottomColor: "rgba(139, 92, 246, 0.3)",
   },
   modalTitle: {
     fontSize: fontSize.lg,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
   },
   closeButton: {
     width: 32,
     height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   subtitleList: {
     maxHeight: 400,
   },
   subtitleItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
     marginBottom: spacing.xs,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   subtitleItemSelected: {
-    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    backgroundColor: "rgba(139, 92, 246, 0.3)",
     borderColor: colors.primary.DEFAULT,
   },
   subtitleItemPressed: {
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    backgroundColor: "rgba(139, 92, 246, 0.2)",
   },
   subtitleItemContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
   },
   subtitleItemText: {
     fontSize: fontSize.base,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   dualModeToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: spacing.md,
     marginBottom: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
     gap: spacing.sm,
   },
   dualModeToggleActive: {
-    borderColor: 'rgba(139, 92, 246, 0.5)',
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    borderColor: "rgba(139, 92, 246, 0.5)",
+    backgroundColor: "rgba(139, 92, 246, 0.1)",
   },
   dualModeIconContainer: {
     width: 32,
     height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
   },
   dualModeTextContainer: {
     flex: 1,
   },
   dualModeTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textSecondary,
   },
   dualModeTitleActive: {
@@ -1227,16 +1401,16 @@ const styles = StyleSheet.create({
   },
   dualModeDescription: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: "rgba(255, 255, 255, 0.4)",
     marginTop: 2,
   },
   dualModeSwitch: {
     width: 44,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     padding: 2,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   dualModeSwitchActive: {
     backgroundColor: colors.primary.DEFAULT,
@@ -1245,7 +1419,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
   },
   dualModeSwitchKnobActive: {
     backgroundColor: colors.text,
@@ -1259,11 +1433,11 @@ const styles = StyleSheet.create({
   dualModeInstructionText: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   dualModeCastingWarning: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.lg,
@@ -1278,11 +1452,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.lg,
     backgroundColor: colors.primary.DEFAULT,
-    alignItems: 'center',
+    alignItems: "center",
   },
   dualConfirmText: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.text,
   },
 });

@@ -110,9 +110,16 @@ async def create_moment(
     if not content.interactive_moments:
         content.interactive_moments = []
 
+    timestamp = moment_data.get("timestamp")
+    if not timestamp or float(timestamp) <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="timestamp is required and must be > 0 (seconds into video)",
+        )
+
     new_moment = {
         "id": str(PydanticObjectId()),
-        "timestamp": moment_data.get("timestamp", 0),
+        "timestamp": float(timestamp),
         "character_name": moment_data.get("character_name", ""),
         "interaction_prompt": moment_data.get("interaction_prompt", ""),
         "character_frame_url": moment_data.get("character_frame_url"),

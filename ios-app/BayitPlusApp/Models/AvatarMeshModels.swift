@@ -1,7 +1,7 @@
 import Foundation
 
-/// APIClient uses .convertFromSnakeCase key decoding, so explicit
-/// snake_case CodingKeys are unnecessary and would conflict.
+// APIClient uses .convertFromSnakeCase key decoding, so explicit
+// snake_case CodingKeys are unnecessary and would conflict.
 
 struct CreatifyAvatarStatus: Codable, Identifiable {
     let avatarId: String
@@ -10,10 +10,13 @@ struct CreatifyAvatarStatus: Codable, Identifiable {
     let status: String
     let avatarImageUrl: String?
     let errorMessage: String?
+    let hasVoiceClone: Bool
     let createdAt: String
     let updatedAt: String
 
-    var id: String { avatarId }
+    var id: String {
+        avatarId
+    }
 }
 
 enum BiometricConsentType: String, CaseIterable {
@@ -29,7 +32,10 @@ struct BiometricConsentStatus: Codable {
 }
 
 struct ConsentEntry: Codable, Identifiable {
-    var id: String { consentType }
+    var id: String {
+        consentType
+    }
+
     let consentType: String
     let active: Bool
 }
@@ -51,7 +57,9 @@ struct CharacterProfile: Codable, Identifiable {
     let personalityTraits: [String]?
     let relationshipToOthers: String?
 
-    var id: String { name }
+    var id: String {
+        name
+    }
 }
 
 struct InteractiveMoment: Codable, Identifiable {
@@ -71,7 +79,9 @@ struct InteractiveMoment: Codable, Identifiable {
     let allowCrossCharacterReactions: Bool?
     let maxActiveCharacters: Int?
 
-    var id: Double { timestamp }
+    var id: Double {
+        timestamp
+    }
 }
 
 struct VODSessionResponse: Codable {
@@ -103,7 +113,9 @@ struct ContentCharacter: Codable, Identifiable {
     let description: String
     let movieContext: String
 
-    var id: String { name }
+    var id: String {
+        name
+    }
 }
 
 struct DialogueExchange: Codable, Identifiable {
@@ -117,7 +129,9 @@ struct DialogueExchange: Codable, Identifiable {
     let participantUserId: String?
     let participantName: String?
 
-    var id: String { "\(speaker)-\(messageText.prefix(20))" }
+    var id: String {
+        "\(speaker)-\(messageText.prefix(20))"
+    }
 }
 
 // MARK: - Multi-Character Interaction
@@ -144,7 +158,9 @@ struct SharedParticipant: Codable, Identifiable {
     let avatarImageUrl: String?
     let displayName: String
 
-    var id: String { userId }
+    var id: String {
+        userId
+    }
 }
 
 struct SharedSessionState: Codable {

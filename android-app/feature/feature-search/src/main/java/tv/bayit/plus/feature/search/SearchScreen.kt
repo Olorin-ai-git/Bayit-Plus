@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.ContentItem
+import tv.bayit.plus.core.model.resolveContentType
 import tv.bayit.plus.designsystem.component.GlassSearchBar
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
@@ -32,7 +33,7 @@ fun SearchRoute(
         onFilterClick = viewModel::selectFilter,
         onSuggestionClick = viewModel::onSuggestionClick,
         onContentClick = { item ->
-            val type = item.type ?: if (item.isSeries == true) "series" else "movie"
+            val type = resolveContentType(item)
             onNavigateToContent(item.id, type)
         },
         modifier = modifier,

@@ -79,6 +79,8 @@ class MovieDetailViewModel @Inject constructor(
                         related = detail.related.orEmpty(),
                         isFavorite = false,
                         streamUrl = detail.directUrl ?: detail.streamUrl,
+                        trailerStreamUrl = detail.trailerStreamUrl ?: detail.trailerUrl,
+                        hasTrailer = detail.trailerStreamUrl != null || detail.trailerUrl != null,
                         isDownloaded = existingDownload != null,
                     )
                 }
@@ -158,6 +160,8 @@ sealed interface MovieDetailUiState {
         val related: List<RelatedItem>,
         val isFavorite: Boolean,
         val streamUrl: String? = null,
+        val trailerStreamUrl: String? = null,
+        val hasTrailer: Boolean = false,
         val isDownloading: Boolean = false,
         val isDownloaded: Boolean = false,
     ) : MovieDetailUiState

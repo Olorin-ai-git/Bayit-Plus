@@ -3953,8 +3953,8 @@
     "appVersion": "🏠 Bayit+ v1.0.0",
     "slogan": "您的家，随处可及。",
     "ok": "确定",
-    "untitled": "无标题",
-    "percent": "百分比",
+    "untitled": "Untitled",
+    "percent": "%",
     "success": "成功",
     "warning": "警告",
     "confirm": "确认",
@@ -4055,13 +4055,11 @@
     "maybeLater": "Maybe Later",
     "medium": "Medium",
     "or": "or",
-    "percent": "%",
     "playlist": "Playlist",
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
     "unavailable": "Unavailable",
-    "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
     "content": "Content",
@@ -6100,17 +6098,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6122,10 +6111,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -6303,6 +6289,13 @@
     "interaction": {
       "previous": "上一个互动",
       "next": "下一个互动"
+    },
+    "pauseAsk": {
+      "title": "互动",
+      "processing": "处理中...",
+      "askAnother": "再问一个",
+      "resumeMovie": "继续",
+      "selectCharacter": "选择角色"
     },
     "sleepTimer": {
       "title": "睡眠定时器",
@@ -9080,225 +9073,35 @@
     }
   },
   "zehAni": {
-    "mesh": {
-      "title": "3D头像",
-      "subtitle": "从您的视频自拍创建3D头像",
-      "generating": "正在创建您的3D模型...",
-      "rigging": "正在添加动画...",
-      "ready": "您的3D头像已准备就绪！",
-      "failed": "无法创建3D头像",
-      "retry": "重试",
-      "downloadGlb": "下载3D模型",
-      "viewIn3d": "查3D查看",
-      "statusFailed": "生成失败",
-      "statusGenerating": "正在生成3D模型...",
-      "statusIdle": "准备生成",
-      "statusReady": "3D模型就绪",
-      "statusRigging": "添加动画中...",
-      "viewPreview": "查看3D预览"
-    },
-    "arCapture": {
-      "title": "面部扫描",
-      "subtitle": "通过面部扫描创建您的3D头像",
-      "holdStill": "保持不动...",
-      "smile": "微笑！",
-      "openMouth": "张大嘴巴",
-      "raiseBrows": "抬起眉毛",
-      "processing": "正在构建您的3D模型...",
-      "complete": "面部扫描完成！",
-      "noFace": "未检测到面部。请重试。"
-    },
-    "consent": {
-      "biometric": {
-        "title": "生物识别数据同意",
-        "subtitle": "此功能使用面部数据创建3D头像",
-        "explanation": "我们使用您的面部和语音数据创建个性化AI体验。这些数据经过安全处理,绝不会与第三方共享。",
-        "privacy": "您的生物识别数据已加密并安全存储。您可以随时撤销同意。",
-        "pinLabel": "家庭 PIN",
-        "consentTypes": "同意类型",
-        "meshGeneration": "3D头像生成",
-        "voiceV2V": "声音转换",
-        "latentFeatures": "特征分析",
-        "currentStatus": "当前状态",
-        "pinPlaceholder": "输入PIN",
-        "enterPin": "输入家庭 PIN",
-        "submit": "提交同意",
-        "grantConsent": "授予同意",
-        "revokeConsent": "撤销同意",
-        "consentGranted": "已授予同意",
-        "consentRevoked": "已撤销同意",
-        "pinRequired": "需要家庭 PIN",
-        "invalidPin": "无效 PIN",
-        "familyControlsRequired": "需要家庭控制",
-        "familyControlsExplain": "生物识别同意需要先设置家庭控制。家庭PIN码用于保护生物识别数据的访问。前往家庭控制创建您的PIN码。",
-        "goToFamilyControls": "前往家庭控制"
-      }
-    },
-    "preview3d": {
-      "title": "3D预览",
-      "loading": "正在加载3D模型...",
-      "rotate": "拖拽旋转",
-      "pinchToZoom": "捨合缩放",
-      "error": "无法加载3D模型"
-    },
-    "preview": {
-      "error": "无法加载预览",
-      "loading": "加载预览中...",
-      "title": "3D预览"
-    },
-    "v2v": {
-      "title": "语音练习",
-      "subtitle": "用自己的声音练习希伯来语",
-      "startPractice": "开始练习",
-      "listening": "正在聆听...",
-      "transforming": "正在转换语音...",
-      "result": "结果",
-      "before": "转换前",
-      "after": "转换后",
-      "improvement": "改善程度",
-      "tryAgain": "重试",
-      "sessionComplete": "练习完成",
-      "averageImprovement": "平均改善程度",
-      "beforeAfter": "前后对比",
-      "latency": "延迟",
-      "nextPhrase": "下一个短语",
-      "retry": "重试"
-    },
-    "liveLayer": {
-      "title": "实时头像",
-      "connecting": "连接中...",
-      "connected": "已连接",
-      "disconnected": "已断开"
-    },
-    "trigger": {
-      "listen": "仔细听",
-      "sayWord": "说出这个词",
-      "correct": "正确！",
-      "tryAgain": "再试一次",
-      "skip": "跳过",
-      "scoreLabel": "得分",
-      "continue": "继续",
-      "dismiss": "关闭",
-      "errors": {
-        "microphoneFailed": "无法访问麦克风"
-      },
-      "incorrect": "不太对",
-      "prompt": "说出屏幕上显示的单词",
-      "success": "太棒了!"
-    },
-    "magicMirror": {
-      "title": "魔镜",
-      "greeting": "早上好！",
-      "vocabOfDay": "每日一词",
-      "refresh": "刷新",
-      "loading": "正在加载问候语...",
-      "error": "无法加载问候语",
-      "noAvatar": "创建你的头像",
-      "noAvatarDesc": "设置您孩子的头像，解锁包含每日希伯来语词汇的个性化魔镜问候。",
-      "createAvatar": "开始",
-      "noCreditsTitle": "没有剩余积分",
-      "noCreditsDesc": "您已用完所有AI积分。请升级您的计划或等待积分刷新。",
-      "meshUnavailable": "3D头像加载中..."
-    },
-    "highlights": {
-      "title": "精彩集锦",
-      "generate": "生成视频",
-      "generating": "生成中...",
-      "ready": "就绪",
-      "failed": "生成失败",
-      "share": "分享",
-      "momentCount": "个精彩瞬间",
-      "empty": "还没有精彩集锦",
-      "status": {
-        "pending": "等待中",
-        "selecting": "正在选择精彩瞬间",
-        "rendering": "正在渲染视频",
-        "ready": "可以分享",
-        "failed": "失败"
-      }
-    },
-    "contacts": {
-      "title": "祖父母联系人",
-      "add": "添加联系人",
-      "name": "显示名称",
-      "phone": "电话号码",
-      "relationship": "关系",
-      "language": "语言",
-      "empty": "还没有添加联系人",
-      "delete": "删除联系人",
-      "reelsSent": "已发送视频",
-      "pin": "家庭PIN"
-    },
-    "feedback": {
-      "title": "反馈收件箱",
-      "empty": "还没有反馈",
-      "from": "来自",
-      "voiceMessage": "语音消息",
-      "textMessage": "文字消息"
-    },
-    "dashboard": {
-      "title": "Zeh Ani",
-      "mirrorSection": "魔镜",
-      "reelsSection": "精彩集锦",
-      "contactsSection": "联系人",
-      "feedbackSection": "反馈"
-    },
-    "hub": {
-      "title": "Zeh Ani中心",
-      "magicMirror": "魔镜",
-      "magicMirrorDesc": "带有个性化问候和每日希伯来语单词的交互式AI魔镜",
-      "highlights": "精彩集锦",
-      "highlightsDesc": "生成并与亲人分享难忘的瞬间集锦",
-      "contacts": "祖父母联系人",
-      "contactsDesc": "管理联系人以分享您的精彩集锦",
-      "feedback": "反馈收件箱",
-      "feedbackDesc": "接收家人的语音和文字消息",
-      "consent": "生物识别同意",
-      "consentDesc": "管理面部和语音数据的同意设置",
-      "movieInteractions": "电影互动",
-      "movieInteractionsDesc": "浏览电影并与你最喜欢的角色交谈"
-    },
     "movieInteractions": {
       "title": "电影互动",
-      "subtitle": "选择一部电影并与角色交谈",
-      "tagMovie": "标记电影",
-      "tagging": "正在提取角色...",
-      "tagged": "就绪",
-      "noMovies": "尚未标记任何电影。标记一部电影开始与角色交谈。",
-      "characters": {
-        "title": "角色",
-        "subtitle": "选择一个角色来交谈",
-        "playedBy": "由{{actorName}}饰演",
-        "noCharacters": "没有可用的角色"
-      },
-      "dialogue": {
-        "title": "与{{characterName}}交谈",
-        "specificQuestions": "角色问题",
-        "genericQuestions": "通用问题",
-        "customQuestion": "提出你自己的问题",
-        "placeholder": "输入问题...",
-        "generatingResponse": "思考中...",
-        "generatingAudio": "创建语音...",
-        "generatingVideo": "创建视频...",
-        "creditCost": "花费{{credits}}积分",
-        "askAnother": "问另一个问题",
-        "sending": "发送中..."
-      },
-      "errors": {
-        "fetchFailed": "加载电影失败",
-        "tagFailed": "标记电影失败",
-        "charactersFailed": "加载角色失败",
-        "questionsFailed": "加载问题失败",
-        "dialogueFailed": "发送消息失败"
-      }
+      "subtitle": "选择一部电影并与你喜欢的角色对话",
+      "moviesSection": "电影",
+      "charactersSection": "角色",
+      "questionsSection": "问题",
+      "empty": "暂无可互动电影",
+      "characterCount": "{{count}}个角色"
     },
-    "avatar3d": {
-      "errorTitle": "3D Avatar Error",
-      "loading": "Loading 3D Avatar...",
-      "resetCamera": "Reset Camera",
-      "title": "3D Avatar Preview"
+    "dialogue": {
+      "specificQuestions": "角色问题",
+      "genericQuestions": "通用问题",
+      "placeholder": "提问...",
+      "send": "发送",
+      "you": "你"
     },
-    "subtitle": "Interactive experiences and social features"
+    "subtitle": "你的互动身份",
+    "hub": {
+      "magicMirror": "魔镜",
+      "magicMirrorDesc": "看看自己作为故事中的角色",
+      "highlights": "精彩集锦",
+      "highlightsDesc": "你最好的互动时刻",
+      "movieInteractions": "电影互动",
+      "movieInteractionsDesc": "与你喜欢的角色对话",
+      "contacts": "联系人",
+      "contactsDesc": "管理家庭联系人以便分享",
+      "feedback": "反馈",
+      "feedbackDesc": "来自家人和朋友的消息"
+    }
   },
   "starStory": {
     "title": "故事之星",

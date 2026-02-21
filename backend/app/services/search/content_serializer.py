@@ -35,6 +35,8 @@ def content_to_dict(content: Content) -> Dict[str, Any]:
         "narrator": content.narrator,
         "content_type": derived_type,
         "is_series": False,
+        "series_id": content.series_id,
+        "total_episodes": content.total_episodes,
         "requires_subscription": content.requires_subscription,
         "is_kids_content": content.is_kids_content,
         "age_rating": content.age_rating,

@@ -218,7 +218,7 @@ fun BayitNavHost(
         composable<Route.SeriesDetail> {
             SeriesDetailRoute(
                 onNavigateToPlayer = { id -> navController.navigate(Route.Player(contentId = id, contentType = "episode")) },
-                onNavigateToRelated = { id -> navController.navigate(Route.MovieDetail(movieId = id)) },
+                onNavigateToRelated = { id -> navController.navigate(Route.SeriesDetail(seriesId = id)) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }
@@ -605,7 +605,7 @@ fun BayitNavHost(
                 onNavigateToMagicMirror = { profileId -> navController.navigate(Route.ZehAniMagicMirror(profileId = profileId, avatarId = "")) },
                 onNavigateToV2V = { profileId -> navController.navigate(Route.ZehAniV2V(avatarId = "", profileId = profileId)) },
                 onNavigateToAvatar3D = { profileId -> navController.navigate(Route.ZehAniAvatar3D(avatarId = profileId)) },
-                onNavigateToHighlights = { profileId -> navController.navigate(Route.ZehAniHighlights(profileId = profileId)) },
+                onNavigateToMovieInteractions = { profileId -> navController.navigate(Route.ZehAniHighlights(profileId = profileId)) },
                 onNavigateToContacts = { profileId -> navController.navigate(Route.ZehAniContacts(profileId = profileId)) },
                 onNavigateToFeedback = { profileId -> navController.navigate(Route.ZehAniFeedback(profileId = profileId)) },
                 onNavigateToConsent = { navController.navigate(Route.ZehAniConsent) },

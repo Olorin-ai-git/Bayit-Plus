@@ -2,7 +2,6 @@ import BayitNetworking
 import Foundation
 
 protocol MovieInteractionRepository: Sendable {
-
     func listInteractableMovies() async throws -> [InteractableMovieItem]
 
     func tagMovie(
@@ -21,7 +20,6 @@ protocol MovieInteractionRepository: Sendable {
 }
 
 final class APIMovieInteractionRepository: MovieInteractionRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -68,11 +66,9 @@ final class APIMovieInteractionRepository: MovieInteractionRepository, @unchecke
         contentId: String,
         characterName: String
     ) async throws -> CharacterQuestionsItem {
-        let encoded = characterName.addingPercentEncoding(
-            withAllowedCharacters: .urlQueryAllowed
-        ) ?? characterName
         return try await client.get(
-            "/api/v1/movie-interactions/characters/\(contentId)/questions?character_name=\(encoded)",
+            "/api/v1/movie-interactions/characters/\(contentId)/questions",
+            queryItems: [URLQueryItem(name: "character_name", value: characterName)],
             as: CharacterQuestionsItem.self
         )
     }

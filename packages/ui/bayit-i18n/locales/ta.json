@@ -4114,6 +4114,16 @@
       "voiceConsentRequired": "குரல் தொடர்புக்கு குரல் ஒப்புதல் தேவை",
       "micPermissionDenied": "ஒலிவாங்கி அனுமதி மறுக்கப்பட்டது"
     },
+    "pauseAsk": {
+      "title": "கதாபாத்திரத்திடம் கேளுங்கள்",
+      "selectCharacter": "யாரிடம் பேச வேண்டும் என்று தேர்வு செய்யுங்கள்",
+      "processing": "உங்கள் கேள்வியை தயார் செய்கிறது...",
+      "userSpeaking": "நீங்கள் கேட்கிறீர்கள்...",
+      "characterSpeaking": "பதில் அளிக்கிறது...",
+      "resumeMovie": "திரைப்படத்தை தொடரவும்",
+      "askAnother": "மற்றொரு கேள்வி கேளுங்கள்",
+      "requiresVoiceClone": "இந்த அம்சத்தை பயன்படுத்த உங்கள் அவதாரின் குரலை உருவாக்குங்கள்"
+    },
     "multiCharacter": {
       "selectCharacter": "உரையாட கதாபாத்திரத்தை தேர்வுசெய்",
       "talkingTo": "உரையாடுகிறது",
@@ -9563,5 +9573,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "திரைப்பட இடையொழிப்பு",
+      "subtitle": "ஒரு திரைப்படத்தை தேர்ந்து நீங்கள் விரும்பும் கதாபாத்திரங்களுடன் பேசுங்கள்",
+      "moviesSection": "திரைப்படங்கள்",
+      "charactersSection": "கதாபாத்திரங்கள்",
+      "questionsSection": "கேள்விகள்",
+      "empty": "இன்னும் இடையொழிப்பு திரைப்படங்கள் இல்லை",
+      "characterCount": "{{count}} கதாபாத்திரங்கள்"
+    },
+    "dialogue": {
+      "specificQuestions": "கதாபாத்திர கேள்விகள்",
+      "genericQuestions": "பொதுவான கேள்விகள்",
+      "placeholder": "கேள்வி கேளுங்கள்...",
+      "send": "அனுப்பு",
+      "you": "நீங்கள்"
+    },
+    "subtitle": "உங்கள் இடையொழிப்பு அடையாளம்",
+    "hub": {
+      "magicMirror": "மாயக் கண்ணாடி",
+      "magicMirrorDesc": "கதையில் ஒரு கதாபாத்திரமாக நீங்களை பாருங்கள்",
+      "highlights": "சிறப்பு தொகுப்பு",
+      "highlightsDesc": "உங்கள் சிறந்த இடையொழிப்பு நிமிடங்கள்",
+      "movieInteractions": "திரைப்பட இடையொழிப்பு",
+      "movieInteractionsDesc": "நீங்கள் விரும்பும் கதாபாத்திரங்களுடன் பேசுங்கள்",
+      "contacts": "தொடர்புகள்",
+      "contactsDesc": "பகிர்வதற்கான குடும்ப தொடர்புகளை நிர்வகிக்கவும்",
+      "feedback": "கருத்து",
+      "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்"
+    }
   }
 }

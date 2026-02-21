@@ -52,7 +52,7 @@ fun LLMSearchRoute(
         onAskQuestion = { viewModel.askQuestion(uiState.query) },
         onClearHistory = viewModel::clearHistory,
         onResultClick = { item ->
-            onNavigateToContent(item.id, item.type ?: "movie")
+            onNavigateToContent(item.id, item.type.orEmpty().ifEmpty { "movie" })
         },
         onNavigateBack = onNavigateBack,
         modifier = modifier,

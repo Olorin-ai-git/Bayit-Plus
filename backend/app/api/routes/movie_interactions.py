@@ -17,6 +17,7 @@ from fastapi import (
     status,
 )
 
+from app.api.routes.content.utils import convert_to_proxy_url
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
@@ -29,6 +30,7 @@ from app.models.movie_interaction import (
     MovieTagStatus,
 )
 from app.models.user import User
+from app.models.vod_interaction import ContentCharacter
 from app.services.vod_interaction.character_extractor import (
     character_extractor_service,
 )
@@ -44,6 +46,18 @@ router = APIRouter(
 )
 
 _TAG_JOBS: dict[str, str] = {}
+
+
+def _proxy_character_urls(
+    characters: List[ContentCharacter],
+) -> List[ContentCharacter]:
+    """Proxy GCS URLs in character frame_url fields so clients can access them."""
+    proxied: List[ContentCharacter] = []
+    for char in characters:
+        proxied.append(char.model_copy(update={
+            "frame_url": convert_to_proxy_url(char.frame_url),
+        }))
+    return proxied
 
 
 async def _run_extraction(content_id: str) -> None:
@@ -118,7 +132,9 @@ async def tag_movie(
         return MovieTagStatus(
             content_id=request.content_id,
             status="ready",
-            characters=content.interactive_characters,
+            characters=_proxy_character_urls(
+                content.interactive_characters,
+            ),
         )
 
     current = _TAG_JOBS.get(request.content_id)
@@ -164,7 +180,9 @@ async def get_tag_status(
         return MovieTagStatus(
             content_id=content_id,
             status="ready",
-            characters=content.interactive_characters,
+            characters=_proxy_character_urls(
+                content.interactive_characters,
+            ),
         )
 
     job_status = _TAG_JOBS.get(content_id, "pending")
@@ -189,10 +207,11 @@ async def list_interactable_movies(
 
     movies: List[InteractableMovie] = []
     for c in contents:
+        raw_poster = c.poster_url if hasattr(c, "poster_url") else None
         movies.append(InteractableMovie(
             content_id=str(c.id),
             title=c.title or "",
-            poster_url=c.poster_url if hasattr(c, "poster_url") else None,
+            poster_url=convert_to_proxy_url(raw_poster) if raw_poster else None,
             character_count=len(c.interactive_characters),
             status="ready",
         ))

@@ -19,9 +19,6 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
-/**
- * Navigation entry-point for the Series Detail screen.
- */
 @Composable
 fun SeriesDetailRoute(
     onNavigateToPlayer: (String) -> Unit,
@@ -35,8 +32,10 @@ fun SeriesDetailRoute(
     SeriesDetailScreen(
         uiState = uiState,
         onEpisodePlay = onNavigateToPlayer,
+        onPlayAll = { viewModel.firstEpisodeId()?.let(onNavigateToPlayer) },
         onSeasonSelected = viewModel::selectSeason,
         onEpisodeDownload = viewModel::downloadEpisode,
+        onToggleFavorite = viewModel::toggleFavorite,
         onRelatedClick = onNavigateToRelated,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
@@ -48,8 +47,10 @@ fun SeriesDetailRoute(
 internal fun SeriesDetailScreen(
     uiState: SeriesDetailUiState,
     onEpisodePlay: (String) -> Unit,
+    onPlayAll: () -> Unit,
     onSeasonSelected: (Int) -> Unit,
     onEpisodeDownload: (EpisodeItem) -> Unit,
+    onToggleFavorite: () -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
@@ -66,8 +67,10 @@ internal fun SeriesDetailScreen(
             is SeriesDetailUiState.Success -> SeriesSuccessContent(
                 state = uiState,
                 onEpisodePlay = onEpisodePlay,
+                onPlayAll = onPlayAll,
                 onSeasonSelected = onSeasonSelected,
                 onEpisodeDownload = onEpisodeDownload,
+                onToggleFavorite = onToggleFavorite,
                 onRelatedClick = onRelatedClick,
                 onBack = onBack,
             )
@@ -79,14 +82,17 @@ internal fun SeriesDetailScreen(
 private fun SeriesSuccessContent(
     state: SeriesDetailUiState.Success,
     onEpisodePlay: (String) -> Unit,
+    onPlayAll: () -> Unit,
     onSeasonSelected: (Int) -> Unit,
     onEpisodeDownload: (EpisodeItem) -> Unit,
+    onToggleFavorite: () -> Unit,
     onRelatedClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { SeriesHeroSection(state, onBack) }
         item { SeriesMetadataSection(state) }
+        item { SeriesActionRow(state.isFavorite, onToggleFavorite, onPlayAll) }
         if (state.seasons.isNotEmpty()) {
             item {
                 SeasonTabRow(
@@ -99,30 +105,22 @@ private fun SeriesSuccessContent(
         if (state.isLoadingEpisodes) {
             item {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(DesignTokens.Spacing.xxxxl),
+                    modifier = Modifier.fillMaxWidth().height(DesignTokens.Spacing.xxxxl),
                     contentAlignment = Alignment.Center,
-                ) {
-                    GlassSpinner(size = SpinnerSize.MEDIUM)
-                }
+                ) { GlassSpinner(size = SpinnerSize.MEDIUM) }
             }
         } else {
             items(items = state.episodes, key = { it.id }) { episode ->
-                EpisodeRow(
+                SeriesEpisodeRow(
                     episode = episode,
+                    selectedSeason = state.selectedSeason,
                     onPlay = { onEpisodePlay(episode.id) },
                     onDownload = { onEpisodeDownload(episode) },
                 )
             }
         }
         if (state.related.isNotEmpty()) {
-            item {
-                SeriesRelatedShelf(
-                    related = state.related,
-                    onRelatedClick = onRelatedClick,
-                )
-            }
+            item { SeriesRelatedShelf(related = state.related, onRelatedClick = onRelatedClick) }
         }
     }
 }

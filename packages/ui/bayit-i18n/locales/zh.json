@@ -4563,6 +4563,16 @@
       "voiceConsentRequired": "语音交互需要语音同意",
       "micPermissionDenied": "麦克风权限被拒绝"
     },
+    "pauseAsk": {
+      "title": "向角色提问",
+      "selectCharacter": "选择与谁对话",
+      "processing": "正在准备你的问题...",
+      "userSpeaking": "你正在提问...",
+      "characterSpeaking": "正在回答...",
+      "resumeMovie": "继续播放",
+      "askAnother": "再问一个问题",
+      "requiresVoiceClone": "创建你的头像语音以使用此功能"
+    },
     "multiCharacter": {
       "selectCharacter": "选择要对话的角色",
       "talkingTo": "正在与...对话",
@@ -9492,5 +9502,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "电影互动",
+      "subtitle": "选择一部电影并与你喜欢的角色对话",
+      "moviesSection": "电影",
+      "charactersSection": "角色",
+      "questionsSection": "问题",
+      "empty": "暂无可互动电影",
+      "characterCount": "{{count}}个角色"
+    },
+    "dialogue": {
+      "specificQuestions": "角色问题",
+      "genericQuestions": "通用问题",
+      "placeholder": "提问...",
+      "send": "发送",
+      "you": "你"
+    },
+    "subtitle": "你的互动身份",
+    "hub": {
+      "magicMirror": "魔镜",
+      "magicMirrorDesc": "看看自己作为故事中的角色",
+      "highlights": "精彩集锦",
+      "highlightsDesc": "你最好的互动时刻",
+      "movieInteractions": "电影互动",
+      "movieInteractionsDesc": "与你喜欢的角色对话",
+      "contacts": "联系人",
+      "contactsDesc": "管理家庭联系人以便分享",
+      "feedback": "反馈",
+      "feedbackDesc": "来自家人和朋友的消息"
+    }
   }
 }

@@ -124,6 +124,7 @@ class AtlasSearchExecutor:
             {"$addFields": {"search_score": {"$meta": "searchScore"}}},
             {"$limit": fetch_limit},
         ]
+
         if sort_by != SortField.RELEVANCE:
             field = _SORT_FIELD_MAP.get(sort_by, "created_at")
             direction = 1 if sort_order == SortOrder.ASC else -1
@@ -187,10 +188,12 @@ class AtlasSearchExecutor:
         }),
         "series": (Content, "is_published", "vod", {
             "content_format": {"$ne": "audiobook"},
-            "$or": [
-                {"category_name": {"$regex": _SERIES_REGEX, "$options": "i"}},
-                {"series_id": {"$exists": True, "$ne": None}},
-                {"total_episodes": {"$exists": True, "$ne": None, "$gt": 0}},
+            "category_name": {"$regex": _SERIES_REGEX, "$options": "i"},
+            "total_episodes": {"$gt": 0},
+            "$and": [
+                {"$or": [{"series_id": None}, {"series_id": {"$exists": False}}, {"series_id": ""}]},
+                {"$or": [{"season": None}, {"season": {"$exists": False}}]},
+                {"$or": [{"episode": None}, {"episode": {"$exists": False}}]},
             ],
         }),
         "collection": (Content, "is_published", "vod", {
@@ -334,4 +337,8 @@ def _filter_by_subtype(results: List[ScoredResult], subtype: str) -> List[Scored
     """Filter search results by derived content_type to match the requested subtype."""
     if subtype == "vod":
         return [r for r in results if r.content_dict.get("content_type") != "audiobook"]
+    if subtype == "series":
+        return [r for r in results if r.content_dict.get("content_type") == "series"
+                and not r.content_dict.get("series_id")
+                and (r.content_dict.get("total_episodes") or 0) > 0]
     return [r for r in results if r.content_dict.get("content_type") == subtype]

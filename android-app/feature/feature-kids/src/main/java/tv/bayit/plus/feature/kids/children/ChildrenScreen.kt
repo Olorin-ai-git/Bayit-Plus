@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.ContentItem
+import tv.bayit.plus.core.model.resolveContentType
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
@@ -42,8 +43,7 @@ fun ChildrenRoute(
     ChildrenScreen(
         uiState = uiState,
         onContentClick = { item ->
-            val type = item.type ?: if (item.isSeries == true) "series" else "movie"
-            onNavigateToContent(item.id, type)
+            onNavigateToContent(item.id, resolveContentType(item))
         },
         onRefresh = viewModel::refresh,
         modifier = modifier,

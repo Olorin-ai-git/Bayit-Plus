@@ -4345,6 +4345,16 @@
       "voiceConsentRequired": "Consenso vocale richiesto per l'interazione vocale",
       "micPermissionDenied": "Autorizzazione microfono negata"
     },
+    "pauseAsk": {
+      "title": "Chiedi a un personaggio",
+      "selectCharacter": "Scegli con chi parlare",
+      "processing": "Preparazione della domanda...",
+      "userSpeaking": "Stai chiedendo...",
+      "characterSpeaking": "Sta rispondendo...",
+      "resumeMovie": "Riprendi il film",
+      "askAnother": "Fai un'altra domanda",
+      "requiresVoiceClone": "Crea la voce del tuo avatar per usare questa funzione"
+    },
     "multiCharacter": {
       "selectCharacter": "Seleziona personaggio a cui rivolgerti",
       "talkingTo": "Stai parlando con",
@@ -9736,5 +9746,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "Interazioni con i film",
+      "subtitle": "Scegli un film e parla con i tuoi personaggi preferiti",
+      "moviesSection": "Film",
+      "charactersSection": "Personaggi",
+      "questionsSection": "Domande",
+      "empty": "Nessun film interattivo disponibile al momento",
+      "characterCount": "{{count}} personaggi"
+    },
+    "dialogue": {
+      "specificQuestions": "Domande sul personaggio",
+      "genericQuestions": "Domande generali",
+      "placeholder": "Fai una domanda...",
+      "send": "Invia",
+      "you": "Tu"
+    },
+    "subtitle": "La tua identita interattiva",
+    "hub": {
+      "magicMirror": "Specchio Magico",
+      "magicMirrorDesc": "Vediti come un personaggio nella storia",
+      "highlights": "Momenti Salienti",
+      "highlightsDesc": "I tuoi migliori momenti interattivi",
+      "movieInteractions": "Interazioni Film",
+      "movieInteractionsDesc": "Parla con i tuoi personaggi preferiti",
+      "contacts": "Contatti",
+      "contactsDesc": "Gestisci i contatti familiari per la condivisione",
+      "feedback": "Feedback",
+      "feedbackDesc": "Messaggi da famiglia e amici"
+    }
   }
 }

@@ -1,0 +1,2518 @@
+
+    ✻
+    |
+   ▟█▙     Claude Code v2.1.45
+ ▐▛███▜▌   Opus 4.6 · Claude Max
+▝▜█████▛▘  ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+  ▘▘ ▝▝  
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ WebSocket Gateway Extraction Plan                                            │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ Bayit+ backend is a FastAPI monolith on Cloud Run with 157 route files, 215+ │
+│  services, and 24 WebSocket route files (~5K lines). All WebSocket state     │
+│ (connection tracking, room membership, active sessions) is in-memory only -- │
+│  meaning Cloud Run multi-instance scaling silently breaks multi-user         │
+│ features like watch parties, chess, and channel chat. Users on different     │
+│ instances never see each other's messages.                                   │
+│                                                                              │
+│ Extracting WebSocket routes into a dedicated bayit-ws-gateway Cloud Run      │
+│ service solves this by:                                                      │
+│                                                                              │
+│ 1. Introducing Redis pub/sub for cross-instance messaging                    │
+│ 2. Allowing independent scaling (3600s timeout for WS vs 300s for REST)      │
+│ 3. Reducing monolith cold-start time and memory footprint                    │
+│                                                                              │
+│ Routing: Separate subdomain ws.bayit.tv (REST stays on api.bayit.tv).        │
+│ Redis: New infrastructure -- no existing Redis/Memorystore.                  │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 1: Redis Infrastructure (Week 1)                                       │
+│                                                                              │
+│ Goal: Provision Memorystore, add Redis pub/sub library to monolith, no       │
+│ behavior change yet.                                                         │
+│                                                                              │
+│ 1.1 Provision Google Cloud Memorystore for Redis                             │
+│                                                                              │
+│ - Standard tier (automatic failover), 1GB, us-east1                          │
+│ - Create VPC connector bayit-vpc-connector if not exists                     │
+│ - Attach VPC connector to existing bayit-backend-production Cloud Run        │
+│ service                                                                      │
+│ - Add REDIS_URL to Google Cloud Secret Manager                               │
+│ - Add REDIS_URL env var to cloudbuild.yaml secrets block                     │
+│                                                                              │
+│ 1.2 Add Redis pub/sub module to monolith                                     │
+│                                                                              │
+│ Create backend/app/core/pubsub.py (~150 lines):                              │
+│                                                                              │
+│ - PubSubManager class wrapping redis.asyncio pub/sub                         │
+│ - Methods: publish(channel, message), subscribe(channel, callback),          │
+│ unsubscribe(channel)                                                         │
+│ - Auto-reconnect with exponential backoff                                    │
+│ - Graceful degradation: if Redis unavailable, log warning and skip (same as  │
+│ current behavior)                                                            │
+│                                                                              │
+│ Wire into app/main.py lifespan (connect on startup, close on shutdown).      │
+│                                                                              │
+│ 1.3 Update dependencies                                                      │
+│                                                                              │
+│ - Add redis[hiredis]>=5.0.0,<6.0.0 to pyproject.toml (already listed --      │
+│ verify hiredis extra)                                                        │
+│ - Verify redis.asyncio works with Motor's event loop                         │
+│                                                                              │
+│ Files to modify:                                                             │
+│                                                                              │
+│ - backend/app/core/pubsub.py (new, ~150 lines)                               │
+│ - backend/app/core/config.py (add REDIS_URL setting)                         │
+│ - backend/app/main.py (add Redis to lifespan)                                │
+│ - backend/pyproject.toml (verify redis dependency)                           │
+│ - cloudbuild.yaml (add REDIS_URL secret)                                     │
+│                                                                              │
+│ Verification: Deploy monolith, confirm health check passes, Redis connects   │
+│ (check logs), no behavior change for users.                                  │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 2: Redis-Backed Connection Manager (Week 2)                            │
+│                                                                              │
+│ Goal: Replace in-memory state with Redis-backed equivalents inside the       │
+│ monolith. This fixes the cross-instance bug before any service extraction.   │
+│                                                                              │
+│ 2.1 Create RedisConnectionManager                                            │
+│                                                                              │
+│ Create backend/app/services/redis_connection_manager.py (~200 lines):        │
+│                                                                              │
+│ - Keeps a local dict of WebSocket connections on this instance               │
+│ - Registers connections in Redis: bayit:ws:conn:{user_id} hash with          │
+│ instance_id, room info, TTL                                                  │
+│ - Room membership: bayit:ws:room:{type}:{id}:members Redis set               │
+│ - broadcast_to_room(type, id, message) publishes to                          │
+│ bayit:ws:room:{type}:{id} channel                                            │
+│ - Background subscriber task delivers messages from Redis to local           │
+│ connections                                                                  │
+│ - On disconnect: clean up local dict + Redis keys                            │
+│                                                                              │
+│ 2.2 Redis pub/sub channel convention                                         │
+│                                                                              │
+│ bayit:ws:room:party:{party_id}     -- watch party messages                   │
+│ bayit:ws:room:chess:{game_code}    -- chess moves                            │
+│ bayit:ws:room:dm:{user_id}        -- DM delivery                             │
+│ bayit:ws:room:channel:{channel_id} -- channel chat                           │
+│ bayit:ws:room:diagnostics          -- admin broadcast                        │
+│                                                                              │
+│ 2.3 Refactor existing connection managers                                    │
+│                                                                              │
+│ Replace usages one by one (each is a small PR):                              │
+│                                                                              │
+│ Current: ConnectionManager singleton                                         │
+│ Replace with: RedisConnectionManager                                         │
+│ File: app/services/connection_manager.py                                     │
+│ ────────────────────────────────────────                                     │
+│ Current: active_game_connections dict                                        │
+│ Replace with: Redis room via RedisConnectionManager                          │
+│ File: app/api/routes/websocket_chess.py                                      │
+│ ────────────────────────────────────────                                     │
+│ Current: active_dm_connections dict                                          │
+│ Replace with: Redis room via RedisConnectionManager                          │
+│ File: app/api/routes/websocket_dm.py                                         │
+│ ────────────────────────────────────────                                     │
+│ Current: ChannelChatService._channels                                        │
+│ Replace with: Redis room via RedisConnectionManager                          │
+│ File: app/services/channel_chat_service.py                                   │
+│ ────────────────────────────────────────                                     │
+│ Current: _active_sessions dict                                               │
+│ Replace with: Redis set bayit:ws:active_sessions:{channel}                   │
+│ File: app/api/routes/websocket_helpers.py                                    │
+│                                                                              │
+│ 2.4 Refactor room_manager.py REST-WS coupling                                │
+│                                                                              │
+│ Current: room_manager.join_party() calls                                     │
+│ connection_manager.broadcast_to_party() directly.                            │
+│ After: room_manager.join_party() publishes {"type": "participant_joined",    │
+│ ...} to Redis channel. Gateway subscriber delivers to local connections.     │
+│                                                                              │
+│ Files to modify:                                                             │
+│                                                                              │
+│ - backend/app/services/redis_connection_manager.py (new, ~200 lines)         │
+│ - backend/app/services/connection_manager.py (refactor to delegate to Redis) │
+│ - backend/app/services/room_manager.py (publish via Redis instead of direct  │
+│ call)                                                                        │
+│ - backend/app/services/channel_chat_service.py (Redis-backed state)          │
+│ - backend/app/api/routes/websocket_chess.py (use RedisConnectionManager)     │
+│ - backend/app/api/routes/websocket_dm.py (use RedisConnectionManager)        │
+│ - backend/app/api/routes/websocket_helpers.py (Redis set for active          │
+│ sessions)                                                                    │
+│                                                                              │
+│ Verification: Deploy monolith with 2+ Cloud Run instances. Open two browser  │
+│ tabs, join same watch party -- messages should appear in both tabs even if   │
+│ on different instances. Same for chess, DM, channel chat.                    │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 3: Gateway Service Scaffold (Week 3)                                   │
+│                                                                              │
+│ Goal: Create the gateway service, deploy it, verify it can accept WebSocket  │
+│ connections.                                                                 │
+│                                                                              │
+│ 3.1 Directory structure                                                      │
+│                                                                              │
+│ bayit-plus/                                                                  │
+│   bayit-ws-gateway/                                                          │
+│     app/                                                                     │
+│       __init__.py                                                            │
+│       main.py                        # FastAPI app, lifespan, health check   │
+│       api/                                                                   │
+│         __init__.py                                                          │
+│         router_registry.py           # Registers all WS routes               │
+│         routes/                      # WS route files (migrated later)       │
+│           __init__.py                                                        │
+│       core/                                                                  │
+│         __init__.py                                                          │
+│     Dockerfile                                                               │
+│     pyproject.toml                                                           │
+│     cloudbuild-ws-gateway.yaml                                               │
+│                                                                              │
+│ 3.2 Shared code strategy                                                     │
+│                                                                              │
+│ Do NOT create a separate bayit-shared package. Instead, the gateway imports  │
+│ directly from the monolith's app.core and app.models modules via a Poetry    │
+│ path dependency:                                                             │
+│                                                                              │
+│ [tool.poetry.dependencies]                                                   │
+│ bayit-backend = { path = "../backend", develop = true }                      │
+│                                                                              │
+│ This avoids the overhead of extracting and maintaining a shared package.     │
+│ Both services live in the same monorepo and deploy from the same commit.     │
+│                                                                              │
+│ If this creates import issues (circular deps, heavy startup), fall back to   │
+│ symlinking specific modules or extracting only app/core/ and app/models/     │
+│ into a shared package.                                                       │
+│                                                                              │
+│ 3.3 Gateway main.py                                                          │
+│                                                                              │
+│ Minimal FastAPI app:                                                         │
+│                                                                              │
+│ - Lifespan: connect MongoDB (same cluster), connect Redis, init Beanie       │
+│ (WS-relevant models only)                                                    │
+│ - Health check at /health                                                    │
+│ - CORS middleware (same origins as monolith)                                 │
+│ - No REST middleware that doesn't apply to WS (CSRF, input sanitization)     │
+│ - Import RedisConnectionManager and start pub/sub subscriber                 │
+│                                                                              │
+│ 3.4 Dockerfile                                                               │
+│                                                                              │
+│ Based on monolith Dockerfile but lighter:                                    │
+│                                                                              │
+│ - No ffmpeg, xvfb, libgl1 (those are for media processing)                   │
+│ - Same Python 3.11-slim base                                                 │
+│ - Poetry install with only gateway dependencies                              │
+│ - Port 8080, non-root user                                                   │
+│                                                                              │
+│ 3.5 Cloud Run config                                                         │
+│                                                                              │
+│ Service: bayit-ws-gateway                                                    │
+│ Region: us-east1                                                             │
+│ CPU: 1                                                                       │
+│ Memory: 1Gi                                                                  │
+│ Min instances: 1  (avoid cold start dropping WS connections)                 │
+│ Max instances: 5                                                             │
+│ Timeout: 3600s   (1 hour, Cloud Run max, for long-lived WS)                  │
+│ VPC connector: bayit-vpc-connector (for Redis)                               │
+│                                                                              │
+│ 3.6 DNS                                                                      │
+│                                                                              │
+│ Add ws.bayit.tv -> Cloud Run bayit-ws-gateway via Cloud Run domain mapping   │
+│ or Cloud DNS + serverless NEG.                                               │
+│                                                                              │
+│ Files to create:                                                             │
+│                                                                              │
+│ - bayit-ws-gateway/app/main.py (~150 lines)                                  │
+│ - bayit-ws-gateway/app/api/router_registry.py (~50 lines initially)          │
+│ - bayit-ws-gateway/Dockerfile (~40 lines)                                    │
+│ - bayit-ws-gateway/pyproject.toml                                            │
+│ - bayit-ws-gateway/cloudbuild-ws-gateway.yaml                                │
+│                                                                              │
+│ Verification: Deploy gateway, hit https://ws.bayit.tv/health, confirm 200    │
+│ OK. Confirm MongoDB and Redis connections in logs.                           │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 4: Migrate WebSocket Routes (Week 4-6)                                 │
+│                                                                              │
+│ Migrate in order of risk (lowest first):                                     │
+│                                                                              │
+│ 4a. Channel chat + Diagnostics (no REST coupling)                            │
+│                                                                              │
+│ 1. Copy websocket_channel_chat.py, websocket_chat_connection.py to gateway   │
+│ 2. Copy websocket_diagnostics.py to gateway                                  │
+│ 3. Register in gateway's router_registry.py                                  │
+│ 4. Update iOS xcconfig: WEBSOCKET_BASE_URL = wss://ws.bayit.tv               │
+│ 5. Keep monolith routes active during transition (dual-running)              │
+│ 6. After 1 week stable, remove from monolith's router_registry.py            │
+│                                                                              │
+│ 4b. Single-user WS routes (no cross-instance concern)                        │
+│                                                                              │
+│ Move all routes that are single-user-per-connection:                         │
+│                                                                              │
+│ - websocket_live_dubbing.py, websocket_helpers.py                            │
+│ - websocket_live_subtitles.py                                                │
+│ - websocket_live_trivia.py                                                   │
+│ - websocket_bilingual_dubbing.py                                             │
+│ - websocket_vod_interaction.py                                               │
+│ - websocket_v2v.py                                                           │
+│ - websocket_live_layer.py                                                    │
+│ - websocket_phonetic_mirror.py                                               │
+│ - websocket_interactive_mission.py                                           │
+│ - websocket_talk_back.py                                                     │
+│                                                                              │
+│ These are low-risk because they don't need cross-instance messaging.         │
+│                                                                              │
+│ 4c. Multi-user social routes (need Redis pub/sub)                            │
+│                                                                              │
+│ Move the routes that depend on RedisConnectionManager (already refactored in │
+│  Phase 2):                                                                   │
+│                                                                              │
+│ - websocket.py (watch party)                                                 │
+│ - websocket_chess.py + handlers                                              │
+│ - websocket_dm.py + handlers                                                 │
+│                                                                              │
+│ These should work immediately since Phase 2 already switched to Redis-backed │
+│  state.                                                                      │
+│                                                                              │
+│ 4d. Admin/B2B routes                                                         │
+│                                                                              │
+│ - admin_uploads/websocket.py                                                 │
+│ - dubbing/websocket.py                                                       │
+│ - olorin/dubbing_routes/websocket.py                                         │
+│                                                                              │
+│ Client changes (all platforms):                                              │
+│                                                                              │
+│ iOS/tvOS -- already has WEBSOCKET_BASE_URL in xcconfig:                      │
+│                                                                              │
+│ - Configuration/Debug.xcconfig: WEBSOCKET_BASE_URL = ws://localhost:8001     │
+│ - Configuration/Release.xcconfig: WEBSOCKET_BASE_URL = wss://ws.bayit.tv     │
+│ - Existing file: Packages/BayitCore/Sources/BayitCore/Environment.swift      │
+│ (reads from Info.plist, no code change needed)                               │
+│                                                                              │
+│ Android -- update AppModule.kt WS base URL config.                           │
+│                                                                              │
+│ Web -- update Vite env: VITE_WS_URL=wss://ws.bayit.tv.                       │
+│                                                                              │
+│ Verification per batch: Connect via new ws.bayit.tv URL, verify auth         │
+│ handshake, send/receive messages, verify reconnect on disconnect.            │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 5: Cleanup (Week 7)                                                    │
+│                                                                              │
+│ 1. Remove all websocket_*.py from monolith backend/app/api/routes/           │
+│ 2. Remove websocket_auth.py, websocket_helpers.py from monolith              │
+│ 3. Remove WebSocket imports from monolith router_registry.py (~100 lines     │
+│ removed)                                                                     │
+│ 4. Remove connection_manager.py if no longer used by REST routes             │
+│ 5. Remove websockets dependency from monolith pyproject.toml                 │
+│ 6. Update monolith Cloud Run timeout back to 300s (no more long-lived        │
+│ connections)                                                                 │
+│                                                                              │
+│ ---                                                                          │
+│ Risk Assessment                                                              │
+│                                                                              │
+│ Risk: Redis SPOF (Memorystore down = no cross-instance messaging)            │
+│ Severity: High                                                               │
+│ Mitigation: Standard tier with replica; gateway degrades to local-only mode  │
+│   (same as today)                                                            │
+│ ────────────────────────────────────────                                     │
+│ Risk: Message ordering in pub/sub                                            │
+│ Severity: Medium                                                             │
+│ Mitigation: Each message includes server timestamp; clients sort by          │
+│ timestamp;                                                                   │
+│   use Redis Streams for chess moves if needed                                │
+│ ────────────────────────────────────────                                     │
+│ Risk: Cloud Run scale-down drops WS connections                              │
+│ Severity: Medium                                                             │
+│ Mitigation: min-instances=1; gateway sends "reconnect" on SIGTERM; iOS       │
+│ already                                                                      │
+│   has auto-reconnect with backoff                                            │
+│ ────────────────────────────────────────                                     │
+│ Risk: Shared code drift between services                                     │
+│ Severity: Medium                                                             │
+│ Mitigation: Same monorepo, Poetry path dependency, single CI commit deploys  │
+│   both                                                                       │
+│ ────────────────────────────────────────                                     │
+│ Risk: Increased latency from Redis hop                                       │
+│ Severity: Low                                                                │
+│ Mitigation: Same-region Memorystore = sub-ms latency; imperceptible for chat │
+│ ────────────────────────────────────────                                     │
+│ Risk: DNS propagation for ws.bayit.tv                                        │
+│ Severity: Low                                                                │
+│ Mitigation: Pre-provision DNS with low TTL; dual-running period covers       │
+│   propagation                                                                │
+│                                                                              │
+│ Cost Impact                                                                  │
+│                                                                              │
+│ ┌────────────────────────────────────────────────┬──────────────────┐        │
+│ │                    Resource                    │ Monthly estimate │        │
+│ ├────────────────────────────────────────────────┼──────────────────┤        │
+│ │ Memorystore Redis Standard 1GB                 │ ~$60             │        │
+│ ├────────────────────────────────────────────────┼──────────────────┤        │
+│ │ Cloud Run gateway (1 CPU, 1Gi, min 1 instance) │ ~$30-50          │        │
+│ ├────────────────────────────────────────────────┼──────────────────┤        │
+│ │ VPC connector                                  │ ~$7              │        │
+│ ├────────────────────────────────────────────────┼──────────────────┤        │
+│ │ Total additional                               │ ~$100-120/month  │        │
+│ └────────────────────────────────────────────────┴──────────────────┘        │
+│                                                                              │
+│ Offset by potential monolith instance reduction once WS load is removed.     │
+│                                                                              │
+│ Critical Files Reference                                                     │
+│                                                                              │
+│ File: backend/app/api/router_registry.py                                     │
+│ Role: Central route registration -- WS routes removed here                   │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/services/connection_manager.py                             │
+│ Role: In-memory state to replace with Redis                                  │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/services/room_manager.py                                   │
+│ Role: REST-WS coupling point (watch party)                                   │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/api/routes/websocket_auth.py                               │
+│ Role: Shared WS auth (social features)                                       │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/api/routes/websocket_helpers.py                            │
+│ Role: Shared WS helpers (premium features)                                   │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/core/config.py                                             │
+│ Role: Settings -- add REDIS_URL                                              │
+│ ────────────────────────────────────────                                     │
+│ File: backend/app/main.py                                                    │
+│ Role: Lifespan -- add Redis connect/disconnect                               │
+│ ────────────────────────────────────────                                     │
+│ File: ios-app/Configuration/Debug.xcconfig                                   │
+│ Role: iOS WS URL config (dev)                                                │
+│ ────────────────────────────────────────                                     │
+│ File: ios-app/Configuration/Release.xcconfig                                 │
+│ Role: iOS WS URL config (prod)                                               │
+│ ────────────────────────────────────────                                     │
+│ File: ios-app/Packages/BayitCore/Sources/BayitCore/Environment.swift         │
+│ Role: Reads WEBSOCKET_BASE_URL from Info.plist                               │
+│ ────────────────────────────────────────                                     │
+│ File: ios-app/Packages/BayitNetworking/Sources/BayitNetworking/WebSocketConn │
+│ ection.swift                                                                 │
+│ Role: Client WS with auto-reconnect (no changes needed)                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll implement this WebSocket Gateway extraction plan phase by phase. Let me
+  start by exploring the current codebase to understand the existing structure
+  before writing any code.
+
+⏺ Now let me explore the existing codebase structure to understand what we're
+  working with.
+
+⏺ Explore(Explore backend structure) Haiku 4.5
+  ⎿  Done (25 tool uses · 97.9k tokens · 1m 22s)
+  (ctrl+o to expand)
+
+⏺ Good, I have a thorough understanding of the codebase. Now let me read the
+  critical files I need to modify directly.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the main.py lifespan and the end of config.py to understand
+  where to add the REDIS_URL setting.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the existing connection_manager.py and other critical files.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the remaining critical files in parallel.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the channel_chat_service, pyproject.toml redis section, and
+  the existing cloudbuild.yaml.
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Now let me check the existing app/core/ directory and the router_registry for
+  WebSocket imports.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ There's already a redis_client.py in the core directory. Let me read it.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ There's already an AsyncRedisClient and redis_client.py. Now let me check the
+  config for any existing REDIS_URL setting.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ No REDIS_URL in config. Let me check where the existing redis_client gets its
+  URL from.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now I have a complete understanding of the codebase. The existing
+  redis_client.py uses a default URL parameter rather than pulling from config.
+  Let me start implementing.
+
+⏺ Phase 1: Redis Infrastructure
+
+  1.1 Add REDIS_URL to config.py
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/co
+        nfig.py)
+  ⎿  Added 7 lines
+      63      MONGODB_URI: str  # Required, must be set via environment
+      64      MONGODB_DB_NAME: str = "bayit_plus"
+      65  
+      66 +    # Redis (optional - graceful degradation when unavailable) 
+      67 +    REDIS_URL: str = Field(                                    
+      68 +        default="",                                            
+      69 +        description="Redis connection URL (Memorystore or local
+         +). "                                                           
+      70 +        "Empty string disables Redis features with graceful deg
+         +radation."                                                     
+      71 +    )                                                          
+      72 +                                                               
+      73      @field_validator("SECRET_KEY")
+      74      @classmethod
+      75      def validate_secret_key(cls, v: str) -> str:
+
+⏺ 1.2 Update redis_client.py to use config REDIS_URL
+
+  The existing get_redis_client() uses a hardcoded default URL. Let me update it
+   to prefer the config setting.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/re
+        dis_client.py)
+  ⎿  Added 14 lines, removed 2 lines
+      234  
+      235  
+      236  async def get_redis_client(
+      237 -    redis_url: str = "redis://localhost:6379/0",              
+      237 +    redis_url: str = "",                                      
+      238      max_connections: int = 50,
+      239  ) -> AsyncRedisClient:
+      240      """
+     ...
+      244      be created but operations will gracefully skip rather than
+            crash.
+      245  
+      246      Args:
+      247 -        redis_url: Redis connection URL                       
+      247 +        redis_url: Redis connection URL (falls back to setting
+          +s.REDIS_URL)                                                  
+      248          max_connections: Max connections in pool
+      249  
+      250      Returns:
+     ...
+      253      global _redis_client
+      254  
+      255      if _redis_client is None:
+      256 +        # Resolve URL: explicit param > config setting        
+      257 +        if not redis_url:                                     
+      258 +            from app.core.config import settings              
+      259 +            redis_url = settings.REDIS_URL                    
+      260 +                                                              
+      261 +        if not redis_url:                                     
+      262 +            logger.warning(                                   
+      263 +                "REDIS_URL not configured. Redis features disa
+          +bled (graceful degradation)."                                 
+      264 +            )                                                 
+      265 +            _redis_client = AsyncRedisClient("redis://localhos
+          +t:6379/0", max_connections)                                   
+      266 +            return _redis_client                              
+      267 +                                                              
+      268          _redis_client = AsyncRedisClient(redis_url, max_connec
+           tions)
+      269          # connect() is now non-blocking - won't raise if Redis
+            unavailable
+      270          await _redis_client.connect()
+
+⏺ 1.3 Create app/core/pubsub.py - Redis Pub/Sub Manager
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/pub
+       sub.py)
+  ⎿  Wrote 281 lines to ../backend/app/core/pubsub.py
+       1 """
+       2 Redis Pub/Sub Manager for cross-instance WebSocket messaging.
+       3 
+       4 Provides publish/subscribe capabilities backed by Redis for broa
+         dcasting
+       5 messages across multiple Cloud Run instances. Degrades gracefull
+         y when
+       6 Redis is unavailable (same as single-instance in-memory behavior
+         ).
+       7 """
+       8 
+       9 import asyncio
+      10 import json
+     … +271 lines (ctrl+o to expand)
+
+⏺ 1.4 Wire Redis pub/sub into main.py lifespan
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/main.py
+        )
+  ⎿  Added 2 lines
+      25                                      get_database)
+      26  from app.core.database_olorin import (close_olorin_mongo_connec
+          tion,
+      27                                        connect_to_olorin_mongo)
+      28 +from app.core.pubsub import close_pubsub_manager, get_pubsub_ma
+         +nager                                                          
+      29 +from app.core.redis_client import close_redis_client, get_redis
+         +_client                                                        
+      30  from app.core.logging_config import setup_logging
+      31  from app.core.sentry_config import init_sentry
+      32  from app.middleware.correlation_id import CorrelationIdMiddlewa
+          re
+
+⏺ Now add Redis initialization to the startup section, after MongoDB connects:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/main.py
+        )
+  ⎿  Added 12 lines, removed 2 lines
+      173          """Initialize Content metadata service for Olorin cros
+           s-database access."""
+      174          try:
+      175              await content_metadata_service.initialize()
+      176 -            logger.info("✅ Content metadata service initializ
+          -ed")                                                          
+      176 +            logger.info("Content metadata service initialized"
+          +)                                                             
+      177          except Exception as e:
+      178              logger.warning(f"Content metadata service initiali
+           zation failed: {e}")
+      179  
+      180 -    # Run Olorin database and content metadata service initial
+          -ization in parallel                                           
+      180 +    async def init_redis():                                   
+      181 +        """Initialize Redis client and pub/sub manager."""    
+      182 +        try:                                                  
+      183 +            await get_redis_client()                          
+      184 +            await get_pubsub_manager()                        
+      185 +            logger.info("Redis client and pub/sub manager init
+          +ialized")                                                     
+      186 +        except Exception as e:                                
+      187 +            logger.warning(f"Redis initialization failed (grac
+          +eful degradation): {e}")                                      
+      188 +                                                              
+      189 +    # Run Olorin database, content metadata, and Redis initial
+          +ization in parallel                                           
+      190      # These are independent and don't need to block each other
+      191      await asyncio.gather(
+      192          init_olorin_database(),
+      193          init_content_metadata(),
+      194 +        init_redis(),                                         
+      195          return_exceptions=True,  # Don't fail if one fails
+      196      )
+      197  
+
+⏺ Now add Redis shutdown to the shutdown section:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/main.py
+        )
+  ⎿  Added 8 lines
+      294      # Stop background tasks gracefully
+      295      await stop_background_tasks()
+      296  
+      297 +    # Close Redis connections                                 
+      298 +    try:                                                      
+      299 +        await close_pubsub_manager()                          
+      300 +        await close_redis_client()                            
+      301 +        logger.info("Redis connections closed")               
+      302 +    except Exception as e:                                    
+      303 +        logger.warning(f"Failed to close Redis connections: {e
+          +}")                                                           
+      304 +                                                              
+      305      # Close database connection
+      306      await close_mongo_connection()
+      307  
+
+⏺ 1.5 Verify redis dependency in pyproject.toml
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Redis is already there but without the hiredis extra. Let me update it to
+  include hiredis for better performance:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/pyproject.t
+        oml)
+  ⎿  File must be read first
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/pyproject.t
+        oml)
+  ⎿  Added 1 line, removed 1 line
+      29      "httpx (>=0.28.1,<0.29.0)",
+      30      "aiohttp (>=3.13.3,<4.0.0)",
+      31      "beautifulsoup4 (>=4.12.0,<5.0.0)",
+      32 -    "redis (>=5.0.0,<6.0.0)",                                  
+      32 +    "redis[hiredis] (>=5.0.0,<6.0.0)",                         
+      33      "apscheduler (>=3.10.0,<4.0.0)",
+      34      "pytz (>=2024.1)",
+      35      "webvtt-py (>=0.4.0,<0.5.0)",
+
+⏺ 1.6 Add REDIS_URL secret to cloudbuild.yaml
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/cloudbuild.
+        yaml)
+  ⎿  Added 1 line
+      34        - '--update-secrets=WEBAUTHN_ORIGIN=bayit-webauthn-origin
+          :latest'
+      35  
+      36        # Database
+      37 +      - '--update-secrets=REDIS_URL=bayit-redis-url:latest'    
+      38        - '--update-secrets=MONGODB_URI=bayit-mongodb-uri:latest'
+      39        - '--update-secrets=OLORIN_MONGODB_URI=olorin-fraud-mongo
+          db-uri:latest'
+      40        - '--update-secrets=CVPLUS_MONGODB_URI=cvplus-mongodb-uri
+          :latest'
+
+⏺ Now let me also check the root cloudbuild.yaml to add REDIS_URL there too:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/cloudbuild.yaml)
+  ⎿  Added 2 lines, removed 2 lines
+      73  
+      74        # Secrets from Google Secret Manager - Consolidated Forma
+          t (to fit 100-arg limit)
+      75  
+      76 -      # Core Auth, Database, Payments (consolidated)           
+      77 -      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:l
+         -atest,CSRF_ENABLED=csrf-enabled:latest,ADMIN_PASSWORD=bayit-adm
+         -in-password:latest,ADMIN_EMAIL=bayit-admin-email:latest,WEBAUTH
+         -N_ORIGIN=bayit-webauthn-origin:latest,MONGODB_URI=bayit-mongodb
+         --uri:latest,OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest,
+         -CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest,STATION_AI_MONGODB
+         -_URI=station-ai-mongodb-uri:latest,STRIPE_API_KEY=bayit-stripe-
+         -api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest
+         -,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIP
+         -E_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREM
+         -IUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit
+         --stripe-price-family:latest'                                   
+      76 +      # Core Auth, Database, Redis, Payments (consolidated)    
+      77 +      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:l
+         +atest,CSRF_ENABLED=csrf-enabled:latest,ADMIN_PASSWORD=bayit-adm
+         +in-password:latest,ADMIN_EMAIL=bayit-admin-email:latest,WEBAUTH
+         +N_ORIGIN=bayit-webauthn-origin:latest,REDIS_URL=bayit-redis-url
+         +:latest,MONGODB_URI=bayit-mongodb-uri:latest,OLORIN_MONGODB_URI
+         +=olorin-fraud-mongodb-uri:latest,CVPLUS_MONGODB_URI=cvplus-mong
+         +odb-uri:latest,STATION_AI_MONGODB_URI=station-ai-mongodb-uri:la
+         +test,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_K
+         +EY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-s
+         +tripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-pri
+         +ce-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium
+         +:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest'  
+      78  
+      79        # AI Services, Content, OAuth (consolidated)
+      80        - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api
+          -key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLA
+          BS_API_KEY=bayit-elevenlabs-api-key:latest,ELEVENLABS_WEBHOOK_S
+          ECRET=bayit-elevenlabs-webhook-secret:latest,TMDB_API_KEY=bayit
+          -tmdb-api-key:latest,TMDB_API_TOKEN=bayit-tmdb-api-token:latest
+          ,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,PICOVOICE_A
+          CCESS_KEY=picovoice-access-key:latest,GOOGLE_CLIENT_ID=bayit-go
+          ogle-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-
+          secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:lat
+          est,CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:lat
+          est,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_A
+          UTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=ba
+          yit-twilio-phone-number:latest,EXA_API_KEY=bayit-exa-api-key:la
+          test'
+
+⏺ Phase 1 is complete. Let me mark it and move to Phase 2.
+
+⏺ Phase 2: Redis-Backed Connection Manager
+
+  2.1 Create RedisConnectionManager
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/services
+       /redis_connection_manager.py)
+  ⎿  Wrote 513 lines to ../backend/app/services/redis_connection_manager.py
+       1 """
+       2 Redis-backed WebSocket Connection Manager.
+       3 
+       4 Replaces the in-memory ConnectionManager with a hybrid local+Red
+         is approach:
+       5 - Local dict tracks WebSocket objects on THIS instance (not seri
+         alizable)
+       6 - Redis tracks connection metadata across ALL instances (user->i
+         nstance, rooms)
+       7 - Redis pub/sub delivers messages cross-instance
+       8 
+       9 When Redis is unavailable, degrades to local-only (same as origi
+         nal behavior).
+      10 """
+     … +503 lines (ctrl+o to expand)
+
+⏺ 2.2 Refactor connection_manager.py to delegate to Redis
+
+  Now I'll update the existing connection_manager.py to delegate to the
+  RedisConnectionManager so all existing imports continue to work without
+  changes across the codebase.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/services
+       /connection_manager.py)
+  ⎿  Added 12 lines, removed 287 lines
+        1  """
+        2  WebSocket Connection Manager for real-time features.
+        3 -Manages WebSocket connections for watch parties and live featu
+          -res.                                                          
+        3 +                                                              
+        4 +This module now delegates to RedisConnectionManager for cross-
+          +instance                                                      
+        5 +support while maintaining the same public API. All existing im
+          +ports of                                                      
+        6 +`connection_manager` continue to work without changes.        
+        7  """
+        8  
+        6 -import asyncio                                                
+        7 -from dataclasses import dataclass, field                      
+        8 -from datetime import datetime                                 
+        9 -from typing import Dict, List, Optional, Set                  
+        9 +from app.services.redis_connection_manager import (           
+       10 +    RedisConnectionManager,                                   
+       11 +    redis_connection_manager,                                 
+       12 +)                                                             
+       13  
+       11 -from fastapi import WebSocket                                 
+       14 +# Re-export the RedisConnectionManager as ConnectionManager fo
+          +r backward compat                                             
+       15 +ConnectionManager = RedisConnectionManager                    
+       16  
+       13 -                                                              
+       14 -@dataclass                                                    
+       15 -class Connection:                                             
+       16 -    """Represents a single WebSocket connection"""            
+       17 -                                                              
+       18 -    websocket: WebSocket                                      
+       19 -    user_id: str                                              
+       20 -    user_name: str                                            
+       21 -    party_id: Optional[str] = None                            
+       22 -    connected_at: datetime = field(default_factory=datetime.ut
+          -cnow)                                                         
+       23 -                                                              
+       24 -                                                              
+       25 -class ConnectionManager:                                      
+       26 -    """                                                       
+       27 -    Manages WebSocket connections for the application.        
+       28 -    Handles connection lifecycle, message broadcasting, and ro
+          -om-based messaging.                                           
+       29 -    """                                                       
+       30 -                                                              
+       31 -    def __init__(self):                                       
+       32 -        # All active connections: {connection_id: Connection} 
+       33 -        self._connections: Dict[str, Connection] = {}         
+       34 -        # Connections by party: {party_id: set of connection_i
+          -ds}                                                           
+       35 -        self._party_connections: Dict[str, Set[str]] = {}     
+       36 -        # User to connection mapping: {user_id: connection_id}
+       37 -        self._user_connections: Dict[str, str] = {}           
+       38 -        # Lock for thread-safe operations                     
+       39 -        self._lock = asyncio.Lock()                           
+       40 -                                                              
+       41 -    def _generate_connection_id(self, user_id: str) -> str:   
+       42 -        """Generate a unique connection ID"""                 
+       43 -        return f"{user_id}_{datetime.utcnow().timestamp()}"   
+       44 -                                                              
+       45 -    async def connect(                                        
+       46 -        self,                                                 
+       47 -        websocket: WebSocket,                                 
+       48 -        user_id: str,                                         
+       49 -        user_name: str,                                       
+       50 -        party_id: Optional[str] = None,                       
+       51 -        skip_accept: bool = False,                            
+       52 -    ) -> str:                                                 
+       53 -        """                                                   
+       54 -        Accept a new WebSocket connection.                    
+       55 -        Returns the connection ID.                            
+       56 -                                                              
+       57 -        Args:                                                 
+       58 -            skip_accept: If True, skip calling websocket.accep
+          -t() (useful if already accepted)                              
+       59 -        """                                                   
+       60 -        if not skip_accept:                                   
+       61 -            await websocket.accept()                          
+       62 -                                                              
+       63 -        async with self._lock:                                
+       64 -            # Disconnect existing connection for this user if 
+          -any                                                           
+       65 -            if user_id in self._user_connections:             
+       66 -                old_conn_id = self._user_connections[user_id] 
+       67 -                await self._remove_connection(old_conn_id)    
+       68 -                                                              
+       69 -            connection_id = self._generate_connection_id(user_
+          -id)                                                           
+       70 -            connection = Connection(                          
+       71 -                websocket=websocket,                          
+       72 -                user_id=user_id,                              
+       73 -                user_name=user_name,                          
+       74 -                party_id=party_id,                            
+       75 -            )                                                 
+       76 -                                                              
+       77 -            self._connections[connection_id] = connection     
+       78 -            self._user_connections[user_id] = connection_id   
+       79 -                                                              
+       80 -            if party_id:                                      
+       81 -                if party_id not in self._party_connections:   
+       82 -                    self._party_connections[party_id] = set() 
+       83 -                self._party_connections[party_id].add(connecti
+          -on_id)                                                        
+       84 -                                                              
+       85 -        return connection_id                                  
+       86 -                                                              
+       87 -    async def disconnect(self, connection_id: str) -> None:   
+       88 -        """Remove a connection"""                             
+       89 -        async with self._lock:                                
+       90 -            await self._remove_connection(connection_id)      
+       91 -                                                              
+       92 -    async def _remove_connection(self, connection_id: str) -> 
+          -None:                                                         
+       93 -        """Internal method to remove a connection (must be cal
+          -led with lock held)"""                                        
+       94 -        if connection_id not in self._connections:            
+       95 -            return                                            
+       96 -                                                              
+       97 -        connection = self._connections[connection_id]         
+       98 -                                                              
+       99 -        # Remove from party connections                       
+      100 -        if connection.party_id and connection.party_id in self
+          -._party_connections:                                          
+      101 -            self._party_connections[connection.party_id].disca
+          -rd(connection_id)                                             
+      102 -            if not self._party_connections[connection.party_id
+          -]:                                                            
+      103 -                del self._party_connections[connection.party_i
+          -d]                                                            
+      104 -                                                              
+      105 -        # Remove from user connections                        
+      106 -        if connection.user_id in self._user_connections:      
+      107 -            if self._user_connections[connection.user_id] == c
+          -onnection_id:                                                 
+      108 -                del self._user_connections[connection.user_id]
+      109 -                                                              
+      110 -        # Remove connection                                   
+      111 -        del self._connections[connection_id]                  
+      112 -                                                              
+      113 -        # Try to close the websocket                          
+      114 -        try:                                                  
+      115 -            await connection.websocket.close()                
+      116 -        except Exception:                                     
+      117 -            pass                                              
+      118 -                                                              
+      119 -    async def join_party(self, connection_id: str, party_id: s
+          -tr) -> None:                                                  
+      120 -        """Add a connection to a party"""                     
+      121 -        async with self._lock:                                
+      122 -            if connection_id not in self._connections:        
+      123 -                return                                        
+      124 -                                                              
+      125 -            connection = self._connections[connection_id]     
+      126 -                                                              
+      127 -            # Leave current party if any                      
+      128 -            if connection.party_id and connection.party_id in 
+          -self._party_connections:                                      
+      129 -                self._party_connections[connection.party_id].d
+          -iscard(connection_id)                                         
+      130 -                                                              
+      131 -            # Join new party                                  
+      132 -            connection.party_id = party_id                    
+      133 -            if party_id not in self._party_connections:       
+      134 -                self._party_connections[party_id] = set()     
+      135 -            self._party_connections[party_id].add(connection_i
+          -d)                                                            
+      136 -                                                              
+      137 -    async def leave_party(self, connection_id: str) -> None:  
+      138 -        """Remove a connection from its current party"""      
+      139 -        async with self._lock:                                
+      140 -            if connection_id not in self._connections:        
+      141 -                return                                        
+      142 -                                                              
+      143 -            connection = self._connections[connection_id]     
+      144 -                                                              
+      145 -            if connection.party_id and connection.party_id in 
+          -self._party_connections:                                      
+      146 -                self._party_connections[connection.party_id].d
+          -iscard(connection_id)                                         
+      147 -                if not self._party_connections[connection.part
+          -y_id]:                                                        
+      148 -                    del self._party_connections[connection.par
+          -ty_id]                                                        
+      149 -                                                              
+      150 -            connection.party_id = None                        
+      151 -                                                              
+      152 -    async def send_personal_message(self, message: dict, conne
+          -ction_id: str) -> bool:                                       
+      153 -        """Send a message to a specific connection"""         
+      154 -        if connection_id not in self._connections:            
+      155 -            return False                                      
+      156 -                                                              
+      157 -        try:                                                  
+      158 -            await self._connections[connection_id].websocket.s
+          -end_json(message)                                             
+      159 -            return True                                       
+      160 -        except Exception:                                     
+      161 -            await self.disconnect(connection_id)              
+      162 -            return False                                      
+      163 -                                                              
+      164 -    async def send_to_user(self, message: dict, user_id: str) 
+          --> bool:                                                      
+      165 -        """Send a message to a specific user"""               
+      166 -        if user_id not in self._user_connections:             
+      167 -            return False                                      
+      168 -                                                              
+      169 -        connection_id = self._user_connections[user_id]       
+      170 -        return await self.send_personal_message(message, conne
+          -ction_id)                                                     
+      171 -                                                              
+      172 -    async def broadcast_to_party(                             
+      173 -        self, message: dict, party_id: str, exclude_user_id: O
+          -ptional[str] = None                                           
+      174 -    ) -> int:                                                 
+      175 -        """                                                   
+      176 -        Broadcast a message to all connections in a party.    
+      177 -        Returns the number of successful sends.               
+      178 -        """                                                   
+      179 -        if party_id not in self._party_connections:           
+      180 -            return 0                                          
+      181 -                                                              
+      182 -        connection_ids = list(self._party_connections[party_id
+          -])                                                            
+      183 -        success_count = 0                                     
+      184 -                                                              
+      185 -        for conn_id in connection_ids:                        
+      186 -            if conn_id not in self._connections:              
+      187 -                continue                                      
+      188 -                                                              
+      189 -            connection = self._connections[conn_id]           
+      190 -            if exclude_user_id and connection.user_id == exclu
+          -de_user_id:                                                   
+      191 -                continue                                      
+      192 -                                                              
+      193 -            try:                                              
+      194 -                await connection.websocket.send_json(message) 
+      195 -                success_count += 1                            
+      196 -            except Exception:                                 
+      197 -                await self.disconnect(conn_id)                
+      198 -                                                              
+      199 -        return success_count                                  
+      200 -                                                              
+      201 -    async def broadcast_interaction_event(                    
+      202 -        self,                                                 
+      203 -        party_id: str,                                        
+      204 -        event_type: str,                                      
+      205 -        data: dict,                                           
+      206 -        exclude_user_id: Optional[str] = None,                
+      207 -    ) -> int:                                                 
+      208 -        """Broadcast a VOD interaction event to all party memb
+          -ers."""                                                       
+      209 -        message = {"type": "interaction_event", "event": event
+          -_type, **data}                                                
+      210 -        return await self.broadcast_to_party(message, party_id
+          -, exclude_user_id)                                            
+      211 -                                                              
+      212 -    async def broadcast_all(self, message: dict) -> int:      
+      213 -        """Broadcast a message to all connections"""          
+      214 -        connection_ids = list(self._connections.keys())       
+      215 -        success_count = 0                                     
+      216 -                                                              
+      217 -        for conn_id in connection_ids:                        
+      218 -            try:                                              
+      219 -                await self._connections[conn_id].websocket.sen
+          -d_json(message)                                               
+      220 -                success_count += 1                            
+      221 -            except Exception:                                 
+      222 -                await self.disconnect(conn_id)                
+      223 -                                                              
+      224 -        return success_count                                  
+      225 -                                                              
+      226 -    def get_party_users(self, party_id: str) -> List[dict]:   
+      227 -        """Get list of users in a party"""                    
+      228 -        if party_id not in self._party_connections:           
+      229 -            return []                                         
+      230 -                                                              
+      231 -        users = []                                            
+      232 -        for conn_id in self._party_connections[party_id]:     
+      233 -            if conn_id in self._connections:                  
+      234 -                conn = self._connections[conn_id]             
+      235 -                users.append(                                 
+      236 -                    {                                         
+      237 -                        "user_id": conn.user_id,              
+      238 -                        "user_name": conn.user_name,          
+      239 -                        "connected_at": conn.connected_at.isof
+          -ormat(),                                                      
+      240 -                    }                                         
+      241 -                )                                             
+      242 -                                                              
+      243 -        return users                                          
+      244 -                                                              
+      245 -    def get_party_count(self, party_id: str) -> int:          
+      246 -        """Get number of connections in a party"""            
+      247 -        if party_id not in self._party_connections:           
+      248 -            return 0                                          
+      249 -        return len(self._party_connections[party_id])         
+      250 -                                                              
+      251 -    def get_party_connections(self, party_id: str) -> List[tup
+          -le]:                                                          
+      252 -        """                                                   
+      253 -        Get list of (websocket, user_id) tuples for all connec
+          -tions in a party.                                             
+      254 -        Used for personalized message broadcasting.           
+      255 -        """                                                   
+      256 -        if party_id not in self._party_connections:           
+      257 -            return []                                         
+      258 -                                                              
+      259 -        connections = []                                      
+      260 -        for conn_id in self._party_connections[party_id]:     
+      261 -            if conn_id in self._connections:                  
+      262 -                conn = self._connections[conn_id]             
+      263 -                connections.append((conn.websocket, conn.user_
+          -id))                                                          
+      264 -                                                              
+      265 -        return connections                                    
+      266 -                                                              
+      267 -    def get_connection_info(self, connection_id: str) -> Optio
+          -nal[dict]:                                                    
+      268 -        """Get info about a connection"""                     
+      269 -        if connection_id not in self._connections:            
+      270 -            return None                                       
+      271 -                                                              
+      272 -        conn = self._connections[connection_id]               
+      273 -        return {                                              
+      274 -            "connection_id": connection_id,                   
+      275 -            "user_id": conn.user_id,                          
+      276 -            "user_name": conn.user_name,                      
+      277 -            "party_id": conn.party_id,                        
+      278 -            "connected_at": conn.connected_at.isoformat(),    
+      279 -        }                                                     
+      280 -                                                              
+      281 -    @property                                                 
+      282 -    def total_connections(self) -> int:                       
+      283 -        """Total number of active connections"""              
+      284 -        return len(self._connections)                         
+      285 -                                                              
+      286 -    @property                                                 
+      287 -    def total_parties(self) -> int:                           
+      288 -        """Total number of active parties with connections""" 
+      289 -        return len(self._party_connections)                   
+      290 -                                                              
+      291 -                                                              
+      292 -# Global connection manager instance                          
+      293 -connection_manager = ConnectionManager()                      
+       17 +# Global instance used throughout the codebase                
+       18 +connection_manager = redis_connection_manager                 
+
+⏺ 2.3 Update room_manager.py to publish via Redis pub/sub
+
+  The room_manager currently calls connection_manager.broadcast_to_party()
+  directly. With the new RedisConnectionManager, broadcast_to_party already
+  publishes to Redis under the hood, so the room_manager just needs to use the
+  updated connection_manager. Let me verify the import still works:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Good -- all 4 files import from app.services.connection_manager import 
+  connection_manager. Since we re-exported redis_connection_manager as
+  connection_manager in the updated module, these all continue to work.
+
+  Let me verify the connect() signature is backward-compatible. The old
+  connect() accepted party_id, the new one accepts room_type + room_id. I need
+  to check how connect() is called:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The call uses party_id=party_id as a keyword arg. My new connect() method
+  doesn't have a party_id parameter -- it has room_type and room_id. I need to
+  add backward compatibility:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/redis_connection_manager.py)
+  ⎿  Added 8 lines
+      107          user_name: str,
+      108          room_type: Optional[str] = None,
+      109          room_id: Optional[str] = None,
+      110 +        party_id: Optional[str] = None,                       
+      111          skip_accept: bool = False,
+      112      ) -> str:
+      113          """
+     ...
+      115  
+      116          Returns the connection ID. Disconnects previous connec
+           tion
+      117          for the same user if one exists.
+      118 +                                                              
+      119 +        Args:                                                 
+      120 +            party_id: Backward-compat alias for room_type="par
+          +ty", room_id=party_id.                                        
+      121          """
+      122 +        # Backward compatibility: party_id maps to room_type="
+          +party"                                                        
+      123 +        if party_id and not room_type:                        
+      124 +            room_type = "party"                               
+      125 +            room_id = party_id                                
+      126          if not skip_accept:
+      127              await websocket.accept()
+      128  
+
+⏺ 2.4 Update channel_chat_service.py to use Redis for state
+
+  The channel chat service stores _channels (channel_id -> {user_id: WebSocket})
+   in memory. For cross-instance messaging, we need to publish broadcasts via
+  Redis. The WebSocket objects themselves must stay local, but broadcasts need
+  Redis pub/sub.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/service
+        s/channel_chat_service.py)
+  ⎿  Added 59 lines, removed 5 lines
+      227  
+      228              return remaining_users
+      229  
+      230 -    async def broadcast_message(self, channel_id: str, message
+          -_data: dict) -> int:                                          
+      230 +    async def broadcast_message(                              
+      231 +        self,                                                 
+      232 +        channel_id: str,                                      
+      233 +        message_data: dict,                                   
+      234 +        source_instance: Optional[str] = None,                
+      235 +    ) -> int:                                                 
+      236          """
+      237          Broadcast message to all connected users in channel.
+      238  
+      234 -        Handles send failures gracefully by logging and contin
+          -uing.                                                         
+      239 +        Delivers to local connections first, then publishes to
+          + Redis                                                        
+      240 +        for cross-instance delivery.                          
+      241  
+      242          Args:
+      243              channel_id: Channel identifier
+      244              message_data: Message payload as dictionary
+      245 +            source_instance: If set, this is a Redis-relayed m
+          +essage (skip re-publish)                                      
+      246  
+      247          Returns:
+      241 -            Number of successful recipients                   
+      248 +            Number of successful local recipients             
+      249          """
+      250 +        import os                                             
+      251 +        instance_id = os.getenv("K_REVISION", f"local-{os.getp
+          +id()}")                                                       
+      252 +                                                              
+      253          async with self._lock:
+      254              if channel_id not in self._channels:
+      255                  logger.debug(f"No users in channel {channel_id
+           } for broadcast")
+      256 +                # Still publish to Redis for other instances  
+      257 +                if source_instance is None:                   
+      258 +                    await self._publish_channel_broadcast(chan
+          +nel_id, message_data, instance_id)                            
+      259                  return 0
+      260  
+      261              channel_users = self._channels[channel_id]
+      262              if not channel_users:
+      263 +                if source_instance is None:                   
+      264 +                    await self._publish_channel_broadcast(chan
+          +nel_id, message_data, instance_id)                            
+      265                  return 0
+      266  
+      267              message_json = json.dumps(message_data)
+     ...
+      283                      )
+      284                      failed_users.append(user_id)
+      285  
+      271 -            # Clean up failed connections (done outside iterat
+          -ion to avoid dict modification during iteration)              
+      286 +            # Clean up failed connections                     
+      287              for user_id in failed_users:
+      288                  if user_id in channel_users:
+      289                      del channel_users[user_id]
+     ...
+      297                  },
+      298              )
+      299  
+      285 -            return recipient_count                            
+      300 +        # Publish to Redis for other instances (only if not al
+          +ready relayed)                                                
+      301 +        if source_instance is None:                           
+      302 +            await self._publish_channel_broadcast(channel_id, 
+          +message_data, instance_id)                                    
+      303  
+      304 +        return recipient_count                                
+      305 +                                                              
+      306 +    async def _publish_channel_broadcast(                     
+      307 +        self, channel_id: str, message_data: dict, instance_id
+          +: str                                                         
+      308 +    ) -> None:                                                
+      309 +        """Publish a channel broadcast to Redis pub/sub."""   
+      310 +        try:                                                  
+      311 +            from app.core.pubsub import get_pubsub_manager    
+      312 +            pubsub = await get_pubsub_manager()               
+      313 +            if pubsub.is_connected:                           
+      314 +                await pubsub.publish(                         
+      315 +                    f"bayit:ws:room:channel:{channel_id}",    
+      316 +                    {                                         
+      317 +                        "message": message_data,              
+      318 +                        "source_instance": instance_id,       
+      319 +                    },                                        
+      320 +                )                                             
+      321 +        except Exception as exc:                              
+      322 +            logger.warning("Failed to publish channel broadcas
+          +t to Redis: %s", exc)                                         
+      323 +                                                              
+      324 +    async def handle_redis_channel_message(                   
+      325 +        self, channel: str, data: dict                        
+      326 +    ) -> None:                                                
+      327 +        """Handle a broadcast relayed from Redis (another inst
+          +ance)."""                                                     
+      328 +        import os                                             
+      329 +        instance_id = os.getenv("K_REVISION", f"local-{os.getp
+          +id()}")                                                       
+      330 +        source = data.get("source_instance")                  
+      331 +        if source == instance_id:                             
+      332 +            return                                            
+      333 +                                                              
+      334 +        message_data = data.get("message", {})                
+      335 +        # Extract channel_id from Redis channel name: bayit:ws
+          +:room:channel:{channel_id}                                    
+      336 +        parts = channel.split(":")                            
+      337 +        if len(parts) >= 5:                                   
+      338 +            channel_id = ":".join(parts[4:])                  
+      339 +            await self.broadcast_message(channel_id, message_d
+          +ata, source_instance=source)                                  
+      340 +                                                              
+      341      async def get_channel_user_count(self, channel_id: str) ->
+            int:
+      342          """
+      343          Get current connected user count for channel.
+
+⏺ 2.5 Update websocket_helpers.py to use Redis for active sessions
+
+  Let me read the relevant parts of websocket_helpers.py:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Now I'll update the active session tracking to use Redis:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers.py)
+  ⎿  Added 3 lines, removed 2 lines
+      22  
+      23  logger = logging.getLogger(__name__)
+      24  
+      25 -# Track active sessions per channel                            
+      26 -_active_sessions: dict[str, set[str]] = {}                     
+      25 +# Active sessions tracked via Redis for cross-instance visibili
+         +ty.                                                            
+      26 +# Local fallback dict used when Redis is unavailable.          
+      27 +_active_sessions_local: dict[str, set[str]] = {}               
+      28  
+      29  
+      30  async def get_user_from_token(token: str) -> Optional[User]:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers.py)
+  ⎿  Added 9 lines, removed 4 lines
+      256          f"sync_delay={connection_info['sync_delay_ms']}ms"
+      257      )
+      258  
+      259 -    # Track active session                                    
+      259 +    # Track active session (Redis + local fallback)           
+      260      channel_id = str(channel.id)
+      261 -    if channel_id not in _active_sessions:                    
+      262 -        _active_sessions[channel_id] = set()                  
+      263 -    _active_sessions[channel_id].add(dubbing_service.session_i
+          -d)                                                            
+      261 +    if channel_id not in _active_sessions_local:              
+      262 +        _active_sessions_local[channel_id] = set()            
+      263 +    _active_sessions_local[channel_id].add(dubbing_service.ses
+          +sion_id)                                                      
+      264 +    try:                                                      
+      265 +        from app.services.redis_connection_manager import redi
+          +s_connection_manager                                          
+      266 +        await redis_connection_manager.add_active_session(chan
+          +nel_id, dubbing_service.session_id)                           
+      267 +    except Exception:                                         
+      268 +        pass                                                  
+      269  
+      270      # Start pipeline processing task
+      271      pipeline_task = asyncio.create_task(dubbing_service.run_pi
+           peline())
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers.py)
+  ⎿  Added 10 lines, removed 5 lines
+      390              pass
+      391  
+      392      if dubbing_service:
+      393 -        # Remove from active sessions                         
+      394 -        if channel_id in _active_sessions:                    
+      395 -            _active_sessions[channel_id].discard(dubbing_servi
+          -ce.session_id)                                                
+      396 -            if not _active_sessions[channel_id]:              
+      397 -                del _active_sessions[channel_id]              
+      393 +        # Remove from active sessions (Redis + local)         
+      394 +        if channel_id in _active_sessions_local:              
+      395 +            _active_sessions_local[channel_id].discard(dubbing
+          +_service.session_id)                                          
+      396 +            if not _active_sessions_local[channel_id]:        
+      397 +                del _active_sessions_local[channel_id]        
+      398 +        try:                                                  
+      399 +            from app.services.redis_connection_manager import 
+          +redis_connection_manager                                      
+      400 +            await redis_connection_manager.remove_active_sessi
+          +on(channel_id, dubbing_service.session_id)                    
+      401 +        except Exception:                                     
+      402 +            pass                                              
+      403  
+      404          # Stop dubbing service
+      405          try:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers.py)
+  ⎿  Added 11 lines, removed 3 lines
+      409              logger.error(f"Error stopping dubbing service: {e}
+           ")
+      410  
+      411  
+      412 -def get_active_session_count(channel_id: str) -> int:         
+      413 -    """Get count of active sessions for a channel."""         
+      414 -    return len(_active_sessions.get(channel_id, set()))       
+      412 +async def get_active_session_count(channel_id: str) -> int:   
+      413 +    """Get count of active sessions for a channel (cross-insta
+          +nce via Redis)."""                                            
+      414 +    try:                                                      
+      415 +        from app.services.redis_connection_manager import redi
+          +s_connection_manager                                          
+      416 +        count = await redis_connection_manager.get_active_sess
+          +ion_count(channel_id)                                         
+      417 +        if count > 0:                                         
+      418 +            return count                                      
+      419 +    except Exception:                                         
+      420 +        pass                                                  
+      421 +    # Fallback to local count                                 
+      422 +    return len(_active_sessions_local.get(channel_id, set())) 
+
+⏺ Now I need to check if get_active_session_count is called somewhere and update
+   the call to be awaited:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ There are two versions of get_active_session_count -- one in the flat
+  websocket_helpers.py file and another in the package
+  websocket_helpers/session_manager.py. Let me update the package version and
+  check the callers.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Now let me update the package version too:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers/session_manager.py)
+  ⎿  Added 2 lines, removed 1 line
+      15  
+      16  logger = logging.getLogger(__name__)
+      17  
+      18 -# Track active sessions per channel                            
+      18 +# Active sessions tracked via Redis for cross-instance visibili
+         +ty.                                                            
+      19 +# Local fallback dict used when Redis is unavailable.          
+      20  _active_sessions: dict[str, set[str]] = {}
+      21  
+      22  # Track active sessions per user (user_id -> set of session_ids
+          )
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers/session_manager.py)
+  ⎿  Added 5 lines
+      89          if user_id not in _user_sessions:
+      90              _user_sessions[user_id] = set()
+      91          _user_sessions[user_id].add(dubbing_service.session_id)
+      92 +        try:                                                   
+      93 +            from app.services.redis_connection_manager import r
+         +edis_connection_manager                                        
+      94 +            await redis_connection_manager.add_active_session(c
+         +hannel_id, dubbing_service.session_id)                         
+      95 +        except Exception:                                      
+      96 +            pass                                               
+      97  
+      98          # Start pipeline processing task
+      99          pipeline_task = asyncio.create_task(dubbing_service.run
+          _pipeline())
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers/session_manager.py)
+  ⎿  Added 5 lines
+      165              _active_sessions[channel_id].discard(dubbing_servi
+           ce.session_id)
+      166              if not _active_sessions[channel_id]:
+      167                  del _active_sessions[channel_id]
+      168 +        try:                                                  
+      169 +            from app.services.redis_connection_manager import 
+          +redis_connection_manager                                      
+      170 +            await redis_connection_manager.remove_active_sessi
+          +on(channel_id, dubbing_service.session_id)                    
+      171 +        except Exception:                                     
+      172 +            pass                                              
+      173  
+      174          # Remove from per-user sessions
+      175          for uid, sessions in list(_user_sessions.items()):
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_helpers/session_manager.py)
+  ⎿  Added 10 lines, removed 2 lines
+      185              logger.error(f"Error stopping dubbing service: {e}
+           ")
+      186  
+      187  
+      188 -def get_active_session_count(channel_id: str) -> int:         
+      189 -    """Get number of active sessions for a channel."""        
+      188 +async def get_active_session_count(channel_id: str) -> int:   
+      189 +    """Get number of active sessions for a channel (cross-inst
+          +ance via Redis)."""                                           
+      190 +    try:                                                      
+      191 +        from app.services.redis_connection_manager import redi
+          +s_connection_manager                                          
+      192 +        count = await redis_connection_manager.get_active_sess
+          +ion_count(channel_id)                                         
+      193 +        if count > 0:                                         
+      194 +            return count                                      
+      195 +    except Exception:                                         
+      196 +        pass                                                  
+      197 +    # Fallback to local count                                 
+      198      return len(_active_sessions.get(channel_id, set()))
+
+⏺ Now the caller at websocket_live_dubbing.py:346 needs to await the now-async
+  function. Let me check:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        tes/websocket_live_dubbing.py)
+  ⎿  Added 1 line, removed 1 line
+      343          if not channel:
+      344              return {"available": False, "error": "Channel not 
+           found"}
+      345  
+      346 -        active_count = get_active_session_count(channel_id)   
+      346 +        active_count = await get_active_session_count(channel_
+          +id)                                                           
+      347  
+      348          return {
+      349              "available": channel.supports_live_dubbing,
+
+⏺ Let me check for any other callers of get_active_session_count:
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Good, only one caller and it's already been updated to await. Phase 2 is
+  complete.
+
+⏺ Phase 3: Gateway Service Scaffold
+
+  First let me check the monolith's Dockerfile and existing structure:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me check the router_registry for exact WebSocket router registrations:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now let me read the relevant section more precisely:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me create the gateway scaffold. Let me check if the directory needs to
+   be created:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ 3.1 Create bayit-ws-gateway/pyproject.toml
+
+⏺ Bash(mkdir -p /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/
+      bayit-ws-gateway/app/api/routes)
+  ⎿  Done
+
+⏺ Bash(mkdir -p /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/
+      bayit-ws-gateway/app/core)
+  ⎿  Done
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/pyp
+       roject.toml)
+  ⎿  Wrote 36 lines to ../bayit-ws-gateway/pyproject.toml
+       1 [tool.poetry]
+       2 name = "bayit-ws-gateway"
+       3 version = "0.1.0"
+       4 description = "Bayit+ WebSocket Gateway - dedicated Cloud Run se
+         rvice for real-time WebSocket connections"
+       5 authors = ["Olorin <dev@olorin.ai>"]
+       6 readme = "README.md"
+       7 packages = [{include = "app"}]
+       8 
+       9 [tool.poetry.dependencies]
+      10 python = "^3.11"
+     … +26 lines (ctrl+o to expand)
+
+⏺ 3.2 Create __init__.py files
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /__init__.py)
+  ⎿  Wrote 1 lines to ../bayit-ws-gateway/app/__init__.py
+      1 (No content)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /api/__init__.py)
+  ⎿  Wrote 1 lines to ../bayit-ws-gateway/app/api/__init__.py
+      1 (No content)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /api/routes/__init__.py)
+  ⎿  Wrote 1 lines to ../bayit-ws-gateway/app/api/routes/__init__.py
+      1 (No content)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /core/__init__.py)
+  ⎿  Wrote 1 lines to ../bayit-ws-gateway/app/core/__init__.py
+      1 (No content)
+
+⏺ 3.3 Create app/main.py - Gateway FastAPI app
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /main.py)
+  ⎿  Wrote 117 lines to ../bayit-ws-gateway/app/main.py
+      1 """
+      2 Bayit+ WebSocket Gateway Service.
+      3 
+      4 Dedicated Cloud Run service for WebSocket connections. Connects t
+        o the same
+      5 MongoDB cluster and Redis instance as the monolith, but handles o
+        nly
+      6 WebSocket routes with a 3600s timeout (vs 300s for REST).
+      7 
+      8 Imports shared code from the monolith via Poetry path dependency.
+      9 """
+     … +107 lines (ctrl+o to expand)
+
+⏺ 3.4 Create app/api/router_registry.py for the gateway
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /api/router_registry.py)
+  ⎿  Wrote 47 lines to ../bayit-ws-gateway/app/api/router_registry.py
+       1 """
+       2 WebSocket Gateway Router Registry.
+       3 
+       4 Registers WebSocket routes migrated from the monolith. Routes ar
+         e added
+       5 incrementally as they are migrated (Phase 4a-4d).
+       6 """
+       7 
+       8 import logging
+       9 
+      10 from fastapi import FastAPI
+     … +37 lines (ctrl+o to expand)
+
+⏺ 3.5 Create Dockerfile
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/Doc
+       kerfile)
+  ⎿  Wrote 64 lines to ../bayit-ws-gateway/Dockerfile
+      1 # Multi-stage build for Bayit+ WebSocket Gateway
+      2 # Lighter than monolith: no ffmpeg, xvfb, libgl1 (no media proces
+        sing)
+      3 FROM python:3.11-slim as builder
+      4 
+      5 RUN apt-get update && apt-get install -y --no-install-recommends 
+        \
+      6     build-essential \
+      7     curl \
+      8     git \
+      9     && rm -rf /var/lib/apt/lists/*
+     … +54 lines (ctrl+o to expand)
+
+⏺ 3.6 Create cloudbuild-ws-gateway.yaml
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/clo
+       udbuild-ws-gateway.yaml)
+  ⎿  Wrote 74 lines to ../bayit-ws-gateway/cloudbuild-ws-gateway.yaml
+       1 steps:
+       2   - name: 'gcr.io/cloud-builders/docker'
+       3     dir: '.'
+       4     args:
+       5       - 'build'
+       6       - '--no-cache'
+       7       - '-f'
+       8       - './bayit-ws-gateway/Dockerfile'
+       9       - '-t'
+      10       - 'gcr.io/$PROJECT_ID/bayit-ws-gateway:${_BUILD_ID}'
+     … +64 lines (ctrl+o to expand)
+
+⏺ Phase 3 complete. Let me update the iOS xcconfig files for Phase 4 client
+  changes.
+
+⏺ Phase 4: Migrate WebSocket Routes + Client Config
+
+  4.1 iOS xcconfig files
+
+⏺ Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Now I'll update the Release config to point WebSocket at the new gateway
+  subdomain:
+
+⏺ Update(Configuration/Release.xcconfig)
+  ⎿  Added 1 line, removed 1 line
+      1  // Release.xcconfig - Production build settings
+      2  
+      3  API_BASE_URL = https:/$()/api.bayit.tv/api/v1
+      4 -WEBSOCKET_BASE_URL = wss:/$()/api.bayit.tv                      
+      4 +WEBSOCKET_BASE_URL = wss:/$()/ws.bayit.tv                       
+
+⏺ Update Debug config to point to local gateway port:
+
+⏺ Update(Configuration/Debug.xcconfig)
+  ⎿  Added 1 line, removed 1 line
+      4  
+      5  DEV_HOST = localhost
+      6  API_BASE_URL = http:/$()/$(DEV_HOST):8000/api/v1
+      7 -WEBSOCKET_BASE_URL = ws:/$()/$(DEV_HOST):8000                   
+      7 +WEBSOCKET_BASE_URL = ws:/$()/$(DEV_HOST):8001                   
+
+⏺ 4.2 Verify iOS Environment.swift reads WEBSOCKET_BASE_URL
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ The iOS Environment.swift already reads WEBSOCKET_BASE_URL from Info.plist,
+  which gets it from xcconfig. No code changes needed -- just the xcconfig
+  update we already made.
+
+  4.3 Check Android AppModule for WS config
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Android already defaults to wss://ws.bayit.tv/. Let me check the
+  gradle.properties for the debug override:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Update Android debug WS URL to point to gateway port:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/gradle.
+        properties)
+  ⎿  Added 1 line, removed 1 line
+      11  
+      12  # Bayit+ Configuration
+      13  bayit.api.baseUrl=http://10.0.2.2:8000/
+      14 -bayit.ws.baseUrl=ws://10.0.2.2:8000/                           
+      14 +bayit.ws.baseUrl=ws://10.0.2.2:8001/                           
+      15  
+      16  # Google OAuth Configuration
+      17  # Web OAuth Client ID (required for requestIdToken / server aut
+          h)
+
+⏺ 4.4 Check Web app for WS URL config
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ The web app uses VITE_WS_URL in some places. Let me check the env files:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ The web production env doesn't have VITE_WS_URL set -- it derives WS URLs from
+   the API base URL. Let me check how the services construct WS URLs:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Web services construct WS URLs from window.location.host or the API URL. The
+  web app uses Firebase Hosting rewrites to proxy to the backend. For the
+  gateway, we'll need to add VITE_WS_URL for production. Let me create the env
+  var:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The web app constructs WS URLs from window.location.host. Since in production
+  it's served from Firebase Hosting at bayit.tv, and uses rewrites to proxy
+  /api/** to the backend, we need to add VITE_WS_URL support. But this requires
+  touching many web service files. For the dual-running period, let's add the
+  env var to the production example and the chess hook (which already uses it):
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/.env.production
+        .example)
+  ⎿  Added 5 lines
+       8  # Firebase will proxy /api/** to the backend Cloud Run service
+       9  VITE_API_URL=/api/v1
+      10  
+      11 +# WebSocket Gateway URL (dedicated WS service for long-lived co
+         +nnections)                                                     
+      12 +# Empty = derive from window.location.host (same origin, via mo
+         +nolith)                                                        
+      13 +# Set to ws.bayit.tv to route WS through dedicated gateway     
+      14 +VITE_WS_URL=wss://ws.bayit.tv                                  
+      15 +                                                               
+      16  # Stripe (production public key)
+      17  VITE_STRIPE_PUBLIC_KEY=pk_live_...
+      18  
+
+⏺ 4.5 Create a shared WS URL helper for web services
+
+  Rather than modifying each service file individually, let me create a
+  centralized helper:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/wsU
+       rl.ts)
+  ⎿  Wrote 38 lines to ../web/src/services/wsUrl.ts
+       1 /**
+       2  * WebSocket URL builder for Bayit+ services.
+       3  *
+       4  * When VITE_WS_URL is set (e.g., wss://ws.bayit.tv), routes WS 
+         connections
+       5  * to the dedicated gateway. Otherwise, falls back to same-origi
+         n (monolith).
+       6  *
+       7  * Usage:
+       8  *   import { buildWsUrl } from '@/services/wsUrl'
+       9  *   const url = buildWsUrl('/api/v1/ws/live/123/dubbing?lang=en
+         ')
+      10  */
+     … +28 lines (ctrl+o to expand)
+
+⏺ Good, the linter reformatted it. The buildWsUrl helper is ready for web
+  services to adopt incrementally. The web migration can happen
+  service-by-service as routes move to the gateway.
+
+  4.6 Migrate first batch: Channel Chat + Diagnostics to gateway
+
+  The plan calls for copying routes to the gateway. Since the gateway imports
+  from the monolith via path dependency, the routes can simply be re-registered
+  in the gateway's router registry. The actual route files stay in the monolith
+  codebase (same package) -- both services import them.
+
+  Let me update the gateway's router_registry to enable Phase 4a routes:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/bayit-ws-gateway/app
+       /api/router_registry.py)
+  ⎿  Added 153 lines, removed 25 lines
+       1  """
+       2  WebSocket Gateway Router Registry.
+       3  
+       4 -Registers WebSocket routes migrated from the monolith. Routes a
+         -re added                                                       
+       5 -incrementally as they are migrated (Phase 4a-4d).              
+       4 +Registers WebSocket routes migrated from the monolith. Routes a
+         +re imported                                                    
+       5 +from the monolith package (bayit-backend path dependency) and r
+         +egistered                                                      
+       6 +on the gateway FastAPI app.                                    
+       7 +                                                               
+       8 +Migration phases:                                              
+       9 +  4a: Channel chat, diagnostics (no REST coupling)             
+      10 +  4b: Single-user routes (dubbing, subtitles, trivia, etc.)    
+      11 +  4c: Multi-user social routes (party, chess, DM)              
+      12 +  4d: Admin/B2B routes                                         
+      13  """
+      14  
+      15  import logging
+     ...
+       22  
+       23  
+       24  def register_ws_routes(app: FastAPI) -> None:
+       18 -    """                                                       
+       19 -    Register all WebSocket routes on the gateway.             
+       20 -                                                              
+       21 -    Routes are enabled in batches as they are migrated:       
+       22 -    - Phase 4a: Channel chat, diagnostics                     
+       23 -    - Phase 4b: Single-user routes (dubbing, subtitles, trivia
+          -, etc.)                                                       
+       24 -    - Phase 4c: Multi-user social routes (party, chess, DM)   
+       25 -    - Phase 4d: Admin/B2B routes                              
+       26 -    """                                                       
+       25 +    """Register all migrated WebSocket routes on the gateway."
+          +""                                                            
+       26      prefix = settings.API_V1_PREFIX
+       27  
+       28      # ============================================
+       29      # Phase 4a: Channel Chat + Diagnostics
+       30      # ============================================
+       32 -    # Uncomment as routes are migrated:                       
+       33 -    #                                                         
+       34 -    # from app.api.routes import websocket_channel_chat, webso
+          -cket_diagnostics                                              
+       35 -    #                                                         
+       36 -    # app.include_router(                                     
+       37 -    #     websocket_channel_chat.router,                      
+       38 -    #     prefix=prefix,                                      
+       39 -    #     tags=["websocket", "channel-chat"],                 
+       40 -    # )                                                       
+       41 -    # app.include_router(                                     
+       42 -    #     websocket_diagnostics.router,                       
+       43 -    #     tags=["websocket", "diagnostics"],                  
+       44 -    # )                                                       
+       31 +    from app.api.routes import websocket_channel_chat, websock
+          +et_diagnostics                                                
+       32  
+       46 -    logger.info("WebSocket Gateway routes registered (Phase 4 
+          -- incremental)")                                              
+       33 +    app.include_router(                                       
+       34 +        websocket_channel_chat.router,                        
+       35 +        prefix=prefix,                                        
+       36 +        tags=["websocket", "channel-chat"],                   
+       37 +    )                                                         
+       38 +    app.include_router(                                       
+       39 +        websocket_diagnostics.router,                         
+       40 +        tags=["websocket", "diagnostics"],                    
+       41 +    )                                                         
+       42 +    logger.info("Phase 4a routes registered: channel-chat, dia
+          +gnostics")                                                    
+       43 +                                                              
+       44 +    # ============================================            
+       45 +    # Phase 4b: Single-user routes                            
+       46 +    # ============================================            
+       47 +    from app.api.routes import (                              
+       48 +        websocket_live_dubbing,                               
+       49 +        websocket_live_subtitles,                             
+       50 +        websocket_live_trivia,                                
+       51 +        websocket_bilingual_dubbing,                          
+       52 +        websocket_talk_back,                                  
+       53 +        websocket_vod_interaction,                            
+       54 +    )                                                         
+       55 +                                                              
+       56 +    app.include_router(                                       
+       57 +        websocket_live_dubbing.router,                        
+       58 +        prefix=prefix,                                        
+       59 +        tags=["websocket", "live-dubbing"],                   
+       60 +    )                                                         
+       61 +    app.include_router(                                       
+       62 +        websocket_live_subtitles.router,                      
+       63 +        prefix=prefix,                                        
+       64 +        tags=["websocket", "live-subtitles"],                 
+       65 +    )                                                         
+       66 +    app.include_router(                                       
+       67 +        websocket_live_trivia.router,                         
+       68 +        prefix=prefix,                                        
+       69 +        tags=["websocket", "live-trivia"],                    
+       70 +    )                                                         
+       71 +    app.include_router(                                       
+       72 +        websocket_bilingual_dubbing.router,                   
+       73 +        prefix=prefix,                                        
+       74 +        tags=["websocket", "bilingual-dubbing"],              
+       75 +    )                                                         
+       76 +    app.include_router(                                       
+       77 +        websocket_talk_back.router,                           
+       78 +        prefix=prefix,                                        
+       79 +        tags=["websocket", "talk-back"],                      
+       80 +    )                                                         
+       81 +    app.include_router(                                       
+       82 +        websocket_vod_interaction.router,                     
+       83 +        prefix=prefix,                                        
+       84 +        tags=["websocket", "vod-interaction"],                
+       85 +    )                                                         
+       86 +                                                              
+       87 +    # Conditional single-user routes (may have import guards) 
+       88 +    try:                                                      
+       89 +        from app.api.routes import websocket_interactive_missi
+          +on                                                            
+       90 +        app.include_router(                                   
+       91 +            websocket_interactive_mission.router,             
+       92 +            prefix=prefix,                                    
+       93 +            tags=["websocket", "interactive-missions"],       
+       94 +        )                                                     
+       95 +    except ImportError:                                       
+       96 +        logger.warning("websocket_interactive_mission not avai
+          +lable")                                                       
+       97 +                                                              
+       98 +    try:                                                      
+       99 +        from app.api.routes import websocket_phonetic_mirror  
+      100 +        app.include_router(                                   
+      101 +            websocket_phonetic_mirror.router,                 
+      102 +            prefix=prefix,                                    
+      103 +            tags=["websocket", "phonetic-mirror"],            
+      104 +        )                                                     
+      105 +    except ImportError:                                       
+      106 +        logger.warning("websocket_phonetic_mirror not availabl
+          +e")                                                           
+      107 +                                                              
+      108 +    try:                                                      
+      109 +        from app.api.routes import websocket_v2v              
+      110 +        app.include_router(                                   
+      111 +            websocket_v2v.router,                             
+      112 +            prefix=prefix,                                    
+      113 +            tags=["websocket", "zeh-ani"],                    
+      114 +        )                                                     
+      115 +    except ImportError:                                       
+      116 +        logger.warning("websocket_v2v not available")         
+      117 +                                                              
+      118 +    try:                                                      
+      119 +        from app.api.routes import websocket_live_layer       
+      120 +        app.include_router(                                   
+      121 +            websocket_live_layer.router,                      
+      122 +            prefix=prefix,                                    
+      123 +            tags=["websocket", "zeh-ani"],                    
+      124 +        )                                                     
+      125 +    except ImportError:                                       
+      126 +        logger.warning("websocket_live_layer not available")  
+      127 +                                                              
+      128 +    logger.info("Phase 4b routes registered: single-user WS ro
+          +utes")                                                        
+      129 +                                                              
+      130 +    # ============================================            
+      131 +    # Phase 4c: Multi-user social routes                      
+      132 +    # ============================================            
+      133 +    from app.api.routes import websocket, websocket_chess, web
+          +socket_dm                                                     
+      134 +                                                              
+      135 +    app.include_router(                                       
+      136 +        websocket.router, prefix=prefix, tags=["websocket"]   
+      137 +    )                                                         
+      138 +    app.include_router(                                       
+      139 +        websocket_chess.router, prefix=prefix, tags=["websocke
+          +t", "chess"]                                                  
+      140 +    )                                                         
+      141 +    app.include_router(                                       
+      142 +        websocket_dm.router, prefix=prefix, tags=["websocket",
+          + "direct-messages"]                                           
+      143 +    )                                                         
+      144 +    logger.info("Phase 4c routes registered: party, chess, DM"
+          +)                                                             
+      145 +                                                              
+      146 +    # ============================================            
+      147 +    # Phase 4d: Admin/B2B routes                              
+      148 +    # ============================================            
+      149 +    try:                                                      
+      150 +        from app.api.routes.admin_uploads import websocket as 
+          +admin_ws                                                      
+      151 +        app.include_router(                                   
+      152 +            admin_ws.router, prefix=prefix, tags=["websocket",
+          + "admin-uploads"]                                             
+      153 +        )                                                     
+      154 +    except ImportError:                                       
+      155 +        logger.warning("admin_uploads websocket not available"
+          +)                                                             
+      156 +                                                              
+      157 +    try:                                                      
+      158 +        from app.api.routes.dubbing import websocket as dubbin
+          +g_ws                                                          
+      159 +        app.include_router(                                   
+      160 +            dubbing_ws.router, prefix=prefix, tags=["websocket
+          +", "dubbing"]                                                 
+      161 +        )                                                     
+      162 +    except ImportError:                                       
+      163 +        logger.warning("dubbing websocket not available")     
+      164 +                                                              
+      165 +    try:                                                      
+      166 +        from app.api.routes.olorin.dubbing_routes import webso
+          +cket as olorin_dubbing_ws                                     
+      167 +        app.include_router(                                   
+      168 +            olorin_dubbing_ws.router, prefix=prefix, tags=["we
+          +bsocket", "olorin-dubbing"]                                   
+      169 +        )                                                     
+      170 +    except ImportError:                                       
+      171 +        logger.warning("olorin dubbing websocket not available
+          +")                                                            
+      172 +                                                              
+      173 +    logger.info("Phase 4d routes registered: admin/B2B WS rout
+          +es")                                                          
+      174 +    logger.info("WebSocket Gateway: All route phases registere
+          +d")                                                           
+
+⏺ Phase 4 routes are now registered in the gateway. The monolith keeps its
+  routes during the dual-running transition period. Phase 4 complete for the
+  code side -- actual traffic cutover happens with DNS + client config.
+
+⏺ Phase 5: Cleanup Monolith
+
+  Phase 5 is about removing WS routes from the monolith after the gateway is
+  stable. This should NOT be done yet -- the plan says "Week 7, after 1 week
+  stable." Instead, I'll prepare the cleanup by creating a script that marks
+  what needs to be removed, without actually removing it.
+
+  Let me create a cleanup checklist in the monolith's router_registry with clear
+   comments about what gets removed:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/rou
+        ter_registry.py)
+  ⎿  Added 3 lines, removed 1 line
+      535      logger.debug("Registered VOD avatar interaction routes")
+      536  
+      537      # ============================================
+      538 -    # WebSocket Routes                                        
+      538 +    # WebSocket Routes (dual-running with bayit-ws-gateway)   
+      539 +    # Phase 5 cleanup: Remove this entire block once gateway i
+          +s stable.                                                     
+      540 +    # Gateway service at ws.bayit.tv handles all WS routes.   
+      541      # ============================================
+      542      app.include_router(websocket.router, prefix=prefix, tags=[
+           "websocket"])
+      543      app.include_router(websocket_diagnostics.router, tags=["we
+           bsocket", "diagnostics"])
+
+⏺ Phase 5 cleanup is deferred by design -- the monolith keeps WS routes during
+  the dual-running period. The comment marks what to remove.
+
+⏺ Now let me verify the implementation is consistent by checking for any import
+  issues:
+
+⏺ Explore(Verify imports consistency) Haiku 4.5
+  ⎿  Done (6 tool uses · 39.1k tokens · 23s)
+  (ctrl+o to expand)
+
+⏺ All imports are clean with no circular dependencies. Let me do a final summary
+   of all changes made.
+
+  Summary of Changes
+
+  Phase 1: Redis Infrastructure
+
+  File: backend/app/core/config.py
+  Action: Modified
+  Description: Added REDIS_URL setting with empty default (graceful degradation)
+  ────────────────────────────────────────
+  File: backend/app/core/redis_client.py
+  Action: Modified
+  Description: Updated get_redis_client() to resolve URL from config
+  ────────────────────────────────────────
+  File: backend/app/core/pubsub.py
+  Action: New
+  Description: PubSubManager class: publish/subscribe, auto-reconnect, graceful
+    degradation
+  ────────────────────────────────────────
+  File: backend/app/main.py
+  Action: Modified
+  Description: Wire Redis + pub/sub into lifespan (startup + shutdown)
+  ────────────────────────────────────────
+  File: backend/pyproject.toml
+  Action: Modified
+  Description: Added hiredis extra to redis dependency
+  ────────────────────────────────────────
+  File: backend/cloudbuild.yaml
+  Action: Modified
+  Description: Added REDIS_URL secret mapping
+  ────────────────────────────────────────
+  File: cloudbuild.yaml (root)
+  Action: Modified
+  Description: Added REDIS_URL to consolidated secrets block
+
+  Phase 2: Redis-Backed Connection Manager
+
+  File: backend/app/services/redis_connection_manager.py
+  Action: New
+  Description: Hybrid local+Redis WebSocket manager with room-based pub/sub
+  ────────────────────────────────────────
+  File: backend/app/services/connection_manager.py
+  Action: Modified
+  Description: Thin facade delegating to redis_connection_manager
+  ────────────────────────────────────────
+  File: backend/app/services/channel_chat_service.py
+  Action: Modified
+  Description: broadcast_message() now publishes to Redis for cross-instance
+    delivery
+  ────────────────────────────────────────
+  File: backend/app/api/routes/websocket_helpers.py
+  Action: Modified
+  Description: Active sessions tracked in Redis with local fallback
+  ────────────────────────────────────────
+  File: backend/app/api/routes/websocket_helpers/session_manager.py
+  Action: Modified
+  Description: Same Redis-backed active session tracking
+  ────────────────────────────────────────
+  File: backend/app/api/routes/websocket_live_dubbing.py
+  Action: Modified
+  Description: get_active_session_count call now awaited (async)
+
+  Phase 3: Gateway Service Scaffold
+
+  File: bayit-ws-gateway/app/main.py
+  Action: New
+  Description: Minimal FastAPI app: MongoDB + Redis, health check, CORS, no REST
+
+    middleware
+  ────────────────────────────────────────
+  File: bayit-ws-gateway/app/api/router_registry.py
+  Action: New
+  Description: Registers all WS routes from monolith
+  ────────────────────────────────────────
+  File: bayit-ws-gateway/Dockerfile
+  Action: New
+  Description: Slim image (no ffmpeg/xvfb), single worker
+  ────────────────────────────────────────
+  File: bayit-ws-gateway/pyproject.toml
+  Action: New
+  Description: Poetry config with monolith path dependency
+  ────────────────────────────────────────
+  File: bayit-ws-gateway/cloudbuild-ws-gateway.yaml
+  Action: New
+  Description: Cloud Run deploy: 3600s timeout, min 1 instance, VPC connector
+
+  Phase 4: Client Config + Route Migration
+
+  File: ios-app/Configuration/Release.xcconfig
+  Action: Modified
+  Description: WEBSOCKET_BASE_URL -> wss://ws.bayit.tv
+  ────────────────────────────────────────
+  File: ios-app/Configuration/Debug.xcconfig
+  Action: Modified
+  Description: WS port -> 8001 (local gateway)
+  ────────────────────────────────────────
+  File: android-app/gradle.properties
+  Action: Modified
+  Description: bayit.ws.baseUrl -> ws://10.0.2.2:8001/
+  ────────────────────────────────────────
+  File: web/.env.production.example
+  Action: Modified
+  Description: Added VITE_WS_URL=wss://ws.bayit.tv
+  ────────────────────────────────────────
+  File: web/src/services/wsUrl.ts
+  Action: New
+  Description: Centralized WS URL builder respecting VITE_WS_URL
+
+  Phase 5: Cleanup Markers
+
+  File: backend/app/api/router_registry.py
+  Action: Modified
+  Description: Comment marking WS routes for removal after gateway stabilizes
+
+  Key Architecture Decisions
+
+  - Graceful degradation everywhere: Redis unavailable = same behavior as today
+  (local-only)
+  - No breaking changes: All existing imports (from 
+  app.services.connection_manager import connection_manager) continue to work
+  - Dual-running: Monolith keeps WS routes during transition; removed in Phase 5
+   after gateway is stable
+  - Monorepo path dependency: Gateway imports monolith code directly (no
+  separate shared package)
+  - Backward-compatible connect() API: Added party_id parameter that maps to
+  room_type="party"
+
+✻ Sautéed for 13m 30s
+
+❯ next steps? 
+
+⏺ Next Steps (in order)
+
+  1. Infrastructure Provisioning (before any deploy)
+
+  These are manual GCloud operations:
+
+  # Create Memorystore Redis instance
+  gcloud redis instances create bayit-redis \
+    --size=1 --region=us-east1 --tier=standard \
+    --network=default
+
+  # Get the Redis host IP
+  gcloud redis instances describe bayit-redis --region=us-east1
+  --format='value(host)'
+
+  # Create VPC connector (if not exists)
+  gcloud compute networks vpc-access connectors create bayit-vpc-connector \
+    --region=us-east1 --network=default --range=10.8.0.0/28
+
+  # Add REDIS_URL to Secret Manager
+  gcloud secrets create bayit-redis-url --replication-policy=automatic
+  echo -n "redis://10.x.x.x:6379/0" | gcloud secrets versions add
+  bayit-redis-url --data-file=-
+
+  # Attach VPC connector to existing monolith service
+  gcloud run services update bayit-backend-production \
+    --region=us-east1 --vpc-connector=bayit-vpc-connector
+
+  2. Deploy Monolith First (Phase 1+2 validation)
+
+  Deploy the updated monolith with Redis support. Verify:
+  - Health check passes
+  - Redis connects (check Cloud Run logs for "Redis client and pub/sub manager
+  initialized")
+  - No behavior change for users (graceful degradation if Redis hiccups)
+  - Spin up 2+ instances and test watch party cross-instance messaging
+
+  3. Deploy Gateway (Phase 3 validation)
+
+  # From bayit-plus/ root
+  gcloud builds submit --config=bayit-ws-gateway/cloudbuild-ws-gateway.yaml .
+
+  Verify:
+  - https://ws.bayit.tv/health returns 200
+  - MongoDB + Redis connections in gateway logs
+  - WebSocket handshake works on wss://ws.bayit.tv/api/v1/ws/...
+
+  4. DNS Setup
+
+  # Option A: Cloud Run domain mapping
+  gcloud run domain-mappings create --service=bayit-ws-gateway \
+    --domain=ws.bayit.tv --region=us-east1
+
+  # Option B: Cloud DNS + serverless NEG (if using load balancer)
+
+  5. Client Rollout (staged)
+
+  - Web: Set VITE_WS_URL=wss://ws.bayit.tv in production env, deploy Firebase
+  Hosting
+  - iOS: Next TestFlight build picks up xcconfig change automatically
+  - Android: Next Play Store build picks up gradle.properties change
+
+  6. Monitoring Period (1 week)
+
+  Watch for:
+  - Redis connection errors in both services
+  - WebSocket reconnection spikes
+  - Message delivery latency changes
+  - Cross-instance party/chess/DM functionality
+
+  7. Phase 5 Cleanup (after stable)
+
+  Once gateway is stable for 1+ week:
+  - Remove the WS routes block from monolith router_registry.py (marked with
+  comment)
+  - Remove WS-only imports from monolith
+  - Update monolith Cloud Run timeout back to --timeout=300
+  - Remove websockets from monolith dependencies if no longer needed
+
+  Estimated Cost
+
+  ┌───────────────────────────────────────┬───────────┐
+  │               Resource                │  Monthly  │
+  ├───────────────────────────────────────┼───────────┤
+  │ Memorystore Redis Standard 1GB        │ ~$60      │
+  ├───────────────────────────────────────┼───────────┤
+  │ Cloud Run gateway (1 CPU, 1Gi, min 1) │ ~$30-50   │
+  ├───────────────────────────────────────┼───────────┤
+  │ VPC connector                         │ ~$7       │
+  ├───────────────────────────────────────┼───────────┤
+  │ Total                                 │ ~$100-120 │
+  └───────────────────────────────────────┴───────────┘
+
+  What to do right now
+
+  Start with step 1 (infrastructure provisioning) -- everything else depends on
+  the Redis instance and VPC connector being in place. Want me to generate the
+  exact gcloud commands for your project ID?
+
+❯ generate the gcloud commands for my project 
+
+⏺ Let me find your GCP project ID first.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Bash(gcloud config get-value project 2>/dev/null || echo "NOT_SET")
+  ⎿  bayit-plus
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Bash(gcloud compute networks vpc-access connectors list --region=us-east1
+      --format='table(name,network,ipCidrRange,state)' 2>/dev/null || echo
+      "NO_CONNECTORS_OR_API_…)
+  ⎿  NO_CONNECTORS_OR_API_DISABLED
+
+⏺ Bash(gcloud redis instances list --region=us-east1
+      --format='table(name,host,port,tier,memorySizeGb,state)' 2>/dev/null ||
+      echo "NO_REDIS_OR_API_DISABLED")
+  ⎿  NO_REDIS_OR_API_DISABLED
+
+⏺ Bash(gcloud run services describe bayit-backend-production --region=us-east1
+      --format='value(spec.template.metadata.annotations["run.googleapis.com/vpc
+      -access-connec…)
+  ⎿  (No output)
+
+⏺ Bash(gcloud run services describe bayit-backend-production --region=us-east1
+      --format=json 2>/dev/null | python3 -c "import sys,json;
+      d=json.load(sys.stdin); ann=d.g…)
+  ⎿  NONE
+
+⏺ Bash(gcloud compute networks list --format='table(name,subnetMode)'
+      2>/dev/null || echo "CANNOT_LIST_NETWORKS")
+  ⎿  NAME     SUBNET_MODE
+     default
+
+⏺ Good. Project is bayit-plus, region us-east1, network default, no existing VPC
+   connector or Redis. Here's the full provisioning script:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/provision-ws
+       -gateway-infra.sh)
+  ⎿  Wrote 221 lines to ../scripts/provision-ws-gateway-infra.sh
+       1 #!/usr/bin/env bash
+       2 #
+       3 # Provision infrastructure for Bayit+ WebSocket Gateway
+       4 #
+       5 # Project:  bayit-plus
+       6 # Region:   us-east1
+       7 # Network:  default
+       8 #
+       9 # Run steps in order. Each step is idempotent (safe to re-run).
+      10 # Review output after each step before proceeding.
+     … +211 lines (ctrl+o to expand)
+
+⏺ Bash(chmod +x /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/
+      scripts/provision-ws-gateway-infra.sh)
+  ⎿  Done
+
+⏺ Script is at scripts/provision-ws-gateway-infra.sh. It runs steps 1-6
+  automatically (APIs, VPC connector, Redis, Secret Manager, attach VPC to
+  monolith), then prints the manual deploy commands for steps 7-10.
+
+  Steps 1-6 are idempotent -- safe to re-run. The Redis creation takes 5-10
+  minutes; the script waits for it. Steps 7+ are printed as commands for you to
+  run manually since they trigger deploys.
+
+  Run it with:
+
+  cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+  ./scripts/provision-ws-gateway-infra.sh
+
+✻ Worked for 1m 27s
+
+❯ run the provisioning script 
+
+⏺ Bash(/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/p
+      rovision-ws-gateway-infra.sh)
+  ⎿  === Bayit+ WS Gateway Infrastructure Provisioning ===
+     Project: bayit-plus | Region: us-east1 | Network: default
+     … +65 lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+⏺ All infrastructure is provisioned:
+
+  Resource: Redis API
+  Status: Enabled
+  Details: redis.googleapis.com
+  ────────────────────────────────────────
+  Resource: VPC Access API
+  Status: Enabled
+  Details: vpcaccess.googleapis.com
+  ────────────────────────────────────────
+  Resource: VPC Connector
+  Status: Created
+  Details: bayit-vpc-connector (10.8.0.0/28)
+  ────────────────────────────────────────
+  Resource: Memorystore Redis
+  Status: Ready
+  Details: 10.110.145.188:6379 (Standard tier, 1GB)
+  ────────────────────────────────────────
+  Resource: Secret Manager
+  Status: Stored
+  Details: bayit-redis-url = redis://10.110.145.188:6379/0
+  ────────────────────────────────────────
+  Resource: Monolith VPC
+  Status: Attached
+  Details: bayit-backend-production now routes to Redis via VPC
+
+  Remaining manual steps:
+
+  Step 7 -- Deploy the monolith with the new Redis code:
+  cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+  gcloud builds submit --config=cloudbuild.yaml --project=bayit-plus .
+
+  Step 8 -- Deploy the WS gateway + attach VPC:
+  gcloud builds submit --config=bayit-ws-gateway/cloudbuild-ws-gateway.yaml
+  --project=bayit-plus .
+
+  gcloud run services update bayit-ws-gateway \
+    --region=us-east1 \
+    --vpc-connector=bayit-vpc-connector \
+    --vpc-egress=private-ranges-only \
+    --project=bayit-plus
+
+  Step 9 -- DNS mapping for ws.bayit.tv
+
+  Want me to run the monolith deploy (step 7)?
+
+✻ Sautéed for 9m 29s
+
+❯ yes, deploy the monolith 
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus &&
+      gcloud builds submit --config=cloudbuild.yaml --project=bayit-plus . 2>&1)
+  ⎿  Error: Exit code 1
+     Creating temporary archive of 3005 file(s) totalling 576.1 MiB before 
+     compression.
+     Uploading tarball of [.] to [gs://bayit-plus_cloudbuild/source/1771647149.9
+     00126-24b8cfe6e34c43c4b03e7b3bbc695677.tgz]
+     Created [https://cloudbuild.googleapis.com/v1/projects/bayit-plus/locations
+     /global/builds/a9ea624b-44b0-4a68-a7cd-17bfbddc8385].
+     Logs are available at [ https://console.cloud.google.com/cloud-build/builds
+     /a9ea624b-44b0-4a68-a7cd-17bfbddc8385?project=624470113582 ].
+     Waiting for build to complete. Polling interval: 1 second(s).
+     ----------------------------- REMOTE BUILD OUTPUT 
+     ------------------------------
+     starting build "a9ea624b-44b0-4a68-a7cd-17bfbddc8385"
+
+     FETCHSOURCE
+     … +140 lines (ctrl+o to see all)
+
+⏺ Build failed. Let me check the build logs for the actual error.
+
+⏺ Bash(gcloud builds log a9ea624b-44b0-4a68-a7cd-17bfbddc8385
+      --project=bayit-plus 2>&1 | tail -100)
+  ⎿  Step #0: Setting up libctf0:amd64 (2.44-3) ...
+     Step #0: Setting up libidn2-0:amd64 (2.3.8-2) ...
+     Step #0: Setting up libperl5.40:amd64 (5.40.1-6) ...
+     … +67 lines (ctrl+o to expand)
+
+⏺ The lock file is out of sync because we changed redis to redis[hiredis] in
+  pyproject.toml. Need to update the lock file first.
+
+⏺ Bash(cd
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend &&
+       poetry lock --no-update 2>&1)
+  ⎿  Error: Exit code 1
+
+     The option "--no-update" does not exist
+
+
+     The option "--no-update" does not exist
+
+⏺ Bash(cd
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend &&
+       poetry lock 2>&1)
+  ⎿  Resolving dependencies...
+
+     Writing lock file
+  ⎿  Shell cwd was reset to /Users/olorin/Documents/Projects/olorin/olorin-
+     media/bayit-plus/ios-app
+
+⏺ Lock file updated. Now redeploy.
+
+⏺ Bash(cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus &&
+      gcloud builds submit --config=cloudbuild.yaml --project=bayit-plus . 2>&1)
+  ⎿  Running in the background (↓ to manage)
+  ⎿  (timeout 10m)
+
+⏺ Task Output be8979f
+  ⎿  Creating temporary archive of 3005 file(s) totalling 576.1 MiB before
+     compression.
+     Uploading tarball of [.] to [gs://bayit-plus_cloudbuild/source/1771647
+     … +426 lines (ctrl+o to expand)
+
+⏺ Build is still running. Let me wait for it to finish.
+
+⏺ Task Output be8979f
+  ⎿  Creating temporary archive of 3005 file(s) totalling 576.1 MiB before
+     compression.
+     Uploading tarball of [.] to [gs://bayit-plus_cloudbuild/source/1771647
+     … +2186 lines (ctrl+o to expand)
+
+⏺ Monolith deployed successfully. Revision bayit-backend-production-00094-wld is
+   serving 100% traffic. Let me verify Redis connectivity in the logs.
+
+⏺ Bash(gcloud run services logs read bayit-backend-production --region=us-east1
+      --project=bayit-plus --limit=30 2>&1 | grep -i -E
+      "redis|pubsub|startup|ready|initializ…)
+  ⎿  No matches found
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Baked for 33m 36s
+
+⏺ Background command "Deploy monolith with updated poetry.lock" completed (exit
+code 0)
+  ⎿  Context limit reached · /compact or /clear to continue

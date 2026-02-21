@@ -26,5 +26,6 @@ class CreatifyAvatarResponse(BaseModel):
     status: str
     avatar_image_url: Optional[str] = None
     error_message: Optional[str] = None
+    has_voice_clone: bool = False
     created_at: str
     updated_at: str

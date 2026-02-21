@@ -3984,7 +3984,7 @@
     "slogan": "הבית שלך. בכל מקום.",
     "ok": "אישור",
     "untitled": "ללא כותרת",
-    "percent": "אחוז",
+    "percent": "%",
     "success": "הצליח",
     "partialSuccess": "הצלחה חלקית",
     "warning": "אזהרה",
@@ -4081,13 +4081,11 @@
     "maybeLater": "Maybe Later",
     "medium": "Medium",
     "or": "or",
-    "percent": "%",
     "playlist": "Playlist",
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
     "unavailable": "Unavailable",
-    "untitled": "ללא כותרת",
     "guest": "אורח",
     "anonymous": "אנונימי",
     "content": "תוכן",
@@ -6163,11 +6161,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -6179,10 +6173,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",
@@ -6381,6 +6372,13 @@
     "interaction": {
       "previous": "אינטראקציה קודמת",
       "next": "אינטראקציה הבאה"
+    },
+    "pauseAsk": {
+      "title": "אינטראקציה",
+      "processing": "מעבד...",
+      "askAnother": "שאל שוב",
+      "resumeMovie": "חזור לסרט",
+      "selectCharacter": "בחר דמות"
     },
     "premiumRequiredRecording": "נדרש מנוי פרימיום",
     "sleepTimer": {
@@ -9163,225 +9161,35 @@
     }
   },
   "zehAni": {
-    "mesh": {
-      "title": "אווטאר תלת-ממדי",
-      "subtitle": "צור את האווטאר התלת-ממדי שלך מסרטון סלפי",
-      "generating": "יוצר את המודל התלת-ממדי שלך...",
-      "rigging": "מוסיף אנימציות...",
-      "ready": "האווטאר התלת-ממדי שלך מוכן!",
-      "failed": "לא הצלחנו ליצור אווטאר תלת-ממדי",
-      "retry": "נסה שוב",
-      "downloadGlb": "הורד מודל תלת-ממדי",
-      "viewIn3d": "צפה בתלת-ממד",
-      "statusFailed": "היצירה נכשלה",
-      "statusGenerating": "יוצר מודל תלת-ממדי...",
-      "statusIdle": "מוכן ליצירה",
-      "statusReady": "המודל התלת-ממדי מוכן",
-      "statusRigging": "מוסיף אנימציות...",
-      "viewPreview": "צפה בתצוגה מקדימה"
-    },
-    "arCapture": {
-      "title": "סריקת פנים",
-      "subtitle": "צור אווטאר תלת מימדי עם סריקת פנים",
-      "holdStill": "אל תזוזו...",
-      "smile": "חייך!",
-      "openMouth": "פתח את הפה לרווחה",
-      "raiseBrows": "הרם גבות",
-      "processing": "בונה את המודל התלת מימדי שלך...",
-      "complete": "סריקת הפנים הושלמה!",
-      "noFace": "לא זוהו פנים. נסה שוב."
-    },
-    "consent": {
-      "biometric": {
-        "title": "הסכמה לנתונים ביומטריים",
-        "subtitle": "תכונה זו משתמשת בנתוני פנים ליצירת אווטאר תלת-ממדי",
-        "explanation": "אנו משתמשים בנתוני הפנים והקול שלך ליצירת חוויות AI מותאמות אישית. נתונים אלו מעובדים בצורה מאובטחת ולעולם לא משותפים עם צדדים שלישיים.",
-        "privacy": "הנתונים הביומטריים שלך מוצפנים ומאוחסנים בצורה מאובטחת. תוכל לבטל את ההסכמה בכל עת.",
-        "pinLabel": "קוד משפחתי",
-        "consentTypes": "סוגי הסכמה",
-        "meshGeneration": "יצירת אווטאר תלת-ממדי",
-        "voiceV2V": "המרת קול",
-        "latentFeatures": "ניתוח מאפיינים",
-        "currentStatus": "סטטוס נוכחי",
-        "pinPlaceholder": "הזן קוד",
-        "enterPin": "הזן קוד משפחתי",
-        "submit": "שלח הסכמה",
-        "grantConsent": "אשר הסכמה",
-        "revokeConsent": "בטל הסכמה",
-        "consentGranted": "ההסכמה אושרה",
-        "consentRevoked": "ההסכמה בוטלה",
-        "pinRequired": "נדרש קוד משפחתי",
-        "invalidPin": "קוד שגוי",
-        "familyControlsRequired": "נדרשות בקרות משפחתיות",
-        "familyControlsExplain": "הסכמה ביומטרית דורשת הגדרת בקרות משפחתיות תחילה. קוד משפחתי משמש להגנה על גישה לנתונים ביומטריים. עבור לבקרות משפחתיות כדי ליצור את הקוד שלך.",
-        "goToFamilyControls": "עבור לבקרות משפחתיות"
-      }
-    },
-    "preview3d": {
-      "title": "תצוגה מקדימה תלת-ממדית",
-      "loading": "טוען מודל תלת-ממדי...",
-      "rotate": "גרור לסיבוב",
-      "pinchToZoom": "צבוט לזום",
-      "error": "לא ניתן לטעון מודל תלת-ממדי"
-    },
-    "preview": {
-      "error": "לא ניתן לטעון תצוגה מקדימה",
-      "loading": "טוען תצוגה מקדימה...",
-      "title": "תצוגה תלת-ממדית"
-    },
-    "v2v": {
-      "title": "תרגול קול",
-      "subtitle": "תרגלו עברית עם הקול שלכם",
-      "startPractice": "התחל תרגול",
-      "listening": "מאזין...",
-      "transforming": "ממיר קול...",
-      "result": "תוצאה",
-      "before": "לפני",
-      "after": "אחרי",
-      "improvement": "שיפור",
-      "tryAgain": "נסה שוב",
-      "sessionComplete": "השיעור הושלם",
-      "averageImprovement": "שיפור ממוצע",
-      "beforeAfter": "לפני ואחרי",
-      "latency": "זמן תגובה",
-      "nextPhrase": "המשפט הבא",
-      "retry": "נסה שוב"
-    },
-    "liveLayer": {
-      "title": "אווטאר חי",
-      "connecting": "מתחבר...",
-      "connected": "מחובר",
-      "disconnected": "מנותק"
-    },
-    "trigger": {
-      "listen": "הקשיבו היטב",
-      "sayWord": "אמרו את המילה",
-      "correct": "נכון!",
-      "tryAgain": "נסו שוב",
-      "skip": "דלג",
-      "scoreLabel": "ניקוד",
-      "continue": "המשך",
-      "dismiss": "סגור",
-      "errors": {
-        "microphoneFailed": "לא ניתן לגשת למיקרופון"
-      },
-      "incorrect": "לא בדיוק",
-      "prompt": "אמור את המילה שמופיעה על המסך",
-      "success": "כל הכבוד!"
-    },
-    "magicMirror": {
-      "title": "מראה קסומה",
-      "greeting": "בוקר טוב!",
-      "vocabOfDay": "המילה של היום",
-      "refresh": "רענון",
-      "loading": "טוען ברכה...",
-      "error": "לא ניתן לטעון ברכה",
-      "noAvatar": "יצירת האווטאר שלך",
-      "noAvatarDesc": "הגדירו את האווטאר של הילד כדי לקבל ברכות מראה קסם מותאמות אישית עם אוצר מילים יומי בעברית.",
-      "createAvatar": "בואו נתחיל",
-      "noCreditsTitle": "לא נותרו קרדיטים",
-      "noCreditsDesc": "השתמשת בכל קרדיטי הבינה המלאכותית שלך. שדרג את התוכנית שלך או המתן לחידוש הקרדיטים.",
-      "meshUnavailable": "טוען אווטאר תלת מימדי..."
-    },
-    "highlights": {
-      "title": "סרטוני הדגשה",
-      "generate": "צור סרטון",
-      "generating": "יוצר...",
-      "ready": "מוכן",
-      "failed": "היצירה נכשלה",
-      "share": "שתף",
-      "momentCount": "רגעים",
-      "empty": "אין סרטוני הדגשה עדיין",
-      "status": {
-        "pending": "ממתין",
-        "selecting": "בוחר רגעים",
-        "rendering": "מעבד וידאו",
-        "ready": "מוכן לשיתוף",
-        "failed": "נכשל"
-      }
-    },
-    "contacts": {
-      "title": "אנשי קשר - סבא וסבתא",
-      "add": "הוסף איש קשר",
-      "name": "שם תצוגה",
-      "phone": "מספר טלפון",
-      "relationship": "קרבה משפחתית",
-      "language": "שפה",
-      "empty": "לא נוספו אנשי קשר עדיין",
-      "delete": "הסר איש קשר",
-      "reelsSent": "סרטונים שנשלחו",
-      "pin": "קוד משפחתי"
-    },
-    "feedback": {
-      "title": "תיבת משוב",
-      "empty": "אין משוב עדיין",
-      "from": "מאת",
-      "voiceMessage": "הודעה קולית",
-      "textMessage": "הודעת טקסט"
-    },
-    "dashboard": {
-      "title": "זה אני",
-      "mirrorSection": "מראה קסומה",
-      "reelsSection": "סרטוני הדגשה",
-      "contactsSection": "אנשי קשר",
-      "feedbackSection": "משוב"
-    },
-    "hub": {
-      "title": "מרכז זה אני",
-      "magicMirror": "מראה קסומה",
-      "magicMirrorDesc": "מראה AI אינטראקטיבית עם ברכות מותאמות אישית ומילים בעברית יומיות",
-      "highlights": "סרטוני הדגשה",
-      "highlightsDesc": "צור ושתף קומפילציות של רגעים בלתי נשכחים עם יקיריך",
-      "contacts": "אנשי קשר סבא וסבתא",
-      "contactsDesc": "נהל אנשי קשר לשיתוף סרטוני ההדגשה שלך",
-      "feedback": "תיבת משוב",
-      "feedbackDesc": "קבל הודעות קוליות וטקסטיות ממשפחה",
-      "consent": "הסכמה ביומטרית",
-      "consentDesc": "נהל הגדרות הסכמה לנתוני פנים וקול",
-      "movieInteractions": "אינטראקציות עם סרטים",
-      "movieInteractionsDesc": "עיין בסרטים ודבר עם הדמויות האהובות עליך"
-    },
     "movieInteractions": {
       "title": "אינטראקציות עם סרטים",
-      "subtitle": "בחר סרט ודבר עם דמויות",
-      "tagMovie": "סמן סרט",
-      "tagging": "מחלץ דמויות...",
-      "tagged": "מוכן",
-      "noMovies": "אין סרטים מסומנים עדיין. סמן סרט כדי להתחיל לדבר עם דמויות.",
-      "characters": {
-        "title": "דמויות",
-        "subtitle": "בחר דמות לדבר איתה",
-        "playedBy": "בביצוע {{actorName}}",
-        "noCharacters": "אין דמויות זמינות"
-      },
-      "dialogue": {
-        "title": "דבר עם {{characterName}}",
-        "specificQuestions": "שאלות על הדמות",
-        "genericQuestions": "שאלות כלליות",
-        "customQuestion": "שאל שאלה משלך",
-        "placeholder": "הקלד שאלה...",
-        "generatingResponse": "חושב...",
-        "generatingAudio": "יוצר קול...",
-        "generatingVideo": "יוצר וידאו...",
-        "creditCost": "עולה {{credits}} קרדיטים",
-        "askAnother": "שאל שאלה נוספת",
-        "sending": "שולח..."
-      },
-      "errors": {
-        "fetchFailed": "טעינת הסרטים נכשלה",
-        "tagFailed": "סימון הסרט נכשל",
-        "charactersFailed": "טעינת הדמויות נכשלה",
-        "questionsFailed": "טעינת השאלות נכשלה",
-        "dialogueFailed": "שליחת ההודעה נכשלה"
-      }
+      "subtitle": "בחרו סרט ודברו עם הדמויות האהובות שלכם",
+      "moviesSection": "סרטים",
+      "charactersSection": "דמויות",
+      "questionsSection": "שאלות",
+      "empty": "אין סרטים אינטראקטיביים זמינים עדיין",
+      "characterCount": "{{count}} דמויות"
     },
-    "avatar3d": {
-      "errorTitle": "3D Avatar Error",
-      "loading": "Loading 3D Avatar...",
-      "resetCamera": "Reset Camera",
-      "title": "3D Avatar Preview"
+    "dialogue": {
+      "specificQuestions": "שאלות לדמות",
+      "genericQuestions": "שאלות כלליות",
+      "placeholder": "שאלו שאלה...",
+      "send": "שלח",
+      "you": "אתה"
     },
-    "subtitle": "Interactive experiences and social features"
+    "subtitle": "הזהות האינטראקטיבית שלכם",
+    "hub": {
+      "magicMirror": "מראה קסם",
+      "magicMirrorDesc": "ראו את עצמכם כדמות בסיפור",
+      "highlights": "רילים מובחרים",
+      "highlightsDesc": "הרגעים האינטראקטיביים הטובים שלכם",
+      "movieInteractions": "אינטראקציות עם סרטים",
+      "movieInteractionsDesc": "דברו עם הדמויות האהובות שלכם",
+      "contacts": "אנשי קשר",
+      "contactsDesc": "נהלו אנשי קשר משפחתיים לשיתוף",
+      "feedback": "משוב",
+      "feedbackDesc": "הודעות מהמשפחה וחברים"
+    }
   },
   "starStory": {
     "title": "כוכב בסיפור",

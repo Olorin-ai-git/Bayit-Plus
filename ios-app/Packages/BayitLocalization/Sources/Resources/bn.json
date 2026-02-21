@@ -3947,8 +3947,8 @@
     "appVersion": "🏠 Bayit+ v1.0.0",
     "slogan": "আপনার বাড়ি। যেকোনো জায়গায়।",
     "ok": "ঠিক আছে",
-    "untitled": "শিরোনামহীন",
-    "percent": "শতাংশ",
+    "untitled": "Untitled",
+    "percent": "%",
     "success": "সফল",
     "warning": "সতর্কতা",
     "confirm": "নিশ্চিত করুন",
@@ -4051,13 +4051,11 @@
     "maybeLater": "Maybe Later",
     "medium": "Medium",
     "or": "or",
-    "percent": "%",
     "playlist": "Playlist",
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
     "unavailable": "Unavailable",
-    "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
     "content": "Content",
@@ -6097,11 +6095,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6113,10 +6107,7 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": [
-        "অফলাইন দেখা",
-        "পরিবার প্রোফাইল"
-      ]
+      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -6291,6 +6282,13 @@
     "interaction": {
       "previous": "পূর্ববর্তী ইন্টারঅ্যাকশন",
       "next": "পরবর্তী ইন্টারঅ্যাকশন"
+    },
+    "pauseAsk": {
+      "title": "ইন্টারেক্ট",
+      "processing": "প্রক্রিয়াকরণ...",
+      "askAnother": "আরো জিজ্ঞেস করুন",
+      "resumeMovie": "চালিয়ে যান",
+      "selectCharacter": "চরিত্র নির্বাচন করুন"
     },
     "sleepTimer": {
       "title": "স্লিপ টাইমার",
@@ -9065,225 +9063,35 @@
     }
   },
   "zehAni": {
-    "mesh": {
-      "title": "3D অ্যাভাটার",
-      "subtitle": "আপনার ভিডিও সেলফি থেকে 3D অ্যাভাটার তৈরি করুন",
-      "generating": "আপনার 3D মডেল তৈরি হচ্ছে...",
-      "rigging": "অ্যানিমেশন যোগ হচ্ছে...",
-      "ready": "আপনার 3D অ্যাভাটার তৈরি!",
-      "failed": "3D অ্যাভাটার তৈরি করা যায়নি",
-      "retry": "আবার চেষ্টা করুন",
-      "downloadGlb": "3D মডেল ডাউনলোড",
-      "viewIn3d": "3D তে দেখুন",
-      "statusFailed": "জেনারেশন ব্যর্থ",
-      "statusGenerating": "3D মডেল তৈরি হচ্ছে...",
-      "statusIdle": "তৈরি করতে প্রস্তুত",
-      "statusReady": "3D মডেল প্রস্তুত",
-      "statusRigging": "অ্যানিমেশন যোগ হচ্ছে...",
-      "viewPreview": "3D প্রিভিউ দেখুন"
-    },
-    "arCapture": {
-      "title": "মুখ স্ক্যান",
-      "subtitle": "মুখ স্ক্যান দিয়ে আপনার 3D অ্যাভাতার তৈরি করুন",
-      "holdStill": "স্থির থাকুন...",
-      "smile": "হাসুন!",
-      "openMouth": "মুখ বড় করে খুলুন",
-      "raiseBrows": "ভ্রু তুলুন",
-      "processing": "আপনার 3D মডেল তৈরি হচ্ছে...",
-      "complete": "মুখ স্ক্যান সম্পন্ন!",
-      "noFace": "মুখ শনাক্ত হয়নি। আবার চেষ্টা করুন।"
-    },
-    "consent": {
-      "biometric": {
-        "title": "বায়োমেট্রিক ডেটা সম্মতি",
-        "subtitle": "এই বৈশিষ্ট্য 3D অ্যাভাটার তৈরি করতে মুখের ডেটা ব্যবহার করে",
-        "explanation": "আমরা ব্যক্তিগত AI অভিজ্ঞতা তৈরি করতে আপনার মুখ এবং কণ্ঠস্বর ডেটা ব্যবহার করি। এই ডেটা নিরাপদে প্রক্রিয়া করা হয় এবং কখনো তৃতীয় পক্ষের সাথে শেয়ার করা হয় না।",
-        "privacy": "আপনার বায়োমেট্রিক ডেটা এনক্রিপ্ট করা এবং নিরাপদে সংরক্ষিত। আপনি যেকোনো সময় সম্মতি প্রত্যাহার করতে পারবেন।",
-        "pinLabel": "পরিবারের PIN",
-        "consentTypes": "সম্মতির ধরন",
-        "meshGeneration": "3D অ্যাভাটার তৈরি",
-        "voiceV2V": "কণ্ঠস্বর রূপান্তর",
-        "latentFeatures": "বৈশিষ্ট্য বিশ্লেষণ",
-        "currentStatus": "বর্তমান অবস্থা",
-        "pinPlaceholder": "পিন লিখুন",
-        "enterPin": "পরিবারের PIN দিন",
-        "submit": "সম্মতি জমা দিন",
-        "grantConsent": "সম্মতি দিন",
-        "revokeConsent": "সম্মতি প্রত্যাহার",
-        "consentGranted": "সম্মতি দেওয়া হয়েছে",
-        "consentRevoked": "সম্মতি প্রত্যাহার করা হয়েছে",
-        "pinRequired": "পরিবারের PIN প্রয়োজন",
-        "invalidPin": "অবৈধ PIN",
-        "familyControlsRequired": "পারিবারিক নিয়ন্ত্রণ প্রয়োজন",
-        "familyControlsExplain": "বায়োমেট্রিক সম্মতির জন্য প্রথমে পারিবারিক নিয়ন্ত্রণ সেট আপ করতে হবে। বায়োমেট্রিক ডেটা অ্যাক্সেস রক্ষা করতে একটি পারিবারিক পিন ব্যবহার করা হয়। আপনার পিন তৈরি করতে পারিবারিক নিয়ন্ত্রণে যান।",
-        "goToFamilyControls": "পারিবারিক নিয়ন্ত্রণে যান"
-      }
-    },
-    "preview3d": {
-      "title": "3D প্রিভিউ",
-      "loading": "3D মডেল লোড হচ্ছে...",
-      "rotate": "ঘোরাতে টানুন",
-      "pinchToZoom": "জুম করতে পিঞ্চ করুন",
-      "error": "3D মডেল লোড করা যায়নি"
-    },
-    "preview": {
-      "error": "প্রিভিউ লোড করা যায়নি",
-      "loading": "প্রিভিউ লোড হচ্ছে...",
-      "title": "3D প্রিভিউ"
-    },
-    "v2v": {
-      "title": "কণ্ঠস্বর অনুশীলন",
-      "subtitle": "নিজের কণ্ঠে হিব্রু অনুশীলন করুন",
-      "startPractice": "অনুশীলন শুরু করুন",
-      "listening": "শুনছে...",
-      "transforming": "কণ্ঠস্বর রূপান্তর হচ্ছে...",
-      "result": "ফলাফল",
-      "before": "আগে",
-      "after": "পরে",
-      "improvement": "উন্নতি",
-      "tryAgain": "আবার চেষ্টা করুন",
-      "sessionComplete": "সেশন সম্পূর্ণ",
-      "averageImprovement": "গড় উন্নতি",
-      "beforeAfter": "আগে ও পরে",
-      "latency": "বিলম্ব",
-      "nextPhrase": "পরবর্তী বাক্য",
-      "retry": "আবার চেষ্টা"
-    },
-    "liveLayer": {
-      "title": "লাইভ অ্যাভাটার",
-      "connecting": "সংযুক্ত হচ্ছে...",
-      "connected": "সংযুক্ত",
-      "disconnected": "সংযোগ বিচ্ছিন্ন"
-    },
-    "trigger": {
-      "listen": "মনোযোগ দিয়ে শুনুন",
-      "sayWord": "শব্দটি বলুন",
-      "correct": "সঠিক!",
-      "tryAgain": "আবার চেষ্টা করুন",
-      "skip": "এড়িয়ে যান",
-      "scoreLabel": "স্কোর",
-      "continue": "চালিয়ে যান",
-      "dismiss": "বন্ধ",
-      "errors": {
-        "microphoneFailed": "মাইক্রোফোন অ্যাক্সেস করা যায়নি"
-      },
-      "incorrect": "ঠিক নয়",
-      "prompt": "স্ক্রিনে দেখানো শব্দটি বলুন",
-      "success": "দারুণ!"
-    },
-    "magicMirror": {
-      "title": "জাদুর আয়না",
-      "greeting": "সুপ্রভাত!",
-      "vocabOfDay": "আজকের শব্দ",
-      "refresh": "রিফ্রেশ",
-      "loading": "অভিবাদন লোড হচ্ছে...",
-      "error": "অভিবাদন লোড করা যায়নি",
-      "noAvatar": "আপনার অবতার তৈরি করুন",
-      "noAvatarDesc": "দৈনিক হিব্রু শব্দভাণ্ডার সহ ব্যক্তিগত ম্যাজিক মিরর অভিবাদন আনলক করতে আপনার সন্তানের অবতার সেট আপ করুন।",
-      "createAvatar": "শুরু করুন",
-      "noCreditsTitle": "কোনো ক্রেডিট অবশিষ্ট নেই",
-      "noCreditsDesc": "আপনি আপনার সমস্ত AI ক্রেডিট ব্যবহার করেছেন। আপনার প্ল্যান আপগ্রেড করুন অথবা আপনার ক্রেডিট পুনর্নবীকরণের জন্য অপেক্ষা করুন।",
-      "meshUnavailable": "3D অবতার লোড হচ্ছে..."
-    },
-    "highlights": {
-      "title": "হাইলাইট ভিডিও",
-      "generate": "ভিডিও তৈরি করুন",
-      "generating": "তৈরি হচ্ছে...",
-      "ready": "প্রস্তুত",
-      "failed": "তৈরি ব্যর্থ হয়েছে",
-      "share": "শেয়ার করুন",
-      "momentCount": "মুহূর্ত",
-      "empty": "এখনো কোনো হাইলাইট ভিডিও নেই",
-      "status": {
-        "pending": "অপেক্ষমান",
-        "selecting": "মুহূর্ত নির্বাচন করছে",
-        "rendering": "ভিডিও রেন্ডার হচ্ছে",
-        "ready": "শেয়ার করতে প্রস্তুত",
-        "failed": "ব্যর্থ"
-      }
-    },
-    "contacts": {
-      "title": "দাদা-দাদির যোগাযোগ",
-      "add": "যোগাযোগ যোগ করুন",
-      "name": "প্রদর্শিত নাম",
-      "phone": "ফোন নম্বর",
-      "relationship": "সম্পর্ক",
-      "language": "ভাষা",
-      "empty": "এখনো কোনো যোগাযোগ যোগ করা হয়নি",
-      "delete": "যোগাযোগ মুছুন",
-      "reelsSent": "পাঠানো ভিডিও",
-      "pin": "পারিবারিক পিন"
-    },
-    "feedback": {
-      "title": "প্রতিক্রিয়া ইনবক্স",
-      "empty": "এখনো কোনো প্রতিক্রিয়া নেই",
-      "from": "প্রেরক",
-      "voiceMessage": "ভয়েস বার্তা",
-      "textMessage": "পাঠ্য বার্তা"
-    },
-    "dashboard": {
-      "title": "জেহ আনি",
-      "mirrorSection": "জাদুর আয়না",
-      "reelsSection": "হাইলাইট ভিডিও",
-      "contactsSection": "যোগাযোগ",
-      "feedbackSection": "প্রতিক্রিয়া"
-    },
-    "hub": {
-      "title": "জেহ আনি কেন্দ্র",
-      "magicMirror": "জাদুর আয়না",
-      "magicMirrorDesc": "ব্যক্তিগত অভিবাদন এবং দৈনিক হিব্রু শব্দ সহ ইন্টারেক্টিভ AI আয়না",
-      "highlights": "হাইলাইট ভিডিও",
-      "highlightsDesc": "প্রিয়জনদের সাথে স্মরণীয় মুহূর্তের সংকলন তৈরি এবং শেয়ার করুন",
-      "contacts": "দাদা-দাদির যোগাযোগ",
-      "contactsDesc": "আপনার হাইলাইট ভিডিও শেয়ার করতে যোগাযোগ পরিচালনা করুন",
-      "feedback": "প্রতিক্রিয়া ইনবক্স",
-      "feedbackDesc": "পরিবার থেকে ভয়েস এবং পাঠ্য বার্তা গ্রহণ করুন",
-      "consent": "বায়োমেট্রিক সম্মতি",
-      "consentDesc": "মুখ এবং কণ্ঠস্বর ডেটার জন্য সম্মতি সেটিংস পরিচালনা করুন",
-      "movieInteractions": "সিনেমা ইন্টারঅ্যাকশন",
-      "movieInteractionsDesc": "সিনেমা ব্রাউজ করুন এবং আপনার প্রিয় চরিত্রগুলির সাথে কথা বলুন"
-    },
     "movieInteractions": {
-      "title": "সিনেমা ইন্টারঅ্যাকশন",
-      "subtitle": "একটি সিনেমা বেছে নিন এবং চরিত্রগুলির সাথে কথা বলুন",
-      "tagMovie": "সিনেমা ট্যাগ করুন",
-      "tagging": "চরিত্র বের করা হচ্ছে...",
-      "tagged": "প্রস্তুত",
-      "noMovies": "এখনো কোনো সিনেমা ট্যাগ করা হয়নি। চরিত্রগুলির সাথে কথা বলতে একটি সিনেমা ট্যাগ করুন।",
-      "characters": {
-        "title": "চরিত্র",
-        "subtitle": "কথা বলার জন্য একটি চরিত্র বেছে নিন",
-        "playedBy": "{{actorName}} অভিনীত",
-        "noCharacters": "কোনো চরিত্র পাওয়া যায়নি"
-      },
-      "dialogue": {
-        "title": "{{characterName}} এর সাথে কথা বলুন",
-        "specificQuestions": "চরিত্রের প্রশ্ন",
-        "genericQuestions": "সাধারণ প্রশ্ন",
-        "customQuestion": "আপনার নিজের প্রশ্ন করুন",
-        "placeholder": "একটি প্রশ্ন লিখুন...",
-        "generatingResponse": "ভাবছে...",
-        "generatingAudio": "কণ্ঠ তৈরি হচ্ছে...",
-        "generatingVideo": "ভিডিও তৈরি হচ্ছে...",
-        "creditCost": "{{credits}} ক্রেডিট খরচ হবে",
-        "askAnother": "আরেকটি প্রশ্ন করুন",
-        "sending": "পাঠানো হচ্ছে..."
-      },
-      "errors": {
-        "fetchFailed": "সিনেমা লোড করতে ব্যর্থ",
-        "tagFailed": "সিনেমা ট্যাগ করতে ব্যর্থ",
-        "charactersFailed": "চরিত্র লোড করতে ব্যর্থ",
-        "questionsFailed": "প্রশ্ন লোড করতে ব্যর্থ",
-        "dialogueFailed": "বার্তা পাঠাতে ব্যর্থ"
-      }
+      "title": "চলচ্চিত্র ইন্টার‍্যাকশন",
+      "subtitle": "একটি চলচ্চিত্র বেছে নিন এবং আপনার প্রিয় চরিত্রদের সাথে কথা বলুন",
+      "moviesSection": "চলচ্চিত্র",
+      "charactersSection": "চরিত্র",
+      "questionsSection": "প্রশ্ন",
+      "empty": "এখনও কোনো ইন্টার‍্যাক্টিভ চলচ্চিত্র নেই",
+      "characterCount": "{{count}} চরিত্র"
     },
-    "avatar3d": {
-      "errorTitle": "3D Avatar Error",
-      "loading": "Loading 3D Avatar...",
-      "resetCamera": "Reset Camera",
-      "title": "3D Avatar Preview"
+    "dialogue": {
+      "specificQuestions": "চরিত্রের প্রশ্ন",
+      "genericQuestions": "সাধারণ প্রশ্ন",
+      "placeholder": "প্রশ্ন করুন...",
+      "send": "পাঠান",
+      "you": "আপনি"
     },
-    "subtitle": "Interactive experiences and social features"
+    "subtitle": "আপনার ইন্টার‍্যাক্টিভ পরিচয়",
+    "hub": {
+      "magicMirror": "ম্যাজিক মিরর",
+      "magicMirrorDesc": "গল্পের একটি চরিত্র হিসেবে নিজেকে দেখুন",
+      "highlights": "হাইলাইট রিল",
+      "highlightsDesc": "আপনার সেরা ইন্টার‍্যাক্টিভ মুহূর্ত",
+      "movieInteractions": "চলচ্চিত্র ইন্টার‍্যাকশন",
+      "movieInteractionsDesc": "আপনার প্রিয় চরিত্রদের সাথে কথা বলুন",
+      "contacts": "যোগাযোগ",
+      "contactsDesc": "শেয়ার করার জন্য পারিবারিক যোগাযোগ পরিচালনা করুন",
+      "feedback": "মতামত",
+      "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা"
+    }
   },
   "starStory": {
     "title": "গল্পে তারকা",

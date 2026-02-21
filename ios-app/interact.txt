@@ -1,0 +1,1286 @@
+
+    ✻
+    |
+   ▟█▙     Claude Code v2.1.49
+ ▐▛███▜▌   Sonnet 4.6 · Claude Max
+▝▜█████▛▘  ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+  ▘▘ ▝▝  
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Plan: Add Interact / Previous / Next Interaction Buttons to iOS, Android &   │
+│ Web Players                                                                  │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ The tvOS player (TVPlayerControlBar.swift) already exposes three interaction │
+│  buttons:                                                                    │
+│                                                                              │
+│ - Interact (player.pauseAsk.title) — triggers pause-ask / character-dialogue │
+│  flow                                                                        │
+│ - Previous Interaction (player.interaction.previous) — seeks to 5 s before   │
+│ the preceding interactive moment                                             │
+│ - Next Interaction (player.interaction.next) — seeks to 5 s before the next  │
+│ interactive moment                                                           │
+│                                                                              │
+│ None of these buttons exist in the iOS mobile player, Android player, or web │
+│  player. The moment-loading infrastructure (API endpoints, repositories,     │
+│ data models) already exists on iOS and in the web hooks; Android has the API │
+│  retrofit layer but not the UI wiring.                                       │
+│                                                                              │
+│ Shared constants (identical to tvOS)                                         │
+│                                                                              │
+│ - interactionRewindThreshold = 3.0 s — minimum gap before a moment for       │
+│ "previous" to target it                                                      │
+│ - interactionSeekOffset = 5.0 s — lead time before moment timestamp when     │
+│ seeking                                                                      │
+│                                                                              │
+│ ---                                                                          │
+│ Platform 1 — iOS (BayitPlusApp)                                              │
+│                                                                              │
+│ Files modified                                                               │
+│                                                                              │
+│ BayitPlusApp/Views/Player/PlayerView.swift                                   │
+│                                                                              │
+│ 1. Add constants (after the existing state block):                           │
+│                                                                              │
+│ private let interactionRewindThreshold: TimeInterval = 3                     │
+│ private let interactionSeekOffset: TimeInterval = 5                          │
+│ 2. Add computed properties (reuse identical logic from                       │
+│ TVPlayerView.swift:465-502):                                                 │
+│                                                                              │
+│ private var sortedMoments: [InteractiveMoment] {                             │
+│     interactionVM?.moments.sorted { $0.timestamp < $1.timestamp } ?? []      │
+│ }                                                                            │
+│ private var previousInteractionAction: (() -> Void)? {                       │
+│     guard let moment = sortedMoments.last(where: {                           │
+│         $0.timestamp < viewModel.player.currentTime -                        │
+│ interactionRewindThreshold                                                   │
+│     }) else { return nil }                                                   │
+│     return { [self] in                                                       │
+│         let t = max(0, moment.timestamp - interactionSeekOffset)             │
+│         Task { await viewModel.player.seek(to: t) }                          │
+│     }                                                                        │
+│ }                                                                            │
+│ private var nextInteractionAction: (() -> Void)? {                           │
+│     guard let moment = sortedMoments.first(where: {                          │
+│         $0.timestamp > viewModel.player.currentTime                          │
+│     }) else { return nil }                                                   │
+│     return { [self] in                                                       │
+│         let t = max(0, moment.timestamp - interactionSeekOffset)             │
+│         Task { await viewModel.player.seek(to: t) }                          │
+│     }                                                                        │
+│ }                                                                            │
+│ 3. Update topBar — inside the if !mediaContentType.isLive, interactionVM !=  │
+│ nil block replace the plain icon-only dialogue button with:                  │
+│   - Previous button (backward.end.fill) — shown when                         │
+│ previousInteractionAction != nil                                             │
+│   - Interact button (existing icon bubble.left.and.bubble.right[.fill]) —    │
+│ accessibility label → localization.t("player.pauseAsk.title")                │
+│   - Next button (forward.end.fill) — shown when nextInteractionAction != nil │
+│                                                                              │
+│ Order in the HStack: ...subtitleButton | playbackRate | quality | download | │
+│  previousInteraction | interact | nextInteraction | liveFeatureButtons | ... │
+│                                                                              │
+│ ---                                                                          │
+│ Platform 2 — Android (feature/feature-player)                                │
+│                                                                              │
+│ Files modified                                                               │
+│                                                                              │
+│ PlayerExtendedState.kt                                                       │
+│                                                                              │
+│ Add two fields:                                                              │
+│                                                                              │
+│ val interactiveMoments: List<InteractiveMoment> = emptyList(),               │
+│ val vodInteractionCharacters: List<VodCharacter> = emptyList(),              │
+│                                                                              │
+│ InteractiveMoment and VodCharacter are new data classes (see below).         │
+│                                                                              │
+│ New file: dialogue/InteractiveMoment.kt                                      │
+│                                                                              │
+│ data class InteractiveMoment(                                                │
+│     val timestamp: Double,                                                   │
+│     val duration: Double,                                                    │
+│     val characterName: String,                                               │
+│     val interactionPrompt: String,                                           │
+│     val sceneContext: String,                                                │
+│ )                                                                            │
+│ data class VodCharacter(                                                     │
+│     val name: String, val voiceId: String,                                   │
+│     val frameUrl: String, val description: String,                           │
+│ )                                                                            │
+│                                                                              │
+│ dialogue/VODInteractionApi.kt (existing)                                     │
+│                                                                              │
+│ Add moments endpoint:                                                        │
+│                                                                              │
+│ @GET("api/v1/avatar-mesh/content/{contentId}/interactive-moments")           │
+│ suspend fun getInteractiveMoments(@Path("contentId") contentId: String):     │
+│ List<InteractiveMoment>                                                      │
+│                                                                              │
+│ Reuse existing @GET("api/v1/vod-interactions/characters/{contentId}") for    │
+│ characters (already there).                                                  │
+│                                                                              │
+│ PlayerViewModel.kt                                                           │
+│                                                                              │
+│ Add VOD interaction methods (after loadContent):                             │
+│                                                                              │
+│ // Called from loadContent for non-live                                      │
+│ private fun loadInteractiveMoments(contentId: String) {                      │
+│     viewModelScope.launch {                                                  │
+│         val moments = runCatching {                                          │
+│ vodInteractionApi.getInteractiveMoments(contentId) }                         │
+│             .getOrElse { emptyList() }                                       │
+│         _extendedState.value = _extendedState.value.copy(interactiveMoments  │
+│ = moments)                                                                   │
+│     }                                                                        │
+│ }                                                                            │
+│                                                                              │
+│ fun navigateToPreviousInteraction() {                                        │
+│     val pos = mediaPlayer.getCurrentPosition() / 1000.0                      │
+│     val threshold = 3.0; val offset = 5.0                                    │
+│     val moments = _extendedState.value.interactiveMoments.sortedBy {         │
+│ it.timestamp }                                                               │
+│     val target = moments.lastOrNull { it.timestamp < pos - threshold         │
+│ }?.timestamp ?: return                                                       │
+│     mediaPlayer.seekTo(((target - offset).coerceAtLeast(0.0) *               │
+│ 1000).toLong())                                                              │
+│ }                                                                            │
+│                                                                              │
+│ fun navigateToNextInteraction() {                                            │
+│     val pos = mediaPlayer.getCurrentPosition() / 1000.0                      │
+│     val offset = 5.0                                                         │
+│     val moments = _extendedState.value.interactiveMoments.sortedBy {         │
+│ it.timestamp }                                                               │
+│     val target = moments.firstOrNull { it.timestamp > pos }?.timestamp ?:    │
+│ return                                                                       │
+│     mediaPlayer.seekTo(((target - offset).coerceAtLeast(0.0) *               │
+│ 1000).toLong())                                                              │
+│ }                                                                            │
+│                                                                              │
+│ fun startVodInteraction() {                                                  │
+│     val contentId = currentContentId ?: return                               │
+│     viewModelScope.launch {                                                  │
+│         val characters = runCatching {                                       │
+│ vodInteractionApi.getCharacters(contentId) }                                 │
+│             .getOrElse { emptyList() }                                       │
+│         _extendedState.value =                                               │
+│ _extendedState.value.copy(vodInteractionCharacters = characters)             │
+│         mediaPlayer.pause()                                                  │
+│         _extendedState.value =                                               │
+│ _extendedState.value.copy(showVodInteractionSheet = true)                    │
+│     }                                                                        │
+│ }                                                                            │
+│                                                                              │
+│ Add vodInteractionApi: VODInteractionApi to @Inject constructor (via Hilt    │
+│ DI).                                                                         │
+│ Add showVodInteractionSheet: Boolean = false to PlayerExtendedState.         │
+│                                                                              │
+│ ui/PlayerControlsOverlay.kt                                                  │
+│                                                                              │
+│ Add optional VOD interaction params and buttons in the VOD row:              │
+│                                                                              │
+│ onInteract: (() -> Unit)? = null,                                            │
+│ onPreviousInteraction: (() -> Unit)? = null,                                 │
+│ onNextInteraction: (() -> Unit)? = null,                                     │
+│ hasInteractiveMoments: Boolean = false,                                      │
+│                                                                              │
+│ Inside the if (!isLiveContent) transport row, after the restart button:      │
+│                                                                              │
+│ if (hasInteractiveMoments) {                                                 │
+│     onPreviousInteraction?.let { action ->                                   │
+│         IconButton(onClick = action) { Icon(Icons.Default.SkipPrevious, ...) │
+│  }                                                                           │
+│     }                                                                        │
+│     onInteract?.let { action ->                                              │
+│         IconButton(onClick = action) { Icon(Icons.Default.RecordVoiceOver,   │
+│ ...) }                                                                       │
+│     }                                                                        │
+│     onNextInteraction?.let { action ->                                       │
+│         IconButton(onClick = action) { Icon(Icons.Default.SkipNext, ...) }   │
+│     }                                                                        │
+│ }                                                                            │
+│                                                                              │
+│ ui/PlayerOverlay.kt                                                          │
+│                                                                              │
+│ Thread the four new params down to PlayerControlsOverlay.                    │
+│                                                                              │
+│ New file: dialogue/VODInteractionSheet.kt                                    │
+│                                                                              │
+│ Bottom sheet composable:                                                     │
+│                                                                              │
+│ - Shows character list from extendedState.vodInteractionCharacters           │
+│ - On character tap → calls onStartSession(character)                         │
+│ - Dismiss → calls onDismiss + resume playback                                │
+│                                                                              │
+│ PlayerScreen.kt (both PlayerRoute and PlayerScreen)                          │
+│                                                                              │
+│ 1. Add val showVodInteractionSheet by …                                      │
+│ 2. Wire onInteract = viewModel::startVodInteraction, onPreviousInteraction = │
+│  viewModel::navigateToPreviousInteraction, onNextInteraction =               │
+│ viewModel::navigateToNextInteraction                                         │
+│ 3. Show VODInteractionSheet when showVodInteractionSheet == true             │
+│                                                                              │
+│ ---                                                                          │
+│ Platform 3 — Web (VideoPlayer.tsx / control stack)                           │
+│                                                                              │
+│ web/src/components/player/VideoPlayer.tsx                                    │
+│                                                                              │
+│ 1. Import useVODInteraction from @/hooks/useVODInteraction                   │
+│ 2. Initialize:                                                               │
+│ const vodInteraction = useVODInteraction({                                   │
+│   contentId: contentId ?? "",                                                │
+│   profileId: user?.profileId ?? "",                                          │
+│   avatarId: user?.avatarId ?? "",                                            │
+│   currentTime: videoState.currentTime,                                       │
+│   onPauseRequested: controls.pause,                                          │
+│   onResumeRequested: controls.play,                                          │
+│ });                                                                          │
+│ 3. Pass to VideoPlayerControlsOverlay:                                       │
+│ renderInteractButton={renderers.renderInteractButton}                        │
+│ renderPreviousInteractionButton={renderers.renderPreviousInteractionButton}  │
+│ renderNextInteractionButton={renderers.renderNextInteractionButton}          │
+│ 4. Render <VODInteractionPlayer> overlay (already exists at                  │
+│ @/components/vod-interactions/VODInteractionPlayer) inside                   │
+│ VideoPlayerOverlays when !isLive.                                            │
+│                                                                              │
+│ web/src/components/player/hooks/usePlayerControlRenderers.tsx                │
+│                                                                              │
+│ Add three new params:                                                        │
+│                                                                              │
+│ vodInteraction?: {                                                           │
+│   moments: InteractiveMoment[]                                               │
+│   currentTime: number                                                        │
+│   isFreeDialogueActive: boolean                                              │
+│   hasMoments: boolean                                                        │
+│   onInteract: () => void                                                     │
+│   onPreviousInteraction: () => void                                          │
+│   onNextInteraction: () => void                                              │
+│ }                                                                            │
+│                                                                              │
+│ Add three render functions (VOD-only, using LiveFeatureButton pattern with   │
+│ MessageCircle, SkipBack, SkipForward icons from lucide-react):               │
+│                                                                              │
+│ const renderInteractButton = useCallback(() =>                               │
+│   !isLive && vodInteraction?.hasMoments ? (                                  │
+│     <LiveFeatureButton                                                       │
+│       label={t('player.pauseAsk.title')}                                     │
+│       icon={<MessageCircle size={18} color={…} />}                           │
+│       isActive={vodInteraction.isFreeDialogueActive}                         │
+│       onPress={vodInteraction.onInteract}                                    │
+│     />                                                                       │
+│   ) : null                                                                   │
+│ , [isLive, vodInteraction, t])                                               │
+│                                                                              │
+│ const renderPreviousInteractionButton = useCallback(() =>                    │
+│   !isLive && vodInteraction?.hasMoments ? (                                  │
+│     <LiveFeatureButton                                                       │
+│       label={t('player.interaction.previous')}                               │
+│       icon={<SkipBack size={18} color={…} />}                                │
+│       isActive={false}                                                       │
+│       onPress={vodInteraction.onPreviousInteraction}                         │
+│     />                                                                       │
+│   ) : null                                                                   │
+│ , [isLive, vodInteraction, t])                                               │
+│                                                                              │
+│ const renderNextInteractionButton = useCallback(() =>                        │
+│   !isLive && vodInteraction?.hasMoments ? (                                  │
+│     <LiveFeatureButton                                                       │
+│       label={t('player.interaction.next')}                                   │
+│       icon={<SkipForward size={18} color={…} />}                             │
+│       isActive={false}                                                       │
+│       onPress={vodInteraction.onNextInteraction}                             │
+│     />                                                                       │
+│   ) : null                                                                   │
+│ , [isLive, vodInteraction, t])                                               │
+│                                                                              │
+│ Add to return useMemo(...).                                                  │
+│                                                                              │
+│ web/src/components/player/VideoPlayerControlsOverlay.tsx                     │
+│                                                                              │
+│ Add three render* props (optional, () => React.ReactNode) and thread them    │
+│ into <PlayerControls>.                                                       │
+│                                                                              │
+│ web/src/components/player/PlayerControls.tsx                                 │
+│                                                                              │
+│ Add three render props, pass them to <RightControls>.                        │
+│                                                                              │
+│ web/src/components/player/controls/RightControls.tsx                         │
+│                                                                              │
+│ Add three render props and render them in the VOD non-live path:             │
+│                                                                              │
+│ {                                                                            │
+│   !isLive && renderPreviousInteractionButton?.();                            │
+│ }                                                                            │
+│ {                                                                            │
+│   !isLive && renderInteractButton?.();                                       │
+│ }                                                                            │
+│ {                                                                            │
+│   !isLive && renderNextInteractionButton?.();                                │
+│ }                                                                            │
+│                                                                              │
+│ Place after renderSubtitleControls() and before the Settings button.         │
+│                                                                              │
+│ Web — Navigation logic (inside VideoPlayer.tsx)                              │
+│                                                                              │
+│ Compute prev/next seek targets from vodInteraction.moments and currentTime:  │
+│                                                                              │
+│ const REWIND_THRESHOLD = 3;                                                  │
+│ const SEEK_OFFSET = 5;                                                       │
+│                                                                              │
+│ const onPreviousInteraction = useCallback(() => {                            │
+│   const sorted = [...vodInteraction.moments].sort(                           │
+│     (a, b) => a.timestamp - b.timestamp,                                     │
+│   );                                                                         │
+│   const moment = [...sorted]                                                 │
+│     .reverse()                                                               │
+│     .find((m) => m.timestamp < videoState.currentTime - REWIND_THRESHOLD);   │
+│   if (moment) controls.seekToTime(Math.max(0, moment.timestamp -             │
+│ SEEK_OFFSET));                                                               │
+│ }, [vodInteraction.moments, videoState.currentTime, controls]);              │
+│                                                                              │
+│ const onNextInteraction = useCallback(() => {                                │
+│   const sorted = [...vodInteraction.moments].sort(                           │
+│     (a, b) => a.timestamp - b.timestamp,                                     │
+│   );                                                                         │
+│   const moment = sorted.find((m) => m.timestamp > videoState.currentTime);   │
+│   if (moment) controls.seekToTime(Math.max(0, moment.timestamp -             │
+│ SEEK_OFFSET));                                                               │
+│ }, [vodInteraction.moments, videoState.currentTime, controls]);              │
+│                                                                              │
+│ const onInteract = useCallback(() => {                                       │
+│   vodInteraction.loadCharacters(); // triggers character selection inside    │
+│ VODInteractionPlayer                                                         │
+│ }, [vodInteraction.loadCharacters]);                                         │
+│                                                                              │
+│ Pass these + hasMoments: vodInteraction.moments.length > 0 into the          │
+│ vodInteraction renderer param.                                               │
+│                                                                              │
+│ ---                                                                          │
+│ Localization keys used (all already added in the previous step)              │
+│                                                                              │
+│ - player.pauseAsk.title → "Interact" (all 10 languages)                      │
+│ - player.interaction.previous → "Previous Interaction" (all 10 languages)    │
+│ - player.interaction.next → "Next Interaction" (all 10 languages)            │
+│                                                                              │
+│ ---                                                                          │
+│ Files to create (new)                                                        │
+│                                                                              │
+│ ┌───────────────────────────────────────────────┬────────────┐               │
+│ │                     File                      │ Lines est. │               │
+│ ├───────────────────────────────────────────────┼────────────┤               │
+│ │ android-app/…/dialogue/InteractiveMoment.kt   │ ~20        │               │
+│ ├───────────────────────────────────────────────┼────────────┤               │
+│ │ android-app/…/dialogue/VODInteractionSheet.kt │ ~80        │               │
+│ └───────────────────────────────────────────────┴────────────┘               │
+│                                                                              │
+│ Files to modify                                                              │
+│                                                                              │
+│ File: BayitPlusApp/Views/Player/PlayerView.swift                             │
+│ Change summary: +constants, +computed props, +2 icon buttons in topBar       │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/PlayerExtendedState.kt                                   │
+│ Change summary: +2 fields                                                    │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/PlayerViewModel.kt                                       │
+│ Change summary: +4 methods, +api injection                                   │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/dialogue/VODInteractionApi.kt                            │
+│ Change summary: +1 endpoint                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/ui/PlayerControlsOverlay.kt                              │
+│ Change summary: +4 params, +3 icon buttons                                   │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/ui/PlayerOverlay.kt                                      │
+│ Change summary: thread params                                                │
+│ ────────────────────────────────────────                                     │
+│ File: android-app/…/PlayerScreen.kt                                          │
+│ Change summary: wire callbacks + sheet                                       │
+│ ────────────────────────────────────────                                     │
+│ File: web/src/…/hooks/usePlayerControlRenderers.tsx                          │
+│ Change summary: +3 render fns + params                                       │
+│ ────────────────────────────────────────                                     │
+│ File: web/src/…/VideoPlayer.tsx                                              │
+│ Change summary: +useVODInteraction + pass callbacks                          │
+│ ────────────────────────────────────────                                     │
+│ File: web/src/…/VideoPlayerControlsOverlay.tsx                               │
+│ Change summary: +3 render props                                              │
+│ ────────────────────────────────────────                                     │
+│ File: web/src/…/PlayerControls.tsx                                           │
+│ Change summary: +3 render props                                              │
+│ ────────────────────────────────────────                                     │
+│ File: web/src/…/controls/RightControls.tsx                                   │
+│ Change summary: +3 buttons (VOD path)                                        │
+│                                                                              │
+│ ---                                                                          │
+│ Verification                                                                 │
+│                                                                              │
+│ 1. iOS: Build in simulator; open a VOD with interactive moments; confirm     │
+│ Prev/Next/Interact buttons appear in the top bar and are hidden for          │
+│ Live/content without moments.                                                │
+│ 2. Android: Build + run; open a VOD; confirm the three buttons appear in the │
+│  transport row and are absent for live channels.                             │
+│ 3. Web: npm start on port 3000; open a VOD detail page; confirm buttons      │
+│ appear in the control bar and clicking "Interact" opens the character        │
+│ selection panel.                                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ I'll start by reading all the relevant files in parallel to understand the
+  current state before making changes.
+
+⏺ Searched for 5 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me find the Android and Web file paths:
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Good. Now let me read all the relevant files in parallel:
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Now let me read the remaining files:
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Now let me read the remaining web files:
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ Now let me check the TVPlayerView for reference implementation of the
+  interaction navigation:
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Bash(find /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/andr
+      oid-app/feature/feature-player/src -name "*.kt" | xargs grep -l
+      "dialogue\|VODInteracti…)
+  ⎿  /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+     d-app/feature/feature-player/src/main/java/tv/bayit/plus/feature/playe
+     r/dialogue/SharedInteractionModels.kt
+     … +45 lines (ctrl+o to expand)
+
+⏺ Searched for 1 pattern, read 4 files (ctrl+o to expand)
+
+⏺ Now let me check the Android DI setup for VODInteractionApi and the
+  useVODInteraction hook's moments field:
+
+⏺ Searched for 2 patterns, read 3 files (ctrl+o to expand)
+
+⏺ Let me read a few more relevant files before implementing:
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now I have everything I need. Let me implement all the changes across all
+  three platforms:
+
+  Starting with iOS, then Android, then Web — all in parallel for the reads, 
+  then sequentially for the writes.
+
+⏺ Platform 1 — iOS
+
+  Step 1: Add constants and computed properties to PlayerView.swift
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 3 lines
+      82      // AI panel state
+      83      @State var showAIPanel = false
+      84      @State var selectedAILanguage: String = "en"
+      85 +                                                               
+      86 +    private let interactionRewindThreshold: TimeInterval = 3   
+      87 +    private let interactionSeekOffset: TimeInterval = 5        
+      88      @State var selectedSecondaryLanguage: String?
+      89      @State var showAILanguagePicker = false
+      90  
+
+⏺ Step 2: Add computed properties after mediaContentType
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 24 lines
+      912          }
+      913      }
+      914  
+      915 +    private var sortedMoments: [InteractiveMoment] {          
+      916 +        interactionVM?.moments.sorted { $0.timestamp < $1.time
+          +stamp } ?? []                                                 
+      917 +    }                                                         
+      918 +                                                              
+      919 +    private var previousInteractionAction: (() -> Void)? {    
+      920 +        guard let moment = sortedMoments.last(where: {        
+      921 +            $0.timestamp < viewModel.player.currentTime - inte
+          +ractionRewindThreshold                                        
+      922 +        }) else { return nil }                                
+      923 +        return {                                              
+      924 +            let t = max(0, moment.timestamp - interactionSeekO
+          +ffset)                                                        
+      925 +            Task { await viewModel.player.seek(to: t) }       
+      926 +        }                                                     
+      927 +    }                                                         
+      928 +                                                              
+      929 +    private var nextInteractionAction: (() -> Void)? {        
+      930 +        guard let moment = sortedMoments.first(where: {       
+      931 +            $0.timestamp > viewModel.player.currentTime       
+      932 +        }) else { return nil }                                
+      933 +        return {                                              
+      934 +            let t = max(0, moment.timestamp - interactionSeekO
+          +ffset)                                                        
+      935 +            Task { await viewModel.player.seek(to: t) }       
+      936 +        }                                                     
+      937 +    }                                                         
+      938 +                                                              
+      939      private func toggleControls() {
+      940          withAnimation(.easeInOut(duration: 0.25)) {
+      941              showControls.toggle()
+
+⏺ Step 3: Replace the dialogue button block in topBar with three buttons
+
+⏺ Update(BayitPlusApp/Views/Player/PlayerView.swift)
+  ⎿  Added 24 lines, removed 4 lines
+      651                  }
+      652              }
+      653  
+      654 -            // Free-form dialogue button (VOD only, when inter
+          -actions enabled)                                              
+      654 +            // Previous Interaction button (VOD only, when int
+          +eractions enabled)                                            
+      655 +            if !mediaContentType.isLive, interactionVM != nil,
+          + let action = previousInteractionAction {                     
+      656 +                Button { action() } label: {                  
+      657 +                    Image(systemName: "backward.end.fill")    
+      658 +                        .font(.system(size: 18))              
+      659 +                        .foregroundStyle(.white)              
+      660 +                        .frame(width: 44, height: 44)         
+      661 +                }                                             
+      662 +                .accessibilityLabel(localization.t("player.int
+          +eraction.previous"))                                          
+      663 +            }                                                 
+      664 +                                                              
+      665 +            // Interact button (VOD only, when interactions en
+          +abled)                                                        
+      666              if !mediaContentType.isLive, interactionVM != nil 
+           {
+      667                  Button {
+      668                      if hasVoiceClone {
+     ...
+      681                          )
+      682                          .frame(width: 44, height: 44)
+      683                  }
+      673 -                .accessibilityLabel(                          
+      674 -                    localization.t("player.dialogue.talkToChar
+          -acter")                                                       
+      675 -                )                                             
+      684 +                .accessibilityLabel(localization.t("player.pau
+          +seAsk.title"))                                                
+      685              }
+      686  
+      687 +            // Next Interaction button (VOD only, when interac
+          +tions enabled)                                                
+      688 +            if !mediaContentType.isLive, interactionVM != nil,
+          + let action = nextInteractionAction {                         
+      689 +                Button { action() } label: {                  
+      690 +                    Image(systemName: "forward.end.fill")     
+      691 +                        .font(.system(size: 18))              
+      692 +                        .foregroundStyle(.white)              
+      693 +                        .frame(width: 44, height: 44)         
+      694 +                }                                             
+      695 +                .accessibilityLabel(localization.t("player.int
+          +eraction.next"))                                              
+      696 +            }                                                 
+      697 +                                                              
+      698              liveFeatureButtons
+      699  
+      700              if mediaContentType.isLive {
+
+⏺ Platform 2 — Android
+
+  Step 1: Create dialogue/InteractiveMoment.kt
+
+⏺ Write(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/
+       feature-player/src/main/java/tv/bayit/plus/feature/player/dialogue/Intera
+       ctiveMoment.kt)
+  ⎿  Wrote 20 lines to ../android-app/feature/feature-player/src/main/java/
+     tv/bayit/plus/feature/player/dialogue/InteractiveMoment.kt
+       1 package tv.bayit.plus.feature.player.dialogue
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 
+       6 /**
+       7  * A curated moment in a VOD content item where the viewer can i
+         nteract
+       8  * with a character.
+       9  *
+      10  * Maps to the backend response from
+     … +10 lines (ctrl+o to expand)
+
+⏺ Step 2: Add fields to PlayerExtendedState.kt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerExtende
+        dState.kt)
+  ⎿  Added 2 lines
+      43      val showOmriOverlay: Boolean = false,
+      44      val hasTriggeredOmriOverlay: Boolean = false,
+      45      val isFullscreen: Boolean = false,
+      46 +    val interactiveMoments: List<tv.bayit.plus.feature.player.d
+         +ialogue.InteractiveMoment> = emptyList(),                      
+      47 +    val showVodInteractionSheet: Boolean = false,              
+      48  )
+
+⏺ Step 3: Add getInteractiveMoments endpoint to VODInteractionApi.kt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/dialogue/VODI
+        nteractionApi.kt)
+  ⎿  Added 5 lines
+      14   */
+      15  interface VODInteractionApi {
+      16  
+      17 +    @GET("api/v1/avatar-mesh/content/{contentId}/interactive-mo
+         +ments")                                                        
+      18 +    suspend fun getInteractiveMoments(                         
+      19 +        @Path("contentId") contentId: String,                  
+      20 +    ): List<InteractiveMoment>                                 
+      21 +                                                               
+      22      @GET("api/v1/vod-interactions/characters/{contentId}")
+      23      suspend fun getInteractiveCharacters(
+      24          @Path("contentId") contentId: String,
+
+⏺ Step 4: Add VOD interaction methods to PlayerViewModel.kt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 2 lines
+      21  import tv.bayit.plus.core.media.PlayerState
+      22  import tv.bayit.plus.core.model.MediaPlayback
+      23  import tv.bayit.plus.feature.player.chapters.ChapterMarker
+      24 +import tv.bayit.plus.feature.player.dialogue.ContentCharacter  
+      25 +import tv.bayit.plus.feature.player.dialogue.VODInteractionApi 
+      26  import tv.bayit.plus.feature.player.live.LiveAICoordinator
+      27  import tv.bayit.plus.core.media.SleepTimerManager
+      28  import tv.bayit.plus.feature.player.trivia.VodTriviaManager
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 1 line
+      40      private val userRepository: UserRepository,
+      41      private val timeProvider: TimeProvider,
+      42      private val logger: BayitLogger,
+      43 +    private val vodInteractionApi: VODInteractionApi,          
+      44  ) : ViewModel() {
+      45  
+      46      private val _uiState = MutableStateFlow<PlayerUiState>(Play
+          erUiState.Loading)
+
+⏺ Now add the loadInteractiveMoments call inside loadContent (non-live branch)
+  and all four new methods:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 1 line
+      107                      if (!isLive) {
+      108                          loadAvailableSubtitles(contentId)
+      109                          vodTriviaManager.loadFacts(contentId, 
+           _extendedState.value.vodTriviaLanguage, viewModelScope)
+      110 +                        loadInteractiveMoments(contentId)     
+      111                      }
+      112                      logger.info("Playback started", mapOf("con
+           tentId" to contentId))
+      113                      startPeriodicProgressSave()
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 43 lines
+      399  
+      400      fun cancelSleepTimer() = sleepTimerManager.cancel()
+      401  
+      402 +    private fun loadInteractiveMoments(contentId: String) {   
+      403 +        viewModelScope.launch {                               
+      404 +            val moments = runCatching { vodInteractionApi.getI
+          +nteractiveMoments(contentId) }                                
+      405 +                .getOrElse { emptyList() }                    
+      406 +            _extendedState.value = _extendedState.value.copy(i
+          +nteractiveMoments = moments)                                  
+      407 +            logger.debug("Loaded interactive moments", mapOf("
+          +contentId" to contentId, "count" to moments.size.toString())) 
+      408 +        }                                                     
+      409 +    }                                                         
+      410 +                                                              
+      411 +    fun navigateToPreviousInteraction() {                     
+      412 +        val posSeconds = mediaPlayer.getCurrentPosition() / 10
+          +00.0                                                          
+      413 +        val moments = _extendedState.value.interactiveMoments.
+          +sortedBy { it.timestamp }                                     
+      414 +        val target = moments.lastOrNull { it.timestamp < posSe
+          +conds - INTERACTION_REWIND_THRESHOLD_S }?.timestamp ?: return 
+      415 +        mediaPlayer.seekTo(((target - INTERACTION_SEEK_OFFSET_
+          +S).coerceAtLeast(0.0) * 1000).toLong())                       
+      416 +        logger.debug("Navigated to previous interaction", mapO
+          +f("targetTimestamp" to target.toString()))                    
+      417 +    }                                                         
+      418 +                                                              
+      419 +    fun navigateToNextInteraction() {                         
+      420 +        val posSeconds = mediaPlayer.getCurrentPosition() / 10
+          +00.0                                                          
+      421 +        val moments = _extendedState.value.interactiveMoments.
+          +sortedBy { it.timestamp }                                     
+      422 +        val target = moments.firstOrNull { it.timestamp > posS
+          +econds }?.timestamp ?: return                                 
+      423 +        mediaPlayer.seekTo(((target - INTERACTION_SEEK_OFFSET_
+          +S).coerceAtLeast(0.0) * 1000).toLong())                       
+      424 +        logger.debug("Navigated to next interaction", mapOf("t
+          +argetTimestamp" to target.toString()))                        
+      425 +    }                                                         
+      426 +                                                              
+      427 +    fun startVodInteraction() {                               
+      428 +        val contentId = currentContentId ?: return            
+      429 +        viewModelScope.launch {                               
+      430 +            val characters = runCatching { vodInteractionApi.g
+          +etInteractiveCharacters(contentId) }                          
+      431 +                .getOrElse { emptyList<ContentCharacter>() }  
+      432 +            mediaPlayer.pause()                               
+      433 +            _extendedState.value = _extendedState.value.copy( 
+      434 +                showVodInteractionSheet = true,               
+      435 +            )                                                 
+      436 +            logger.debug("Started VOD interaction", mapOf("con
+          +tentId" to contentId, "characters" to characters.size.toString
+          +()))                                                          
+      437 +        }                                                     
+      438 +    }                                                         
+      439 +                                                              
+      440 +    fun dismissVodInteractionSheet() {                        
+      441 +        _extendedState.value = _extendedState.value.copy(showV
+          +odInteractionSheet = false)                                   
+      442 +        mediaPlayer.play()                                    
+      443 +    }                                                         
+      444 +                                                              
+      445      fun hideOmriOverlay() {
+      446          _extendedState.value = _extendedState.value.copy(showO
+           mriOverlay = false)
+      447      }
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 2 lines
+      615          private const val PROGRESS_SAVE_INTERVAL_MS = 15_000L
+      616          private val SPECIAL_USER_EMAILS = setOf("oklainert@gma
+           il.com", "admin@olorin.ai")
+      617          private const val SKIP_INTERVAL_MS = 30_000L
+      618 +        private const val INTERACTION_REWIND_THRESHOLD_S = 3.0
+      619 +        private const val INTERACTION_SEEK_OFFSET_S = 5.0     
+      620      }
+      621  }
+
+⏺ Step 5: Add interaction buttons to PlayerControlsOverlay.kt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/ui/PlayerCont
+        rolsOverlay.kt)
+  ⎿  Added 3 lines
+      18  import androidx.compose.material.icons.filled.FullscreenExit
+      19  import androidx.compose.material.icons.filled.Pause
+      20  import androidx.compose.material.icons.filled.PlayArrow
+      21 +import androidx.compose.material.icons.filled.RecordVoiceOver  
+      22  import androidx.compose.material.icons.filled.Replay
+      23  import androidx.compose.material.icons.filled.Replay30
+      24 +import androidx.compose.material.icons.filled.SkipNext         
+      25 +import androidx.compose.material.icons.filled.SkipPrevious     
+      26  import androidx.compose.material.icons.filled.VolumeOff
+      27  import androidx.compose.material.icons.filled.VolumeUp
+      28  import androidx.compose.material3.Icon
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/ui/PlayerCont
+        rolsOverlay.kt)
+  ⎿  Added 4 lines
+      68      onVolumeChange: (Float) -> Unit,
+      69      onSpeedChange: (Float) -> Unit,
+      70      onToggleFullscreen: () -> Unit,
+      71 +    onInteract: (() -> Unit)? = null,                          
+      72 +    onPreviousInteraction: (() -> Unit)? = null,               
+      73 +    onNextInteraction: (() -> Unit)? = null,                   
+      74 +    hasInteractiveMoments: Boolean = false,                    
+      75      modifier: Modifier = Modifier,
+      76  ) {
+      77      var showVolume by remember { mutableStateOf(false) }
+
+⏺ Now add the three interaction icon buttons in the VOD transport row, after the
+   restart button:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/ui/PlayerCont
+        rolsOverlay.kt)
+  ⎿  Added 32 lines
+      126                          modifier = Modifier.size(24.dp),
+      127                      )
+      128                  }
+      129 +                if (hasInteractiveMoments) {                  
+      130 +                    onPreviousInteraction?.let { action ->    
+      131 +                        IconButton(onClick = action) {        
+      132 +                            Icon(                             
+      133 +                                imageVector = Icons.Default.Sk
+          +ipPrevious,                                                   
+      134 +                                contentDescription = bayitStri
+          +ng("player.interaction.previous"),                            
+      135 +                                tint = DesignTokens.Colors.Tex
+          +t.primary,                                                    
+      136 +                                modifier = Modifier.size(24.dp
+          +),                                                            
+      137 +                            )                                 
+      138 +                        }                                     
+      139 +                    }                                         
+      140 +                    onInteract?.let { action ->               
+      141 +                        IconButton(onClick = action) {        
+      142 +                            Icon(                             
+      143 +                                imageVector = Icons.Default.Re
+          +cordVoiceOver,                                                
+      144 +                                contentDescription = bayitStri
+          +ng("player.pauseAsk.title"),                                  
+      145 +                                tint = DesignTokens.Colors.Tex
+          +t.primary,                                                    
+      146 +                                modifier = Modifier.size(24.dp
+          +),                                                            
+      147 +                            )                                 
+      148 +                        }                                     
+      149 +                    }                                         
+      150 +                    onNextInteraction?.let { action ->        
+      151 +                        IconButton(onClick = action) {        
+      152 +                            Icon(                             
+      153 +                                imageVector = Icons.Default.Sk
+          +ipNext,                                                       
+      154 +                                contentDescription = bayitStri
+          +ng("player.interaction.next"),                                
+      155 +                                tint = DesignTokens.Colors.Tex
+          +t.primary,                                                    
+      156 +                                modifier = Modifier.size(24.dp
+          +),                                                            
+      157 +                            )                                 
+      158 +                        }                                     
+      159 +                    }                                         
+      160 +                }                                             
+      161                  IconButton(onClick = onSkipBackward) {
+      162                      Icon(
+      163                          imageVector = Icons.Default.Replay30,
+
+⏺ Step 6: Thread params through PlayerOverlay.kt
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/ui/PlayerOver
+        lay.kt)
+  ⎿  Added 4 lines
+      54      onAIFeaturesClick: (() -> Unit)? = null,
+      55      isVodTriviaEnabled: Boolean = false,
+      56      onVodTriviaToggle: (() -> Unit)? = null,
+      57 +    onInteract: (() -> Unit)? = null,                          
+      58 +    onPreviousInteraction: (() -> Unit)? = null,               
+      59 +    onNextInteraction: (() -> Unit)? = null,                   
+      60 +    hasInteractiveMoments: Boolean = false,                    
+      61      subtitleOverlay: @Composable (() -> Unit)? = null,
+      62      triviaOverlay: @Composable (() -> Unit)? = null,
+      63      aiFeaturesPanel: @Composable (() -> Unit)? = null,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/ui/PlayerOver
+        lay.kt)
+  ⎿  Added 4 lines
+      121                      onVolumeChange = onVolumeChange,
+      122                      onSpeedChange = onSpeedChange,
+      123                      onToggleFullscreen = onToggleFullscreen,
+      124 +                    onInteract = onInteract,                  
+      125 +                    onPreviousInteraction = onPreviousInteract
+          +ion,                                                          
+      126 +                    onNextInteraction = onNextInteraction,    
+      127 +                    hasInteractiveMoments = hasInteractiveMome
+          +nts,                                                          
+      128                      modifier = Modifier.align(Alignment.Bottom
+           Center),
+      129                  )
+      130              }
+
+⏺ Step 7: Thread params through PlayerContent.kt (ReadyContent)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerContent
+        .kt)
+  ⎿  Added 4 lines
+      63      onSpeedChange: (Float) -> Unit,
+      64      onBack: () -> Unit,
+      65      onToggleFullscreen: () -> Unit,
+      66 +    onInteract: (() -> Unit)? = null,                          
+      67 +    onPreviousInteraction: (() -> Unit)? = null,               
+      68 +    onNextInteraction: (() -> Unit)? = null,                   
+      69 +    hasInteractiveMoments: Boolean = false,                    
+      70  ) {
+      71      Column(modifier = Modifier.fillMaxSize()) {
+      72          Box(
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerContent
+        .kt)
+  ⎿  Added 4 lines
+      116                  onAIFeaturesClick = if (state.isLiveContent) o
+           nToggleAIPanel else null,
+      117                  isVodTriviaEnabled = extendedState.isVodTrivia
+           Enabled,
+      118                  onVodTriviaToggle = if (!state.isLiveContent) 
+           onToggleVodTrivia else null,
+      119 +                onInteract = if (!state.isLiveContent) onInter
+          +act else null,                                                
+      120 +                onPreviousInteraction = if (!state.isLiveConte
+          +nt) onPreviousInteraction else null,                          
+      121 +                onNextInteraction = if (!state.isLiveContent) 
+          +onNextInteraction else null,                                  
+      122 +                hasInteractiveMoments = !state.isLiveContent &
+          +& hasInteractiveMoments,                                      
+      123                  subtitleOverlay = {
+      124                      if (!state.isLiveContent && extendedState.
+           isSubtitlesEnabled) {
+      125                          if (extendedState.isSplitSubtitleMode)
+            {
+
+⏺ Step 8: Wire everything in PlayerScreen.kt
+
+  First add the new params to PlayerScreen and ReadyContent call sites:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 1 line
+      37  import tv.bayit.plus.designsystem.component.GlassButton
+      38  import tv.bayit.plus.designsystem.component.GlassLoadingIndicat
+          or
+      39  import tv.bayit.plus.designsystem.theme.DesignTokens
+      40 +import tv.bayit.plus.feature.player.dialogue.CharacterSelection
+         +Sheet                                                          
+      41  import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
+      42  import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
+      43  import tv.bayit.plus.designsystem.component.SleepTimerBanner
+
+⏺ Now wire the callbacks in PlayerRoute and pass them down through PlayerScreen:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 3 lines
+      176          onRestart = viewModel::restartContent,
+      177          onVolumeChange = viewModel::setVolume,
+      178          onSpeedChange = viewModel::setPlaybackSpeed,
+      179 +        onInteract = viewModel::startVodInteraction,          
+      180 +        onPreviousInteraction = viewModel::navigateToPreviousI
+          +nteraction,                                                   
+      181 +        onNextInteraction = viewModel::navigateToNextInteracti
+          +on,                                                           
+      182          showSleepTimerPicker = showSleepTimerPicker,
+      183          onShowSleepTimerPicker = { showSleepTimerPicker = true
+            },
+      184          onHideSleepTimerPicker = { showSleepTimerPicker = fals
+           e },
+
+⏺ Now add the new params to PlayerScreen function signature and thread them, and
+   show the character selection sheet:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 3 lines
+      245      onRestart: () -> Unit,
+      246      onVolumeChange: (Float) -> Unit,
+      247      onSpeedChange: (Float) -> Unit,
+      248 +    onInteract: (() -> Unit)? = null,                         
+      249 +    onPreviousInteraction: (() -> Unit)? = null,              
+      250 +    onNextInteraction: (() -> Unit)? = null,                  
+      251      showSleepTimerPicker: Boolean,
+      252      onShowSleepTimerPicker: () -> Unit,
+      253      onHideSleepTimerPicker: () -> Unit,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 12 lines
+      298                      onSpeedChange = onSpeedChange,
+      299                      onBack = onBack,
+      300                      onToggleFullscreen = onToggleFullscreen,
+      301 +                    onInteract = onInteract,                  
+      302 +                    onPreviousInteraction = onPreviousInteract
+          +ion,                                                          
+      303 +                    onNextInteraction = onNextInteraction,    
+      304 +                    hasInteractiveMoments = extendedState.inte
+          +ractiveMoments.isNotEmpty(),                                  
+      305                  )
+      306  
+      307 +                if (extendedState.showVodInteractionSheet) {  
+      308 +                    CharacterSelectionSheet(                  
+      309 +                        characters = emptyList(),             
+      310 +                        onCharacterSelected = { },            
+      311 +                        onDismiss = { onInteract?.invoke() }, 
+      312 +                    )                                         
+      313 +                }                                             
+      314 +                                                              
+      315                  if (!uiState.isLiveContent) {
+      316                      SleepTimerBanner(
+      317                          isVisible = extendedState.isSleepTimer
+           Active,
+
+⏺ I need to fix the character storage. Let me update PlayerExtendedState and
+  startVodInteraction:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerExtende
+        dState.kt)
+  ⎿  Added 1 line
+      44      val hasTriggeredOmriOverlay: Boolean = false,
+      45      val isFullscreen: Boolean = false,
+      46      val interactiveMoments: List<tv.bayit.plus.feature.player.d
+          ialogue.InteractiveMoment> = emptyList(),
+      47 +    val vodInteractionCharacters: List<tv.bayit.plus.feature.pl
+         +ayer.dialogue.ContentCharacter> = emptyList(),                 
+      48      val showVodInteractionSheet: Boolean = false,
+      49  )
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerViewMod
+        el.kt)
+  ⎿  Added 1 line
+      431                  .getOrElse { emptyList<ContentCharacter>() }
+      432              mediaPlayer.pause()
+      433              _extendedState.value = _extendedState.value.copy(
+      434 +                vodInteractionCharacters = characters,        
+      435                  showVodInteractionSheet = true,
+      436              )
+      437              logger.debug("Started VOD interaction", mapOf("con
+           tentId" to contentId, "characters" to characters.size.toString
+           ()))
+
+⏺ Now fix the CharacterSelectionSheet call in PlayerScreen.kt to use actual
+  characters and proper dismiss:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 2 lines, removed 2 lines
+      306  
+      307                  if (extendedState.showVodInteractionSheet) {
+      308                      CharacterSelectionSheet(
+      309 -                        characters = emptyList(),             
+      310 -                        onCharacterSelected = { },            
+      309 +                        characters = extendedState.vodInteract
+          +ionCharacters,                                                
+      310 +                        onCharacterSelected = { _ -> onInterac
+          +t?.invoke() },                                                
+      311                          onDismiss = { onInteract?.invoke() },
+      312                      )
+      313                  }
+
+⏺ The dismiss callback needs to be dismissVodInteractionSheet, not onInteract.
+  Let me wire that properly:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 1 line
+      179          onInteract = viewModel::startVodInteraction,
+      180          onPreviousInteraction = viewModel::navigateToPreviousI
+           nteraction,
+      181          onNextInteraction = viewModel::navigateToNextInteracti
+           on,
+      182 +        onDismissVodInteractionSheet = viewModel::dismissVodIn
+          +teractionSheet,                                               
+      183          showSleepTimerPicker = showSleepTimerPicker,
+      184          onShowSleepTimerPicker = { showSleepTimerPicker = true
+            },
+      185          onHideSleepTimerPicker = { showSleepTimerPicker = fals
+           e },
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 1 line
+      249      onInteract: (() -> Unit)? = null,
+      250      onPreviousInteraction: (() -> Unit)? = null,
+      251      onNextInteraction: (() -> Unit)? = null,
+      252 +    onDismissVodInteractionSheet: (() -> Unit)? = null,       
+      253      showSleepTimerPicker: Boolean,
+      254      onShowSleepTimerPicker: () -> Unit,
+      255      onHideSleepTimerPicker: () -> Unit,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature
+        /feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerScreen.
+        kt)
+  ⎿  Added 2 lines, removed 2 lines
+      309                  if (extendedState.showVodInteractionSheet) {
+      310                      CharacterSelectionSheet(
+      311                          characters = extendedState.vodInteract
+           ionCharacters,
+      312 -                        onCharacterSelected = { _ -> onInterac
+          -t?.invoke() },                                                
+      313 -                        onDismiss = { onInteract?.invoke() }, 
+      312 +                        onCharacterSelected = { _ -> onDismiss
+          +VodInteractionSheet?.invoke() },                              
+      313 +                        onDismiss = { onDismissVodInteractionS
+          +heet?.invoke() },                                             
+      314                      )
+      315                  }
+      316  
+
+⏺ Platform 3 — Web
+
+  Step 1: Add SkipBack, SkipForward imports and vodInteraction param to 
+  usePlayerControlRenderers.tsx
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        player/hooks/usePlayerControlRenderers.tsx)
+  ⎿  Added 1 line, removed 1 line
+      12  import CatchUpButton from '../catchup/CatchUpButton'
+      13  import PiPButton from '../controls/PiPButton'
+      14  import LiveFeatureButton from '../controls/LiveFeatureButton'
+      15 -import { MessageCircle, Lightbulb } from 'lucide-react'        
+      15 +import { MessageCircle, Lightbulb, SkipBack, SkipForward } from
+         + 'lucide-react'                                                
+      16  import { colors } from '@olorin/design-tokens'
+      17  import liveSubtitleService from '@/services/liveSubtitleService
+          '
+      18  import { SubtitleTrack, SubtitleSettings, HebrewMode, EnglishMo
+          de, SplitLanguages } from '@/types/subtitle'
+
+⏺ Now add the vodInteraction param to the interface, the function signature, and
+   three render functions:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        player/hooks/usePlayerControlRenderers.tsx)
+  ⎿  Added 9 lines
+      118      canRequest: boolean;
+      119    };
+      120  
+      121 +  // VOD interaction navigation (non-live only)               
+      122 +  vodInteraction?: {                                          
+      123 +    hasMoments: boolean                                       
+      124 +    isFreeDialogueActive: boolean                             
+      125 +    onInteract: () => void                                    
+      126 +    onPreviousInteraction: () => void                         
+      127 +    onNextInteraction: () => void                             
+      128 +  }                                                           
+      129 +                                                              
+      130    // Callbacks
+      131    onShowUpgrade?: () => void;
+      132    onHoveredButtonChange?: (button: string | null) => void;
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        player/hooks/usePlayerControlRenderers.tsx)
+  ⎿  Added 1 line
+      180    channelChat,
+      181    liveTrivia,
+      182    catchUp,
+      183 +  vodInteraction,                                             
+      184    onShowUpgrade,
+      185    onHoveredButtonChange,
+      186  }: UsePlayerControlRenderersParams) {
+
+⏺ Now add the three render functions before return useMemo:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        player/hooks/usePlayerControlRenderers.tsx)
+  ⎿  Added 50 lines
+      534      [isLive, catchUp],
+      535    );
+      536  
+      537 +  const renderInteractButton = useCallback(                   
+      538 +    () =>                                                     
+      539 +      !isLive && vodInteraction?.hasMoments ? (               
+      540 +        <LiveFeatureButton                                    
+      541 +          label={t('player.pauseAsk.title')}                  
+      542 +          icon={                                              
+      543 +            <MessageCircle                                    
+      544 +              size={18}                                       
+      545 +              color={vodInteraction.isFreeDialogueActive ? col
+          +ors.text : colors.textSecondary}                              
+      546 +            />                                                
+      547 +          }                                                   
+      548 +          isActive={vodInteraction.isFreeDialogueActive}      
+      549 +          onPress={vodInteraction.onInteract}                 
+      550 +        />                                                    
+      551 +      ) : null,                                               
+      552 +    [isLive, vodInteraction, t],                              
+      553 +  );                                                          
+      554 +                                                              
+      555 +  const renderPreviousInteractionButton = useCallback(        
+      556 +    () =>                                                     
+      557 +      !isLive && vodInteraction?.hasMoments ? (               
+      558 +        <LiveFeatureButton                                    
+      559 +          label={t('player.interaction.previous')}            
+      560 +          icon={<SkipBack size={18} color={colors.textSecondar
+          +y} />}                                                        
+      561 +          isActive={false}                                    
+      562 +          onPress={vodInteraction.onPreviousInteraction}      
+      563 +        />                                                    
+      564 +      ) : null,                                               
+      565 +    [isLive, vodInteraction, t],                              
+      566 +  );                                                          
+      567 +                                                              
+      568 +  const renderNextInteractionButton = useCallback(            
+      569 +    () =>                                                     
+      570 +      !isLive && vodInteraction?.hasMoments ? (               
+      571 +        <LiveFeatureButton                                    
+      572 +          label={t('player.interaction.next')}                
+      573 +          icon={<SkipForward size={18} color={colors.textSecon
+          +dary} />}                                                     
+      574 +          isActive={false}                                    
+      575 +          onPress={vodInteraction.onNextInteraction}          
+      576 +        />                                                    
+      577 +      ) : null,                                               
+      578 +    [isLive, vodInteraction, t],                              
+      579 +  );                                                          
+      580 +                                                              
+      581    return useMemo(
+      582      () => ({
+      583        renderWatchPartyButton,
+     ...
+      593        renderChannelChatButton,
+      594        renderLiveTriviaButton,
+      595        renderCatchUpButton,
+      596 +      renderInteractButton,                                   
+      597 +      renderPreviousInteractionButton,                        
+      598 +      renderNextInteractionButton,                            
+      599      }),
+      600      [
+      601        renderWatchPartyButton,
+     ...
+      611        renderChannelChatButton,
+      612        renderLiveTriviaButton,
+      613        renderCatchUpButton,
+      614 +      renderInteractButton,                                   
+      615 +      renderPreviousInteractionButton,                        
+      616 +      renderNextInteractionButton,                            
+      617      ],
+      618    );
+      619  }
+
+⏺ Step 2: Update VideoPlayer.tsx — Add moments state, callbacks, and wire to
+  renderers:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        player/VideoPlayer.tsx)
+  ⎿  Added 3 lines
+       4  import { ttsService } from '@bayit/shared-services/ttsService'
+       5  import liveSubtitleService from '@/services/liveSubtitleService
+          '
+       6  import logger from '@/utils/logger'
+       7 +import api from '@/services/api'                               
+       8 +import { InteractiveMoment } from '@/hooks/useVODInteraction'  
+       9 +import { VODInteractionPlayer } from '@/components/vod-interact
+         +ions/VODInteractionPlayer'                                     
+      10  import VideoPlayerOverlays from './VideoPlayerOverlays'
+      11  import VideoPlayerPanels from './VideoPlayerPanels'
+      12  import VideoPlayerControlsOverlay from './VideoPlayerControlsOv
+          erlay'
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Baked for 10m 44s
+
+❯ /compact 
+  ⎿  Error: Error during compaction: Error: Conversation too long. Press esc
+     twice to go up a few messages and try again.

@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "bayit-ws-gateway"
+version = "0.1.0"
+description = "Bayit+ WebSocket Gateway - dedicated Cloud Run service for real-time WebSocket connections"
+authors = ["Olorin <dev@olorin.ai>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = ">=0.128.0,<1.0.0"
+uvicorn = {extras = ["standard"], version = ">=0.40.0,<1.0.0"}
+redis = {extras = ["hiredis"], version = ">=5.0.0,<6.0.0"}
+motor = ">=3.7.0,<4.0.0"
+beanie = ">=2.0.0,<3.0.0"
+python-jose = {extras = ["cryptography"], version = ">=3.3.0,<4.0.0"}
+pydantic = ">=2.12.0,<3.0.0"
+pydantic-settings = ">=2.12.0,<3.0.0"
+python-dotenv = ">=1.2.1,<2.0.0"
+httpx = ">=0.28.1,<0.29.0"
+sentry-sdk = {extras = ["fastapi"], version = ">=1.40.0,<3.0.0"}
+
+# NOTE: No path dependency on backend. The Dockerfile installs backend deps
+# directly and merges the backend app/ code at build time. This file is only
+# used for local dev (poetry install in bayit-ws-gateway/).
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0.0,<9.0.0"
+pytest-asyncio = ">=0.25.0,<1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

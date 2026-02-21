@@ -22,7 +22,6 @@ enum PairingStatus: Equatable {
 @MainActor
 @Observable
 final class TVQRAuthViewModel {
-
     // MARK: - Published State
 
     private(set) var qrCodeData: String?
@@ -35,11 +34,11 @@ final class TVQRAuthViewModel {
     private let authManager: AuthManager
     private let logger: APILogger
     private let config: AppConfiguration
-    @ObservationIgnored nonisolated(unsafe) private var webSocketTask: URLSessionWebSocketTask?
-    @ObservationIgnored nonisolated(unsafe) private var refreshTask: Task<Void, Never>?
-    @ObservationIgnored nonisolated(unsafe) private var initTask: Task<Void, Never>?
-    @ObservationIgnored nonisolated(unsafe) private var pollingTask: Task<Void, Never>?
-    @ObservationIgnored nonisolated(unsafe) private var pingTask: Task<Void, Never>?
+    @ObservationIgnored private nonisolated(unsafe) var webSocketTask: URLSessionWebSocketTask?
+    @ObservationIgnored private nonisolated(unsafe) var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private nonisolated(unsafe) var initTask: Task<Void, Never>?
+    @ObservationIgnored private nonisolated(unsafe) var pollingTask: Task<Void, Never>?
+    @ObservationIgnored private nonisolated(unsafe) var pingTask: Task<Void, Never>?
     private var lastInitTime: Date?
 
     /// When true, a WebSocket message has already updated the state;
@@ -105,7 +104,7 @@ final class TVQRAuthViewModel {
     init(authManager: AuthManager, logger: APILogger) {
         self.authManager = authManager
         self.logger = logger
-        self.config = AppConfiguration()
+        config = AppConfiguration()
     }
 
     deinit {
@@ -118,12 +117,13 @@ final class TVQRAuthViewModel {
     private static let minInitInterval: TimeInterval = 5.0
 
     /// Maximum allowed WebSocket message size in bytes (10 KB).
-    private static let maxWebSocketMessageSize = 10_240
+    private static let maxWebSocketMessageSize = 10240
 
     /// Initializes a new device pairing session with the backend.
     func initSession() async {
         if let lastInit = lastInitTime,
-           Date().timeIntervalSince(lastInit) < Self.minInitInterval {
+           Date().timeIntervalSince(lastInit) < Self.minInitInterval
+        {
             logger.debug(
                 "Session init throttled",
                 metadata: ["interval": "\(Self.minInitInterval)s"]
@@ -148,7 +148,8 @@ final class TVQRAuthViewModel {
             let (data, response) = try await URLSession.shared.data(for: request)
 
             guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+                  httpResponse.statusCode == 200
+            else {
                 let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
                 throw AuthError.devicePairingFailed(
                     underlying: "Backend returned HTTP \(statusCode)"
@@ -254,13 +255,13 @@ final class TVQRAuthViewModel {
                 guard let self, !self.isTerminalStatus else { return }
 
                 switch result {
-                case .success(let message):
+                case let .success(message):
                     self.handleWebSocketMessage(message)
                     if !self.isTerminalStatus {
                         self.listenForMessages()
                     }
 
-                case .failure(let wsError):
+                case let .failure(wsError):
                     // Don't set failed status -- polling fallback will
                     // continue checking session state and can still
                     // complete authentication if the companion finishes.
@@ -278,10 +279,10 @@ final class TVQRAuthViewModel {
     ) {
         let data: Data
         switch message {
-        case .string(let text):
+        case let .string(text):
             guard let textData = text.data(using: .utf8) else { return }
             data = textData
-        case .data(let binaryData):
+        case let .data(binaryData):
             data = binaryData
         @unknown default:
             return
@@ -293,7 +294,7 @@ final class TVQRAuthViewModel {
             logger.warning(
                 "Failed to decode WebSocket message",
                 metadata: [
-                    "raw": String(data: data, encoding: .utf8) ?? "binary"
+                    "raw": String(data: data, encoding: .utf8) ?? "binary",
                 ]
             )
             return
@@ -386,7 +387,8 @@ final class TVQRAuthViewModel {
         status = .authenticating
 
         guard let accessToken = message.accessToken,
-              let user = message.user else {
+              let user = message.user
+        else {
             status = .failed
             error = AuthError.devicePairingFailed(
                 underlying: "Missing credentials in pairing response"
@@ -414,10 +416,14 @@ final class TVQRAuthViewModel {
     // MARK: - Polling Fallback
 
     /// Interval between status polls (seconds).
-    private static let pollingInterval: TimeInterval = 3.0
+    private static let pollingInterval: TimeInterval = 5.0
+
+    /// Maximum number of poll attempts before giving up.
+    /// 120 attempts * 5 seconds = 10 minutes, well within the 20-minute TTL.
+    private static let maxPollAttempts = 120
 
     /// Starts a background polling loop that calls GET /status/{sessionId}
-    /// every 3 seconds. Acts as a fallback when WebSocket messages are lost
+    /// every few seconds. Acts as a fallback when WebSocket messages are lost
     /// (e.g., due to multi-worker deployment or network issues).
     private func startPolling(sessionId: String) {
         pollingTask?.cancel()
@@ -426,12 +432,16 @@ final class TVQRAuthViewModel {
             .appendingPathComponent("auth/device-pairing/status/\(sessionId)")
 
         pollingTask = Task { [weak self] in
-            while !Task.isCancelled {
+            var attempts = 0
+
+            while !Task.isCancelled, attempts < Self.maxPollAttempts {
                 try? await Task.sleep(for: .seconds(Self.pollingInterval))
                 guard let self, !Task.isCancelled, !self.isTerminalStatus else { return }
 
                 // Skip if WebSocket already delivered the update
-                if self.wsDeliveredUpdate { continue }
+                if self.wsDeliveredUpdate { return }
+
+                attempts += 1
 
                 do {
                     var request = URLRequest(url: url)
@@ -444,11 +454,19 @@ final class TVQRAuthViewModel {
                         for: request
                     )
 
-                    guard let httpResponse = response as? HTTPURLResponse,
-                          httpResponse.statusCode == 200 else { continue }
+                    guard let httpResponse = response as? HTTPURLResponse else { continue }
+
+                    // 404 means session expired or was removed on the backend
+                    if httpResponse.statusCode == 404 {
+                        self.status = .expired
+                        self.error = AuthError.sessionExpired.userFacingMessage
+                        return
+                    }
+
+                    guard httpResponse.statusCode == 200 else { continue }
 
                     // Re-check after await in case WS delivered meanwhile
-                    if self.wsDeliveredUpdate || self.isTerminalStatus { continue }
+                    if self.wsDeliveredUpdate || self.isTerminalStatus { return }
 
                     let poll = try JSONDecoder().decode(
                         PollStatusResponse.self, from: data
@@ -466,7 +484,19 @@ final class TVQRAuthViewModel {
     }
 
     private func handlePollResponse(_ poll: PollStatusResponse) {
+        // Backend reports session already expired via flag
+        if poll.isExpired {
+            status = .expired
+            error = AuthError.sessionExpired.userFacingMessage
+            cleanup()
+            return
+        }
+
         switch poll.status {
+        case "waiting":
+            // Initial state -- no companion has scanned yet; keep polling
+            break
+
         case "scanning" where status == .waitingForScan:
             status = .companionConnected
             logger.info(
@@ -512,7 +542,8 @@ final class TVQRAuthViewModel {
 
     private func handlePollSuccess(_ poll: PollStatusResponse) {
         guard let accessToken = poll.accessToken,
-              let user = poll.user else {
+              let user = poll.user
+        else {
             // Token/user not yet available in status response; keep polling
             logger.debug(
                 "Poll returned success but missing credentials; retrying",
@@ -587,7 +618,8 @@ final class TVQRAuthViewModel {
         ]
 
         guard let expiryDate = formatter.date(from: expiresAt)
-            ?? ISO8601DateFormatter().date(from: expiresAt) else {
+            ?? ISO8601DateFormatter().date(from: expiresAt)
+        else {
             return
         }
 
@@ -617,7 +649,7 @@ final class TVQRAuthViewModel {
 
     // MARK: - Cleanup
 
-    nonisolated private func cleanup() {
+    private nonisolated func cleanup() {
         initTask?.cancel()
         initTask = nil
         refreshTask?.cancel()

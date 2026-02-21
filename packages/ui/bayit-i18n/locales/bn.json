@@ -4031,6 +4031,16 @@
       "voiceConsentRequired": "ভয়েস ইন্টারঅ্যাকশনের জন্য ভয়েস সম্মতি প্রয়োজন",
       "micPermissionDenied": "মাইক্রোফোন অনুমতি প্রত্যাখ্যান করা হয়েছে"
     },
+    "pauseAsk": {
+      "title": "একটি চরিত্রকে জিজ্ঞাসা করুন",
+      "selectCharacter": "কার সাথে কথা বলবেন বেছে নিন",
+      "processing": "আপনার প্রশ্ন প্রস্তুত হচ্ছে...",
+      "userSpeaking": "আপনি জিজ্ঞাসা করছেন...",
+      "characterSpeaking": "উত্তর দিচ্ছে...",
+      "resumeMovie": "সিনেমা চালু করুন",
+      "askAnother": "আরেকটি প্রশ্ন করুন",
+      "requiresVoiceClone": "এই বৈশিষ্ট্য ব্যবহার করতে আপনার অবতারের কণ্ঠ তৈরি করুন"
+    },
     "multiCharacter": {
       "selectCharacter": "সম্বোধন করতে চরিত্র নির্বাচন করুন",
       "talkingTo": "কথা বলছেন",
@@ -9471,5 +9481,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "চলচ্চিত্র ইন্টার‍্যাকশন",
+      "subtitle": "একটি চলচ্চিত্র বেছে নিন এবং আপনার প্রিয় চরিত্রদের সাথে কথা বলুন",
+      "moviesSection": "চলচ্চিত্র",
+      "charactersSection": "চরিত্র",
+      "questionsSection": "প্রশ্ন",
+      "empty": "এখনও কোনো ইন্টার‍্যাক্টিভ চলচ্চিত্র নেই",
+      "characterCount": "{{count}} চরিত্র"
+    },
+    "dialogue": {
+      "specificQuestions": "চরিত্রের প্রশ্ন",
+      "genericQuestions": "সাধারণ প্রশ্ন",
+      "placeholder": "প্রশ্ন করুন...",
+      "send": "পাঠান",
+      "you": "আপনি"
+    },
+    "subtitle": "আপনার ইন্টার‍্যাক্টিভ পরিচয়",
+    "hub": {
+      "magicMirror": "ম্যাজিক মিরর",
+      "magicMirrorDesc": "গল্পের একটি চরিত্র হিসেবে নিজেকে দেখুন",
+      "highlights": "হাইলাইট রিল",
+      "highlightsDesc": "আপনার সেরা ইন্টার‍্যাক্টিভ মুহূর্ত",
+      "movieInteractions": "চলচ্চিত্র ইন্টার‍্যাকশন",
+      "movieInteractionsDesc": "আপনার প্রিয় চরিত্রদের সাথে কথা বলুন",
+      "contacts": "যোগাযোগ",
+      "contactsDesc": "শেয়ার করার জন্য পারিবারিক যোগাযোগ পরিচালনা করুন",
+      "feedback": "মতামত",
+      "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা"
+    }
   }
 }

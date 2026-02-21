@@ -15,7 +15,8 @@ from app.services.live_dubbing_service import LiveDubbingService
 
 logger = logging.getLogger(__name__)
 
-# Track active sessions per channel
+# Active sessions tracked via Redis for cross-instance visibility.
+# Local fallback dict used when Redis is unavailable.
 _active_sessions: dict[str, set[str]] = {}
 
 # Track active sessions per user (user_id -> set of session_ids)
@@ -88,6 +89,11 @@ async def initialize_dubbing_session(
         if user_id not in _user_sessions:
             _user_sessions[user_id] = set()
         _user_sessions[user_id].add(dubbing_service.session_id)
+        try:
+            from app.services.redis_connection_manager import redis_connection_manager
+            await redis_connection_manager.add_active_session(channel_id, dubbing_service.session_id)
+        except Exception:
+            pass
 
         # Start pipeline processing task
         pipeline_task = asyncio.create_task(dubbing_service.run_pipeline())
@@ -159,6 +165,11 @@ async def cleanup_dubbing_session(
             _active_sessions[channel_id].discard(dubbing_service.session_id)
             if not _active_sessions[channel_id]:
                 del _active_sessions[channel_id]
+        try:
+            from app.services.redis_connection_manager import redis_connection_manager
+            await redis_connection_manager.remove_active_session(channel_id, dubbing_service.session_id)
+        except Exception:
+            pass
 
         # Remove from per-user sessions
         for uid, sessions in list(_user_sessions.items()):
@@ -174,6 +185,14 @@ async def cleanup_dubbing_session(
             logger.error(f"Error stopping dubbing service: {e}")
 
 
-def get_active_session_count(channel_id: str) -> int:
-    """Get number of active sessions for a channel."""
+async def get_active_session_count(channel_id: str) -> int:
+    """Get number of active sessions for a channel (cross-instance via Redis)."""
+    try:
+        from app.services.redis_connection_manager import redis_connection_manager
+        count = await redis_connection_manager.get_active_session_count(channel_id)
+        if count > 0:
+            return count
+    except Exception:
+        pass
+    # Fallback to local count
     return len(_active_sessions.get(channel_id, set()))

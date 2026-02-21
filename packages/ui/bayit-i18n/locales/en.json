@@ -5477,6 +5477,16 @@
       "voiceConsentRequired": "Voice consent required for voice interaction",
       "micPermissionDenied": "Microphone permission denied"
     },
+    "pauseAsk": {
+      "title": "Ask a Character",
+      "selectCharacter": "Choose who to talk to",
+      "processing": "Preparing your question...",
+      "userSpeaking": "You're asking...",
+      "characterSpeaking": "Answering...",
+      "resumeMovie": "Resume Movie",
+      "askAnother": "Ask Another Question",
+      "requiresVoiceClone": "Create your avatar voice to use this feature"
+    },
     "multiCharacter": {
       "selectCharacter": "Select Character to Address",
       "talkingTo": "Talking to",
@@ -9234,6 +9244,37 @@
       "transferring": "Applying style to avatar",
       "validating": "Validating consistency",
       "complete": "Style transfer complete"
+    }
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "Movie Interactions",
+      "subtitle": "Choose a movie and talk to your favorite characters",
+      "moviesSection": "Movies",
+      "charactersSection": "Characters",
+      "questionsSection": "Questions",
+      "empty": "No interactive movies available yet",
+      "characterCount": "{{count}} characters"
+    },
+    "dialogue": {
+      "specificQuestions": "Character Questions",
+      "genericQuestions": "General Questions",
+      "placeholder": "Ask a question...",
+      "send": "Send",
+      "you": "You"
+    },
+    "subtitle": "Your interactive identity",
+    "hub": {
+      "magicMirror": "Magic Mirror",
+      "magicMirrorDesc": "See yourself as a character in the story",
+      "highlights": "Highlight Reels",
+      "highlightsDesc": "Your best interactive moments compiled",
+      "movieInteractions": "Movie Interactions",
+      "movieInteractionsDesc": "Talk to your favorite movie characters",
+      "contacts": "Contacts",
+      "contactsDesc": "Manage family contacts for sharing",
+      "feedback": "Feedback",
+      "feedbackDesc": "Messages from family and friends"
     }
   }
 }

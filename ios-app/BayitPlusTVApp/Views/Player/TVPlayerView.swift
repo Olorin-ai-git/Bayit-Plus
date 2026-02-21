@@ -19,13 +19,15 @@ struct TVPlayerView: View {
     let contentId: String
     let contentType: MediaContentType
     let channelId: String?
+    let directUrl: String?
 
     // MARK: - Initializer
 
-    init(contentId: String, contentType: MediaContentType, channelId: String?) {
+    init(contentId: String, contentType: MediaContentType, channelId: String?, directUrl: String? = nil) {
         self.contentId = contentId
         self.contentType = contentType
         self.channelId = channelId
+        self.directUrl = directUrl
     }
 
     // MARK: - ViewModels
@@ -47,6 +49,10 @@ struct TVPlayerView: View {
     @State private var showCharacterSelection = false
     @State private var showDialogueOverlay = false
 
+    // Pause & Ask state
+    @State private var showPauseAskOverlay = false
+    @State private var hasVoiceClone = false
+
     // Shared interaction state (Phase 3 WS4)
     @State private var sharedVM: SharedInteractionViewModel?
     @State private var showSharedInteraction = false
@@ -61,6 +67,7 @@ struct TVPlayerView: View {
     @State private var showSpeedControl = false
     @State private var showControlButtons = true
     @State private var overlayHideTask: Task<Void, Never>?
+    @State private var isDockFocused = false
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
     @State private var showCatchUp = false
@@ -97,7 +104,9 @@ struct TVPlayerView: View {
     @State private var hasChapters = false
 
     @Namespace private var playerFocus
-    private var isLive: Bool { contentType == .liveTV }
+    private var isLive: Bool {
+        contentType == .liveTV
+    }
 
     var body: some View {
         ZStack {
@@ -125,6 +134,7 @@ struct TVPlayerView: View {
                 interactiveMomentOverlay
                     .allowsHitTesting(false)
                 dialogueOverlay
+                pauseAskOverlay
                 sharedInteractionOverlay
 
                 if showControlButtons {
@@ -174,6 +184,14 @@ struct TVPlayerView: View {
                                 onSplitTap: { showSplitLanguagePicker = true },
                                 onLanguageTap: { showAILanguagePicker = true }
                             )
+                            .onPreferenceChange(ControlBarFocusKey.self) { focused in
+                                isDockFocused = focused
+                                if focused {
+                                    overlayHideTask?.cancel()
+                                } else {
+                                    resetOverlayTimer()
+                                }
+                            }
                         } else {
                             TVPlayerControlBar(
                                 contentType: contentType,
@@ -184,12 +202,27 @@ struct TVPlayerView: View {
                                     ? { startOver() } : nil,
                                 onAudioTracks: { showAudioTracks = true },
                                 onSpeed: { showSpeedControl = true },
+                                onTalk: interactionVM != nil ? {
+                                    if hasVoiceClone {
+                                        Task { await startPauseAskInteraction() }
+                                    } else {
+                                        Task { await openCharacterSelection() }
+                                    }
+                                } : nil,
                                 onPreviousInteraction: previousInteractionAction,
                                 onNextInteraction: nextInteractionAction,
                                 selectedSubtitleLanguage: selectedSubtitleLanguage,
                                 isSplitEnabled: splitModeEnabled,
                                 splitLanguages: splitLanguages
                             )
+                            .onPreferenceChange(ControlBarFocusKey.self) { focused in
+                                isDockFocused = focused
+                                if focused {
+                                    overlayHideTask?.cancel()
+                                } else {
+                                    resetOverlayTimer()
+                                }
+                            }
                         }
                     }
                     .padding(.bottom, 40)
@@ -402,9 +435,11 @@ struct TVPlayerView: View {
     private func resetOverlayTimer() {
         overlayHideTask?.cancel()
         showControlButtons = true
+        guard !isDockFocused else { return }
         overlayHideTask = Task {
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else { return }
+            guard !isDockFocused else { return }
             await MainActor.run { showControlButtons = false }
         }
     }
@@ -416,7 +451,8 @@ struct TVPlayerView: View {
             // than CMTime.zero which can fall outside it and silently fail.
             let startSeconds: TimeInterval
             if let range = mediaPlayer.avPlayer.currentItem?
-                .seekableTimeRanges.first?.timeRangeValue {
+                .seekableTimeRanges.first?.timeRangeValue
+            {
                 startSeconds = range.start.seconds
             } else {
                 startSeconds = 0
@@ -575,7 +611,8 @@ struct TVPlayerView: View {
     @ViewBuilder
     private var subtitleOverlay: some View {
         if !splitModeEnabled, !isLive,
-           let vm = subtitlesVM, vm.activeCue != nil {
+           let vm = subtitlesVM, vm.activeCue != nil
+        {
             VStack {
                 Spacer()
                 if vm.hebrewMode == .shoresh, !vm.shoreshWords.isEmpty {
@@ -635,7 +672,8 @@ struct TVPlayerView: View {
     @ViewBuilder
     private var translationOverlay: some View {
         if let vm = subtitlesVM, vm.showTranslation,
-           let translation = vm.translation {
+           let translation = vm.translation
+        {
             TVTranslationPopoverView(
                 translation: translation,
                 onDismiss: { vm.dismissTranslation() }
@@ -676,7 +714,8 @@ struct TVPlayerView: View {
         if showDialogueOverlay,
            let vm = dialogueVM,
            let character = vm.selectedCharacter,
-           let imgUrl = avatarImageUrl {
+           let imgUrl = avatarImageUrl
+        {
             TVAvatarDialogueOverlayView(
                 avatarImageUrl: imgUrl,
                 character: character,
@@ -721,6 +760,47 @@ struct TVPlayerView: View {
         await dialogueVM?.endSession()
     }
 
+    // MARK: - Pause & Ask Overlay
+
+    @ViewBuilder
+    private var pauseAskOverlay: some View {
+        if showPauseAskOverlay,
+           let vm = dialogueVM,
+           let imgUrl = avatarImageUrl,
+           hasVoiceClone
+        {
+            TVPauseAskDialogueOverlayView(
+                avatarImageUrl: imgUrl,
+                avatarId: resolvedAvatarId,
+                contentId: contentId,
+                currentTimestamp: mediaPlayer.currentTime,
+                characters: vm.availableCharacters,
+                viewModel: vm,
+                voiceService: voiceService,
+                onDismiss: {
+                    Task { await dismissPauseAsk() }
+                }
+            )
+        }
+    }
+
+    private func startPauseAskInteraction() async {
+        if dialogueVM == nil {
+            dialogueVM = AvatarDialogueViewModel(
+                repository: repos.avatarMeshRepository
+            )
+        }
+        await dialogueVM?.loadCharacters(contentId: contentId)
+        mediaPlayer.avPlayer.pause()
+        showPauseAskOverlay = true
+    }
+
+    private func dismissPauseAsk() async {
+        mediaPlayer.avPlayer.play()
+        showPauseAskOverlay = false
+        await dialogueVM?.endSession()
+    }
+
     // MARK: - Interactive Moment Overlay
 
     @ViewBuilder
@@ -728,7 +808,8 @@ struct TVPlayerView: View {
         if let vm = interactionVM,
            let moment = vm.activeMoment,
            let videoUrl = moment.lipsyncVideoUrl,
-           let imgUrl = avatarImageUrl {
+           let imgUrl = avatarImageUrl
+        {
             TVInteractiveMomentOverlayView(
                 avatarVideoUrl: videoUrl,
                 avatarImageUrl: imgUrl,
@@ -1017,6 +1098,10 @@ struct TVPlayerView: View {
     }
 
     private func fetchStreamURL() async throws -> String {
+        if let directUrl, !directUrl.isEmpty {
+            return directUrl
+        }
+
         switch contentType {
         case .liveTV:
             let channel = try await repos.liveTV.fetchChannelDetail(
@@ -1026,7 +1111,8 @@ struct TVPlayerView: View {
                 channelId: channelId ?? contentId
             )
             guard let url = stream.url ?? channel.streamUrl,
-                  !url.isEmpty else {
+                  !url.isEmpty
+            else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -1059,8 +1145,9 @@ struct TVPlayerView: View {
                 contentId: contentId, quality: nil
             )
             guard let url = stream.url ?? detail.streamUrl ?? detail.directUrl
-                    ?? stream.streamUrl ?? stream.directUrl,
-                  !url.isEmpty else {
+                ?? stream.streamUrl ?? stream.directUrl,
+                !url.isEmpty
+            else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -1178,7 +1265,8 @@ struct TVPlayerView: View {
             let status = try await repos.avatarMeshRepository
                 .fetchAvatarStatus(avatarId: "any")
             guard let imageUrl = status.avatarImageUrl,
-                  status.status == "ready" else {
+                  status.status == "ready"
+            else {
                 logger.info("Avatar not ready: \(status.status)")
                 await MainActor.run {
                     withAnimation { showNoAvatarWarning = true }
@@ -1187,6 +1275,7 @@ struct TVPlayerView: View {
             }
             avatarImageUrl = imageUrl
             resolvedAvatarId = status.avatarId
+            hasVoiceClone = status.hasVoiceClone
         } catch {
             logger.warning("Avatar fetch failed: \(error)")
             await MainActor.run {
@@ -1353,5 +1442,4 @@ struct TVPlayerView: View {
             Task { await mediaPlayer.seek(to: startTime) }
         }
     }
-
 }

@@ -4190,6 +4190,16 @@
       "voiceConsentRequired": "Consentement vocal requis pour l'interaction vocale",
       "micPermissionDenied": "Autorisation du microphone refusee"
     },
+    "pauseAsk": {
+      "title": "Poser une question a un personnage",
+      "selectCharacter": "Choisissez a qui parler",
+      "processing": "Preparation de votre question...",
+      "userSpeaking": "Vous demandez...",
+      "characterSpeaking": "En train de repondre...",
+      "resumeMovie": "Reprendre le film",
+      "askAnother": "Poser une autre question",
+      "requiresVoiceClone": "Creez la voix de votre avatar pour utiliser cette fonctionnalite"
+    },
     "multiCharacter": {
       "selectCharacter": "Selectionner un personnage a interpeller",
       "talkingTo": "En conversation avec",
@@ -10405,5 +10415,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "Interactions avec les films",
+      "subtitle": "Choisissez un film et parlez a vos personnages preferes",
+      "moviesSection": "Films",
+      "charactersSection": "Personnages",
+      "questionsSection": "Questions",
+      "empty": "Aucun film interactif disponible pour le moment",
+      "characterCount": "{{count}} personnages"
+    },
+    "dialogue": {
+      "specificQuestions": "Questions du personnage",
+      "genericQuestions": "Questions generales",
+      "placeholder": "Posez une question...",
+      "send": "Envoyer",
+      "you": "Vous"
+    },
+    "subtitle": "Votre identite interactive",
+    "hub": {
+      "magicMirror": "Miroir Magique",
+      "magicMirrorDesc": "Voyez-vous comme un personnage de l'histoire",
+      "highlights": "Moments Forts",
+      "highlightsDesc": "Vos meilleurs moments interactifs",
+      "movieInteractions": "Interactions Films",
+      "movieInteractionsDesc": "Parlez a vos personnages preferes",
+      "contacts": "Contacts",
+      "contactsDesc": "Gerez les contacts familiaux pour le partage",
+      "feedback": "Retours",
+      "feedbackDesc": "Messages de la famille et des amis"
+    }
   }
 }

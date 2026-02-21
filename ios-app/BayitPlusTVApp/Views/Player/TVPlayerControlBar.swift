@@ -19,6 +19,7 @@ struct TVPlayerControlBar: View {
     var onCatchUp: (() -> Void)?
     var onSceneSearch: (() -> Void)?
     var onChat: (() -> Void)?
+    var onTalk: (() -> Void)?
     var onPreviousInteraction: (() -> Void)?
     var onNextInteraction: (() -> Void)?
 
@@ -58,6 +59,14 @@ struct TVPlayerControlBar: View {
 
             if let onChat {
                 controlButton(icon: "bubble.left.and.bubble.right", label: "Chat", action: onChat)
+            }
+
+            if let onTalk {
+                controlButton(
+                    icon: "bubble.left.and.bubble.right",
+                    label: localization.t("player.pauseAsk.title"),
+                    action: onTalk
+                )
             }
 
             if let onPreviousInteraction {
@@ -179,6 +188,17 @@ struct TVPlayerControlBar: View {
     }
 }
 
+// MARK: - Focus Tracking
+
+/// Tracks whether any button in the control bar has focus.
+/// Used by TVPlayerView to pause the auto-hide timer.
+struct ControlBarFocusKey: PreferenceKey {
+    static var defaultValue: Bool = false
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = value || nextValue()
+    }
+}
+
 // MARK: - Player Control Button Style
 
 /// Custom button style for player dock items.
@@ -229,5 +249,6 @@ private struct PlayerControlButtonContent: View {
                 value: isFocused
             )
             .animation(.easeInOut(duration: 0.1), value: isPressed)
+            .preference(key: ControlBarFocusKey.self, value: isFocused)
     }
 }

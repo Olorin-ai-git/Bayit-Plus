@@ -25,6 +25,8 @@ from app.core.database import (close_mongo_connection, connect_to_mongo,
                                     get_database)
 from app.core.database_olorin import (close_olorin_mongo_connection,
                                       connect_to_olorin_mongo)
+from app.core.pubsub import close_pubsub_manager, get_pubsub_manager
+from app.core.redis_client import close_redis_client, get_redis_client
 from app.core.logging_config import setup_logging
 from app.core.sentry_config import init_sentry
 from app.middleware.correlation_id import CorrelationIdMiddleware
@@ -171,15 +173,25 @@ async def lifespan(app: FastAPI):
         """Initialize Content metadata service for Olorin cross-database access."""
         try:
             await content_metadata_service.initialize()
-            logger.info("✅ Content metadata service initialized")
+            logger.info("Content metadata service initialized")
         except Exception as e:
             logger.warning(f"Content metadata service initialization failed: {e}")
 
-    # Run Olorin database and content metadata service initialization in parallel
+    async def init_redis():
+        """Initialize Redis client and pub/sub manager."""
+        try:
+            await get_redis_client()
+            await get_pubsub_manager()
+            logger.info("Redis client and pub/sub manager initialized")
+        except Exception as e:
+            logger.warning(f"Redis initialization failed (graceful degradation): {e}")
+
+    # Run Olorin database, content metadata, and Redis initialization in parallel
     # These are independent and don't need to block each other
     await asyncio.gather(
         init_olorin_database(),
         init_content_metadata(),
+        init_redis(),
         return_exceptions=True,  # Don't fail if one fails
     )
 
@@ -281,6 +293,14 @@ async def lifespan(app: FastAPI):
 
     # Stop background tasks gracefully
     await stop_background_tasks()
+
+    # Close Redis connections
+    try:
+        await close_pubsub_manager()
+        await close_redis_client()
+        logger.info("Redis connections closed")
+    except Exception as e:
+        logger.warning(f"Failed to close Redis connections: {e}")
 
     # Close database connection
     await close_mongo_connection()

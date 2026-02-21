@@ -63,6 +63,13 @@ class Settings(BaseSettings):
     MONGODB_URI: str  # Required, must be set via environment
     MONGODB_DB_NAME: str = "bayit_plus"
 
+    # Redis (optional - graceful degradation when unavailable)
+    REDIS_URL: str = Field(
+        default="",
+        description="Redis connection URL (Memorystore or local). "
+        "Empty string disables Redis features with graceful degradation."
+    )
+
     @field_validator("SECRET_KEY")
     @classmethod
     def validate_secret_key(cls, v: str) -> str:

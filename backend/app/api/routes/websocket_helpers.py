@@ -22,8 +22,9 @@ from app.services.live_feature_quota_service import live_feature_quota_service
 
 logger = logging.getLogger(__name__)
 
-# Track active sessions per channel
-_active_sessions: dict[str, set[str]] = {}
+# Active sessions tracked via Redis for cross-instance visibility.
+# Local fallback dict used when Redis is unavailable.
+_active_sessions_local: dict[str, set[str]] = {}
 
 
 async def get_user_from_token(token: str) -> Optional[User]:
@@ -255,11 +256,16 @@ async def initialize_dubbing_session(
         f"sync_delay={connection_info['sync_delay_ms']}ms"
     )
 
-    # Track active session
+    # Track active session (Redis + local fallback)
     channel_id = str(channel.id)
-    if channel_id not in _active_sessions:
-        _active_sessions[channel_id] = set()
-    _active_sessions[channel_id].add(dubbing_service.session_id)
+    if channel_id not in _active_sessions_local:
+        _active_sessions_local[channel_id] = set()
+    _active_sessions_local[channel_id].add(dubbing_service.session_id)
+    try:
+        from app.services.redis_connection_manager import redis_connection_manager
+        await redis_connection_manager.add_active_session(channel_id, dubbing_service.session_id)
+    except Exception:
+        pass
 
     # Start pipeline processing task
     pipeline_task = asyncio.create_task(dubbing_service.run_pipeline())
@@ -384,11 +390,16 @@ async def cleanup_dubbing_session(
             pass
 
     if dubbing_service:
-        # Remove from active sessions
-        if channel_id in _active_sessions:
-            _active_sessions[channel_id].discard(dubbing_service.session_id)
-            if not _active_sessions[channel_id]:
-                del _active_sessions[channel_id]
+        # Remove from active sessions (Redis + local)
+        if channel_id in _active_sessions_local:
+            _active_sessions_local[channel_id].discard(dubbing_service.session_id)
+            if not _active_sessions_local[channel_id]:
+                del _active_sessions_local[channel_id]
+        try:
+            from app.services.redis_connection_manager import redis_connection_manager
+            await redis_connection_manager.remove_active_session(channel_id, dubbing_service.session_id)
+        except Exception:
+            pass
 
         # Stop dubbing service
         try:
@@ -398,6 +409,14 @@ async def cleanup_dubbing_session(
             logger.error(f"Error stopping dubbing service: {e}")
 
 
-def get_active_session_count(channel_id: str) -> int:
-    """Get count of active sessions for a channel."""
-    return len(_active_sessions.get(channel_id, set()))
+async def get_active_session_count(channel_id: str) -> int:
+    """Get count of active sessions for a channel (cross-instance via Redis)."""
+    try:
+        from app.services.redis_connection_manager import redis_connection_manager
+        count = await redis_connection_manager.get_active_session_count(channel_id)
+        if count > 0:
+            return count
+    except Exception:
+        pass
+    # Fallback to local count
+    return len(_active_sessions_local.get(channel_id, set()))

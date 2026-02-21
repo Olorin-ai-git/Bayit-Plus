@@ -10,6 +10,7 @@ from app.core.logging_config import get_logger
 from app.models.biometric_consent import BiometricConsentType
 from app.models.vod_interaction import VODInteractionSession
 from app.services.vod_interaction.interaction_service import vod_interaction_service
+from app.services.vod_interaction.pause_ask_orchestrator import pause_ask_orchestrator
 from app.services.vod_interaction.voice_interaction_handler import voice_interaction_handler
 from app.services.zeh_ani.biometric_consent_service import biometric_consent_service
 
@@ -93,6 +94,8 @@ async def _handle_messages(websocket: WebSocket, session: VODInteractionSession)
         msg_type = data.get("type", "")
         if msg_type == "text_message":
             await _handle_text_message(websocket, session, data)
+        elif msg_type == "pause_ask":
+            await _handle_pause_ask(websocket, session, data)
         elif msg_type == "end_session":
             await vod_interaction_service.complete_session(str(session.id))
             await websocket.send_json({"type": "session_completed", "session_id": str(session.id)})
@@ -147,3 +150,30 @@ async def _handle_text_message(ws: WebSocket, session: VODInteractionSession, da
     except Exception as exc:
         logger.error("Text processing failed", extra={"session_id": str(session.id), "error": str(exc)})
         await _send_err(ws, "Message processing failed")
+
+
+async def _handle_pause_ask(ws: WebSocket, session: VODInteractionSession, data: dict):
+    """Process Pause & Ask exchange with phased progress updates."""
+    user_message = data.get("message", "")
+    if not user_message:
+        await _send_err(ws, "Empty message")
+        return
+    if not settings.VOD_INTERACTION_PAUSE_ASK_ENABLED:
+        await _send_err(ws, "Pause & Ask feature is disabled", False)
+        return
+    try:
+        await ws.send_json({"type": "pause_ask_progress", "phase": "polishing"})
+        result = await pause_ask_orchestrator.process_exchange(
+            session=session,
+            user_message=user_message,
+            language_hint=data.get("language_hint", ""),
+        )
+        await ws.send_json({"type": "pause_ask_result", **result.model_dump()})
+    except ValueError as ve:
+        await _send_err(ws, str(ve))
+    except Exception as exc:
+        logger.error(
+            "Pause & Ask WS processing failed",
+            extra={"session_id": str(session.id), "error": str(exc)},
+        )
+        await _send_err(ws, "Pause & Ask processing failed")

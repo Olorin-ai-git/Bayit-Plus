@@ -83,10 +83,12 @@ fun BayitMainScaffold(
     val breadcrumbs = rememberBreadcrumbTrail(navController)
 
     val isAuthScreen = currentRoute?.let { isAuthRoutePattern(it) } == true
+    val isPlayerScreen = currentRoute?.startsWith(Route.Player::class.qualifiedName.orEmpty()) == true
+    val hideChrome = isAuthScreen || isPlayerScreen
 
     Scaffold(
         topBar = {
-            if (!isAuthScreen) {
+            if (!hideChrome) {
                 TopAppBar(
                     showBack = !isRootTab,
                     onBack = { navController.popBackStack() },
@@ -124,7 +126,7 @@ fun BayitMainScaffold(
             }
         },
         bottomBar = {
-            if (!isAuthScreen) {
+            if (!hideChrome) {
                 Column {
                     MiniAudioPlayerBar(
                         audioState = audioState,
@@ -153,7 +155,7 @@ fun BayitMainScaffold(
             }
         },
         floatingActionButton = {
-            if (isAuthenticated) {
+            if (isAuthenticated && !isPlayerScreen) {
                 VoiceAssistantFAB(onClick = { showVoiceModal = true })
             }
         },

@@ -3749,7 +3749,7 @@
     "yes": "はい",
     "no": "いいえ",
     "ok": "OK",
-    "untitled": "無題",
+    "untitled": "Untitled",
     "percent": "パーセント",
     "done": "完了",
     "search": "検索",
@@ -4137,7 +4137,6 @@
     "growth": "成長",
     "change": "変更",
     "difference": "差異",
-    "percent": "パーセント",
     "ratio": "比率",
     "rate": "率",
     "score": "スコア",
@@ -4283,7 +4282,6 @@
     "maybeLater": "Maybe Later",
     "or": "or",
     "saveChanges": "Save Changes",
-    "untitled": "Untitled",
     "anonymous": "Anonymous"
   },
   "components": {
@@ -6875,6 +6873,13 @@
     "interaction": {
       "previous": "前のインタラクション",
       "next": "次のインタラクション"
+    },
+    "pauseAsk": {
+      "title": "インタラクト",
+      "processing": "処理中...",
+      "askAnother": "別の質問",
+      "resumeMovie": "再開",
+      "selectCharacter": "キャラクターを選択"
     },
     "sleepTimer": {
       "title": "スリープタイマー",
@@ -10000,225 +10005,35 @@
     }
   },
   "zehAni": {
-    "mesh": {
-      "title": "3Dアバター",
-      "subtitle": "ビデオセルフィーから3Dアバターを作成",
-      "generating": "3Dモデルを作成中...",
-      "rigging": "アニメーションを追加中...",
-      "ready": "3Dアバターが完成しました！",
-      "failed": "3Dアバターを作成できませんでした",
-      "retry": "やり直す",
-      "downloadGlb": "3Dモデルをダウンロード",
-      "viewIn3d": "3Dで見る",
-      "statusFailed": "生成に失敗",
-      "statusGenerating": "3Dモデルを生成中...",
-      "statusIdle": "生成準備完了",
-      "statusReady": "3Dモデル完成",
-      "statusRigging": "アニメーション追加中...",
-      "viewPreview": "3Dプレビューを見る"
-    },
-    "arCapture": {
-      "title": "フェイススキャン",
-      "subtitle": "フェイススキャンで3Dアバターを作成",
-      "holdStill": "動かないで...",
-      "smile": "笑って！",
-      "openMouth": "口を大きく開けて",
-      "raiseBrows": "眉を上げて",
-      "processing": "3Dモデルを構築中...",
-      "complete": "フェイススキャン完了！",
-      "noFace": "顔が検出されませんでした。もう一度お試しください。"
-    },
-    "consent": {
-      "biometric": {
-        "title": "生体認証データの同意",
-        "subtitle": "この機能は顔データを使用して3Dアバターを作成します",
-        "explanation": "顔と音声のデータを使用してパーソナライズされたAI体験を作成します。このデータは安全に処理され、第三者と共有されることはありません。",
-        "privacy": "生体認証データは暗号化され、安全に保存されます。いつでも同意を取り消すことができます。",
-        "pinLabel": "ファミリーPIN",
-        "consentTypes": "同意の種類",
-        "meshGeneration": "3Dアバター生成",
-        "voiceV2V": "音声変換",
-        "latentFeatures": "特徴分析",
-        "currentStatus": "現在のステータス",
-        "pinPlaceholder": "PINを入力",
-        "enterPin": "ファミリーPINを入力",
-        "submit": "同意を送信",
-        "grantConsent": "同意する",
-        "revokeConsent": "同意を取り消す",
-        "consentGranted": "同意しました",
-        "consentRevoked": "同意を取り消しました",
-        "pinRequired": "ファミリーPINが必要です",
-        "invalidPin": "無効なPIN",
-        "familyControlsRequired": "ファミリーコントロールが必要です",
-        "familyControlsExplain": "生体認証の同意には、ファミリーコントロールを先に設定する必要があります。ファミリーPINは生体データへのアクセスを保護するために使用されます。PINを作成するにはファミリーコントロールに移動してください。",
-        "goToFamilyControls": "ファミリーコントロールへ移動"
-      }
-    },
-    "preview3d": {
-      "title": "3Dプレビュー",
-      "loading": "3Dモデルを読み込み中...",
-      "rotate": "ドラッグで回転",
-      "pinchToZoom": "ピンチでズーム",
-      "error": "3Dモデルを読み込めませんでした"
-    },
-    "preview": {
-      "error": "プレビューを読み込めません",
-      "loading": "プレビューを読み込み中...",
-      "title": "3Dプレビュー"
-    },
-    "v2v": {
-      "title": "音声練習",
-      "subtitle": "自分の声でヘブライ語を練習",
-      "startPractice": "練習を開始",
-      "listening": "聞いています...",
-      "transforming": "音声を変換中...",
-      "result": "結果",
-      "before": "変換前",
-      "after": "変換後",
-      "improvement": "改善度",
-      "tryAgain": "もう一度",
-      "sessionComplete": "セッション完了",
-      "averageImprovement": "平均改善度",
-      "beforeAfter": "ビフォー・アフター",
-      "latency": "レイテンシ",
-      "nextPhrase": "次のフレーズ",
-      "retry": "リトライ"
-    },
-    "liveLayer": {
-      "title": "ライブアバター",
-      "connecting": "接続中...",
-      "connected": "接続済み",
-      "disconnected": "切断されました"
-    },
-    "trigger": {
-      "listen": "よく聞いてください",
-      "sayWord": "単語を言ってください",
-      "correct": "正解！",
-      "tryAgain": "もう一度試してください",
-      "skip": "スキップ",
-      "scoreLabel": "スコア",
-      "continue": "続ける",
-      "dismiss": "閉じる",
-      "errors": {
-        "microphoneFailed": "マイクにアクセスできません"
-      },
-      "incorrect": "もう少し",
-      "prompt": "画面に表示された単語を言ってください",
-      "success": "すばらしい!"
-    },
-    "magicMirror": {
-      "title": "魔法の鏡",
-      "greeting": "おはようございます！",
-      "vocabOfDay": "今日の単語",
-      "refresh": "更新",
-      "loading": "あいさつを読み込み中...",
-      "error": "あいさつを読み込めませんでした",
-      "noAvatar": "アバターを作成",
-      "noAvatarDesc": "お子様のアバターを設定して、毎日のヘブライ語の語彙を含むパーソナライズされたマジックミラーの挨拶を解除しましょう。",
-      "createAvatar": "始める",
-      "noCreditsTitle": "クレジットが残っていません",
-      "noCreditsDesc": "すべてのAIクレジットを使い切りました。プランをアップグレードするか、クレジットが更新されるまでお待ちください。",
-      "meshUnavailable": "3Dアバター読み込み中..."
-    },
-    "highlights": {
-      "title": "ハイライト動画",
-      "generate": "動画を生成",
-      "generating": "生成中...",
-      "ready": "準備完了",
-      "failed": "生成に失敗しました",
-      "share": "共有",
-      "momentCount": "瞬間",
-      "empty": "ハイライト動画はまだありません",
-      "status": {
-        "pending": "保留中",
-        "selecting": "瞬間を選択中",
-        "rendering": "動画をレンダリング中",
-        "ready": "共有可能",
-        "failed": "失敗"
-      }
-    },
-    "contacts": {
-      "title": "祖父母の連絡先",
-      "add": "連絡先を追加",
-      "name": "表示名",
-      "phone": "電話番号",
-      "relationship": "続柄",
-      "language": "言語",
-      "empty": "連絡先はまだ追加されていません",
-      "delete": "連絡先を削除",
-      "reelsSent": "送信済み動画",
-      "pin": "ファミリーPIN"
-    },
-    "feedback": {
-      "title": "フィードバック受信箱",
-      "empty": "フィードバックはまだありません",
-      "from": "送信者",
-      "voiceMessage": "音声メッセージ",
-      "textMessage": "テキストメッセージ"
-    },
-    "dashboard": {
-      "title": "ゼー・アニ",
-      "mirrorSection": "魔法の鏡",
-      "reelsSection": "ハイライト動画",
-      "contactsSection": "連絡先",
-      "feedbackSection": "フィードバック"
-    },
-    "hub": {
-      "title": "ゼー・アニ ハブ",
-      "magicMirror": "魔法の鏡",
-      "magicMirrorDesc": "パーソナライズされた挨拶と毎日のヘブライ語単語を備えたインタラクティブAIミラー",
-      "highlights": "ハイライト動画",
-      "highlightsDesc": "大切な人と思い出の瞬間をまとめた動画を生成・共有",
-      "contacts": "祖父母の連絡先",
-      "contactsDesc": "ハイライト動画を共有するための連絡先を管理",
-      "feedback": "フィードバック受信箱",
-      "feedbackDesc": "家族からの音声やテキストメッセージを受信",
-      "consent": "生体認証の同意",
-      "consentDesc": "顔と音声データの同意設定を管理",
-      "movieInteractions": "映画インタラクション",
-      "movieInteractionsDesc": "映画を探索してお気に入りのキャラクターと話そう"
-    },
     "movieInteractions": {
       "title": "映画インタラクション",
-      "subtitle": "映画を選んでキャラクターと話そう",
-      "tagMovie": "映画をタグ付け",
-      "tagging": "キャラクターを抽出中...",
-      "tagged": "準備完了",
-      "noMovies": "タグ付けされた映画はまだありません。映画をタグ付けしてキャラクターと話しましょう。",
-      "characters": {
-        "title": "キャラクター",
-        "subtitle": "話したいキャラクターを選んでください",
-        "playedBy": "{{actorName}}が演じる",
-        "noCharacters": "利用可能なキャラクターはありません"
-      },
-      "dialogue": {
-        "title": "{{characterName}}と話す",
-        "specificQuestions": "キャラクターの質問",
-        "genericQuestions": "一般的な質問",
-        "customQuestion": "自分の質問をする",
-        "placeholder": "質問を入力...",
-        "generatingResponse": "考え中...",
-        "generatingAudio": "音声を作成中...",
-        "generatingVideo": "動画を作成中...",
-        "creditCost": "{{credits}}クレジットかかります",
-        "askAnother": "別の質問をする",
-        "sending": "送信中..."
-      },
-      "errors": {
-        "fetchFailed": "映画の読み込みに失敗",
-        "tagFailed": "映画のタグ付けに失敗",
-        "charactersFailed": "キャラクターの読み込みに失敗",
-        "questionsFailed": "質問の読み込みに失敗",
-        "dialogueFailed": "メッセージの送信に失敗"
-      }
+      "subtitle": "映画を選んでお気に入りのキャラクターと会話しましょう",
+      "moviesSection": "映画",
+      "charactersSection": "キャラクター",
+      "questionsSection": "質問",
+      "empty": "インタラクティブな映画はまだありません",
+      "characterCount": "{{count}}人のキャラクター"
     },
-    "avatar3d": {
-      "errorTitle": "3D Avatar Error",
-      "loading": "Loading 3D Avatar...",
-      "resetCamera": "Reset Camera",
-      "title": "3D Avatar Preview"
+    "dialogue": {
+      "specificQuestions": "キャラクターの質問",
+      "genericQuestions": "一般的な質問",
+      "placeholder": "質問をどうぞ...",
+      "send": "送信",
+      "you": "あなた"
     },
-    "subtitle": "Interactive experiences and social features"
+    "subtitle": "あなたのインタラクティブアイデンティティ",
+    "hub": {
+      "magicMirror": "魔法の鏡",
+      "magicMirrorDesc": "物語のキャラクターとして自分を見よう",
+      "highlights": "ハイライト",
+      "highlightsDesc": "最高のインタラクティブな瞬間",
+      "movieInteractions": "映画インタラクション",
+      "movieInteractionsDesc": "お気に入りのキャラクターと会話",
+      "contacts": "連絡先",
+      "contactsDesc": "共有用の家族連絡先を管理",
+      "feedback": "フィードバック",
+      "feedbackDesc": "家族や友人からのメッセージ"
+    }
   },
   "starStory": {
     "title": "物語のスター",

@@ -7,11 +7,10 @@ import Observation
 @MainActor
 @Observable
 final class AvatarDialogueViewModel {
-
     // MARK: - Public State
 
     private(set) var availableCharacters: [ContentCharacter] = []
-    private(set) var selectedCharacter: ContentCharacter?
+    var selectedCharacter: ContentCharacter?
     private(set) var sessionId: String?
     private(set) var exchanges: [DialogueExchange] = []
     private(set) var isSending = false
@@ -119,6 +118,56 @@ final class AvatarDialogueViewModel {
 
         } catch {
             logger.error("Failed to send message: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: - Pause & Ask
+
+    func sendPauseAskMessage(
+        _ text: String,
+        languageHint: String = ""
+    ) async -> PauseAskResponse? {
+        guard let sessionId, isActive else { return nil }
+        isSending = true
+        defer { isSending = false }
+
+        do {
+            let response = try await repository.sendPauseAskMessage(
+                sessionId: sessionId,
+                message: text,
+                languageHint: languageHint
+            )
+
+            let userExchange = DialogueExchange(
+                speaker: "user",
+                messageText: response.userPolishedText,
+                audioUrl: response.userAudioUrl,
+                animatedVideoUrl: response.userAnimatedVideoUrl,
+                characterName: nil,
+                addressedTo: nil,
+                reactionTo: nil,
+                participantUserId: nil,
+                participantName: nil
+            )
+            let characterExchange = DialogueExchange(
+                speaker: "character",
+                messageText: response.characterResponseText,
+                audioUrl: response.characterAudioUrl,
+                animatedVideoUrl: response.characterAnimatedVideoUrl,
+                characterName: response.characterName,
+                addressedTo: nil,
+                reactionTo: nil,
+                participantUserId: nil,
+                participantName: nil
+            )
+            exchanges.append(userExchange)
+            exchanges.append(characterExchange)
+
+            logger.info("Pause & Ask exchange completed")
+            return response
+        } catch {
+            logger.error("Pause & Ask failed: \(error)")
             return nil
         }
     }

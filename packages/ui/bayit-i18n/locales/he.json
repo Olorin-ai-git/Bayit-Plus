@@ -5492,6 +5492,16 @@
       "voiceConsentRequired": "נדרשת הסכמה קולית לאינטראקציה קולית",
       "micPermissionDenied": "הרשאת מיקרופון נדחתה"
     },
+    "pauseAsk": {
+      "title": "שאל דמות",
+      "selectCharacter": "בחר עם מי לדבר",
+      "processing": "מכין את השאלה שלך...",
+      "userSpeaking": "אתה שואל...",
+      "characterSpeaking": "עונה...",
+      "resumeMovie": "חזרה לסרט",
+      "askAnother": "שאל שאלה נוספת",
+      "requiresVoiceClone": "צור קול לאווטר שלך כדי להשתמש בתכונה זו"
+    },
     "multiCharacter": {
       "selectCharacter": "בחר דמות לפנות אליה",
       "talkingTo": "מדבר עם",
@@ -9597,5 +9607,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "אינטראקציות עם סרטים",
+      "subtitle": "בחרו סרט ודברו עם הדמויות האהובות שלכם",
+      "moviesSection": "סרטים",
+      "charactersSection": "דמויות",
+      "questionsSection": "שאלות",
+      "empty": "אין סרטים אינטראקטיביים זמינים עדיין",
+      "characterCount": "{{count}} דמויות"
+    },
+    "dialogue": {
+      "specificQuestions": "שאלות לדמות",
+      "genericQuestions": "שאלות כלליות",
+      "placeholder": "שאלו שאלה...",
+      "send": "שלח",
+      "you": "אתה"
+    },
+    "subtitle": "הזהות האינטראקטיבית שלכם",
+    "hub": {
+      "magicMirror": "מראה קסם",
+      "magicMirrorDesc": "ראו את עצמכם כדמות בסיפור",
+      "highlights": "רילים מובחרים",
+      "highlightsDesc": "הרגעים האינטראקטיביים הטובים שלכם",
+      "movieInteractions": "אינטראקציות עם סרטים",
+      "movieInteractionsDesc": "דברו עם הדמויות האהובות שלכם",
+      "contacts": "אנשי קשר",
+      "contactsDesc": "נהלו אנשי קשר משפחתיים לשיתוף",
+      "feedback": "משוב",
+      "feedbackDesc": "הודעות מהמשפחה וחברים"
+    }
   }
 }

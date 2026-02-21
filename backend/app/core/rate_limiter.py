@@ -132,6 +132,8 @@ try:
         "vod_interaction_multi_message": _dev_limit("10/minute"),
         # VOD Shared Interaction
         "vod_interaction_shared_message": _dev_limit("10/minute"),
+        # VOD Pause & Ask (expensive: 2x animation + AI + polish)
+        "vod_interaction_pause_ask": _dev_limit("10/minute"),
     }
 
     RATE_LIMITING_ENABLED = True

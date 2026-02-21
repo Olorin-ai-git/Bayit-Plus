@@ -7,7 +7,7 @@ Supports live interactions with AI-generated character responses and reel genera
 
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from beanie import Document
 
 

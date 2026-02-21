@@ -227,26 +227,41 @@ class ChannelChatService:
 
             return remaining_users
 
-    async def broadcast_message(self, channel_id: str, message_data: dict) -> int:
+    async def broadcast_message(
+        self,
+        channel_id: str,
+        message_data: dict,
+        source_instance: Optional[str] = None,
+    ) -> int:
         """
         Broadcast message to all connected users in channel.
 
-        Handles send failures gracefully by logging and continuing.
+        Delivers to local connections first, then publishes to Redis
+        for cross-instance delivery.
 
         Args:
             channel_id: Channel identifier
             message_data: Message payload as dictionary
+            source_instance: If set, this is a Redis-relayed message (skip re-publish)
 
         Returns:
-            Number of successful recipients
+            Number of successful local recipients
         """
+        import os
+        instance_id = os.getenv("K_REVISION", f"local-{os.getpid()}")
+
         async with self._lock:
             if channel_id not in self._channels:
                 logger.debug(f"No users in channel {channel_id} for broadcast")
+                # Still publish to Redis for other instances
+                if source_instance is None:
+                    await self._publish_channel_broadcast(channel_id, message_data, instance_id)
                 return 0
 
             channel_users = self._channels[channel_id]
             if not channel_users:
+                if source_instance is None:
+                    await self._publish_channel_broadcast(channel_id, message_data, instance_id)
                 return 0
 
             message_json = json.dumps(message_data)
@@ -268,7 +283,7 @@ class ChannelChatService:
                     )
                     failed_users.append(user_id)
 
-            # Clean up failed connections (done outside iteration to avoid dict modification during iteration)
+            # Clean up failed connections
             for user_id in failed_users:
                 if user_id in channel_users:
                     del channel_users[user_id]
@@ -282,7 +297,46 @@ class ChannelChatService:
                 },
             )
 
-            return recipient_count
+        # Publish to Redis for other instances (only if not already relayed)
+        if source_instance is None:
+            await self._publish_channel_broadcast(channel_id, message_data, instance_id)
+
+        return recipient_count
+
+    async def _publish_channel_broadcast(
+        self, channel_id: str, message_data: dict, instance_id: str
+    ) -> None:
+        """Publish a channel broadcast to Redis pub/sub."""
+        try:
+            from app.core.pubsub import get_pubsub_manager
+            pubsub = await get_pubsub_manager()
+            if pubsub.is_connected:
+                await pubsub.publish(
+                    f"bayit:ws:room:channel:{channel_id}",
+                    {
+                        "message": message_data,
+                        "source_instance": instance_id,
+                    },
+                )
+        except Exception as exc:
+            logger.warning("Failed to publish channel broadcast to Redis: %s", exc)
+
+    async def handle_redis_channel_message(
+        self, channel: str, data: dict
+    ) -> None:
+        """Handle a broadcast relayed from Redis (another instance)."""
+        import os
+        instance_id = os.getenv("K_REVISION", f"local-{os.getpid()}")
+        source = data.get("source_instance")
+        if source == instance_id:
+            return
+
+        message_data = data.get("message", {})
+        # Extract channel_id from Redis channel name: bayit:ws:room:channel:{channel_id}
+        parts = channel.split(":")
+        if len(parts) >= 5:
+            channel_id = ":".join(parts[4:])
+            await self.broadcast_message(channel_id, message_data, source_instance=source)
 
     async def get_channel_user_count(self, channel_id: str) -> int:
         """

@@ -28,6 +28,7 @@ def _avatar_response(avatar: ChildAvatar) -> dict:
         status=avatar.creatify_avatar_status,
         avatar_image_url=avatar.creatify_avatar_image_url,
         error_message=avatar.error_message,
+        has_voice_clone=avatar.has_voice_clone,
         created_at=avatar.created_at.isoformat(),
         updated_at=avatar.updated_at.isoformat(),
     ).model_dump()

@@ -80,6 +80,7 @@ data class ContentItem(
     @SerialName("category_name_en") val categoryNameEn: String? = null,
     @SerialName("category_name_es") val categoryNameEs: String? = null,
     val type: String? = null,
+    @SerialName("content_type") val contentType: String? = null,
     @SerialName("is_series") val isSeries: Boolean? = null,
     @SerialName("total_episodes") val totalEpisodes: Int? = null,
     @SerialName("available_subtitle_languages")
@@ -91,6 +92,35 @@ data class ContentItem(
     @SerialName("available_movies") val availableMovies: Int? = null,
     @SerialName("total_movies") val totalMovies: Int? = null,
 )
+
+private val SERIES_KEYWORDS = listOf("series", "סדרות")
+
+/**
+ * Resolves the navigation content type from a [ContentItem].
+ *
+ * Priority: contentType (search API) > type > category name fallback.
+ * Matches iOS SearchResultsGridView.routeForResult + CategoryRow.navigateToItem.
+ */
+fun resolveContentType(item: ContentItem): String {
+    val explicit = item.contentType?.lowercase()
+    if (!explicit.isNullOrEmpty() && explicit != "vod") return explicit
+    return resolveFromFields(type = item.type, category = item.category, isCollectionParent = item.isCollectionParent)
+}
+
+fun resolveContentType(item: SpotlightItem): String =
+    resolveFromFields(type = item.type, category = item.category, isCollectionParent = null)
+
+private fun resolveFromFields(type: String?, category: String?, isCollectionParent: Boolean?): String {
+    val ct = type?.lowercase() ?: ""
+    if (ct.isNotEmpty() && ct != "vod") return ct
+    val cat = category?.lowercase() ?: ""
+    if (SERIES_KEYWORDS.any { cat.contains(it) }) return "series"
+    if (isCollectionParent == true) return "collection"
+    if (cat.contains("podcast")) return "podcast"
+    if (cat.contains("audiobook")) return "audiobook"
+    if (ct == "vod" || cat.contains("movie") || cat.contains("film")) return "movie"
+    return ct.ifEmpty { "movie" }
+}
 
 /** Paginated response from GET /api/v1/content/all */
 @Serializable
@@ -127,6 +157,7 @@ data class ContentDetail(
     @SerialName("stream_type") val streamType: String? = null,
     @SerialName("preview_url") val previewUrl: String? = null,
     @SerialName("trailer_url") val trailerUrl: String? = null,
+    @SerialName("trailer_stream_url") val trailerStreamUrl: String? = null,
     @SerialName("is_transcoded") val isTranscoded: Boolean? = null,
 )
 

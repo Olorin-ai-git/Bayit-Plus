@@ -21,7 +21,9 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case search
     case profile
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var title: String {
         switch self {
@@ -118,13 +120,15 @@ final class TVNavigationCoordinator {
     func presentPlayer(
         contentId: String,
         contentType: MediaContentType,
-        channelId: String? = nil
+        channelId: String? = nil,
+        directUrl: String? = nil
     ) {
         logger.info("Presenting player: \(contentId), type: \(contentType.rawValue)")
         fullscreenRoute = .player(
             contentId: contentId,
             contentType: contentType,
-            channelId: channelId
+            channelId: channelId,
+            directUrl: directUrl
         )
     }
 

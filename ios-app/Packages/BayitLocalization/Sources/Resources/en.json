@@ -3986,7 +3986,7 @@
     "slogan": "Your Home. Anywhere.",
     "ok": "OK",
     "untitled": "Untitled",
-    "percent": "percent",
+    "percent": "%",
     "success": "Success",
     "partialSuccess": "Partial Success",
     "warning": "Warning",
@@ -4081,13 +4081,11 @@
     "maybeLater": "Maybe Later",
     "medium": "Medium",
     "or": "or",
-    "percent": "%",
     "playlist": "Playlist",
     "preview": "Preview",
     "saveChanges": "Save Changes",
     "today": "Today",
     "unavailable": "Unavailable",
-    "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
     "content": "Content",
@@ -6105,11 +6103,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -6121,10 +6115,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -6317,6 +6308,13 @@
     "interaction": {
       "previous": "Previous Interaction",
       "next": "Next Interaction"
+    },
+    "pauseAsk": {
+      "title": "Interact",
+      "processing": "Processing...",
+      "askAnother": "Ask Another",
+      "resumeMovie": "Resume",
+      "selectCharacter": "Select Character"
     },
     "premiumRequiredRecording": "Premium subscription required",
     "sleepTimer": {
@@ -8821,225 +8819,35 @@
     }
   },
   "zehAni": {
-    "mesh": {
-      "title": "3D Avatar",
-      "subtitle": "Create your 3D avatar from your video selfie",
-      "generating": "Creating your 3D model...",
-      "rigging": "Adding animations...",
-      "ready": "Your 3D avatar is ready!",
-      "failed": "Could not create 3D avatar",
-      "retry": "Try Again",
-      "downloadGlb": "Download 3D Model",
-      "viewIn3d": "View in 3D",
-      "statusFailed": "Generation failed",
-      "statusGenerating": "Generating 3D model...",
-      "statusIdle": "Ready to generate",
-      "statusReady": "3D model ready",
-      "statusRigging": "Adding animations...",
-      "viewPreview": "View 3D Preview"
-    },
-    "arCapture": {
-      "title": "Face Scan",
-      "subtitle": "Create your 3D avatar with face scanning",
-      "holdStill": "Hold still...",
-      "smile": "Smile!",
-      "openMouth": "Open mouth wide",
-      "raiseBrows": "Raise eyebrows",
-      "processing": "Building your 3D model...",
-      "complete": "Face scan complete!",
-      "noFace": "No face detected. Please try again."
-    },
-    "consent": {
-      "biometric": {
-        "title": "Biometric Data Consent",
-        "subtitle": "This feature uses facial data to create a 3D avatar",
-        "explanation": "We use your facial and voice data to create personalized AI experiences. This data is processed securely and never shared with third parties.",
-        "privacy": "Your biometric data is encrypted and stored securely. You can revoke consent at any time.",
-        "pinLabel": "Family PIN",
-        "consentTypes": "Consent Types",
-        "meshGeneration": "3D Avatar Generation",
-        "voiceV2V": "Voice Transformation",
-        "latentFeatures": "Feature Analysis",
-        "currentStatus": "Current Status",
-        "pinPlaceholder": "Enter PIN",
-        "enterPin": "Enter family PIN",
-        "submit": "Submit Consent",
-        "grantConsent": "Grant Consent",
-        "revokeConsent": "Revoke Consent",
-        "consentGranted": "Consent granted",
-        "consentRevoked": "Consent revoked",
-        "pinRequired": "Family PIN is required",
-        "invalidPin": "Invalid PIN",
-        "familyControlsRequired": "Family Controls Required",
-        "familyControlsExplain": "Biometric consent requires Family Controls to be set up first. A family PIN is used to protect biometric data access. Go to Family Controls to create your PIN.",
-        "goToFamilyControls": "Go to Family Controls"
-      }
-    },
-    "preview3d": {
-      "title": "3D Preview",
-      "loading": "Loading 3D model...",
-      "rotate": "Drag to rotate",
-      "pinchToZoom": "Pinch to zoom",
-      "error": "Could not load 3D model"
-    },
-    "preview": {
-      "error": "Could not load preview",
-      "loading": "Loading preview...",
-      "title": "3D Preview"
-    },
-    "v2v": {
-      "title": "Voice Practice",
-      "subtitle": "Practice Hebrew with your own voice",
-      "startPractice": "Start Practice",
-      "listening": "Listening...",
-      "transforming": "Transforming voice...",
-      "result": "Result",
-      "before": "Before",
-      "after": "After",
-      "improvement": "Improvement",
-      "tryAgain": "Try Again",
-      "sessionComplete": "Session Complete",
-      "averageImprovement": "Average Improvement",
-      "beforeAfter": "Before & After",
-      "latency": "Latency",
-      "nextPhrase": "Next Phrase",
-      "retry": "Retry"
-    },
-    "liveLayer": {
-      "title": "Live Avatar",
-      "connecting": "Connecting...",
-      "connected": "Connected",
-      "disconnected": "Disconnected"
-    },
-    "trigger": {
-      "listen": "Listen carefully",
-      "sayWord": "Say the word",
-      "correct": "Correct!",
-      "tryAgain": "Try again",
-      "skip": "Skip",
-      "scoreLabel": "Score",
-      "continue": "Continue",
-      "dismiss": "Dismiss",
-      "errors": {
-        "microphoneFailed": "Could not access microphone"
-      },
-      "incorrect": "Not quite right",
-      "prompt": "Say the word shown on screen",
-      "success": "Great job!"
-    },
-    "magicMirror": {
-      "title": "Magic Mirror",
-      "greeting": "Good morning!",
-      "vocabOfDay": "Word of the Day",
-      "refresh": "Refresh",
-      "loading": "Loading greeting...",
-      "error": "Could not load greeting",
-      "noAvatar": "Create Your Avatar",
-      "noAvatarDesc": "Set up your child's avatar to unlock personalized Magic Mirror greetings with daily Hebrew vocabulary.",
-      "createAvatar": "Get Started",
-      "noCreditsTitle": "No Credits Remaining",
-      "noCreditsDesc": "You have used all your AI credits. Upgrade your plan or wait for your credits to refresh.",
-      "meshUnavailable": "3D mesh unavailable"
-    },
-    "highlights": {
-      "title": "Highlight Reels",
-      "generate": "Generate Reel",
-      "generating": "Generating...",
-      "ready": "Ready",
-      "failed": "Generation failed",
-      "share": "Share",
-      "momentCount": "moments",
-      "empty": "No highlight reels yet",
-      "status": {
-        "pending": "Pending",
-        "selecting": "Selecting moments",
-        "rendering": "Rendering video",
-        "ready": "Ready to share",
-        "failed": "Failed"
-      }
-    },
-    "contacts": {
-      "title": "Grandparent Contacts",
-      "add": "Add Contact",
-      "name": "Display Name",
-      "phone": "Phone Number",
-      "relationship": "Relationship",
-      "language": "Language",
-      "empty": "No contacts added yet",
-      "delete": "Remove Contact",
-      "reelsSent": "Reels sent",
-      "pin": "Family PIN"
-    },
-    "feedback": {
-      "title": "Feedback Inbox",
-      "empty": "No feedback yet",
-      "from": "From",
-      "voiceMessage": "Voice message",
-      "textMessage": "Text message"
-    },
-    "dashboard": {
-      "title": "Zeh Ani",
-      "mirrorSection": "Magic Mirror",
-      "reelsSection": "Highlight Reels",
-      "contactsSection": "Contacts",
-      "feedbackSection": "Feedback"
-    },
-    "hub": {
-      "title": "Zeh Ani Hub",
-      "magicMirror": "Magic Mirror",
-      "magicMirrorDesc": "Interactive AI mirror with personalized greetings and daily Hebrew words",
-      "highlights": "Highlight Reels",
-      "highlightsDesc": "Generate and share memorable moment compilations with loved ones",
-      "contacts": "Grandparent Contacts",
-      "contactsDesc": "Manage contacts to share your highlight reels",
-      "feedback": "Feedback Inbox",
-      "feedbackDesc": "Receive voice and text messages from family",
-      "consent": "Biometric Consent",
-      "consentDesc": "Manage consent settings for facial and voice data",
-      "movieInteractions": "Movie Interactions",
-      "movieInteractionsDesc": "Browse movies and talk to your favorite characters"
-    },
     "movieInteractions": {
       "title": "Movie Interactions",
-      "subtitle": "Choose a movie and talk to characters",
-      "tagMovie": "Tag Movie",
-      "tagging": "Extracting characters...",
-      "tagged": "Ready",
-      "noMovies": "No movies tagged yet. Tag a movie to start talking to characters.",
-      "characters": {
-        "title": "Characters",
-        "subtitle": "Choose a character to talk to",
-        "playedBy": "Played by {{actorName}}",
-        "noCharacters": "No characters available"
-      },
-      "dialogue": {
-        "title": "Talk to {{characterName}}",
-        "specificQuestions": "Character Questions",
-        "genericQuestions": "General Questions",
-        "customQuestion": "Ask your own question",
-        "placeholder": "Type a question...",
-        "generatingResponse": "Thinking...",
-        "generatingAudio": "Creating voice...",
-        "generatingVideo": "Creating video...",
-        "creditCost": "Costs {{credits}} credits",
-        "askAnother": "Ask another question",
-        "sending": "Sending..."
-      },
-      "errors": {
-        "fetchFailed": "Failed to load movies",
-        "tagFailed": "Failed to tag movie",
-        "charactersFailed": "Failed to load characters",
-        "questionsFailed": "Failed to load questions",
-        "dialogueFailed": "Failed to send message"
-      }
+      "subtitle": "Choose a movie and talk to your favorite characters",
+      "moviesSection": "Movies",
+      "charactersSection": "Characters",
+      "questionsSection": "Questions",
+      "empty": "No interactive movies available yet",
+      "characterCount": "{{count}} characters"
     },
-    "avatar3d": {
-      "errorTitle": "3D Avatar Error",
-      "loading": "Loading 3D Avatar...",
-      "resetCamera": "Reset Camera",
-      "title": "3D Avatar Preview"
+    "dialogue": {
+      "specificQuestions": "Character Questions",
+      "genericQuestions": "General Questions",
+      "placeholder": "Ask a question...",
+      "send": "Send",
+      "you": "You"
     },
-    "subtitle": "Interactive experiences and social features"
+    "subtitle": "Your interactive identity",
+    "hub": {
+      "magicMirror": "Magic Mirror",
+      "magicMirrorDesc": "See yourself as a character in the story",
+      "highlights": "Highlight Reels",
+      "highlightsDesc": "Your best interactive moments compiled",
+      "movieInteractions": "Movie Interactions",
+      "movieInteractionsDesc": "Talk to your favorite movie characters",
+      "contacts": "Contacts",
+      "contactsDesc": "Manage family contacts for sharing",
+      "feedback": "Feedback",
+      "feedbackDesc": "Messages from family and friends"
+    }
   },
   "starStory": {
     "title": "Star in Story",

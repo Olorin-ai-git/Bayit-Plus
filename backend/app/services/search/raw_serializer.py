@@ -149,6 +149,8 @@ def _raw_vod(raw: dict, doc_id: str) -> Dict[str, Any]:
         "narrator": raw.get("narrator"),
         "content_type": derived_type,
         "is_series": False,
+        "series_id": raw.get("series_id"),
+        "total_episodes": raw.get("total_episodes"),
         "requires_subscription": raw.get("requires_subscription"),
         "is_kids_content": raw.get("is_kids_content"),
         "age_rating": raw.get("age_rating"),

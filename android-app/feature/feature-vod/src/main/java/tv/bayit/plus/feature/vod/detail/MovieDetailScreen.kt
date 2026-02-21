@@ -1,5 +1,7 @@
 package tv.bayit.plus.feature.vod.detail
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -24,6 +27,7 @@ fun MovieDetailRoute(
     viewModel: MovieDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     MovieDetailScreen(
         uiState = uiState,
@@ -33,6 +37,12 @@ fun MovieDetailRoute(
         onDownload = viewModel::startDownload,
         onBack = onNavigateBack,
         onRetry = viewModel::retry,
+        onTrailerClick = { url ->
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(Uri.parse(url), "video/mp4")
+            }
+            context.startActivity(intent)
+        },
         modifier = modifier,
     )
 }
@@ -46,6 +56,7 @@ internal fun MovieDetailScreen(
     onDownload: () -> Unit,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onTrailerClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -63,6 +74,7 @@ internal fun MovieDetailScreen(
                 onFavoriteToggle = onFavoriteToggle,
                 onDownload = onDownload,
                 onBack = onBack,
+                onTrailerClick = onTrailerClick,
             )
         }
     }
@@ -76,11 +88,22 @@ private fun MovieSuccessContent(
     onFavoriteToggle: () -> Unit,
     onDownload: () -> Unit,
     onBack: () -> Unit,
+    onTrailerClick: (String) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { MovieHeroSection(state, onBack, onFavoriteToggle) }
         item { MovieMetadataSection(state) }
-        item { MovieActionSection(state.movieId, state.isDownloading, state.isDownloaded, onPlay, onDownload) }
+        item {
+            MovieActionSection(
+                movieId = state.movieId,
+                isDownloading = state.isDownloading,
+                isDownloaded = state.isDownloaded,
+                hasTrailer = state.hasTrailer,
+                onPlay = onPlay,
+                onDownload = onDownload,
+                onTrailerClick = { state.trailerStreamUrl?.let { onTrailerClick(it) } },
+            )
+        }
         if (state.related.isNotEmpty()) {
             item {
                 RelatedContentShelf(

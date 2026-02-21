@@ -234,7 +234,7 @@ _redis_client: Optional[AsyncRedisClient] = None
 
 
 async def get_redis_client(
-    redis_url: str = "redis://localhost:6379/0",
+    redis_url: str = "",
     max_connections: int = 50,
 ) -> AsyncRedisClient:
     """
@@ -244,7 +244,7 @@ async def get_redis_client(
     be created but operations will gracefully skip rather than crash.
 
     Args:
-        redis_url: Redis connection URL
+        redis_url: Redis connection URL (falls back to settings.REDIS_URL)
         max_connections: Max connections in pool
 
     Returns:
@@ -253,6 +253,18 @@ async def get_redis_client(
     global _redis_client
 
     if _redis_client is None:
+        # Resolve URL: explicit param > config setting
+        if not redis_url:
+            from app.core.config import settings
+            redis_url = settings.REDIS_URL
+
+        if not redis_url:
+            logger.warning(
+                "REDIS_URL not configured. Redis features disabled (graceful degradation)."
+            )
+            _redis_client = AsyncRedisClient("redis://localhost:6379/0", max_connections)
+            return _redis_client
+
         _redis_client = AsyncRedisClient(redis_url, max_connections)
         # connect() is now non-blocking - won't raise if Redis unavailable
         await _redis_client.connect()

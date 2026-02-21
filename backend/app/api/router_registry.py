@@ -535,7 +535,9 @@ def register_all_routers(app: FastAPI) -> None:
     logger.debug("Registered VOD avatar interaction routes")
 
     # ============================================
-    # WebSocket Routes
+    # WebSocket Routes (dual-running with bayit-ws-gateway)
+    # Phase 5 cleanup: Remove this entire block once gateway is stable.
+    # Gateway service at ws.bayit.tv handles all WS routes.
     # ============================================
     app.include_router(websocket.router, prefix=prefix, tags=["websocket"])
     app.include_router(websocket_diagnostics.router, tags=["websocket", "diagnostics"])

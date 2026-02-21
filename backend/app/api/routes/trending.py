@@ -111,7 +111,7 @@ async def get_trending_recommendations(
         score = 0
         title_lower = content.title.lower()
         desc_lower = (content.description or "").lower()
-        tags = [t.lower() for t in (content.tags or [])]
+        tags = [t.lower() for t in (content.topic_tags or [])]
 
         matched_topic = None
         for topic in analysis.topics:

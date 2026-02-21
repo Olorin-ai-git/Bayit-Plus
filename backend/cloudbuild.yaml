@@ -34,6 +34,7 @@ steps:
       - '--update-secrets=WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest'
 
       # Database
+      - '--update-secrets=REDIS_URL=bayit-redis-url:latest'
       - '--update-secrets=MONGODB_URI=bayit-mongodb-uri:latest'
       - '--update-secrets=OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest'
       - '--update-secrets=CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest'

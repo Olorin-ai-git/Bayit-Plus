@@ -5315,6 +5315,16 @@
       "voiceConsentRequired": "Se requiere consentimiento de voz para la interaccion de voz",
       "micPermissionDenied": "Permiso de microfono denegado"
     },
+    "pauseAsk": {
+      "title": "Pregunta a un personaje",
+      "selectCharacter": "Elige con quien hablar",
+      "processing": "Preparando tu pregunta...",
+      "userSpeaking": "Estas preguntando...",
+      "characterSpeaking": "Respondiendo...",
+      "resumeMovie": "Reanudar pelicula",
+      "askAnother": "Hacer otra pregunta",
+      "requiresVoiceClone": "Crea la voz de tu avatar para usar esta funcion"
+    },
     "multiCharacter": {
       "selectCharacter": "Seleccionar personaje para dirigirse",
       "talkingTo": "Hablando con",
@@ -9575,5 +9585,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "Interacciones con Peliculas",
+      "subtitle": "Elige una pelicula y habla con tus personajes favoritos",
+      "moviesSection": "Peliculas",
+      "charactersSection": "Personajes",
+      "questionsSection": "Preguntas",
+      "empty": "No hay peliculas interactivas disponibles aun",
+      "characterCount": "{{count}} personajes"
+    },
+    "dialogue": {
+      "specificQuestions": "Preguntas del personaje",
+      "genericQuestions": "Preguntas generales",
+      "placeholder": "Haz una pregunta...",
+      "send": "Enviar",
+      "you": "Tu"
+    },
+    "subtitle": "Tu identidad interactiva",
+    "hub": {
+      "magicMirror": "Espejo Magico",
+      "magicMirrorDesc": "Vete como un personaje en la historia",
+      "highlights": "Momentos Destacados",
+      "highlightsDesc": "Tus mejores momentos interactivos",
+      "movieInteractions": "Interacciones con Peliculas",
+      "movieInteractionsDesc": "Habla con tus personajes favoritos",
+      "contacts": "Contactos",
+      "contactsDesc": "Gestiona contactos familiares para compartir",
+      "feedback": "Comentarios",
+      "feedbackDesc": "Mensajes de familia y amigos"
+    }
   }
 }

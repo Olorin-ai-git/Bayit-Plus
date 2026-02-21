@@ -118,8 +118,10 @@ internal fun MovieActionSection(
     movieId: String,
     isDownloading: Boolean,
     isDownloaded: Boolean,
+    hasTrailer: Boolean,
     onPlay: (String) -> Unit,
     onDownload: () -> Unit,
+    onTrailerClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
@@ -147,6 +149,13 @@ internal fun MovieActionSection(
                     modifier = Modifier.size(24.dp),
                     color = DesignTokens.Colors.Primary.base,
                     strokeWidth = 2.dp,
+                )
+            }
+            if (hasTrailer) {
+                GlassButton(
+                    text = "Trailer",
+                    onClick = onTrailerClick,
+                    isPrimary = false,
                 )
             }
         }

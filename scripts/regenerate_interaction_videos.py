@@ -126,16 +126,21 @@ async def regenerate_moments(
             continue
 
         char_data = char_lookup.get(char_name)
-        if not char_data:
-            voice_id = moment.get("voice_id", "")
-            frame_url = moment.get("character_frame_url", "")
-            if not voice_id or not frame_url:
+        moment_frame = moment.get("character_frame_url", "")
+        moment_voice = moment.get("voice_id", "")
+
+        if char_data:
+            # Prefer moment's GCS frame_url over lookup's local path
+            if moment_frame.startswith("http") and not char_data["frame_url"].startswith("http"):
+                char_data = {**char_data, "frame_url": moment_frame}
+        else:
+            if not moment_voice or not moment_frame:
                 logger.info(
                     "Moment %d (%s): no character data found, skipping",
                     idx, char_name,
                 )
                 continue
-            char_data = {"voice_id": voice_id, "frame_url": frame_url}
+            char_data = {"voice_id": moment_voice, "frame_url": moment_frame}
 
         if dry_run:
             logger.info(
@@ -167,17 +172,16 @@ async def regenerate_moments(
         moment["voice_id"] = char_data["voice_id"]
         regenerated += 1
 
-        logger.info(
-            "Moment %d (%s) regenerated: video=%s",
-            idx, char_name, video_url[:80],
-        )
-
-    if regenerated > 0 and not dry_run:
+        # Save incrementally after each moment so progress isn't lost
         await db.content.update_one(
             {"_id": content["_id"]},
             {"$set": {"interactive_moments": moments}},
         )
-        logger.info("Updated %d moments in MongoDB", regenerated)
+
+        logger.info(
+            "Moment %d (%s) regenerated and saved: video=%s",
+            idx, char_name, video_url[:80],
+        )
 
     return regenerated
 

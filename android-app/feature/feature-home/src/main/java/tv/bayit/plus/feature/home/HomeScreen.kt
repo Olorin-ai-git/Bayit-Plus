@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
+import tv.bayit.plus.core.model.resolveContentType
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.i18n.bayitString
@@ -80,28 +81,15 @@ fun HomeRoute(
         uiState = uiState,
         onSpotlightClick = { item -> onNavigateToPlayer(item.id, item.type.orEmpty()) },
         onSpotlightMoreInfoClick = { item ->
-            val type = item.type?.lowercase().orEmpty()
-            val cat = item.category?.lowercase().orEmpty()
-            when {
-                item.isSeries == true -> onNavigateToContent(item.id, "series")
-                type.contains("podcast") || cat.contains("podcast") -> onNavigateToContent(item.id, "podcast")
-                type.contains("audiobook") || cat.contains("audiobook") -> onNavigateToContent(item.id, "audiobook")
-                else -> onNavigateToContent(item.id, if (type == "movie") "movie" else type.ifEmpty { "vod" })
-            }
+            onNavigateToContent(item.id, resolveContentType(item))
         },
         onContentClick = { item ->
-            val type = item.type?.lowercase().orEmpty()
+            val resolved = resolveContentType(item)
             val cat = item.category?.lowercase().orEmpty()
             when {
-                item.isSeries == true -> onNavigateToContent(item.id, "series")
-                item.isCollectionParent == true -> onNavigateToContent(item.id, "collection")
-                type.contains("podcast") || cat.contains("podcast") -> onNavigateToContent(item.id, "podcast")
-                type.contains("audiobook") || cat.contains("audiobook") -> onNavigateToContent(item.id, "audiobook")
-                type == "movie" || type == "vod"
-                    || cat.contains("movie") || cat.contains("film") -> onNavigateToContent(item.id, "movie")
-                type.contains("radio") || cat.contains("radio") -> onNavigateToRadioBrowse()
-                type.contains("live") || cat.contains("live") -> onNavigateToLiveTV()
-                else -> onNavigateToPlayer(item.id, type.ifEmpty { "vod" })
+                resolved == "radio" || cat.contains("radio") -> onNavigateToRadioBrowse()
+                resolved == "live" || cat.contains("live") -> onNavigateToLiveTV()
+                else -> onNavigateToContent(item.id, resolved)
             }
         },
         onContinueWatchingItemClick = onNavigateToContinueWatchingItem,

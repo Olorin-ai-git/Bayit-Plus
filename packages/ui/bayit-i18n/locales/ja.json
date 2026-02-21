@@ -5112,6 +5112,16 @@
       "voiceConsentRequired": "音声インタラクションには音声同意が必要です",
       "micPermissionDenied": "マイクの許可が拒否されました"
     },
+    "pauseAsk": {
+      "title": "キャラクターに質問する",
+      "selectCharacter": "話したい相手を選んでください",
+      "processing": "質問を準備中...",
+      "userSpeaking": "あなたが質問しています...",
+      "characterSpeaking": "回答中...",
+      "resumeMovie": "映画を再開",
+      "askAnother": "もう一つ質問する",
+      "requiresVoiceClone": "この機能を使うにはアバターの声を作成してください"
+    },
     "multiCharacter": {
       "selectCharacter": "話しかけるキャラクターを選択",
       "talkingTo": "話し相手",
@@ -10918,5 +10928,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "映画インタラクション",
+      "subtitle": "映画を選んでお気に入りのキャラクターと会話しましょう",
+      "moviesSection": "映画",
+      "charactersSection": "キャラクター",
+      "questionsSection": "質問",
+      "empty": "インタラクティブな映画はまだありません",
+      "characterCount": "{{count}}人のキャラクター"
+    },
+    "dialogue": {
+      "specificQuestions": "キャラクターの質問",
+      "genericQuestions": "一般的な質問",
+      "placeholder": "質問をどうぞ...",
+      "send": "送信",
+      "you": "あなた"
+    },
+    "subtitle": "あなたのインタラクティブアイデンティティ",
+    "hub": {
+      "magicMirror": "魔法の鏡",
+      "magicMirrorDesc": "物語のキャラクターとして自分を見よう",
+      "highlights": "ハイライト",
+      "highlightsDesc": "最高のインタラクティブな瞬間",
+      "movieInteractions": "映画インタラクション",
+      "movieInteractionsDesc": "お気に入りのキャラクターと会話",
+      "contacts": "連絡先",
+      "contactsDesc": "共有用の家族連絡先を管理",
+      "feedback": "フィードバック",
+      "feedbackDesc": "家族や友人からのメッセージ"
+    }
   }
 }

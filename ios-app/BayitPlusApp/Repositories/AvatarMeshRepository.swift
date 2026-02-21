@@ -2,7 +2,6 @@ import BayitNetworking
 import Foundation
 
 protocol AvatarRepository: Sendable {
-
     func createCreatifyPersona(
         avatarId: String,
         profileId: String,
@@ -74,6 +73,14 @@ protocol AvatarRepository: Sendable {
         addressedCharacter: String
     ) async throws -> MultiCharacterResponse
 
+    // MARK: - Pause & Ask
+
+    func sendPauseAskMessage(
+        sessionId: String,
+        message: String,
+        languageHint: String
+    ) async throws -> PauseAskResponse
+
     // MARK: - Shared Interaction (Phase 3)
 
     func startSharedInteraction(
@@ -105,7 +112,6 @@ protocol AvatarRepository: Sendable {
 }
 
 final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -165,7 +171,7 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
             "consent_type": response.consentType,
             "active": response.active,
             "granted_at": response.grantedAt,
-            "on_device_only": response.onDeviceOnly
+            "on_device_only": response.onDeviceOnly,
         ]
     }
 
@@ -300,6 +306,24 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
             "/api/v1/vod-interactions/sessions/\(sessionId)/multi-message",
             body: body,
             as: MultiCharacterResponse.self
+        )
+    }
+
+    // MARK: - Pause & Ask
+
+    func sendPauseAskMessage(
+        sessionId: String,
+        message: String,
+        languageHint: String
+    ) async throws -> PauseAskResponse {
+        let body: [String: String] = [
+            "message": message,
+            "language_hint": languageHint,
+        ]
+        return try await client.post(
+            "/api/v1/vod-interactions/sessions/\(sessionId)/pause-ask",
+            body: body,
+            as: PauseAskResponse.self
         )
     }
 

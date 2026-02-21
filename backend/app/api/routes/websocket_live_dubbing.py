@@ -343,7 +343,7 @@ async def check_dubbing_availability(channel_id: str):
         if not channel:
             return {"available": False, "error": "Channel not found"}
 
-        active_count = get_active_session_count(channel_id)
+        active_count = await get_active_session_count(channel_id)
 
         return {
             "available": channel.supports_live_dubbing,

@@ -21,8 +21,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideNetworkConfiguration(): NetworkConfiguration = NetworkConfiguration(
-        baseUrl = "https://api.bayit.tv",
-        webSocketBaseUrl = "wss://api.bayit.tv/ws",
+        baseUrl = BuildConfig.API_BASE_URL,
+        webSocketBaseUrl = BuildConfig.WS_BASE_URL,
         timeoutDuration = 30.seconds,
         maxRetries = 3,
         retryBaseDelayDuration = 1.seconds,

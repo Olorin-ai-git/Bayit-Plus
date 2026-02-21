@@ -4,10 +4,12 @@ import Foundation
 /// Navigation routes for the tvOS app.
 /// Simpler than iOS routes since tvOS uses tab-level navigation with fullscreen modals.
 enum TVRoute: Hashable, Identifiable {
+    var id: Int {
+        hashValue
+    }
 
-    var id: Int { hashValue }
     /// Present the fullscreen player.
-    case player(contentId: String, contentType: MediaContentType, channelId: String?)
+    case player(contentId: String, contentType: MediaContentType, channelId: String?, directUrl: String? = nil)
     /// Navigate to podcast detail screen.
     case podcastDetail(showId: String)
     /// Navigate to series detail screen.
@@ -55,24 +57,25 @@ enum TVRoute: Hashable, Identifiable {
 
     func hash(into hasher: inout Hasher) {
         switch self {
-        case .player(let contentId, let contentType, let channelId):
+        case let .player(contentId, contentType, channelId, directUrl):
             hasher.combine("player")
             hasher.combine(contentId)
             hasher.combine(contentType.rawValue)
             hasher.combine(channelId)
-        case .podcastDetail(let showId):
+            hasher.combine(directUrl)
+        case let .podcastDetail(showId):
             hasher.combine("podcastDetail")
             hasher.combine(showId)
-        case .seriesDetail(let seriesId):
+        case let .seriesDetail(seriesId):
             hasher.combine("seriesDetail")
             hasher.combine(seriesId)
-        case .movieDetail(let movieId):
+        case let .movieDetail(movieId):
             hasher.combine("movieDetail")
             hasher.combine(movieId)
-        case .collectionDetail(let collectionId):
+        case let .collectionDetail(collectionId):
             hasher.combine("collectionDetail")
             hasher.combine(collectionId)
-        case .audiobookDetail(let audiobookId):
+        case let .audiobookDetail(audiobookId):
             hasher.combine("audiobookDetail")
             hasher.combine(audiobookId)
         case .audiobooks:
@@ -89,27 +92,27 @@ enum TVRoute: Hashable, Identifiable {
             hasher.combine("shekelsWallet")
         case .couponShop:
             hasher.combine("couponShop")
-        case .cultureDetail(let id):
+        case let .cultureDetail(id):
             hasher.combine("cultureDetail")
             hasher.combine(id)
         case .subscriptionGate:
             hasher.combine("subscriptionGate")
         case .connectedAccounts:
             hasher.combine("connectedAccounts")
-        case .aiCompanion(let contentId):
+        case let .aiCompanion(contentId):
             hasher.combine("aiCompanion")
             hasher.combine(contentId)
-        case .catchUpSummary(let contentId):
+        case let .catchUpSummary(contentId):
             hasher.combine("catchUpSummary")
             hasher.combine(contentId)
-        case .quiz(let contentId):
+        case let .quiz(contentId):
             hasher.combine("quiz")
             hasher.combine(contentId)
         case .watchlist:
             hasher.combine("watchlist")
         case .downloads:
             hasher.combine("downloads")
-        case .judaism(let category):
+        case let .judaism(category):
             hasher.combine("judaism")
             hasher.combine(category)
         }
@@ -117,8 +120,8 @@ enum TVRoute: Hashable, Identifiable {
 
     static func == (lhs: TVRoute, rhs: TVRoute) -> Bool {
         switch (lhs, rhs) {
-        case let (.player(lId, lType, lCh), .player(rId, rType, rCh)):
-            return lId == rId && lType == rType && lCh == rCh
+        case let (.player(lId, lType, lCh, lUrl), .player(rId, rType, rCh, rUrl)):
+            return lId == rId && lType == rType && lCh == rCh && lUrl == rUrl
         case let (.podcastDetail(lId), .podcastDetail(rId)):
             return lId == rId
         case let (.seriesDetail(lId), .seriesDetail(rId)):

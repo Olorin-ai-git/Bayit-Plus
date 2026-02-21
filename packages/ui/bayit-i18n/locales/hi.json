@@ -4186,6 +4186,16 @@
       "voiceConsentRequired": "ध्वनि इंटरैक्शन के लिए ध्वनि सहमति आवश्यक है",
       "micPermissionDenied": "माइक्रोफ़ोन अनुमति अस्वीकृत"
     },
+    "pauseAsk": {
+      "title": "किसी पात्र से पूछें",
+      "selectCharacter": "किससे बात करना है चुनें",
+      "processing": "आपका सवाल तैयार हो रहा है...",
+      "userSpeaking": "आप पूछ रहे हैं...",
+      "characterSpeaking": "जवाब दे रहा है...",
+      "resumeMovie": "फिल्म जारी रखें",
+      "askAnother": "एक और सवाल पूछें",
+      "requiresVoiceClone": "इस सुविधा का उपयोग करने के लिए अपने अवतार की आवाज बनाएं"
+    },
     "multiCharacter": {
       "selectCharacter": "संबोधित करने के लिए पात्र चुनें",
       "talkingTo": "से बात कर रहे हैं",
@@ -9495,5 +9505,36 @@
     "low": "Low",
     "sensitivity": "Sensitivity",
     "title": "Hey Bayit"
+  },
+  "zehAni": {
+    "movieInteractions": {
+      "title": "फिल्म इंटरैक्शन",
+      "subtitle": "एक फिल्म चुनें और अपने पसंदीदा पात्रों से बात करें",
+      "moviesSection": "फिल्में",
+      "charactersSection": "पात्र",
+      "questionsSection": "सवाल",
+      "empty": "अभी कोई इंटरैक्टिव फिल्म उपलब्ध नहीं",
+      "characterCount": "{{count}} पात्र"
+    },
+    "dialogue": {
+      "specificQuestions": "पात्र के सवाल",
+      "genericQuestions": "सामान्य सवाल",
+      "placeholder": "सवाल पूछें...",
+      "send": "भेजें",
+      "you": "आप"
+    },
+    "subtitle": "आपकी इंटरैक्टिव पहचान",
+    "hub": {
+      "magicMirror": "जादू का आईना",
+      "magicMirrorDesc": "कहानी में एक पात्र के रूप में अपने आप को देखें",
+      "highlights": "हाइलाइट रील्स",
+      "highlightsDesc": "आपके सर्वश्रेष्ठ इंटरैक्टिव पल",
+      "movieInteractions": "फिल्म इंटरैक्शन",
+      "movieInteractionsDesc": "अपने पसंदीदा पात्रों से बात करें",
+      "contacts": "संपर्क",
+      "contactsDesc": "साझा करने के लिए पारिवारिक संपर्क प्रबंधित करें",
+      "feedback": "प्रतिक्रिया",
+      "feedbackDesc": "परिवार और दोस्तों के संदेश"
+    }
   }
 }

@@ -1,12 +1,11 @@
-import Foundation
 import BayitNetworking
+import Foundation
 
 /// Repository protocol for content/home API operations.
 ///
 /// Abstracts API calls behind a protocol for testability, allowing mock implementations
 /// in tests while the real implementation uses the centralized `APIClient`.
 protocol ContentRepository: Sendable {
-
     /// Fetch featured content for the home screen.
     ///
     /// - Returns: Featured response with hero, spotlight, and category rows.
@@ -132,6 +131,13 @@ protocol ContentRepository: Sendable {
     /// - Returns: Response with recommendations and matched trending topics.
     /// - Throws: `NetworkError` if the request fails.
     func fetchTrendingRecommendations(limit: Int) async throws -> TrendingRecommendationsResponse
+
+    /// Resolve a trailer URL to a direct playable stream URL.
+    ///
+    /// - Parameter contentId: Content ID whose trailer to resolve.
+    /// - Returns: Trailer stream response with the resolved direct URL.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchTrailerStream(contentId: String) async throws -> TrailerStreamResponse
 }
 
 /// Production implementation of `ContentRepository` using `APIClient`.
@@ -141,7 +147,6 @@ protocol ContentRepository: Sendable {
 /// - Auth token, correlation ID, locale, and location headers injected automatically.
 /// - Retry logic and rate limiting handled by `APIClient`.
 final class APIContentRepository: ContentRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     /// Initialize with an `APIClient` instance.
@@ -163,7 +168,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
     func fetchAllContent(page: Int, limit: Int) async throws -> ContentListResponse {
         let queryItems = [
             URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
+            URLQueryItem(name: "limit", value: String(limit)),
         ]
 
         return try await client.get(
@@ -190,7 +195,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         var queryItems = [
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
+            URLQueryItem(name: "limit", value: String(limit)),
         ]
 
         if let type {
@@ -210,7 +215,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
     func fetchIsraelisInCity(city: String, state: String) async throws -> IsraelisInCityResponse {
         let queryItems = [
             URLQueryItem(name: "city", value: city),
-            URLQueryItem(name: "state", value: state)
+            URLQueryItem(name: "state", value: state),
         ]
 
         return try await client.get(
@@ -223,7 +228,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
     func fetchIsraeliBusinesses(city: String, state: String) async throws -> IsraeliBusinessesResponse {
         let queryItems = [
             URLQueryItem(name: "city", value: city),
-            URLQueryItem(name: "state", value: state)
+            URLQueryItem(name: "state", value: state),
         ]
 
         return try await client.get(
@@ -264,7 +269,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
     func fetchSeries(page: Int, limit: Int) async throws -> ContentListResponse {
         let queryItems = [
             URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
+            URLQueryItem(name: "limit", value: String(limit)),
         ]
 
         return try await client.get(
@@ -277,7 +282,7 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
     func fetchCollections(skip: Int, limit: Int) async throws -> [CollectionListItem] {
         let queryItems = [
             URLQueryItem(name: "skip", value: String(skip)),
-            URLQueryItem(name: "limit", value: String(limit))
+            URLQueryItem(name: "limit", value: String(limit)),
         ]
 
         return try await client.get(
@@ -313,6 +318,13 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
             "/api/v1/trending/recommendations",
             queryItems: [URLQueryItem(name: "limit", value: String(limit))],
             as: TrendingRecommendationsResponse.self
+        )
+    }
+
+    func fetchTrailerStream(contentId: String) async throws -> TrailerStreamResponse {
+        return try await client.get(
+            "/api/v1/content/\(contentId)/trailer",
+            as: TrailerStreamResponse.self
         )
     }
 }
