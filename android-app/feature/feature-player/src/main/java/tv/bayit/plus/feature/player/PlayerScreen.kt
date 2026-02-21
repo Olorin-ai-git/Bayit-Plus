@@ -99,10 +99,8 @@ fun PlayerRoute(
         if (extendedState.isFullscreen) {
             controller?.hide(WindowInsetsCompat.Type.systemBars())
             controller?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
             controller?.show(WindowInsetsCompat.Type.systemBars())
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
         onDispose {
             controller?.show(WindowInsetsCompat.Type.systemBars())

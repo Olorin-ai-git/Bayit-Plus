@@ -172,29 +172,34 @@ async def list_collections(
 @router.get(
     "/collections/recommendations", response_model=List[CollectionRecommendationResponse]
 )
-async def get_collection_recommendations():
+async def get_collection_recommendations(
+    limit: int = Query(20, ge=1, le=100, description="Max collections to return"),
+    offset: int = Query(0, ge=0, description="Number of collections to skip"),
+):
     """
-    Get all published collections with weighted random ordering.
+    Get published collections with weighted random ordering.
 
     Collections are ordered using weighted random selection based on available_movies count.
     Collections with more movies appear more frequently in rotation.
 
     Results are cached in Redis for 30 minutes for performance.
 
+    Args:
+        limit: Maximum collections to return (default 20, max 100)
+        offset: Skip this many collections for pagination (default 0)
+
     Returns:
-        List of all published collections with all language promo texts
+        Paginated list of published collections with all language promo texts
     """
     cache_key = "collection_recs:all:weighted"
     redis_client = await get_redis_client()
 
-    # Check cache first
+    # Check cache first — cache holds the full ordered list, pagination applied after
     cached_data = await redis_client.get(cache_key)
     if cached_data and isinstance(cached_data, dict) and "collections" in cached_data:
         logger.info("Returning cached collection recommendations")
-        return [
-            CollectionRecommendationResponse(**item)
-            for item in cached_data["collections"]
-        ]
+        page_items = cached_data["collections"][offset : offset + limit]
+        return [CollectionRecommendationResponse(**item) for item in page_items]
 
     # Fetch all published collections
     collections = await Content.find(
@@ -242,9 +247,12 @@ async def get_collection_recommendations():
         random.shuffle(collection_data)
         selected_collections = collection_data
 
+    # Apply pagination to the weighted-ordered list
+    paginated_collections = selected_collections[offset : offset + limit]
+
     # Build response with all language promo texts
     results = []
-    for item in selected_collections:
+    for item in paginated_collections:
         collection = item["collection"]
         available_movies = item["available_movies"]
 

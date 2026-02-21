@@ -12,6 +12,8 @@ struct TVHeroItem: View {
     let onMoreInfo: () -> Void
 
     @Environment(LocalizationManager.self) private var localization
+    @FocusState private var watchNowFocused: Bool
+    @FocusState private var moreInfoFocused: Bool
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -19,9 +21,10 @@ struct TVHeroItem: View {
             Color.clear
                 .overlay(alignment: .top) {
                     if let urlStr = item.backdrop ?? item.thumbnail,
-                       let url = URL(string: urlStr) {
+                       let url = URL(string: urlStr)
+                    {
                         AsyncImage(url: url) { phase in
-                            if case .success(let img) = phase {
+                            if case let .success(img) = phase {
                                 img.resizable()
                                     .aspectRatio(contentMode: .fill)
                             } else {
@@ -40,7 +43,7 @@ struct TVHeroItem: View {
                     .init(color: .clear, location: 0.0),
                     .init(color: DesignTokens.Background.primary.opacity(0.3), location: 0.35),
                     .init(color: DesignTokens.Background.primary.opacity(0.8), location: 0.7),
-                    .init(color: DesignTokens.Background.primary, location: 1.0)
+                    .init(color: DesignTokens.Background.primary, location: 1.0),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -67,7 +70,8 @@ struct TVHeroItem: View {
 
                     // Subtitle emoji flags
                     if let languages = item.availableSubtitleLanguages,
-                       !languages.isEmpty {
+                       !languages.isEmpty
+                    {
                         SubtitleFlagsPill(
                             languages: languages,
                             aiLanguages: [],
@@ -102,17 +106,29 @@ struct TVHeroItem: View {
         Button(action: onWatchNow) {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Image(systemName: "play.fill")
-                    .font(.system(size: TVDesignTokens.FontSize.md))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
                 Text(localization.t("hero.watchNow"))
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
             }
             .foregroundStyle(.white)
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
-            .background(DesignTokens.Primary.default)
-            .clipShape(Capsule())
+            .background(
+                Capsule()
+                    .fill(DesignTokens.Primary.default)
+                    .brightness(watchNowFocused ? 0.22 : 0)
+            )
+            .shadow(
+                color: watchNowFocused ? DesignTokens.Primary.p500.opacity(0.75) : .clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0,
+                y: 6
+            )
         }
-        .buttonStyle(.card)
+        .buttonStyle(.plain)
+        .focused($watchNowFocused)
+        .scaleEffect(watchNowFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+        .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: watchNowFocused)
         .accessibilityLabel(localization.t("hero.watchNow"))
     }
 
@@ -129,10 +145,22 @@ struct TVHeroItem: View {
             .foregroundStyle(.white)
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
-            .background(DesignTokens.Glass.bgStrong)
-            .clipShape(Capsule())
+            .background(
+                Capsule()
+                    .fill(Color.white.opacity(moreInfoFocused ? 0.18 : 0.08))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(
+                        Color.white.opacity(moreInfoFocused ? 0.75 : 0.32),
+                        lineWidth: moreInfoFocused ? 2.5 : 1.5
+                    )
+            )
         }
-        .buttonStyle(.card)
+        .buttonStyle(.plain)
+        .focused($moreInfoFocused)
+        .scaleEffect(moreInfoFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+        .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: moreInfoFocused)
         .accessibilityLabel(localization.t("common.moreInfo"))
     }
 

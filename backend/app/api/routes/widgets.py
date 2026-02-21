@@ -66,6 +66,75 @@ def _widget_dict(w: Widget) -> dict:
     }
 
 
+@router.get("/active")
+async def get_active_widgets(
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """
+    Get active widgets for the current user.
+
+    Returns user's active personal and subscribed system widgets in the format
+    expected by mobile clients (widgets key instead of items key).
+    """
+    user_id = str(current_user.id) if current_user else None
+
+    if not user_id:
+        return {"widgets": [], "total": 0}
+
+    personal_widgets = (
+        await Widget.find(
+            {"type": WidgetType.PERSONAL},
+            {"user_id": user_id},
+            {"is_active": True},
+            Widget.is_deleted != True,
+        )
+        .sort(Widget.order)
+        .to_list()
+    )
+
+    user_subscriptions = (
+        await UserSystemWidget.find(
+            {"user_id": user_id},
+            {"is_visible": True},
+        )
+        .sort(UserSystemWidget.order)
+        .to_list()
+    )
+
+    subscribed_system_widgets = []
+    if user_subscriptions:
+        widget_ids = [ObjectId(sub.widget_id) for sub in user_subscriptions]
+        system_widgets = await Widget.find(
+            {"_id": {"$in": widget_ids}}, {"is_active": True}
+        ).to_list()
+
+        widget_lookup = {str(w.id): w for w in system_widgets}
+
+        for sub in user_subscriptions:
+            widget = widget_lookup.get(sub.widget_id)
+            if not widget:
+                continue
+            widget_data = _widget_dict(widget)
+            if sub.position:
+                widget_data["position"] = {
+                    "x": sub.position.x,
+                    "y": sub.position.y,
+                    "width": sub.position.width,
+                    "height": sub.position.height,
+                    "z_index": sub.position.z_index,
+                }
+            widget_data["is_muted"] = sub.is_muted
+            widget_data["is_visible"] = sub.is_visible
+            widget_data["is_minimized"] = sub.is_minimized
+            subscribed_system_widgets.append(widget_data)
+
+    all_widgets = subscribed_system_widgets + [
+        _widget_dict(w) for w in personal_widgets
+    ]
+
+    return {"widgets": all_widgets, "total": len(all_widgets)}
+
+
 @router.get("")
 async def get_my_widgets(
     page_path: Optional[str] = None,

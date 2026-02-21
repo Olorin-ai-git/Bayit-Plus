@@ -52,60 +52,62 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refresh() {
-        val currentState = _uiState.value
-        if (currentState is HomeUiState.Success) {
-            _uiState.value = currentState.copy(isRefreshing = true)
-        }
         loadHomeFeed()
     }
 
     private fun loadHomeFeed() {
-        viewModelScope.launch {
-            logger.debug("Loading home feed")
+        val isRefresh = _uiState.value is HomeUiState.Success
 
-            when (val featuredResult = contentRepository.getFeatured()) {
+        // Transition to Success skeleton immediately so the home screen is
+        // visible right away.  Each section fills in as its request completes.
+        if (!isRefresh) {
+            _uiState.value = HomeUiState.Success()
+        } else {
+            updateState { copy(isRefreshing = true) }
+        }
+
+        logger.debug("Loading home feed")
+
+        // Fire featured hero + all section requests concurrently.
+        // The hero/spotlight update when featured arrives; other rows update
+        // as their own requests complete — no section waits on another.
+        launchSection {
+            when (val result = contentRepository.getFeatured()) {
                 is BayitResult.Success -> {
-                    val featured = featuredResult.data as? FeaturedResponse
+                    val featured = result.data as? FeaturedResponse
                     if (featured != null) {
-                        loadAdditionalSections(featured)
+                        logger.info(
+                            "Home feed featured loaded",
+                            mapOf(
+                                "spotlightCount" to featured.spotlight.size.toString(),
+                                "categoriesCount" to featured.categories.size.toString(),
+                            ),
+                        )
+                        updateState {
+                            copy(
+                                hero = featured.hero,
+                                spotlight = featured.spotlight,
+                                categories = filterCategories(featured.categories),
+                                isRefreshing = false,
+                            )
+                        }
                     } else {
-                        handleError("Invalid featured data format")
+                        logger.error("Home feed featured: invalid data format", null, emptyMap())
+                        updateState { copy(isRefreshing = false) }
                     }
                 }
                 is BayitResult.Error -> {
                     logger.error(
-                        "Home feed load failed",
-                        featuredResult.exception,
-                        mapOf("errorMessage" to featuredResult.message.orEmpty()),
+                        "Home feed featured load failed",
+                        result.exception,
+                        mapOf("errorMessage" to result.message.orEmpty()),
                     )
-                    _uiState.value = HomeUiState.Error(
-                        message = featuredResult.message
-                            ?: featuredResult.exception.message.orEmpty(),
-                    )
+                    updateState { copy(isRefreshing = false) }
                 }
                 is BayitResult.Loading -> Unit
             }
         }
-    }
 
-    private fun loadAdditionalSections(featured: FeaturedResponse) {
-        // Show featured content immediately so the user sees the home screen fast
-        _uiState.value = HomeUiState.Success(
-            hero = featured.hero,
-            spotlight = featured.spotlight,
-            categories = filterCategories(featured.categories),
-            isRefreshing = false,
-        )
-
-        logger.info(
-            "Home feed featured loaded",
-            mapOf(
-                "spotlightCount" to featured.spotlight.size.toString(),
-                "categoriesCount" to featured.categories.size.toString(),
-            ),
-        )
-
-        // Load remaining sections in parallel, updating UI as each completes
         launchSection { loadLiveChannels().let { data -> updateState { copy(liveChannels = data) } } }
         launchSection { loadRadioStations().let { data -> updateState { copy(radioStations = data) } } }
         launchSection { loadContinueWatching().let { data -> updateState { copy(continueWatching = data) } } }

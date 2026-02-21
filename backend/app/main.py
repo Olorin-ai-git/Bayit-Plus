@@ -207,6 +207,44 @@ async def lifespan(app: FastAPI):
     # Don't block server startup - these can initialize after server is ready
     import asyncio
 
+    async def _warm_content_caches():
+        """
+        Pre-warm slow external-data caches so first mobile clients never hit cold latency.
+        Targets: trending/topics (LLM ~15s cold), tel-aviv/featured (RSS ~25s cold),
+        jerusalem/featured (RSS ~25s cold).
+        """
+        from app.services.news_analyzer import get_trending_analysis
+        from app.services.tel_aviv_content_service import tel_aviv_content_service
+        from app.services.jerusalem_content_service import jerusalem_content_service
+
+        async def _warm_trending():
+            try:
+                await get_trending_analysis()
+                logger.info("Cache warm-up: trending analysis ready")
+            except Exception as e:
+                logger.warning(f"Cache warm-up: trending analysis failed: {e}")
+
+        async def _warm_tel_aviv():
+            try:
+                await tel_aviv_content_service.get_featured_content()
+                logger.info("Cache warm-up: Tel Aviv featured ready")
+            except Exception as e:
+                logger.warning(f"Cache warm-up: Tel Aviv featured failed: {e}")
+
+        async def _warm_jerusalem():
+            try:
+                await jerusalem_content_service.get_featured_content()
+                logger.info("Cache warm-up: Jerusalem featured ready")
+            except Exception as e:
+                logger.warning(f"Cache warm-up: Jerusalem featured failed: {e}")
+
+        await asyncio.gather(
+            _warm_trending(),
+            _warm_tel_aviv(),
+            _warm_jerusalem(),
+            return_exceptions=True,
+        )
+
     async def _background_seeding():
         """Background task to seed default data after server startup."""
         # Collections are ready immediately after init_beanie() with skip_indexes=True
@@ -229,7 +267,8 @@ async def lifespan(app: FastAPI):
     # Launch background tasks without blocking startup
     asyncio.create_task(_background_seeding())
     asyncio.create_task(ensure_ttl_indexes_background())
-    logger.info("Background tasks scheduled: data seeding, TTL index creation")
+    asyncio.create_task(_warm_content_caches())
+    logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up")
 
     # Upload queue processor is now manual-only (triggered from UI)
     from app.services.upload_service import upload_service  # noqa: F401

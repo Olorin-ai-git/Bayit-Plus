@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,8 +87,10 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             logger.debug("Loading content", mapOf("contentId" to contentId, "contentType" to contentType))
             val isLive = contentResolver.isLiveContent(contentType)
-            val streamResult = contentResolver.resolveStreamUrl(contentId, contentType)
-            val metadata = contentResolver.resolveMetadata(contentId, contentType)
+            val streamDeferred = async { contentResolver.resolveStreamUrl(contentId, contentType) }
+            val metadataDeferred = async { contentResolver.resolveMetadata(contentId, contentType) }
+            val streamResult = streamDeferred.await()
+            val metadata = metadataDeferred.await()
             when (streamResult) {
                 is BayitResult.Success -> {
                     mediaPlayer.loadMedia(MediaPlayback(

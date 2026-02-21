@@ -2,9 +2,13 @@ package tv.bayit.plus.core.common.i18n
 
 import android.content.Context
 import android.content.SharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -27,8 +31,11 @@ class JsonBayitStringProvider(
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
 
-    private var activeLocale: JsonObject = JsonObject(emptyMap())
-    private var fallbackLocale: JsonObject = JsonObject(emptyMap())
+    // Locale maps start empty; background coroutine populates them before
+    // any UI frame is drawn.  string() returns the raw key as fallback until
+    // loading completes — typically < 50 ms on a background thread.
+    @Volatile private var activeLocale: JsonObject = JsonObject(emptyMap())
+    @Volatile private var fallbackLocale: JsonObject = JsonObject(emptyMap())
     private var _currentLanguage: String = prefs.getString(PREF_KEY, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
 
     override val currentLanguage: String get() = _currentLanguage
@@ -38,12 +45,17 @@ class JsonBayitStringProvider(
 
     override val supportedLanguages: List<String> = SUPPORTED_LANGUAGES
 
+    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     init {
-        fallbackLocale = loadLocaleFile(DEFAULT_LANGUAGE)
-        activeLocale = if (_currentLanguage == DEFAULT_LANGUAGE) {
-            fallbackLocale
-        } else {
-            loadLocaleFile(_currentLanguage)
+        // Load locale files on an IO thread so DI graph construction does not
+        // block the main thread.  The main thread can proceed to first frame
+        // while this runs in the background.
+        ioScope.launch {
+            val loaded = loadLocaleFile(DEFAULT_LANGUAGE)
+            fallbackLocale = loaded
+            activeLocale = if (_currentLanguage == DEFAULT_LANGUAGE) loaded
+                           else loadLocaleFile(_currentLanguage)
         }
     }
 

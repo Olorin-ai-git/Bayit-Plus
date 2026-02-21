@@ -21,7 +21,7 @@ interface VODInteractionApi {
         @Path("avatarId") avatarId: String,
     ): AvatarStatus
 
-    @GET("api/v1/avatar-mesh/content/{contentId}/interactive-moments")
+    @GET("api/v1/admin/interactive-moments/content/{contentId}/moments")
     suspend fun getInteractiveMoments(
         @Path("contentId") contentId: String,
     ): List<InteractiveMoment>

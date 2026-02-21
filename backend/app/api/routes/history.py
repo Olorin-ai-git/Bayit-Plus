@@ -161,7 +161,11 @@ async def get_continue_watching(
                         "id": content.podcast_id,
                         "episode_id": str(content.id),
                         "title": content.title,
-                        "thumbnail": getattr(content, "thumbnail", None) or show_cover,
+                        "thumbnail": (
+                            getattr(content, "poster_url", None)
+                            or getattr(content, "thumbnail", None)
+                            or show_cover
+                        ),
                         "duration": getattr(content, "duration", None),
                         "type": item.content_type,
                         "progress": item.progress_percent,
@@ -173,7 +177,11 @@ async def get_continue_watching(
                     {
                         "id": str(content.id),
                         "title": content.title,
-                        "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
+                        "thumbnail": (
+                            getattr(content, "poster_url", None)
+                            or getattr(content, "thumbnail", None)
+                            or getattr(content, "cover", None)
+                        ),
                         "duration": getattr(content, "duration", None),
                         "type": item.content_type,
                         "progress": item.progress_percent,
