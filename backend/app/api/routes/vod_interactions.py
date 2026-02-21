@@ -8,6 +8,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from app.api.routes.content.utils import convert_to_proxy_url
 from app.models.user import User
 from app.models.content import Content
 from app.models.profile import Profile
@@ -85,7 +86,14 @@ async def get_interactive_characters(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Content not found"
             )
-        return content.interactive_characters or []
+        characters = content.interactive_characters or []
+        proxy_base = str(request.base_url).rstrip("/") + "/api/proxy/media"
+        return [
+            char.model_copy(update={
+                "frame_url": convert_to_proxy_url(char.frame_url, base_url=proxy_base)
+            })
+            for char in characters
+        ]
 
     except HTTPException:
         raise

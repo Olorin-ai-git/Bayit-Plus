@@ -195,7 +195,7 @@ async def get_interactive_moments(
                 detail="Content not found"
             )
 
-        return content.interactive_moments
+        return [m for m in content.interactive_moments if m.is_complete]
 
     except HTTPException:
         raise

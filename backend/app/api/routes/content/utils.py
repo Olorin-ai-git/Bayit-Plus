@@ -162,7 +162,7 @@ def generate_signed_url_if_needed(url: str) -> str:
 
 
 def convert_to_proxy_url(
-    url: str, base_url: str = "https://api.bayit.tv/api/v1/proxy/media"
+    url: str, base_url: str = "https://api.bayit.tv/api/proxy/media"
 ) -> str:
     """Convert GCS URL to proxied URL through our backend."""
     if not url or "storage.googleapis.com" not in url:

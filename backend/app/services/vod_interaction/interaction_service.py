@@ -356,8 +356,10 @@ class VODInteractionService:
         moments: List[InteractiveMoment],
         timestamp: float
     ) -> Optional[InteractiveMoment]:
-        """Find interactive moment at timestamp"""
+        """Find interactive moment at timestamp, skipping incomplete entries."""
         for moment in moments:
+            if not moment.is_complete:
+                continue
             if moment.timestamp <= timestamp <= moment.timestamp + moment.duration:
                 return moment
         return None

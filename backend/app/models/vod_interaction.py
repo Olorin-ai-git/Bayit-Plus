@@ -50,13 +50,22 @@ class CharacterProfile(BaseModel):
 
 class InteractiveMoment(BaseModel):
     """Marks an interactive moment in content metadata"""
-    timestamp: float = Field(..., description="Seconds into video")
+    # These three fields default to sentinel values so documents written before
+    # the required constraint was enforced still deserialise without errors.
+    # Moments with timestamp == 0.0 or empty scene_context are considered
+    # incomplete and must be filtered out by callers before presenting to users.
+    timestamp: float = Field(default=0.0, description="Seconds into video")
     duration: float = Field(default=30.0, description="Interaction window duration")
-    scene_context: str = Field(..., description="Scene subtitles/description for AI")
+    scene_context: str = Field(default="", description="Scene subtitles/description for AI")
     character_name: str = Field(..., description="Character to interact with")
     character_frame_url: Optional[str] = Field(None, description="GCS URL of character still")
-    interaction_prompt: str = Field(..., description="Display text for user")
+    interaction_prompt: str = Field(default="", description="Display text for user")
     voice_id: str = Field(..., description="ElevenLabs voice ID for character")
+
+    @property
+    def is_complete(self) -> bool:
+        """Returns True only if the moment has all fields needed to display."""
+        return self.timestamp > 0.0 and bool(self.scene_context) and bool(self.interaction_prompt)
     dialogue_options: List[str] = Field(
         default_factory=list,
         description="Predefined dialogue choices shown to user",
@@ -103,6 +112,13 @@ class DialogueExchange(BaseModel):
     audio_url: Optional[str] = Field(None, description="TTS audio URL (character only)")
     animated_video_url: Optional[str] = Field(None, description="Creatify video URL")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    # Pause & Ask: user avatar animation
+    user_animated_video_url: Optional[str] = Field(
+        None, description="Lip-sync video of user avatar speaking",
+    )
+    polished_text: Optional[str] = Field(
+        None, description="Grammar-polished version of user message",
+    )
     # Phase 3: Multi-Character (WS3)
     character_name: Optional[str] = Field(
         None, description="Character name for multi-character exchanges",
