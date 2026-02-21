@@ -7,8 +7,10 @@ import re
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
+from google.api_core import exceptions as google_exceptions
 from google.cloud import storage
 
+from app.core.storage import GCSStorageProvider, storage_service
 from app.models.content import Content
 from app.services.ffmpeg.realtime_transcode import (
     check_transcode_requirements,
@@ -62,17 +64,33 @@ async def proxy_media(encoded_url: str):
 
         bucket_name, blob_name = parts
 
-        # Get file from GCS
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
+        # Reuse the already-authenticated GCS client from storage_service so
+        # credentials (ADC / service-account key) are shared across the app.
+        provider = storage_service.provider
+        gcs_client = provider.client if isinstance(provider, GCSStorageProvider) else storage.Client()
+
+        bucket = gcs_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
 
-        if not blob.exists():
+        # Load metadata (content_type, size) — raises NotFound / Forbidden on error.
+        try:
+            blob.reload()
+        except google_exceptions.NotFound:
+            logger.warning(
+                "GCS blob not found in media proxy",
+                extra={"bucket": bucket_name, "blob": blob_name},
+            )
             raise HTTPException(status_code=404, detail="File not found")
+        except google_exceptions.Forbidden:
+            logger.error(
+                "GCS access denied in media proxy",
+                extra={"bucket": bucket_name, "blob": blob_name},
+            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
-        # Stream the file
+        content_type = blob.content_type or "application/octet-stream"
+
         def generate():
-            # Download in chunks to avoid memory issues
             chunk_size = 1024 * 1024  # 1MB chunks
             with blob.open("rb") as f:
                 while True:
@@ -81,20 +99,23 @@ async def proxy_media(encoded_url: str):
                         break
                     yield chunk
 
-        # Determine content type
-        content_type = blob.content_type or "video/mp4"
-
         return StreamingResponse(
             generate(),
             media_type=content_type,
             headers={
                 "Accept-Ranges": "bytes",
                 "Content-Length": str(blob.size),
+                "Cache-Control": "public, max-age=3600",
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error proxying media: {e}")
+        logger.error(
+            "GCS media proxy error",
+            extra={"error": str(e)},
+        )
         raise HTTPException(status_code=500, detail="Failed to proxy media file")
 
 
@@ -244,11 +265,14 @@ async def _stream_direct(url: str):
         raise HTTPException(status_code=400, detail="Invalid GCS URL format")
 
     bucket_name, blob_name = parts
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
+    provider = storage_service.provider
+    gcs_client = provider.client if isinstance(provider, GCSStorageProvider) else storage.Client()
+    bucket = gcs_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
 
-    if not blob.exists():
+    try:
+        blob.reload()
+    except google_exceptions.NotFound:
         raise HTTPException(status_code=404, detail="File not found")
 
     chunk_size = 1024 * 1024  # 1MB chunks
