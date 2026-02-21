@@ -18,6 +18,9 @@ import kotlin.time.Duration.Companion.seconds
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    private const val I18N_PREFS_NAME = "bayit_i18n"
+
+
     @Provides
     @Singleton
     fun provideNetworkConfiguration(): NetworkConfiguration = NetworkConfiguration(
@@ -42,6 +45,6 @@ object AppModule {
     ): BayitStringProvider = JsonBayitStringProvider(
         context = context,
         logger = logger,
-        prefs = context.getSharedPreferences("bayit_i18n", Context.MODE_PRIVATE),
+        prefs = context.getSharedPreferences(I18N_PREFS_NAME, Context.MODE_PRIVATE),
     )
 }

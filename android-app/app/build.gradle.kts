@@ -6,17 +6,17 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
-    // alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
     namespace = "tv.bayit.plus"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "tv.bayit.plus"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
 
@@ -46,6 +46,17 @@ android {
 
     }
 
+    signingConfigs {
+        if (project.hasProperty("bayit.keystore.path")) {
+            create("release") {
+                storeFile = file(project.property("bayit.keystore.path").toString())
+                storePassword = project.property("bayit.keystore.password").toString()
+                keyAlias = project.property("bayit.key.alias").toString()
+                keyPassword = project.property("bayit.key.password").toString()
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
@@ -58,7 +69,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (signingConfigs.names.contains("release")) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
     }
 

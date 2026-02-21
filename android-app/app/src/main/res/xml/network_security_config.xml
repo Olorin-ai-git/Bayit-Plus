@@ -7,9 +7,15 @@
     </base-config>
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">bayit.tv</domain>
-        <pin-set expiration="2027-01-01">
-            <pin digest="SHA-256">PLACEHOLDER_PIN_HASH</pin>
-        </pin-set>
+        <!--
+          Certificate pinning: add the real SHA-256 SPKI hash for api.bayit.tv
+          and at least one backup pin before enabling. Derive with:
+            openssl s_client -connect api.bayit.tv:443 \
+              | openssl x509 -pubkey -noout \
+              | openssl pkey -pubreq -outform der \
+              | openssl dgst -sha256 -binary | base64
+          Store the value in Google Cloud Secret Manager and inject via CI.
+        -->
     </domain-config>
     <debug-overrides>
         <trust-anchors>

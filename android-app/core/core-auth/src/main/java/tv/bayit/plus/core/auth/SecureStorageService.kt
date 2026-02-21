@@ -22,7 +22,7 @@ import javax.inject.Singleton
 class SecureStorageService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: BayitLogger,
-) {
+) : AuthTokenStorage {
     private val masterKey: MasterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -162,16 +162,16 @@ class SecureStorageService @Inject constructor(
         return token
     }
 
-    fun saveAccessToken(token: String) {
+    fun saveAccessToken(token: String, expiresAt: Long) {
         storagePrefs.edit().putString(ACCESS_TOKEN_KEY, token)
-            .putLong(ACCESS_TOKEN_EXPIRY_KEY, System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_MS).apply()
+            .putLong(ACCESS_TOKEN_EXPIRY_KEY, expiresAt).apply()
     }
 
     fun getAccessToken(): String? = getStoredToken(ACCESS_TOKEN_KEY, ACCESS_TOKEN_EXPIRY_KEY, "Access token")
 
-    fun saveRefreshToken(token: String) {
+    fun saveRefreshToken(token: String, expiresAt: Long) {
         storagePrefs.edit().putString(REFRESH_TOKEN_KEY, token)
-            .putLong(REFRESH_TOKEN_EXPIRY_KEY, System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY_MS).apply()
+            .putLong(REFRESH_TOKEN_EXPIRY_KEY, expiresAt).apply()
     }
 
     fun getRefreshToken(): String? = getStoredToken(REFRESH_TOKEN_KEY, REFRESH_TOKEN_EXPIRY_KEY, "Refresh token")
@@ -195,7 +195,5 @@ class SecureStorageService @Inject constructor(
         private const val ACCESS_TOKEN_EXPIRY_KEY = "bayit_access_token_expiry"
         private const val REFRESH_TOKEN_KEY = "bayit_refresh_token"
         private const val REFRESH_TOKEN_EXPIRY_KEY = "bayit_refresh_token_expiry"
-        private const val ACCESS_TOKEN_VALIDITY_MS = 30L * 24 * 60 * 60 * 1000L
-        private const val REFRESH_TOKEN_VALIDITY_MS = 7L * 24 * 60 * 60 * 1000L
     }
 }

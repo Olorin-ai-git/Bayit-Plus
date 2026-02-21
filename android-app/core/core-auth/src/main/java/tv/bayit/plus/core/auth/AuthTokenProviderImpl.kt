@@ -14,12 +14,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class AuthTokenProviderImpl @Inject constructor(
-    private val secureStorage: SecureStorageService,
+    private val secureStorage: AuthTokenStorage,
     private val olorinAuthService: Lazy<OlorinAuthService>,
     private val logger: BayitLogger,
 ) : AuthTokenProvider {
 
-    override suspend fun getToken(): String? = secureStorage.getAccessToken()
+    override fun getToken(): String? = secureStorage.getAccessToken()
 
     override suspend fun refreshToken(): String? {
         val refreshToken = secureStorage.getRefreshToken() ?: run {

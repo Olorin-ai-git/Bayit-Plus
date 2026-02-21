@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class OlorinAuthService @Inject constructor(
     private val apiClient: BayitApiClient,
-    private val secureStorage: SecureStorageService,
+    private val secureStorage: AuthTokenStorage,
     private val logger: BayitLogger,
 ) {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
@@ -77,8 +77,13 @@ class OlorinAuthService @Inject constructor(
     }
 
     fun storeAuthTokens(response: AuthResponse) {
-        secureStorage.saveAccessToken(response.accessToken)
-        response.refreshToken?.let { secureStorage.saveRefreshToken(it) }
+        val now = System.currentTimeMillis()
+        val accessExpiresAt = now + ((response.expiresIn ?: DEFAULT_ACCESS_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
+        secureStorage.saveAccessToken(response.accessToken, accessExpiresAt)
+        response.refreshToken?.let { token ->
+            val refreshExpiresAt = now + ((response.refreshExpiresIn ?: DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
+            secureStorage.saveRefreshToken(token, refreshExpiresAt)
+        }
         _authState.value = AuthState.Authenticated
     }
 
@@ -111,8 +116,11 @@ class OlorinAuthService @Inject constructor(
             val response = apiClient.safeApiCall {
                 authApi.refresh(TokenRefreshRequest(refreshToken = refreshToken))
             }
-            secureStorage.saveAccessToken(response.accessToken)
-            secureStorage.saveRefreshToken(response.refreshToken)
+            val now = System.currentTimeMillis()
+            val accessExpiresAt = now + (response.expiresIn * MS_PER_SECOND)
+            val refreshExpiresAt = now + (DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS * MS_PER_SECOND)
+            secureStorage.saveAccessToken(response.accessToken, accessExpiresAt)
+            secureStorage.saveRefreshToken(response.refreshToken, refreshExpiresAt)
             _authState.value = AuthState.Authenticated
             logger.info("Access token refreshed successfully")
             BayitResult.success(response.accessToken)
@@ -120,6 +128,12 @@ class OlorinAuthService @Inject constructor(
             logger.error("Token refresh failed", error = e)
             BayitResult.failure(BayitError.Authentication("Token refresh failed", e))
         }
+    }
+
+    companion object {
+        private const val MS_PER_SECOND = 1_000L
+        private const val DEFAULT_ACCESS_TOKEN_EXPIRY_SECONDS = 3_600L  // 1 hour fallback
+        private const val DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS = 604_800L // 7 days
     }
 
     private interface OlorinAuthApi {
@@ -135,7 +149,7 @@ class OlorinAuthService @Inject constructor(
         @POST("api/v1/auth/password-reset/request")
         suspend fun requestPasswordReset(@Body request: PasswordResetRequest)
 
-        @POST("api/v1/auth/token/refresh")
+        @POST("api/v1/auth/v2/refresh")
         suspend fun refresh(@Body request: TokenRefreshRequest): TokenRefreshResponse
     }
 
@@ -172,6 +186,8 @@ class OlorinAuthService @Inject constructor(
         @SerialName("refresh_token") val refreshToken: String?,
         val user: UserData,
         @SerialName("requires_payment") val requiresPayment: Boolean = false,
+        @SerialName("expires_in") val expiresIn: Int? = null,
+        @SerialName("refresh_expires_in") val refreshExpiresIn: Int? = null,
     )
 
     @Serializable

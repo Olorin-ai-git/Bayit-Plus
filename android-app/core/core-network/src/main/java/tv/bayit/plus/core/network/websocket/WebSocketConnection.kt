@@ -5,13 +5,14 @@ import kotlinx.coroutines.flow.SharedFlow
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import timber.log.Timber
+import tv.bayit.plus.core.common.logging.BayitLogger
 import java.util.concurrent.atomic.AtomicInteger
 
 class WebSocketConnection(
     val id: String,
     val url: String,
     val channelType: ChannelType,
+    private val logger: BayitLogger,
 ) {
     var webSocket: WebSocket? = null
     val reconnectAttempt = AtomicInteger(0)
@@ -33,10 +34,10 @@ class WebSocketConnection(
                 val authMsg = """{"type":"authenticate","token":"$token"}"""
                 webSocket.send(authMsg)
                 pendingAuthToken = null
-                Timber.d("WebSocket auth message sent: %s", id)
+                logger.debug("WebSocket auth message sent", mapOf("connectionId" to id))
             }
             _state.tryEmit(ConnectionState.CONNECTED)
-            Timber.d("WebSocket open: %s", id)
+            logger.debug("WebSocket open", mapOf("connectionId" to id))
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
@@ -50,12 +51,15 @@ class WebSocketConnection(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             _state.tryEmit(ConnectionState.CLOSED)
-            Timber.d("WebSocket closed: %s (code=%d)", id, code)
+            logger.debug(
+                "WebSocket closed",
+                mapOf("connectionId" to id, "code" to code.toString()),
+            )
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             _state.tryEmit(ConnectionState.FAILED)
-            Timber.e(t, "WebSocket failure: %s", id)
+            logger.error("WebSocket failure", t, mapOf("connectionId" to id))
         }
     }
 

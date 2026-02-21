@@ -5,17 +5,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
-import timber.log.Timber
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.AuthTokenProvider
-import tv.bayit.plus.core.network.NetworkConfig
+import tv.bayit.plus.core.network.NetworkConfiguration
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -27,7 +22,8 @@ import kotlin.math.pow
 class WebSocketManager @Inject constructor(
     private val okHttpClient: OkHttpClient,
     private val authTokenProvider: AuthTokenProvider,
-    private val config: NetworkConfig,
+    private val config: NetworkConfiguration,
+    private val logger: BayitLogger,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val connections = ConcurrentHashMap<String, WebSocketConnection>()
@@ -44,10 +40,8 @@ class WebSocketManager @Inject constructor(
 
         val connectionId = UUID.randomUUID().toString()
         val token = authTokenProvider.getToken()
-        val connection = WebSocketConnection(connectionId, url, channelType)
+        val connection = WebSocketConnection(connectionId, url, channelType, logger)
 
-        // Set auth token for first-message authentication (backend expects
-        // {"type":"authenticate","token":"..."} as the first WebSocket message)
         if (token != null) {
             connection.pendingAuthToken = token
         }
@@ -62,11 +56,13 @@ class WebSocketManager @Inject constructor(
         connections[connectionId] = connection
         startPingIfNeeded()
 
-        Timber.i(
-            "WebSocket connected: %s (type=%s, active=%d)",
-            connectionId,
-            channelType.name,
-            connections.size,
+        logger.info(
+            "WebSocket connected",
+            mapOf(
+                "connectionId" to connectionId,
+                "type" to channelType.name,
+                "active" to connections.size.toString(),
+            ),
         )
         return connection
     }
@@ -74,10 +70,9 @@ class WebSocketManager @Inject constructor(
     fun disconnect(connectionId: String) {
         val connection = connections.remove(connectionId)
         connection?.close()
-        Timber.i(
-            "WebSocket disconnected: %s (remaining=%d)",
-            connectionId,
-            connections.size,
+        logger.info(
+            "WebSocket disconnected",
+            mapOf("connectionId" to connectionId, "remaining" to connections.size.toString()),
         )
         stopPingIfIdle()
     }
@@ -86,17 +81,16 @@ class WebSocketManager @Inject constructor(
         connections.values.forEach { it.close() }
         connections.clear()
         stopPingIfIdle()
-        Timber.i("All WebSocket connections disconnected")
+        logger.info("All WebSocket connections disconnected")
     }
 
     private fun startPingIfNeeded() {
         if (pingJob != null || connections.isEmpty()) return
+        val pingIntervalMs = config.webSocketPingIntervalDuration.inWholeMilliseconds
         pingJob = scope.launch {
             while (connections.isNotEmpty()) {
-                delay(config.webSocketPingInterval)
-                connections.values.forEach { conn ->
-                    conn.sendPing()
-                }
+                delay(pingIntervalMs)
+                connections.values.forEach { it.sendPing() }
             }
         }
     }
@@ -112,26 +106,28 @@ class WebSocketManager @Inject constructor(
         val connection = connections[connectionId] ?: return
         scope.launch {
             val attempt = connection.reconnectAttempt.incrementAndGet()
-            val delay = min(
-                config.retryBaseDelay * 2.0.pow(attempt - 1).toLong(),
-                30_000L,
+            val baseDelayMs = config.webSocketReconnectBaseDelay.inWholeMilliseconds
+            val delayMs = min(baseDelayMs * 2.0.pow(attempt - 1).toLong(), MAX_RECONNECT_DELAY_MS)
+            logger.debug(
+                "Reconnecting WebSocket",
+                mapOf(
+                    "connectionId" to connectionId,
+                    "attempt" to attempt.toString(),
+                    "delayMs" to delayMs.toString(),
+                ),
             )
-            Timber.d(
-                "Reconnecting %s (attempt %d, delay %dms)",
-                connectionId,
-                attempt,
-                delay,
-            )
-            delay(delay)
+            delay(delayMs)
             try {
                 disconnect(connectionId)
-                val freshToken = authTokenProvider.getToken()
-                Timber.d("Fetched fresh token for reconnection: %s", connectionId)
                 connect(connection.url, connection.channelType)
             } catch (e: Exception) {
-                Timber.e(e, "Reconnection failed for %s", connectionId)
+                logger.error("WebSocket reconnection failed", e, mapOf("connectionId" to connectionId))
             }
         }
+    }
+
+    companion object {
+        private const val MAX_RECONNECT_DELAY_MS = 30_000L
     }
 }
 

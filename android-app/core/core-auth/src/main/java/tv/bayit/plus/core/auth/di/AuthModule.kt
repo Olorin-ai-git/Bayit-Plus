@@ -5,6 +5,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import tv.bayit.plus.core.auth.AuthTokenProviderImpl
+import tv.bayit.plus.core.auth.AuthTokenStorage
+import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.network.AuthTokenProvider
 
 @Module
@@ -15,4 +17,9 @@ abstract class AuthBindingsModule {
     abstract fun bindAuthTokenProvider(
         impl: AuthTokenProviderImpl,
     ): AuthTokenProvider
+
+    @Binds
+    abstract fun bindAuthTokenStorage(
+        impl: SecureStorageService,
+    ): AuthTokenStorage
 }

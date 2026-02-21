@@ -21,6 +21,7 @@ data class ProfileResponse(
     @SerialName("has_password") val hasPassword: Boolean? = null,
     @SerialName("auth_provider") val authProvider: String? = null,
     @SerialName("email_verified") val emailVerified: Boolean? = null,
+    val role: String? = null,
 )
 
 /** User preferences nested within ProfileResponse. */
