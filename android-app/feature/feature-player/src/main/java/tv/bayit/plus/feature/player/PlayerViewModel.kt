@@ -21,6 +21,8 @@ import tv.bayit.plus.core.media.BayitMediaPlayer
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.model.MediaPlayback
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
+import tv.bayit.plus.feature.player.dialogue.ContentCharacter
+import tv.bayit.plus.feature.player.dialogue.VODInteractionApi
 import tv.bayit.plus.feature.player.live.LiveAICoordinator
 import tv.bayit.plus.core.media.SleepTimerManager
 import tv.bayit.plus.feature.player.trivia.VodTriviaManager
@@ -38,6 +40,7 @@ class PlayerViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val timeProvider: TimeProvider,
     private val logger: BayitLogger,
+    private val vodInteractionApi: VODInteractionApi,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
@@ -104,6 +107,7 @@ class PlayerViewModel @Inject constructor(
                     if (!isLive) {
                         loadAvailableSubtitles(contentId)
                         vodTriviaManager.loadFacts(contentId, _extendedState.value.vodTriviaLanguage, viewModelScope)
+                        loadInteractiveMoments(contentId)
                     }
                     logger.info("Playback started", mapOf("contentId" to contentId))
                     startPeriodicProgressSave()
@@ -395,6 +399,50 @@ class PlayerViewModel @Inject constructor(
 
     fun cancelSleepTimer() = sleepTimerManager.cancel()
 
+    private fun loadInteractiveMoments(contentId: String) {
+        viewModelScope.launch {
+            val moments = runCatching { vodInteractionApi.getInteractiveMoments(contentId) }
+                .getOrElse { emptyList() }
+            _extendedState.value = _extendedState.value.copy(interactiveMoments = moments)
+            logger.debug("Loaded interactive moments", mapOf("contentId" to contentId, "count" to moments.size.toString()))
+        }
+    }
+
+    fun navigateToPreviousInteraction() {
+        val posSeconds = mediaPlayer.getCurrentPosition() / 1000.0
+        val moments = _extendedState.value.interactiveMoments.sortedBy { it.timestamp }
+        val target = moments.lastOrNull { it.timestamp < posSeconds - INTERACTION_REWIND_THRESHOLD_S }?.timestamp ?: return
+        mediaPlayer.seekTo(((target - INTERACTION_SEEK_OFFSET_S).coerceAtLeast(0.0) * 1000).toLong())
+        logger.debug("Navigated to previous interaction", mapOf("targetTimestamp" to target.toString()))
+    }
+
+    fun navigateToNextInteraction() {
+        val posSeconds = mediaPlayer.getCurrentPosition() / 1000.0
+        val moments = _extendedState.value.interactiveMoments.sortedBy { it.timestamp }
+        val target = moments.firstOrNull { it.timestamp > posSeconds }?.timestamp ?: return
+        mediaPlayer.seekTo(((target - INTERACTION_SEEK_OFFSET_S).coerceAtLeast(0.0) * 1000).toLong())
+        logger.debug("Navigated to next interaction", mapOf("targetTimestamp" to target.toString()))
+    }
+
+    fun startVodInteraction() {
+        val contentId = currentContentId ?: return
+        viewModelScope.launch {
+            val characters = runCatching { vodInteractionApi.getInteractiveCharacters(contentId) }
+                .getOrElse { emptyList<ContentCharacter>() }
+            mediaPlayer.pause()
+            _extendedState.value = _extendedState.value.copy(
+                vodInteractionCharacters = characters,
+                showVodInteractionSheet = true,
+            )
+            logger.debug("Started VOD interaction", mapOf("contentId" to contentId, "characters" to characters.size.toString()))
+        }
+    }
+
+    fun dismissVodInteractionSheet() {
+        _extendedState.value = _extendedState.value.copy(showVodInteractionSheet = false)
+        mediaPlayer.play()
+    }
+
     fun hideOmriOverlay() {
         _extendedState.value = _extendedState.value.copy(showOmriOverlay = false)
     }
@@ -403,6 +451,13 @@ class PlayerViewModel @Inject constructor(
         val current = _extendedState.value.isFullscreen
         _extendedState.value = _extendedState.value.copy(isFullscreen = !current)
         logger.debug("Toggled fullscreen", mapOf("isFullscreen" to (!current).toString()))
+    }
+
+    fun setFullscreen(fullscreen: Boolean) {
+        if (_extendedState.value.isFullscreen != fullscreen) {
+            _extendedState.value = _extendedState.value.copy(isFullscreen = fullscreen)
+            logger.debug("Set fullscreen", mapOf("isFullscreen" to fullscreen.toString()))
+        }
     }
 
     private suspend fun checkSpecialUser() {
@@ -561,5 +616,7 @@ class PlayerViewModel @Inject constructor(
         private const val PROGRESS_SAVE_INTERVAL_MS = 15_000L
         private val SPECIAL_USER_EMAILS = setOf("oklainert@gmail.com", "admin@olorin.ai")
         private const val SKIP_INTERVAL_MS = 30_000L
+        private const val INTERACTION_REWIND_THRESHOLD_S = 3.0
+        private const val INTERACTION_SEEK_OFFSET_S = 5.0
     }
 }

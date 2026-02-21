@@ -63,6 +63,10 @@ internal fun ReadyContent(
     onSpeedChange: (Float) -> Unit,
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit,
+    onInteract: (() -> Unit)? = null,
+    onPreviousInteraction: (() -> Unit)? = null,
+    onNextInteraction: (() -> Unit)? = null,
+    hasInteractiveMoments: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -112,6 +116,10 @@ internal fun ReadyContent(
                 onAIFeaturesClick = if (state.isLiveContent) onToggleAIPanel else null,
                 isVodTriviaEnabled = extendedState.isVodTriviaEnabled,
                 onVodTriviaToggle = if (!state.isLiveContent) onToggleVodTrivia else null,
+                onInteract = if (!state.isLiveContent) onInteract else null,
+                onPreviousInteraction = if (!state.isLiveContent) onPreviousInteraction else null,
+                onNextInteraction = if (!state.isLiveContent) onNextInteraction else null,
+                hasInteractiveMoments = !state.isLiveContent && hasInteractiveMoments,
                 subtitleOverlay = {
                     if (!state.isLiveContent && extendedState.isSubtitlesEnabled) {
                         if (extendedState.isSplitSubtitleMode) {

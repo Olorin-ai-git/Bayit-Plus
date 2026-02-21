@@ -12,7 +12,6 @@ import SwiftUI
 /// playback with PiP, AirPlay, and system controls. Overlays glass-styled
 /// transport controls and metadata on top.
 struct PlayerView: View {
-
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) var repositories
     @Environment(AuthManager.self) var authManager
@@ -44,7 +43,7 @@ struct PlayerView: View {
     @State private var showRecordingError = false
     @State private var recordingErrorMessage: String?
 
-    // Dubbing controls state
+    /// Dubbing controls state
     @State var showDubbingControls = false
 
     // VOD interaction state
@@ -60,11 +59,15 @@ struct PlayerView: View {
     @State var showCharacterSheet = false
     @State var showDialogueOverlay = false
 
+    // Pause & Ask state
+    @State var showPauseAskOverlay = false
+    @State var hasVoiceClone = false
+
     // Shared interaction state (Phase 3 WS4)
     @State var sharedVM: SharedInteractionViewModel?
     @State var showSharedInteraction = false
 
-    // Catch-up ViewModel (shared across overlays)
+    /// Catch-up ViewModel (shared across overlays)
     @State var catchUpVM: CatchUpViewModel?
 
     // Live feature overlays
@@ -79,6 +82,9 @@ struct PlayerView: View {
     // AI panel state
     @State var showAIPanel = false
     @State var selectedAILanguage: String = "en"
+
+    private let interactionRewindThreshold: TimeInterval = 3
+    private let interactionSeekOffset: TimeInterval = 5
     @State var selectedSecondaryLanguage: String?
     @State var showAILanguagePicker = false
 
@@ -90,7 +96,7 @@ struct PlayerView: View {
     @State var primarySubtitleCues: [SubtitleCue] = []
     @State var secondarySubtitleCues: [SubtitleCue] = []
 
-    // PiP state
+    /// PiP state
     @State private var isPiPActive = false
 
     // Quality & playback rate
@@ -107,7 +113,8 @@ struct PlayerView: View {
          liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository,
          podcastRepository: any PodcastRepository, audiobookRepository: any AudiobookRepository,
          widgetSync: WidgetDataSyncService,
-         downloadManager: DownloadManager? = nil) {
+         downloadManager: DownloadManager? = nil)
+    {
         self.contentId = contentId
         self.contentType = contentType
         self.resume = resume
@@ -247,6 +254,9 @@ struct PlayerView: View {
 
             // Free-form dialogue overlay
             dialogueOverlay
+
+            // Pause & Ask overlay
+            pauseAskOverlay
 
             // Shared interaction overlay (Phase 3 WS4)
             sharedInteractionOverlay
@@ -641,24 +651,48 @@ struct PlayerView: View {
                 }
             }
 
-            // Free-form dialogue button (VOD only, when interactions enabled)
+            // Previous Interaction button (VOD only, when interactions enabled)
+            if !mediaContentType.isLive, interactionVM != nil, let action = previousInteractionAction {
+                Button { action() } label: {
+                    Image(systemName: "backward.end.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel(localization.t("player.interaction.previous"))
+            }
+
+            // Interact button (VOD only, when interactions enabled)
             if !mediaContentType.isLive, interactionVM != nil {
                 Button {
-                    Task { await openCharacterSheet() }
+                    if hasVoiceClone {
+                        Task { await startPauseAskInteraction() }
+                    } else {
+                        Task { await openCharacterSheet() }
+                    }
                 } label: {
-                    Image(systemName: showDialogueOverlay
+                    Image(systemName: (showDialogueOverlay || showPauseAskOverlay)
                         ? "bubble.left.and.bubble.right.fill"
                         : "bubble.left.and.bubble.right")
                         .font(.system(size: 18))
                         .foregroundStyle(
-                            showDialogueOverlay
+                            (showDialogueOverlay || showPauseAskOverlay)
                                 ? DesignTokens.Primary.p400 : .white
                         )
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel(
-                    localization.t("player.dialogue.talkToCharacter")
-                )
+                .accessibilityLabel(localization.t("player.pauseAsk.title"))
+            }
+
+            // Next Interaction button (VOD only, when interactions enabled)
+            if !mediaContentType.isLive, interactionVM != nil, let action = nextInteractionAction {
+                Button { action() } label: {
+                    Image(systemName: "forward.end.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel(localization.t("player.interaction.next"))
             }
 
             liveFeatureButtons
@@ -849,7 +883,8 @@ struct PlayerView: View {
 
         // Initialize catch-up for live content when user is beta
         if mediaContentType.isLive,
-           authManager.user?.isBetaUser == true {
+           authManager.user?.isBetaUser == true
+        {
             let vm = CatchUpViewModel(repository: repositories.liveTV)
             catchUpVM = vm
             Task {
@@ -897,6 +932,30 @@ struct PlayerView: View {
         }
     }
 
+    private var sortedMoments: [InteractiveMoment] {
+        interactionVM?.moments.sorted { $0.timestamp < $1.timestamp } ?? []
+    }
+
+    private var previousInteractionAction: (() -> Void)? {
+        guard let moment = sortedMoments.last(where: {
+            $0.timestamp < viewModel.player.currentTime - interactionRewindThreshold
+        }) else { return nil }
+        return {
+            let t = max(0, moment.timestamp - interactionSeekOffset)
+            Task { await viewModel.player.seek(to: t) }
+        }
+    }
+
+    private var nextInteractionAction: (() -> Void)? {
+        guard let moment = sortedMoments.first(where: {
+            $0.timestamp > viewModel.player.currentTime
+        }) else { return nil }
+        return {
+            let t = max(0, moment.timestamp - interactionSeekOffset)
+            Task { await viewModel.player.seek(to: t) }
+        }
+    }
+
     private func toggleControls() {
         withAnimation(.easeInOut(duration: 0.25)) {
             showControls.toggle()
@@ -941,7 +1000,8 @@ struct PlayerView: View {
     private func startRecording() async {
         // Premium check (allow premium subscribers and admin users)
         guard let user = authManager.user,
-              user.subscriptionTier.isPremium || user.role.isAdmin else {
+              user.subscriptionTier.isPremium || user.role.isAdmin
+        else {
             recordingErrorMessage = localization.t("player.premiumRequired")
             showRecordingError = true
             return
@@ -1041,7 +1101,7 @@ struct PlayerView: View {
     // MARK: - Orientation
 
     private func requestLandscapeOrientation() {
-        guard viewModel.contentType != .live && viewModel.contentType != .liveTV else { return }
+        guard viewModel.contentType != .live, viewModel.contentType != .liveTV else { return }
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
             scene.requestGeometryUpdate(preferences) { _ in }

@@ -2,6 +2,7 @@ package tv.bayit.plus.feature.player
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
@@ -35,6 +37,7 @@ import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.player.dialogue.CharacterSelectionSheet
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
 import tv.bayit.plus.designsystem.component.SleepTimerBanner
@@ -96,6 +99,13 @@ fun PlayerRoute(
             controller?.show(WindowInsetsCompat.Type.systemBars())
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
+    }
+
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    DisposableEffect(isLandscape) {
+        viewModel.setFullscreen(isLandscape)
+        onDispose { }
     }
 
     BackHandler {
@@ -166,6 +176,10 @@ fun PlayerRoute(
         onRestart = viewModel::restartContent,
         onVolumeChange = viewModel::setVolume,
         onSpeedChange = viewModel::setPlaybackSpeed,
+        onInteract = viewModel::startVodInteraction,
+        onPreviousInteraction = viewModel::navigateToPreviousInteraction,
+        onNextInteraction = viewModel::navigateToNextInteraction,
+        onDismissVodInteractionSheet = viewModel::dismissVodInteractionSheet,
         showSleepTimerPicker = showSleepTimerPicker,
         onShowSleepTimerPicker = { showSleepTimerPicker = true },
         onHideSleepTimerPicker = { showSleepTimerPicker = false },
@@ -232,6 +246,10 @@ private fun PlayerScreen(
     onRestart: () -> Unit,
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
+    onInteract: (() -> Unit)? = null,
+    onPreviousInteraction: (() -> Unit)? = null,
+    onNextInteraction: (() -> Unit)? = null,
+    onDismissVodInteractionSheet: (() -> Unit)? = null,
     showSleepTimerPicker: Boolean,
     onShowSleepTimerPicker: () -> Unit,
     onHideSleepTimerPicker: () -> Unit,
@@ -282,7 +300,19 @@ private fun PlayerScreen(
                     onSpeedChange = onSpeedChange,
                     onBack = onBack,
                     onToggleFullscreen = onToggleFullscreen,
+                    onInteract = onInteract,
+                    onPreviousInteraction = onPreviousInteraction,
+                    onNextInteraction = onNextInteraction,
+                    hasInteractiveMoments = extendedState.interactiveMoments.isNotEmpty(),
                 )
+
+                if (extendedState.showVodInteractionSheet) {
+                    CharacterSelectionSheet(
+                        characters = extendedState.vodInteractionCharacters,
+                        onCharacterSelected = { _ -> onDismissVodInteractionSheet?.invoke() },
+                        onDismiss = { onDismissVodInteractionSheet?.invoke() },
+                    )
+                }
 
                 if (!uiState.isLiveContent) {
                     SleepTimerBanner(

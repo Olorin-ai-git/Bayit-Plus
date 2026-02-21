@@ -14,6 +14,11 @@ import retrofit2.http.Path
  */
 interface VODInteractionApi {
 
+    @GET("api/v1/avatar-mesh/content/{contentId}/interactive-moments")
+    suspend fun getInteractiveMoments(
+        @Path("contentId") contentId: String,
+    ): List<InteractiveMoment>
+
     @GET("api/v1/vod-interactions/characters/{contentId}")
     suspend fun getInteractiveCharacters(
         @Path("contentId") contentId: String,

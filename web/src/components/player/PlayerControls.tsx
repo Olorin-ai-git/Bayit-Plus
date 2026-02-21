@@ -3,51 +3,62 @@
  * Main control bar with play/pause, skip, volume, and action buttons
  */
 
-import { View } from 'react-native'
-import { isTV } from '@bayit/shared/utils/platform'
-import { useDirection } from '@/hooks/useDirection'
-import { PlayerState, PlayerControls as PlayerControlsType, Chapter } from './types'
-import { LeftControls, RightControls, controlStyles as styles } from './controls'
+import { View } from "react-native";
+import { isTV } from "@bayit/shared/utils/platform";
+import { useDirection } from "@/hooks/useDirection";
+import {
+  PlayerState,
+  PlayerControls as PlayerControlsType,
+  Chapter,
+} from "./types";
+import {
+  LeftControls,
+  RightControls,
+  controlStyles as styles,
+} from "./controls";
 
 interface PlayerControlsProps {
-  state: PlayerState
-  controls: PlayerControlsType
-  isLive?: boolean
-  liveSubtitleLang?: string
-  availableLanguages?: string[]
-  onLanguageChange?: (lang: string) => void
-  isDubbingActive?: boolean
-  showChaptersPanel?: boolean
-  showSceneSearchPanel?: boolean
-  showSettings?: boolean
-  hasChapters?: boolean
-  hasSceneSearch?: boolean
-  chapters?: Chapter[]
-  onChaptersPanelToggle?: () => void
-  onSceneSearchToggle?: () => void
-  onSettingsToggle?: () => void
-  renderWatchPartyButton?: () => React.ReactNode
-  renderSubtitleControls?: () => React.ReactNode
-  renderLiveSubtitleControls?: () => React.ReactNode
-  renderLiveSplitSubtitleControls?: () => React.ReactNode
-  renderDubbingControls?: () => React.ReactNode
-  renderRecordButton?: () => React.ReactNode
-  renderCastButton?: () => React.ReactNode
-  renderAirPlayButton?: () => React.ReactNode
-  renderChromecastButton?: () => React.ReactNode
-  renderPiPButton?: () => React.ReactNode
-  renderChannelChatButton?: () => React.ReactNode
-  renderLiveTriviaButton?: () => React.ReactNode
-  renderCatchUpButton?: () => React.ReactNode
-  liveFeatureError?: string | null
-  onDismissLiveFeatureError?: () => void
+  state: PlayerState;
+  controls: PlayerControlsType;
+  isLive?: boolean;
+  liveSubtitleLang?: string;
+  availableLanguages?: string[];
+  onLanguageChange?: (lang: string) => void;
+  isDubbingActive?: boolean;
+  showChaptersPanel?: boolean;
+  showSceneSearchPanel?: boolean;
+  showSettings?: boolean;
+  hasChapters?: boolean;
+  hasSceneSearch?: boolean;
+  chapters?: Chapter[];
+  onChaptersPanelToggle?: () => void;
+  onSceneSearchToggle?: () => void;
+  onSettingsToggle?: () => void;
+  renderWatchPartyButton?: () => React.ReactNode;
+  renderSubtitleControls?: () => React.ReactNode;
+  renderLiveSubtitleControls?: () => React.ReactNode;
+  renderLiveSplitSubtitleControls?: () => React.ReactNode;
+  renderDubbingControls?: () => React.ReactNode;
+  renderRecordButton?: () => React.ReactNode;
+  renderCastButton?: () => React.ReactNode;
+  renderAirPlayButton?: () => React.ReactNode;
+  renderChromecastButton?: () => React.ReactNode;
+  renderPiPButton?: () => React.ReactNode;
+  renderChannelChatButton?: () => React.ReactNode;
+  renderLiveTriviaButton?: () => React.ReactNode;
+  renderCatchUpButton?: () => React.ReactNode;
+  renderInteractButton?: () => React.ReactNode;
+  renderPreviousInteractionButton?: () => React.ReactNode;
+  renderNextInteractionButton?: () => React.ReactNode;
+  liveFeatureError?: string | null;
+  onDismissLiveFeatureError?: () => void;
 }
 
 export default function PlayerControls({
   state,
   controls,
   isLive = false,
-  liveSubtitleLang = 'en',
+  liveSubtitleLang = "en",
   availableLanguages,
   onLanguageChange,
   isDubbingActive = false,
@@ -73,13 +84,21 @@ export default function PlayerControls({
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
+  renderInteractButton,
+  renderPreviousInteractionButton,
+  renderNextInteractionButton,
   liveFeatureError,
   onDismissLiveFeatureError,
 }: PlayerControlsProps) {
-  const { isRTL } = useDirection()
+  const { isRTL } = useDirection();
 
   return (
-    <View style={[styles.controlsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View
+      style={[
+        styles.controlsRow,
+        { flexDirection: isRTL ? "row-reverse" : "row" },
+      ]}
+    >
       <LeftControls
         state={state}
         controls={controls}
@@ -116,9 +135,12 @@ export default function PlayerControls({
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}
+        renderInteractButton={renderInteractButton}
+        renderPreviousInteractionButton={renderPreviousInteractionButton}
+        renderNextInteractionButton={renderNextInteractionButton}
         liveFeatureError={liveFeatureError}
         onDismissLiveFeatureError={onDismissLiveFeatureError}
       />
     </View>
-  )
+  );
 }

@@ -18,8 +18,11 @@ import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Replay30
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
@@ -65,6 +68,10 @@ fun PlayerControlsOverlay(
     onVolumeChange: (Float) -> Unit,
     onSpeedChange: (Float) -> Unit,
     onToggleFullscreen: () -> Unit,
+    onInteract: (() -> Unit)? = null,
+    onPreviousInteraction: (() -> Unit)? = null,
+    onNextInteraction: (() -> Unit)? = null,
+    hasInteractiveMoments: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var showVolume by remember { mutableStateOf(false) }
@@ -118,6 +125,38 @@ fun PlayerControlsOverlay(
                         tint = DesignTokens.Colors.Text.secondary,
                         modifier = Modifier.size(24.dp),
                     )
+                }
+                if (hasInteractiveMoments) {
+                    onPreviousInteraction?.let { action ->
+                        IconButton(onClick = action) {
+                            Icon(
+                                imageVector = Icons.Default.SkipPrevious,
+                                contentDescription = bayitString("player.interaction.previous"),
+                                tint = DesignTokens.Colors.Text.primary,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
+                    onInteract?.let { action ->
+                        IconButton(onClick = action) {
+                            Icon(
+                                imageVector = Icons.Default.RecordVoiceOver,
+                                contentDescription = bayitString("player.pauseAsk.title"),
+                                tint = DesignTokens.Colors.Text.primary,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
+                    onNextInteraction?.let { action ->
+                        IconButton(onClick = action) {
+                            Icon(
+                                imageVector = Icons.Default.SkipNext,
+                                contentDescription = bayitString("player.interaction.next"),
+                                tint = DesignTokens.Colors.Text.primary,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
                 }
                 IconButton(onClick = onSkipBackward) {
                     Icon(

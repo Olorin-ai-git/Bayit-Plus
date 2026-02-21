@@ -54,6 +54,10 @@ fun PlayerOverlay(
     onAIFeaturesClick: (() -> Unit)? = null,
     isVodTriviaEnabled: Boolean = false,
     onVodTriviaToggle: (() -> Unit)? = null,
+    onInteract: (() -> Unit)? = null,
+    onPreviousInteraction: (() -> Unit)? = null,
+    onNextInteraction: (() -> Unit)? = null,
+    hasInteractiveMoments: Boolean = false,
     subtitleOverlay: @Composable (() -> Unit)? = null,
     triviaOverlay: @Composable (() -> Unit)? = null,
     aiFeaturesPanel: @Composable (() -> Unit)? = null,
@@ -117,6 +121,10 @@ fun PlayerOverlay(
                     onVolumeChange = onVolumeChange,
                     onSpeedChange = onSpeedChange,
                     onToggleFullscreen = onToggleFullscreen,
+                    onInteract = onInteract,
+                    onPreviousInteraction = onPreviousInteraction,
+                    onNextInteraction = onNextInteraction,
+                    hasInteractiveMoments = hasInteractiveMoments,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
