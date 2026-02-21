@@ -1,0 +1,2047 @@
+
+    ✻
+    |
+   ▟█▙     Claude Code v2.1.50
+ ▐▛███▜▌   Sonnet 4.6 · Claude Max
+▝▜█████▛▘  ~/Documents/Projects/olorin/olorin-media/bayit-plus/android-app
+  ▘▘ ▝▝  
+
+❯ /clear 
+  ⎿  (no content)
+
+❯ read                                                                      
+  2026-02-21-161806-local-command-caveatcaveat-the-messages-below-w.txt     
+  continue                                                                  
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The previous session ran out of context mid-implementation. Let me check the
+  current build state to understand what still needs fixing.
+
+⏺ Bash(./gradlew assembleDebug 2>&1 | grep -E "FAILED|BUILD SUCCESSFUL|error:" |
+       tail -20)
+  ⎿  BUILD SUCCESSFUL in 915ms
+
+⏺ Bash(find . -name "*.kt" -not -path "*/build/*" -not -path "*/test/*" -not
+      -path "*Test*" | xargs wc -l 2>/dev/null | sort -rn | head -30)
+  ⎿     74196 total
+          225 ./feature/feature-player/src/main/java/tv/bayit/plus/feature/
+     player/PlayerContent.kt
+     … +39 lines (ctrl+o to expand)
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Build is green. The session successfully:
+  - Fixed runBlocking(Dispatchers.IO) in TokenAuthenticator
+  - Replaced raw Timber calls with injected BayitLogger in DeepLinkHandler,
+  LiveFeatureManager, and subclasses
+  - Split many large files
+  - Added tests for TokenAuthenticator, DeepLinkHandler, SessionEventBus
+  - Fixed all compilation errors from the splits
+
+  Still outstanding: 23 files over the 200-line limit (201–225 lines). Let me
+  split them now.
+
+⏺ Bash(find . -name "*.kt" -not -path "*/build/*" -not -path "*/test/*" -not
+      -path "*Test*" | xargs wc -l 2>/dev/null | awk '$1 > 200 && $2 != "total"'
+       | sort -rn | aw…)
+  ⎿  awk: syntax error at source line 1
+      context is
+        $1 > 200 && $2 >>>  \ <<< != "total"
+     awk: bailing out at source line 1
+
+⏺ Bash(find . -name "*.kt" -not -path "*/build/*" -not -path "*/test/*" -not
+      -path "*Test*" | xargs wc -l 2>/dev/null | sort -rn | awk 'NR>1 && $1>200
+      {print $1, $2}')
+  ⎿  225 ./feature/feature-player/src/main/java/tv/bayit/plus/feature/playe
+     r/PlayerContent.kt
+     221 ./feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/deta
+     … +29 lines (ctrl+o to expand)
+
+⏺ 23 files to split. Let me read them all in parallel to plan clean splits.
+
+⏺ Read 23 files (ctrl+o to expand)
+
+⏺ Now I have a complete picture of all 23 files. Let me execute all splits
+  systematically — starting with Route extractions (cleanest), then data class
+  moves, then UI component extractions.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Now I have a full picture. Let me execute all 23 splits systematically in
+  parallel batches.
+
+⏺ Write(feature/feature-home/src/main/java/tv/bayit/plus/feature/home/HomeRoute.
+       kt)
+  ⎿  Wrote 115 lines to feature/feature-home/src/main/java/tv/bayit/plus/fe
+     ature/home/HomeRoute.kt
+       1 package tv.bayit.plus.feature.home
+       2 
+       3 import android.Manifest
+       4 import android.content.Intent
+       5 import android.net.Uri
+       6 import android.provider.Settings
+       7 import androidx.activity.compose.rememberLauncherForActivityResu
+         lt
+       8 import androidx.activity.result.contract.ActivityResultContracts
+       9 import androidx.compose.runtime.Composable
+      10 import androidx.compose.runtime.DisposableEffect
+     … +105 lines (ctrl+o to expand)
+
+⏺ Write(feature/feature-auth/src/main/java/tv/bayit/plus/feature/auth/login/Logi
+       nRoute.kt)
+  ⎿  Wrote 47 lines to feature/feature-auth/src/main/java/tv/bayit/plus/fea
+     ture/auth/login/LoginRoute.kt
+       1 package tv.bayit.plus.feature.auth.login
+       2 
+       3 import androidx.compose.runtime.Composable
+       4 import androidx.compose.runtime.LaunchedEffect
+       5 import androidx.compose.runtime.getValue
+       6 import androidx.compose.ui.Modifier
+       7 import androidx.hilt.navigation.compose.hiltViewModel
+       8 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+       9 
+      10 @Composable
+     … +37 lines (ctrl+o to expand)
+
+⏺ Write(feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/favorites/Fa
+       voritesRoute.kt)
+  ⎿  Wrote 29 lines to feature/feature-vod/src/main/java/tv/bayit/plus/feat
+     ure/vod/favorites/FavoritesRoute.kt
+       1 package tv.bayit.plus.feature.vod.favorites
+       2 
+       3 import androidx.compose.runtime.Composable
+       4 import androidx.compose.runtime.getValue
+       5 import androidx.compose.ui.Modifier
+       6 import androidx.hilt.navigation.compose.hiltViewModel
+       7 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+       8 
+       9 @Composable
+      10 fun FavoritesRoute(
+     … +19 lines (ctrl+o to expand)
+
+⏺ Now remove the Route functions from the original files and clean up their
+  imports:
+
+⏺ Update(feature/feature-home/src/main/java/tv/bayit/plus/feature/home/HomeScree
+        n.kt)
+  ⎿  Removed 109 lines
+       1  package tv.bayit.plus.feature.home
+       2  
+       3 -import android.Manifest                                        
+       4 -import android.content.Intent                                  
+       5 -import android.net.Uri                                         
+       6 -import android.provider.Settings                               
+       7 -import androidx.compose.ui.platform.LocalContext               
+       8 -import androidx.activity.compose.rememberLauncherForActivityRes
+         -ult                                                            
+       9 -import androidx.activity.result.contract.ActivityResultContract
+         -s                                                              
+       3  import androidx.compose.foundation.layout.Arrangement
+       4  import androidx.compose.foundation.layout.Box
+       5  import androidx.compose.foundation.layout.Column
+     ...
+        7  import androidx.compose.material3.MaterialTheme
+        8  import androidx.compose.material3.Text
+        9  import androidx.compose.runtime.Composable
+       17 -import androidx.compose.runtime.DisposableEffect              
+       18 -import androidx.compose.runtime.getValue                      
+       10  import androidx.compose.ui.Alignment
+       11  import androidx.compose.ui.Modifier
+       21 -import androidx.hilt.navigation.compose.hiltViewModel         
+       22 -import androidx.lifecycle.Lifecycle                           
+       23 -import androidx.lifecycle.LifecycleEventObserver              
+       24 -import androidx.lifecycle.compose.LocalLifecycleOwner         
+       25 -import androidx.lifecycle.compose.collectAsStateWithLifecycle 
+       12  import tv.bayit.plus.core.model.ContentItem
+       13  import tv.bayit.plus.core.model.SpotlightItem
+       28 -import tv.bayit.plus.core.model.resolveContentType            
+       14  import tv.bayit.plus.designsystem.component.GlassButton
+       15  import tv.bayit.plus.designsystem.component.GlassLoadingIndica
+           tor
+       16  import tv.bayit.plus.designsystem.i18n.bayitString
+       17  import tv.bayit.plus.designsystem.theme.DesignTokens
+       18  
+       19  @Composable
+       35 -fun HomeRoute(                                                
+       36 -    onNavigateToContent: (String, String) -> Unit,            
+       37 -    onNavigateToPlayer: (String, String) -> Unit,             
+       38 -    onNavigateToContinueWatchingItem: (String, String, Long) -
+          -> Unit,                                                       
+       39 -    onNavigateToChannel: (String) -> Unit,                    
+       40 -    onNavigateToRadio: (String) -> Unit,                      
+       41 -    onNavigateToYoungsters: () -> Unit,                       
+       42 -    onNavigateToJerusalem: () -> Unit,                        
+       43 -    onNavigateToTelAviv: () -> Unit,                          
+       44 -    onNavigateToContinueWatchingAll: () -> Unit,              
+       45 -    onNavigateToLiveTV: () -> Unit,                           
+       46 -    onNavigateToRadioBrowse: () -> Unit,                      
+       47 -    onNavigateToTrending: () -> Unit,                         
+       48 -    onNavigateToCategoryBrowse: (String) -> Unit,             
+       49 -    onNavigateToIsraelisCity: () -> Unit,                     
+       50 -    onNavigateToIsraeliBusinesses: () -> Unit,                
+       51 -    modifier: Modifier = Modifier,                            
+       52 -    viewModel: HomeViewModel = hiltViewModel(),               
+       53 -) {                                                           
+       54 -    val uiState by viewModel.uiState.collectAsStateWithLifecyc
+          -le()                                                          
+       55 -    val activity = LocalContext.current as? android.app.Activi
+          -ty                                                            
+       56 -    val lifecycleOwner = LocalLifecycleOwner.current          
+       57 -                                                              
+       58 -    // Re-check permission when returning from the Settings sc
+          -reen                                                          
+       59 -    DisposableEffect(lifecycleOwner) {                        
+       60 -        val observer = LifecycleEventObserver { _, event ->   
+       61 -            if (event == Lifecycle.Event.ON_RESUME) viewModel.
+          -recheckLocationPermission()                                   
+       62 -        }                                                     
+       63 -        lifecycleOwner.lifecycle.addObserver(observer)        
+       64 -        onDispose { lifecycleOwner.lifecycle.removeObserver(ob
+          -server) }                                                     
+       65 -    }                                                         
+       66 -                                                              
+       67 -    val locationPermissionLauncher = rememberLauncherForActivi
+          -tyResult(                                                     
+       68 -        contract = ActivityResultContracts.RequestPermission()
+          -,                                                             
+       69 -    ) { isGranted ->                                          
+       70 -        if (isGranted) viewModel.onLocationPermissionGranted()
+          - else viewModel.onLocationPermissionDenied()                  
+       71 -    }                                                         
+       72 -                                                              
+       73 -    // Permanently denied = was requested before AND system no
+          - longer shows rationale                                       
+       74 -    val successState = uiState as? HomeUiState.Success        
+       75 -    val isPermanentlyDenied = successState?.locationPermission
+          -Needed == true &&                                             
+       76 -        successState.locationPermissionPreviouslyDenied &&    
+       77 -        activity?.shouldShowRequestPermissionRationale(Manifes
+          -t.permission.ACCESS_COARSE_LOCATION) == false                 
+       78 -                                                              
+       79 -    val context = LocalContext.current                        
+       80 -    HomeScreen(                                               
+       81 -        uiState = uiState,                                    
+       82 -        onSpotlightClick = { item -> onNavigateToPlayer(item.i
+          -d, item.type.orEmpty()) },                                    
+       83 -        onSpotlightMoreInfoClick = { item ->                  
+       84 -            onNavigateToContent(item.id, resolveContentType(it
+          -em))                                                          
+       85 -        },                                                    
+       86 -        onContentClick = { item ->                            
+       87 -            val resolved = resolveContentType(item)           
+       88 -            val cat = item.category?.lowercase().orEmpty()    
+       89 -            when {                                            
+       90 -                resolved == "radio" || cat.contains("radio") -
+          -> onNavigateToRadioBrowse()                                   
+       91 -                resolved == "live" || cat.contains("live") -> 
+          -onNavigateToLiveTV()                                          
+       92 -                else -> onNavigateToContent(item.id, resolved)
+       93 -            }                                                 
+       94 -        },                                                    
+       95 -        onContinueWatchingItemClick = onNavigateToContinueWatc
+          -hingItem,                                                     
+       96 -        onCollectionClick = { id -> onNavigateToContent(id, "c
+          -ollection") },                                                
+       97 -        onWatchNowClick = { movieId -> onNavigateToPlayer(movi
+          -eId, "movie") },                                              
+       98 -        onChannelClick = onNavigateToChannel,                 
+       99 -        onRadioClick = onNavigateToRadio,                     
+      100 -        onYoungstersClick = onNavigateToYoungsters,           
+      101 -        onJerusalemClick = onNavigateToJerusalem,             
+      102 -        onTelAvivClick = onNavigateToTelAviv,                 
+      103 -        onContinueWatchingShowAll = onNavigateToContinueWatchi
+          -ngAll,                                                        
+      104 -        onLiveTVShowAll = onNavigateToLiveTV,                 
+      105 -        onRadioShowAll = onNavigateToRadioBrowse,             
+      106 -        onTrendingShowAll = onNavigateToTrending,             
+      107 -        onCategoryShowAll = onNavigateToCategoryBrowse,       
+      108 -        onIsraelisCityShowAll = onNavigateToIsraelisCity,     
+      109 -        onIsraeliBusinessesShowAll = onNavigateToIsraeliBusine
+          -sses,                                                         
+      110 -        onOpenUrl = { url -> context.startActivity(Intent(Inte
+          -nt.ACTION_VIEW, Uri.parse(url))) },                           
+      111 -        isLocationPermissionPermanentlyDenied = isPermanentlyD
+          -enied,                                                        
+      112 -        onRequestLocationPermission = {                       
+      113 -            viewModel.markLocationPermissionRequested()       
+      114 -            locationPermissionLauncher.launch(Manifest.permiss
+          -ion.ACCESS_COARSE_LOCATION)                                   
+      115 -        },                                                    
+      116 -        onOpenLocationSettings = {                            
+      117 -            val intent = Intent(Settings.ACTION_APPLICATION_DE
+          -TAILS_SETTINGS).apply {                                       
+      118 -                data = Uri.fromParts("package", activity?.pack
+          -ageName.orEmpty(), null)                                      
+      119 -            }                                                 
+      120 -            activity?.startActivity(intent)                   
+      121 -        },                                                    
+      122 -        onRefresh = viewModel::refresh,                       
+      123 -        onDismissShabbatBanner = viewModel::dismissShabbatBann
+          -er,                                                           
+      124 -        modifier = modifier,                                  
+      125 -    )                                                         
+      126 -}                                                             
+      127 -                                                              
+      128 -@Composable                                                   
+       20  internal fun HomeScreen(
+       21      uiState: HomeUiState,
+       22      onSpotlightClick: (SpotlightItem) -> Unit,
+
+⏺ Update(feature/feature-auth/src/main/java/tv/bayit/plus/feature/auth/login/Log
+        inScreen.kt)
+  ⎿  Removed 47 lines
+       9  import androidx.compose.foundation.layout.height
+      10  import androidx.compose.foundation.layout.padding
+      11  import androidx.compose.foundation.rememberScrollState
+      12 -import androidx.compose.foundation.text.KeyboardActions        
+      13 -import androidx.compose.foundation.text.KeyboardOptions        
+      12  import androidx.compose.foundation.verticalScroll
+      13  import androidx.compose.material3.MaterialTheme
+      14  import androidx.compose.material3.Text
+      15  import androidx.compose.material3.TextButton
+      16  import androidx.compose.runtime.Composable
+      19 -import androidx.compose.runtime.LaunchedEffect                 
+      20 -import androidx.compose.runtime.getValue                       
+      17  import androidx.compose.ui.Alignment
+      18  import androidx.compose.ui.Modifier
+      19  import androidx.compose.ui.platform.LocalSoftwareKeyboardContro
+          ller
+      24 -import androidx.compose.ui.text.input.ImeAction                
+      25 -import androidx.compose.ui.text.input.KeyboardType             
+      26 -import androidx.hilt.navigation.compose.hiltViewModel          
+      27 -import androidx.lifecycle.compose.collectAsStateWithLifecycle  
+      20  import tv.bayit.plus.designsystem.component.GlassButton
+      21  import tv.bayit.plus.designsystem.component.GlassLoadingIndicat
+          or
+      22  import tv.bayit.plus.designsystem.component.GlassTextField
+     ...
+      24  import tv.bayit.plus.designsystem.theme.DesignTokens
+      25  
+      26  @Composable
+      35 -fun LoginRoute(                                                
+      36 -    onNavigateToHome: () -> Unit,                              
+      37 -    onNavigateToRegister: () -> Unit,                          
+      38 -    onNavigateToForgotPassword: () -> Unit,                    
+      39 -    onRequestGoogleSignIn: ((String) -> Unit) -> Unit,         
+      40 -    onRequestBiometricSignIn: ((Boolean) -> Unit) -> Unit,     
+      41 -    modifier: Modifier = Modifier,                             
+      42 -    viewModel: LoginViewModel = hiltViewModel(),               
+      43 -) {                                                            
+      44 -    val uiState by viewModel.uiState.collectAsStateWithLifecycl
+         -e()                                                            
+      45 -                                                               
+      46 -    LaunchedEffect(uiState) {                                  
+      47 -        val success = uiState as? LoginUiState.Success ?: retur
+         -n@LaunchedEffect                                               
+      48 -        if (!success.offerBiometricEnrollment) onNavigateToHome
+         -()                                                             
+      49 -    }                                                          
+      50 -                                                               
+      51 -    if (uiState is LoginUiState.Success && (uiState as LoginUiS
+         -tate.Success).offerBiometricEnrollment) {                      
+      52 -        BiometricEnrollmentDialog(                             
+      53 -            onEnable = { viewModel.enableBiometricSignIn(); onN
+         -avigateToHome() },                                             
+      54 -            onDismiss = onNavigateToHome,                      
+      55 -        )                                                      
+      56 -    } else {                                                   
+      57 -        LoginScreen(                                           
+      58 -            uiState = uiState,                                 
+      59 -            onEmailChange = viewModel::updateEmail,            
+      60 -            onPasswordChange = viewModel::updatePassword,      
+      61 -            onLoginClick = viewModel::loginWithEmail,          
+      62 -            onGoogleSignInClick = { onRequestGoogleSignIn(viewM
+         -odel::loginWithGoogle) },                                      
+      63 -            onRegisterClick = onNavigateToRegister,            
+      64 -            onForgotPasswordClick = onNavigateToForgotPassword,
+      65 -            onDismissError = viewModel::dismissError,          
+      66 -            showBiometricSignIn = (uiState as? LoginUiState.Inp
+         -ut)?.showBiometricSignIn ?: false,                             
+      67 -            onBiometricSignInClick = { onRequestBiometricSignIn
+         -(viewModel::onBiometricSignInResult) },                        
+      68 -            modifier = modifier,                               
+      69 -        )                                                      
+      70 -    }                                                          
+      71 -}                                                              
+      72 -                                                               
+      73 -@Composable                                                    
+      27  internal fun LoginScreen(
+      28      uiState: LoginUiState,
+      29      onEmailChange: (String) -> Unit,
+
+⏺ Update(feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/favorites/F
+        avoritesScreen.kt)
+  ⎿  Removed 22 lines
+      41  private val POSTER_WIDTH = 100.dp
+      42  
+      43  @Composable
+      44 -fun FavoritesRoute(                                            
+      45 -    onNavigateToContent: (String, String) -> Unit,             
+      46 -    onNavigateBack: () -> Unit,                                
+      47 -    modifier: Modifier = Modifier,                             
+      48 -    viewModel: FavoritesViewModel = hiltViewModel(),           
+      49 -) {                                                            
+      50 -    val uiState by viewModel.uiState.collectAsStateWithLifecycl
+         -e()                                                            
+      51 -    FavoritesScreen(                                           
+      52 -        uiState = uiState,                                     
+      53 -        onItemClick = { item ->                                
+      54 -            val type = item.type ?: "movie"                    
+      55 -            val id = item.contentId ?: item.id                 
+      56 -            onNavigateToContent(id, type)                      
+      57 -        },                                                     
+      58 -        onRemove = { item -> viewModel.removeFavorite(item.id) 
+         -},                                                             
+      59 -        onNavigateBack = onNavigateBack,                       
+      60 -        onRetry = viewModel::retry,                            
+      61 -        modifier = modifier,                                   
+      62 -    )                                                          
+      63 -}                                                              
+      64 -                                                               
+      65 -@Composable                                                    
+      44  internal fun FavoritesScreen(
+      45      uiState: FavoritesUiState,
+      46      onItemClick: (FavoriteItem) -> Unit,
+
+⏺ Now remove unused imports from FavoritesScreen.kt:
+
+⏺ Update(feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/favorites/F
+        avoritesScreen.kt)
+  ⎿  Removed 3 lines
+      21  import androidx.compose.material3.MaterialTheme
+      22  import androidx.compose.material3.Text
+      23  import androidx.compose.runtime.Composable
+      24 -import androidx.compose.runtime.getValue                       
+      24  import androidx.compose.ui.Alignment
+      25  import androidx.compose.ui.Modifier
+      26  import androidx.compose.ui.text.font.FontWeight
+      27  import androidx.compose.ui.text.style.TextOverflow
+      28  import androidx.compose.ui.unit.dp
+      30 -import androidx.hilt.navigation.compose.hiltViewModel          
+      31 -import androidx.lifecycle.compose.collectAsStateWithLifecycle  
+      29  import tv.bayit.plus.core.model.FavoriteItem
+      30  import tv.bayit.plus.designsystem.component.CachedAsyncImage
+      31  import tv.bayit.plus.designsystem.component.GlassButton
+
+⏺ Now let's extract the repository service/model files. I'll start with
+  SubtitleApiModels (already internal) and the others (need private → internal):
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/SubtitleApiModels+Types.ktcore/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Sub
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/SubtitleApiModels+Types.kttitleApiModels+Types.kt)
+  ⎿  Wrote 90 lines to core/core-data/src/main/java/tv/bayit/plus/core/data
+     /repository/impl/SubtitleApiModels+Types.kt
+      1 package tv.bayit.plus.core.data.repository.impl
+      2 
+      3 import kotlinx.serialization.SerialName
+      4 import kotlinx.serialization.Serializable
+      5 
+      6 @Serializable
+      7 internal data class SubtitleTracksResponse(
+      8     val tracks: List<SubtitleTrackItem> = emptyList(),
+      9 )
+     … +80 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiPhoneticMirrorRepository+Models.ktcore/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Api
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiPhoneticMirrorRepository+Models.ktPhoneticMirrorRepository+Models.kt)
+  ⎿  Wrote 119 lines to core/core-data/src/main/java/tv/bayit/plus/core/dat
+     a/repository/impl/ApiPhoneticMirrorRepository+Models.kt
+       1 package tv.bayit.plus.core.data.repository.impl
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 import okhttp3.MediaType.Companion.toMediaType
+       6 import retrofit2.http.Body
+       7 import retrofit2.http.GET
+       8 import retrofit2.http.POST
+       9 import retrofit2.http.Path
+      10 import retrofit2.http.Query
+     … +109 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiHouseholdRepository+Models.ktcore/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Api
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiHouseholdRepository+Models.ktHouseholdRepository+Models.kt)
+  ⎿  Wrote 116 lines to core/core-data/src/main/java/tv/bayit/plus/core/dat
+     a/repository/impl/ApiHouseholdRepository+Models.kt
+       1 package tv.bayit.plus.core.data.repository.impl
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 import retrofit2.http.Body
+       6 import retrofit2.http.DELETE
+       7 import retrofit2.http.GET
+       8 import retrofit2.http.PUT
+       9 import retrofit2.http.POST
+      10 import retrofit2.http.Path
+     … +106 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiCultureRepository+Models.ktcore/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Api
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiCultureRepository+Models.ktCultureRepository+Models.kt)
+  ⎿  Wrote 124 lines to core/core-data/src/main/java/tv/bayit/plus/core/dat
+     a/repository/impl/ApiCultureRepository+Models.kt
+      1 package tv.bayit.plus.core.data.repository.impl
+      2 
+      3 import kotlinx.serialization.SerialName
+      4 import kotlinx.serialization.Serializable
+      5 import retrofit2.http.GET
+      6 import retrofit2.http.Path
+      7 import retrofit2.http.Query
+      8 
+      9 internal interface CultureService {
+     … +114 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiLiveDubbingRepository+Models.ktcore/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Api
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/ApiLiveDubbingRepository+Models.ktLiveDubbingRepository+Models.kt)
+  ⎿  Wrote 94 lines to core/core-data/src/main/java/tv/bayit/plus/core/data
+     /repository/impl/ApiLiveDubbingRepository+Models.kt
+       1 package tv.bayit.plus.core.data.repository.impl
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 import retrofit2.http.Body
+       6 import retrofit2.http.GET
+       7 import retrofit2.http.POST
+       8 import retrofit2.http.PUT
+       9 import retrofit2.http.Path
+      10 import tv.bayit.plus.core.model.DubbingVoice
+     … +84 lines (ctrl+o to expand)
+
+⏺ Now truncate the source repository files by removing the moved sections:
+
+⏺ Update(core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Su
+        btitleApiModels.kt)
+  ⎿  Added 1 line, removed 85 lines
+      132      ): ActiveJobsResponse
+      133  }
+      134  
+      135 -@Serializable                                                 
+      136 -internal data class SubtitleTracksResponse(                   
+      137 -    val tracks: List<SubtitleTrackItem> = emptyList(),        
+      138 -)                                                             
+      139 -                                                              
+      140 -@Serializable                                                 
+      141 -internal data class SubtitleTrackItem(                        
+      142 -    val id: String,                                           
+      143 -    @SerialName("content_id") val contentId: String,          
+      144 -    val language: String,                                     
+      145 -    @SerialName("language_name") val languageName: String? = n
+          -ull,                                                          
+      146 -    val format: String? = null,                               
+      147 -    @SerialName("has_nikud_version") val hasNikudVersion: Bool
+          -ean? = null,                                                  
+      148 -    @SerialName("has_shoresh_version") val hasShoreshVersion: 
+          -Boolean? = null,                                              
+      149 -    @SerialName("has_heblish_version") val hasHeblishVersion: 
+          -Boolean? = null,                                              
+      150 -    @SerialName("has_engrew_version") val hasEngrewVersion: Bo
+          -olean? = null,                                                
+      151 -    @SerialName("is_default") val isDefault: Boolean? = null, 
+      152 -    @SerialName("is_auto_generated") val isAutoGenerated: Bool
+          -ean? = null,                                                  
+      153 -    @SerialName("cue_count") val cueCount: Int? = null,       
+      154 -)                                                             
+      155 -                                                              
+      156 -@Serializable                                                 
+      157 -internal data class SubtitleTrackDetail(                      
+      158 -    val tracks: List<SubtitleTrackItem> = emptyList(),        
+      159 -)                                                             
+      160 -                                                              
+      161 -@Serializable                                                 
+      162 -internal data class SubtitlePreferencesResponse(              
+      163 -    val preferences: List<SubtitlePreferenceItem> = emptyList(
+          -),                                                            
+      164 -    val total: Int? = null,                                   
+      165 -)                                                             
+      166 -                                                              
+      167 -@Serializable                                                 
+      168 -internal data class SubtitlePreferenceItem(                   
+      169 -    @SerialName("content_id") val contentId: String,          
+      170 -    @SerialName("preferred_language") val preferredLanguage: S
+          -tring? = null,                                                
+      171 -    @SerialName("hebrew_mode") val hebrewMode: String? = null,
+      172 -    @SerialName("last_used_at") val lastUsedAt: String? = null
+          -,                                                             
+      173 -)                                                             
+      174 -                                                              
+      175 -@Serializable                                                 
+      176 -internal data class SubtitlePreferencesBody(                  
+      177 -    val language: String? = null,                             
+      178 -    @SerialName("hebrew_mode") val hebrewMode: String? = null,
+      179 -    @SerialName("english_mode") val englishMode: String? = nul
+          -l,                                                            
+      180 -    @SerialName("font_size") val fontSize: Float? = null,     
+      181 -    @SerialName("show_background") val showBackground: Boolean
+          -? = null,                                                     
+      182 -)                                                             
+      183 -                                                              
+      184 -@Serializable                                                 
+      185 -internal data class SubtitleDeletePreferenceResponse(         
+      186 -    val status: String? = null,                               
+      187 -    @SerialName("content_id") val contentId: String? = null,  
+      188 -    val message: String? = null,                              
+      189 -)                                                             
+      190 -                                                              
+      191 -@Serializable                                                 
+      192 -internal data class AIGenerationJobResponse(                  
+      193 -    @SerialName("job_id") val jobId: String? = null,          
+      194 -    @SerialName("content_id") val contentId: String? = null,  
+      195 -    @SerialName("job_type") val jobType: String? = null,      
+      196 -    val status: String? = null,                               
+      197 -    val progress: Double? = null,                             
+      198 -    @SerialName("created_at") val createdAt: String? = null,  
+      199 -    @SerialName("completed_at") val completedAt: String? = nul
+          -l,                                                            
+      200 -    val message: String? = null,                              
+      201 -    val error: String? = null,                                
+      202 -)                                                             
+      203 -                                                              
+      204 -@Serializable                                                 
+      205 -internal data class CancelJobResponse(                        
+      206 -    val message: String? = null,                              
+      207 -    val job: AIGenerationJobResponse? = null,                 
+      208 -)                                                             
+      209 -                                                              
+      210 -@Serializable                                                 
+      211 -internal data class ActiveJobsResponse(                       
+      212 -    @SerialName("content_id") val contentId: String? = null,  
+      213 -    @SerialName("nikud_job") val nikudJob: AIGenerationJobResp
+          -onse? = null,                                                 
+      214 -    @SerialName("shoresh_job") val shoreshJob: AIGenerationJob
+          -Response? = null,                                             
+      215 -    @SerialName("heblish_job") val heblishJob: AIGenerationJob
+          -Response? = null,                                             
+      216 -    @SerialName("grammar_flip_job") val grammarFlipJob: AIGene
+          -rationJobResponse? = null,                                    
+      217 -    @SerialName("slang_synthesis_job") val slangSynthesisJob: 
+          -AIGenerationJobResponse? = null,                              
+      218 -    @SerialName("engrew_job") val engrewJob: AIGenerationJobRe
+          -sponse? = null,                                               
+      219 -)                                                             
+      135 +// Types moved to SubtitleApiModels+Types.kt                  
+
+⏺ Now remove the models from the three repository files:
+
+⏺ Update(core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Ap
+        iPhoneticMirrorRepository.kt)
+  ⎿  Added 1 line, removed 118 lines
+       92      }
+       93  }
+       94  
+       95 -private interface PhoneticMirrorService {                     
+       96 -                                                              
+       97 -    @POST("api/v1/phonetic/guide")                            
+       98 -    suspend fun getPhoneticGuide(                             
+       99 -        @Body request: PhoneticGuideRequest,                  
+      100 -    ): PhoneticGuideResponse                                  
+      101 -                                                              
+      102 -    @GET("api/v1/phonetic/audio")                             
+      103 -    suspend fun getPronunciationAudio(                        
+      104 -        @Query("text") text: String,                          
+      105 -        @Query("language") language: String,                  
+      106 -    ): PhoneticAudioResponse                                  
+      107 -                                                              
+      108 -    @POST("api/v1/phonetic/attempt")                          
+      109 -    suspend fun submitAttempt(                                
+      110 -        @Query("text") text: String,                          
+      111 -        @Body audioData: okhttp3.RequestBody,                 
+      112 -    ): PhoneticAttemptResponse                                
+      113 -                                                              
+      114 -    @GET("api/v1/phonetic/progress")                          
+      115 -    suspend fun getProgress(): PhoneticProgressResponse       
+      116 -                                                              
+      117 -    @GET("api/v1/phonetic/lessons/{language}")                
+      118 -    suspend fun getLessons(                                   
+      119 -        @Path("language") language: String,                   
+      120 -    ): PhoneticLessonsResponse                                
+      121 -                                                              
+      122 -    @GET("api/v1/phonetic/phrases")                           
+      123 -    suspend fun getPhrases(                                   
+      124 -        @Query("profile_id") profileId: String,               
+      125 -        @Query("difficulty") difficulty: String,              
+      126 -        @Query("count") count: Int,                           
+      127 -    ): PhoneticPhrasesResponse                                
+      128 -}                                                             
+      129 -                                                              
+      130 -/** Request body for generating a phonetic guide. */          
+      131 -@Serializable                                                 
+      132 -private data class PhoneticGuideRequest(                      
+      133 -    val text: String,                                         
+      134 -    val language: String,                                     
+      135 -)                                                             
+      136 -                                                              
+      137 -/** Response containing phonetic breakdown of the requested te
+          -xt. */                                                        
+      138 -@Serializable                                                 
+      139 -private data class PhoneticGuideResponse(                     
+      140 -    val text: String? = null,                                 
+      141 -    val language: String? = null,                             
+      142 -    val phonetic: String? = null,                             
+      143 -    val syllables: List<PhoneticSyllable> = emptyList(),      
+      144 -    @SerialName("audio_url") val audioUrl: String? = null,    
+      145 -)                                                             
+      146 -                                                              
+      147 -/** A single syllable within a phonetic breakdown. */         
+      148 -@Serializable                                                 
+      149 -private data class PhoneticSyllable(                          
+      150 -    val text: String,                                         
+      151 -    val ipa: String? = null,                                  
+      152 -    @SerialName("stress_level") val stressLevel: Int = 0,     
+      153 -)                                                             
+      154 -                                                              
+      155 -/** Response containing a URL to pronunciation audio. */      
+      156 -@Serializable                                                 
+      157 -private data class PhoneticAudioResponse(                     
+      158 -    @SerialName("audio_url") val audioUrl: String? = null,    
+      159 -    @SerialName("duration_ms") val durationMs: Long? = null,  
+      160 -)                                                             
+      161 -                                                              
+      162 -/** Response from submitting a pronunciation attempt for scori
+          -ng. */                                                        
+      163 -@Serializable                                                 
+      164 -private data class PhoneticAttemptResponse(                   
+      165 -    val score: Double? = null,                                
+      166 -    val feedback: String? = null,                             
+      167 -    @SerialName("problem_areas") val problemAreas: List<String
+          -> = emptyList(),                                              
+      168 -    @SerialName("is_passing") val isPassing: Boolean = false, 
+      169 -)                                                             
+      170 -                                                              
+      171 -/** User progress in phonetic training. */                    
+      172 -@Serializable                                                 
+      173 -private data class PhoneticProgressResponse(                  
+      174 -    @SerialName("total_attempts") val totalAttempts: Int = 0, 
+      175 -    @SerialName("average_score") val averageScore: Double = 0.
+          -0,                                                            
+      176 -    @SerialName("lessons_completed") val lessonsCompleted: Int
+          - = 0,                                                         
+      177 -    @SerialName("current_streak") val currentStreak: Int = 0, 
+      178 -    val level: Int = 1,                                       
+      179 -)                                                             
+      180 -                                                              
+      181 -/** List wrapper for lesson plan endpoints. */                
+      182 -@Serializable                                                 
+      183 -private data class PhoneticLessonsResponse(                   
+      184 -    val lessons: List<PhoneticLesson> = emptyList(),          
+      185 -)                                                             
+      186 -                                                              
+      187 -/** A single phonetic lesson. */                              
+      188 -@Serializable                                                 
+      189 -private data class PhoneticLesson(                            
+      190 -    val id: String,                                           
+      191 -    val title: String? = null,                                
+      192 -    val description: String? = null,                          
+      193 -    val difficulty: String? = null,                           
+      194 -    @SerialName("word_count") val wordCount: Int = 0,         
+      195 -    @SerialName("is_completed") val isCompleted: Boolean = fal
+          -se,                                                           
+      196 -)                                                             
+      197 -                                                              
+      198 -/** List wrapper for practice phrases response. */            
+      199 -@Serializable                                                 
+      200 -private data class PhoneticPhrasesResponse(                   
+      201 -    val phrases: List<PhoneticPhraseItem> = emptyList(),      
+      202 -)                                                             
+      203 -                                                              
+      204 -/** A single Hebrew practice phrase with transliteration and E
+          -nglish translation. */                                        
+      205 -@Serializable                                                 
+      206 -private data class PhoneticPhraseItem(                        
+      207 -    @SerialName("phrase_he") val phraseHe: String,            
+      208 -    val transliteration: String,                              
+      209 -    val translation: String,                                  
+      210 -)                                                             
+      211 -                                                              
+      212 -private val AUDIO_WAV_TYPE = "audio/wav".toMediaType()        
+       95 +// Service interface and models are in ApiPhoneticMirrorReposi
+          +tory+Models.kt                                                
+
+⏺ Update(core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Ap
+        iHouseholdRepository.kt)
+  ⎿  Added 1 line, removed 112 lines
+       92      }
+       93  }
+       94  
+       95 -private interface HouseholdService {                          
+       96 -                                                              
+       97 -    @GET("api/v1/household")                                  
+       98 -    suspend fun getHousehold(): HouseholdResponse             
+       99 -                                                              
+      100 -    @POST("api/v1/household/{householdId}/invite")            
+      101 -    suspend fun inviteMember(                                 
+      102 -        @Path("householdId") householdId: String,             
+      103 -        @Body request: InviteMemberBody,                      
+      104 -    ): InvitationResponse                                     
+      105 -                                                              
+      106 -    @DELETE("api/v1/household/{householdId}/members/{userId}")
+      107 -    suspend fun removeMember(                                 
+      108 -        @Path("householdId") householdId: String,             
+      109 -        @Path("userId") userId: String,                       
+      110 -    ): MessageResponse                                        
+      111 -                                                              
+      112 -    @PUT("api/v1/household/{householdId}/members/{userId}/role
+          -")                                                            
+      113 -    suspend fun updateMemberRole(                             
+      114 -        @Path("householdId") householdId: String,             
+      115 -        @Path("userId") userId: String,                       
+      116 -        @Body request: RoleUpdateBody,                        
+      117 -    ): MessageResponse                                        
+      118 -                                                              
+      119 -    @GET("api/v1/household/{householdId}/controls")           
+      120 -    suspend fun getSharedControls(                            
+      121 -        @Path("householdId") householdId: String,             
+      122 -    ): SharedControlsResponse                                 
+      123 -                                                              
+      124 -    @POST("api/v1/profiles")                                  
+      125 -    suspend fun addProfile(@Body request: AddProfileBody): Pro
+          -fileResponse                                                  
+      126 -}                                                             
+      127 -                                                              
+      128 -@Serializable                                                 
+      129 -private data class AddProfileBody(                            
+      130 -    val name: String,                                         
+      131 -    @SerialName("avatar_url") val avatarUrl: String? = null,  
+      132 -    @SerialName("age_group") val ageGroup: String,            
+      133 -)                                                             
+      134 -                                                              
+      135 -@Serializable                                                 
+      136 -private data class ProfileResponse(                           
+      137 -    @SerialName("profile_id") val profileId: String? = null,  
+      138 -    val name: String? = null,                                 
+      139 -)                                                             
+      140 -                                                              
+      141 -/** Response from GET /api/v1/household. */                   
+      142 -@Serializable                                                 
+      143 -private data class HouseholdResponse(                         
+      144 -    @SerialName("household_id") val householdId: String,      
+      145 -    val name: String? = null,                                 
+      146 -    @SerialName("owner_id") val ownerId: String? = null,      
+      147 -    val members: List<HouseholdMember> = emptyList(),         
+      148 -    @SerialName("shared_controls_id") val sharedControlsId: St
+          -ring? = null,                                                 
+      149 -    @SerialName("created_at") val createdAt: String? = null,  
+      150 -    @SerialName("updated_at") val updatedAt: String? = null,  
+      151 -)                                                             
+      152 -                                                              
+      153 -/** A member within a household response. */                  
+      154 -@Serializable                                                 
+      155 -private data class HouseholdMember(                           
+      156 -    @SerialName("user_id") val userId: String? = null,        
+      157 -    val role: String? = null,                                 
+      158 -    @SerialName("joined_at") val joinedAt: String? = null,    
+      159 -    @SerialName("display_name") val displayName: String? = nul
+          -l,                                                            
+      160 -    val avatar: String? = null,                               
+      161 -)                                                             
+      162 -                                                              
+      163 -/** Request body for inviting a member to the household. */   
+      164 -@Serializable                                                 
+      165 -private data class InviteMemberBody(                          
+      166 -    val email: String,                                        
+      167 -    val role: String,                                         
+      168 -)                                                             
+      169 -                                                              
+      170 -/** Response from the invite endpoint. */                     
+      171 -@Serializable                                                 
+      172 -private data class InvitationResponse(                        
+      173 -    @SerialName("invitation_id") val invitationId: String? = n
+          -ull,                                                          
+      174 -    @SerialName("expires_at") val expiresAt: String? = null,  
+      175 -)                                                             
+      176 -                                                              
+      177 -/** Request body for updating a member's role. */             
+      178 -@Serializable                                                 
+      179 -private data class RoleUpdateBody(                            
+      180 -    val role: String,                                         
+      181 -)                                                             
+      182 -                                                              
+      183 -/** Response from the shared controls endpoint, includes devic
+          -e info. */                                                    
+      184 -@Serializable                                                 
+      185 -private data class SharedControlsResponse(                    
+      186 -    val controls: SharedControlsDetail? = null,               
+      187 -    val devices: List<HouseholdDevice>? = null,               
+      188 -)                                                             
+      189 -                                                              
+      190 -/** Shared family controls detail. */                         
+      191 -@Serializable                                                 
+      192 -private data class SharedControlsDetail(                      
+      193 -    val id: String? = null,                                   
+      194 -    @SerialName("max_content_rating") val maxContentRating: St
+          -ring? = null,                                                 
+      195 -    @SerialName("viewing_hours_enabled") val viewingHoursEnabl
+          -ed: Boolean? = null,                                          
+      196 -)                                                             
+      197 -                                                              
+      198 -/** A device registered to the household. */                  
+      199 -@Serializable                                                 
+      200 -private data class HouseholdDevice(                           
+      201 -    val id: String? = null,                                   
+      202 -    val name: String? = null,                                 
+      203 -    val type: String? = null,                                 
+      204 -    @SerialName("last_active") val lastActive: String? = null,
+      205 -    @SerialName("user_id") val userId: String? = null,        
+      206 -)                                                             
+       95 +// Service interface and models are in ApiHouseholdRepository+
+          +Models.kt                                                     
+
+⏺ Update(core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Ap
+        iCultureRepository.kt)
+  ⎿  Added 1 line, removed 125 lines
+       75      }
+       76  }
+       77  
+       78 -private interface CultureService {                            
+       79 -                                                              
+       80 -    @GET("api/v1/cultures")                                   
+       81 -    suspend fun getCultures(): List<CultureItem>              
+       82 -                                                              
+       83 -    @GET("api/v1/cultures/default")                           
+       84 -    suspend fun getDefaultCulture(): CultureItem              
+       85 -                                                              
+       86 -    @GET("api/v1/cultures/{cultureId}/featured")              
+       87 -    suspend fun getCultureFeatured(                           
+       88 -        @Path("cultureId") cultureId: String,                 
+       89 -    ): CultureFeaturedResponse                                
+       90 -                                                              
+       91 -    @GET("api/v1/cultures/{cultureId}/trending")              
+       92 -    suspend fun getCultureTrending(                           
+       93 -        @Path("cultureId") cultureId: String,                 
+       94 -        @Query("limit") limit: Int = 10,                      
+       95 -    ): List<CultureContentItem>                               
+       96 -                                                              
+       97 -    @GET("api/v1/cultures/{cultureId}/time")                  
+       98 -    suspend fun getCultureTime(                               
+       99 -        @Path("cultureId") cultureId: String,                 
+      100 -    ): CultureTimeResponse                                    
+      101 -                                                              
+      102 -    @GET("api/v1/judaism/shabbat/featured")                   
+      103 -    suspend fun getShabbatFeatured(): ShabbatFeaturedResponse 
+      104 -                                                              
+      105 -    @GET("api/v1/cultures/city/{citySlug}/content")           
+      106 -    suspend fun getCityContent(                               
+      107 -        @Path("citySlug") citySlug: String,                   
+      108 -    ): List<CultureContentItem>                               
+      109 -}                                                             
+      110 -                                                              
+      111 -/** A culture entry from the cultures list or default endpoint
+          -. */                                                          
+      112 -@Serializable                                                 
+      113 -private data class CultureItem(                               
+      114 -    val id: String,                                           
+      115 -    val name: String? = null,                                 
+      116 -    @SerialName("name_en") val nameEn: String? = null,        
+      117 -    @SerialName("name_he") val nameHe: String? = null,        
+      118 -    val description: String? = null,                          
+      119 -    val timezone: String? = null,                             
+      120 -    @SerialName("is_active") val isActive: Boolean? = null,   
+      121 -    @SerialName("display_order") val displayOrder: Int? = null
+          -,                                                             
+      122 -)                                                             
+      123 -                                                              
+      124 -/** Response from the culture featured endpoint. */           
+      125 -@Serializable                                                 
+      126 -private data class CultureFeaturedResponse(                   
+      127 -    val hero: CultureHeroItem? = null,                        
+      128 -    val sections: List<CultureSection> = emptyList(),         
+      129 -)                                                             
+      130 -                                                              
+      131 -/** Hero item within a culture featured response. */          
+      132 -@Serializable                                                 
+      133 -private data class CultureHeroItem(                           
+      134 -    val id: String? = null,                                   
+      135 -    val title: String? = null,                                
+      136 -    val description: String? = null,                          
+      137 -    val thumbnail: String? = null,                            
+      138 -    val backdrop: String? = null,                             
+      139 -)                                                             
+      140 -                                                              
+      141 -/** A section grouping culture content. */                    
+      142 -@Serializable                                                 
+      143 -private data class CultureSection(                            
+      144 -    val title: String? = null,                                
+      145 -    @SerialName("title_en") val titleEn: String? = null,      
+      146 -    val items: List<CultureContentItem> = emptyList(),        
+      147 -)                                                             
+      148 -                                                              
+      149 -/** A single culture content item. */                         
+      150 -@Serializable                                                 
+      151 -private data class CultureContentItem(                        
+      152 -    val id: String? = null,                                   
+      153 -    val title: String? = null,                                
+      154 -    val description: String? = null,                          
+      155 -    val thumbnail: String? = null,                            
+      156 -    val category: String? = null,                             
+      157 -    val type: String? = null,                                 
+      158 -)                                                             
+      159 -                                                              
+      160 -/** Response from the culture time endpoint. */               
+      161 -@Serializable                                                 
+      162 -private data class CultureTimeResponse(                       
+      163 -    @SerialName("formatted_time") val formattedTime: String? =
+          - null,                                                        
+      164 -    @SerialName("formatted_date") val formattedDate: String? =
+          - null,                                                        
+      165 -    @SerialName("day_of_week") val dayOfWeek: String? = null, 
+      166 -    val timezone: String? = null,                             
+      167 -    @SerialName("is_weekend") val isWeekend: Boolean? = null, 
+      168 -    @SerialName("hebrew_date") val hebrewDate: String? = null,
+      169 -)                                                             
+      170 -                                                              
+      171 -/** Response from the Judaism Shabbat featured endpoint. */   
+      172 -@Serializable                                                 
+      173 -private data class ShabbatFeaturedResponse(                   
+      174 -    val parasha: String? = null,                              
+      175 -    @SerialName("parasha_he") val parashaHe: String? = null,  
+      176 -    @SerialName("is_shabbat") val isShabbat: Boolean? = null, 
+      177 -    val sections: ShabbatSections? = null,                    
+      178 -    @SerialName("all_content") val allContent: List<ShabbatCon
+          -tentItem> = emptyList(),                                      
+      179 -)                                                             
+      180 -                                                              
+      181 -/** Section groupings within the Shabbat featured response. */
+      182 -@Serializable                                                 
+      183 -private data class ShabbatSections(                           
+      184 -    @SerialName("parasha_content") val parashaContent: List<Sh
+          -abbatContentItem> = emptyList(),                              
+      185 -    @SerialName("shabbat_music") val shabbatMusic: List<Shabba
+          -tContentItem> = emptyList(),                                  
+      186 -    val preparation: List<ShabbatContentItem> = emptyList(),  
+      187 -    val featured: List<ShabbatContentItem> = emptyList(),     
+      188 -)                                                             
+      189 -                                                              
+      190 -/** A content item within the Shabbat featured response. */   
+      191 -@Serializable                                                 
+      192 -private data class ShabbatContentItem(                        
+      193 -    val id: String? = null,                                   
+      194 -    val title: String? = null,                                
+      195 -    @SerialName("title_en") val titleEn: String? = null,      
+      196 -    val description: String? = null,                          
+      197 -    val thumbnail: String? = null,                            
+      198 -    val duration: String? = null,                             
+      199 -    val rabbi: String? = null,                                
+      200 -    val category: String? = null,                             
+      201 -    val type: String? = null,                                 
+      202 -)                                                             
+       78 +// Service interface and models are in ApiCultureRepository+Mo
+          +dels.kt                                                       
+
+⏺ Update(core/core-data/src/main/java/tv/bayit/plus/core/data/repository/impl/Ap
+        iLiveDubbingRepository.kt)
+  ⎿  Added 1 line, removed 92 lines
+      107      }
+      108  }
+      109  
+      110 -private interface LiveDubbingService {                        
+      111 -                                                              
+      112 -    @GET("api/v1/live/{channelId}/dubbing/availability")      
+      113 -    suspend fun getDubbingAvailability(                       
+      114 -        @Path("channelId") channelId: String,                 
+      115 -    ): DubbingAvailabilityResponse                            
+      116 -                                                              
+      117 -    @GET("api/v1/live/dubbing/voices")                        
+      118 -    suspend fun getVoices(): VoicesListResponse               
+      119 -                                                              
+      120 -    @POST("api/v1/live-dubbing/start")                        
+      121 -    suspend fun startDubbing(                                 
+      122 -        @Body body: StartDubbingBody,                         
+      123 -    ): DubbingSessionResponse                                 
+      124 -                                                              
+      125 -    @POST("api/v1/live-dubbing/stop")                         
+      126 -    suspend fun stopDubbing(                                  
+      127 -        @Body body: StopDubbingBody,                          
+      128 -    ): DubbingStopResponse                                    
+      129 -                                                              
+      130 -    @PUT("api/v1/live-dubbing/volume")                        
+      131 -    suspend fun updateVolumeMix(                              
+      132 -        @Body body: VolumeMixBody,                            
+      133 -    ): DubbingVolumeResponse                                  
+      134 -}                                                             
+      135 -                                                              
+      136 -/** Response from the voices endpoint. */                     
+      137 -@Serializable                                                 
+      138 -private data class VoicesListResponse(                        
+      139 -    val voices: List<DubbingVoice> = emptyList(),             
+      140 -)                                                             
+      141 -                                                              
+      142 -/** Response from the dubbing availability check endpoint. */ 
+      143 -@Serializable                                                 
+      144 -private data class DubbingAvailabilityResponse(               
+      145 -    val available: Boolean,                                   
+      146 -    @SerialName("source_language") val sourceLanguage: String?
+          - = null,                                                      
+      147 -    @SerialName("supported_target_languages")                 
+      148 -    val supportedTargetLanguages: List<String> = emptyList(), 
+      149 -    @SerialName("default_voice_id") val defaultVoiceId: String
+          -? = null,                                                     
+      150 -    @SerialName("default_sync_delay_ms") val defaultSyncDelayM
+          -s: Int? = null,                                               
+      151 -    val error: String? = null,                                
+      152 -)                                                             
+      153 -                                                              
+      154 -/** A language item derived from the availability response. */
+      155 -@Serializable                                                 
+      156 -private data class DubbingLanguageItem(                       
+      157 -    val code: String,                                         
+      158 -    val available: Boolean,                                   
+      159 -)                                                             
+      160 -                                                              
+      161 -/** Request body for starting a live dubbing session. */      
+      162 -@Serializable                                                 
+      163 -private data class StartDubbingBody(                          
+      164 -    @SerialName("channel_id") val channelId: String,          
+      165 -    @SerialName("target_language") val targetLanguage: String,
+      166 -)                                                             
+      167 -                                                              
+      168 -/** Response from starting a dubbing session. */              
+      169 -@Serializable                                                 
+      170 -private data class DubbingSessionResponse(                    
+      171 -    @SerialName("session_id") val sessionId: String,          
+      172 -    val status: String? = null,                               
+      173 -    @SerialName("stream_url") val streamUrl: String? = null,  
+      174 -)                                                             
+      175 -                                                              
+      176 -/** Request body for stopping a dubbing session. */           
+      177 -@Serializable                                                 
+      178 -private data class StopDubbingBody(                           
+      179 -    @SerialName("session_id") val sessionId: String,          
+      180 -)                                                             
+      181 -                                                              
+      182 -/** Response from stopping a dubbing session. */              
+      183 -@Serializable                                                 
+      184 -private data class DubbingStopResponse(                       
+      185 -    val success: Boolean = true,                              
+      186 -    val message: String? = null,                              
+      187 -)                                                             
+      188 -                                                              
+      189 -/** Request body for adjusting the volume mix between original
+          - and dubbed audio. */                                         
+      190 -@Serializable                                                 
+      191 -private data class VolumeMixBody(                             
+      192 -    @SerialName("session_id") val sessionId: String,          
+      193 -    @SerialName("original_volume") val originalVolume: Float, 
+      194 -    @SerialName("dubbing_volume") val dubbingVolume: Float,   
+      195 -)                                                             
+      196 -                                                              
+      197 -/** Response from the volume mix update endpoint. */          
+      198 -@Serializable                                                 
+      199 -private data class DubbingVolumeResponse(                     
+      200 -    val success: Boolean = true,                              
+      201 -)                                                             
+      110 +// Service interface and models are in ApiLiveDubbingRepositor
+          +y+Models.kt                                                   
+
+⏺ Now do the UI component extractions (Batch 3) in parallel:
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerContent+Extras.ktfeature/feature-player/src/main/java/tv/bayit/plus/feature/player/Player
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-player/src/main/java/tv/bayit/plus/feature/player/PlayerContent+Extras.ktContent+Extras.kt)
+  ⎿  Wrote 54 lines to feature/feature-player/src/main/java/tv/bayit/plus/f
+     eature/player/PlayerContent+Extras.kt
+       1 package tv.bayit.plus.feature.player
+       2 
+       3 import androidx.compose.foundation.layout.Arrangement
+       4 import androidx.compose.foundation.layout.Column
+       5 import androidx.compose.foundation.layout.Spacer
+       6 import androidx.compose.foundation.layout.fillMaxSize
+       7 import androidx.compose.foundation.layout.height
+       8 import androidx.compose.foundation.layout.padding
+       9 import androidx.compose.material3.MaterialTheme
+      10 import androidx.compose.material3.Text
+     … +44 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/detail/MovieDetailSections+Related.ktfeature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/detail/Movie
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/detail/MovieDetailSections+Related.ktDetailSections+Related.kt)
+  ⎿  Wrote 90 lines to feature/feature-vod/src/main/java/tv/bayit/plus/feat
+     ure/vod/detail/MovieDetailSections+Related.kt
+       1 package tv.bayit.plus.feature.vod.detail
+       2 
+       3 import androidx.compose.foundation.clickable
+       4 import androidx.compose.foundation.layout.Arrangement
+       5 import androidx.compose.foundation.layout.Box
+       6 import androidx.compose.foundation.layout.Column
+       7 import androidx.compose.foundation.layout.PaddingValues
+       8 import androidx.compose.foundation.layout.Spacer
+       9 import androidx.compose.foundation.layout.aspectRatio
+      10 import androidx.compose.foundation.layout.fillMaxSize
+     … +80 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/settings/AvatarSettingsScreen+Components.ktfeature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/settin
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/settings/AvatarSettingsScreen+Components.ktgs/AvatarSettingsScreen+Components.kt)
+  ⎿  Wrote 67 lines to feature/feature-zehani/src/main/java/tv/bayit/plus/f
+     eature/zehani/settings/AvatarSettingsScreen+Components.kt
+       1 package tv.bayit.plus.feature.zehani.settings
+       2 
+       3 import androidx.compose.foundation.layout.Arrangement
+       4 import androidx.compose.foundation.layout.Box
+       5 import androidx.compose.foundation.layout.Column
+       6 import androidx.compose.foundation.layout.Row
+       7 import androidx.compose.foundation.layout.fillMaxSize
+       8 import androidx.compose.foundation.layout.fillMaxWidth
+       9 import androidx.compose.material3.MaterialTheme
+      10 import androidx.compose.material3.Switch
+     … +57 lines (ctrl+o to expand)
+
+⏺ Now remove the moved functions from source files and fix the renamed
+  ErrorContent in AvatarSettingsScreen:
+
+⏺ Update(feature/feature-player/src/main/java/tv/bayit/plus/feature/player/Playe
+        rContent.kt)
+  ⎿  Added 1 line, removed 37 lines
+      186      }
+      187  }
+      188  
+      189 -@Composable                                                   
+      190 -internal fun MetadataSection(title: String, description: Strin
+          -g?) {                                                         
+      191 -    Column(modifier = Modifier.padding(DesignTokens.Spacing.ba
+          -se)) {                                                        
+      192 -        Text(                                                 
+      193 -            text = title,                                     
+      194 -            style = MaterialTheme.typography.headlineMedium,  
+      195 -            color = DesignTokens.Colors.Text.primary,         
+      196 -        )                                                     
+      197 -        description?.let { desc ->                            
+      198 -            Spacer(modifier = Modifier.height(DesignTokens.Spa
+          -cing.sm))                                                     
+      199 -            Text(                                             
+      200 -                text = desc,                                  
+      201 -                style = MaterialTheme.typography.bodyMedium,  
+      202 -                color = DesignTokens.Colors.Text.secondary,   
+      203 -            )                                                 
+      204 -        }                                                     
+      205 -    }                                                         
+      206 -}                                                             
+      207 -                                                              
+      208 -@Composable                                                   
+      209 -internal fun ErrorContent(message: String, onBack: () -> Unit)
+          - {                                                            
+      210 -    Column(                                                   
+      211 -        modifier = Modifier                                   
+      212 -            .fillMaxSize()                                    
+      213 -            .padding(DesignTokens.Spacing.xl),                
+      214 -        verticalArrangement = Arrangement.Center,             
+      215 -        horizontalAlignment = Alignment.CenterHorizontally,   
+      216 -    ) {                                                       
+      217 -        Text(                                                 
+      218 -            text = message,                                   
+      219 -            color = DesignTokens.Colors.Semantic.error,       
+      220 -            style = MaterialTheme.typography.bodyLarge,       
+      221 -        )                                                     
+      222 -        Spacer(modifier = Modifier.height(DesignTokens.Spacing
+          -.md))                                                         
+      223 -        GlassButton(text = bayitString("player.go_back"), onCl
+          -ick = onBack)                                                 
+      224 -    }                                                         
+      225 -}                                                             
+      189 +// MetadataSection and ErrorContent are in PlayerContent+Extra
+          +s.kt                                                          
+
+⏺ Update(feature/feature-vod/src/main/java/tv/bayit/plus/feature/vod/detail/Movi
+        eDetailSections.kt)
+  ⎿  Added 1 line, removed 57 lines
+      162      }
+      163  }
+      164  
+      165 -@Composable                                                   
+      166 -internal fun RelatedContentShelf(                             
+      167 -    related: List<RelatedItem>,                               
+      168 -    onRelatedClick: (String) -> Unit,                         
+      169 -    modifier: Modifier = Modifier,                            
+      170 -) {                                                           
+      171 -    Column(modifier = modifier.padding(top = DesignTokens.Spac
+          -ing.lg)) {                                                    
+      172 -        Text(                                                 
+      173 -            text = "Related",                                 
+      174 -            style = MaterialTheme.typography.titleMedium,     
+      175 -            color = DesignTokens.Colors.Text.primary,         
+      176 -            fontWeight = FontWeight.SemiBold,                 
+      177 -            modifier = Modifier.padding(horizontal = DesignTok
+          -ens.Spacing.base),                                            
+      178 -        )                                                     
+      179 -        Spacer(modifier = Modifier.height(DesignTokens.Spacing
+          -.sm))                                                         
+      180 -        LazyRow(                                              
+      181 -            contentPadding = PaddingValues(horizontal = Design
+          -Tokens.Spacing.base),                                         
+      182 -            horizontalArrangement = Arrangement.spacedBy(Desig
+          -nTokens.Spacing.md),                                          
+      183 -        ) {                                                   
+      184 -            items(items = related, key = { it.id }) { item -> 
+      185 -                RelatedCard(item = item, onClick = { onRelated
+          -Click(item.id) })                                             
+      186 -            }                                                 
+      187 -        }                                                     
+      188 -        Spacer(modifier = Modifier.height(DesignTokens.Spacing
+          -.xl))                                                         
+      189 -    }                                                         
+      190 -}                                                             
+      191 -                                                              
+      192 -@Composable                                                   
+      193 -private fun RelatedCard(item: RelatedItem, onClick: () -> Unit
+          -, modifier: Modifier = Modifier) {                            
+      194 -    GlassCard(modifier = modifier.width(RELATED_CARD_WIDTH)) {
+      195 -        Column(modifier = Modifier.clickable(onClick = onClick
+          -)) {                                                          
+      196 -            CachedAsyncImage(                                 
+      197 -                url = item.thumbnail,                         
+      198 -                contentDescription = item.title,              
+      199 -                modifier = Modifier.fillMaxWidth().aspectRatio
+          -(RELATED_POSTER_RATIO),                                       
+      200 -            )                                                 
+      201 -            Spacer(modifier = Modifier.height(DesignTokens.Spa
+          -cing.xs))                                                     
+      202 -            item.title?.let { title ->                        
+      203 -                Text(title, style = MaterialTheme.typography.b
+          -odySmall, color = DesignTokens.Colors.Text.primary, fontWeight
+          - = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.El
+          -lipsis, modifier = Modifier.padding(horizontal = DesignTokens.
+          -Spacing.xs))                                                  
+      204 -            }                                                 
+      205 -            item.year?.let { year ->                          
+      206 -                Text(year.toString(), style = MaterialTheme.ty
+          -pography.labelSmall, color = DesignTokens.Colors.Text.muted, m
+          -odifier = Modifier.padding(horizontal = DesignTokens.Spacing.x
+          -s))                                                           
+      207 -            }                                                 
+      208 -        }                                                     
+      209 -    }                                                         
+      210 -}                                                             
+      211 -                                                              
+      212 -@Composable                                                   
+      213 -internal fun MovieErrorContent(message: String, onBack: () -> 
+          -Unit, onRetry: () -> Unit, modifier: Modifier = Modifier) {   
+      214 -    Box(modifier = modifier.fillMaxSize(), contentAlignment = 
+          -Alignment.Center) {                                           
+      215 -        Column(horizontalAlignment = Alignment.CenterHorizonta
+          -lly, verticalArrangement = Arrangement.spacedBy(DesignTokens.S
+          -pacing.md)) {                                                 
+      216 -            Text(message, style = MaterialTheme.typography.bod
+          -yLarge, color = DesignTokens.Colors.Semantic.error)           
+      217 -            GlassButton(text = "Retry", onClick = onRetry)    
+      218 -            GlassButton(text = "Go Back", onClick = onBack, is
+          -Primary = false)                                              
+      219 -        }                                                     
+      220 -    }                                                         
+      221 -}                                                             
+      165 +// RelatedContentShelf, RelatedCard, MovieErrorContent are in 
+          +MovieDetailSections+Related.kt                                
+
+⏺ Update(feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/setti
+        ngs/AvatarSettingsScreen.kt)
+  ⎿  Added 1 line, removed 1 line
+      61          GlassTopBar(title = "Avatar Settings")
+      62          when (uiState) {
+      63              is AvatarSettingsUiState.Loading -> GlassLoadingInd
+          icator()
+      64 -            is AvatarSettingsUiState.Error -> ErrorContent(mess
+         -age = uiState.message, onRetry = onRetry)                      
+      64 +            is AvatarSettingsUiState.Error -> AvatarSettingsErr
+         +orContent(message = uiState.message, onRetry = onRetry)        
+      65              is AvatarSettingsUiState.Success -> AvatarSettingsC
+          ontent(
+      66                  state = uiState,
+      67                  onSelectOutfit = onSelectOutfit,
+
+⏺ Now remove the SettingToggle and ErrorContent from AvatarSettingsScreen.kt:
+
+⏺ Update(feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/setti
+        ngs/AvatarSettingsScreen.kt)
+  ⎿  Added 1 line, removed 48 lines
+      170      }
+      171  }
+      172  
+      173 -@Composable                                                   
+      174 -private fun SettingToggle(                                    
+      175 -    label: String,                                            
+      176 -    description: String,                                      
+      177 -    checked: Boolean,                                         
+      178 -    onCheckedChange: (Boolean) -> Unit,                       
+      179 -) {                                                           
+      180 -    Row(                                                      
+      181 -        modifier = Modifier.fillMaxWidth(),                   
+      182 -        horizontalArrangement = Arrangement.SpaceBetween,     
+      183 -        verticalAlignment = Alignment.CenterVertically,       
+      184 -    ) {                                                       
+      185 -        Column(modifier = Modifier.weight(1f)) {              
+      186 -            Text(                                             
+      187 -                text = label,                                 
+      188 -                style = MaterialTheme.typography.bodyMedium,  
+      189 -                color = DesignTokens.Colors.Text.primary,     
+      190 -                fontWeight = FontWeight.Medium,               
+      191 -            )                                                 
+      192 -            Text(                                             
+      193 -                text = description,                           
+      194 -                style = MaterialTheme.typography.bodySmall,   
+      195 -                color = DesignTokens.Colors.Text.muted,       
+      196 -            )                                                 
+      197 -        }                                                     
+      198 -        Switch(                                               
+      199 -            checked = checked,                                
+      200 -            onCheckedChange = onCheckedChange,                
+      201 -            colors = SwitchDefaults.colors(                   
+      202 -                checkedThumbColor = DesignTokens.Colors.Primar
+          -y.base,                                                       
+      203 -                checkedTrackColor = DesignTokens.Colors.Primar
+          -y.light,                                                      
+      204 -            ),                                                
+      205 -        )                                                     
+      206 -    }                                                         
+      207 -}                                                             
+      208 -                                                              
+      209 -@Composable                                                   
+      210 -private fun ErrorContent(message: String, onRetry: () -> Unit)
+          - {                                                            
+      211 -    Box(modifier = Modifier.fillMaxSize(), contentAlignment = 
+          -Alignment.Center) {                                           
+      212 -        Column(                                               
+      213 -            horizontalAlignment = Alignment.CenterHorizontally
+          -,                                                             
+      214 -            verticalArrangement = Arrangement.spacedBy(DesignT
+          -okens.Spacing.md),                                            
+      215 -        ) {                                                   
+      216 -            Text(text = message, color = DesignTokens.Colors.S
+          -emantic.error, style = MaterialTheme.typography.bodyLarge)    
+      217 -            GlassButton(text = "Retry", onClick = onRetry)    
+      218 -        }                                                     
+      219 -    }                                                         
+      220 -}                                                             
+      173 +// SettingToggle and AvatarSettingsErrorContent are in AvatarS
+          +ettingsScreen+Components.kt                                   
+
+⏺ Now handle the remaining UI component splits in parallel:
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-player/src/main/java/tv/bayit/plus/feature/player/dialogue/DialogueConversation+Video.ktfeature/feature-player/src/main/java/tv/bayit/plus/feature/player/dialog
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-player/src/main/java/tv/bayit/plus/feature/player/dialogue/DialogueConversation+Video.ktue/DialogueConversation+Video.kt)
+  ⎿  Wrote 82 lines to feature/feature-player/src/main/java/tv/bayit/plus/f
+     eature/player/dialogue/DialogueConversation+Video.kt
+       1 package tv.bayit.plus.feature.player.dialogue
+       2 
+       3 import android.net.Uri
+       4 import androidx.compose.foundation.layout.Box
+       5 import androidx.compose.foundation.layout.size
+       6 import androidx.compose.foundation.shape.CircleShape
+       7 import androidx.compose.material3.Text
+       8 import androidx.compose.runtime.Composable
+       9 import androidx.compose.runtime.DisposableEffect
+      10 import androidx.compose.runtime.getValue
+     … +72 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-podcasts/src/main/java/tv/bayit/plus/feature/podcasts/detail/PodcastDetailSections+Hero.ktfeature/feature-podcasts/src/main/java/tv/bayit/plus/feature/podcasts/de
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-podcasts/src/main/java/tv/bayit/plus/feature/podcasts/detail/PodcastDetailSections+Hero.kttail/PodcastDetailSections+Hero.kt)
+  ⎿  Wrote 62 lines to feature/feature-podcasts/src/main/java/tv/bayit/plus
+     /feature/podcasts/detail/PodcastDetailSections+Hero.kt
+       1 package tv.bayit.plus.feature.podcasts.detail
+       2 
+       3 import androidx.compose.foundation.background
+       4 import androidx.compose.foundation.layout.Box
+       5 import androidx.compose.foundation.layout.Column
+       6 import androidx.compose.foundation.layout.aspectRatio
+       7 import androidx.compose.foundation.layout.fillMaxSize
+       8 import androidx.compose.foundation.layout.fillMaxWidth
+       9 import androidx.compose.foundation.layout.padding
+      10 import androidx.compose.foundation.layout.size
+     … +52 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/avatar/Avatar3DScreen+Cards.ktfeature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/avatar
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/avatar/Avatar3DScreen+Cards.kt/Avatar3DScreen+Cards.kt)
+  ⎿  Wrote 73 lines to feature/feature-zehani/src/main/java/tv/bayit/plus/f
+     eature/zehani/avatar/Avatar3DScreen+Cards.kt
+       1 package tv.bayit.plus.feature.zehani.avatar
+       2 
+       3 import androidx.compose.foundation.layout.Arrangement
+       4 import androidx.compose.foundation.layout.Column
+       5 import androidx.compose.foundation.layout.Row
+       6 import androidx.compose.foundation.layout.fillMaxWidth
+       7 import androidx.compose.material3.MaterialTheme
+       8 import androidx.compose.material3.Text
+       9 import androidx.compose.runtime.Composable
+      10 import androidx.compose.ui.Modifier
+     … +63 lines (ctrl+o to expand)
+
+⏺ Now remove the moved functions from the source files and fix references:
+
+⏺ Update(feature/feature-player/src/main/java/tv/bayit/plus/feature/player/dialo
+        gue/DialogueConversation.kt)
+  ⎿  Added 1 line, removed 56 lines
+      117      }
+      118  }
+      119  
+      120 -@Composable                                                   
+      121 -internal fun CharacterVideoCircle(videoUrl: String) {         
+      122 -    val context = LocalContext.current                        
+      123 -    var isReady by remember { mutableStateOf(false) }         
+      124 -    var hasError by remember { mutableStateOf(false) }        
+      125 -    val exoPlayer = remember(videoUrl) {                      
+      126 -        ExoPlayer.Builder(context).build().apply {            
+      127 -            setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)
+          -))                                                            
+      128 -            addListener(object : Player.Listener {            
+      129 -                override fun onPlaybackStateChanged(state: Int
+          -) {                                                           
+      130 -                    when (state) {                            
+      131 -                        Player.STATE_READY -> isReady = true  
+      132 -                        Player.STATE_ENDED -> {}              
+      133 -                        Player.STATE_IDLE -> {}               
+      134 -                        Player.STATE_BUFFERING -> {}          
+      135 -                    }                                         
+      136 -                }                                             
+      120 +// CharacterVideoCircle is in DialogueConversation+Video.kt   
+      121  
+      138 -                override fun onPlayerError(error: androidx.med
+          -ia3.common.PlaybackException) {                               
+      139 -                    hasError = true                           
+      140 -                }                                             
+      141 -            })                                                
+      142 -            prepare()                                         
+      143 -            playWhenReady = true                              
+      144 -            repeatMode = Player.REPEAT_MODE_OFF               
+      145 -        }                                                     
+      146 -    }                                                         
+      147 -    DisposableEffect(videoUrl) { onDispose { exoPlayer.release
+          -() } }                                                        
+      148 -    Box(                                                      
+      149 -        modifier = Modifier.size(AVATAR_CIRCLE_SIZE).clip(Circ
+          -leShape),                                                     
+      150 -        contentAlignment = Alignment.Center,                  
+      151 -    ) {                                                       
+      152 -        if (hasError) {                                       
+      153 -            Box(                                              
+      154 -                modifier = Modifier.matchParentSize(),        
+      155 -                contentAlignment = Alignment.Center,          
+      156 -            ) {                                               
+      157 -                Text(                                         
+      158 -                    text = "!",                               
+      159 -                    color = DesignTokens.Colors.Text.muted,   
+      160 -                    fontSize = DesignTokens.FontSize.lg,      
+      161 -                )                                             
+      162 -            }                                                 
+      163 -        } else {                                              
+      164 -            AndroidView(                                      
+      165 -                factory = { ctx ->                            
+      166 -                    PlayerView(ctx).apply { player = exoPlayer
+          -; useController = false }                                     
+      167 -                },                                            
+      168 -                modifier = Modifier.matchParentSize(),        
+      169 -            )                                                 
+      170 -            if (!isReady) {                                   
+      171 -                GlassSpinner(size = SpinnerSize.SMALL)        
+      172 -            }                                                 
+      173 -        }                                                     
+      174 -    }                                                         
+      175 -}                                                             
+      176 -                                                              
+      122  @Composable
+      123  internal fun MessageInput(isSending: Boolean, onSendMessage: (
+           String) -> Unit) {
+      124      var messageText by remember { mutableStateOf("") }
+
+⏺ Update(feature/feature-podcasts/src/main/java/tv/bayit/plus/feature/podcasts/d
+        etail/PodcastDetailSections.kt)
+  ⎿  Added 1 line, removed 35 lines
+      42  private val EPISODE_THUMBNAIL_WIDTH = 80.dp
+      43  private val PLAY_BUTTON_SIZE = 44.dp
+      44  
+      45 -@Composable                                                    
+      46 -internal fun PodcastHeroSection(state: PodcastDetailUiState.Suc
+         -cess, onBack: () -> Unit) {                                    
+      47 -    Box(modifier = Modifier.fillMaxWidth().aspectRatio(HERO_ASP
+         -ECT_RATIO)) {                                                  
+      48 -        CachedAsyncImage(                                      
+      49 -            url = state.cover,                                 
+      50 -            contentDescription = state.title,                  
+      51 -            modifier = Modifier.fillMaxSize(),                 
+      52 -        )                                                      
+      53 -        Box(                                                   
+      54 -            modifier = Modifier.fillMaxSize().background(      
+      55 -                Brush.verticalGradient(                        
+      56 -                    colors = listOf(Color.Transparent, DesignTo
+         -kens.Colors.Background.primary),                               
+      57 -                ),                                             
+      58 -            ),                                                 
+      59 -        )                                                      
+      60 -        IconButton(                                            
+      61 -            onClick = onBack,                                  
+      62 -            modifier = Modifier.align(Alignment.TopStart).paddi
+         -ng(DesignTokens.Spacing.sm),                                   
+      63 -        ) {                                                    
+      64 -            Icon(                                              
+      65 -                imageVector = Icons.AutoMirrored.Filled.ArrowBa
+         -ck,                                                            
+      66 -                contentDescription = "Navigate back",          
+      67 -                tint = DesignTokens.Colors.Text.primary,       
+      68 -                modifier = Modifier.size(DesignTokens.TouchTarg
+         -et.minimum),                                                   
+      69 -            )                                                  
+      70 -        }                                                      
+      71 -        Text(                                                  
+      72 -            text = state.title,                                
+      73 -            style = MaterialTheme.typography.headlineLarge,    
+      74 -            color = DesignTokens.Colors.Text.primary,          
+      75 -            fontWeight = FontWeight.Bold,                      
+      76 -            modifier = Modifier.align(Alignment.BottomStart).pa
+         -dding(DesignTokens.Spacing.base),                              
+      77 -        )                                                      
+      78 -    }                                                          
+      79 -}                                                              
+      45 +// PodcastHeroSection is in PodcastDetailSections+Hero.kt      
+      46  
+      47  @Composable
+      48  internal fun PodcastMetadataSection(state: PodcastDetailUiState
+          .Success) {
+
+⏺ Update(feature/feature-zehani/src/main/java/tv/bayit/plus/feature/zehani/avata
+        r/Avatar3DScreen.kt)
+  ⎿  Added 1 line, removed 57 lines
+      139      }
+      140  }
+      141  
+      142 -@Composable                                                   
+      143 -private fun MeshInfoCard(mesh: AvatarMesh) {                  
+      144 -    GlassCard(modifier = Modifier.fillMaxWidth()) {           
+      145 -        Column(verticalArrangement = Arrangement.spacedBy(Desi
+          -gnTokens.Spacing.xs)) {                                       
+      146 -            InfoRow("Vertices", mesh.vertexCount.toString())  
+      147 -            InfoRow("Bones", mesh.boneCount.toString())       
+      148 -            InfoRow("Blend Shapes", mesh.blendShapes.size.toSt
+          -ring())                                                       
+      149 -            InfoRow("Has GLB", if (mesh.hasGlb) "Yes" else "No
+          -")                                                            
+      150 -        }                                                     
+      151 -    }                                                         
+      152 -}                                                             
+      142 +// MeshInfoCard, ControlsCard, AvatarInfoRow are in Avatar3DSc
+          +reen+Cards.kt                                                 
+      143  
+      144  @Composable
+      155 -private fun ControlsCard(                                     
+      156 -    state: Avatar3DUiState.Success,                           
+      157 -    onRotate: (Float, Float) -> Unit,                         
+      158 -    onZoom: (Float) -> Unit,                                  
+      159 -    onToggleAnimation: () -> Unit,                            
+      160 -) {                                                           
+      161 -    GlassCard(modifier = Modifier.fillMaxWidth()) {           
+      162 -        Column(verticalArrangement = Arrangement.spacedBy(Desi
+          -gnTokens.Spacing.sm)) {                                       
+      163 -            Text(                                             
+      164 -                text = "Controls",                            
+      165 -                style = MaterialTheme.typography.titleMedium, 
+      166 -                color = DesignTokens.Colors.Text.primary,     
+      167 -                fontWeight = FontWeight.SemiBold,             
+      168 -            )                                                 
+      169 -            Row(                                              
+      170 -                modifier = Modifier.fillMaxWidth(),           
+      171 -                horizontalArrangement = Arrangement.spacedBy(D
+          -esignTokens.Spacing.sm),                                      
+      172 -            ) {                                               
+      173 -                GlassButton(                                  
+      174 -                    text = if (state.isAnimating) "Pause" else
+          - "Animate",                                                   
+      175 -                    onClick = onToggleAnimation,              
+      176 -                    modifier = Modifier.weight(1f),           
+      177 -                )                                             
+      178 -                GlassButton(                                  
+      179 -                    text = "Reset",                           
+      180 -                    onClick = { onRotate(0f, 0f); onZoom(1f) }
+          -,                                                             
+      181 -                    isPrimary = false,                        
+      182 -                    modifier = Modifier.weight(1f),           
+      183 -                )                                             
+      184 -            }                                                 
+      185 -        }                                                     
+      186 -    }                                                         
+      187 -}                                                             
+      188 -                                                              
+      189 -@Composable                                                   
+      190 -private fun InfoRow(label: String, value: String) {           
+      191 -    Row(                                                      
+      192 -        modifier = Modifier.fillMaxWidth(),                   
+      193 -        horizontalArrangement = Arrangement.SpaceBetween,     
+      194 -    ) {                                                       
+      195 -        Text(text = label, color = DesignTokens.Colors.Text.se
+          -condary, fontSize = DesignTokens.FontSize.sm)                 
+      196 -        Text(text = value, color = DesignTokens.Colors.Text.pr
+          -imary, fontSize = DesignTokens.FontSize.sm, fontWeight = FontW
+          -eight.Medium)                                                 
+      197 -    }                                                         
+      198 -}                                                             
+      199 -                                                              
+      200 -@Composable                                                   
+      145  private fun ErrorContent(message: String, onRetry: () -> Unit)
+            {
+      146      Box(modifier = Modifier.fillMaxSize(), contentAlignment = 
+           Alignment.Center) {
+      147          Column(
+
+⏺ Now handle GrandparentBridgeScreen and ShabbatBanner splits:
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-social/src/main/java/tv/bayit/plus/feature/social/grandparent/GrandparentBridgeScreen+Content.ktfeature/feature-social/src/main/java/tv/bayit/plus/feature/social/grandp
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-social/src/main/java/tv/bayit/plus/feature/social/grandparent/GrandparentBridgeScreen+Content.ktarent/GrandparentBridgeScreen+Content.kt)
+  ⎿  Wrote 116 lines to feature/feature-social/src/main/java/tv/bayit/plus/
+     feature/social/grandparent/GrandparentBridgeScreen+Content.kt
+       1 package tv.bayit.plus.feature.social.grandparent
+       2 
+       3 import androidx.compose.foundation.layout.Arrangement
+       4 import androidx.compose.foundation.layout.Column
+       5 import androidx.compose.foundation.layout.Row
+       6 import androidx.compose.foundation.layout.fillMaxWidth
+       7 import androidx.compose.foundation.layout.padding
+       8 import androidx.compose.foundation.layout.size
+       9 import androidx.compose.foundation.lazy.LazyColumn
+      10 import androidx.compose.foundation.lazy.items
+     … +106 lines (ctrl+o to expand)
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-home/src/main/java/tv/bayit/plus/feature/home/ShabbatBanner+Time.ktfeature/feature-home/src/main/java/tv/bayit/plus/feature/home/ShabbatBan
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/feature/feature-home/src/main/java/tv/bayit/plus/feature/home/ShabbatBanner+Time.ktner+Time.kt)
+  ⎿  Wrote 46 lines to feature/feature-home/src/main/java/tv/bayit/plus/fea
+     ture/home/ShabbatBanner+Time.kt
+       1 package tv.bayit.plus.feature.home
+       2 
+       3 import tv.bayit.plus.core.model.ShabbatInfo
+       4 import java.time.Duration
+       5 import java.time.ZonedDateTime
+       6 import java.time.format.DateTimeFormatter
+       7 
+       8 internal fun calculateTimeRemaining(
+       9     shabbatInfo: ShabbatInfo,
+      10     currentTime: ZonedDateTime,
+     … +36 lines (ctrl+o to expand)
+
+⏺ Now remove the moved functions from their source files:
+
+⏺ Update(feature/feature-social/src/main/java/tv/bayit/plus/feature/social/grand
+        parent/GrandparentBridgeScreen.kt)
+  ⎿  Added 1 line, removed 93 lines
+       90      }
+       91  }
+       92  
+       93 -@Composable                                                   
+       94 -private fun SuccessContent(                                   
+       95 -    connections: List<Any>,                                   
+       96 -    onNavigateToInvite: () -> Unit,                           
+       97 -    onNavigateToSharedMoments: (String) -> Unit,              
+       98 -) {                                                           
+       99 -    LazyColumn(                                               
+      100 -        modifier = Modifier.fillMaxSize().padding(DesignTokens
+          -.Spacing.md),                                                 
+      101 -        verticalArrangement = Arrangement.spacedBy(DesignToken
+          -s.Spacing.md),                                                
+      102 -    ) {                                                       
+      103 -        item {                                                
+      104 -            Text(                                             
+      105 -                text = "Connected Grandparents",              
+      106 -                style = MaterialTheme.typography.titleLarge,  
+      107 -                color = MaterialTheme.colorScheme.onSurface,  
+      108 -            )                                                 
+      109 -        }                                                     
+       93 +// SuccessContent, EmptyConnectionsState, ConnectionCard are i
+          +n GrandparentBridgeScreen+Content.kt                          
+       94  
+      111 -        if (connections.isEmpty()) {                          
+      112 -            item {                                            
+      113 -                EmptyConnectionsState(onNavigateToInvite = onN
+          -avigateToInvite)                                              
+      114 -            }                                                 
+      115 -        } else {                                              
+      116 -            items(connections) { connection ->                
+      117 -                ConnectionCard(                               
+      118 -                    connection = connection,                  
+      119 -                    onViewSharedMoments = { onNavigateToShared
+          -Moments("connection-id") },                                   
+      120 -                )                                             
+      121 -            }                                                 
+      122 -        }                                                     
+      123 -                                                              
+      124 -        item {                                                
+      125 -            GlassButton(                                      
+      126 -                text = "Invite Grandparent",                  
+      127 -                onClick = onNavigateToInvite,                 
+      128 -                modifier = Modifier.fillMaxWidth(),           
+      129 -            )                                                 
+      130 -        }                                                     
+      131 -    }                                                         
+      132 -}                                                             
+      133 -                                                              
+       95  @Composable
+      135 -private fun EmptyConnectionsState(onNavigateToInvite: () -> Un
+          -it) {                                                         
+      136 -    GlassCard(modifier = Modifier.fillMaxWidth().padding(Desig
+          -nTokens.Spacing.lg)) {                                        
+      137 -        Column(                                               
+      138 -            modifier = Modifier.padding(DesignTokens.Spacing.l
+          -g),                                                           
+      139 -            horizontalAlignment = Alignment.CenterHorizontally
+          -,                                                             
+      140 -            verticalArrangement = Arrangement.spacedBy(DesignT
+          -okens.Spacing.md),                                            
+      141 -        ) {                                                   
+      142 -            Text(                                             
+      143 -                text = "No connections yet",                  
+      144 -                style = MaterialTheme.typography.titleMedium, 
+      145 -                color = MaterialTheme.colorScheme.onSurface,  
+      146 -            )                                                 
+      147 -            Text(                                             
+      148 -                text = "Invite a grandparent to start sharing 
+          -moments together",                                            
+      149 -                style = MaterialTheme.typography.bodyMedium,  
+      150 -                color = MaterialTheme.colorScheme.onSurfaceVar
+          -iant,                                                         
+      151 -            )                                                 
+      152 -            GlassButton(text = "Invite Grandparent", onClick =
+          - onNavigateToInvite)                                          
+      153 -        }                                                     
+      154 -    }                                                         
+      155 -}                                                             
+      156 -                                                              
+      157 -@Composable                                                   
+      158 -private fun ConnectionCard(connection: Any, onViewSharedMoment
+          -s: () -> Unit) {                                              
+      159 -    GlassCard(modifier = Modifier.fillMaxWidth()) {           
+      160 -        Row(                                                  
+      161 -            modifier = Modifier.fillMaxWidth().padding(DesignT
+          -okens.Spacing.md),                                            
+      162 -            horizontalArrangement = Arrangement.spacedBy(Desig
+          -nTokens.Spacing.md),                                          
+      163 -            verticalAlignment = Alignment.CenterVertically,   
+      164 -        ) {                                                   
+      165 -            CachedAsyncImage(                                 
+      166 -                url = null,                                   
+      167 -                contentDescription = "Grandparent avatar",    
+      168 -                modifier = Modifier.size(56.dp).clip(CircleSha
+          -pe),                                                          
+      169 -            )                                                 
+      170 -            Column(modifier = Modifier.weight(1f)) {          
+      171 -                Text(                                         
+      172 -                    text = "Grandparent",                     
+      173 -                    style = MaterialTheme.typography.titleMedi
+          -um,                                                           
+      174 -                    color = MaterialTheme.colorScheme.onSurfac
+          -e,                                                            
+      175 -                )                                             
+      176 -                Text(                                         
+      177 -                    text = "Connected",                       
+      178 -                    style = MaterialTheme.typography.bodySmall
+          -,                                                             
+      179 -                    color = MaterialTheme.colorScheme.onSurfac
+          -eVariant,                                                     
+      180 -                )                                             
+      181 -            }                                                 
+      182 -            GlassButton(text = "Shared Moments", onClick = onV
+          -iewSharedMoments)                                             
+      183 -        }                                                     
+      184 -    }                                                         
+      185 -}                                                             
+      186 -                                                              
+      187 -@Composable                                                   
+       96  private fun ErrorContent(message: String, onRetry: () -> Unit)
+            {
+       97      Box(modifier = Modifier.fillMaxSize(), contentAlignment = 
+           Alignment.Center) {
+       98          Column(
+
+⏺ Update(feature/feature-home/src/main/java/tv/bayit/plus/feature/home/ShabbatBa
+        nner.kt)
+  ⎿  Added 1 line, removed 42 lines
+      157      }
+      158  }
+      159  
+      160 -/**                                                           
+      161 - * Calculates time remaining until candle lighting or havdalah
+          -.                                                             
+      162 - */                                                           
+      163 -private fun calculateTimeRemaining(                           
+      164 -    shabbatInfo: ShabbatInfo,                                 
+      165 -    currentTime: ZonedDateTime,                               
+      166 -): String {                                                   
+      167 -    return try {                                              
+      168 -        val targetTimeString = if (shabbatInfo.isShabbat) {   
+      169 -            shabbatInfo.havdalah                              
+      170 -        } else {                                              
+      171 -            shabbatInfo.candleLighting                        
+      172 -        }                                                     
+      173 -                                                              
+      174 -        val targetTime = ZonedDateTime.parse(                 
+      175 -            targetTimeString,                                 
+      176 -            DateTimeFormatter.ISO_DATE_TIME,                  
+      177 -        )                                                     
+      178 -                                                              
+      179 -        val duration = Duration.between(currentTime, targetTim
+          -e)                                                            
+      180 -                                                              
+      181 -        when {                                                
+      182 -            duration.isNegative -> "Now"                      
+      183 -            duration.toHours() >= 24 -> {                     
+      184 -                val days = duration.toDays()                  
+      185 -                "${days}d ${duration.toHours() % 24}h"        
+      186 -            }                                                 
+      187 -            duration.toHours() >= 1 -> {                      
+      188 -                val hours = duration.toHours()                
+      189 -                val minutes = duration.toMinutes() % 60       
+      190 -                "${hours}h ${minutes}m"                       
+      191 -            }                                                 
+      192 -            else -> {                                         
+      193 -                val minutes = duration.toMinutes()            
+      194 -                val seconds = duration.seconds % 60           
+      195 -                "${minutes}m ${seconds}s"                     
+      196 -            }                                                 
+      197 -        }                                                     
+      198 -    } catch (e: Exception) {                                  
+      199 -        "Unknown"                                             
+      200 -    }                                                         
+      201 -}                                                             
+      160 +// calculateTimeRemaining is in ShabbatBanner+Time.kt         
+
+⏺ Now handle Batch 4 - the complex splits (LLMSearchViewModel models,
+  OlorinAuthService API models, WakeWordService config):
+
+⏺ Write(feature/feature-search/src/main/java/tv/bayit/plus/feature/search/llm/LL
+       MSearchModels.kt)
+  ⎿  Wrote 50 lines to feature/feature-search/src/main/java/tv/bayit/plus/f
+     eature/search/llm/LLMSearchModels.kt
+       1 package tv.bayit.plus.feature.search.llm
+       2 
+       3 data class LLMSearchUiState(
+       4     val query: String = "",
+       5     val results: List<LLMResultItem> = emptyList(),
+       6     val suggestions: List<String> = emptyList(),
+       7     val historyEntries: List<HistoryEntry> = emptyList(),
+       8     val answer: String? = null,
+       9     val isSearching: Boolean = false,
+      10     val isAskingQuestion: Boolean = false,
+     … +40 lines (ctrl+o to expand)
+
+⏺ Write(core/voice/WakeWordConfig.kt)
+  ⎿  Wrote 14 lines to core/voice/WakeWordConfig.kt
+       1 package tv.bayit.plus.core.voice
+       2 
+       3 /** Configuration for wake word detection: sensitivity (0-1), co
+         oldown, and phrase. */
+       4 data class WakeWordConfig(
+       5     val sensitivity: Float = WakeWordDefaults.SENSITIVITY,
+       6     val cooldownMs: Long = WakeWordDefaults.COOLDOWN_MS,
+       7     val wakePhrase: String = WakeWordDefaults.WAKE_PHRASE,
+       8 )
+       9 
+      10 internal object WakeWordDefaults {
+     … +4 lines (ctrl+o to expand)
+
+⏺ The WakeWordConfig.kt was written to the wrong path. Let me fix it:
+
+⏺ Bash(mv /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/androi
+      d-app/core/voice/WakeWordConfig.kt
+      /Users/olorin/Documents/Projects/olorin/olorin-media…)
+  ⎿  done
+
+⏺ Now remove the LLMSearch models and WakeWordConfig from source files:
+
+⏺ Update(feature/feature-search/src/main/java/tv/bayit/plus/feature/search/llm/L
+        LMSearchViewModel.kt)
+  ⎿  Added 1 line, removed 48 lines
+      168      }
+      169  }
+      170  
+      171 -data class LLMSearchUiState(                                  
+      172 -    val query: String = "",                                   
+      173 -    val results: List<LLMResultItem> = emptyList(),           
+      174 -    val suggestions: List<String> = emptyList(),              
+      175 -    val historyEntries: List<HistoryEntry> = emptyList(),     
+      176 -    val answer: String? = null,                               
+      177 -    val isSearching: Boolean = false,                         
+      178 -    val isAskingQuestion: Boolean = false,                    
+      179 -    val errorMessage: String? = null,                         
+      180 -)                                                             
+      181 -                                                              
+      182 -data class LLMResultItem(                                     
+      183 -    val id: String,                                           
+      184 -    val title: String,                                        
+      185 -    val description: String,                                  
+      186 -    val thumbnail: String?,                                   
+      187 -    val type: String?,                                        
+      188 -    val relevanceExplanation: String?,                        
+      189 -) {                                                           
+      190 -    companion object {                                        
+      191 -        fun fromApiResponse(item: Any): LLMResultItem {       
+      192 -            val map = item as? Map<*, *>                      
+      193 -            return LLMResultItem(                             
+      194 -                id = map?.get("id")?.toString().orEmpty(),    
+      195 -                title = map?.get("title")?.toString().orEmpty(
+          -),                                                            
+      196 -                description = map?.get("description")?.toStrin
+          -g().orEmpty(),                                                
+      197 -                thumbnail = map?.get("thumbnail")?.toString(),
+      198 -                type = map?.get("type")?.toString(),          
+      199 -                relevanceExplanation = map?.get("relevance_exp
+          -lanation")?.toString(),                                       
+      200 -            )                                                 
+      201 -        }                                                     
+      202 -    }                                                         
+      203 -}                                                             
+      204 -                                                              
+      205 -data class HistoryEntry(                                      
+      206 -    val query: String,                                        
+      207 -    val searchedAt: String?,                                  
+      208 -) {                                                           
+      209 -    companion object {                                        
+      210 -        fun fromApiResponse(item: Any): HistoryEntry {        
+      211 -            val map = item as? Map<*, *>                      
+      212 -            return HistoryEntry(                              
+      213 -                query = map?.get("query")?.toString().orEmpty(
+          -),                                                            
+      214 -                searchedAt = map?.get("searched_at")?.toString
+          -(),                                                           
+      215 -            )                                                 
+      216 -        }                                                     
+      217 -    }                                                         
+      218 -}                                                             
+      171 +// LLMSearchUiState, LLMResultItem, HistoryEntry are in LLMSea
+          +rchModels.kt                                                  
+
+⏺ Update(core/core-voice/src/main/java/tv/bayit/plus/core/voice/WakeWordService.
+        kt)
+  ⎿  Added 1 line, removed 12 lines
+      20  import javax.inject.Singleton
+      21  import kotlin.math.min
+      22  
+      23 -/** Configuration for wake word detection: sensitivity (0-1), c
+         -ooldown, and phrase. */                                        
+      24 -data class WakeWordConfig(                                     
+      25 -    val sensitivity: Float = WakeWordDefaults.SENSITIVITY,     
+      26 -    val cooldownMs: Long = WakeWordDefaults.COOLDOWN_MS,       
+      27 -    val wakePhrase: String = WakeWordDefaults.WAKE_PHRASE,     
+      28 -)                                                              
+      23 +// WakeWordConfig and WakeWordDefaults are in WakeWordConfig.kt
+      24  
+      30 -internal object WakeWordDefaults {                             
+      31 -    const val SENSITIVITY = 0.5f                               
+      32 -    const val COOLDOWN_MS = 3000L                              
+      33 -    const val WAKE_PHRASE = "hey bayit"                        
+      34 -}                                                              
+      35 -                                                               
+      25  /**
+      26   * Background wake word detection service ("Hey Bayit").
+      27   *
+
+⏺ Now handle OlorinAuthService - extract the private nested API models to a
+  separate file:
+
+⏺ Write(ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-auth/src/main/java/tv/bayit/plus/core/auth/OlorinAuthService+Api.ktcore/core-auth/src/main/java/tv/bayit/plus/core/auth/OlorinAuthService+A
+       ile:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/android-app/core/core-auth/src/main/java/tv/bayit/plus/core/auth/OlorinAuthService+Api.ktpi.kt)
+  ⎿  Wrote 50 lines to core/core-auth/src/main/java/tv/bayit/plus/core/auth
+     /OlorinAuthService+Api.kt
+       1 package tv.bayit.plus.core.auth
+       2 
+       3 import kotlinx.serialization.SerialName
+       4 import kotlinx.serialization.Serializable
+       5 import retrofit2.http.Body
+       6 import retrofit2.http.POST
+       7 
+       8 internal interface OlorinAuthApi {
+       9     @POST("api/v1/auth/v2/register")
+      10     suspend fun register(@Body request: OlorinAuthRegisterReques
+         t): OlorinAuthService.AuthResponse
+     … +40 lines (ctrl+o to expand)
+
+⏺ Now update OlorinAuthService.kt to remove the nested private types and use the
+   new names:
+
+⏺ Read 1 file (ctrl+o to expand)
+  ⎿  Context limit reached · /compact or /clear to continue · /model sonnet[1m] 
+
+✻ Cooked for 11m 28s
