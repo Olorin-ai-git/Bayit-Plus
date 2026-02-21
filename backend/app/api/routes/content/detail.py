@@ -17,6 +17,8 @@ from app.core.security import (get_current_active_user, get_optional_user,
 from app.models.content import Content
 from app.models.user import User
 from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
+from app.services.trailer_resolver import resolve_trailer_stream
+from app.services.youtube_validator.url_parser import is_youtube_url
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -323,3 +325,33 @@ async def get_content_preview(content_id: str):
         "thumbnail": content.thumbnail,
         "backdrop": content.backdrop,
     }
+
+
+@router.get("/{content_id}/trailer")
+async def get_trailer_stream(
+    content_id: str,
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Resolve trailer URL to a direct playable stream URL."""
+    content = await Content.get(content_id)
+    if not content or not content.is_published:
+        raise HTTPException(status_code=404, detail="Content not found")
+
+    if content.trailer_stream_url:
+        return {"stream_url": content.trailer_stream_url}
+
+    trailer_url = content.trailer_url
+    if not trailer_url:
+        raise HTTPException(status_code=404, detail="No trailer available")
+
+    if not is_youtube_url(trailer_url):
+        return {"stream_url": trailer_url}
+
+    stream_url = await resolve_trailer_stream(trailer_url)
+    if not stream_url:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to resolve trailer stream",
+        )
+
+    return {"stream_url": stream_url}

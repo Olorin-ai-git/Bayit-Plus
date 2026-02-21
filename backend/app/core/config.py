@@ -1573,6 +1573,38 @@ class Settings(BaseSettings):
     # YouTube Data API v3 key for importing kids channel content
     YOUTUBE_API_KEY: str = ""
 
+    # Trailer Resolution Configuration
+    TRAILER_STREAM_CACHE_TTL_HOURS: int = Field(
+        default=4,
+        description="Cache TTL in hours for resolved YouTube stream URLs",
+    )
+
+    # Trailer Extraction Pipeline Configuration
+    TRAILER_EXTRACTION_TEMP_DIR: str = Field(
+        default="/tmp/trailer-extraction",
+        description="Temp directory for yt-dlp downloads and ffmpeg merges",
+    )
+    TRAILER_EXTRACTION_FFMPEG_TIMEOUT: int = Field(
+        default=300,
+        description="Timeout in seconds for ffmpeg merge operations",
+    )
+    TRAILER_EXTRACTION_YTDLP_TIMEOUT: int = Field(
+        default=120,
+        description="Timeout in seconds for yt-dlp download operations",
+    )
+    TRAILER_EXTRACTION_SCAN_INTERVAL_MINUTES: int = Field(
+        default=60,
+        description="How often the periodic scanner runs (minutes)",
+    )
+    TRAILER_EXTRACTION_BATCH_LIMIT: int = Field(
+        default=10,
+        description="Max trailers to extract per scan batch",
+    )
+    TRAILER_GCS_PATH_PREFIX: str = Field(
+        default="trailers",
+        description="GCS object path prefix for uploaded trailer MP4s",
+    )
+
     # YouTube Validation Configuration
     # Concurrent limit for batch validation (lower to avoid rate limiting)
     YOUTUBE_VALIDATION_CONCURRENT_LIMIT: int = 5
@@ -2946,6 +2978,28 @@ class Settings(BaseSettings):
         default=15, ge=0,
         env="CREDIT_RATE_VOD_INTERACTION_SHARED_REEL",
         description="Credits per shared interaction reel (split among participants)",
+    )
+
+    # Pause & Ask (Dynamic character dialogue with user avatar animation)
+    VOD_INTERACTION_PAUSE_ASK_ENABLED: bool = Field(
+        default=True,
+        env="VOD_INTERACTION_PAUSE_ASK_ENABLED",
+        description="Enable Pause & Ask feature (user avatar + character lip-sync)",
+    )
+    VOD_INTERACTION_TEXT_POLISH_MAX_TOKENS: int = Field(
+        default=150, ge=50, le=500,
+        env="VOD_INTERACTION_TEXT_POLISH_MAX_TOKENS",
+        description="Max tokens for grammar/pronunciation polish via Claude",
+    )
+    VOD_INTERACTION_TEXT_POLISH_MODEL: str = Field(
+        default="claude-haiku-4-5-20251001",
+        env="VOD_INTERACTION_TEXT_POLISH_MODEL",
+        description="Claude model for text polishing (fast, cheap)",
+    )
+    CREDIT_RATE_VOD_PAUSE_ASK: int = Field(
+        default=3, ge=0,
+        env="CREDIT_RATE_VOD_PAUSE_ASK",
+        description="Credits per Pause & Ask exchange (2 animations + polish)",
     )
 
     # ============================================

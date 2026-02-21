@@ -173,6 +173,7 @@ class Content(Document):
 
     # Trailer/Preview
     trailer_url: Optional[str] = None
+    trailer_stream_url: Optional[str] = None  # GCS-hosted merged HD trailer MP4
     preview_url: Optional[str] = None  # 5-second preview clip
 
     # Visibility

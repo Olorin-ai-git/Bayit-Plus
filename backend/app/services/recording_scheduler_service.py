@@ -60,6 +60,16 @@ class RecordingSchedulerService:
             replace_existing=True,
         )
 
+        from app.services.trailer_extraction.scanner import scan_and_extract_trailers
+
+        trailer_scan_interval = settings.TRAILER_EXTRACTION_SCAN_INTERVAL_MINUTES
+        self._scheduler.add_job(
+            scan_and_extract_trailers,
+            trigger=IntervalTrigger(minutes=trailer_scan_interval),
+            id="trailer_extraction_scan",
+            replace_existing=True,
+        )
+
         logger.info("Recording scheduler initialized")
 
     async def shutdown(self) -> None:

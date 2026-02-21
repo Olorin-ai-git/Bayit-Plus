@@ -40,7 +40,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_content_importer, admin_content_vod_read,
                                 admin_content_vod_toggles,
                                 admin_content_vod_write, admin_cultures,
-                                admin_documentary_import,
+                                admin_documentary_import, admin_trailer_extraction,
                                 admin_kids_content, admin_live_channels,
                                 admin_podcast_episodes, admin_podcasts,
                                 admin_radio_stations, admin_subtitle_sync, admin_taxonomy,
@@ -83,7 +83,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_voice_clone_preview,
                                 admin_voice_cloning,
                                 websocket_vod_interaction,
-                                vod_interaction_admin)
+                                vod_interaction_admin,
+                                vod_interaction_pause_ask)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     # Quiz and rewards routes
@@ -490,6 +491,11 @@ def register_all_routers(app: FastAPI) -> None:
         admin_subtitle_sync.router, prefix=prefix, tags=["admin-subtitles"]
     )
     app.include_router(
+        admin_trailer_extraction.router,
+        prefix=f"{prefix}/admin",
+        tags=["admin-trailer-extraction"],
+    )
+    app.include_router(
         avatar_studio.router, prefix=f"{prefix}/admin", tags=["admin-avatar-studio"]
     )
     logger.debug("Registered admin routes")
@@ -522,6 +528,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         vod_interaction_shared.router, prefix=prefix, tags=["vod-interaction-shared"]
+    )
+    app.include_router(
+        vod_interaction_pause_ask.router, prefix=prefix, tags=["vod-interaction-pause-ask"]
     )
     logger.debug("Registered VOD avatar interaction routes")
 
