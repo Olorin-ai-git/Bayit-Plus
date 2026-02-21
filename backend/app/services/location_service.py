@@ -1,4 +1,5 @@
 """Location service for reverse geocoding coordinates to city/state via GeoNames API."""
+import asyncio
 import hashlib
 import logging
 from datetime import datetime, timedelta, timezone
@@ -29,7 +30,17 @@ class LocationService:
             if cached:
                 logger.debug(f"Cache hit for {latitude}, {longitude}")
                 return cached
-            location = await self._fetch_from_geonames(latitude, longitude)
+            try:
+                location = await asyncio.wait_for(
+                    self._fetch_from_geonames(latitude, longitude),
+                    timeout=float(settings.GEONAMES_TIMEOUT_SECONDS),
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    "GeoNames reverse geocode timed out",
+                    extra={"latitude": latitude, "longitude": longitude, "timeout": settings.GEONAMES_TIMEOUT_SECONDS},
+                )
+                return None
             if location:
                 await self._cache_location(latitude, longitude, location)
                 return location
