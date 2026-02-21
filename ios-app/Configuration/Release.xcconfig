@@ -1,0 +1,4 @@
+// Release.xcconfig - Production build settings
+
+API_BASE_URL = https:/$()/api.bayit.tv/api/v1
+WEBSOCKET_BASE_URL = wss:/$()/api.bayit.tv

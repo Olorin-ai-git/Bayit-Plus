@@ -23,30 +23,37 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
-# Validate Info.plist contains production values only
-echo -e "${BLUE}🔍 Validating Info.plist for production values...${NC}"
+# Validate Release.xcconfig contains production API URL
+echo -e "${BLUE}Validating Release.xcconfig for production values...${NC}"
 
-API_BASE_URL=$(plutil -extract API_BASE_URL raw -o - BayitPlusApp/Info.plist)
+RELEASE_XCCONFIG="$PROJECT_DIR/Configuration/Release.xcconfig"
 
-# Check for localhost or any non-production URLs
-if [[ "$API_BASE_URL" == *"localhost"* ]] || [[ "$API_BASE_URL" == *"127.0.0.1"* ]] || [[ "$API_BASE_URL" =~ ^http://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+ ]]; then
-  echo -e "${RED}❌ ERROR: Info.plist contains non-production API_BASE_URL${NC}"
-  echo -e "${RED}   Found: $API_BASE_URL${NC}"
-  echo -e "${RED}   Expected: https://api.bayit.tv/api/v1${NC}"
-  echo ""
-  echo -e "${BLUE}Fix with: plutil -replace API_BASE_URL -string 'https://api.bayit.tv/api/v1' BayitPlusApp/Info.plist${NC}"
+if [ ! -f "$RELEASE_XCCONFIG" ]; then
+  echo -e "${RED}ERROR: Configuration/Release.xcconfig not found${NC}"
+  echo -e "${RED}   Run xcodegen generate to regenerate the project${NC}"
   exit 1
 fi
 
-# Verify it's the exact production URL
-if [[ "$API_BASE_URL" != "https://api.bayit.tv/api/v1" ]]; then
-  echo -e "${RED}❌ ERROR: API_BASE_URL is not set to production value${NC}"
-  echo -e "${RED}   Found: $API_BASE_URL${NC}"
+# Extract API_BASE_URL from Release.xcconfig (format: "API_BASE_URL = https://...")
+RELEASE_API_URL=$(grep '^API_BASE_URL' "$RELEASE_XCCONFIG" | sed 's/^API_BASE_URL *= *//')
+
+if [[ "$RELEASE_API_URL" != *"api.bayit.tv"* ]]; then
+  echo -e "${RED}ERROR: Release.xcconfig API_BASE_URL is not set to production${NC}"
+  echo -e "${RED}   Found: $RELEASE_API_URL${NC}"
   echo -e "${RED}   Expected: https://api.bayit.tv/api/v1${NC}"
   exit 1
 fi
 
-echo -e "${GREEN}✅ Info.plist validation passed - production values confirmed${NC}"
+# Verify Info.plist uses the build setting variable (not a hardcoded URL)
+PLIST_API_URL=$(plutil -extract API_BASE_URL raw -o - BayitPlusApp/Info.plist)
+if [[ "$PLIST_API_URL" != *'$(API_BASE_URL)'* ]]; then
+  echo -e "${RED}ERROR: BayitPlusApp/Info.plist API_BASE_URL is not using build setting variable${NC}"
+  echo -e "${RED}   Found: $PLIST_API_URL${NC}"
+  echo -e "${RED}   Expected: \$(API_BASE_URL)${NC}"
+  exit 1
+fi
+
+echo -e "${GREEN}Release.xcconfig validation passed - production values confirmed${NC}"
 
 # Get current build number from Info.plist
 CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusApp/Info.plist)

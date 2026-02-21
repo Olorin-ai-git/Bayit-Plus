@@ -9,6 +9,10 @@ options:
   generateEmptyDirectories: true
   minimumXcodeGenVersion: "2.40.0"
 
+configFiles:
+  Debug: Configuration/Debug.xcconfig
+  Release: Configuration/Release.xcconfig
+
 settings:
   base:
     SWIFT_VERSION: "5.9"
@@ -135,7 +139,8 @@ targets:
     info:
       path: BayitPlusTVApp/Info.plist
       properties:
-        API_BASE_URL: "https://api.bayit.tv/api/v1"
+        API_BASE_URL: "$(API_BASE_URL)"
+        WEBSOCKET_BASE_URL: "$(WEBSOCKET_BASE_URL)"
         CFBundleDisplayName: "Bayit+"
         CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"
@@ -149,6 +154,9 @@ targets:
               - com.googleusercontent.apps.624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf
         GOOGLE_CLIENT_ID: "624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com"
         GOOGLE_SERVER_CLIENT_ID: "624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com"
+        ITSAppUsesNonExemptEncryption: false
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
 
   BayitWidgets:
     type: app-extension

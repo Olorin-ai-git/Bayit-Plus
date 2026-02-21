@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>API_BASE_URL</key>
-	<string>https://api.bayit.tv/api/v1</string>
+	<string>$(API_BASE_URL)</string>
 	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
 	<string>15</string>
 	<key>CATCHUP_CREDIT_COST</key>
@@ -128,7 +128,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>WEBSOCKET_BASE_URL</key>
-	<string>wss://api.bayit.tv</string>
+	<string>$(WEBSOCKET_BASE_URL)</string>
 	<key>WIDGET_APP_GROUP_ID</key>
 	<string>group.tv.bayit.plus</string>
 </dict>
