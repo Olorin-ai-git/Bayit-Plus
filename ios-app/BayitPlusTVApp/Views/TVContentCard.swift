@@ -24,7 +24,7 @@ struct TVContentCard: View {
         subtitle: String? = nil,
         badge: String? = nil,
         progress: Double? = nil,
-        aspectRatio: CGFloat = 2.0/3.0,
+        aspectRatio: CGFloat = 2.0 / 3.0,
         placeholderIcon: String = "photo",
         availableSubtitleLanguages: [String]? = nil,
         onSelect: @escaping () -> Void
@@ -81,8 +81,8 @@ struct TVContentCard: View {
     @ViewBuilder
     private var posterImage: some View {
         if let urlStr = imageURL, let url = URL(string: urlStr) {
-            AsyncImage(url: url) { phase in
-                if case .success(let image) = phase {
+            CachedAsyncImage(url: url) { phase in
+                if case let .success(image) = phase {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)

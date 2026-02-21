@@ -5709,7 +5709,9 @@
     "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
     "enableLocation": "Activer la localisation",
     "locationPermissionDeniedDescription": "L'accès à la localisation a été refusé. Ouvrez les Paramètres pour l'activer et voir le contenu israélien près de chez vous.",
-    "openSettings": "Ouvrir les Paramètres"
+    "openSettings": "Ouvrir les Paramètres",
+    "jerusalem": "Jérusalem",
+    "telAviv": "Tel Aviv"
   },
   "household": {
     "title": "Gestion du Foyer",
@@ -6513,7 +6515,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -6725,7 +6730,8 @@
       "timerSet": "Minuterie réglée pour {{minutes}} minutes",
       "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
       "timerCancelled": "Minuterie de sommeil annulée"
-    }
+    },
+    "startOver": "Recommencer"
   },
   "playlist": {
     "title": "Ma Liste",

@@ -33,7 +33,6 @@ struct TVLeaderboardView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: MissionsViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             headerSection
@@ -130,9 +129,9 @@ struct TVLeaderboardRow: View {
 
     private var badgeColor: Color {
         switch user.position {
-        case 1: return DesignTokens.Warning.default
-        case 2: return Color(red: 0.75, green: 0.75, blue: 0.75)
-        case 3: return Color(red: 0.8, green: 0.5, blue: 0.2)
+        case 1: return DesignTokens.Leaderboard.gold
+        case 2: return DesignTokens.Leaderboard.silver
+        case 3: return DesignTokens.Leaderboard.bronze
         default: return DesignTokens.Glass.bgStrong
         }
     }
@@ -140,7 +139,7 @@ struct TVLeaderboardRow: View {
     private var avatarView: some View {
         Group {
             if let avatarUrl = user.avatarUrl, let url = URL(string: avatarUrl) {
-                AsyncImage(url: url) { image in
+                CachedAsyncImage(url: url) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     avatarPlaceholder

@@ -41,7 +41,6 @@ struct TVStarStoryGalleryView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: StarStoryViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             headerSection
@@ -86,8 +85,8 @@ struct TVStarStoryGalleryView: View {
         Button {} label: {
             VStack(spacing: TVDesignTokens.Spacing.md) {
                 if let urlStr = avatar.primaryAvatarUrl, let url = URL(string: urlStr) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let img) = phase {
+                    CachedAsyncImage(url: url) { phase in
+                        if case let .success(img) = phase {
                             img.resizable().aspectRatio(contentMode: .fill)
                         } else { avatarPlaceholder }
                     }

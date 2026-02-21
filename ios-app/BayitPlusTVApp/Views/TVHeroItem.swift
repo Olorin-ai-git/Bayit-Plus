@@ -23,7 +23,7 @@ struct TVHeroItem: View {
                     if let urlStr = item.backdrop ?? item.thumbnail,
                        let url = URL(string: urlStr)
                     {
-                        AsyncImage(url: url) { phase in
+                        CachedAsyncImage(url: url) { phase in
                             if case let .success(img) = phase {
                                 img.resizable()
                                     .aspectRatio(contentMode: .fill)

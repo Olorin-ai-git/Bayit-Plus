@@ -33,32 +33,32 @@ struct TVPlayerControlBar: View {
             subtitleButton
 
             if contentType == .liveTV {
-                controlButton(icon: "waveform", label: "Dubbing", action: onDubbing)
+                controlButton(icon: "waveform", label: localization.t("player.dubbing"), action: onDubbing)
             }
 
-            controlButton(icon: "list.bullet", label: "Chapters", action: onChapters)
+            controlButton(icon: "list.bullet", label: localization.t("player.chapters"), action: onChapters)
 
             if let onStartOver {
                 controlButton(
                     icon: "arrow.counterclockwise",
-                    label: "Start Over",
+                    label: localization.t("player.startOver"),
                     action: onStartOver
                 )
             }
 
-            controlButton(icon: "speaker.wave.2", label: "Audio", action: onAudioTracks)
-            controlButton(icon: "gauge.medium", label: "Speed", action: onSpeed)
+            controlButton(icon: "speaker.wave.2", label: localization.t("player.audio"), action: onAudioTracks)
+            controlButton(icon: "gauge.medium", label: localization.t("player.speed"), action: onSpeed)
 
             if let onCatchUp {
-                controlButton(icon: "clock.arrow.circlepath", label: "Catch Up", action: onCatchUp)
+                controlButton(icon: "clock.arrow.circlepath", label: localization.t("player.catchUp"), action: onCatchUp)
             }
 
             if let onSceneSearch {
-                controlButton(icon: "magnifyingglass", label: "Scenes", action: onSceneSearch)
+                controlButton(icon: "magnifyingglass", label: localization.t("player.scenes"), action: onSceneSearch)
             }
 
             if let onChat {
-                controlButton(icon: "bubble.left.and.bubble.right", label: "Chat", action: onChat)
+                controlButton(icon: "bubble.left.and.bubble.right", label: localization.t("player.chat"), action: onChat)
             }
 
             if let onTalk {
@@ -157,13 +157,14 @@ struct TVPlayerControlBar: View {
     }
 
     private var subtitleAccessibilityLabel: String {
+        let subtitlesLabel = localization.t("player.subtitles")
         if isSplitEnabled, splitLanguages.count == 2 {
-            return "Subtitles: Split \(splitLanguages[0]) and \(splitLanguages[1])"
+            return "\(subtitlesLabel): Split \(splitLanguages[0]) and \(splitLanguages[1])"
         }
         if let lang = selectedSubtitleLanguage {
-            return "Subtitles: \(SubtitleLanguages.info(for: lang)?.name ?? lang)"
+            return "\(subtitlesLabel): \(SubtitleLanguages.info(for: lang)?.name ?? lang)"
         }
-        return "Subtitles: Off"
+        return "\(subtitlesLabel): \(localization.t("player.subtitlesOff"))"
     }
 
     private func flag(for code: String) -> String {
@@ -185,70 +186,5 @@ struct TVPlayerControlBar: View {
         }
         .buttonStyle(PlayerControlButtonStyle())
         .accessibilityLabel(label)
-    }
-}
-
-// MARK: - Focus Tracking
-
-/// Tracks whether any button in the control bar has focus.
-/// Used by TVPlayerView to pause the auto-hide timer.
-struct ControlBarFocusKey: PreferenceKey {
-    static var defaultValue: Bool = false
-    static func reduce(value: inout Bool, nextValue: () -> Bool) {
-        value = value || nextValue()
-    }
-}
-
-// MARK: - Player Control Button Style
-
-/// Custom button style for player dock items.
-/// Transparent background with dark purple border on focus,
-/// replacing the default `.card` style that adds an opaque background.
-private struct PlayerControlButtonStyle: ButtonStyle {
-    @Environment(\.isFocused) private var isFocused
-
-    func makeBody(configuration: Configuration) -> some View {
-        PlayerControlButtonContent(
-            configuration: configuration,
-            isPressed: configuration.isPressed
-        )
-    }
-}
-
-private struct PlayerControlButtonContent: View {
-    let configuration: ButtonStyleConfiguration
-    let isPressed: Bool
-    @Environment(\.isFocused) private var isFocused
-
-    var body: some View {
-        configuration.label
-            .padding(TVDesignTokens.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                    .fill(Color.clear)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                    .stroke(
-                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
-                        lineWidth: TVDesignTokens.Focus.ringWidth
-                    )
-            )
-            .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
-            .scaleEffect(isPressed ? 0.95 : 1.0)
-            .shadow(
-                color: isFocused
-                    ? DesignTokens.Glass.purpleGlow.opacity(0.6)
-                    : Color.clear,
-                radius: TVDesignTokens.Focus.shadowRadius,
-                x: 0,
-                y: isFocused ? 8 : 0
-            )
-            .animation(
-                .spring(duration: TVDesignTokens.Focus.animationDuration, bounce: 0.2),
-                value: isFocused
-            )
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
-            .preference(key: ControlBarFocusKey.self, value: isFocused)
     }
 }

@@ -8,7 +8,6 @@ import Observation
 @MainActor
 @Observable
 final class ChannelChatViewModel {
-
     private(set) var messages: [ChannelChatMessage] = []
     private(set) var isConnected = false
     private(set) var isLoading = false
@@ -21,6 +20,7 @@ final class ChannelChatViewModel {
     private var connection: WebSocketConnection?
     private var channelId: String?
     private var receiveTask: Task<Void, Never>?
+    private var disconnectTask: Task<Void, Never>?
 
     init(repository: any LiveTVRepository, webSocketManager: WebSocketManager) {
         self.repository = repository
@@ -42,7 +42,9 @@ final class ChannelChatViewModel {
         do {
             let baseURL = await webSocketManager.configuration.baseURL
             let wsScheme = baseURL.scheme == "https" ? "wss" : "ws"
-            let host = baseURL.host ?? "localhost"
+            guard let host = baseURL.host else {
+                throw URLError(.badURL)
+            }
             let port = baseURL.port.map { ":\($0)" } ?? ""
             let urlString = "\(wsScheme)://\(host)\(port)/ws/channel-chat/\(channelId)"
 
@@ -68,7 +70,8 @@ final class ChannelChatViewModel {
 
         let payload = ChannelChatSendRequest(content: text, channelId: channelId)
         guard let data = try? JSONEncoder().encode(payload),
-              let jsonString = String(data: data, encoding: .utf8) else {
+              let jsonString = String(data: data, encoding: .utf8)
+        else {
             logger.error("Failed to encode chat message")
             return
         }
@@ -86,8 +89,8 @@ final class ChannelChatViewModel {
     func disconnect() {
         receiveTask?.cancel()
         receiveTask = nil
-        Task {
-            await connection?.disconnect()
+        if let conn = connection {
+            disconnectTask = Task { await conn.disconnect() }
         }
         connection = nil
         isConnected = false
@@ -107,11 +110,9 @@ final class ChannelChatViewModel {
 
     private func handleMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else { return }
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         do {
-            let chatMessage = try decoder.decode(ChannelChatMessage.self, from: data)
+            let chatMessage = try WebSocketDecoder.shared.decode(ChannelChatMessage.self, from: data)
             messages.append(chatMessage)
         } catch {
             logger.error("Failed to decode chat message", error: error)

@@ -16,8 +16,8 @@ struct SubtitlePaneView: View {
 
         var borderColor: Color {
             switch self {
-            case .left: return Color(red: 0.34, green: 0.71, blue: 0.95) // Sky blue
-            case .right: return Color(red: 0.95, green: 0.71, blue: 0.34) // Orange
+            case .left: return DesignTokens.Subtitle.primaryBorder
+            case .right: return DesignTokens.Subtitle.secondaryBorder
             }
         }
 

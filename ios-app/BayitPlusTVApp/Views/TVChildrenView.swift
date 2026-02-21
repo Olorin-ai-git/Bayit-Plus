@@ -7,7 +7,7 @@ import SwiftUI
 struct TVChildrenView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: ChildrenViewModel?
     @State private var selectedAgeGroupId: String?
 
@@ -42,7 +42,6 @@ struct TVChildrenView: View {
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
     ]
 
-    @ViewBuilder
     private func contentSections(_ vm: ChildrenViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             if let featured = vm.featured, let hero = featured.hero {
@@ -66,8 +65,8 @@ struct TVChildrenView: View {
     private func featuredHero(_ item: SectionContentItem) -> some View {
         ZStack(alignment: .bottomLeading) {
             if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fill)
                     } else {
                         DesignTokens.Glass.purpleLight
@@ -163,7 +162,8 @@ struct TVChildrenView: View {
                     )
                     .overlay(alignment: .bottomLeading) {
                         if let languages = item.availableSubtitleLanguages,
-                           !languages.isEmpty {
+                           !languages.isEmpty
+                        {
                             SubtitleFlagsPill(
                                 languages: languages,
                                 aiLanguages: [],
@@ -176,35 +176,5 @@ struct TVChildrenView: View {
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
-    }
-
-    private func filterChip(
-        _ title: String,
-        isSelected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
-                .foregroundStyle(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.secondary)
-                .padding(.horizontal, TVDesignTokens.Spacing.lg)
-                .padding(.vertical, TVDesignTokens.Spacing.md)
-                .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg)
-                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
-        }
-        .buttonStyle(.card)
-        .tvFocusStyle()
-    }
-
-    private var loadingState: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
-            ProgressView()
-                .tint(DesignTokens.Primary.default)
-                .scaleEffect(1.5)
-            Text(localization.t("tvos.children.loading"))
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
-        .frame(maxWidth: .infinity, minHeight: 400)
     }
 }

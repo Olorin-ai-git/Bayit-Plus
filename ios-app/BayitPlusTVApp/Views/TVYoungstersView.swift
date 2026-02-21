@@ -38,7 +38,6 @@ struct TVYoungstersView: View {
 
     // MARK: - Content Sections
 
-    @ViewBuilder
     private func contentSections(_ vm: YoungstersViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             if let featured = vm.featured, let hero = featured.hero {
@@ -68,8 +67,8 @@ struct TVYoungstersView: View {
     private func featuredHero(_ item: SectionContentItem) -> some View {
         ZStack(alignment: .bottomLeading) {
             if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fill)
                     } else {
                         DesignTokens.Glass.purpleLight

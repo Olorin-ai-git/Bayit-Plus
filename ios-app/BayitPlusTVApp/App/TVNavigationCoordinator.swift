@@ -25,19 +25,6 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         rawValue
     }
 
-    var title: String {
-        switch self {
-        case .home: return "Home"
-        case .liveTV: return "Live"
-        case .vod: return "VOD"
-        case .zehAni: return "Zeh Ani"
-        case .podcasts: return "Listen"
-        case .kids: return "Kids"
-        case .search: return "Search"
-        case .profile: return "Profile"
-        }
-    }
-
     var iconName: String {
         switch self {
         case .home: return "house"
@@ -75,6 +62,10 @@ final class TVNavigationCoordinator {
     var categoryBrowseTitle: String = ""
     var categoryBrowseIcon: String = ""
     var categoryBrowseItems: [ContentItem] = []
+
+    /// Set to `true` from any view (e.g. Profile) to surface the widget dock.
+    /// TVMainTabView observes this and resets it after showing the dock.
+    var showWidgetDock: Bool = false
 
     /// Breadcrumb trail per tab (tracks labels for the navigation stack).
     var breadcrumbTrails: [TVTab: [TVBreadcrumbEntry]] = [:]
@@ -156,10 +147,9 @@ final class TVNavigationCoordinator {
     }
 
     /// Open web content URL on tvOS.
-    /// tvOS has no browser; this attempts to open via URL scheme handling.
+    /// tvOS has no browser — logs a warning rather than attempting to open.
     func presentWebView(url: URL, title: String) {
-        logger.info("Web content: \(url.absoluteString) - \(title)")
-        UIApplication.shared.open(url)
+        logger.warning("Cannot open URL on tvOS — no browser available: \(url.absoluteString) (\(title))")
     }
 
     /// Handle a `bayitplus://` deep link URL.

@@ -74,7 +74,7 @@
         }
 
         private func stillImage(url: String) -> some View {
-            AsyncImage(url: URL(string: url)) { imgPhase in
+            CachedAsyncImage(url: URL(string: url)) { imgPhase in
                 switch imgPhase {
                 case let .success(image):
                     image.resizable().scaledToFill()

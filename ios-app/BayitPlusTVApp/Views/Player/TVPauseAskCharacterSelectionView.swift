@@ -75,7 +75,7 @@
 
         var body: some View {
             VStack(spacing: TVDesignTokens.Spacing.sm) {
-                AsyncImage(url: URL(string: character.frameUrl)) { phase in
+                CachedAsyncImage(url: URL(string: character.frameUrl)) { phase in
                     switch phase {
                     case let .success(image):
                         image.resizable().scaledToFill()

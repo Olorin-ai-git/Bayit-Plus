@@ -1,214 +1,138 @@
 #if os(tvOS)
-import BayitDesignSystem
-import BayitLocalization
-import SwiftUI
+    import BayitDesignSystem
+    import BayitLocalization
+    import SwiftUI
 
-/// tvOS auto-prompt overlay shown when a user joins a live channel in progress.
-/// Uses focus-based navigation for Siri Remote. Countdown auto-declines.
-struct TVCatchUpAutoPromptView: View {
-    @Environment(LocalizationManager.self) private var localization
+    /// tvOS auto-prompt overlay shown when a user joins a live channel in progress.
+    /// Uses focus-based navigation for Siri Remote. Countdown auto-declines.
+    struct TVCatchUpAutoPromptView: View {
+        @Environment(LocalizationManager.self) private var localization
 
-    let programName: String?
-    let creditCost: Int
-    let creditBalance: Int
-    let autoDismissSeconds: Int
-    let onAccept: () -> Void
-    let onDecline: () -> Void
+        let programName: String?
+        let creditCost: Int
+        let creditBalance: Int
+        let autoDismissSeconds: Int
+        let onAccept: () -> Void
+        let onDecline: () -> Void
 
-    @State private var secondsRemaining: Int
-    @State private var countdownTask: Task<Void, Never>?
+        @State var secondsRemaining: Int
+        @State var countdownTask: Task<Void, Never>?
 
-    private var isLowBalance: Bool {
-        creditBalance <= creditCost * 3
-    }
+        private var isLowBalance: Bool {
+            creditBalance <= creditCost * 3
+        }
 
-    init(
-        programName: String?,
-        creditCost: Int,
-        creditBalance: Int,
-        autoDismissSeconds: Int,
-        onAccept: @escaping () -> Void,
-        onDecline: @escaping () -> Void
-    ) {
-        self.programName = programName
-        self.creditCost = creditCost
-        self.creditBalance = creditBalance
-        self.autoDismissSeconds = autoDismissSeconds
-        self.onAccept = onAccept
-        self.onDecline = onDecline
-        _secondsRemaining = State(initialValue: autoDismissSeconds)
-    }
+        init(
+            programName: String?,
+            creditCost: Int,
+            creditBalance: Int,
+            autoDismissSeconds: Int,
+            onAccept: @escaping () -> Void,
+            onDecline: @escaping () -> Void
+        ) {
+            self.programName = programName
+            self.creditCost = creditCost
+            self.creditBalance = creditBalance
+            self.autoDismissSeconds = autoDismissSeconds
+            self.onAccept = onAccept
+            self.onDecline = onDecline
+            _secondsRemaining = State(initialValue: autoDismissSeconds)
+        }
 
-    var body: some View {
-        ZStack {
-            Color.black.opacity(0.6).ignoresSafeArea()
+        var body: some View {
+            ZStack {
+                Color.black.opacity(0.6).ignoresSafeArea()
 
-            VStack(spacing: TVDesignTokens.Spacing.xl) {
-                headerSection
-                creditInfoSection
+                VStack(spacing: TVDesignTokens.Spacing.xl) {
+                    headerSection
+                    creditInfoSection
 
-                if isLowBalance {
-                    lowBalanceWarning
+                    if isLowBalance {
+                        lowBalanceWarning
+                    }
+
+                    countdownProgress
+                    actionButtons
                 }
-
-                countdownProgress
-                actionButtons
+                .padding(TVDesignTokens.Spacing.xxl)
+                .frame(maxWidth: 600)
+                .background(DesignTokens.Glass.bgStrong)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                )
             }
-            .padding(TVDesignTokens.Spacing.xxl)
-            .frame(maxWidth: 600)
-            .background(DesignTokens.Glass.bgStrong)
+            .focusSection()
+            .accessibilityAddTraits(.isModal)
+            .onAppear { startCountdown() }
+            .onDisappear { countdownTask?.cancel() }
+            .onExitCommand { onDecline() }
+        }
+
+        // MARK: - Header
+
+        private var headerSection: some View {
+            VStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.system(size: 48))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+
+                Text(localization.t("catchup.overlay.title"))
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.xxl, weight: .bold
+                    ))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                if let name = programName {
+                    Text(localization.t(
+                        "catchup.overlay.description",
+                        ["programName": name]
+                    ))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .multilineTextAlignment(.center)
+                }
+            }
+        }
+
+        // MARK: - Credit Info
+
+        private var creditInfoSection: some View {
+            Text(localization.t(
+                "catchup.overlay.creditContext",
+                [
+                    "cost": String(creditCost),
+                    "balance": String(creditBalance),
+                ]
+            ))
+            .font(.system(size: TVDesignTokens.FontSize.sm))
+            .foregroundStyle(DesignTokens.Text.muted)
+            .multilineTextAlignment(.center)
+        }
+
+        // MARK: - Low Balance Warning
+
+        private var lowBalanceWarning: some View {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 18))
+                    .foregroundStyle(DesignTokens.Warning.default)
+                Text(localization.t("catchup.overlay.lowBalanceWarning"))
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.sm, weight: .medium
+                    ))
+                    .foregroundStyle(DesignTokens.Warning.default)
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.lg)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
+            .background(DesignTokens.Warning.default.opacity(0.15))
             .clipShape(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
             )
         }
-        .focusSection()
-        .accessibilityAddTraits(.isModal)
-        .onAppear { startCountdown() }
-        .onDisappear { countdownTask?.cancel() }
-        .onExitCommand { onDecline() }
-    }
 
-    // MARK: - Header
-
-    private var headerSection: some View {
-        VStack(spacing: TVDesignTokens.Spacing.md) {
-            Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 48))
-                .foregroundStyle(DesignTokens.Primary.p400)
-
-            Text(localization.t("catchup.overlay.title"))
-                .font(.system(
-                    size: TVDesignTokens.FontSize.xxl, weight: .bold
-                ))
-                .foregroundStyle(DesignTokens.Text.primary)
-
-            if let name = programName {
-                Text(localization.t(
-                    "catchup.overlay.description",
-                    ["programName": name]
-                ))
-                .font(.system(size: TVDesignTokens.FontSize.base))
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .multilineTextAlignment(.center)
-            }
+        var progressFraction: CGFloat {
+            guard autoDismissSeconds > 0 else { return 0 }
+            return CGFloat(secondsRemaining) / CGFloat(autoDismissSeconds)
         }
     }
-
-    // MARK: - Credit Info
-
-    private var creditInfoSection: some View {
-        Text(localization.t(
-            "catchup.overlay.creditContext",
-            [
-                "cost": String(creditCost),
-                "balance": String(creditBalance)
-            ]
-        ))
-        .font(.system(size: TVDesignTokens.FontSize.sm))
-        .foregroundStyle(DesignTokens.Text.muted)
-        .multilineTextAlignment(.center)
-    }
-
-    // MARK: - Low Balance Warning
-
-    private var lowBalanceWarning: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 18))
-                .foregroundStyle(DesignTokens.Warning.default)
-            Text(localization.t("catchup.overlay.lowBalanceWarning"))
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm, weight: .medium
-                ))
-                .foregroundStyle(DesignTokens.Warning.default)
-        }
-        .padding(.horizontal, TVDesignTokens.Spacing.lg)
-        .padding(.vertical, TVDesignTokens.Spacing.sm)
-        .background(DesignTokens.Warning.default.opacity(0.15))
-        .clipShape(
-            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
-        )
-    }
-
-    // MARK: - Countdown
-
-    private var countdownProgress: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xs) {
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(Color.white.opacity(0.1))
-                        .frame(height: 6)
-
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(DesignTokens.Primary.p400)
-                        .frame(
-                            width: geo.size.width * progressFraction,
-                            height: 6
-                        )
-                        .animation(
-                            .linear(duration: 1),
-                            value: secondsRemaining
-                        )
-                }
-            }
-            .frame(height: 6)
-
-            Text("\(secondsRemaining)s")
-                .font(.system(
-                    size: TVDesignTokens.FontSize.sm,
-                    design: .monospaced
-                ))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
-    }
-
-    private var progressFraction: CGFloat {
-        guard autoDismissSeconds > 0 else { return 0 }
-        return CGFloat(secondsRemaining) / CGFloat(autoDismissSeconds)
-    }
-
-    // MARK: - Buttons
-
-    private var actionButtons: some View {
-        HStack(spacing: TVDesignTokens.Spacing.lg) {
-            GlassButton(
-                localization.t(
-                    "catchup.overlay.acceptButton",
-                    ["cost": String(creditCost)]
-                ),
-                variant: .primary,
-                size: .large
-            ) {
-                countdownTask?.cancel()
-                onAccept()
-            }
-            .tvFocusStyle()
-
-            GlassButton(
-                localization.t("catchup.overlay.declineButton"),
-                variant: .secondary,
-                size: .large
-            ) {
-                countdownTask?.cancel()
-                onDecline()
-            }
-            .tvFocusStyle()
-        }
-    }
-
-    // MARK: - Countdown Timer
-
-    private func startCountdown() {
-        countdownTask = Task {
-            while secondsRemaining > 0, !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(1))
-                guard !Task.isCancelled else { return }
-                secondsRemaining -= 1
-            }
-            guard !Task.isCancelled else { return }
-            onDecline()
-        }
-    }
-}
 #endif

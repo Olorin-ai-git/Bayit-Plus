@@ -7,7 +7,7 @@ import UIKit
 /// Full-screen splash view that plays a language-specific intro video
 /// with the animated Bayit+ logo and slogan, matching the web app experience.
 struct TVSplashView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
 
     let onFinished: () -> Void
 
@@ -69,7 +69,7 @@ struct TVSplashView: View {
 
             (Text("Bayit")
                 .foregroundColor(.white)
-            + Text("+")
+                + Text("+")
                 .foregroundColor(DesignTokens.Colors.Primary.base))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
         }
@@ -102,9 +102,9 @@ struct TVSplashView: View {
     private var poweredByFooter: some View {
         (Text("Powered by ")
             .foregroundColor(DesignTokens.Text.muted)
-        + Text("Olorin.ai")
+            + Text("Olorin.ai")
             .foregroundColor(DesignTokens.Colors.Primary.dark)
-        + Text(" LLC")
+            + Text(" LLC")
             .foregroundColor(DesignTokens.Text.muted))
             .font(.system(size: TVDesignTokens.FontSize.sm))
     }
@@ -226,13 +226,13 @@ struct TVSplashView: View {
 private struct SplashVideoLayer: UIViewRepresentable {
     let player: AVPlayer
 
-    func makeUIView(context: Context) -> UIView {
+    func makeUIView(context _: Context) -> UIView {
         let view = SplashPlayerView()
         view.player = player
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_: UIView, context _: Context) {}
 }
 
 private final class SplashPlayerView: UIView {
@@ -240,7 +240,9 @@ private final class SplashPlayerView: UIView {
         didSet { playerLayer.player = player }
     }
 
-    override class var layerClass: AnyClass { AVPlayerLayer.self }
+    override class var layerClass: AnyClass {
+        AVPlayerLayer.self
+    }
 
     private var playerLayer: AVPlayerLayer {
         layer as! AVPlayerLayer
@@ -252,5 +254,7 @@ private final class SplashPlayerView: UIView {
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) { nil }
+    required init?(coder _: NSCoder) {
+        nil
+    }
 }

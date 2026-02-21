@@ -17,9 +17,9 @@ struct TVCollectionPromoBannerView: View {
         Button(action: navigateToCollection) {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 if let posterUrl, let url = URL(string: posterUrl) {
-                    AsyncImage(url: url) { phase in
+                    CachedAsyncImage(url: url) { phase in
                         switch phase {
-                        case .success(let image):
+                        case let .success(image):
                             image.resizable().aspectRatio(contentMode: .fill)
                         default:
                             Rectangle().fill(DesignTokens.Glass.bgMedium)
@@ -130,7 +130,7 @@ struct TVFeaturedCollectionsCarousel: View {
 
                 if collections.count > 1 {
                     HStack(spacing: 8) {
-                        ForEach(0..<collections.count, id: \.self) { index in
+                        ForEach(0 ..< collections.count, id: \.self) { index in
                             Circle()
                                 .fill(
                                     index == currentIndex

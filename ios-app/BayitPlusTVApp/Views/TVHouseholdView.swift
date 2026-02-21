@@ -32,7 +32,6 @@ struct TVHouseholdView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: HouseholdViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             householdHeader(vm)
@@ -120,7 +119,7 @@ struct TVHouseholdView: View {
     private func avatarView(_ member: HouseholdMember) -> some View {
         Group {
             if let avatarUrl = member.avatar, let url = URL(string: avatarUrl) {
-                AsyncImage(url: url) { image in
+                CachedAsyncImage(url: url) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     avatarPlaceholder(member)

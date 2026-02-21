@@ -5,7 +5,7 @@ import SwiftUI
 /// tvOS billing screen showing current subscription plan and transaction
 /// history, adapted for 10-foot UI with focus-based navigation.
 struct TVBillingView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var transactions: [Transaction] = []
     @State private var subscription: SubscriptionDetail?
@@ -152,52 +152,5 @@ struct TVBillingView: View {
                 }
             }
         }
-    }
-
-    private func transactionRow(_ tx: Transaction) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                Text(tx.description ?? localization.t("billing.payment"))
-                    .font(.system(size: TVDesignTokens.FontSize.base))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(1)
-
-                Text(tx.createdAt ?? "")
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.muted)
-            }
-
-            Spacer()
-
-            Text(String(format: "$%.2f", tx.amount ?? 0))
-                .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
-
-            statusBadge(tx.status)
-        }
-        .padding(TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Glass.bgLight)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
-    }
-
-    private func statusBadge(_ status: String?) -> some View {
-        let color: Color = switch status {
-        case "completed", "paid":
-            DesignTokens.Success.default
-        case "pending":
-            DesignTokens.Warning.default
-        case "failed", "refunded":
-            DesignTokens.ErrorColor.default
-        default:
-            DesignTokens.Primary.default
-        }
-        return Text(status?.capitalized ?? "-")
-            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, TVDesignTokens.Spacing.md)
-            .padding(.vertical, TVDesignTokens.Spacing.xs)
-            .background(color)
-            .clipShape(Capsule())
     }
 }

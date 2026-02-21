@@ -103,7 +103,7 @@
         private func episodeThumbnail(_ urlStr: String?) -> some View {
             Group {
                 if let urlStr = urlStr, let url = URL(string: urlStr) {
-                    AsyncImage(url: url) { phase in
+                    CachedAsyncImage(url: url) { phase in
                         if case let .success(image) = phase {
                             image.resizable().aspectRatio(contentMode: .fill)
                         } else {

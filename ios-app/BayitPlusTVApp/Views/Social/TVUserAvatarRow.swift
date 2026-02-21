@@ -28,7 +28,7 @@ struct TVUserAvatarRow: View {
     @ViewBuilder
     private var avatarView: some View {
         if let avatarURL, let url = URL(string: avatarURL) {
-            AsyncImage(url: url) { image in
+            CachedAsyncImage(url: url) { image in
                 image
                     .resizable()
                     .scaledToFill()

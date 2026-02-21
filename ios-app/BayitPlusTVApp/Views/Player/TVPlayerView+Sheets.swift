@@ -1,0 +1,156 @@
+import BayitAuth
+import BayitCore
+import BayitDesignSystem
+import BayitMedia
+import SwiftUI
+
+/// Full-screen cover sheet content views presented from the player.
+extension TVPlayerView {
+    // MARK: - Subtitle Language Picker
+
+    var subtitleLanguagePickerSheet: some View {
+        TVSubtitleLanguagePickerView(
+            availableLanguages: state.availableSubtitleLanguages,
+            selectedLanguage: state.selectedSubtitleLanguage,
+            isSplitEnabled: state.splitModeEnabled,
+            onSelect: { handleSubtitleSelection($0) },
+            onSplitTap: {
+                state.showSubtitleLanguagePicker = false
+                state.showSplitLanguagePicker = true
+            },
+            onDismiss: { state.showSubtitleLanguagePicker = false },
+            contentId: contentId,
+            repository: repos.subtitle,
+            currentHebrewMode: state.subtitlesVM?.hebrewMode ?? .standard,
+            currentEnglishMode: state.subtitlesVM?.englishMode ?? .standard,
+            hasNikud: state.subtitlesVM?.hasNikud ?? false,
+            hasShoresh: state.subtitlesVM?.hasShoresh ?? false,
+            hasHeblish: state.subtitlesVM?.hasHeblish ?? false,
+            hasEngrew: state.subtitlesVM?.hasEngrew ?? false,
+            isAdmin: authManager.user?.role.isAdmin ?? false,
+            onHebrewModeSelect: { mode in
+                Task {
+                    await state.subtitlesVM?.setHebrewMode(
+                        mode, contentId: contentId,
+                        language: state.selectedSubtitleLanguage
+                    )
+                }
+            },
+            onEnglishModeSelect: { mode in
+                Task {
+                    await state.subtitlesVM?.setEnglishMode(
+                        mode, contentId: contentId,
+                        language: state.selectedSubtitleLanguage
+                    )
+                }
+            },
+            onSubtitlesRefresh: {
+                Task { await loadAvailableLanguages() }
+            }
+        )
+    }
+
+    // MARK: - Split Language Picker
+
+    var splitLanguagePickerSheet: some View {
+        TVSplitLanguagePickerView(
+            availableLanguages: state.availableSubtitleLanguages,
+            selectedLanguages: $state.splitLanguages,
+            layout: $state.splitLayout,
+            onConfirm: { languages in
+                state.splitLanguages = languages
+                state.splitModeEnabled = true
+                state.showSplitLanguagePicker = false
+                Task { await loadSplitSubtitleCues() }
+            },
+            onDismiss: { state.showSplitLanguagePicker = false }
+        )
+    }
+
+    // MARK: - AI Language Picker
+
+    var aiLanguagePickerSheet: some View {
+        TVAILanguagePickerView(
+            selectedLanguage: state.selectedAILanguage,
+            onSelect: { handleAILanguageChange($0) },
+            onDismiss: { state.showAILanguagePicker = false }
+        )
+    }
+
+    // MARK: - Dubbing Controls
+
+    @ViewBuilder
+    var dubbingControlsSheet: some View {
+        if let vm = state.liveDubbingVM {
+            TVLiveDubbingOverlayView(
+                viewModel: vm,
+                channelId: channelId ?? contentId
+            )
+        }
+    }
+
+    // MARK: - Chapter List
+
+    var chapterListSheet: some View {
+        TVChapterNavigationView(contentId: contentId) { chapter in
+            state.showChapterList = false
+            if let startTime = chapter.startTime {
+                Task { await mediaPlayer.seek(to: startTime) }
+            }
+        }
+    }
+
+    // MARK: - Audio Tracks
+
+    var audioTracksSheet: some View {
+        TVAudioTrackSelectorView(
+            tracks: state.audioTracks,
+            selectedTrackId: $state.selectedAudioTrackId,
+            onDismiss: { state.showAudioTracks = false }
+        )
+    }
+
+    // MARK: - Speed Control
+
+    var speedControlSheet: some View {
+        TVPlaybackSpeedControlView(
+            currentSpeed: state.playbackSpeed,
+            onSpeedSelected: { speed in
+                state.playbackSpeed = speed
+                mediaPlayer.setRate(speed)
+                state.showSpeedControl = false
+            },
+            onDismiss: { state.showSpeedControl = false }
+        )
+    }
+
+    // MARK: - Catch-Up
+
+    @ViewBuilder
+    var catchUpSheet: some View {
+        if let vm = state.catchUpVM {
+            TVCatchUpView(
+                viewModel: vm,
+                channelId: channelId ?? contentId,
+                onSeek: { time in
+                    state.showCatchUp = false
+                    Task { await mediaPlayer.seek(to: time) }
+                },
+                onDismiss: { state.showCatchUp = false }
+            )
+        }
+    }
+
+    // MARK: - Character Selection
+
+    var characterSelectionSheet: some View {
+        TVCharacterSelectionView(
+            characters: state.dialogueVM?.availableCharacters ?? [],
+            onSelect: { character in
+                state.showCharacterSelection = false
+                Task { await startDialogue(with: character) }
+            },
+            onDismiss: { state.showCharacterSelection = false }
+        )
+    }
+}

@@ -92,8 +92,8 @@ struct TVRecordingsView: View {
     private func thumbnailView(_ url: String?) -> some View {
         Group {
             if let urlStr = url, let imageURL = URL(string: urlStr) {
-                AsyncImage(url: imageURL) { phase in
-                    if case .success(let image) = phase {
+                CachedAsyncImage(url: imageURL) { phase in
+                    if case let .success(image) = phase {
                         image.resizable().aspectRatio(contentMode: .fill)
                     } else {
                         DesignTokens.Glass.bg

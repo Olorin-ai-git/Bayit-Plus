@@ -5435,7 +5435,9 @@
     "locationPermissionDescription": "Enable location to see Israeli content and businesses near you",
     "enableLocation": "Enable Location",
     "locationPermissionDeniedDescription": "Location access was denied. Open Settings to enable it and see Israeli content near you.",
-    "openSettings": "Open Settings"
+    "openSettings": "Open Settings",
+    "jerusalem": "Jerusalem",
+    "telAviv": "Tel Aviv"
   },
   "household": {
     "title": "Household Management",
@@ -6103,7 +6105,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6115,7 +6121,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -6328,7 +6337,8 @@
       "timerSet": "Sleep timer set for {{minutes}} minutes",
       "timerExtended": "Timer extended by {{minutes}} minutes",
       "timerCancelled": "Sleep timer cancelled"
-    }
+    },
+    "startOver": "Start Over"
   },
   "playlist": {
     "title": "My Playlist",

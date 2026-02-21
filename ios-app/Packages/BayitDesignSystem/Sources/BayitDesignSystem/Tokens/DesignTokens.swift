@@ -3,7 +3,6 @@ import SwiftUI
 /// Olorin Design System tokens ported from @olorin/design-tokens
 /// All color values match the TypeScript design token definitions exactly
 public enum DesignTokens {
-
     /// Namespace for all color tokens, mirrors the TypeScript theme.colors structure.
     public enum Colors {
         /// Primary brand purple palette
@@ -45,6 +44,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Primary Purple (Brand) - raw scale
+
     public enum Primary {
         public static let p50 = Color(hex: 0xFAF5FF)
         public static let p100 = Color(hex: 0xF3E8FF)
@@ -61,6 +61,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Secondary Purple (Accents)
+
     public enum Secondary {
         public static let s400 = Color(hex: 0xE879F9)
         public static let s500 = Color(hex: 0xD946EF)
@@ -71,6 +72,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Semantic Colors
+
     public enum Success {
         public static let s400 = Color(hex: 0x4ADE80)
         public static let s500 = Color(hex: 0x10B981)
@@ -100,10 +102,12 @@ public enum DesignTokens {
     }
 
     // MARK: - Special Colors
+
     public static let live = Color(hex: 0xFF4444)
     public static let gold = Color(hex: 0xFFD700)
 
     // MARK: - Glass Colors
+
     public enum Glass {
         public static let bg = Color.black.opacity(0.7)
         public static let bgLight = Color.black.opacity(0.5)
@@ -118,6 +122,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Text Colors (Dark Mode)
+
     public enum Text {
         public static let primary = Color.white
         public static let secondary = Color.white.opacity(0.7)
@@ -126,12 +131,14 @@ public enum DesignTokens {
     }
 
     // MARK: - Background Colors
+
     public enum Background {
         public static let primary = Color(hex: 0x0D0D1A)
         public static let elevated = Color(hex: 0x1A1A2E)
     }
 
     // MARK: - Spacing (4-point grid)
+
     public enum Spacing {
         public static let xxs: CGFloat = 2
         public static let xs: CGFloat = 4
@@ -146,6 +153,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Border Radius
+
     public enum Radius {
         public static let sm: CGFloat = 4
         public static let `default`: CGFloat = 8
@@ -157,6 +165,7 @@ public enum DesignTokens {
     }
 
     // MARK: - Typography (SF Pro scale)
+
     public enum FontSize {
         public static let xs: CGFloat = 10
         public static let sm: CGFloat = 12
@@ -173,8 +182,8 @@ public enum DesignTokens {
 
 // MARK: - Color Hex Extension
 
-extension Color {
-    public init(hex: UInt, alpha: Double = 1.0) {
+public extension Color {
+    init(hex: UInt, alpha: Double = 1.0) {
         self.init(
             .sRGB,
             red: Double((hex >> 16) & 0xFF) / 255.0,

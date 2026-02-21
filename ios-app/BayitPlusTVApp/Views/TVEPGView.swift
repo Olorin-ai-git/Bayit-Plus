@@ -89,8 +89,8 @@ struct TVEPGView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 if let logo = channel.channelLogo, let url = URL(string: logo) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let image) = phase {
+                    CachedAsyncImage(url: url) { phase in
+                        if case let .success(image) = phase {
                             image.resizable().aspectRatio(contentMode: .fit)
                         } else {
                             DesignTokens.Glass.bg
@@ -190,7 +190,7 @@ struct TVEPGView: View {
         let dayFormatter = DateFormatter()
         dayFormatter.dateFormat = "EEE d"
         let today = Date()
-        return (0..<7).map { offset in
+        return (0 ..< 7).map { offset in
             let date = Calendar.current.date(byAdding: .day, value: offset, to: today) ?? today
             let label = offset == 0 ? localization.t("common.today") : dayFormatter.string(from: date)
             return (label: label, value: offset == 0 ? nil : formatter.string(from: date))

@@ -211,6 +211,15 @@
 		2996DA7AE994956352549139 /* TVMiniAudioPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 860DF24850E52C37BB5A8D86 /* TVMiniAudioPlayerBar.swift */; };
 		29A9499952132EA0529ADD2D /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A2951A64FD8406490820B6C /* AvatarMeshRepository.swift */; };
 		2A3DC1A55507B50AE68A33CB /* TVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D13E0342CB5D7C12B194A77 /* TVPlayerView.swift */; };
+		13FB75FDEAF0E53E48CBC99D /* TVPlayerStateContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB5A3BD40994BF0D4B0867 /* TVPlayerStateContainer.swift */; };
+		712C7C6D9E5507C84BC1CCAA /* TVPlayerView+TransportControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457D39C937AFDC19EF63418A /* TVPlayerView+TransportControls.swift */; };
+		D9CA06DAB8DF5F6965B75267 /* TVPlayerView+MetadataOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C1363FB359E5D061DD4999 /* TVPlayerView+MetadataOverlay.swift */; };
+		AF1CD72CB0E2B93ABBC3F4A6 /* TVPlayerView+InteractionOverlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD54B1F818148FBAD01E2DA /* TVPlayerView+InteractionOverlays.swift */; };
+		D5B75B776BE86F8552776C46 /* TVPlayerView+Lifecycle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FB3E3CE9741FA391969C48 /* TVPlayerView+Lifecycle.swift */; };
+		EF663CF31BCFB30170E8F98E /* TVPlayerView+FocusManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9276BFB51774F4A3873BB21C /* TVPlayerView+FocusManagement.swift */; };
+		CAD4ED5A3CBB42AEC2E7FE99 /* TVPlayerView+ProgressTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B66D41936D079D1B5FF05B /* TVPlayerView+ProgressTracking.swift */; };
+		072E746B074FE379774C521F /* TVPlayerView+Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE39E9CC9497D7A8C95C23E2 /* TVPlayerView+Sheets.swift */; };
+		3E9FA41738215F52BF62E7AE /* TVPlayerView+ControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */; };
 		2AC5E1A5823E1A69FDF9E33A /* SplitSubtitleOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0E8DC6C24D80BB2D464836 /* SplitSubtitleOverlayView.swift */; };
 		2ACC93E7AD72EA4CCA1BD9C4 /* OpenSubtitlesDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1647213A7910EA192645E78 /* OpenSubtitlesDownloadView.swift */; };
 		2AD689FF052688DDC470484D /* PlayContentIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2A6DCCAF299C3AC82E9891 /* PlayContentIntent.swift */; };
@@ -1682,6 +1691,15 @@
 		9CB5E4B8D3BECA726963E52C /* InteractiveSubtitlesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveSubtitlesView.swift; sourceTree = "<group>"; };
 		9CBE22C79186FC04E1F08867 /* IPadVODCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadVODCard.swift; sourceTree = "<group>"; };
 		9D13E0342CB5D7C12B194A77 /* TVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPlayerView.swift; sourceTree = "<group>"; };
+		EFFB5A3BD40994BF0D4B0867 /* TVPlayerStateContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPlayerStateContainer.swift; sourceTree = "<group>"; };
+		457D39C937AFDC19EF63418A /* TVPlayerView+TransportControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+TransportControls.swift"; sourceTree = "<group>"; };
+		54C1363FB359E5D061DD4999 /* TVPlayerView+MetadataOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+MetadataOverlay.swift"; sourceTree = "<group>"; };
+		8DD54B1F818148FBAD01E2DA /* TVPlayerView+InteractionOverlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+InteractionOverlays.swift"; sourceTree = "<group>"; };
+		02FB3E3CE9741FA391969C48 /* TVPlayerView+Lifecycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+Lifecycle.swift"; sourceTree = "<group>"; };
+		9276BFB51774F4A3873BB21C /* TVPlayerView+FocusManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+FocusManagement.swift"; sourceTree = "<group>"; };
+		88B66D41936D079D1B5FF05B /* TVPlayerView+ProgressTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+ProgressTracking.swift"; sourceTree = "<group>"; };
+		AE39E9CC9497D7A8C95C23E2 /* TVPlayerView+Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+Sheets.swift"; sourceTree = "<group>"; };
+		A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+ControlBar.swift"; sourceTree = "<group>"; };
 		9D47D907652EE218BD5BA042 /* WakeWordSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeWordSettingsView.swift; sourceTree = "<group>"; };
 		9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessMoveHistoryView.swift; sourceTree = "<group>"; };
 		9E196CA4F02D52BFA9F696F0 /* AppLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocationProvider.swift; sourceTree = "<group>"; };
@@ -2704,6 +2722,15 @@
 				7055798832AD9CA968CC1A1A /* TVPlaybackSpeedControlView.swift */,
 				60CB989F79193AF6E03A16C2 /* TVPlayerControlBar.swift */,
 				9D13E0342CB5D7C12B194A77 /* TVPlayerView.swift */,
+				EFFB5A3BD40994BF0D4B0867 /* TVPlayerStateContainer.swift */,
+				457D39C937AFDC19EF63418A /* TVPlayerView+TransportControls.swift */,
+				54C1363FB359E5D061DD4999 /* TVPlayerView+MetadataOverlay.swift */,
+				8DD54B1F818148FBAD01E2DA /* TVPlayerView+InteractionOverlays.swift */,
+				02FB3E3CE9741FA391969C48 /* TVPlayerView+Lifecycle.swift */,
+				9276BFB51774F4A3873BB21C /* TVPlayerView+FocusManagement.swift */,
+				88B66D41936D079D1B5FF05B /* TVPlayerView+ProgressTracking.swift */,
+				AE39E9CC9497D7A8C95C23E2 /* TVPlayerView+Sheets.swift */,
+				A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */,
 				BF49B52CC1BF1AA93D14C3DE /* TVQualitySelectorView.swift */,
 				5E9F0FB32F632CE9884F9F0C /* TVQuizAnswerButton.swift */,
 				42F36B12C39543EE87D4FB33 /* TVQuizOverlayView.swift */,

@@ -53,9 +53,9 @@ struct TVPodcastDetailView: View {
     private func showHeader(_ detail: PodcastDetail) -> some View {
         HStack(alignment: .top, spacing: TVDesignTokens.Spacing.xxxl) {
             if let urlStr = detail.cover, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -141,9 +141,9 @@ struct TVPodcastDetailView: View {
         GlassCard {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 if let urlStr = episode.thumbnail, let url = URL(string: urlStr) {
-                    AsyncImage(url: url) { phase in
+                    CachedAsyncImage(url: url) { phase in
                         switch phase {
-                        case .success(let image):
+                        case let .success(image):
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)

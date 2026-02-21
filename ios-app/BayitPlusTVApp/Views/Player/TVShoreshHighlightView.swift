@@ -7,7 +7,7 @@ import SwiftUI
 struct TVShoreshHighlightView: View {
     let words: [HighlightedWord]
 
-    private let rootColor = Color(red: 1.0, green: 0.65, blue: 0) // Amber #FFA500
+    private let rootColor = DesignTokens.Hebrew.rootHighlight
     private let normalColor = Color.white
 
     var body: some View {

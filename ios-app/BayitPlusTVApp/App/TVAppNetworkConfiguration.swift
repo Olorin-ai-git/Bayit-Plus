@@ -6,9 +6,13 @@ import Foundation
 /// for the tvOS app target.
 struct TVAppNetworkConfiguration: NetworkConfiguration {
     private let appConfig: EnvironmentConfiguration
+    private let clientVersion: String
 
     init(appConfig: EnvironmentConfiguration) {
         self.appConfig = appConfig
+        clientVersion = Bundle.main.object(
+            forInfoDictionaryKey: "CFBundleShortVersionString"
+        ) as? String ?? "0.0.0"
     }
 
     var baseURL: URL {
@@ -34,9 +38,7 @@ struct TVAppNetworkConfiguration: NetworkConfiguration {
     var defaultHeaders: [String: String] {
         [
             "X-Client-Platform": "tvos",
-            "X-Client-Version": Bundle.main.object(
-                forInfoDictionaryKey: "CFBundleShortVersionString"
-            ) as? String ?? "0.0.0",
+            "X-Client-Version": clientVersion,
         ]
     }
 
@@ -64,5 +66,15 @@ struct TVAppNetworkConfiguration: NetworkConfiguration {
 
     var webSocketBaseURL: URL {
         appConfig.webSocketBaseURL
+    }
+
+    // MARK: - URLCache Configuration
+
+    var urlCacheMemoryCapacity: Int {
+        10 * 1024 * 1024
+    }
+
+    var urlCacheDiskCapacity: Int {
+        50 * 1024 * 1024
     }
 }

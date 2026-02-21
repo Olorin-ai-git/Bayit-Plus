@@ -40,7 +40,6 @@ struct TVRewardsView: View {
         }
     }
 
-    @ViewBuilder
     private func rewardsContent(_ vm: RewardsViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xxl) {
             levelHeader(vm)
@@ -149,8 +148,8 @@ struct TVRewardsView: View {
     private func badgeCard(_ badge: Badge) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             if let iconURL = badge.icon, let url = URL(string: iconURL) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fit)
                     } else {
                         Image(systemName: "rosette")

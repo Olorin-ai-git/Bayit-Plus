@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// App environment configuration
 public enum AppEnvironment: String, Sendable {
@@ -55,6 +56,11 @@ public protocol EnvironmentConfiguration: Sendable {
     var catchUpCreditCost: Int { get }
     var catchUpAutoPromptSeconds: Int { get }
     var catchUpDefaultWindowMinutes: Int { get }
+
+    // MARK: - Cast Configuration
+
+    var googleCastReceiverAppId: String { get }
+    var supportEmail: String { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -74,6 +80,8 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let catchUpCreditCost: Int
     public let catchUpAutoPromptSeconds: Int
     public let catchUpDefaultWindowMinutes: Int
+    public let googleCastReceiverAppId: String
+    public let supportEmail: String
 
     public init() {
         let env = AppEnvironment.current
@@ -128,7 +136,18 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         let catchUpWindowValue = info["CATCHUP_DEFAULT_WINDOW_MINUTES"] as? String
             ?? ProcessInfo.processInfo.environment["CATCHUP_DEFAULT_WINDOW_MINUTES"]
 
+        let castReceiverAppIdValue = info["GOOGLE_CAST_RECEIVER_APP_ID"] as? String
+            ?? ProcessInfo.processInfo.environment["GOOGLE_CAST_RECEIVER_APP_ID"]
+
+        let supportEmailValue = info["SUPPORT_EMAIL"] as? String
+            ?? ProcessInfo.processInfo.environment["SUPPORT_EMAIL"]
+
+        guard let resolvedSupportEmail = supportEmailValue, !resolvedSupportEmail.isEmpty else {
+            fatalError("SUPPORT_EMAIL must be set in Info.plist or SUPPORT_EMAIL env var")
+        }
+
         environment = env
+        supportEmail = resolvedSupportEmail
         apiBaseURL = apiURL
         apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
         apiMaxRetries = Int(maxRetriesValue ?? "") ?? 3
@@ -143,27 +162,29 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         catchUpCreditCost = Int(catchUpCreditCostValue ?? "") ?? 1
         catchUpAutoPromptSeconds = Int(catchUpAutoPromptValue ?? "") ?? 15
         catchUpDefaultWindowMinutes = Int(catchUpWindowValue ?? "") ?? 15
+        googleCastReceiverAppId = castReceiverAppIdValue ?? ""
     }
 
-    private static func defaultAPIBaseURL(for env: AppEnvironment) -> String {
-        switch env {
-        case .development:
-            return "http://localhost:8000/api/v1"
-        case .staging:
-            return "https://staging-api.bayit.tv/api/v1"
-        case .production:
-            return "https://api.bayit.tv/api/v1"
-        }
+    private static func defaultAPIBaseURL(for _: AppEnvironment) -> String {
+        fatalError("API_BASE_URL must be set in Info.plist or API_BASE_URL env var")
     }
 
-    private static func defaultWebSocketURL(for env: AppEnvironment) -> String {
-        switch env {
-        case .development:
-            return "ws://localhost:8000"
-        case .staging:
-            return "wss://staging-api.bayit.tv"
-        case .production:
-            return "wss://ws.bayit.tv"
-        }
+    private static func defaultWebSocketURL(for _: AppEnvironment) -> String {
+        fatalError("WEBSOCKET_BASE_URL must be set in Info.plist or WEBSOCKET_BASE_URL env var")
+    }
+}
+
+// MARK: - SwiftUI Environment Key
+
+private struct AppConfigurationKey: EnvironmentKey {
+    static var defaultValue: AppConfiguration {
+        AppConfiguration()
+    }
+}
+
+public extension EnvironmentValues {
+    var appConfiguration: AppConfiguration {
+        get { self[AppConfigurationKey.self] }
+        set { self[AppConfigurationKey.self] = newValue }
     }
 }

@@ -16,7 +16,6 @@ protocol WatchPartyRepository: Sendable {
 
 /// Production implementation of `WatchPartyRepository` using `APIClient`.
 final class APIWatchPartyRepository: WatchPartyRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -95,7 +94,9 @@ final class APIWatchPartyRepository: WatchPartyRepository, @unchecked Sendable {
     ) async throws -> WebSocketConnection {
         let baseURL = await client.configuration.baseURL
         let wsScheme = baseURL.scheme == "https" ? "wss" : "ws"
-        let host = baseURL.host ?? "localhost"
+        guard let host = baseURL.host else {
+            throw URLError(.badURL)
+        }
         let port = baseURL.port.map { ":\($0)" } ?? ""
         let urlString = "\(wsScheme)://\(host)\(port)/ws/party/\(partyId)"
 

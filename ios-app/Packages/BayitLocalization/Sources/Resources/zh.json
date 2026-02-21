@@ -5433,7 +5433,9 @@
     "locationPermissionDescription": "启用位置以查看附近的以色列内容和商店",
     "enableLocation": "启用位置",
     "locationPermissionDeniedDescription": "位置访问被拒绝。打开设置以启用它并查看附近的以色列内容。",
-    "openSettings": "打开设置"
+    "openSettings": "打开设置",
+    "jerusalem": "耶路撒冷",
+    "telAviv": "特拉维夫"
   },
   "household": {
     "title": "家庭管理",
@@ -6098,8 +6100,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6111,7 +6122,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -6308,7 +6322,8 @@
       "timerSet": "睡眠定时器已设置{{minutes}}分钟",
       "timerExtended": "定时器延长{{minutes}}分钟",
       "timerCancelled": "睡眠定时器已取消"
-    }
+    },
+    "startOver": "重新开始"
   },
   "playlist": {
     "title": "我的播放列表",

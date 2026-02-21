@@ -5884,7 +5884,9 @@
     "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
     "enableLocation": "位置情報を有効にする",
     "locationPermissionDeniedDescription": "位置情報へのアクセスが拒否されました。設定を開いて有効にし、近くのイスラエルコンテンツを見てください。",
-    "openSettings": "設定を開く"
+    "openSettings": "設定を開く",
+    "jerusalem": "エルサレム",
+    "telAviv": "テルアビブ"
   },
   "household": {
     "title": "世帯管理",

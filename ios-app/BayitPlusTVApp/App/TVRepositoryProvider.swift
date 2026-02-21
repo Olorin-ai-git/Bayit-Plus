@@ -1,14 +1,12 @@
 import BayitCore
 import BayitNetworking
 import Foundation
-import Observation
 
 /// Provides repository instances for the tvOS app via SwiftUI Environment.
 ///
 /// Mirrors the iOS RepositoryProvider but excludes iOS-only features
 /// (voice orchestration, downloads, device pairing).
 /// Shares all repository protocols and implementations from BayitPlusApp.
-@Observable
 final class TVRepositoryProvider {
     let content: any ContentRepository
     let liveTV: any LiveTVRepository
@@ -63,51 +61,51 @@ final class TVRepositoryProvider {
         authTokenProvider: AuthTokenProvider,
         configuration: any EnvironmentConfiguration
     ) {
-        self.content = APIContentRepository(client: client)
-        self.liveTV = APILiveTVRepository(client: client)
-        self.radio = APIRadioRepository(client: client)
-        self.series = APISeriesRepository(client: client)
-        self.media = APIMediaRepository(client: client)
-        self.playlist = APIPlaylistRepository(client: client)
-        self.epg = APIEPGRepository(client: client)
-        self.category = APICategoryRepository(client: client)
-        self.settings = APISettingsRepository(client: client)
-        self.userSettings = APIUserSettingsRepository(client: client)
-        self.liveDubbing = APILiveDubbingRepository(client: client)
-        self.subtitle = APISubtitleRepository(client: client)
-        self.chapter = APIChapterRepository(client: client)
-        self.audiobook = APIAudiobookRepository(client: client)
-        self.trendingRepo = APITrendingRepository(client: client)
-        self.llmSearch = APILLMSearchRepository(client: client)
-        self.podcasts = APIPodcastRepository(client: client)
-        self.user = APIUserRepository(client: client)
-        self.betaCredits = APIBetaCreditsRepository(client: client)
-        self.culture = APICultureRepository(client: client)
-        self.trivia = APITriviaRepository(client: client)
-        self.friends = APIFriendsRepository(client: client)
-        self.reward = APIRewardRepository(client: client)
-        self.search = APISearchRepository(client: client)
-        self.watchParty = APIWatchPartyRepository(client: client)
-        self.household = APIHouseholdRepository(client: client)
-        self.news = APINewsRepository(client: client)
-        self.stats = APIStatsRepository(client: client)
-        self.shabbat = APIShabbatRepository(client: client)
-        self.security = APISecurityRepository(client: client)
-        self.familyControls = APIFamilyControlsRepository(client: client)
-        self.chat = APIChatRepository(client: client)
-        self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
-        self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
-        self.widget = APIWidgetRepository(client: client)
-        self.missions = APIMissionsRepository(client: client)
-        self.starStory = APIStarStoryRepository(client: client)
-        self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
-        self.gamificationRepository = APIGamificationRepository(client: client)
-        self.avatarMeshRepository = APIAvatarRepository(client: client)
-        self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
-        self.zehAniRepository = APIZehAniRepository(client: client)
-        self.movieInteraction = APIMovieInteractionRepository(client: client)
+        content = APIContentRepository(client: client)
+        liveTV = APILiveTVRepository(client: client)
+        radio = APIRadioRepository(client: client)
+        series = APISeriesRepository(client: client)
+        media = APIMediaRepository(client: client)
+        playlist = APIPlaylistRepository(client: client)
+        epg = APIEPGRepository(client: client)
+        category = APICategoryRepository(client: client)
+        settings = APISettingsRepository(client: client)
+        userSettings = APIUserSettingsRepository(client: client)
+        liveDubbing = APILiveDubbingRepository(client: client)
+        subtitle = APISubtitleRepository(client: client)
+        chapter = APIChapterRepository(client: client)
+        audiobook = APIAudiobookRepository(client: client)
+        trendingRepo = APITrendingRepository(client: client)
+        llmSearch = APILLMSearchRepository(client: client)
+        podcasts = APIPodcastRepository(client: client)
+        user = APIUserRepository(client: client)
+        betaCredits = APIBetaCreditsRepository(client: client)
+        culture = APICultureRepository(client: client)
+        trivia = APITriviaRepository(client: client)
+        friends = APIFriendsRepository(client: client)
+        reward = APIRewardRepository(client: client)
+        search = APISearchRepository(client: client)
+        watchParty = APIWatchPartyRepository(client: client)
+        household = APIHouseholdRepository(client: client)
+        news = APINewsRepository(client: client)
+        stats = APIStatsRepository(client: client)
+        shabbat = APIShabbatRepository(client: client)
+        security = APISecurityRepository(client: client)
+        familyControls = APIFamilyControlsRepository(client: client)
+        chat = APIChatRepository(client: client)
+        chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
+        directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
+        widget = APIWidgetRepository(client: client)
+        missions = APIMissionsRepository(client: client)
+        starStory = APIStarStoryRepository(client: client)
+        grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
+        gamificationRepository = APIGamificationRepository(client: client)
+        avatarMeshRepository = APIAvatarRepository(client: client)
+        phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
+        zehAniRepository = APIZehAniRepository(client: client)
+        movieInteraction = APIMovieInteractionRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
-        self.offlineCache = OfflineCacheService()
+        offlineCache = OfflineCacheService()
     }
 }

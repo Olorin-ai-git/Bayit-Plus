@@ -15,15 +15,15 @@
         let characterImageUrl: String?
         let onDismiss: () -> Void
 
-        private let circleSize: CGFloat = 240
-        private let transitionDelay: TimeInterval = 0.5
-        private let logger = BayitLogger(category: "TVInteractiveMoment")
+        let circleSize: CGFloat = 240
+        let transitionDelay: TimeInterval = 0.5
+        let logger = BayitLogger(category: "TVInteractiveMoment")
 
-        @State private var phase: OverlayPhase = .avatarSpeaking
-        @State private var avatarPlayer: AVPlayer?
-        @State private var characterPlayer: AVPlayer?
-        @State private var isAvatarVideoReady = false
-        @State private var isCharacterVideoReady = false
+        @State var phase: OverlayPhase = .avatarSpeaking
+        @State var avatarPlayer: AVPlayer?
+        @State var characterPlayer: AVPlayer?
+        @State var isAvatarVideoReady = false
+        @State var isCharacterVideoReady = false
 
         var body: some View {
             VStack {
@@ -86,7 +86,7 @@
         }
 
         private func stillImage(url: String) -> some View {
-            AsyncImage(url: URL(string: url)) { phase in
+            CachedAsyncImage(url: URL(string: url)) { phase in
                 switch phase {
                 case let .success(image):
                     image.resizable().scaledToFill()
@@ -94,162 +94,6 @@
                     Color.black
                 }
             }
-        }
-
-        // MARK: - Avatar Player
-
-        private func setupAvatarPlayer() {
-            guard let url = URL(string: avatarVideoUrl) else {
-                logger.error("Invalid avatar video URL: \(avatarVideoUrl)")
-                onDismiss()
-                return
-            }
-
-            let player = AVPlayer(url: url)
-            avatarPlayer = player
-
-            NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem,
-                queue: .main
-            ) { _ in
-                Task { @MainActor in onAvatarFinished() }
-            }
-
-            Task {
-                let ready = await waitForPlayerReady(player, label: "avatar")
-                await MainActor.run {
-                    guard ready else {
-                        logger.error("Avatar video failed to load")
-                        onDismiss()
-                        return
-                    }
-                    withAnimation(.easeIn(duration: 0.3)) {
-                        isAvatarVideoReady = true
-                    }
-                    player.play()
-                }
-            }
-        }
-
-        private func onAvatarFinished() {
-            guard let charUrl = characterVideoUrl,
-                  URL(string: charUrl) != nil
-            else {
-                logger.info(
-                    "No character response video, dismissing"
-                )
-                dismissAfterDelay()
-                return
-            }
-
-            logger.info("Avatar finished, transitioning to character")
-            phase = .transition
-            Task {
-                try? await Task.sleep(for: .seconds(transitionDelay))
-                await MainActor.run {
-                    setupCharacterPlayer(urlString: charUrl)
-                }
-            }
-        }
-
-        // MARK: - Character Player
-
-        private func setupCharacterPlayer(urlString: String) {
-            guard let url = URL(string: urlString) else {
-                logger.error("Invalid character video URL: \(urlString)")
-                dismissAfterDelay()
-                return
-            }
-
-            logger.info("Setting up character player: \(urlString)")
-            let player = AVPlayer(url: url)
-            characterPlayer = player
-            phase = .characterSpeaking
-
-            NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem,
-                queue: .main
-            ) { _ in
-                Task { @MainActor in dismissAfterDelay() }
-            }
-
-            Task {
-                let ready = await waitForPlayerReady(player, label: "character")
-                await MainActor.run {
-                    guard ready else {
-                        logger.error("Character video failed to load")
-                        dismissAfterDelay()
-                        return
-                    }
-                    withAnimation(.easeIn(duration: 0.3)) {
-                        isCharacterVideoReady = true
-                    }
-                    player.play()
-                    logger.info("Character video playing")
-                }
-            }
-        }
-
-        // MARK: - Player Readiness
-
-        private func waitForPlayerReady(
-            _ player: AVPlayer,
-            label: String
-        ) async -> Bool {
-            guard let item = player.currentItem else {
-                logger.error("\(label) player has no current item")
-                return false
-            }
-
-            let maxWaitSeconds = 10.0
-            let pollInterval = 0.1
-            var elapsed = 0.0
-
-            while elapsed < maxWaitSeconds {
-                switch item.status {
-                case .readyToPlay:
-                    logger.info(
-                        "\(label) video ready after \(String(format: "%.1f", elapsed))s"
-                    )
-                    return true
-                case .failed:
-                    let errorDesc = item.error?.localizedDescription ?? "unknown"
-                    logger.error(
-                        "\(label) video failed to load: \(errorDesc)"
-                    )
-                    return false
-                case .unknown:
-                    try? await Task.sleep(for: .seconds(pollInterval))
-                    elapsed += pollInterval
-                @unknown default:
-                    try? await Task.sleep(for: .seconds(pollInterval))
-                    elapsed += pollInterval
-                }
-            }
-
-            logger.error(
-                "\(label) video timed out after \(maxWaitSeconds)s"
-            )
-            return false
-        }
-
-        // MARK: - Lifecycle
-
-        private func dismissAfterDelay() {
-            phase = .done
-            Task {
-                try? await Task.sleep(for: .seconds(0.3))
-                await MainActor.run { onDismiss() }
-            }
-        }
-
-        private func cleanupPlayers() {
-            avatarPlayer?.pause()
-            avatarPlayer = nil
-            characterPlayer?.pause()
-            characterPlayer = nil
         }
     }
 

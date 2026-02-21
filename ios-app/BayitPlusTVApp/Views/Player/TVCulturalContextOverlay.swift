@@ -49,12 +49,12 @@ final class TVCulturalContextViewModel {
         self.client = client
     }
 
-    // Convenience initializer for standalone use
+    /// Convenience initializer for standalone use
     convenience init() {
         let appConfig = AppConfiguration()
         let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
         let apiLogger = TVAppAPILogger()
-        let authConfig = TVAppAuthConfiguration()
+        let authConfig = AppAuthConfiguration()
         let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
 
         let client = APIClient(

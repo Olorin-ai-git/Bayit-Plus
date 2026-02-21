@@ -36,7 +36,6 @@ struct TVLiveAvatarOverlayView: View {
         .onAppear { loadAvatarImage() }
     }
 
-    @ViewBuilder
     private var avatarOverlay: some View {
         ZStack {
             if isPlayingVideo, let player = player {
@@ -48,10 +47,11 @@ struct TVLiveAvatarOverlayView: View {
                         self.player = nil
                     }
             } else if let imageUrlString = avatarImageUrl,
-                      let imageUrl = URL(string: imageUrlString) {
-                AsyncImage(url: imageUrl) { phase in
+                      let imageUrl = URL(string: imageUrlString)
+            {
+                CachedAsyncImage(url: imageUrl) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image.resizable().scaledToFill()
                     default:
                         Color.clear

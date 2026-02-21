@@ -43,9 +43,9 @@ struct TVZineReaderView: View {
     private func zinePage(urlString: String, pageNumber: Int) -> some View {
         GeometryReader { geometry in
             if let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -114,7 +114,7 @@ struct TVZineReaderView: View {
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
 
             HStack(spacing: TVDesignTokens.Spacing.xs) {
-                ForEach(0..<pageUrls.count, id: \.self) { index in
+                ForEach(0 ..< pageUrls.count, id: \.self) { index in
                     Circle()
                         .fill(
                             index == currentPage

@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Layout mode for split subtitles on tvOS.
 enum SplitSubtitleLayout: String, CaseIterable {
-    case stacked    // Primary on top, secondary below
+    case stacked // Primary on top, secondary below
     case sideBySide // Left and right columns
 
     var label: String {
@@ -47,7 +47,7 @@ struct TVSplitSubtitleOverlayView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-        .padding(.horizontal, UIScreen.main.bounds.width * 0.1)
+        .containerRelativeFrame(.horizontal) { width, _ in width * 0.8 }
         .padding(.bottom, TVDesignTokens.Spacing.xxxxl)
     }
 

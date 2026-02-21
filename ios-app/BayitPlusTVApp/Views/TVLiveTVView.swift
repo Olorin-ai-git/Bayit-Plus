@@ -67,7 +67,7 @@ struct TVLiveTVView: View {
 
     private var loadingGrid: some View {
         LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
-            ForEach(0..<6, id: \.self) { _ in
+            ForEach(0 ..< 6, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                     .fill(DesignTokens.Glass.bg)
                     .aspectRatio(16 / 9, contentMode: .fit)
@@ -111,9 +111,10 @@ private struct TVChannelCard: View {
     private var channelLogo: some View {
         ZStack(alignment: .topTrailing) {
             if let urlStr = channel.logo ?? channel.thumbnail,
-               let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
+               let url = URL(string: urlStr)
+            {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .padding(TVDesignTokens.Spacing.md)

@@ -72,7 +72,7 @@ struct TVRadioView: View {
 
     private var loadingGrid: some View {
         LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
-            ForEach(0..<8, id: \.self) { _ in
+            ForEach(0 ..< 8, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                     .fill(DesignTokens.Glass.bg)
                     .aspectRatio(1, contentMode: .fit)
@@ -139,8 +139,8 @@ private struct TVRadioStationItemCard: View {
     private var stationLogo: some View {
         Group {
             if let urlStr = station.logo, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fill)
                     } else {
                         stationPlaceholder
