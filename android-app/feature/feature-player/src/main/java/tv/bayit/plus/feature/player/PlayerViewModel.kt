@@ -427,14 +427,36 @@ class PlayerViewModel @Inject constructor(
     fun startVodInteraction() {
         val contentId = currentContentId ?: return
         viewModelScope.launch {
+            // Verify the user has a ready Creatify avatar before showing the sheet.
+            // Using "any" as the sentinel avatarId tells the backend to return the
+            // current user's active persona — mirroring the iOS implementation.
+            val avatarStatus = runCatching { vodInteractionApi.getAvatarStatus("any") }
+                .getOrNull()
+
+            if (avatarStatus == null || avatarStatus.status != "ready" || avatarStatus.avatarImageUrl == null) {
+                logger.info(
+                    "Avatar not ready, skipping VOD interaction",
+                    mapOf(
+                        "contentId" to contentId,
+                        "avatarStatus" to (avatarStatus?.status ?: "null"),
+                    ),
+                )
+                return@launch
+            }
+
             val characters = runCatching { vodInteractionApi.getInteractiveCharacters(contentId) }
                 .getOrElse { emptyList<ContentCharacter>() }
             mediaPlayer.pause()
             _extendedState.value = _extendedState.value.copy(
                 vodInteractionCharacters = characters,
                 showVodInteractionSheet = true,
+                avatarId = avatarStatus.avatarId,
+                avatarImageUrl = avatarStatus.avatarImageUrl,
             )
-            logger.debug("Started VOD interaction", mapOf("contentId" to contentId, "characters" to characters.size.toString()))
+            logger.debug(
+                "Started VOD interaction",
+                mapOf("contentId" to contentId, "characters" to characters.size.toString()),
+            )
         }
     }
 
@@ -463,9 +485,10 @@ class PlayerViewModel @Inject constructor(
     private suspend fun checkSpecialUser() {
         val result = userRepository.getCurrentUser()
         if (result is BayitResult.Success) {
-            val email = (result.data as? ProfileResponse)?.email
+            val profile = result.data as? ProfileResponse
             _extendedState.value = _extendedState.value.copy(
-                isSpecialUser = email in SPECIAL_USER_EMAILS,
+                isSpecialUser = profile?.email in SPECIAL_USER_EMAILS,
+                profileId = profile?.id,
             )
         }
     }

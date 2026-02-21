@@ -46,4 +46,10 @@ data class PlayerExtendedState(
     val interactiveMoments: List<tv.bayit.plus.feature.player.dialogue.InteractiveMoment> = emptyList(),
     val vodInteractionCharacters: List<tv.bayit.plus.feature.player.dialogue.ContentCharacter> = emptyList(),
     val showVodInteractionSheet: Boolean = false,
+    /** Profile ID of the currently authenticated user; populated on content load. */
+    val profileId: String? = null,
+    /** Creatify avatar ID for the current user; populated on first interaction attempt. */
+    val avatarId: String? = null,
+    /** Avatar image URL for the current user's ready persona; used in dialogue overlay header. */
+    val avatarImageUrl: String? = null,
 )

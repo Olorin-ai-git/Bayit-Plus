@@ -1,5 +1,7 @@
 package tv.bayit.plus.feature.player.dialogue
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -13,6 +15,11 @@ import retrofit2.http.Path
  * to the base URL configured in [NetworkModule].
  */
 interface VODInteractionApi {
+
+    @GET("api/v1/zeh-ani/avatar/{avatarId}")
+    suspend fun getAvatarStatus(
+        @Path("avatarId") avatarId: String,
+    ): AvatarStatus
 
     @GET("api/v1/avatar-mesh/content/{contentId}/interactive-moments")
     suspend fun getInteractiveMoments(
@@ -51,6 +58,19 @@ interface VODInteractionApi {
         @Body request: VodReelRequest,
     ): VodReelResponse
 }
+
+/**
+ * Avatar readiness status from `GET /api/v1/zeh-ani/avatar/{avatarId}`.
+ * Used by the player to verify the user has a ready Creatify persona before
+ * showing the character interaction sheet.
+ */
+@Serializable
+data class AvatarStatus(
+    @SerialName("avatar_id") val avatarId: String,
+    val status: String,
+    @SerialName("avatar_image_url") val avatarImageUrl: String? = null,
+    @SerialName("has_voice_clone") val hasVoiceClone: Boolean = false,
+)
 
 data class VodReelRequest(
     val sessionIds: List<String>,

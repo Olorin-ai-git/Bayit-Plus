@@ -37,7 +37,10 @@ import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.player.dialogue.AvatarDialogueOverlay
+import tv.bayit.plus.feature.player.dialogue.AvatarDialogueViewModel
 import tv.bayit.plus.feature.player.dialogue.CharacterSelectionSheet
+import tv.bayit.plus.feature.player.dialogue.ContentCharacter
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
 import tv.bayit.plus.feature.player.live.ui.PlayerLiveOverlays
 import tv.bayit.plus.designsystem.component.SleepTimerBanner
@@ -58,6 +61,7 @@ fun PlayerRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlayerViewModel = hiltViewModel(),
+    dialogueViewModel: AvatarDialogueViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
@@ -70,6 +74,11 @@ fun PlayerRoute(
     val triviaProgress by viewModel.triviaProgress.collectAsStateWithLifecycle()
     val aiPanelState by viewModel.aiPanelState.collectAsStateWithLifecycle()
     val extendedState by viewModel.extendedState.collectAsStateWithLifecycle()
+    val dialogueCharacter by dialogueViewModel.selectedCharacter.collectAsStateWithLifecycle()
+    val dialogueIsActive by dialogueViewModel.isActive.collectAsStateWithLifecycle()
+    val dialogueExchanges by dialogueViewModel.exchanges.collectAsStateWithLifecycle()
+    val dialogueIsSending by dialogueViewModel.isSending.collectAsStateWithLifecycle()
+    val dialoguePlacement by dialogueViewModel.avatarPlacement.collectAsStateWithLifecycle()
 
     var showLanguagePicker by remember { mutableStateOf(false) }
     var showSubtitlePicker by remember { mutableStateOf(false) }
@@ -180,6 +189,25 @@ fun PlayerRoute(
         onPreviousInteraction = viewModel::navigateToPreviousInteraction,
         onNextInteraction = viewModel::navigateToNextInteraction,
         onDismissVodInteractionSheet = viewModel::dismissVodInteractionSheet,
+        onStartDialogue = { character ->
+            viewModel.dismissVodInteractionSheet()
+            val profileId = extendedState.profileId ?: return@PlayerScreen
+            val avatarId = extendedState.avatarId ?: return@PlayerScreen
+            dialogueViewModel.startSession(
+                contentId = contentId,
+                profileId = profileId,
+                avatarId = avatarId,
+                character = character,
+                timestamp = positionMs / 1000.0,
+            )
+        },
+        onSendDialogueMessage = dialogueViewModel::sendMessage,
+        onDismissDialogue = dialogueViewModel::endSession,
+        dialogueIsActive = dialogueIsActive,
+        dialogueCharacter = dialogueCharacter,
+        dialogueExchanges = dialogueExchanges,
+        dialogueIsSending = dialogueIsSending,
+        dialoguePlacement = dialoguePlacement,
         showSleepTimerPicker = showSleepTimerPicker,
         onShowSleepTimerPicker = { showSleepTimerPicker = true },
         onHideSleepTimerPicker = { showSleepTimerPicker = false },
@@ -250,6 +278,14 @@ private fun PlayerScreen(
     onPreviousInteraction: (() -> Unit)? = null,
     onNextInteraction: (() -> Unit)? = null,
     onDismissVodInteractionSheet: (() -> Unit)? = null,
+    onStartDialogue: ((ContentCharacter) -> Unit)? = null,
+    onSendDialogueMessage: ((String) -> Unit)? = null,
+    onDismissDialogue: (() -> Unit)? = null,
+    dialogueIsActive: Boolean = false,
+    dialogueCharacter: ContentCharacter? = null,
+    dialogueExchanges: List<tv.bayit.plus.feature.player.dialogue.DialogueExchange> = emptyList(),
+    dialogueIsSending: Boolean = false,
+    dialoguePlacement: tv.bayit.plus.feature.player.dialogue.AvatarPlacement? = null,
     showSleepTimerPicker: Boolean,
     onShowSleepTimerPicker: () -> Unit,
     onHideSleepTimerPicker: () -> Unit,
@@ -309,10 +345,24 @@ private fun PlayerScreen(
                 if (extendedState.showVodInteractionSheet) {
                     CharacterSelectionSheet(
                         characters = extendedState.vodInteractionCharacters,
-                        onCharacterSelected = { _ -> onDismissVodInteractionSheet?.invoke() },
+                        onCharacterSelected = { character ->
+                            onStartDialogue?.invoke(character)
+                        },
                         onDismiss = { onDismissVodInteractionSheet?.invoke() },
                     )
                 }
+
+                AvatarDialogueOverlay(
+                    isActive = dialogueIsActive,
+                    selectedCharacter = dialogueCharacter,
+                    avatarUrl = extendedState.avatarImageUrl,
+                    exchanges = dialogueExchanges,
+                    isSending = dialogueIsSending,
+                    mainPlayer = uiState.exoPlayer,
+                    avatarPlacement = dialoguePlacement,
+                    onSendMessage = { text -> onSendDialogueMessage?.invoke(text) },
+                    onClose = { onDismissDialogue?.invoke() },
+                )
 
                 if (!uiState.isLiveContent) {
                     SleepTimerBanner(

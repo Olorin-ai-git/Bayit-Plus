@@ -73,12 +73,11 @@ class AvatarDialogueViewModel @Inject constructor(
         contentId: String,
         profileId: String,
         avatarId: String,
-        characterName: String,
+        character: ContentCharacter,
         timestamp: Double,
     ) {
         viewModelScope.launch {
             try {
-                val character = _availableCharacters.value.firstOrNull { it.name == characterName }
                 _selectedCharacter.value = character
 
                 val response = apiClient.safeApiCall {
@@ -87,7 +86,7 @@ class AvatarDialogueViewModel @Inject constructor(
                             contentId = contentId,
                             profileId = profileId,
                             avatarId = avatarId,
-                            characterName = characterName,
+                            characterName = character.name,
                             currentTimestamp = timestamp,
                         ),
                     )
@@ -102,7 +101,7 @@ class AvatarDialogueViewModel @Inject constructor(
                     mapOf(
                         "sessionId" to response.sessionId,
                         "contentId" to contentId,
-                        "character" to characterName,
+                        "character" to character.name,
                     ),
                 )
             } catch (e: Exception) {
@@ -111,10 +110,11 @@ class AvatarDialogueViewModel @Inject constructor(
                     error = e,
                     metadata = mapOf(
                         "contentId" to contentId,
-                        "character" to characterName,
+                        "character" to character.name,
                     ),
                 )
                 _isActive.value = false
+                _selectedCharacter.value = null
             }
         }
     }
