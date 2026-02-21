@@ -78,10 +78,10 @@ class OlorinAuthService @Inject constructor(
 
     fun storeAuthTokens(response: AuthResponse) {
         val now = System.currentTimeMillis()
-        val accessExpiresAt = now + ((response.expiresIn ?: DEFAULT_ACCESS_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
+        val accessExpiresAt = now + ((response.expiresIn?.toLong() ?: DEFAULT_ACCESS_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
         secureStorage.saveAccessToken(response.accessToken, accessExpiresAt)
         response.refreshToken?.let { token ->
-            val refreshExpiresAt = now + ((response.refreshExpiresIn ?: DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
+            val refreshExpiresAt = now + ((response.refreshExpiresIn?.toLong() ?: DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
             secureStorage.saveRefreshToken(token, refreshExpiresAt)
         }
         _authState.value = AuthState.Authenticated

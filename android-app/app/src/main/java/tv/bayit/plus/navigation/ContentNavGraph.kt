@@ -42,7 +42,7 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
             onNavigateToRadioBrowse = { navController.navigate(Route.Radio) },
             onNavigateToTrending = { navController.navigate(Route.Trending) },
             onNavigateToCategoryBrowse = { categoryId -> navController.navigate(Route.CategoryBrowse(categoryId = categoryId)) },
-            onNavigateToIsraeliCity = { navController.navigate(Route.Culture) },
+            onNavigateToIsraelisCity = { navController.navigate(Route.Culture) },
             onNavigateToIsraeliBusinesses = { navController.navigate(Route.Culture) },
         )
     }

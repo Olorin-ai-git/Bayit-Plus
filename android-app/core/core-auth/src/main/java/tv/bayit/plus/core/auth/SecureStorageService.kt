@@ -162,21 +162,21 @@ class SecureStorageService @Inject constructor(
         return token
     }
 
-    fun saveAccessToken(token: String, expiresAt: Long) {
+    override fun saveAccessToken(token: String, expiresAt: Long) {
         storagePrefs.edit().putString(ACCESS_TOKEN_KEY, token)
             .putLong(ACCESS_TOKEN_EXPIRY_KEY, expiresAt).apply()
     }
 
-    fun getAccessToken(): String? = getStoredToken(ACCESS_TOKEN_KEY, ACCESS_TOKEN_EXPIRY_KEY, "Access token")
+    override fun getAccessToken(): String? = getStoredToken(ACCESS_TOKEN_KEY, ACCESS_TOKEN_EXPIRY_KEY, "Access token")
 
-    fun saveRefreshToken(token: String, expiresAt: Long) {
+    override fun saveRefreshToken(token: String, expiresAt: Long) {
         storagePrefs.edit().putString(REFRESH_TOKEN_KEY, token)
             .putLong(REFRESH_TOKEN_EXPIRY_KEY, expiresAt).apply()
     }
 
-    fun getRefreshToken(): String? = getStoredToken(REFRESH_TOKEN_KEY, REFRESH_TOKEN_EXPIRY_KEY, "Refresh token")
+    override fun getRefreshToken(): String? = getStoredToken(REFRESH_TOKEN_KEY, REFRESH_TOKEN_EXPIRY_KEY, "Refresh token")
 
-    fun clearAuthTokens() {
+    override fun clearAuthTokens() {
         storagePrefs.edit().remove(ACCESS_TOKEN_KEY).remove(ACCESS_TOKEN_EXPIRY_KEY)
             .remove(REFRESH_TOKEN_KEY).remove(REFRESH_TOKEN_EXPIRY_KEY).apply()
     }

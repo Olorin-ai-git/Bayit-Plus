@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 private val PlayerViewModel.channelId: String?

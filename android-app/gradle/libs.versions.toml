@@ -258,6 +258,7 @@ media3 = [
 firebase = [
     "firebase-auth",
     "firebase-analytics",
+    "firebase-crashlytics",
     "firebase-messaging",
 ]
 

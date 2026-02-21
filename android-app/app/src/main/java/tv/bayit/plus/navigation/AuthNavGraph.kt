@@ -1,7 +1,7 @@
 package tv.bayit.plus.navigation
 
 import android.app.Activity
-import androidx.activity.result.ManagedActivityResultLauncher
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext

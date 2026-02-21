@@ -61,6 +61,9 @@ dependencies {
     // Common for BayitResult
     implementation(project(":core:core-common"))
 
+    // Auth for AuthTokenStorage interface
+    implementation(project(":core:core-auth"))
+
     // Data layer for repository interfaces
     implementation(project(":core:core-data"))
 }

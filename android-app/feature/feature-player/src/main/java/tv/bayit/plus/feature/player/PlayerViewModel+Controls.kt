@@ -1,7 +1,9 @@
 package tv.bayit.plus.feature.player
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.update
 import tv.bayit.plus.core.media.PlayerState
+import tv.bayit.plus.feature.player.PlayerViewModel.Companion.SKIP_INTERVAL_MS
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 
 // Transport controls

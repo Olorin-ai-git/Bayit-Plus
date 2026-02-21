@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.update
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
