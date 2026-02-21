@@ -12,7 +12,7 @@ import tv.bayit.plus.core.model.MediaPlayback
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val POSITION_POLL_INTERVAL_MS = 500L
+internal const val POSITION_POLL_INTERVAL_MS = 500L
 private const val SKIP_BACKWARD_MS = 15_000L
 private const val SKIP_FORWARD_MS = 30_000L
 
@@ -27,16 +27,16 @@ private const val SKIP_FORWARD_MS = 30_000L
  */
 @Singleton
 class AudioPlaybackManager @Inject constructor(
-    private val player: BayitMediaPlayer,
-    private val logger: BayitLogger,
+    internal val player: BayitMediaPlayer,
+    internal val logger: BayitLogger,
 ) {
 
-    private val _state = MutableStateFlow(AudioPlaybackState())
+    internal val _state = MutableStateFlow(AudioPlaybackState())
     val state: StateFlow<AudioPlaybackState> = _state.asStateFlow()
 
-    private var activeContentId: String? = null
-    private var pollingJob: Job? = null
-    private var stateObserverJob: Job? = null
+    internal var activeContentId: String? = null
+    internal var pollingJob: Job? = null
+    internal var stateObserverJob: Job? = null
     private var scope: CoroutineScope? = null
 
     /** Binds to a CoroutineScope (typically viewModelScope) for polling. */
@@ -146,65 +146,5 @@ class AudioPlaybackManager @Inject constructor(
         _state.value = AudioPlaybackState()
     }
 
-    private fun startStateObserver(coroutineScope: CoroutineScope) {
-        stateObserverJob?.cancel()
-        stateObserverJob = coroutineScope.launch {
-            player.playerState.collect { playerState ->
-                val current = _state.value
-                if (!current.isActive) return@collect
-
-                _state.value = when (playerState) {
-                    is PlayerState.Playing -> current.copy(
-                        isPlaying = true,
-                        isLoading = false,
-                    )
-                    is PlayerState.Paused -> current.copy(
-                        isPlaying = false,
-                        isLoading = false,
-                    )
-                    is PlayerState.Buffering -> current.copy(isLoading = true)
-                    is PlayerState.Idle -> {
-                        if (activeContentId != null) {
-                            current.copy(isActive = false)
-                        } else {
-                            current
-                        }
-                    }
-                    is PlayerState.Ended -> current.copy(
-                        isPlaying = false,
-                        isLoading = false,
-                    )
-                    is PlayerState.Error -> {
-                        logger.error(
-                            "Audio playback error",
-                            null,
-                            mapOf(
-                                "component" to "AudioPlaybackManager",
-                                "message" to playerState.message,
-                            ),
-                        )
-                        current.copy(
-                            isPlaying = false,
-                            isLoading = false,
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun startPositionPolling(coroutineScope: CoroutineScope) {
-        pollingJob?.cancel()
-        pollingJob = coroutineScope.launch {
-            while (true) {
-                delay(POSITION_POLL_INTERVAL_MS)
-                val current = _state.value
-                if (!current.isActive) break
-                _state.value = current.copy(
-                    currentPositionMs = player.getCurrentPosition(),
-                    durationMs = player.getDuration(),
-                )
-            }
-        }
-    }
+    // startStateObserver and startPositionPolling are in AudioPlaybackManager+Observers.kt
 }

@@ -1,8 +1,6 @@
 package tv.bayit.plus.feature.auth.subscription
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,22 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
-import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
-import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -76,7 +68,7 @@ internal fun SubscribeScreen(
         GlassTopBar(title = "Subscribe to Bayit+")
         when (uiState) {
             is SubscribeUiState.Loading -> GlassLoadingIndicator()
-            is SubscribeUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
+            is SubscribeUiState.Error -> SubscribeErrorContent(message = uiState.message, onRetry = onRetry)
             is SubscribeUiState.Success -> SubscribeContent(
                 state = uiState,
                 selectedPlanId = selectedPlanId,
@@ -143,90 +135,23 @@ private fun SubscribeContent(
 
         items(state.plans, key = { it.hashCode() }) { plan ->
             val planId = plan.hashCode().toString()
-            val isSelected = planId == selectedPlanId
-
-            GlassCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onSelectPlan(planId) },
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = plan.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (isSelected) DesignTokens.Colors.Primary.light else DesignTokens.Colors.Text.primary,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        )
-                    }
-                    RadioButton(
-                        selected = isSelected,
-                        onClick = { onSelectPlan(planId) },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = DesignTokens.Colors.Primary.base,
-                        ),
-                    )
-                }
-            }
+            SubscribePlanCard(
+                planText = plan.toString(),
+                planId = planId,
+                isSelected = planId == selectedPlanId,
+                onSelectPlan = onSelectPlan,
+            )
         }
 
         item {
-            state.checkoutError?.let {
-                Text(
-                    text = it,
-                    color = DesignTokens.Colors.Semantic.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-
-            if (state.isProcessingCheckout) {
-                GlassSpinner(size = SpinnerSize.MEDIUM, modifier = Modifier.padding(DesignTokens.Spacing.lg))
-            } else {
-                GlassButton(
-                    text = "Continue to Checkout",
-                    onClick = onStartCheckout,
-                    enabled = selectedPlanId != null,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            SubscribeCheckoutFooter(
+                checkoutError = state.checkoutError,
+                isProcessingCheckout = state.isProcessingCheckout,
+                selectedPlanId = selectedPlanId,
+                onStartCheckout = onStartCheckout,
+            )
         }
 
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
-    }
-}
-
-@Composable
-private fun BillingPeriodChip(
-    label: String,
-    period: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    GlassCard(
-        modifier = Modifier.clickable(onClick = onClick),
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (isSelected) DesignTokens.Colors.Primary.light else DesignTokens.Colors.Text.secondary,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-        )
-    }
-}
-
-@Composable
-private fun ErrorContent(message: String, onRetry: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
-            GlassButton(text = "Retry", onClick = onRetry)
-        }
     }
 }

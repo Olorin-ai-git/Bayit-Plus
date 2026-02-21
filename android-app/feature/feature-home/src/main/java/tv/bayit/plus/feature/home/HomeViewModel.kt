@@ -16,36 +16,26 @@ import tv.bayit.plus.core.data.repository.LocationRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
 import tv.bayit.plus.core.data.repository.ShabbatRepository
 import tv.bayit.plus.core.location.LocationManager
-import tv.bayit.plus.core.model.CityContentResponse
-import tv.bayit.plus.core.model.CollectionDetail
-import tv.bayit.plus.core.model.CultureTrendingItem
+import tv.bayit.plus.core.location.wasPermissionRequested
 import tv.bayit.plus.core.model.FeaturedResponse
-import tv.bayit.plus.core.model.IsraeliBusinessesResponse
-import tv.bayit.plus.core.model.IsraelisInCityResponse
-import tv.bayit.plus.core.model.LiveChannelItem
-import tv.bayit.plus.core.model.RadioStationItem
-import tv.bayit.plus.core.model.SectionContentItem
-import tv.bayit.plus.core.model.ShabbatInfo
-import tv.bayit.plus.core.model.WatchHistoryItem
-import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val contentRepository: ContentRepository,
-    private val liveTVRepository: LiveTVRepository,
-    private val radioRepository: RadioRepository,
-    private val categoryRepository: CategoryRepository,
-    private val shabbatRepository: ShabbatRepository,
-    private val locationRepository: LocationRepository,
-    private val locationManager: LocationManager,
-    private val logger: BayitLogger,
+    internal val contentRepository: ContentRepository,
+    internal val liveTVRepository: LiveTVRepository,
+    internal val radioRepository: RadioRepository,
+    internal val categoryRepository: CategoryRepository,
+    internal val shabbatRepository: ShabbatRepository,
+    internal val locationRepository: LocationRepository,
+    internal val locationManager: LocationManager,
+    internal val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private val hiddenChannelKeywords = listOf("king 5", "king5", "cnn", "abc")
+    internal val hiddenChannelKeywords = listOf("king 5", "king5", "cnn", "abc")
     private val hiddenCategoryKeywords = emptyList<String>()
 
     init {
@@ -59,8 +49,6 @@ class HomeViewModel @Inject constructor(
     private fun loadHomeFeed() {
         val isRefresh = _uiState.value is HomeUiState.Success
 
-        // Transition to Success skeleton immediately so the home screen is
-        // visible right away.  Each section fills in as its request completes.
         if (!isRefresh) {
             _uiState.value = HomeUiState.Success()
         } else {
@@ -69,9 +57,6 @@ class HomeViewModel @Inject constructor(
 
         logger.debug("Loading home feed")
 
-        // Fire featured hero + all section requests concurrently.
-        // The hero/spotlight update when featured arrives; other rows update
-        // as their own requests complete — no section waits on another.
         launchSection {
             when (val result = contentRepository.getFeatured()) {
                 is BayitResult.Success -> {
@@ -128,30 +113,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun markLocationPermissionRequested() {
-        locationManager.markPermissionRequested()
-    }
-
-    fun onLocationPermissionGranted() {
-        updateState { copy(locationPermissionNeeded = false, locationPermissionPreviouslyDenied = false) }
-        launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }
-        launchSection { loadIsraeliBusinesses().let { data -> updateState { copy(israeliBusinesses = data) } } }
-    }
-
-    fun onLocationPermissionDenied() {
-        locationManager.markPermissionRequested()
-        updateState { copy(locationPermissionPreviouslyDenied = true) }
-    }
-
-    fun recheckLocationPermission() {
-        if (locationManager.hasLocationPermission()) onLocationPermissionGranted()
-    }
-
-    private fun launchSection(block: suspend () -> Unit) {
+    internal fun launchSection(block: suspend () -> Unit) {
         viewModelScope.launch { block() }
     }
 
-    private fun updateState(transform: HomeUiState.Success.() -> HomeUiState.Success) {
+    internal fun updateState(transform: HomeUiState.Success.() -> HomeUiState.Success) {
         val current = _uiState.value
         if (current is HomeUiState.Success) {
             _uiState.value = current.transform()
@@ -165,202 +131,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadFeaturedCollections(): List<CollectionDetail> {
-        return try {
-            when (val result = contentRepository.getCollectionRecommendations()) {
-                is BayitResult.Success -> result.data
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load collection recommendations (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadLiveChannels(): List<LiveChannelItem> {
-        return try {
-            when (val result = liveTVRepository.getChannels()) {
-                is BayitResult.Success -> {
-                    val channels = (result.data as? List<*>)?.filterIsInstance<LiveChannelItem>()
-                        ?: emptyList()
-                    channels.filter { channel ->
-                        val name = channel.name?.lowercase() ?: return@filter true
-                        !hiddenChannelKeywords.any { keyword -> name.contains(keyword) }
-                    }.take(8)
-                }
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load live channels (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadRadioStations(): List<RadioStationItem> {
-        return try {
-            when (val result = radioRepository.getStations()) {
-                is BayitResult.Success -> {
-                    val stations = (result.data as? List<*>)?.filterIsInstance<RadioStationItem>()
-                        ?: emptyList()
-                    stations.take(8)
-                }
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load radio stations (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadContinueWatching(): List<WatchHistoryItem> {
-        return try {
-            when (val result = contentRepository.getContinueWatching()) {
-                is BayitResult.Success -> {
-                    (result.data as? List<*>)?.filterIsInstance<WatchHistoryItem>() ?: emptyList()
-                }
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load continue watching (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadTrending(): List<CultureTrendingItem> {
-        return try {
-            when (val result = contentRepository.getTrending()) {
-                is BayitResult.Success -> {
-                    (result.data as? List<*>)?.filterIsInstance<CultureTrendingItem>() ?: emptyList()
-                }
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load trending (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadYoungsters(): List<SectionContentItem> {
-        return try {
-            when (val result = contentRepository.getYoungstersTrending()) {
-                is BayitResult.Success -> {
-                    (result.data as? List<*>)?.filterIsInstance<SectionContentItem>() ?: emptyList()
-                }
-                else -> emptyList()
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load youngsters (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            emptyList()
-        }
-    }
-
-    private suspend fun loadTelAvivContent(): CityContentResponse? {
-        return try {
-            when (val result = contentRepository.getTelAvivContent()) {
-                is BayitResult.Success -> result.data as? CityContentResponse
-                else -> null
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load Tel Aviv content (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            null
-        }
-    }
-
-    private suspend fun loadJerusalemContent(): CityContentResponse? {
-        return try {
-            when (val result = contentRepository.getJerusalemContent()) {
-                is BayitResult.Success -> result.data as? CityContentResponse
-                else -> null
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load Jerusalem content (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            null
-        }
-    }
-
-    private suspend fun loadIsraelisInCity(): IsraelisInCityResponse? {
-        val userLocation = getUserLocation() ?: return null
-
-        return try {
-            when (val result = contentRepository.getIsraelisInCity(
-                city = userLocation.city,
-                state = userLocation.state,
-                county = userLocation.county,
-            )) {
-                is BayitResult.Success -> result.data as? IsraelisInCityResponse
-                else -> null
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load Israelis in city (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            null
-        }
-    }
-
-    private suspend fun loadIsraeliBusinesses(): IsraeliBusinessesResponse? {
-        val userLocation = getUserLocation() ?: return null
-
-        return try {
-            when (val result = contentRepository.getIsraeliBusinesses(
-                city = userLocation.city,
-                state = userLocation.state,
-                county = userLocation.county,
-            )) {
-                is BayitResult.Success -> result.data as? IsraeliBusinessesResponse
-                else -> null
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load Israeli businesses (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            null
-        }
-    }
-
-    private suspend fun getUserLocation(): tv.bayit.plus.core.model.UserLocation? {
-        locationManager.getCachedLocation()?.let { cached ->
-            logger.debug("Using cached location", mapOf("city" to cached.city, "state" to cached.state))
-            updateState { copy(localLocationLabel = "${cached.city}, ${cached.state}") }
-            return cached
-        }
-
-        if (!locationManager.hasLocationPermission()) {
-            logger.debug("Location permission not granted")
-            return null
-        }
-
-        val deviceLocation = locationManager.getLastKnownLocation()
-            ?: locationManager.getCurrentLocation()
-            ?: run {
-                logger.debug("Could not get device location")
-                return null
-            }
-
-        val userLocation = locationManager.reverseGeocode(
-            latitude = deviceLocation.latitude,
-            longitude = deviceLocation.longitude,
-        ) { lat, lon ->
-            when (val result = locationRepository.reverseGeocode(lat, lon)) {
-                is BayitResult.Success -> result.data
-                else -> null
-            }
-        } ?: return null
-
-        locationManager.cacheLocation(userLocation)
-        updateState { copy(localLocationLabel = "${userLocation.city}, ${userLocation.state}") }
-
-        return userLocation
-    }
-
-    private suspend fun loadShabbatInfo(): ShabbatInfo? {
-        return try {
-            when (val result = shabbatRepository.getShabbatTimes(32.0853, 34.7818)) {
-                is BayitResult.Success -> result.data as? ShabbatInfo
-                else -> null
-            }
-        } catch (e: Exception) {
-            logger.debug("Failed to load Shabbat info (non-blocking)", mapOf("error" to e.message.orEmpty()))
-            null
-        }
-    }
-
     private fun filterCategories(categories: List<tv.bayit.plus.core.model.ContentCategory>): List<tv.bayit.plus.core.model.ContentCategory> {
         return categories.filter { category ->
             val name = category.name.lowercase()
@@ -368,39 +138,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun handleError(message: String) {
+    internal fun handleError(message: String) {
         logger.error("Home feed error", null, mapOf("message" to message))
         _uiState.value = HomeUiState.Error(message = message)
     }
-}
-
-sealed interface HomeUiState {
-    data object Loading : HomeUiState
-
-    data class Success(
-        val hero: tv.bayit.plus.core.model.HeroContent? = null,
-        val spotlight: List<tv.bayit.plus.core.model.SpotlightItem> = emptyList(),
-        val categories: List<tv.bayit.plus.core.model.ContentCategory> = emptyList(),
-        val liveChannels: List<LiveChannelItem> = emptyList(),
-        val radioStations: List<RadioStationItem> = emptyList(),
-        val continueWatching: List<WatchHistoryItem> = emptyList(),
-        val featuredCollections: List<CollectionDetail> = emptyList(),
-        val trendingContent: List<CultureTrendingItem> = emptyList(),
-        val youngstersTrending: List<SectionContentItem> = emptyList(),
-        val telAvivContent: CityContentResponse? = null,
-        val jerusalemContent: CityContentResponse? = null,
-        val israelisInCity: IsraelisInCityResponse? = null,
-        val israeliBusinesses: IsraeliBusinessesResponse? = null,
-        val shabbatInfo: ShabbatInfo? = null,
-        val isShabbatBannerDismissed: Boolean = false,
-        val locationPermissionNeeded: Boolean = false,
-        val locationPermissionPreviouslyDenied: Boolean = false,
-        val isRefreshing: Boolean = false,
-        val localTimezone: String = TimeZone.getDefault().id,
-        val localLocationLabel: String = timezoneDisplayCity(TimeZone.getDefault().id),
-    ) : HomeUiState
-
-    data class Error(
-        val message: String,
-    ) : HomeUiState
 }

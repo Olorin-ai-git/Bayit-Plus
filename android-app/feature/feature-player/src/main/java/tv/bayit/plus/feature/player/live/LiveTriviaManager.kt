@@ -11,6 +11,7 @@ import kotlinx.serialization.encodeToString
 import tv.bayit.plus.core.model.LiveTriviaEnvelope
 import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.core.model.WebSocketTranscriptMessage
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
 import tv.bayit.plus.core.network.websocket.WebSocketManager
@@ -30,15 +31,17 @@ import javax.inject.Singleton
 class LiveTriviaManager @Inject constructor(
     webSocketManager: WebSocketManager,
     networkConfig: NetworkConfig,
+    logger: BayitLogger,
 ) : LiveFeatureManager<LiveTriviaUiState>(
     webSocketManager,
     networkConfig,
     ChannelType.LIVE_TRIVIA,
+    logger,
 ) {
-    private val _progressFraction = MutableStateFlow(0f)
+    internal val _progressFraction = MutableStateFlow(0f)
     val progressFraction: StateFlow<Float> = _progressFraction.asStateFlow()
 
-    private var progressJob: Job? = null
+    internal var progressJob: Job? = null
 
     private val shownFactIds = object : LinkedHashSet<String>() {
         override fun add(element: String): Boolean {
@@ -163,36 +166,7 @@ class LiveTriviaManager @Inject constructor(
         sendMessage("""{"type":"request_followup","fact_id":"${factId ?: ""}"}""")
     }
 
-    private fun showFact(fact: TriviaFact, scope: CoroutineScope) {
-        scope.launch {
-            updateState { it.copy(activeFact = fact) }
-        }
-        _progressFraction.value = 0f
-
-        val displayDuration = fact.displayDuration
-            ?: LiveAIConfig.TRIVIA_DEFAULT_DISPLAY_DURATION_SEC
-        startProgressAnimation(displayDuration, scope)
-        scheduleAutoDismiss(displayDuration * 1000L, scope)
-    }
-
-    private fun startProgressAnimation(durationSec: Int, scope: CoroutineScope) {
-        progressJob?.cancel()
-        progressJob = scope.launch {
-            val steps = (durationSec * 10)
-            repeat(steps) { step ->
-                _progressFraction.value = (step + 1) / steps.toFloat()
-                delay(LiveAIConfig.PROGRESS_UPDATE_INTERVAL_MS)
-            }
-        }
-    }
-
-    private fun scheduleAutoDismiss(durationMs: Long, scope: CoroutineScope) {
-        autoDismissJob?.cancel()
-        autoDismissJob = scope.launch {
-            delay(durationMs)
-            dismissFact()
-        }
-    }
+    // showFact, startProgressAnimation, scheduleAutoDismiss are in LiveTriviaManager+Display.kt
 
     companion object {
         private const val MAX_SHOWN_FACTS = 1000

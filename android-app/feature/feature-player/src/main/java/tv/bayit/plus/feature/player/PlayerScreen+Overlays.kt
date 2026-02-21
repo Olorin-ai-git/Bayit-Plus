@@ -87,6 +87,7 @@ internal fun PlayerScreenDialogueOverlays(
     InteractiveMomentOverlay(
         moment = extendedState.activeMoment,
         mainPlayer = state.exoPlayer,
+        avatarImageUrl = extendedState.avatarImageUrl,
         onDismiss = { onDismissMoment?.invoke() },
         modifier = momentModifier,
     )

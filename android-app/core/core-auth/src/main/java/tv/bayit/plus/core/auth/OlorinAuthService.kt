@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import retrofit2.http.Body
-import retrofit2.http.POST
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitError
 import tv.bayit.plus.core.common.result.BayitResult
@@ -19,6 +17,8 @@ import javax.inject.Singleton
  *
  * Single source of truth for authentication. Delegates to auth.olorin.ai
  * via Bayit+ backend proxy endpoints. Manages auth state and token storage.
+ *
+ * Service interface and request/response models are in OlorinAuthService+Api.kt
  */
 @Singleton
 class OlorinAuthService @Inject constructor(
@@ -45,20 +45,20 @@ class OlorinAuthService @Inject constructor(
         password: String,
         name: String,
     ): BayitResult<AuthResponse> = safeAuthCall("Registration", mapOf("email" to email)) {
-        authApi.register(RegisterRequest(email = email, password = password, name = name))
+        authApi.register(OlorinAuthRegisterRequest(email = email, password = password, name = name))
     }
 
     suspend fun loginWithEmail(
         email: String,
         password: String,
     ): BayitResult<AuthResponse> = safeAuthCall("Login", mapOf("email" to email)) {
-        authApi.login(LoginRequest(email = email, password = password))
+        authApi.login(OlorinAuthLoginRequest(email = email, password = password))
     }
 
     suspend fun loginWithGoogle(
         idToken: String,
     ): BayitResult<AuthResponse> = safeAuthCall("Google login", mapOf("provider" to "google")) {
-        authApi.loginGoogle(GoogleLoginRequest(idToken = idToken))
+        authApi.loginGoogle(OlorinAuthGoogleRequest(idToken = idToken))
     }
 
     suspend fun requestPasswordReset(
@@ -66,7 +66,7 @@ class OlorinAuthService @Inject constructor(
     ): BayitResult<Unit> {
         return try {
             apiClient.safeApiCall {
-                authApi.requestPasswordReset(PasswordResetRequest(email = email))
+                authApi.requestPasswordReset(OlorinAuthPasswordResetRequest(email = email))
             }
             logger.info("Password reset email sent", mapOf("email" to email))
             BayitResult.success(Unit)
@@ -114,7 +114,7 @@ class OlorinAuthService @Inject constructor(
     suspend fun refreshAccessToken(refreshToken: String): BayitResult<String> {
         return try {
             val response = apiClient.safeApiCall {
-                authApi.refresh(TokenRefreshRequest(refreshToken = refreshToken))
+                authApi.refresh(OlorinAuthTokenRefreshRequest(refreshToken = refreshToken))
             }
             val now = System.currentTimeMillis()
             val accessExpiresAt = now + (response.expiresIn * MS_PER_SECOND)
@@ -135,50 +135,6 @@ class OlorinAuthService @Inject constructor(
         private const val DEFAULT_ACCESS_TOKEN_EXPIRY_SECONDS = 3_600L  // 1 hour fallback
         private const val DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS = 604_800L // 7 days
     }
-
-    private interface OlorinAuthApi {
-        @POST("api/v1/auth/v2/register")
-        suspend fun register(@Body request: RegisterRequest): AuthResponse
-
-        @POST("api/v1/auth/v2/login")
-        suspend fun login(@Body request: LoginRequest): AuthResponse
-
-        @POST("api/v1/auth/v2/google")
-        suspend fun loginGoogle(@Body request: GoogleLoginRequest): AuthResponse
-
-        @POST("api/v1/auth/password-reset/request")
-        suspend fun requestPasswordReset(@Body request: PasswordResetRequest)
-
-        @POST("api/v1/auth/v2/refresh")
-        suspend fun refresh(@Body request: TokenRefreshRequest): TokenRefreshResponse
-    }
-
-    @Serializable
-    private data class RegisterRequest(val email: String, val password: String, val name: String)
-
-    @Serializable
-    private data class LoginRequest(val email: String, val password: String)
-
-    @Serializable
-    private data class GoogleLoginRequest(
-        @SerialName("id_token") val idToken: String,
-    )
-
-    @Serializable
-    private data class PasswordResetRequest(val email: String)
-
-    @Serializable
-    private data class TokenRefreshRequest(
-        @SerialName("refresh_token") val refreshToken: String,
-    )
-
-    @Serializable
-    private data class TokenRefreshResponse(
-        @SerialName("access_token") val accessToken: String,
-        @SerialName("refresh_token") val refreshToken: String,
-        @SerialName("token_type") val tokenType: String,
-        @SerialName("expires_in") val expiresIn: Int,
-    )
 
     @Serializable
     data class AuthResponse(

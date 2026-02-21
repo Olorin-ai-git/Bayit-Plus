@@ -139,63 +139,7 @@ private fun Avatar3DContent(
     }
 }
 
-@Composable
-private fun MeshInfoCard(mesh: AvatarMesh) {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
-            InfoRow("Vertices", mesh.vertexCount.toString())
-            InfoRow("Bones", mesh.boneCount.toString())
-            InfoRow("Blend Shapes", mesh.blendShapes.size.toString())
-            InfoRow("Has GLB", if (mesh.hasGlb) "Yes" else "No")
-        }
-    }
-}
-
-@Composable
-private fun ControlsCard(
-    state: Avatar3DUiState.Success,
-    onRotate: (Float, Float) -> Unit,
-    onZoom: (Float) -> Unit,
-    onToggleAnimation: () -> Unit,
-) {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-            Text(
-                text = "Controls",
-                style = MaterialTheme.typography.titleMedium,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-            ) {
-                GlassButton(
-                    text = if (state.isAnimating) "Pause" else "Animate",
-                    onClick = onToggleAnimation,
-                    modifier = Modifier.weight(1f),
-                )
-                GlassButton(
-                    text = "Reset",
-                    onClick = { onRotate(0f, 0f); onZoom(1f) },
-                    isPrimary = false,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun InfoRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(text = label, color = DesignTokens.Colors.Text.secondary, fontSize = DesignTokens.FontSize.sm)
-        Text(text = value, color = DesignTokens.Colors.Text.primary, fontSize = DesignTokens.FontSize.sm, fontWeight = FontWeight.Medium)
-    }
-}
+// MeshInfoCard, ControlsCard, AvatarInfoRow are in Avatar3DScreen+Cards.kt
 
 @Composable
 private fun ErrorContent(message: String, onRetry: () -> Unit) {

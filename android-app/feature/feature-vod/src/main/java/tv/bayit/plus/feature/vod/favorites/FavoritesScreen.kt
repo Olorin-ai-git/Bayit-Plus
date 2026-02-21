@@ -21,14 +21,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.FavoriteItem
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -39,28 +36,6 @@ import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private val POSTER_WIDTH = 100.dp
-
-@Composable
-fun FavoritesRoute(
-    onNavigateToContent: (String, String) -> Unit,
-    onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: FavoritesViewModel = hiltViewModel(),
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    FavoritesScreen(
-        uiState = uiState,
-        onItemClick = { item ->
-            val type = item.type ?: "movie"
-            val id = item.contentId ?: item.id
-            onNavigateToContent(id, type)
-        },
-        onRemove = { item -> viewModel.removeFavorite(item.id) },
-        onNavigateBack = onNavigateBack,
-        onRetry = viewModel::retry,
-        modifier = modifier,
-    )
-}
 
 @Composable
 internal fun FavoritesScreen(

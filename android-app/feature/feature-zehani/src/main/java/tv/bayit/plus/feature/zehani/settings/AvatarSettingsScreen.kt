@@ -61,7 +61,7 @@ internal fun AvatarSettingsScreen(
         GlassTopBar(title = "Avatar Settings")
         when (uiState) {
             is AvatarSettingsUiState.Loading -> GlassLoadingIndicator()
-            is AvatarSettingsUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
+            is AvatarSettingsUiState.Error -> AvatarSettingsErrorContent(message = uiState.message, onRetry = onRetry)
             is AvatarSettingsUiState.Success -> AvatarSettingsContent(
                 state = uiState,
                 onSelectOutfit = onSelectOutfit,
@@ -170,51 +170,4 @@ private fun AvatarSettingsContent(
     }
 }
 
-@Composable
-private fun SettingToggle(
-    label: String,
-    description: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.Medium,
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.muted,
-            )
-        }
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = DesignTokens.Colors.Primary.base,
-                checkedTrackColor = DesignTokens.Colors.Primary.light,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun ErrorContent(message: String, onRetry: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
-            GlassButton(text = "Retry", onClick = onRetry)
-        }
-    }
-}
+// SettingToggle and AvatarSettingsErrorContent are in AvatarSettingsScreen+Components.kt

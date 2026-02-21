@@ -26,12 +26,12 @@ import kotlin.coroutines.resume
 @Singleton
 class LocationManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val logger: BayitLogger,
+    internal val logger: BayitLogger,
 ) {
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
-    private val preferences = context.getSharedPreferences(
+    internal val preferences = context.getSharedPreferences(
         "bayit_location_cache",
         Context.MODE_PRIVATE,
     )
@@ -161,48 +161,5 @@ class LocationManager @Inject constructor(
         }
     }
 
-    /**
-     * Caches location for 24 hours.
-     */
-    fun cacheLocation(location: UserLocation) {
-        preferences.edit()
-            .putString("city", location.city)
-            .putString("state", location.state)
-            .putString("county", location.county)
-            .putFloat("latitude", location.latitude.toFloat())
-            .putFloat("longitude", location.longitude.toFloat())
-            .putLong("timestamp", location.timestamp)
-            .apply()
-
-        logger.info(
-            "Location cached",
-            mapOf(
-                "city" to location.city,
-                "state" to location.state,
-            ),
-        )
-    }
-
-    /**
-     * Returns true if we have ever launched the OS permission dialog for location.
-     * Used to distinguish "never asked" from "permanently denied" when combined
-     * with shouldShowRequestPermissionRationale().
-     */
-    fun wasPermissionRequested(): Boolean =
-        preferences.getBoolean("permission_requested", false)
-
-    /**
-     * Records that we have launched the OS permission dialog at least once.
-     * Call this immediately before launching the permission request.
-     */
-    fun markPermissionRequested() {
-        preferences.edit().putBoolean("permission_requested", true).apply()
-    }
-
-    /**
-     * Clears cached location.
-     */
-    fun clearCache() {
-        preferences.edit().clear().apply()
-    }
+    // cacheLocation, wasPermissionRequested, markPermissionRequested, clearCache are in LocationManager+Cache.kt
 }

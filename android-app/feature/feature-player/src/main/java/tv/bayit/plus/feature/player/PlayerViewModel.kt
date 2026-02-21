@@ -88,6 +88,9 @@ class PlayerViewModel @Inject constructor(
                     if (!isLive) {
                         subtitleDelegate.loadAvailableSubtitles(contentId, viewModelScope) { t -> _extendedState.update(t) }
                         vodTriviaManager.loadFacts(contentId, _extendedState.value.vodTriviaLanguage, viewModelScope)
+                        // Load avatar info first so the overlay can display the user's avatar
+                        // image immediately when a moment triggers (iOS parity).
+                        featuresDelegate.loadAvatarInfo(viewModelScope) { t -> _extendedState.update(t) }
                         featuresDelegate.loadInteractiveMoments(contentId, viewModelScope) { t -> _extendedState.update(t) }
                     }
                     logger.info("Playback started", mapOf("contentId" to contentId))

@@ -17,10 +17,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatbotViewModel @Inject constructor(
-    private val chatRepository: ChatRepository,
+    internal val chatRepository: ChatRepository,
     private val speechService: SpeechRecognitionService,
-    private val ttsService: TTSService,
-    private val logger: BayitLogger,
+    internal val ttsService: TTSService,
+    internal val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ChatbotUiState>(ChatbotUiState.Loading)
@@ -46,6 +46,10 @@ class ChatbotViewModel @Inject constructor(
 
     fun updateMessageInput(text: String) {
         _messageInput.value = text
+    }
+
+    internal fun updateUiState(state: ChatbotUiState) {
+        _uiState.value = state
     }
 
     fun toggleVoiceInput(language: String) {
@@ -121,68 +125,6 @@ class ChatbotViewModel @Inject constructor(
 
     fun retry() {
         loadActiveChannelAndMessages()
-    }
-
-    private fun loadActiveChannelAndMessages() {
-        _uiState.value = ChatbotUiState.Loading
-        viewModelScope.launch {
-            logger.debug("Loading active chatbot channels")
-            when (val result = chatRepository.getActiveChannels()) {
-                is BayitResult.Success -> {
-                    val channels = result.data
-                    if (channels.isEmpty()) {
-                        _uiState.value = ChatbotUiState.Error("No active AI channels available")
-                        return@launch
-                    }
-                    val channelId = extractChannelId(channels.first())
-                    logger.info("Active channel found", mapOf("channelId" to channelId))
-                    loadMessages(channelId)
-                }
-                is BayitResult.Error -> {
-                    logger.error("Failed to load channels", result.exception)
-                    _uiState.value = ChatbotUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
-                }
-                is BayitResult.Loading -> Unit
-            }
-        }
-    }
-
-    private suspend fun loadMessages(channelId: String) {
-        logger.debug("Loading messages", mapOf("channelId" to channelId))
-        when (val result = chatRepository.getChannelMessages(channelId, null)) {
-            is BayitResult.Success -> {
-                val messages = result.data.map { item ->
-                    ChatMessage.fromApiResponse(item)
-                }
-                logger.info("Messages loaded", mapOf("count" to messages.size.toString()))
-                _uiState.value = ChatbotUiState.Ready(
-                    channelId = channelId,
-                    messages = messages,
-                )
-                speakLatestAiResponse(messages)
-            }
-            is BayitResult.Error -> {
-                logger.error("Failed to load messages", result.exception)
-                _uiState.value = ChatbotUiState.Error(
-                    result.message ?: result.exception.message.orEmpty(),
-                )
-            }
-            is BayitResult.Loading -> Unit
-        }
-    }
-
-    private fun speakLatestAiResponse(messages: List<ChatMessage>) {
-        val lastAiMessage = messages.lastOrNull { it.isAi } ?: return
-        if (lastAiMessage.content.isNotBlank()) {
-            ttsService.speak(lastAiMessage.content, "he")
-        }
-    }
-
-    private fun extractChannelId(channel: Any): String {
-        val map = channel as? Map<*, *>
-        return map?.get("id")?.toString() ?: channel.toString()
     }
 
     override fun onCleared() {

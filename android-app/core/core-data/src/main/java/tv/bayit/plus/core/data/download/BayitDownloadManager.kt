@@ -11,13 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.DownloadsRepository
-import tv.bayit.plus.core.model.DownloadStartRequest
 import tv.bayit.plus.core.model.DownloadStatus
 import tv.bayit.plus.core.model.LocalDownload
 import tv.bayit.plus.core.model.LocalDownloadRequest
@@ -32,20 +28,20 @@ import javax.inject.Singleton
  */
 @Singleton
 class BayitDownloadManager @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @DownloadClient private val downloadClient: OkHttpClient,
-    private val authClient: OkHttpClient,
-    private val downloadsRepository: DownloadsRepository,
-    private val store: DownloadStore,
-    private val logger: BayitLogger,
+    @ApplicationContext internal val context: Context,
+    @DownloadClient internal val downloadClient: OkHttpClient,
+    internal val authClient: OkHttpClient,
+    internal val downloadsRepository: DownloadsRepository,
+    internal val store: DownloadStore,
+    internal val logger: BayitLogger,
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val activeJobs = mutableMapOf<String, Job>()
+    internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    internal val activeJobs = mutableMapOf<String, Job>()
 
-    private val _downloads = MutableStateFlow<List<LocalDownload>>(emptyList())
+    internal val _downloads = MutableStateFlow<List<LocalDownload>>(emptyList())
     val downloads: StateFlow<List<LocalDownload>> = _downloads.asStateFlow()
 
-    private val downloadsDir: File
+    internal val downloadsDir: File
         get() = File(context.filesDir, DOWNLOADS_DIR).also { it.mkdirs() }
 
     fun initialize() {
@@ -190,148 +186,7 @@ class BayitDownloadManager @Inject constructor(
         return uri
     }
 
-    private fun executeDownload(download: LocalDownload) {
-        val job = scope.launch {
-            val downloading = download.copy(status = DownloadStatus.DOWNLOADING)
-            store.upsert(downloading)
-            emitState()
-
-            try {
-                logger.debug(
-                    "Executing download",
-                    mapOf("id" to download.id, "url" to download.sourceUrl),
-                )
-                val extension = extractExtension(download.sourceUrl)
-                val targetFile = File(downloadsDir, "${download.id}.$extension")
-
-                val request = Request.Builder()
-                    .url(download.sourceUrl)
-                    .build()
-
-                val client = if (download.sourceUrl.contains("/api/proxy/")) {
-                    authClient
-                } else {
-                    downloadClient
-                }
-
-                val response = withContext(Dispatchers.IO) {
-                    client.newCall(request).execute()
-                }
-
-                if (!response.isSuccessful) {
-                    markFailed(download.id, "HTTP ${response.code}")
-                    response.close()
-                    return@launch
-                }
-
-                val body = response.body ?: run {
-                    markFailed(download.id, "Empty response body")
-                    return@launch
-                }
-
-                val progressBody = ProgressResponseBody(body) { progress ->
-                    updateProgressInMemory(download.id, progress)
-                }
-
-                withContext(Dispatchers.IO) {
-                    targetFile.outputStream().use { output ->
-                        progressBody.source().inputStream().use { input ->
-                            input.copyTo(output)
-                        }
-                    }
-                }
-
-                val completed = download.copy(
-                    status = DownloadStatus.COMPLETED,
-                    progress = 1f,
-                    filePath = targetFile.absolutePath,
-                    fileSize = targetFile.length(),
-                )
-                store.upsert(completed)
-                emitState()
-                activeJobs.remove(download.id)
-                logger.info(
-                    "Download completed",
-                    mapOf(
-                        "id" to download.id,
-                        "size" to targetFile.length().toString(),
-                    ),
-                )
-            } catch (e: Exception) {
-                markFailed(download.id, e.message ?: "Download failed")
-            }
-        }
-        activeJobs[download.id] = job
-    }
-
-    private fun updateProgressInMemory(id: String, progress: Float) {
-        val current = _downloads.value.toMutableList()
-        val index = current.indexOfFirst { it.id == id }
-        if (index < 0) return
-        val item = current[index]
-        if (item.status != DownloadStatus.DOWNLOADING) return
-        current[index] = item.copy(progress = progress)
-        _downloads.value = current
-    }
-
-    private suspend fun markFailed(id: String, error: String) {
-        val current = findById(id) ?: return
-        val failed = current.copy(
-            status = DownloadStatus.FAILED,
-            error = error,
-        )
-        store.upsert(failed)
-        emitState()
-        logger.error("Download failed", metadata = mapOf("id" to id, "error" to error))
-    }
-
-    private suspend fun registerWithServer(request: LocalDownloadRequest) {
-        val serverRequest = DownloadStartRequest(
-            contentId = request.contentId,
-            contentType = request.contentType,
-        )
-        when (val result = downloadsRepository.startDownload(serverRequest)) {
-            is BayitResult.Success -> {
-                val serverId = result.data.downloadId
-                if (serverId != null) {
-                    val download = _downloads.value.firstOrNull {
-                        it.contentId == request.contentId
-                    }
-                    if (download != null) {
-                        store.upsert(download.copy(serverDownloadId = serverId))
-                        emitState()
-                    }
-                }
-            }
-            is BayitResult.Error -> logger.warning(
-                "Server download registration failed",
-                mapOf("contentId" to request.contentId),
-            )
-            is BayitResult.Loading -> Unit
-        }
-    }
-
-    private suspend fun emitState() {
-        _downloads.value = store.load()
-    }
-
-    private fun findById(id: String): LocalDownload? =
-        _downloads.value.firstOrNull { it.id == id }
-
-    private fun deleteFile(download: LocalDownload) {
-        download.filePath?.let { path ->
-            File(path).takeIf { it.exists() }?.delete()
-        }
-    }
-
-    private fun extractExtension(url: String): String {
-        val path = url.substringBefore("?").substringAfterLast("/")
-        val ext = path.substringAfterLast(".", "")
-        return ext.ifEmpty { DEFAULT_EXTENSION }
-    }
-
     companion object {
         private const val DOWNLOADS_DIR = "BayitDownloads"
-        private const val DEFAULT_EXTENSION = "mp4"
     }
 }

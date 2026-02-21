@@ -42,7 +42,7 @@ data class PlayerExtendedState(
     val isSpecialUser: Boolean = false,
     val showOmriOverlay: Boolean = false,
     val hasTriggeredOmriOverlay: Boolean = false,
-    val isFullscreen: Boolean = false,
+    val isFullscreen: Boolean = true,
     val interactiveMoments: List<tv.bayit.plus.feature.player.dialogue.InteractiveMoment> = emptyList(),
     val vodInteractionCharacters: List<tv.bayit.plus.feature.player.dialogue.ContentCharacter> = emptyList(),
     val showVodInteractionSheet: Boolean = false,

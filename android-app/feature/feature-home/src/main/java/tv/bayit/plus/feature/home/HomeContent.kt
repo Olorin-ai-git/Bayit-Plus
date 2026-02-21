@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,7 +75,7 @@ internal fun HomeSuccessContent(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
                     ) {
                         CultureClock(
-                            flagText = "🇮🇱",
+                            flagText = "\uD83C\uDDEE\uD83C\uDDF1",
                             locationLabel = bayitString(
                                 "cultureClock.timeIn",
                                 mapOf("location" to bayitString("clock.israel")),
@@ -178,78 +177,18 @@ internal fun HomeSuccessContent(
                 }
             }
 
-            if (uiState.israelisInCity != null) {
-                item(key = "israelis") {
-                    LocationContentRow(
-                        title = bayitString("home.nearYou"),
-                        israelisResponse = uiState.israelisInCity,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
-                        onShowAllClick = onIsraelisCityShowAll,
-                    )
-                }
-            }
-
-            if (uiState.israeliBusinesses != null) {
-                item(key = "businesses") {
-                    BusinessLocationRow(
-                        businessesResponse = uiState.israeliBusinesses,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
-                        onShowAllClick = onIsraeliBusinessesShowAll,
-                    )
-                }
-            }
-
-            if (uiState.trendingContent.isNotEmpty()) {
-                item(key = "trending") {
-                    TrendingRow(
-                        items = uiState.trendingContent,
-                        onItemClick = { item -> item.url?.let(onOpenUrl) },
-                        onShowAllClick = onTrendingShowAll,
-                    )
-                }
-            }
-
-            if (uiState.youngstersTrending.isNotEmpty()) {
-                item(key = "youngsters") {
-                    YoungstersSection(
-                        items = uiState.youngstersTrending,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
-                        onShowAllClick = onYoungstersClick,
-                    )
-                }
-            }
-
-            if (uiState.jerusalemContent?.items?.isNotEmpty() == true) {
-                item(key = "jerusalem") {
-                    CityContentRow(
-                        title = bayitString("home.jerusalemConnection"),
-                        items = uiState.jerusalemContent.items,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
-                        onShowAllClick = onJerusalemClick,
-                        backgroundRes = R.drawable.bg_jerusalem,
-                    )
-                }
-            }
-
-            if (uiState.telAvivContent?.items?.isNotEmpty() == true) {
-                item(key = "telaviv") {
-                    CityContentRow(
-                        title = bayitString("home.telAvivConnection"),
-                        items = uiState.telAvivContent.items,
-                        onItemClick = { id, type -> onContentClick(ContentItem(id = id, type = type)) },
-                        onShowAllClick = onTelAvivClick,
-                        backgroundRes = R.drawable.bg_telaviv,
-                    )
-                }
-            }
-
-            items(items = uiState.categories, key = { it.id }) { category ->
-                CategoryRow(
-                    category = category,
-                    onItemClick = onContentClick,
-                    onShowAllClick = onCategoryShowAll,
-                )
-            }
+            homeLocationAndCityItems(
+                uiState = uiState,
+                onContentClick = onContentClick,
+                onIsraelisCityShowAll = onIsraelisCityShowAll,
+                onIsraeliBusinessesShowAll = onIsraeliBusinessesShowAll,
+                onTrendingShowAll = onTrendingShowAll,
+                onYoungstersClick = onYoungstersClick,
+                onJerusalemClick = onJerusalemClick,
+                onTelAvivClick = onTelAvivClick,
+                onOpenUrl = onOpenUrl,
+                onCategoryShowAll = onCategoryShowAll,
+            )
         }
     }
 }

@@ -9,66 +9,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
-
-@Composable
-fun LoginRoute(
-    onNavigateToHome: () -> Unit,
-    onNavigateToRegister: () -> Unit,
-    onNavigateToForgotPassword: () -> Unit,
-    onRequestGoogleSignIn: ((String) -> Unit) -> Unit,
-    onRequestBiometricSignIn: ((Boolean) -> Unit) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(uiState) {
-        val success = uiState as? LoginUiState.Success ?: return@LaunchedEffect
-        if (!success.offerBiometricEnrollment) onNavigateToHome()
-    }
-
-    if (uiState is LoginUiState.Success && (uiState as LoginUiState.Success).offerBiometricEnrollment) {
-        BiometricEnrollmentDialog(
-            onEnable = { viewModel.enableBiometricSignIn(); onNavigateToHome() },
-            onDismiss = onNavigateToHome,
-        )
-    } else {
-        LoginScreen(
-            uiState = uiState,
-            onEmailChange = viewModel::updateEmail,
-            onPasswordChange = viewModel::updatePassword,
-            onLoginClick = viewModel::loginWithEmail,
-            onGoogleSignInClick = { onRequestGoogleSignIn(viewModel::loginWithGoogle) },
-            onRegisterClick = onNavigateToRegister,
-            onForgotPasswordClick = onNavigateToForgotPassword,
-            onDismissError = viewModel::dismissError,
-            showBiometricSignIn = (uiState as? LoginUiState.Input)?.showBiometricSignIn ?: false,
-            onBiometricSignInClick = { onRequestBiometricSignIn(viewModel::onBiometricSignInResult) },
-            modifier = modifier,
-        )
-    }
-}
 
 @Composable
 internal fun LoginScreen(

@@ -16,16 +16,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
-import tv.bayit.plus.designsystem.component.GlassCard
-import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -89,10 +86,13 @@ internal fun AIOnboardingScreen(
             )
 
             Text(
-                text = bayitString("aiOnboarding.stepProgress", mapOf(
-                    "step" to (currentStep + 1).toString(),
-                    "total" to totalSteps.toString()
-                )),
+                text = bayitString(
+                    "aiOnboarding.stepProgress",
+                    mapOf(
+                        "step" to (currentStep + 1).toString(),
+                        "total" to totalSteps.toString(),
+                    ),
+                ),
                 style = MaterialTheme.typography.labelMedium,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -134,99 +134,13 @@ internal fun AIOnboardingScreen(
                     GlassButton(
                         text = bayitString(
                             if (currentStep == totalSteps - 1) "aiOnboarding.buttons.finish"
-                            else "aiOnboarding.buttons.next"
+                            else "aiOnboarding.buttons.next",
                         ),
                         onClick = if (currentStep == totalSteps - 1) onComplete else onNextStep,
                         modifier = Modifier.weight(1f),
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun WelcomeStep() {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
-            Text(
-                text = bayitString("aiOnboarding.welcome.title"),
-                style = MaterialTheme.typography.titleLarge,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = bayitString("aiOnboarding.welcome.description"),
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PermissionsStep() {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            Text(
-                text = bayitString("aiOnboarding.permissions.title"),
-                style = MaterialTheme.typography.titleMedium,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = bayitString("aiOnboarding.permissions.description"),
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PersonalizationStep() {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            Text(
-                text = bayitString("aiOnboarding.personalization.title"),
-                style = MaterialTheme.typography.titleMedium,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = bayitString("aiOnboarding.personalization.description"),
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-            )
-        }
-    }
-}
-
-@Composable
-private fun CompletionStep() {
-    GlassCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
-            Text(
-                text = bayitString("aiOnboarding.completion.title"),
-                style = MaterialTheme.typography.titleLarge,
-                color = DesignTokens.Colors.Primary.light,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = bayitString("aiOnboarding.completion.message"),
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-                textAlign = TextAlign.Center,
-            )
         }
     }
 }

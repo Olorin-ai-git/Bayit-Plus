@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -81,6 +82,7 @@ internal fun ReadyContent(
                         PlayerView(context).apply {
                             this.player = player
                             useController = false
+                            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
                         }
                     },
                     modifier = Modifier.fillMaxSize(),
@@ -186,40 +188,4 @@ internal fun ReadyContent(
     }
 }
 
-@Composable
-internal fun MetadataSection(title: String, description: String?) {
-    Column(modifier = Modifier.padding(DesignTokens.Spacing.base)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineMedium,
-            color = DesignTokens.Colors.Text.primary,
-        )
-        description?.let { desc ->
-            Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            Text(
-                text = desc,
-                style = MaterialTheme.typography.bodyMedium,
-                color = DesignTokens.Colors.Text.secondary,
-            )
-        }
-    }
-}
-
-@Composable
-internal fun ErrorContent(message: String, onBack: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(DesignTokens.Spacing.xl),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = message,
-            color = DesignTokens.Colors.Semantic.error,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        GlassButton(text = bayitString("player.go_back"), onClick = onBack)
-    }
-}
+// MetadataSection and ErrorContent are in PlayerContent+Extras.kt

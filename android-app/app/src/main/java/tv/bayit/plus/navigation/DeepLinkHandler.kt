@@ -2,12 +2,14 @@ package tv.bayit.plus.navigation
 
 import android.content.Intent
 import android.net.Uri
-import timber.log.Timber
+import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DeepLinkHandler @Inject constructor() {
+class DeepLinkHandler @Inject constructor(
+    private val logger: BayitLogger,
+) {
 
     fun handleIntent(intent: Intent?): Route? {
         val uri = intent?.data ?: return null
@@ -27,7 +29,10 @@ class DeepLinkHandler @Inject constructor() {
     }
 
     private fun handleCustomScheme(host: String?, segments: List<String>, uri: Uri): Route? {
-        Timber.d("Deep link custom scheme: %s://%s/%s", uri.scheme, host, segments.joinToString("/"))
+        logger.debug(
+            "Deep link custom scheme",
+            mapOf("scheme" to uri.scheme.orEmpty(), "host" to host.orEmpty(), "path" to segments.joinToString("/")),
+        )
         return when (host) {
             "player" -> segments.firstOrNull()?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }
             "movie" -> segments.firstOrNull()?.let { Route.MovieDetail(it) }
@@ -48,7 +53,7 @@ class DeepLinkHandler @Inject constructor() {
     }
 
     private fun handleUniversalLink(segments: List<String>, uri: Uri): Route? {
-        Timber.d("Universal link: %s", uri)
+        logger.debug("Universal link received", mapOf("uri" to uri.toString()))
         if (segments.isEmpty()) return Route.Home
         return when (segments.first()) {
             "watch" -> segments.getOrNull(1)?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }

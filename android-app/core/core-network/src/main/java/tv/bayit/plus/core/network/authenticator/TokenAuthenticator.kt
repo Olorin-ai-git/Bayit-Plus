@@ -1,5 +1,6 @@
 package tv.bayit.plus.core.network.authenticator
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Request
@@ -48,8 +49,9 @@ class TokenAuthenticator @Inject constructor(
         ))
 
         // Authenticator requires synchronous execution
-        // Use runBlocking to bridge suspend function to blocking context
-        val newToken = runBlocking {
+        // Dispatchers.IO ensures the coroutine runs on an IO thread, not OkHttp's own
+        // dispatcher, preventing thread starvation if multiple 401s happen concurrently.
+        val newToken = runBlocking(Dispatchers.IO) {
             try {
                 authTokenProvider.refreshToken()
             } catch (e: Exception) {

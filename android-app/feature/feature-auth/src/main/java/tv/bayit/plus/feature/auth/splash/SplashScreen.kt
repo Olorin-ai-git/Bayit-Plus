@@ -2,30 +2,16 @@ package tv.bayit.plus.feature.auth.splash
 
 import android.media.MediaPlayer
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
 fun SplashRoute(onFinished: () -> Unit, modifier: Modifier = Modifier) {
@@ -44,15 +30,15 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
 
     val currentLanguage = java.util.Locale.getDefault().language
     val slogan = when (currentLanguage) {
-        "he", "iw" -> "הבית שלך. בכל מקום."
+        "he", "iw" -> "\u05D4\u05D1\u05D9\u05EA \u05E9\u05DC\u05DA. \u05D1\u05DB\u05DC \u05DE\u05E7\u05D5\u05DD."
         "es" -> "Tu Casa. En Todas Partes."
-        "zh" -> "您的家，随处可及。"
+        "zh" -> "\u60A8\u7684\u5BB6\uFF0C\u968F\u5904\u53EF\u53CA\u3002"
         "fr" -> "Votre Maison. Partout."
         "it" -> "La Tua Casa. Ovunque."
-        "hi" -> "आपका घर। कहीं भी।"
-        "ta" -> "உங்கள் வீடு. எங்கும்."
-        "bn" -> "আপনার বাড়ি। যেকোনো জায়গায়।"
-        "ja" -> "あなたの家、どこでも。"
+        "hi" -> "\u0906\u092A\u0915\u093E \u0918\u0930\u0964 \u0915\u0939\u0940\u0902 \u092D\u0940\u0964"
+        "ta" -> "\u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0BB5\u0BC0\u0B9F\u0BC1. \u0B8E\u0B99\u0BCD\u0B95\u0BC1\u0BAE\u0BCD."
+        "bn" -> "\u0986\u09AA\u09A8\u09BE\u09B0 \u09AC\u09BE\u09DC\u09BF\u0964 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u099C\u09BE\u09AF\u09BC\u0997\u09BE\u09AF\u09BC\u0964"
+        "ja" -> "\u3042\u306A\u305F\u306E\u5BB6\u3001\u3069\u3053\u3067\u3082\u3002"
         else -> "Your Home. Anywhere."
     }
 
@@ -62,51 +48,46 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
     }
     val audioResId = context.resources.getIdentifier(audioFileName, "raw", context.packageName)
 
-    // Determine if current language is Hebrew (RTL)
     val isHebrew = currentLanguage in listOf("he", "iw")
 
-    // For Hebrew (RTL): +בית - "+" from left, "בית" from right
-    // For English (LTR): Bayit+ - "Bayit" from left, "+" from right
     val wordOffset by animateFloatAsState(
         targetValue = if (showTextAnimation) 0f else if (isHebrew) 300f else -300f,
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
-        label = "wordSlide"
+        label = "wordSlide",
     )
 
     val plusOffset by animateFloatAsState(
         targetValue = if (showTextAnimation) 0f else if (isHebrew) -300f else 300f,
         animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
-        label = "plusSlide"
+        label = "plusSlide",
     )
 
     val logoAlpha by animateFloatAsState(
         targetValue = if (showLogo) 1f else 0f,
         animationSpec = tween(durationMillis = 800),
-        label = "logoAlpha"
+        label = "logoAlpha",
     )
 
     val logoScale by animateFloatAsState(
         targetValue = if (showLogo) 1f else 0.85f,
         animationSpec = tween(durationMillis = 800),
-        label = "logoScale"
+        label = "logoScale",
     )
 
     val sloganAlpha by animateFloatAsState(
         targetValue = if (showSlogan) 1f else 0f,
         animationSpec = tween(durationMillis = 600),
-        label = "sloganAlpha"
+        label = "sloganAlpha",
     )
 
     val screenAlpha by animateFloatAsState(
         targetValue = if (fadeOut) 0f else 1f,
         animationSpec = tween(durationMillis = 500),
-        label = "screenAlpha"
+        label = "screenAlpha",
     )
 
     DisposableEffect(Unit) {
-        onDispose {
-            mediaPlayer?.release()
-        }
+        onDispose { mediaPlayer?.release() }
     }
 
     Box(
@@ -119,119 +100,26 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
                     skipRequested = true
                     fadeOut = true
                 }
-            }
+            },
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(DesignTokens.Spacing.xl),
+                .padding(tv.bayit.plus.designsystem.theme.DesignTokens.Spacing.xl),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Spacer(modifier = Modifier.weight(1f))
-
-            Column(
-                modifier = Modifier
-                    .alpha(logoAlpha)
-                    .graphicsLayer(
-                        scaleX = logoScale,
-                        scaleY = logoScale
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
-            ) {
-                // Logo Image
-                Image(
-                    painter = painterResource(id = tv.bayit.plus.feature.auth.R.drawable.splash_logo),
-                    contentDescription = "Bayit+ Logo",
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(60.dp),
-                    contentScale = ContentScale.Fit
-                )
-
-                // Animated text sliding in from opposite directions
-                // Hebrew (RTL): +בית - "+" from left, "בית" from right
-                // English (LTR): Bayit+ - "Bayit" from left, "+" from right
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (isHebrew) {
-                        // Hebrew: + comes first (from left)
-                        Text(
-                            text = "+",
-                            color = DesignTokens.Colors.Primary.base,
-                            fontSize = DesignTokens.FontSize.display,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.offset(x = plusOffset.dp)
-                        )
-                        // Hebrew: בית comes second (from right)
-                        Text(
-                            text = "בית",
-                            color = Color.White,
-                            fontSize = DesignTokens.FontSize.display,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.offset(x = wordOffset.dp)
-                        )
-                    } else {
-                        // English: Bayit comes first (from left)
-                        Text(
-                            text = "Bayit",
-                            color = Color.White,
-                            fontSize = DesignTokens.FontSize.display,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.offset(x = wordOffset.dp)
-                        )
-                        // English: + comes second (from right)
-                        Text(
-                            text = "+",
-                            color = DesignTokens.Colors.Primary.base,
-                            fontSize = DesignTokens.FontSize.display,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.offset(x = plusOffset.dp)
-                        )
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .alpha(sloganAlpha)
-                    .padding(top = DesignTokens.Spacing.xl)
-            ) {
-                Text(
-                    text = slogan,
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                DesignTokens.Colors.Primary.light,
-                                DesignTokens.Colors.Primary.base
-                            )
-                        )
-                    ),
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // "Powered by Olorin.ai" with dark purple "ai"
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = DesignTokens.Colors.Text.muted)) {
-                        append("Powered by Olorin")
-                    }
-                    withStyle(style = SpanStyle(color = Color(0xFF6B46C1))) { // Dark purple
-                        append(".ai")
-                    }
-                },
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .alpha(logoAlpha)
-                    .padding(bottom = DesignTokens.Spacing.lg)
+            SplashLogoBlock(
+                logoAlpha = logoAlpha,
+                logoScale = logoScale,
+                isHebrew = isHebrew,
+                wordOffset = wordOffset,
+                plusOffset = plusOffset,
             )
+            SplashSloganBlock(sloganAlpha = sloganAlpha, slogan = slogan)
+            Spacer(modifier = Modifier.weight(1f))
+            SplashPoweredByText(logoAlpha = logoAlpha)
         }
     }
 
@@ -251,7 +139,7 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
         showLogo = true
 
         delay(400)
-        showTextAnimation = true  // Trigger slide-in animation
+        showTextAnimation = true
 
         delay(1200)
         showSlogan = true
@@ -273,9 +161,3 @@ internal fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier)
         }
     }
 }
-
-@Composable
-private fun Modifier.graphicsLayer(
-    scaleX: Float = 1f,
-    scaleY: Float = 1f
-): Modifier = this.scale(scaleX = scaleX, scaleY = scaleY)

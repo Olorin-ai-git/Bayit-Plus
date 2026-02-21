@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.model.LiveSubtitleEnvelope
 import tv.bayit.plus.core.model.WebSocketPongMessage
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
 import tv.bayit.plus.core.network.websocket.WebSocketManager
@@ -26,10 +27,12 @@ import javax.inject.Singleton
 class LiveSubtitlesManager @Inject constructor(
     webSocketManager: WebSocketManager,
     networkConfig: NetworkConfig,
+    logger: BayitLogger,
 ) : LiveFeatureManager<LiveSubtitleUiState>(
     webSocketManager,
     networkConfig,
     ChannelType.LIVE_SUBTITLES,
+    logger,
 ) {
     override fun createInitialState() = LiveSubtitleUiState()
 

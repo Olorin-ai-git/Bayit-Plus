@@ -10,6 +10,7 @@ import tv.bayit.plus.core.model.DubbedAudioSegment
 import tv.bayit.plus.core.model.DubbingConnectionInfo
 import tv.bayit.plus.core.model.DubbingLatencyReport
 import tv.bayit.plus.core.model.LiveDubbingEnvelope
+import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.NetworkConfig
 import tv.bayit.plus.core.network.websocket.ChannelType
 import tv.bayit.plus.core.network.websocket.WebSocketManager
@@ -30,10 +31,12 @@ import javax.inject.Singleton
 class LiveDubbingManager @Inject constructor(
     webSocketManager: WebSocketManager,
     networkConfig: NetworkConfig,
+    logger: BayitLogger,
 ) : LiveFeatureManager<LiveDubbingUiState>(
     webSocketManager,
     networkConfig,
     ChannelType.LIVE_DUBBING,
+    logger,
 ) {
     private val _latencyReport = MutableStateFlow<DubbingLatencyReport?>(null)
     val latencyReport: StateFlow<DubbingLatencyReport?> = _latencyReport.asStateFlow()

@@ -41,9 +41,47 @@ class PlayerFeaturesDelegate @Inject constructor(
         update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
     ) {
         scope.launch {
-            val moments = runCatching { vodInteractionApi.getInteractiveMoments(contentId) }.getOrElse { emptyList() }
+            val moments = runCatching { vodInteractionApi.getInteractiveMoments(contentId) }
+                .onFailure { error ->
+                    logger.error(
+                        "Failed to load interactive moments",
+                        error,
+                        mapOf("contentId" to contentId),
+                    )
+                }
+                .getOrElse { emptyList() }
             update { copy(interactiveMoments = moments) }
             logger.debug("Loaded interactive moments", mapOf("contentId" to contentId, "count" to moments.size.toString()))
+        }
+    }
+
+    /**
+     * Pre-fetches avatar status for the current user and stores the result in
+     * [PlayerExtendedState] so that auto-triggered [InteractiveMoment] overlays
+     * can display the user's avatar image without waiting for a manual interaction.
+     *
+     * Mirrors the iOS `initializeInteractiveMoments()` avatar-status check.
+     */
+    fun loadAvatarInfo(
+        scope: CoroutineScope,
+        update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
+    ) {
+        scope.launch {
+            val status = runCatching { vodInteractionApi.getAvatarStatus("any") }
+                .onFailure { error ->
+                    logger.warning("Could not fetch avatar status for moment prerequisites", mapOf("error" to (error.message ?: "unknown")))
+                }
+                .getOrNull()
+            if (status?.status == "ready" && status.avatarImageUrl != null) {
+                update {
+                    copy(
+                        avatarId = status.avatarId,
+                        avatarImageUrl = status.avatarImageUrl,
+                        hasVoiceClone = status.hasVoiceClone,
+                    )
+                }
+                logger.debug("Avatar info loaded for moment prerequisites", mapOf("avatarId" to status.avatarId))
+            }
         }
     }
 
@@ -127,7 +165,11 @@ class PlayerFeaturesDelegate @Inject constructor(
         if (state.interactiveMoments.isEmpty()) return null
         val posSeconds = positionMs / MILLIS_PER_SECOND
         return state.interactiveMoments.firstOrNull { moment ->
-            posSeconds >= moment.timestamp &&
+            // Guard: only trigger moments that have a lipsync video ready (iOS parity).
+            // Moments without a lipsync video are structurally complete per is_complete but
+            // have no visual content to display — triggering them silently breaks UX.
+            moment.lipsyncVideoUrl != null &&
+                posSeconds >= moment.timestamp &&
                 posSeconds <= moment.timestamp + moment.duration &&
                 moment.timestamp !in state.triggeredMomentTimestamps
         }

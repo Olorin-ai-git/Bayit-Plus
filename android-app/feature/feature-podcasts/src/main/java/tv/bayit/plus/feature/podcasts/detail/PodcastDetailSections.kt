@@ -42,41 +42,7 @@ private const val HERO_ASPECT_RATIO = 1f
 private val EPISODE_THUMBNAIL_WIDTH = 80.dp
 private val PLAY_BUTTON_SIZE = 44.dp
 
-@Composable
-internal fun PodcastHeroSection(state: PodcastDetailUiState.Success, onBack: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().aspectRatio(HERO_ASPECT_RATIO)) {
-        CachedAsyncImage(
-            url = state.cover,
-            contentDescription = state.title,
-            modifier = Modifier.fillMaxSize(),
-        )
-        Box(
-            modifier = Modifier.fillMaxSize().background(
-                Brush.verticalGradient(
-                    colors = listOf(Color.Transparent, DesignTokens.Colors.Background.primary),
-                ),
-            ),
-        )
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier.align(Alignment.TopStart).padding(DesignTokens.Spacing.sm),
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
-                tint = DesignTokens.Colors.Text.primary,
-                modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
-            )
-        }
-        Text(
-            text = state.title,
-            style = MaterialTheme.typography.headlineLarge,
-            color = DesignTokens.Colors.Text.primary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.BottomStart).padding(DesignTokens.Spacing.base),
-        )
-    }
-}
+// PodcastHeroSection is in PodcastDetailSections+Hero.kt
 
 @Composable
 internal fun PodcastMetadataSection(state: PodcastDetailUiState.Success) {
