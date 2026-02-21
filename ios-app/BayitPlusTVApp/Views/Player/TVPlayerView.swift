@@ -487,11 +487,14 @@ struct TVPlayerView: View {
     }
 
     private var nextInteractionAction: (() -> Void)? {
-        guard let moment = sortedMoments.first(where: {
-            $0.timestamp > mediaPlayer.currentTime
+        let currentTime = mediaPlayer.currentTime
+        let sorted = sortedMoments
+        guard let moment = sorted.first(where: {
+            $0.timestamp > currentTime
         }) else { return nil }
         return { [self] in
             let target = max(0, moment.timestamp - interactionSeekOffset)
+            logger.info("Jumping to \(moment.characterName) at \(target)s")
             resetOverlayTimer()
             seekPreviewPosition = target
             Task {

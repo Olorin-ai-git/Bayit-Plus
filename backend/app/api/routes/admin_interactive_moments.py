@@ -69,6 +69,14 @@ async def update_interactive_moments(
                 detail="Content not found"
             )
 
+        invalid = [m for m in request.moments if m.timestamp <= 0]
+        if invalid:
+            names = ", ".join(m.character_name for m in invalid)
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"All moments must have timestamp > 0. Invalid: {names}",
+            )
+
         content.interactive_moments = request.moments
         content.supports_avatar_interaction = len(request.moments) > 0
         await content.save()

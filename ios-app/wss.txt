@@ -1,0 +1,608 @@
+
+    ✻
+    |
+   ▟█▙     Claude Code v2.1.45
+ ▐▛███▜▌   Opus 4.6 · Claude Max
+▝▜█████▛▘  ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+  ▘▘ ▝▝  
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact 
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Read ../bayit-ws-gateway/cloudbuild-ws-gateway.yaml (95 lines)
+  ⎿  Read ../../../../../../../../tmp/gateway_env.txt (29 lines)
+  ⎿  Read ../../../../../../../../tmp/monolith_env.txt (212 lines)
+  ⎿  Read ../bayit-ws-gateway/Dockerfile (75 lines)
+  ⎿  Read ../scripts/deployment/deploy_ws_gateway.sh (220 lines)
+
+⏺ Task "Web frontend: store, pages, components" completed in background
+
+⏺ Task "iOS views, routes, repository" completed in background
+
+⏺ Task "tvOS movie interactions view" completed in background
+
+⏺ Task "Android models, API, screens" completed in background
+
+⏺ Task "Localize movie interactions in all files" completed in background
+
+⏺ Task "Fix pre-existing web TS errors" completed in background
+
+⏺ Task "Build 5 Bayit+ skills" completed in background
+
+⏺ Task "Build 3 Fraud skills" completed in background
+
+⏺ Task "Build 2 CVPlus skills" completed in background
+
+⏺ Task "Build 4 cross-ecosystem skills" completed in background
+  ⎿  Skills restored (deploy-bayit)
+
+❯ domain mapping 
+  ⎿  [Image #1]
+
+⏺ ws.bayit.tv domain mapping is created and pointing to bayit-ws-gateway. It's
+  still provisioning (no green checkmark yet like api.bayit.tv has).
+
+  You'll need to add a DNS CNAME record at your domain registrar:
+
+  ws.bayit.tv  CNAME  ghs.googlehosted.com.
+
+  Once DNS propagates and the SSL cert provisions (usually 15-30 min), the
+  mapping will go green.
+
+  After that, the next step is updating all clients to use wss://ws.bayit.tv for
+   WebSocket connections instead of the monolith URL. Want me to find and update
+   the WebSocket URL references across iOS, tvOS, Android, and web?
+
+❯ yes, update all WS URLs to use ws.bayit.tv 
+
+⏺ Let me first find all the WebSocket URL references across the codebase.
+
+⏺ Searched for 3 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now let me read the key production files that need updating across all
+  platforms.
+
+⏺ Searched for 1 pattern, read 9 files (ctrl+o to expand)
+
+⏺ Now let me read the remaining web service files that construct WS URLs.
+
+⏺ Read 13 files (ctrl+o to expand)
+
+⏺ I now have a clear picture of all files needing updates. Let me create tasks
+  and make all edits. I'll work through them systematically.
+
+⏺ Group 1: Non-web platform files (all independent edits):
+
+⏺ Update(Packages/BayitCore/Sources/BayitCore/Environment.swift)
+  ⎿  Added 1 line, removed 1 line
+      152          case .staging:
+      153              return "wss://staging-api.bayit.tv"
+      154          case .production:
+      155 -            return "wss://api.bayit.tv"                       
+      155 +            return "wss://ws.bayit.tv"                        
+      156          }
+      157      }
+      158  }
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/middlew
+        are/security_headers.py)
+  ⎿  Added 1 line, removed 1 line
+      51              "img-src 'self' data: https:; "
+      52              "font-src 'self' data:; "
+      53              "media-src 'self' https: blob:; "
+      54 -            "connect-src 'self' https://api.stripe.com wss://ap
+         -i.bayit.tv wss://m.bayit.tv; "                                 
+      54 +            "connect-src 'self' https://api.stripe.com wss://ws
+         +.bayit.tv wss://api.bayit.tv wss://m.bayit.tv; "               
+      55              "frame-ancestors 'none'; "
+      56              "base-uri 'self'; "
+      57              "form-action 'self'"
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/shared/stores/devic
+        ePairingStore.ts)
+  ⎿  Added 1 line, removed 1 line
+       7  // Get WebSocket URL based on platform
+       8  const getWsBaseUrl = () => {
+       9    if (!__DEV__) {
+      10 -    return 'wss://api.bayit.tv/api/v1';                        
+      10 +    return 'wss://ws.bayit.tv/api/v1';                         
+      11    }
+      12    if (Platform.OS === 'web') {
+      13      return 'ws://localhost:8000/api/v1';
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/shared/stores/watch
+        PartyStore.ts)
+  ⎿  Added 1 line, removed 1 line
+       7  // Get WebSocket URL based on platform
+       8  const getWsBaseUrl = () => {
+       9    if (!__DEV__) {
+      10 -    return 'wss://api.bayit.tv/api/v1';                        
+      10 +    return 'wss://ws.bayit.tv/api/v1';                         
+      11    }
+      12    if (Platform.OS === 'web') {
+      13      return 'ws://localhost:8000/api/v1';
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/chrome-extension/ex
+        tension/config/constants.ts)
+  ⎿  Added 1 line, removed 1 line
+      72  
+      73    API: {
+      74      BASE_URL: getEnvVar('VITE_API_BASE_URL', 'https://api.bayit
+          .tv'),
+      75 -    WEBSOCKET_URL: getEnvVar('VITE_WS_BASE_URL', 'wss://api.bay
+         -it.tv'),                                                       
+      75 +    WEBSOCKET_URL: getEnvVar('VITE_WS_BASE_URL', 'wss://ws.bayi
+         +t.tv'),                                                        
+      76      TIMEOUT_MS: getEnvNumber('VITE_API_TIMEOUT_MS', 30000),
+      77    },
+      78  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/chrome-extension/ex
+        tension/manifest.json)
+  ⎿  Added 1 line, removed 1 line
+      61      }
+      62    ],
+      63    "content_security_policy": {
+      64 -    "extension_pages": "script-src 'self'; object-src 'self'; c
+         -onnect-src https://api.bayit.tv https://m.bayit.tv wss://api.ba
+         -yit.tv wss://m.bayit.tv"                                       
+      64 +    "extension_pages": "script-src 'self'; object-src 'self'; c
+         +onnect-src https://api.bayit.tv https://m.bayit.tv wss://ws.bay
+         +it.tv wss://api.bayit.tv wss://m.bayit.tv"                     
+      65    }
+      66  }
+
+⏺ Group 1 done. Now Group 2: Web services - migrate to use buildWsUrl:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ch
+        annelChatService.ts)
+  ⎿  Added 1 line
+       7  
+       8  import logger from '@/utils/logger'
+       9  import api from './api'
+      10 +import { buildWsUrl } from './wsUrl'                           
+      11  import type {
+      12    ConnectedData, ChatMessageData, UserJoinData, UserLeftData,
+      13    ReactionUpdateData, MessageDeletedData, UserMutedData, UserUn
+          mutedData,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ch
+        annelChatService.ts)
+  ⎿  Error editing file
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veDubbingService.ts)
+  ⎿  Error editing file
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ta
+        lkBackService.ts)
+  ⎿  Error editing file
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/bi
+        lingualDubbingService.ts)
+  ⎿  Error editing file
+
+⏺ The linter reformatted files. Let me re-read the modified files and continue
+  the edits.
+
+⏺ Read 7 files (ctrl+o to expand)
+
+⏺ Now let me make all the remaining web edits. I need to add buildWsUrl import
+  to each file and update the URL construction.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ch
+        annelChatService.ts)
+  ⎿  Added 1 line, removed 3 lines
+      60  
+      61        this.currentChannelId = channelId;
+      62        this.callbacks = callbacks;
+      63 -      const wsProtocol = window.location.protocol === "https:" 
+         -? "wss:" : "ws:";                                              
+      64 -      const wsHost = window.location.host;                     
+      63        const wsPathPrefix = isLive ? "live" : "content";
+      66 -      const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/${wsPat
+         -hPrefix}/${channelId}/chat`;                                   
+      64 +      const wsUrl = buildWsUrl(`/api/v1/ws/${wsPathPrefix}/${ch
+         +annelId}/chat`);                                               
+      65  
+      66        logger.info(
+      67          "Connecting to channel chat WebSocket",
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veDubbingService.ts)
+  ⎿  Added 1 line
+       7   */
+       8  
+       9  import logger from '@/utils/logger'
+      10 +import { buildWsUrl } from './wsUrl'                           
+      11  import { SharedAudioCapture } from './audio/sharedAudioCapture'
+      12  import {
+      13    ContinuousPlaybackController,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ta
+        lkBackService.ts)
+  ⎿  Added 1 line
+       5   */
+       6  
+       7  import logger from '@/utils/logger';
+       8 +import { buildWsUrl } from './wsUrl';                          
+       9  
+      10  const AUTH_STORAGE_KEY = 'bayit-auth';
+      11  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/bi
+        lingualDubbingService.ts)
+  ⎿  Added 1 line
+       5   */
+       6  
+       7  import logger from '@/utils/logger';
+       8 +import { buildWsUrl } from './wsUrl';                          
+       9  
+      10  const AUTH_STORAGE_KEY = 'bayit-auth';
+      11  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veSubtitleService.ts)
+  ⎿  Added 1 line
+       4   */
+       5  
+       6  import logger from '@/utils/logger'
+       7 +import { buildWsUrl } from './wsUrl'                           
+       8  import i18n from 'i18next'
+       9  import { liveSubtitleConfig } from '@/config/liveSubtitleConfig
+          '
+      10  import {
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veTriviaService.ts)
+  ⎿  Added 1 line
+       6   */
+       7  
+       8  import logger from '@/utils/logger'
+       9 +import { buildWsUrl } from './wsUrl'                           
+      10  import type { LiveTriviaFact } from '@/components/player/hooks/
+          useLiveTrivia'
+      11  import i18n from 'i18next'
+      12  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veSplitSubtitleService.ts)
+  ⎿  Added 1 line
+       6  /// <reference types="vite/client" />
+       7  
+       8  import logger from '@/utils/logger'
+       9 +import { buildWsUrl } from './wsUrl'                           
+      10  import i18n from 'i18next'
+      11  import { liveSubtitleConfig } from '@/config/liveSubtitleConfig
+          '
+      12  import { LiveSubtitleCue } from '@/types/subtitle'
+
+⏺ Imports added. Now let me update the actual URL construction in the
+  reformatted files. The linter reformatted the code, so I need to use the new
+  format.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veDubbingService.ts)
+  ⎿  Added 1 line, removed 3 lines
+      396  
+      397        // SECURITY: Do NOT pass JWT token in URL query paramete
+           rs (visible in logs, history, referer headers)
+      398        // Token is sent securely via first message after WebSoc
+           ket connection is established
+      399 -      const wsProtocol = window.location.protocol === "https:"
+          - ? "wss:" : "ws:";                                            
+      400 -      // Use window.location.host for WebSocket connections (V
+          -ite proxy handles it in dev)                                  
+      401 -      let wsUrl = `${wsProtocol}//${window.location.host}/api/
+          -v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&plat
+          -form=${platform}&continuous_flow=${enableContinuousFlow}`;    
+      399 +      let wsUrl = buildWsUrl(`/api/v1/ws/live/${channelId}/dub
+          +bing?target_lang=${targetLang}&platform=${platform}&continuous
+          +_flow=${enableContinuousFlow}`);                              
+      400        if (voiceId) {
+      401          wsUrl += `&voice_id=${voiceId}`;
+      402        }
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/ta
+        lkBackService.ts)
+  ⎿  Added 1 line, removed 2 lines
+      45        return;
+      46      }
+      47  
+      48 -    const wsProtocol = window.location.protocol === "https:" ? 
+         -"wss:" : "ws:";                                                
+      49 -    const wsUrl = `${wsProtocol}//${window.location.host}/api/v
+         -1/ws/talk-back/${contentId}?profile_id=${profileId}`;          
+      48 +    const wsUrl = buildWsUrl(`/api/v1/ws/talk-back/${contentId}
+         +?profile_id=${profileId}`);                                    
+      49  
+      50      this.ws = new WebSocket(wsUrl);
+      51  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/bi
+        lingualDubbingService.ts)
+  ⎿  Added 1 line, removed 2 lines
+      47        return;
+      48      }
+      49  
+      50 -    const wsProtocol = window.location.protocol === "https:" ? 
+         -"wss:" : "ws:";                                                
+      51 -    const wsUrl = `${wsProtocol}//${window.location.host}/api/v
+         -1/ws/bilingual-dubbing/${contentId}?profile_id=${profileId}`;  
+      50 +    const wsUrl = buildWsUrl(`/api/v1/ws/bilingual-dubbing/${co
+         +ntentId}?profile_id=${profileId}`);                            
+      51  
+      52      this.ws = new WebSocket(wsUrl);
+      53      this.playbackContext = new AudioContext();
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veSubtitleService.ts)
+  ⎿  Added 1 line, removed 11 lines
+      125            return;
+      126          }
+      127  
+      128 -        const wsProtocol =                                    
+      129 -          window.location.protocol === "https:" ? "wss:" : "ws
+          -:";                                                           
+      130 -        // Handle both absolute URLs (https://api.example.com/
+          -api/v1) and relative paths (/api/v1)                          
+      131 -        const isRelativePath = API_BASE_URL.startsWith("/");  
+      132 -        const wsHost = isRelativePath                         
+      133 -          ? window.location.host                              
+      134 -          : API_BASE_URL.replace(/^https?:\/\//, "").replace( 
+      135 -              /\/api\/v1\/?$/,                                
+      136 -              "",                                             
+      137 -            );                                                
+      138 -        const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live
+          -/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=
+          -${targetLang}&hebrew_mode=${hebrewMode}`;                     
+      128 +        const wsUrl = buildWsUrl(`/api/v1/ws/live/${channelId}
+          +/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}
+          +&hebrew_mode=${hebrewMode}`);                                 
+      129  
+      130          this.ws = new WebSocket(wsUrl);
+      131  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veTriviaService.ts)
+  ⎿  Added 1 line, removed 7 lines
+      123        return;
+      124      }
+      125  
+      126 -    const wsProtocol = window.location.protocol === "https:" ?
+          - "wss:" : "ws:";                                              
+      127 -    // Handle both absolute URLs (https://api.example.com/api/
+          -v1) and relative paths (/api/v1)                              
+      128 -    const isRelativePath = API_BASE_URL.startsWith("/");      
+      129 -    const wsHost = isRelativePath                             
+      130 -      ? window.location.host                                  
+      131 -      : API_BASE_URL.replace(/^https?:\/\//, "").replace(/\/ap
+          -i\/v1\/?$/, "");                                              
+      132 -    const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live/${c
+          -hannelId}/trivia`;                                            
+      126 +    const wsUrl = buildWsUrl(`/api/v1/ws/live/${channelId}/tri
+          +via`);                                                        
+      127  
+      128      logger.info(
+      129        `Connecting to trivia WebSocket for channel ${channelId}
+           `,
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/services/li
+        veSplitSubtitleService.ts)
+  ⎿  Added 1 line, removed 10 lines
+      173        try {
+      174          onStatus?.("connecting", position);
+      175  
+      176 -        const wsProtocol =                                    
+      177 -          window.location.protocol === "https:" ? "wss:" : "ws
+          -:";                                                           
+      178 -        const isRelativePath = API_BASE_URL.startsWith("/");  
+      179 -        const wsHost = isRelativePath                         
+      180 -          ? window.location.host                              
+      181 -          : API_BASE_URL.replace(/^https?:\/\//, "").replace( 
+      182 -              /\/api\/v1\/?$/,                                
+      183 -              "",                                             
+      184 -            );                                                
+      185 -        const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live
+          -/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=
+          -${targetLang}&hebrew_mode=${hebrewMode}`;                     
+      176 +        const wsUrl = buildWsUrl(`/api/v1/ws/live/${channelId}
+          +/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}
+          +&hebrew_mode=${hebrewMode}`);                                 
+      177  
+      178          state.ws = new WebSocket(wsUrl);
+      179  
+
+⏺ Now the web hooks and remaining files:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useCh
+        essGame.ts)
+  ⎿  Added 2 lines, removed 11 lines
+      73    const maxReconnectAttempts = 5;
+      74  
+      75    const getWebSocketUrl = useCallback((gameCode: string) => {
+      76 -    const wsProtocol = window.location.protocol === 'https:' ? 
+         -'wss:' : 'ws:';                                                
+      77 -    const wsHost = import.meta.env.VITE_WS_URL ||              
+      78 -      (import.meta.env.PROD                                    
+      79 -        ? 'wss://api.bayit.plus'                               
+      80 -        : `ws://${window.location.hostname}:8000`);            
+      76 +    return buildWsUrl(`/api/v1/ws/chess/${gameCode}`);         
+      77 +  }, []);                                                      
+      78  
+      82 -    // Remove protocol if present in VITE_WS_URL               
+      83 -    const cleanHost = wsHost.replace(/^wss?:\/\//, '');        
+      84 -                                                               
+      85 -    return `${wsProtocol}//${cleanHost}/api/v1/ws/chess/${gameC
+         -ode}`;                                                         
+      86 -  }, [token]);                                                 
+      87 -                                                               
+      79    const connectWebSocket = useCallback((gameCode: string) => {
+      80      if (!token) {
+      81        setError(i18n.t('errors.auth.notAuthenticated'));
+
+⏺ Now I need to add the buildWsUrl import to useChessGame.ts. Let me also update
+   the remaining hooks/files.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useCh
+        essGame.ts)
+  ⎿  Added 1 line
+       5  import { useState, useEffect, useRef, useCallback } from "react
+          ";
+       6  import { useAuthStore } from "../stores/authStore";
+       7  import api from "@/services/api";
+       8 +import { buildWsUrl } from "@/services/wsUrl";                 
+       9  import logger from "@/utils/logger";
+      10  import i18n from "i18next";
+      11  
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/useSy
+        stemHealth.ts)
+  ⎿  Added 1 line
+      29  }
+      30  
+      31  const WS_BASE_URL = import.meta.env.VITE_WS_URL || `ws://${wind
+          ow.location.hostname}:8000`;
+      32 +// Note: Admin diagnostics WS uses WS_BASE_URL directly (not bu
+         +ildWsUrl) since it needs a bare host                           
+      33  
+      34  /**
+      35   * Custom hook for system health monitoring with WebSocket real
+          -time updates
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/hooks/voice
+        InteractionWSUrl.ts)
+  ⎿  Added 4 lines, removed 11 lines
+       1  /**
+       2   * voiceInteractionWSUrl
+       3   *
+       4 - * Utility to construct the voice interaction WebSocket URL fro
+         -m env config.                                                  
+       5 - * Mirrors the pattern used in watchPartyStore.js.             
+       4 + * Utility to construct the voice interaction WebSocket URL.   
+       5 + * Uses centralized buildWsUrl to route through the WS gateway 
+         +in production.                                                 
+       6   */
+       7  
+       8 -const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1' 
+       8 +import { buildWsUrl } from '@/services/wsUrl'                  
+       9  
+      10  export const buildVoiceWsUrl = (sessionId: string): string => {
+      11 -  const wsProtocol = window.location.protocol === 'https:' ? 'w
+         -ss:' : 'ws:'                                                   
+      12 -  let base: string                                             
+      13 -  if (API_BASE_URL.startsWith('/')) {                          
+      14 -    base = `${wsProtocol}//${window.location.host}${API_BASE_UR
+         -L}`                                                            
+      15 -  } else {                                                     
+      16 -    base = API_BASE_URL.replace(/^https?/, wsProtocol.replace('
+         -:', ''))                                                       
+      17 -  }                                                            
+      18 -  return `${base}/ws/vod-interaction/${sessionId}`             
+      11 +  return buildWsUrl(`/api/v1/ws/vod-interaction/${sessionId}`) 
+      12  }
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        zeh-ani/useV2VWebSocket.ts)
+  ⎿  Added 1 line, removed 7 lines
+      10  const MAX_RECONNECT_ATTEMPTS = 5;
+      11  
+      12  function getWebSocketUrl(avatarId: string): string {
+      13 -  const wsProtocol = window.location.protocol === 'https:' ? 'w
+         -ss:' : 'ws:';                                                  
+      14 -  const wsHost = import.meta.env.VITE_WS_URL ||                
+      15 -    (import.meta.env.PROD                                      
+      16 -      ? import.meta.env.VITE_WS_PROD_HOST                      
+      17 -      : `${window.location.hostname}:8000`);                   
+      18 -  const cleanHost = wsHost.replace(/^wss?:\/\//, '');          
+      19 -  return `${wsProtocol}//${cleanHost}/api/v1/ws/v2v/${avatarId}
+         -`;                                                             
+      13 +  return buildWsUrl(`/api/v1/ws/v2v/${avatarId}`);             
+      14  }
+      15  
+      16  export interface V2VWebSocketHook {
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        zeh-ani/useLipsyncWebSocket.ts)
+  ⎿  Added 1 line, removed 7 lines
+      10  const MAX_RECONNECT_ATTEMPTS = 5;
+      11  
+      12  function getWebSocketUrl(contentId: string): string {
+      13 -  const wsProtocol = window.location.protocol === 'https:' ? 'w
+         -ss:' : 'ws:';                                                  
+      14 -  const wsHost = import.meta.env.VITE_WS_URL ||                
+      15 -    (import.meta.env.PROD                                      
+      16 -      ? import.meta.env.VITE_WS_PROD_HOST                      
+      17 -      : `${window.location.hostname}:8000`);                   
+      18 -  const cleanHost = wsHost.replace(/^wss?:\/\//, '');          
+      19 -  return `${wsProtocol}//${cleanHost}/api/v1/ws/live-layer/${co
+         -ntentId}`;                                                     
+      13 +  return buildWsUrl(`/api/v1/ws/live-layer/${contentId}`);     
+      14  }
+      15  
+      16  export function useLipsyncWebSocket(
+
+⏺ Now add buildWsUrl imports to the two zeh-ani hooks:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        zeh-ani/useV2VWebSocket.ts)
+  ⎿  Added 1 line
+      1  import { useState, useRef, useCallback, useEffect } from "react"
+         ;
+      2 +import { buildWsUrl } from "@/services/wsUrl";                  
+      3  import logger from "@bayit/shared-utils/logger";
+      4  import { useAuthStore } from "@bayit/shared-stores/authStore";
+      5  import { useV2VStore } from "@/stores/v2vStore";
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/
+        zeh-ani/useLipsyncWebSocket.ts)
+  ⎿  Added 1 line
+      1  import { useRef, useCallback, useEffect } from "react";
+      2 +import { buildWsUrl } from "@/services/wsUrl";                  
+      3  import logger from "@bayit/shared-utils/logger";
+      4  import { useAuthStore } from "@bayit/shared-stores/authStore";
+      5  import { useLiveLayerStore } from "@/stores/liveLayerStore";
+
+⏺ Now update the web watchPartyStore.js to use buildWsUrl:
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/stores/watc
+        hPartyStore.js)
+  ⎿  Added 1 line, removed 13 lines
+       1  import { create } from 'zustand'
+       2  import { partyService } from '../services/api'
+       3 +import { buildWsUrl } from '../services/wsUrl'                 
+       4  import logger from '@/utils/logger'
+       5  
+       5 -const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1' 
+       6 -                                                               
+       7 -// Build WebSocket base URL - handle both absolute URLs and rel
+         -ative paths                                                    
+       8 -const getWsBaseUrl = () => {                                   
+       9 -  const wsProtocol = window.location.protocol === 'https:' ? 'w
+         -ss:' : 'ws:'                                                   
+      10 -  if (API_BASE_URL.startsWith('/')) {                          
+      11 -    // Relative path - use current host                        
+      12 -    return `${wsProtocol}//${window.location.host}/api/v1`     
+      13 -  }                                                            
+      14 -  // Absolute URL - replace http with ws                       
+      15 -  return API_BASE_URL.replace(/^https?/, wsProtocol.replace(':'
+         -, ''))                                                         
+      16 -}                                                              
+      17 -                                                               
+       6  /**
+       7   * Watch Party Store
+       8   * Manages watch party state, WebSocket connection, and real-ti
+          me events.
+
+⏺ Update(~/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/stores/watc
+        hPartyStore.js)
+  ⎿  Error editing file
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Crunched for 4m 31s

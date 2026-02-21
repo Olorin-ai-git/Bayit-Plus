@@ -62,6 +62,22 @@ class InteractiveMoment(BaseModel):
     interaction_prompt: str = Field(default="", description="Display text for user")
     voice_id: str = Field(..., description="ElevenLabs voice ID for character")
 
+    @model_validator(mode="after")
+    def _require_timestamp_on_creation(self) -> "InteractiveMoment":
+        """Log a warning for moments missing a timestamp.
+
+        We keep the default=0.0 so legacy MongoDB documents still
+        deserialise, but new moments should always have timestamp > 0.
+        """
+        if self.timestamp <= 0.0 and self.character_name:
+            import logging
+            logging.getLogger(__name__).warning(
+                "InteractiveMoment for '%s' has timestamp=0; "
+                "callers should always provide a positive timestamp",
+                self.character_name,
+            )
+        return self
+
     @property
     def is_complete(self) -> bool:
         """Returns True only if the moment has all fields needed to display."""
