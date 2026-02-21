@@ -1,6 +1,11 @@
 package tv.bayit.plus.feature.player.dialogue
 
+import android.graphics.Matrix
+import android.graphics.Outline
 import android.net.Uri
+import android.view.TextureView
+import android.view.View
+import android.view.ViewOutlineProvider
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,25 +32,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
-import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
  * Auto-triggered overlay for interactive moments during VOD playback.
  *
- * Sequential playback (iOS parity): avatar lipsync plays first, then character
- * response. Any video error dismisses after [DISMISS_DELAY_MS] — never instantly.
+ * Uses TextureView (not SurfaceView/PlayerView) so circular clipping works.
+ * Applies a center-crop Matrix transform so video fills the circle without distortion.
  */
 @Composable
 fun InteractiveMomentOverlay(
@@ -73,45 +77,35 @@ fun InteractiveMomentOverlay(
                     scheduleDismiss
                 }
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(DesignTokens.Spacing.base)
-                    .glassMorphism(cornerRadius = DesignTokens.Radius.lg, backgroundColor = DesignTokens.Colors.Glass.bgStrong)
-                    .padding(DesignTokens.Spacing.base),
-                contentAlignment = Alignment.Center,
+            Column(
+                modifier = Modifier.padding(DesignTokens.Spacing.base),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = activeMoment.characterName,
-                        color = DesignTokens.Colors.Primary.light,
-                        fontSize = DesignTokens.FontSize.md,
-                        fontWeight = FontWeight.Bold,
+                Text(
+                    text = activeMoment.characterName,
+                    color = DesignTokens.Colors.Primary.light,
+                    fontSize = DesignTokens.FontSize.md,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xl),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    MomentVideoCircle(
+                        videoUrl = activeMoment.lipsyncVideoUrl,
+                        fallbackImageUrl = avatarImageUrl,
+                        shouldPlay = phase == MomentOverlayPhase.AVATAR_SPEAKING,
+                        onVideoEnded = onAvatarEnded,
+                        onVideoError = scheduleDismiss,
                     )
-                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xl),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        MomentVideoCircle(
-                            videoUrl = activeMoment.lipsyncVideoUrl,
-                            shouldPlay = phase == MomentOverlayPhase.AVATAR_SPEAKING,
-                            onVideoEnded = onAvatarEnded,
-                            onVideoError = scheduleDismiss,
-                        )
-                        MomentVideoCircle(
-                            videoUrl = activeMoment.characterResponseVideoUrl,
-                            shouldPlay = phase == MomentOverlayPhase.CHARACTER_SPEAKING,
-                            onVideoEnded = scheduleDismiss,
-                            onVideoError = scheduleDismiss,
-                        )
-                    }
-                    if (phase == MomentOverlayPhase.CHARACTER_SPEAKING) {
-                        activeMoment.characterResponseText?.let { text ->
-                            Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-                            Text(text = text, color = DesignTokens.Colors.Text.secondary, fontSize = DesignTokens.FontSize.sm, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-                        }
-                    }
+                    MomentVideoCircle(
+                        videoUrl = activeMoment.characterResponseVideoUrl,
+                        fallbackImageUrl = activeMoment.characterFrameUrl,
+                        shouldPlay = phase == MomentOverlayPhase.CHARACTER_SPEAKING,
+                        onVideoEnded = scheduleDismiss,
+                        onVideoError = scheduleDismiss,
+                    )
                 }
             }
         }
@@ -129,23 +123,25 @@ private fun DuckVolume(mainPlayer: Player?) {
     }
 }
 
-/**
- * Single video circle. When [shouldPlay] is true, creates an ExoPlayer and starts
- * immediately. When false, shows a spinner (preserves circle space, no wasted
- * player resources). [onVideoError] never fires instantly — callers must schedule
- * dismiss with a delay themselves.
- */
 @Composable
 private fun MomentVideoCircle(
     videoUrl: String?,
+    fallbackImageUrl: String?,
     shouldPlay: Boolean,
     onVideoEnded: () -> Unit,
     onVideoError: () -> Unit,
 ) {
-    Box(modifier = Modifier.size(AVATAR_CIRCLE_SIZE).clip(CircleShape), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.size(MOMENT_CIRCLE_SIZE).clip(CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
         if (videoUrl != null && shouldPlay) {
             val context = LocalContext.current
             var isReady by remember { mutableStateOf(false) }
+            // Plain array holders avoid recomposition side-effects from mutation
+            val tvHolder = remember { arrayOfNulls<TextureView>(1) }
+            val sizeHolder = remember { arrayOfNulls<VideoSize>(1) }
+
             val exoPlayer = remember(videoUrl) {
                 ExoPlayer.Builder(context).build().apply {
                     setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
@@ -155,21 +151,76 @@ private fun MomentVideoCircle(
                             if (state == Player.STATE_ENDED) onVideoEnded()
                         }
                         override fun onPlayerError(error: PlaybackException) { onVideoError() }
+                        override fun onVideoSizeChanged(videoSize: VideoSize) {
+                            sizeHolder[0] = videoSize
+                            tvHolder[0]?.let { applyCenterCrop(it, videoSize) }
+                        }
                     })
+                    volume = 1.0f
                     prepare(); playWhenReady = true; repeatMode = Player.REPEAT_MODE_OFF
                 }
             }
             DisposableEffect(videoUrl) { onDispose { exoPlayer.release() } }
             AndroidView(
-                factory = { ctx -> PlayerView(ctx).apply { player = exoPlayer; useController = false } },
+                factory = { ctx ->
+                    TextureView(ctx).apply {
+                        outlineProvider = object : ViewOutlineProvider() {
+                            override fun getOutline(view: View, outline: Outline) {
+                                outline.setOval(0, 0, view.width, view.height)
+                            }
+                        }
+                        clipToOutline = true
+                        tvHolder[0] = this
+                        exoPlayer.setVideoTextureView(this)
+                        // Re-apply crop after layout if size already known
+                        addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                            sizeHolder[0]?.let { applyCenterCrop(this, it) }
+                        }
+                    }
+                },
                 modifier = Modifier.matchParentSize(),
             )
-            if (!isReady) GlassSpinner(size = SpinnerSize.SMALL)
+            if (!isReady) {
+                if (fallbackImageUrl != null) {
+                    CachedAsyncImage(url = fallbackImageUrl, contentDescription = null, modifier = Modifier.matchParentSize())
+                } else {
+                    GlassSpinner(size = SpinnerSize.SMALL)
+                }
+            }
+        } else if (fallbackImageUrl != null) {
+            CachedAsyncImage(url = fallbackImageUrl, contentDescription = null, modifier = Modifier.matchParentSize())
         } else {
             GlassSpinner(size = SpinnerSize.SMALL)
         }
     }
 }
 
-private const val DUCKED_VOLUME = 0.15f
+/**
+ * Center-crops the TextureView to display the video without distortion.
+ * TextureView stretches video to fill by default; this corrects to cover/fill
+ * while maintaining the video's natural aspect ratio.
+ */
+private fun applyCenterCrop(tv: TextureView, videoSize: VideoSize) {
+    val vw = videoSize.width.toFloat()
+    val vh = videoSize.height.toFloat()
+    val tw = tv.width.toFloat()
+    val th = tv.height.toFloat()
+    if (vw <= 0f || vh <= 0f || tw <= 0f || th <= 0f) return
+
+    val scaleX: Float
+    val scaleY: Float
+    if (vw * th > tw * vh) {
+        scaleX = vw * th / (vh * tw)
+        scaleY = 1f
+    } else {
+        scaleX = 1f
+        scaleY = vh * tw / (vw * th)
+    }
+    val matrix = Matrix()
+    matrix.setScale(scaleX, scaleY, tw / 2f, th / 2f)
+    tv.setTransform(matrix)
+}
+
+private const val DUCKED_VOLUME = 0.05f
 private const val DISMISS_DELAY_MS = 300L
+private val MOMENT_CIRCLE_SIZE = 120.dp
