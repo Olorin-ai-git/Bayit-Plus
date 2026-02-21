@@ -532,6 +532,29 @@
       "timerSet": "{{minutes}} मिनट के लिए स्लीप टाइमर सेट",
       "timerExtended": "टाइमर {{minutes}} मिनट बढ़ाया गया",
       "timerCancelled": "स्लीप टाइमर रद्द किया गया"
+    },
+    "dialogue": {
+      "selectCharacter": "एक पात्र चुनें",
+      "cancel": "रद्द करें",
+      "placeholder": "सवाल लिखें...",
+      "send": "भेजें",
+      "close": "बंद करें",
+      "yourAvatar": "आपका अवतार",
+      "sharedSession": "साझा सत्र",
+      "waitingForTurn": "आपकी बारी का इंतजार..."
+    },
+    "pauseAsk": {
+      "title": "पात्र से पूछें",
+      "selectCharacter": "आप किससे पूछना चाहेंगे?",
+      "resumeMovie": "फिल्म जारी रखें",
+      "processing": "आपका सवाल प्रोसेस हो रहा है...",
+      "askAgain": "एक और सवाल पूछें",
+      "resume": "जारी रखें",
+      "placeholder": "अपना सवाल पूछें..."
+    },
+    "interaction": {
+      "previous": "पिछला इंटरैक्शन",
+      "next": "अगला इंटरैक्शन"
     }
   },
   "content": {

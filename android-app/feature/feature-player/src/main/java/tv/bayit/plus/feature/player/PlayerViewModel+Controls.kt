@@ -82,3 +82,19 @@ fun PlayerViewModel.dismissVodInteractionSheet() {
     _extendedState.update { it.copy(showVodInteractionSheet = false) }
     mediaPlayer.play()
 }
+
+// Pause-to-Ask
+fun PlayerViewModel.startPauseAsk() {
+    mediaPlayer.pause()
+    _extendedState.update { it.copy(showPauseAskOverlay = true) }
+}
+
+fun PlayerViewModel.dismissPauseAsk() {
+    _extendedState.update { it.copy(showPauseAskOverlay = false) }
+    mediaPlayer.play()
+}
+
+// Interactive moments
+fun PlayerViewModel.dismissMoment() {
+    _extendedState.update { it.copy(activeMoment = null) }
+}

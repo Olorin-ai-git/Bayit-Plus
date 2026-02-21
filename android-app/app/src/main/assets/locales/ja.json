@@ -1213,6 +1213,29 @@
       "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
       "timerExtended": "タイマーを{{minutes}}分延長しました",
       "timerCancelled": "スリープタイマーがキャンセルされました"
+    },
+    "dialogue": {
+      "selectCharacter": "キャラクターを選択",
+      "cancel": "キャンセル",
+      "placeholder": "質問を入力...",
+      "send": "送信",
+      "close": "閉じる",
+      "yourAvatar": "あなたのアバター",
+      "sharedSession": "共有セッション",
+      "waitingForTurn": "順番をお待ちください..."
+    },
+    "pauseAsk": {
+      "title": "キャラクターに質問",
+      "selectCharacter": "誰に質問しますか？",
+      "resumeMovie": "再生を再開",
+      "processing": "質問を処理中...",
+      "askAgain": "もう一度質問",
+      "resume": "再開",
+      "placeholder": "質問を入力してください..."
+    },
+    "interaction": {
+      "previous": "前のインタラクション",
+      "next": "次のインタラクション"
     }
   },
   "content": {

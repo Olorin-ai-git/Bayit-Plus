@@ -153,6 +153,15 @@ class PlayerViewModel @Inject constructor(
                     if (ext.isSpecialUser && !ext.hasTriggeredOmriOverlay && playerState.value is PlayerState.Playing) {
                         _extendedState.update { it.copy(showOmriOverlay = true, hasTriggeredOmriOverlay = true) }
                     }
+                    val moment = featuresDelegate.checkMomentAtPosition(pos, ext)
+                    if (moment != null && ext.activeMoment == null) {
+                        _extendedState.update {
+                            it.copy(
+                                activeMoment = moment,
+                                triggeredMomentTimestamps = it.triggeredMomentTimestamps + moment.timestamp,
+                            )
+                        }
+                    }
                 }
                 delay(POSITION_POLL_INTERVAL_MS)
             }

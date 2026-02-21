@@ -1078,6 +1078,29 @@
       "timerSet": "Sleep timer set for {{minutes}} minutes",
       "timerExtended": "Timer extended by {{minutes}} minutes",
       "timerCancelled": "Sleep timer cancelled"
+    },
+    "dialogue": {
+      "selectCharacter": "Select a Character",
+      "cancel": "Cancel",
+      "placeholder": "Type a question...",
+      "send": "Send",
+      "close": "Close",
+      "yourAvatar": "Your avatar",
+      "sharedSession": "Shared Session",
+      "waitingForTurn": "Waiting for your turn..."
+    },
+    "pauseAsk": {
+      "title": "Ask a Character",
+      "selectCharacter": "Who would you like to ask?",
+      "resumeMovie": "Resume Movie",
+      "processing": "Processing your question...",
+      "askAgain": "Ask Another Question",
+      "resume": "Resume",
+      "placeholder": "Ask your question..."
+    },
+    "interaction": {
+      "previous": "Previous interaction",
+      "next": "Next interaction"
     }
   },
   "empty": {
@@ -2871,11 +2894,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -2887,10 +2906,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",

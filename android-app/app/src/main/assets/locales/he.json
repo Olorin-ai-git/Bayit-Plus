@@ -1084,6 +1084,29 @@
       "timerSet": "טיימר שינה הוגדר ל-{{minutes}} דקות",
       "timerExtended": "הטיימר הוארך ב-{{minutes}} דקות",
       "timerCancelled": "טיימר שינה בוטל"
+    },
+    "dialogue": {
+      "selectCharacter": "\u05d1\u05d7\u05e8 \u05d3\u05de\u05d5\u05ea",
+      "cancel": "\u05d1\u05d9\u05d8\u05d5\u05dc",
+      "placeholder": "\u05db\u05ea\u05d5\u05d1 \u05e9\u05d0\u05dc\u05d4...",
+      "send": "\u05e9\u05dc\u05d7",
+      "close": "\u05e1\u05d2\u05d5\u05e8",
+      "yourAvatar": "\u05d4\u05d0\u05d5\u05d5\u05d8\u05d0\u05e8 \u05e9\u05dc\u05da",
+      "sharedSession": "\u05e9\u05d9\u05d7\u05d4 \u05de\u05e9\u05d5\u05ea\u05e4\u05ea",
+      "waitingForTurn": "\u05de\u05de\u05ea\u05d9\u05df \u05dc\u05ea\u05d5\u05e8\u05da..."
+    },
+    "pauseAsk": {
+      "title": "\u05e9\u05d0\u05dc \u05d3\u05de\u05d5\u05ea",
+      "selectCharacter": "\u05dc\u05de\u05d9 \u05ea\u05e8\u05e6\u05d4 \u05dc\u05e9\u05d0\u05d5\u05dc?",
+      "resumeMovie": "\u05d4\u05de\u05e9\u05da \u05e6\u05e4\u05d9\u05d9\u05d4",
+      "processing": "\u05de\u05e2\u05d1\u05d3 \u05d0\u05ea \u05d4\u05e9\u05d0\u05dc\u05d4 \u05e9\u05dc\u05da...",
+      "askAgain": "\u05e9\u05d0\u05dc \u05e9\u05d0\u05dc\u05d4 \u05e0\u05d5\u05e1\u05e4\u05ea",
+      "resume": "\u05d4\u05de\u05e9\u05da",
+      "placeholder": "\u05e9\u05d0\u05dc \u05d0\u05ea \u05e9\u05d0\u05dc\u05ea\u05da..."
+    },
+    "interaction": {
+      "previous": "\u05d0\u05d9\u05e0\u05d8\u05e8\u05d0\u05e7\u05e6\u05d9\u05d4 \u05e7\u05d5\u05d3\u05de\u05ea",
+      "next": "\u05d0\u05d9\u05e0\u05d8\u05e8\u05d0\u05e7\u05e6\u05d9\u05d4 \u05d4\u05d1\u05d0\u05d4"
     }
   },
   "empty": {
@@ -2870,11 +2893,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -2886,10 +2905,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",

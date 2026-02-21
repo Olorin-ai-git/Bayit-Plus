@@ -52,4 +52,12 @@ data class PlayerExtendedState(
     val avatarId: String? = null,
     /** Avatar image URL for the current user's ready persona; used in dialogue overlay header. */
     val avatarImageUrl: String? = null,
+    /** Whether the user's Creatify persona has a cloned voice available. */
+    val hasVoiceClone: Boolean = false,
+    /** Whether the pause-ask dialogue overlay should be displayed. */
+    val showPauseAskOverlay: Boolean = false,
+    /** Currently active interactive moment triggered by playback position. */
+    val activeMoment: tv.bayit.plus.feature.player.dialogue.InteractiveMoment? = null,
+    /** Timestamps of moments already triggered during this session to avoid re-triggering. */
+    val triggeredMomentTimestamps: Set<Double> = emptySet(),
 )

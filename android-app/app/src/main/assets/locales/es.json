@@ -997,6 +997,29 @@
       "timerSet": "Temporizador configurado para {{minutes}} minutos",
       "timerExtended": "Temporizador extendido {{minutes}} minutos",
       "timerCancelled": "Temporizador de sueño cancelado"
+    },
+    "dialogue": {
+      "selectCharacter": "Elige un personaje",
+      "cancel": "Cancelar",
+      "placeholder": "Escribe una pregunta...",
+      "send": "Enviar",
+      "close": "Cerrar",
+      "yourAvatar": "Tu avatar",
+      "sharedSession": "Sesion compartida",
+      "waitingForTurn": "Esperando tu turno..."
+    },
+    "pauseAsk": {
+      "title": "Pregunta a un personaje",
+      "selectCharacter": "A quien quieres preguntar?",
+      "resumeMovie": "Reanudar pelicula",
+      "processing": "Procesando tu pregunta...",
+      "askAgain": "Hacer otra pregunta",
+      "resume": "Reanudar",
+      "placeholder": "Haz tu pregunta..."
+    },
+    "interaction": {
+      "previous": "Interaccion anterior",
+      "next": "Siguiente interaccion"
     }
   },
   "empty": {
@@ -2708,11 +2731,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -2724,10 +2743,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",

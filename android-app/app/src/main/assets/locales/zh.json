@@ -1026,6 +1026,29 @@
       "timerSet": "睡眠定时器已设置{{minutes}}分钟",
       "timerExtended": "定时器延长{{minutes}}分钟",
       "timerCancelled": "睡眠定时器已取消"
+    },
+    "dialogue": {
+      "selectCharacter": "\u9009\u62e9\u89d2\u8272",
+      "cancel": "\u53d6\u6d88",
+      "placeholder": "\u8f93\u5165\u95ee\u9898...",
+      "send": "\u53d1\u9001",
+      "close": "\u5173\u95ed",
+      "yourAvatar": "\u4f60\u7684\u5934\u50cf",
+      "sharedSession": "\u5171\u4eab\u4f1a\u8bdd",
+      "waitingForTurn": "\u7b49\u5f85\u4f60\u7684\u56de\u5408..."
+    },
+    "pauseAsk": {
+      "title": "\u8be2\u95ee\u89d2\u8272",
+      "selectCharacter": "\u4f60\u60f3\u95ee\u8c01\uff1f",
+      "resumeMovie": "\u7ee7\u7eed\u64ad\u653e",
+      "processing": "\u6b63\u5728\u5904\u7406\u4f60\u7684\u95ee\u9898...",
+      "askAgain": "\u518d\u95ee\u4e00\u4e2a\u95ee\u9898",
+      "resume": "\u7ee7\u7eed",
+      "placeholder": "\u63d0\u51fa\u4f60\u7684\u95ee\u9898..."
+    },
+    "interaction": {
+      "previous": "\u4e0a\u4e00\u4e2a\u4e92\u52a8",
+      "next": "\u4e0b\u4e00\u4e2a\u4e92\u52a8"
     }
   },
   "empty": {
@@ -1373,17 +1396,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -1395,10 +1409,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",

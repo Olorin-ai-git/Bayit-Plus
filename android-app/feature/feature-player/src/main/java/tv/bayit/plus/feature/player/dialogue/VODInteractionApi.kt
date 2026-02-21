@@ -47,6 +47,12 @@ interface VODInteractionApi {
         @Path("sessionId") sessionId: String,
     ): SessionStatusResponse
 
+    @POST("api/v1/vod-interactions/sessions/{sessionId}/pause-ask")
+    suspend fun sendPauseAsk(
+        @Path("sessionId") sessionId: String,
+        @Body request: PauseAskRequest,
+    ): PauseAskResponse
+
     @POST("api/v1/vod-interactions/sessions/{sessionId}/multi-message")
     suspend fun sendMultiMessage(
         @Path("sessionId") sessionId: String,

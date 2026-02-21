@@ -14,31 +14,37 @@ import javax.inject.Inject
 /** ViewModel for single-character avatar dialogue during VOD playback. */
 @HiltViewModel
 class AvatarDialogueViewModel @Inject constructor(
-    private val vodInteractionApi: VODInteractionApi,
-    private val apiClient: BayitApiClient,
-    private val logger: BayitLogger,
+    internal val vodInteractionApi: VODInteractionApi,
+    internal val apiClient: BayitApiClient,
+    internal val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _availableCharacters = MutableStateFlow<List<ContentCharacter>>(emptyList())
     val availableCharacters: StateFlow<List<ContentCharacter>> = _availableCharacters.asStateFlow()
 
-    private val _selectedCharacter = MutableStateFlow<ContentCharacter?>(null)
+    internal val _selectedCharacter = MutableStateFlow<ContentCharacter?>(null)
     val selectedCharacter: StateFlow<ContentCharacter?> = _selectedCharacter.asStateFlow()
 
-    private val _sessionId = MutableStateFlow<String?>(null)
+    internal val _sessionId = MutableStateFlow<String?>(null)
     val sessionId: StateFlow<String?> = _sessionId.asStateFlow()
 
-    private val _exchanges = MutableStateFlow<List<DialogueExchange>>(emptyList())
+    internal val _exchanges = MutableStateFlow<List<DialogueExchange>>(emptyList())
     val exchanges: StateFlow<List<DialogueExchange>> = _exchanges.asStateFlow()
 
-    private val _isSending = MutableStateFlow(false)
+    internal val _isSending = MutableStateFlow(false)
     val isSending: StateFlow<Boolean> = _isSending.asStateFlow()
 
-    private val _isActive = MutableStateFlow(false)
+    internal val _isActive = MutableStateFlow(false)
     val isActive: StateFlow<Boolean> = _isActive.asStateFlow()
 
     private val _avatarPlacement = MutableStateFlow<AvatarPlacement?>(null)
     val avatarPlacement: StateFlow<AvatarPlacement?> = _avatarPlacement.asStateFlow()
+
+    internal val _pauseAskPhase = MutableStateFlow(PauseAskPhase.IDLE)
+    val pauseAskPhase: StateFlow<PauseAskPhase> = _pauseAskPhase.asStateFlow()
+
+    internal val _pauseAskResponse = MutableStateFlow<PauseAskResponse?>(null)
+    val pauseAskResponse: StateFlow<PauseAskResponse?> = _pauseAskResponse.asStateFlow()
 
     fun updateAvatarPlacement(placement: AvatarPlacement?) {
         _avatarPlacement.value = placement
@@ -53,10 +59,7 @@ class AvatarDialogueViewModel @Inject constructor(
                 _availableCharacters.value = characters
                 logger.info(
                     "Loaded interactive characters",
-                    mapOf(
-                        "contentId" to contentId,
-                        "count" to characters.size.toString(),
-                    ),
+                    mapOf("contentId" to contentId, "count" to characters.size.toString()),
                 )
             } catch (e: Exception) {
                 logger.error(
@@ -79,7 +82,6 @@ class AvatarDialogueViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _selectedCharacter.value = character
-
                 val response = apiClient.safeApiCall {
                     vodInteractionApi.startFreeSession(
                         StartFreeSessionRequest(
@@ -91,11 +93,9 @@ class AvatarDialogueViewModel @Inject constructor(
                         ),
                     )
                 }
-
                 _sessionId.value = response.sessionId
                 _isActive.value = true
                 _exchanges.value = emptyList()
-
                 logger.info(
                     "Dialogue session started",
                     mapOf(
@@ -108,10 +108,7 @@ class AvatarDialogueViewModel @Inject constructor(
                 logger.error(
                     "Failed to start dialogue session",
                     error = e,
-                    metadata = mapOf(
-                        "contentId" to contentId,
-                        "character" to character.name,
-                    ),
+                    metadata = mapOf("contentId" to contentId, "character" to character.name),
                 )
                 _isActive.value = false
                 _selectedCharacter.value = null
@@ -119,70 +116,47 @@ class AvatarDialogueViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(text: String) {
+    fun sendPauseAskMessage(text: String, languageHint: String? = null) {
         val activeSessionId = _sessionId.value ?: return
         if (text.isBlank()) return
 
-        _isSending.value = true
+        _pauseAskPhase.value = PauseAskPhase.POLISHING
         viewModelScope.launch {
             try {
                 val response = apiClient.safeApiCall {
-                    vodInteractionApi.sendMessage(
+                    vodInteractionApi.sendPauseAsk(
                         activeSessionId,
-                        MessageRequest(message = text),
+                        PauseAskRequest(message = text, languageHint = languageHint),
                     )
                 }
-
-                val exchange = DialogueExchange(
-                    userMessage = text,
-                    characterReply = response.responseText,
-                    characterVideoUrl = response.animatedVideoUrl,
-                )
-                _exchanges.value = _exchanges.value + exchange
-
+                _pauseAskResponse.value = response
+                _pauseAskPhase.value = PauseAskPhase.USER_SPEAKING
                 logger.debug(
-                    "Dialogue exchange completed",
+                    "Pause-ask response received",
                     mapOf(
                         "sessionId" to activeSessionId,
-                        "hasVideo" to (response.animatedVideoUrl != null).toString(),
+                        "hasUserVideo" to (response.userLipsyncVideoUrl != null).toString(),
+                        "hasCharVideo" to (response.characterResponseVideoUrl != null).toString(),
                     ),
                 )
             } catch (e: Exception) {
                 logger.error(
-                    "Failed to send dialogue message",
+                    "Failed to send pause-ask message",
                     error = e,
                     metadata = mapOf("sessionId" to activeSessionId),
                 )
-            } finally {
-                _isSending.value = false
+                _pauseAskPhase.value = PauseAskPhase.INPUT
             }
         }
     }
 
-    fun endSession() {
-        val activeSessionId = _sessionId.value ?: return
-        viewModelScope.launch {
-            try {
-                apiClient.safeApiCall {
-                    vodInteractionApi.completeSession(activeSessionId)
-                }
-                logger.info(
-                    "Dialogue session ended",
-                    mapOf("sessionId" to activeSessionId),
-                )
-            } catch (e: Exception) {
-                logger.error(
-                    "Failed to end dialogue session",
-                    error = e,
-                    metadata = mapOf("sessionId" to activeSessionId),
-                )
-            } finally {
-                _sessionId.value = null
-                _isActive.value = false
-                _selectedCharacter.value = null
-                _exchanges.value = emptyList()
-            }
-        }
+    fun advancePauseAskPhase(phase: PauseAskPhase) {
+        _pauseAskPhase.value = phase
+    }
+
+    fun resetPauseAsk() {
+        _pauseAskPhase.value = PauseAskPhase.IDLE
+        _pauseAskResponse.value = null
     }
 
     override fun onCleared() {

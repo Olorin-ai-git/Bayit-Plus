@@ -8,6 +8,7 @@ import tv.bayit.plus.core.common.time.TimeProvider
 import tv.bayit.plus.core.data.repository.UserRepository
 import tv.bayit.plus.core.model.ProfileResponse
 import tv.bayit.plus.feature.player.dialogue.ContentCharacter
+import tv.bayit.plus.feature.player.dialogue.InteractiveMoment
 import tv.bayit.plus.feature.player.dialogue.VODInteractionApi
 import javax.inject.Inject
 
@@ -113,9 +114,29 @@ class PlayerFeaturesDelegate @Inject constructor(
         }
     }
 
+    /**
+     * Checks whether the current playback position falls within an interactive
+     * moment that hasn't been triggered yet during this session.
+     *
+     * @return the [InteractiveMoment] to activate, or null if none match.
+     */
+    fun checkMomentAtPosition(
+        positionMs: Long,
+        state: PlayerExtendedState,
+    ): InteractiveMoment? {
+        if (state.interactiveMoments.isEmpty()) return null
+        val posSeconds = positionMs / MILLIS_PER_SECOND
+        return state.interactiveMoments.firstOrNull { moment ->
+            posSeconds >= moment.timestamp &&
+                posSeconds <= moment.timestamp + moment.duration &&
+                moment.timestamp !in state.triggeredMomentTimestamps
+        }
+    }
+
     companion object {
         private const val ADMIN_ROLE = "admin"
         private const val INTERACTION_REWIND_THRESHOLD_S = 3.0
         private const val INTERACTION_SEEK_OFFSET_S = 5.0
+        private const val MILLIS_PER_SECOND = 1000.0
     }
 }

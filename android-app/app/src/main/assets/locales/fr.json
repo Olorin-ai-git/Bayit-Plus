@@ -628,6 +628,29 @@
       "timerSet": "Minuterie réglée pour {{minutes}} minutes",
       "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
       "timerCancelled": "Minuterie de sommeil annulée"
+    },
+    "dialogue": {
+      "selectCharacter": "Choisir un personnage",
+      "cancel": "Annuler",
+      "placeholder": "Tapez une question...",
+      "send": "Envoyer",
+      "close": "Fermer",
+      "yourAvatar": "Votre avatar",
+      "sharedSession": "Session partagee",
+      "waitingForTurn": "En attente de votre tour..."
+    },
+    "pauseAsk": {
+      "title": "Poser une question",
+      "selectCharacter": "A qui voulez-vous demander ?",
+      "resumeMovie": "Reprendre le film",
+      "processing": "Traitement de votre question...",
+      "askAgain": "Poser une autre question",
+      "resume": "Reprendre",
+      "placeholder": "Posez votre question..."
+    },
+    "interaction": {
+      "previous": "Interaction precedente",
+      "next": "Interaction suivante"
     }
   },
   "content": {
@@ -766,10 +789,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",

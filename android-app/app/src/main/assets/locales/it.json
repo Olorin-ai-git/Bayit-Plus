@@ -544,6 +544,29 @@
       "timerSet": "Timer impostato per {{minutes}} minuti",
       "timerExtended": "Timer esteso di {{minutes}} minuti",
       "timerCancelled": "Timer di spegnimento annullato"
+    },
+    "dialogue": {
+      "selectCharacter": "Scegli un personaggio",
+      "cancel": "Annulla",
+      "placeholder": "Scrivi una domanda...",
+      "send": "Invia",
+      "close": "Chiudi",
+      "yourAvatar": "Il tuo avatar",
+      "sharedSession": "Sessione condivisa",
+      "waitingForTurn": "In attesa del tuo turno..."
+    },
+    "pauseAsk": {
+      "title": "Chiedi a un personaggio",
+      "selectCharacter": "A chi vuoi chiedere?",
+      "resumeMovie": "Riprendi il film",
+      "processing": "Elaborazione della tua domanda...",
+      "askAgain": "Fai un'altra domanda",
+      "resume": "Riprendi",
+      "placeholder": "Fai la tua domanda..."
+    },
+    "interaction": {
+      "previous": "Interazione precedente",
+      "next": "Interazione successiva"
     }
   },
   "content": {
@@ -660,11 +683,7 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
-      ]
+      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
     },
     "premium": {
       "name": "Premium",
@@ -676,10 +695,7 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": [
-        "Visione offline",
-        "Profili familiari"
-      ]
+      "notIncluded": ["Visione offline", "Profili familiari"]
     },
     "family": {
       "name": "Famiglia",

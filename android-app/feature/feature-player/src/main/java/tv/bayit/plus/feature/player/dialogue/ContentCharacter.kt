@@ -99,4 +99,25 @@ data class DialogueExchangeItem(
     val isReaction: Boolean get() = reactionTo != null
 }
 
+/**
+ * Request body for the pause-ask endpoint. Sends a question to a character
+ * while the user has paused playback, triggering avatar lip-sync generation.
+ */
+@Serializable
+data class PauseAskRequest(
+    val message: String,
+    @SerialName("language_hint") val languageHint: String? = null,
+)
+
+/**
+ * Response from the pause-ask endpoint containing the character's reply text
+ * and video URLs for both the user's avatar lip-sync and character's response.
+ */
+@Serializable
+data class PauseAskResponse(
+    @SerialName("response_text") val responseText: String,
+    @SerialName("user_lipsync_video_url") val userLipsyncVideoUrl: String? = null,
+    @SerialName("character_response_video_url") val characterResponseVideoUrl: String? = null,
+)
+
 internal const val SPEAKER_USER = "user"

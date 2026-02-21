@@ -437,6 +437,29 @@
       "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
       "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
       "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
+    },
+    "dialogue": {
+      "selectCharacter": "একটি চরিত্র নির্বাচন করুন",
+      "cancel": "বাতিল",
+      "placeholder": "একটি প্রশ্ন লিখুন...",
+      "send": "পাঠান",
+      "close": "বন্ধ করুন",
+      "yourAvatar": "আপনার অ্যাভাটার",
+      "sharedSession": "শেয়ার্ড সেশন",
+      "waitingForTurn": "আপনার পালার জন্য অপেক্ষা করছে..."
+    },
+    "pauseAsk": {
+      "title": "চরিত্রকে জিজ্ঞাসা করুন",
+      "selectCharacter": "আপনি কাকে জিজ্ঞাসা করতে চান?",
+      "resumeMovie": "চলচ্চিত্র চালু রাখুন",
+      "processing": "আপনার প্রশ্ন প্রক্রিয়া করা হচ্ছে...",
+      "askAgain": "আরেকটি প্রশ্ন করুন",
+      "resume": "চালু রাখুন",
+      "placeholder": "আপনার প্রশ্ন করুন..."
+    },
+    "interaction": {
+      "previous": "পূর্ববর্তী ইন্টার্যাকশন",
+      "next": "পরবর্তী ইন্টার্যাকশন"
     }
   },
   "content": {
