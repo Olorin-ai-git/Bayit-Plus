@@ -8,19 +8,28 @@ public enum AppEnvironment: String, Sendable {
 
     public static var current: AppEnvironment {
         guard let rawValue = Bundle.main.infoDictionary?["APP_ENVIRONMENT"] as? String,
-              let environment = AppEnvironment(rawValue: rawValue) else {
+              let environment = AppEnvironment(rawValue: rawValue)
+        else {
             #if DEBUG
-            return .development
+                return .development
             #else
-            return .production
+                return .production
             #endif
         }
         return environment
     }
 
-    public var isDevelopment: Bool { self == .development }
-    public var isStaging: Bool { self == .staging }
-    public var isProduction: Bool { self == .production }
+    public var isDevelopment: Bool {
+        self == .development
+    }
+
+    public var isStaging: Bool {
+        self == .staging
+    }
+
+    public var isProduction: Bool {
+        self == .production
+    }
 }
 
 /// Protocol for environment-specific configuration values
@@ -34,6 +43,7 @@ public protocol EnvironmentConfiguration: Sendable {
     var environment: AppEnvironment { get }
 
     // MARK: - WebSocket Configuration
+
     var webSocketMaxConcurrentConnections: Int { get }
     var webSocketPingInterval: TimeInterval { get }
     var webSocketMaxReconnectAttempts: Int { get }
@@ -41,6 +51,7 @@ public protocol EnvironmentConfiguration: Sendable {
     var webSocketInactiveGracePeriod: TimeInterval { get }
 
     // MARK: - Catch-Up Configuration
+
     var catchUpCreditCost: Int { get }
     var catchUpAutoPromptSeconds: Int { get }
     var catchUpDefaultWindowMinutes: Int { get }
@@ -117,21 +128,21 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         let catchUpWindowValue = info["CATCHUP_DEFAULT_WINDOW_MINUTES"] as? String
             ?? ProcessInfo.processInfo.environment["CATCHUP_DEFAULT_WINDOW_MINUTES"]
 
-        self.environment = env
-        self.apiBaseURL = apiURL
-        self.apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
-        self.apiMaxRetries = Int(maxRetriesValue ?? "") ?? 3
-        self.apiRetryBaseDelay = TimeInterval(retryDelayValue ?? "") ?? 1.0
-        self.apiRetryableStatusCodes = [408, 429, 500, 502, 503, 504]
-        self.webSocketBaseURL = wsURL
-        self.webSocketMaxConcurrentConnections = Int(wsMaxConnValue ?? "") ?? 5
-        self.webSocketPingInterval = TimeInterval(wsPingValue ?? "") ?? 30.0
-        self.webSocketMaxReconnectAttempts = Int(wsMaxReconnectValue ?? "") ?? 5
-        self.webSocketReconnectBaseDelay = TimeInterval(wsReconnectDelayValue ?? "") ?? 1.0
-        self.webSocketInactiveGracePeriod = TimeInterval(wsGracePeriodValue ?? "") ?? 10.0
-        self.catchUpCreditCost = Int(catchUpCreditCostValue ?? "") ?? 1
-        self.catchUpAutoPromptSeconds = Int(catchUpAutoPromptValue ?? "") ?? 15
-        self.catchUpDefaultWindowMinutes = Int(catchUpWindowValue ?? "") ?? 15
+        environment = env
+        apiBaseURL = apiURL
+        apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
+        apiMaxRetries = Int(maxRetriesValue ?? "") ?? 3
+        apiRetryBaseDelay = TimeInterval(retryDelayValue ?? "") ?? 1.0
+        apiRetryableStatusCodes = [408, 429, 500, 502, 503, 504]
+        webSocketBaseURL = wsURL
+        webSocketMaxConcurrentConnections = Int(wsMaxConnValue ?? "") ?? 5
+        webSocketPingInterval = TimeInterval(wsPingValue ?? "") ?? 30.0
+        webSocketMaxReconnectAttempts = Int(wsMaxReconnectValue ?? "") ?? 5
+        webSocketReconnectBaseDelay = TimeInterval(wsReconnectDelayValue ?? "") ?? 1.0
+        webSocketInactiveGracePeriod = TimeInterval(wsGracePeriodValue ?? "") ?? 10.0
+        catchUpCreditCost = Int(catchUpCreditCostValue ?? "") ?? 1
+        catchUpAutoPromptSeconds = Int(catchUpAutoPromptValue ?? "") ?? 15
+        catchUpDefaultWindowMinutes = Int(catchUpWindowValue ?? "") ?? 15
     }
 
     private static func defaultAPIBaseURL(for env: AppEnvironment) -> String {
@@ -152,7 +163,7 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         case .staging:
             return "wss://staging-api.bayit.tv"
         case .production:
-            return "wss://api.bayit.tv"
+            return "wss://ws.bayit.tv"
         }
     }
 }

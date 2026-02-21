@@ -2,16 +2,17 @@
  * Chess game hook for managing WebSocket connection and game state.
  * Handles real-time chess moves, chat messages, and game lifecycle.
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuthStore } from '../stores/authStore';
-import api from '@/services/api';
-import logger from '@/utils/logger';
-import i18n from 'i18next';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useAuthStore } from "../stores/authStore";
+import api from "@/services/api";
+import { buildWsUrl } from "@/services/wsUrl";
+import logger from "@/utils/logger";
+import i18n from "i18next";
 
 interface ChessPlayer {
   user_id: string;
   user_name: string;
-  color: 'white' | 'black';
+  color: "white" | "black";
   is_connected: boolean;
   time_remaining_ms?: number;
   joined_at: string;
@@ -27,7 +28,7 @@ interface ChessMove {
   is_en_passant: boolean;
   san: string;
   timestamp: string;
-  player: 'white' | 'black';
+  player: "white" | "black";
 }
 
 interface ChessChatMessage {
@@ -39,16 +40,23 @@ interface ChessChatMessage {
   timestamp: string;
 }
 
-type GameMode = 'pvp' | 'bot';
-type BotDifficulty = 'easy' | 'medium' | 'hard';
+type GameMode = "pvp" | "bot";
+type BotDifficulty = "easy" | "medium" | "hard";
 
 interface ChessGame {
   id: string;
   game_code: string;
   white_player?: ChessPlayer;
   black_player?: ChessPlayer;
-  current_turn: 'white' | 'black';
-  status: 'waiting' | 'active' | 'checkmate' | 'stalemate' | 'draw' | 'resigned' | 'timeout';
+  current_turn: "white" | "black";
+  status:
+    | "waiting"
+    | "active"
+    | "checkmate"
+    | "stalemate"
+    | "draw"
+    | "resigned"
+    | "timeout";
   board_fen: string;
   move_history: ChessMove[];
   chat_enabled: boolean;
@@ -73,144 +81,162 @@ export default function useChessGame() {
   const maxReconnectAttempts = 5;
 
   const getWebSocketUrl = useCallback((gameCode: string) => {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = import.meta.env.VITE_WS_URL ||
-      (import.meta.env.PROD
-        ? 'wss://api.bayit.plus'
-        : `ws://${window.location.hostname}:8000`);
+    return buildWsUrl(`/api/v1/ws/chess/${gameCode}`);
+  }, []);
 
-    // Remove protocol if present in VITE_WS_URL
-    const cleanHost = wsHost.replace(/^wss?:\/\//, '');
+  const connectWebSocket = useCallback(
+    (gameCode: string) => {
+      if (!token) {
+        setError(i18n.t("errors.auth.notAuthenticated"));
+        return;
+      }
 
-    return `${wsProtocol}//${cleanHost}/api/v1/ws/chess/${gameCode}`;
-  }, [token]);
+      try {
+        const wsUrl = getWebSocketUrl(gameCode);
+        logger.debug("Connecting to WebSocket", "useChessGame", {
+          url: wsUrl.replace(token, "TOKEN_HIDDEN"),
+        });
+        ws.current = new WebSocket(wsUrl);
 
-  const connectWebSocket = useCallback((gameCode: string) => {
-    if (!token) {
-      setError(i18n.t('errors.auth.notAuthenticated'));
-      return;
-    }
+        ws.current.onopen = () => {
+          logger.debug("WebSocket connected, sending auth", "useChessGame");
+          setIsConnected(true);
+          setIsAuthenticated(false);
+          setError(null);
+          reconnectAttempts.current = 0;
 
-    try {
-      const wsUrl = getWebSocketUrl(gameCode);
-      logger.debug('Connecting to WebSocket', 'useChessGame', { url: wsUrl.replace(token, 'TOKEN_HIDDEN') });
-      ws.current = new WebSocket(wsUrl);
+          ws.current?.send(JSON.stringify({ type: "auth", token }));
+        };
 
-      ws.current.onopen = () => {
-        logger.debug('WebSocket connected, sending auth', 'useChessGame');
-        setIsConnected(true);
-        setIsAuthenticated(false);
-        setError(null);
-        reconnectAttempts.current = 0;
+        ws.current.onclose = (event) => {
+          logger.debug("WebSocket disconnected", "useChessGame", {
+            code: event.code,
+            reason: event.reason,
+          });
+          setIsConnected(false);
 
-        ws.current?.send(JSON.stringify({ type: 'auth', token }));
-      };
+          // Attempt reconnection if not intentional disconnect
+          if (game && reconnectAttempts.current < maxReconnectAttempts) {
+            reconnectAttempts.current += 1;
+            const delay = Math.min(
+              1000 * Math.pow(2, reconnectAttempts.current),
+              10000,
+            );
 
-      ws.current.onclose = (event) => {
-        logger.debug('WebSocket disconnected', 'useChessGame', { code: event.code, reason: event.reason });
-        setIsConnected(false);
+            logger.debug("Reconnecting", "useChessGame", {
+              delay,
+              attempt: reconnectAttempts.current,
+            });
 
-        // Attempt reconnection if not intentional disconnect
-        if (game && reconnectAttempts.current < maxReconnectAttempts) {
-          reconnectAttempts.current += 1;
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 10000);
-
-          logger.debug('Reconnecting', 'useChessGame', { delay, attempt: reconnectAttempts.current });
-
-          reconnectTimeout.current = setTimeout(() => {
-            connectWebSocket(gameCode);
-          }, delay);
-        }
-      };
-
-      ws.current.onerror = (event) => {
-        logger.error('WebSocket error', 'useChessGame', { event, readyState: ws.current?.readyState, gameCode });
-        setError(i18n.t('errors.connection.failed'));
-      };
-
-      ws.current.onmessage = (event) => {
-        try {
-          const message = JSON.parse(event.data);
-
-          switch (message.type) {
-            case 'game_state':
-              setIsAuthenticated(true);
-              setGame(message.data);
-              break;
-
-            case 'move':
-              setGame((prev) => prev ? {
-                ...prev,
-                board_fen: message.data.board_fen,
-                current_turn: message.data.current_turn,
-                status: message.data.status,
-                move_history: [...prev.move_history, message.data.move]
-              } : null);
-              break;
-
-            case 'chat':
-              setChatMessages((prev) => [...prev, message.data]);
-              break;
-
-            case 'game_end':
-              setGame((prev) => prev ? {
-                ...prev,
-                status: message.data.status
-              } : null);
-              break;
-
-            case 'error':
-              setError(message.message);
-              break;
-
-            case 'pong':
-              // Heartbeat response
-              break;
-
-            default:
-              logger.warn('Unknown message type', 'useChessGame', { type: message.type });
+            reconnectTimeout.current = setTimeout(() => {
+              connectWebSocket(gameCode);
+            }, delay);
           }
-        } catch (err) {
-          logger.error('Failed to parse message', 'useChessGame', err);
-        }
-      };
+        };
 
-      // Send periodic ping to keep connection alive
-      const pingInterval = setInterval(() => {
-        if (ws.current?.readyState === WebSocket.OPEN) {
-          ws.current.send(JSON.stringify({ type: 'ping' }));
-        }
-      }, 30000); // Every 30 seconds
+        ws.current.onerror = (event) => {
+          logger.error("WebSocket error", "useChessGame", {
+            event,
+            readyState: ws.current?.readyState,
+            gameCode,
+          });
+          setError(i18n.t("errors.connection.failed"));
+        };
 
-      // Cleanup ping interval on disconnect
-      ws.current.addEventListener('close', () => {
-        clearInterval(pingInterval);
-      });
+        ws.current.onmessage = (event) => {
+          try {
+            const message = JSON.parse(event.data);
 
-    } catch (err) {
-      logger.error('Failed to connect', 'useChessGame', err);
-      setError(i18n.t('errors.chess.connectFailed'));
-    }
-  }, [token, game, getWebSocketUrl]);
+            switch (message.type) {
+              case "game_state":
+                setIsAuthenticated(true);
+                setGame(message.data);
+                break;
+
+              case "move":
+                setGame((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        board_fen: message.data.board_fen,
+                        current_turn: message.data.current_turn,
+                        status: message.data.status,
+                        move_history: [...prev.move_history, message.data.move],
+                      }
+                    : null,
+                );
+                break;
+
+              case "chat":
+                setChatMessages((prev) => [...prev, message.data]);
+                break;
+
+              case "game_end":
+                setGame((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        status: message.data.status,
+                      }
+                    : null,
+                );
+                break;
+
+              case "error":
+                setError(message.message);
+                break;
+
+              case "pong":
+                // Heartbeat response
+                break;
+
+              default:
+                logger.warn("Unknown message type", "useChessGame", {
+                  type: message.type,
+                });
+            }
+          } catch (err) {
+            logger.error("Failed to parse message", "useChessGame", err);
+          }
+        };
+
+        // Send periodic ping to keep connection alive
+        const pingInterval = setInterval(() => {
+          if (ws.current?.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({ type: "ping" }));
+          }
+        }, 30000); // Every 30 seconds
+
+        // Cleanup ping interval on disconnect
+        ws.current.addEventListener("close", () => {
+          clearInterval(pingInterval);
+        });
+      } catch (err) {
+        logger.error("Failed to connect", "useChessGame", err);
+        setError(i18n.t("errors.chess.connectFailed"));
+      }
+    },
+    [token, game, getWebSocketUrl],
+  );
 
   const createGame = async (
-    color: 'white' | 'black',
+    color: "white" | "black",
     timeControl?: number,
-    gameMode: GameMode = 'pvp',
-    botDifficulty?: BotDifficulty
+    gameMode: GameMode = "pvp",
+    botDifficulty?: BotDifficulty,
   ) => {
     if (!token) {
-      setError(i18n.t('errors.auth.notAuthenticated'));
-      throw new Error(i18n.t('errors.auth.notAuthenticated'));
+      setError(i18n.t("errors.auth.notAuthenticated"));
+      throw new Error(i18n.t("errors.auth.notAuthenticated"));
     }
 
     try {
-      const response = await api.post('/chess/create', {
+      const response = (await api.post("/chess/create", {
         color,
         time_control: timeControl,
         game_mode: gameMode,
-        bot_difficulty: botDifficulty
-      }) as { game: ChessGame };
+        bot_difficulty: botDifficulty,
+      })) as { game: ChessGame };
 
       const newGame = response.game;
       setGame(newGame);
@@ -218,7 +244,7 @@ export default function useChessGame() {
 
       return newGame;
     } catch (err: any) {
-      const message = err?.detail || 'Failed to create game';
+      const message = err?.detail || "Failed to create game";
       setError(message);
       throw new Error(message);
     }
@@ -226,14 +252,14 @@ export default function useChessGame() {
 
   const joinGame = async (gameCode: string) => {
     if (!token) {
-      setError(i18n.t('errors.auth.notAuthenticated'));
-      throw new Error(i18n.t('errors.auth.notAuthenticated'));
+      setError(i18n.t("errors.auth.notAuthenticated"));
+      throw new Error(i18n.t("errors.auth.notAuthenticated"));
     }
 
     try {
-      const response = await api.post('/chess/join', {
-        game_code: gameCode
-      }) as { game: ChessGame };
+      const response = (await api.post("/chess/join", {
+        game_code: gameCode,
+      })) as { game: ChessGame };
 
       const joinedGame = response.game;
       setGame(joinedGame);
@@ -241,7 +267,7 @@ export default function useChessGame() {
 
       return joinedGame;
     } catch (err: any) {
-      const message = err?.detail || 'Failed to join game';
+      const message = err?.detail || "Failed to join game";
       setError(message);
       throw new Error(message);
     }
@@ -249,11 +275,11 @@ export default function useChessGame() {
 
   const sendIfReady = (payload: object) => {
     if (ws.current?.readyState !== WebSocket.OPEN) {
-      setError(i18n.t('errors.chess.notConnected'));
+      setError(i18n.t("errors.chess.notConnected"));
       return false;
     }
     if (!isAuthenticated) {
-      setError(i18n.t('errors.chess.notAuthenticated'));
+      setError(i18n.t("errors.chess.notAuthenticated"));
       return false;
     }
     ws.current.send(JSON.stringify(payload));
@@ -261,19 +287,19 @@ export default function useChessGame() {
   };
 
   const makeMove = (from: string, to: string, promotion?: string) => {
-    sendIfReady({ type: 'move', from, to, promotion });
+    sendIfReady({ type: "move", from, to, promotion });
   };
 
   const sendChatMessage = (message: string) => {
-    sendIfReady({ type: 'chat', message });
+    sendIfReady({ type: "chat", message });
   };
 
   const resign = () => {
-    sendIfReady({ type: 'resign' });
+    sendIfReady({ type: "resign" });
   };
 
   const offerDraw = () => {
-    sendIfReady({ type: 'offer_draw' });
+    sendIfReady({ type: "offer_draw" });
   };
 
   const leaveGame = () => {

@@ -1,22 +1,17 @@
-import { useRef, useCallback, useEffect } from 'react';
-import logger from '@bayit/shared-utils/logger';
-import { useAuthStore } from '@bayit/shared-stores/authStore';
-import { useLiveLayerStore } from '@/stores/liveLayerStore';
-import type { LipsyncWeights } from '@/stores/liveLayerStore.types';
+import { useRef, useCallback, useEffect } from "react";
+import { buildWsUrl } from "@/services/wsUrl";
+import logger from "@bayit/shared-utils/logger";
+import { useAuthStore } from "@bayit/shared-stores/authStore";
+import { useLiveLayerStore } from "@/stores/liveLayerStore";
+import type { LipsyncWeights } from "@/stores/liveLayerStore.types";
 
-const wsLogger = logger.scope('LipsyncWebSocket');
+const wsLogger = logger.scope("LipsyncWebSocket");
 
 const WS_RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
 function getWebSocketUrl(contentId: string): string {
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsHost = import.meta.env.VITE_WS_URL ||
-    (import.meta.env.PROD
-      ? import.meta.env.VITE_WS_PROD_HOST
-      : `${window.location.hostname}:8000`);
-  const cleanHost = wsHost.replace(/^wss?:\/\//, '');
-  return `${wsProtocol}//${cleanHost}/api/v1/ws/live-layer/${contentId}`;
+  return buildWsUrl(`/api/v1/ws/live-layer/${contentId}`);
 }
 
 export function useLipsyncWebSocket(
@@ -40,34 +35,36 @@ export function useLipsyncWebSocket(
 
     ws.onopen = () => {
       reconnectCountRef.current = 0;
-      ws.send(JSON.stringify({ type: 'auth', token }));
+      ws.send(JSON.stringify({ type: "auth", token }));
       setWsConnected(true);
-      wsLogger.info('Live layer WebSocket connected', { contentId });
+      wsLogger.info("Live layer WebSocket connected", { contentId });
     };
 
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
 
-        if (data.type === 'authenticated') {
-          ws.send(JSON.stringify({
-            type: 'start_lipsync',
-            avatar_id: avatarId,
-          }));
-          wsLogger.info('Authenticated, requesting lip-sync', { avatarId });
-        } else if (data.type === 'lipsync_weights') {
+        if (data.type === "authenticated") {
+          ws.send(
+            JSON.stringify({
+              type: "start_lipsync",
+              avatar_id: avatarId,
+            }),
+          );
+          wsLogger.info("Authenticated, requesting lip-sync", { avatarId });
+        } else if (data.type === "lipsync_weights") {
           const weights: LipsyncWeights = {
             timestamp: data.timestamp,
             weights: data.weights,
           };
           setLipsyncWeights(weights);
-        } else if (data.type === 'trigger_upcoming') {
+        } else if (data.type === "trigger_upcoming") {
           useLiveLayerStore.getState().setActiveTrigger(data);
-        } else if (data.type === 'trigger_result') {
+        } else if (data.type === "trigger_result") {
           useLiveLayerStore.getState().setTriggerResult(data);
         }
       } catch (parseError) {
-        wsLogger.error('Failed to parse WebSocket message', parseError);
+        wsLogger.error("Failed to parse WebSocket message", parseError);
       }
     };
 
@@ -81,7 +78,7 @@ export function useLipsyncWebSocket(
     };
 
     ws.onerror = (wsError) => {
-      wsLogger.error('Live layer WebSocket error', wsError);
+      wsLogger.error("Live layer WebSocket error", wsError);
     };
 
     wsRef.current = ws;
@@ -99,10 +96,12 @@ export function useLipsyncWebSocket(
 
   const sendTimestampUpdate = useCallback((currentTime: number) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'timestamp_update',
-        current_time: currentTime,
-      }));
+      wsRef.current.send(
+        JSON.stringify({
+          type: "timestamp_update",
+          current_time: currentTime,
+        }),
+      );
     }
   }, []);
 

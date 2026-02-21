@@ -8,12 +8,7 @@
     "48": "assets/icon-48.png",
     "128": "assets/icon-128.png"
   },
-  "permissions": [
-    "tabCapture",
-    "storage",
-    "offscreen",
-    "identity"
-  ],
+  "permissions": ["tabCapture", "storage", "offscreen", "identity"],
   "host_permissions": [
     "https://screenil.com/*",
     "https://mako.co.il/*",
@@ -61,6 +56,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.bayit.tv https://m.bayit.tv wss://api.bayit.tv wss://m.bayit.tv"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.bayit.tv https://m.bayit.tv wss://ws.bayit.tv wss://api.bayit.tv wss://m.bayit.tv"
   }
 }

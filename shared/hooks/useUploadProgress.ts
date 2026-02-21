@@ -3,16 +3,22 @@
  * WebSocket hook for real-time upload progress tracking
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { API_BASE_URL } from '../config/appConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { logger } from '../utils/logger';
+import { useState, useEffect, useCallback, useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logger } from "../utils/logger";
+import { buildWsUrl } from "../utils/wsUrl";
 
 export interface UploadJob {
   job_id: string;
   type: string;
   filename: string;
-  status: 'queued' | 'processing' | 'uploading' | 'completed' | 'failed' | 'cancelled';
+  status:
+    | "queued"
+    | "processing"
+    | "uploading"
+    | "completed"
+    | "failed"
+    | "cancelled";
   progress: number;
   file_size?: number;
   bytes_uploaded: number;
@@ -61,21 +67,20 @@ export const useUploadProgress = () => {
   const maxReconnectAttempts = 5;
 
   const getWebSocketUrl = useCallback(async () => {
-    // Get auth token
-    const token = await AsyncStorage.getItem('token');
+    const token = await AsyncStorage.getItem("token");
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    // Convert HTTP(S) URL to WS(S)
-    const wsUrl = API_BASE_URL.replace(/^http/, 'ws');
-    return `${wsUrl}/api/v1/admin/uploads/ws?token=${encodeURIComponent(token)}`;
+    return buildWsUrl(
+      `/api/v1/admin/uploads/ws?token=${encodeURIComponent(token)}`,
+    );
   }, []);
 
   const connect = useCallback(async () => {
     try {
       const url = await getWebSocketUrl();
-      
+
       // Close existing connection
       if (ws.current) {
         ws.current.close();
@@ -84,9 +89,9 @@ export const useUploadProgress = () => {
       ws.current = new WebSocket(url);
 
       ws.current.onopen = () => {
-        logger.debug('Upload WebSocket connected', 'UploadProgress');
+        logger.debug("Upload WebSocket connected", "UploadProgress");
         reconnectAttempts.current = 0;
-        setState(prev => ({ ...prev, connected: true, error: null }));
+        setState((prev) => ({ ...prev, connected: true, error: null }));
       };
 
       ws.current.onmessage = (event) => {
@@ -94,12 +99,15 @@ export const useUploadProgress = () => {
           const message = JSON.parse(event.data);
 
           switch (message.type) {
-            case 'connected':
-              logger.debug('Upload service connected: ' + message.message, 'UploadProgress');
+            case "connected":
+              logger.debug(
+                "Upload service connected: " + message.message,
+                "UploadProgress",
+              );
               break;
 
-            case 'queue_update':
-              setState(prev => ({
+            case "queue_update":
+              setState((prev) => ({
                 ...prev,
                 stats: message.stats,
                 activeJob: message.active_job,
@@ -108,59 +116,79 @@ export const useUploadProgress = () => {
               }));
               break;
 
-            case 'pong':
+            case "pong":
               // Heartbeat response
               break;
 
-            case 'error':
-              logger.error('Upload WebSocket error: ' + message.message, 'UploadProgress');
-              setState(prev => ({ ...prev, error: message.message }));
+            case "error":
+              logger.error(
+                "Upload WebSocket error: " + message.message,
+                "UploadProgress",
+              );
+              setState((prev) => ({ ...prev, error: message.message }));
               break;
 
             default:
-              logger.warn('Unknown message type: ' + message.type, 'UploadProgress');
+              logger.warn(
+                "Unknown message type: " + message.type,
+                "UploadProgress",
+              );
           }
         } catch (err) {
-          logger.error('Failed to parse WebSocket message', 'UploadProgress', err);
+          logger.error(
+            "Failed to parse WebSocket message",
+            "UploadProgress",
+            err,
+          );
         }
       };
 
       ws.current.onerror = (error) => {
-        logger.error('Upload WebSocket error', 'UploadProgress', error);
-        setState(prev => ({
+        logger.error("Upload WebSocket error", "UploadProgress", error);
+        setState((prev) => ({
           ...prev,
           connected: false,
-          error: 'WebSocket connection error',
+          error: "WebSocket connection error",
         }));
       };
 
       ws.current.onclose = () => {
-        logger.debug('Upload WebSocket disconnected', 'UploadProgress');
-        setState(prev => ({ ...prev, connected: false }));
+        logger.debug("Upload WebSocket disconnected", "UploadProgress");
+        setState((prev) => ({ ...prev, connected: false }));
 
         // Attempt to reconnect with exponential backoff
         if (reconnectAttempts.current < maxReconnectAttempts) {
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
+          const delay = Math.min(
+            1000 * Math.pow(2, reconnectAttempts.current),
+            30000,
+          );
           reconnectAttempts.current++;
-          
-          logger.debug(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`, 'UploadProgress');
-          
+
+          logger.debug(
+            `Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`,
+            "UploadProgress",
+          );
+
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
           }, delay);
         } else {
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
-            error: 'Failed to connect after multiple attempts',
+            error: "Failed to connect after multiple attempts",
           }));
         }
       };
     } catch (err) {
-      logger.error('Failed to connect to upload WebSocket', 'UploadProgress', err);
-      setState(prev => ({
+      logger.error(
+        "Failed to connect to upload WebSocket",
+        "UploadProgress",
+        err,
+      );
+      setState((prev) => ({
         ...prev,
         connected: false,
-        error: err instanceof Error ? err.message : 'Connection failed',
+        error: err instanceof Error ? err.message : "Connection failed",
       }));
     }
   }, [getWebSocketUrl]);
@@ -176,12 +204,12 @@ export const useUploadProgress = () => {
       ws.current = null;
     }
 
-    setState(prev => ({ ...prev, connected: false }));
+    setState((prev) => ({ ...prev, connected: false }));
   }, []);
 
   const sendPing = useCallback(() => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({ type: 'ping' }));
+      ws.current.send(JSON.stringify({ type: "ping" }));
     }
   }, []);
 
@@ -206,20 +234,23 @@ export const useUploadProgress = () => {
   }, [state.stats]);
 
   const formatFileSize = useCallback((bytes?: number) => {
-    if (!bytes) return 'Unknown';
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return "Unknown";
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    if (bytes === 0) return "0 Bytes";
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   }, []);
 
-  const formatUploadSpeed = useCallback((bytesPerSecond?: number) => {
-    if (!bytesPerSecond) return 'Calculating...';
-    return `${formatFileSize(bytesPerSecond)}/s`;
-  }, [formatFileSize]);
+  const formatUploadSpeed = useCallback(
+    (bytesPerSecond?: number) => {
+      if (!bytesPerSecond) return "Calculating...";
+      return `${formatFileSize(bytesPerSecond)}/s`;
+    },
+    [formatFileSize],
+  );
 
   const formatETA = useCallback((seconds?: number) => {
-    if (!seconds) return 'Calculating...';
+    if (!seconds) return "Calculating...";
     if (seconds < 60) return `${Math.round(seconds)}s`;
     if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
     return `${Math.round(seconds / 3600)}h ${Math.round((seconds % 3600) / 60)}m`;
@@ -228,12 +259,12 @@ export const useUploadProgress = () => {
   return {
     // State
     ...state,
-    
+
     // Connection control
     connect,
     disconnect,
     reconnect: connect,
-    
+
     // Helper functions
     getProgressPercentage,
     formatFileSize,

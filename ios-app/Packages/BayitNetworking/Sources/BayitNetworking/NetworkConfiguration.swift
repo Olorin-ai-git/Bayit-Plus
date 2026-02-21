@@ -5,7 +5,6 @@ import Foundation
 /// No defaults are provided -- the host app MUST supply every value
 /// from its configuration system (Info.plist, environment, remote config).
 public protocol NetworkConfiguration: Sendable {
-
     /// Base URL for all API requests (e.g. `https://api.bayit.tv/api/v1`).
     var baseURL: URL { get }
 
@@ -44,4 +43,7 @@ public protocol NetworkConfiguration: Sendable {
 
     /// Grace period in seconds before disconnecting WebSockets when app becomes inactive.
     var webSocketInactiveGracePeriod: TimeInterval { get }
+
+    /// Base URL for WebSocket connections (e.g. `wss://ws.bayit.tv`).
+    var webSocketBaseURL: URL { get }
 }

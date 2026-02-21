@@ -5,18 +5,31 @@ import Foundation
 /// Bridges `BayitCore.EnvironmentConfiguration` to `BayitNetworking.NetworkConfiguration`
 /// for the tvOS app target.
 struct TVAppNetworkConfiguration: NetworkConfiguration {
-
     private let appConfig: EnvironmentConfiguration
 
     init(appConfig: EnvironmentConfiguration) {
         self.appConfig = appConfig
     }
 
-    var baseURL: URL { appConfig.apiBaseURL }
-    var timeout: TimeInterval { appConfig.apiTimeout }
-    var maxRetries: Int { appConfig.apiMaxRetries }
-    var retryBaseDelay: TimeInterval { appConfig.apiRetryBaseDelay }
-    var retryableStatusCodes: Set<Int> { appConfig.apiRetryableStatusCodes }
+    var baseURL: URL {
+        appConfig.apiBaseURL
+    }
+
+    var timeout: TimeInterval {
+        appConfig.apiTimeout
+    }
+
+    var maxRetries: Int {
+        appConfig.apiMaxRetries
+    }
+
+    var retryBaseDelay: TimeInterval {
+        appConfig.apiRetryBaseDelay
+    }
+
+    var retryableStatusCodes: Set<Int> {
+        appConfig.apiRetryableStatusCodes
+    }
 
     var defaultHeaders: [String: String] {
         [
@@ -47,5 +60,9 @@ struct TVAppNetworkConfiguration: NetworkConfiguration {
 
     var webSocketInactiveGracePeriod: TimeInterval {
         appConfig.webSocketInactiveGracePeriod
+    }
+
+    var webSocketBaseURL: URL {
+        appConfig.webSocketBaseURL
     }
 }

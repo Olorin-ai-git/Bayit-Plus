@@ -1,33 +1,20 @@
-import { create } from 'zustand';
-import { Platform } from 'react-native';
-import { devicePairingService, InitPairingResponse } from '../services/devicePairingService';
-import { useAuthStore } from './authStore';
-import { logger } from '../utils/logger';
-
-// Get WebSocket URL based on platform
-const getWsBaseUrl = () => {
-  if (!__DEV__) {
-    return 'wss://api.bayit.tv/api/v1';
-  }
-  if (Platform.OS === 'web') {
-    return 'ws://localhost:8000/api/v1';
-  }
-  if (Platform.OS === 'android') {
-    return 'ws://10.0.2.2:8000/api/v1';
-  }
-  return 'ws://localhost:8000/api/v1';
-};
-
-const WS_BASE_URL = getWsBaseUrl();
+import { create } from "zustand";
+import {
+  devicePairingService,
+  InitPairingResponse,
+} from "../services/devicePairingService";
+import { useAuthStore } from "./authStore";
+import { logger } from "../utils/logger";
+import { buildWsUrl } from "../utils/wsUrl";
 
 export type PairingStatus =
-  | 'idle'
-  | 'waiting'
-  | 'scanning'
-  | 'authenticating'
-  | 'success'
-  | 'failed'
-  | 'expired';
+  | "idle"
+  | "waiting"
+  | "scanning"
+  | "authenticating"
+  | "success"
+  | "failed"
+  | "expired";
 
 interface CompanionDeviceInfo {
   deviceType: string;
@@ -67,8 +54,8 @@ interface DevicePairingState {
   // Authentication result
   authenticatedUser: AuthenticatedUser | null;
   accessToken: string | null;
-  refreshToken: string | null;  // Added for v2
-  requiresPayment: boolean;  // Added for v2
+  refreshToken: string | null; // Added for v2
+  requiresPayment: boolean; // Added for v2
 
   // WebSocket
   ws: WebSocket | null;
@@ -94,17 +81,17 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
   expiresAt: null,
   isConnected: false,
   isConnecting: false,
-  pairingStatus: 'idle',
+  pairingStatus: "idle",
   error: null,
   companionDeviceInfo: null,
   authenticatedUser: null,
   accessToken: null,
-  refreshToken: null,  // Added for v2
-  requiresPayment: false,  // Added for v2
+  refreshToken: null, // Added for v2
+  requiresPayment: false, // Added for v2
   ws: null,
 
   initSession: async () => {
-    set({ error: null, pairingStatus: 'idle' });
+    set({ error: null, pairingStatus: "idle" });
 
     try {
       const response = await devicePairingService.initPairing();
@@ -113,14 +100,14 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
         sessionId: response.session_id,
         qrCodeData: response.qr_code_data,
         expiresAt: new Date(response.expires_at),
-        pairingStatus: 'waiting',
+        pairingStatus: "waiting",
       });
 
       return response;
     } catch (error: any) {
       set({
-        error: error.detail || 'Failed to initialize pairing session',
-        pairingStatus: 'failed',
+        error: error.detail || "Failed to initialize pairing session",
+        pairingStatus: "failed",
       });
       return null;
     }
@@ -130,7 +117,7 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
     const { sessionId, ws: existingWs } = get();
 
     if (!sessionId) {
-      set({ error: 'No session ID available' });
+      set({ error: "No session ID available" });
       return;
     }
 
@@ -142,7 +129,7 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
     set({ isConnecting: true, error: null });
 
     const ws = new WebSocket(
-      `${WS_BASE_URL}/auth/device-pairing/ws/${sessionId}`
+      buildWsUrl(`/api/v1/auth/device-pairing/ws/${sessionId}`),
     );
 
     ws.onopen = () => {
@@ -164,13 +151,13 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
         const data = JSON.parse(event.data);
         get().handleMessage(data);
       } catch (e) {
-        logger.error('Failed to parse WebSocket message', 'DevicePairing', e);
+        logger.error("Failed to parse WebSocket message", "DevicePairing", e);
       }
     };
 
     ws.onerror = (error) => {
-      logger.error('WebSocket error', 'DevicePairing', error);
-      set({ error: 'Connection error', isConnecting: false });
+      logger.error("WebSocket error", "DevicePairing", error);
+      set({ error: "Connection error", isConnecting: false });
     };
 
     ws.onclose = () => {
@@ -184,89 +171,90 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
     const { type } = data;
 
     switch (type) {
-      case 'connected':
+      case "connected":
         set({
-          pairingStatus: 'waiting',
+          pairingStatus: "waiting",
           expiresAt: new Date(data.expires_at),
         });
         break;
 
-      case 'companion_connected':
+      case "companion_connected":
         set({
-          pairingStatus: 'scanning',
+          pairingStatus: "scanning",
           companionDeviceInfo: {
-            deviceType: data.device_info?.device_type || 'unknown',
+            deviceType: data.device_info?.device_type || "unknown",
             browser: data.device_info?.browser,
-            connectedAt: data.device_info?.connected_at || new Date().toISOString(),
+            connectedAt:
+              data.device_info?.connected_at || new Date().toISOString(),
           },
         });
         break;
 
-      case 'authenticating':
-        set({ pairingStatus: 'authenticating' });
+      case "authenticating":
+        set({ pairingStatus: "authenticating" });
         break;
 
-      case 'pairing_success':
+      case "pairing_success":
         const user = data.user;
-        const token = data.token || data.access_token;  // v2 uses access_token
-        const refreshToken = data.refresh_token;  // v2 includes refresh_token
+        const token = data.token || data.access_token; // v2 uses access_token
+        const refreshToken = data.refresh_token; // v2 includes refresh_token
         const requiresPayment = data.requires_payment || false;
 
         set({
-          pairingStatus: 'success',
+          pairingStatus: "success",
           authenticatedUser: user,
           accessToken: token,
-          refreshToken,  // Store refresh token for v2
-          requiresPayment,  // Store payment status for v2
+          refreshToken, // Store refresh token for v2
+          requiresPayment, // Store payment status for v2
         });
 
         // Update auth store with the received credentials
         useAuthStore.getState().setUser(user);
         useAuthStore.setState({
           token,
-          refreshToken,  // Store refresh token in auth store
+          refreshToken, // Store refresh token in auth store
           isAuthenticated: true,
         });
         break;
 
-      case 'pairing_failed':
+      case "pairing_failed":
         set({
-          pairingStatus: 'failed',
-          error: data.reason || 'Pairing failed',
+          pairingStatus: "failed",
+          error: data.reason || "Pairing failed",
         });
         break;
 
-      case 'session_expired':
+      case "session_expired":
         set({
-          pairingStatus: 'expired',
-          error: 'Session expired. Please generate a new QR code.',
+          pairingStatus: "expired",
+          error: "Session expired. Please generate a new QR code.",
         });
         break;
 
-      case 'pong':
+      case "pong":
         // Keepalive response received
         break;
 
-      case 'error':
+      case "error":
         set({ error: data.message });
         break;
 
       default:
-        logger.debug('Unknown pairing message type: ' + type, 'DevicePairing');
+        logger.debug("Unknown pairing message type: " + type, "DevicePairing");
     }
   },
 
   sendPing: () => {
     const { ws, isConnected } = get();
     if (ws && isConnected) {
-      ws.send(JSON.stringify({ type: 'ping' }));
+      ws.send(JSON.stringify({ type: "ping" }));
     }
   },
 
   refreshQR: () => {
     const { ws, isConnected } = get();
     if (ws && isConnected) {
-      ws.send(JSON.stringify({ type: 'refresh' }));
+      ws.send(JSON.stringify({ type: "refresh" }));
     }
   },
 
@@ -306,7 +294,7 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
       expiresAt: null,
       isConnected: false,
       isConnecting: false,
-      pairingStatus: 'idle',
+      pairingStatus: "idle",
       error: null,
       companionDeviceInfo: null,
       authenticatedUser: null,

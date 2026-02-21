@@ -1,24 +1,8 @@
-import { create } from 'zustand';
-import { Platform } from 'react-native';
-import { partyService } from '../services/api';
-import { useAuthStore } from './authStore';
-import { logger } from '../utils/logger';
-
-// Get WebSocket URL based on platform
-const getWsBaseUrl = () => {
-  if (!__DEV__) {
-    return 'wss://api.bayit.tv/api/v1';
-  }
-  if (Platform.OS === 'web') {
-    return 'ws://localhost:8000/api/v1';
-  }
-  if (Platform.OS === 'android') {
-    return 'ws://10.0.2.2:8000/api/v1';
-  }
-  return 'ws://localhost:8000/api/v1';
-};
-
-const WS_BASE_URL = getWsBaseUrl();
+import { create } from "zustand";
+import { partyService } from "../services/api";
+import { useAuthStore } from "./authStore";
+import { logger } from "../utils/logger";
+import { buildWsUrl } from "../utils/wsUrl";
 
 interface Participant {
   user_id: string;
@@ -71,7 +55,7 @@ interface WatchPartyState {
       audioEnabled?: boolean;
       chatEnabled?: boolean;
       syncPlayback?: boolean;
-    }
+    },
   ) => Promise<Party>;
   joinByCode: (roomCode: string) => Promise<Party>;
   connect: (partyId: string) => void;
@@ -102,7 +86,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
   createParty: async (contentId, contentType, options = {}) => {
     set({ error: null });
     try {
-      const party = await partyService.create({
+      const party = (await partyService.create({
         content_id: contentId,
         content_type: contentType,
         content_title: options.title,
@@ -110,12 +94,12 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         audio_enabled: options.audioEnabled ?? true,
         chat_enabled: options.chatEnabled ?? true,
         sync_playback: options.syncPlayback ?? true,
-      }) as unknown as Party;
+      })) as unknown as Party;
 
       set({ party, isHost: true, participants: party.participants || [] });
       return party;
     } catch (error: any) {
-      set({ error: error.message || 'Failed to create party' });
+      set({ error: error.message || "Failed to create party" });
       throw error;
     }
   },
@@ -123,7 +107,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
   joinByCode: async (roomCode) => {
     set({ error: null });
     try {
-      const party = await partyService.joinByCode(roomCode) as any as Party;
+      const party = (await partyService.joinByCode(roomCode)) as any as Party;
       set({
         party,
         isHost: false,
@@ -131,7 +115,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
       });
       return party;
     } catch (error: any) {
-      set({ error: error.message || 'Failed to join party' });
+      set({ error: error.message || "Failed to join party" });
       throw error;
     }
   },
@@ -144,14 +128,14 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
 
     const token = useAuthStore.getState().token;
     if (!token) {
-      set({ error: 'Not authenticated' });
+      set({ error: "Not authenticated" });
       return;
     }
 
     set({ isConnecting: true, error: null });
 
     const ws = new WebSocket(
-      `${WS_BASE_URL}/ws/party/${partyId}?token=${token}`
+      buildWsUrl(`/api/v1/ws/party/${partyId}?token=${token}`),
     );
 
     ws.onopen = () => {
@@ -164,8 +148,8 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
     };
 
     ws.onerror = (error) => {
-      logger.error('WebSocket error', 'WatchParty', error);
-      set({ error: 'Connection error', isConnecting: false });
+      logger.error("WebSocket error", "WatchParty", error);
+      set({ error: "Connection error", isConnecting: false });
     };
 
     ws.onclose = () => {
@@ -179,7 +163,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
     const { type } = data;
 
     switch (type) {
-      case 'connected':
+      case "connected":
         set({
           party: data.party,
           participants: data.party.participants,
@@ -187,13 +171,13 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         });
         break;
 
-      case 'chat_message':
+      case "chat_message":
         set((state) => ({
           messages: [...state.messages, data.message],
         }));
         break;
 
-      case 'participant_joined':
+      case "participant_joined":
         set((state) => ({
           participants: [
             ...state.participants,
@@ -207,15 +191,15 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         }));
         break;
 
-      case 'participant_left':
+      case "participant_left":
         set((state) => ({
           participants: state.participants.filter(
-            (p) => p.user_id !== data.user_id
+            (p) => p.user_id !== data.user_id,
           ),
         }));
         break;
 
-      case 'participant_state_changed':
+      case "participant_state_changed":
         set((state) => ({
           participants: state.participants.map((p) =>
             p.user_id === data.user_id
@@ -224,19 +208,19 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
                   is_muted: data.is_muted ?? p.is_muted,
                   is_speaking: data.is_speaking ?? p.is_speaking,
                 }
-              : p
+              : p,
           ),
         }));
         break;
 
-      case 'playback_sync':
+      case "playback_sync":
         set({
           syncedPosition: data.position,
           isPlaying: data.is_playing,
         });
         break;
 
-      case 'host_changed':
+      case "host_changed":
         set((state) => ({
           party: state.party
             ? {
@@ -249,7 +233,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         }));
         break;
 
-      case 'party_ended':
+      case "party_ended":
         set({
           party: null,
           participants: [],
@@ -258,28 +242,28 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         });
         break;
 
-      case 'pong':
+      case "pong":
         break;
 
-      case 'error':
+      case "error":
         set({ error: data.message });
         break;
 
       default:
-        logger.debug('Unknown message type: ' + type, 'WatchParty');
+        logger.debug("Unknown message type: " + type, "WatchParty");
     }
   },
 
-  sendMessage: (message, messageType = 'text') => {
+  sendMessage: (message, messageType = "text") => {
     const { ws, isConnected } = get();
     if (!ws || !isConnected) return;
 
     ws.send(
       JSON.stringify({
-        type: 'chat',
+        type: "chat",
         message,
         message_type: messageType,
-      })
+      }),
     );
   },
 
@@ -289,10 +273,10 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
 
     ws.send(
       JSON.stringify({
-        type: 'sync',
+        type: "sync",
         position,
         is_playing: isPlaying,
-      })
+      }),
     );
   },
 
@@ -302,10 +286,10 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
 
     ws.send(
       JSON.stringify({
-        type: 'state',
+        type: "state",
         is_muted: isMuted,
         is_speaking: isSpeaking,
-      })
+      }),
     );
   },
 
@@ -320,7 +304,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
       try {
         await partyService.leaveParty(party.id);
       } catch (error) {
-        logger.error('Failed to leave party', 'WatchParty', error);
+        logger.error("Failed to leave party", "WatchParty", error);
       }
     }
 
@@ -356,7 +340,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         isHost: false,
       });
     } catch (error: any) {
-      set({ error: error.message || 'Failed to end party' });
+      set({ error: error.message || "Failed to end party" });
       throw error;
     }
   },
@@ -366,11 +350,11 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
     if (!party) return;
 
     try {
-      const response = await partyService.getChatHistory(party.id, 50) as any;
+      const response = (await partyService.getChatHistory(party.id, 50)) as any;
       const messages: ChatMessage[] = response.messages || response || [];
       set({ messages: messages || [] });
     } catch (error) {
-      logger.error('Failed to load chat history', 'WatchParty', error);
+      logger.error("Failed to load chat history", "WatchParty", error);
     }
   },
 

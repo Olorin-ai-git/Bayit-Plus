@@ -3,13 +3,12 @@
  * Manages WebSocket connection and upload queue state
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { QueueState, QueueStats, QueueJob } from '../types';
-import * as uploadsService from '@/services/uploadsService';
-import logger from '@/utils/logger';
-import { WS_RECONNECT_DELAY, WS_MAX_RECONNECT_ATTEMPTS } from '../constants';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+import { useState, useEffect, useCallback, useRef } from "react";
+import type { QueueState, QueueStats, QueueJob } from "../types";
+import * as uploadsService from "@/services/uploadsService";
+import { buildWsUrl } from "@/services/wsUrl";
+import logger from "@/utils/logger";
+import { WS_RECONNECT_DELAY, WS_MAX_RECONNECT_ATTEMPTS } from "../constants";
 
 const initialQueueStats: QueueStats = {
   total_jobs: 0,
@@ -40,7 +39,9 @@ export const useUploadQueue = () => {
   const [clearingQueue, setClearingQueue] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const reconnectAttemptRef = useRef(0); // Use ref to avoid stale closures
 
   /**
@@ -61,9 +62,13 @@ export const useUploadQueue = () => {
 
       setError(null);
     } catch (err: any) {
-      logger.error('Failed to fetch upload queue', 'useUploadQueue', err);
+      logger.error("Failed to fetch upload queue", "useUploadQueue", err);
       // Extract detailed error message from API response
-      const errorMsg = err?.response?.data?.detail || err?.detail || err?.message || 'Failed to load queue';
+      const errorMsg =
+        err?.response?.data?.detail ||
+        err?.detail ||
+        err?.message ||
+        "Failed to load queue";
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -76,12 +81,15 @@ export const useUploadQueue = () => {
   const connectWebSocket = useCallback(() => {
     try {
       // Get token from the same source as API calls
-      const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
+      const authData = JSON.parse(localStorage.getItem("bayit-auth") || "{}");
       const token = authData?.state?.token;
 
       if (!token) {
-        logger.warn('No auth token found, skipping WebSocket connection', 'useUploadQueue');
-        setError('Authentication required. Please log in.');
+        logger.warn(
+          "No auth token found, skipping WebSocket connection",
+          "useUploadQueue",
+        );
+        setError("Authentication required. Please log in.");
         return;
       }
 
@@ -89,24 +97,16 @@ export const useUploadQueue = () => {
         wsRef.current.close();
       }
 
-      // Construct WebSocket URL based on API base URL
-      let wsUrl: string;
-      if (API_BASE_URL.startsWith('http')) {
-        // Use API_BASE_URL as base (development mode)
-        const apiUrl = new URL(API_BASE_URL);
-        const wsProtocol = apiUrl.protocol === 'https:' ? 'wss' : 'ws';
-        wsUrl = `${wsProtocol}://${apiUrl.host}/api/v1/admin/uploads/ws?token=${token}`;
-      } else {
-        // Use current host (production mode)
-        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        wsUrl = `${wsProtocol}://${window.location.host}/api/v1/admin/uploads/ws?token=${token}`;
-      }
+      const wsUrl = buildWsUrl(`/api/v1/admin/uploads/ws?token=${token}`);
 
-      logger.info(`[WebSocket] Connecting to: ${wsUrl.replace(/token=[^&]+/, 'token=***')}`, 'useUploadQueue');
+      logger.info(
+        `[WebSocket] Connecting to: ${wsUrl.replace(/token=[^&]+/, "token=***")}`,
+        "useUploadQueue",
+      );
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        logger.info('[OK] Uploads WebSocket connected', 'useUploadQueue');
+        logger.info("[OK] Uploads WebSocket connected", "useUploadQueue");
         setConnected(true);
         setReconnecting(false);
         setReconnectAttempt(0);
@@ -116,33 +116,49 @@ export const useUploadQueue = () => {
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data.type === 'queue_update') {
+          if (data.type === "queue_update") {
             setQueueState((prev) => ({
               stats: data.stats || prev.stats,
-              activeJob: data.active_job !== undefined ? data.active_job : prev.activeJob,
+              activeJob:
+                data.active_job !== undefined
+                  ? data.active_job
+                  : prev.activeJob,
               queuedJobs: data.queue || prev.queuedJobs,
               recentCompleted: data.recent_completed || prev.recentCompleted,
-              queuePaused: data.queue_paused !== undefined ? data.queue_paused : prev.queuePaused,
-              pauseReason: data.pause_reason !== undefined ? data.pause_reason : prev.pauseReason,
+              queuePaused:
+                data.queue_paused !== undefined
+                  ? data.queue_paused
+                  : prev.queuePaused,
+              pauseReason:
+                data.pause_reason !== undefined
+                  ? data.pause_reason
+                  : prev.pauseReason,
             }));
           }
         } catch (err) {
-          logger.error('[WebSocket] Failed to parse message', 'useUploadQueue', err);
+          logger.error(
+            "[WebSocket] Failed to parse message",
+            "useUploadQueue",
+            err,
+          );
         }
       };
 
       ws.onerror = (error) => {
-        logger.error('[WebSocket] Connection error', 'useUploadQueue', error);
+        logger.error("[WebSocket] Connection error", "useUploadQueue", error);
         setConnected(false);
 
         // If we get an error immediately, the endpoint might not exist
         if (reconnectAttemptRef.current === 0) {
-          logger.error('[WebSocket] Failed to establish initial connection - endpoint may not exist', 'useUploadQueue');
+          logger.error(
+            "[WebSocket] Failed to establish initial connection - endpoint may not exist",
+            "useUploadQueue",
+          );
         }
       };
 
       ws.onclose = () => {
-        logger.warn('[WebSocket] Connection closed', 'useUploadQueue');
+        logger.warn("[WebSocket] Connection closed", "useUploadQueue");
         setConnected(false);
         wsRef.current = null;
 
@@ -155,14 +171,22 @@ export const useUploadQueue = () => {
           setReconnecting(true);
 
           const delay = WS_RECONNECT_DELAY * Math.pow(1.5, nextAttempt - 1);
-          logger.info(`[WebSocket] Reconnecting in ${delay}ms (attempt ${nextAttempt})`, 'useUploadQueue');
+          logger.info(
+            `[WebSocket] Reconnecting in ${delay}ms (attempt ${nextAttempt})`,
+            "useUploadQueue",
+          );
           reconnectTimeoutRef.current = setTimeout(() => {
             connectWebSocket();
           }, delay);
         } else {
-          logger.error('[WebSocket] Max reconnection attempts reached', 'useUploadQueue');
+          logger.error(
+            "[WebSocket] Max reconnection attempts reached",
+            "useUploadQueue",
+          );
           setReconnecting(false);
-          setError('WebSocket connection failed after 10 attempts. Using manual refresh.');
+          setError(
+            "WebSocket connection failed after 10 attempts. Using manual refresh.",
+          );
 
           // Could fall back to polling here if needed
           // setInterval(() => refreshQueue(), QUEUE_REFRESH_INTERVAL);
@@ -171,8 +195,8 @@ export const useUploadQueue = () => {
 
       wsRef.current = ws;
     } catch (err) {
-      logger.error('[WebSocket] Failed to connect', 'useUploadQueue', err);
-      setError('WebSocket connection failed');
+      logger.error("[WebSocket] Failed to connect", "useUploadQueue", err);
+      setError("WebSocket connection failed");
     }
   }, []); // No dependencies - use refs to avoid stale closures
 
@@ -200,11 +224,14 @@ export const useUploadQueue = () => {
     setClearingQueue(true);
     try {
       const result = await uploadsService.clearUploadQueue();
-      logger.info(`Cleared ${result.cancelled_count} jobs from queue`, 'useUploadQueue');
+      logger.info(
+        `Cleared ${result.cancelled_count} jobs from queue`,
+        "useUploadQueue",
+      );
       await refreshQueue();
       return result;
     } catch (err: any) {
-      logger.error('Failed to clear queue', 'useUploadQueue', err);
+      logger.error("Failed to clear queue", "useUploadQueue", err);
       throw err;
     } finally {
       setClearingQueue(false);

@@ -3,7 +3,6 @@ import Foundation
 
 /// Repository protocol for direct message API operations and WebSocket connectivity.
 protocol DirectMessageRepository: Sendable {
-
     /// Fetch all conversations for the current user.
     func fetchConversations() async throws -> [ConversationSummary]
 
@@ -34,7 +33,6 @@ protocol DirectMessageRepository: Sendable {
 
 /// API implementation of `DirectMessageRepository` using `APIClient` and `WebSocketManager`.
 final class APIDirectMessageRepository: DirectMessageRepository, @unchecked Sendable {
-
     private let client: APIClient
     private let webSocketManager: WebSocketManager
 
@@ -97,13 +95,9 @@ final class APIDirectMessageRepository: DirectMessageRepository, @unchecked Send
         friendId: String,
         authToken: String
     ) async throws -> WebSocketConnection {
-        let wsBaseURL = await client.configuration.baseURL
-        let wsURLString = wsBaseURL.absoluteString
-            .replacingOccurrences(of: "http://", with: "ws://")
-            .replacingOccurrences(of: "https://", with: "wss://")
-            .replacingOccurrences(of: "/api/v1", with: "")
+        let wsBaseURL = await webSocketManager.configuration.webSocketBaseURL
 
-        guard let url = URL(string: "\(wsURLString)/ws/dm/\(friendId)") else {
+        guard let url = URL(string: "\(wsBaseURL.absoluteString)/ws/dm/\(friendId)") else {
             throw APIError.networkError(underlying: "Invalid DM WebSocket URL")
         }
 

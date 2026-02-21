@@ -1,22 +1,17 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import logger from '@bayit/shared-utils/logger';
-import { useAuthStore } from '@bayit/shared-stores/authStore';
-import { useV2VStore } from '@/stores/v2vStore';
-import type { V2VTransformResult } from '@/stores/v2vStore.types';
+import { useState, useRef, useCallback, useEffect } from "react";
+import { buildWsUrl } from "@/services/wsUrl";
+import logger from "@bayit/shared-utils/logger";
+import { useAuthStore } from "@bayit/shared-stores/authStore";
+import { useV2VStore } from "@/stores/v2vStore";
+import type { V2VTransformResult } from "@/stores/v2vStore.types";
 
-const wsLogger = logger.scope('V2VWebSocket');
+const wsLogger = logger.scope("V2VWebSocket");
 
 const WS_RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
 function getWebSocketUrl(avatarId: string): string {
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsHost = import.meta.env.VITE_WS_URL ||
-    (import.meta.env.PROD
-      ? import.meta.env.VITE_WS_PROD_HOST
-      : `${window.location.hostname}:8000`);
-  const cleanHost = wsHost.replace(/^wss?:\/\//, '');
-  return `${wsProtocol}//${cleanHost}/api/v1/ws/v2v/${avatarId}`;
+  return buildWsUrl(`/api/v1/ws/v2v/${avatarId}`);
 }
 
 export interface V2VWebSocketHook {
@@ -42,9 +37,9 @@ export function useV2VWebSocket(
 
     ws.onopen = () => {
       reconnectCountRef.current = 0;
-      ws.send(JSON.stringify({ type: 'authenticate', token }));
+      ws.send(JSON.stringify({ type: "authenticate", token }));
       useV2VStore.setState({ wsConnected: true });
-      wsLogger.info('V2V WebSocket connected', { avatarId });
+      wsLogger.info("V2V WebSocket connected", { avatarId });
     };
 
     ws.onmessage = (event) => {
@@ -52,11 +47,11 @@ export function useV2VWebSocket(
         const data = JSON.parse(event.data) as V2VTransformResult;
         setWsResult(data);
         onResult(data);
-        wsLogger.info('V2V result received via WebSocket', {
+        wsLogger.info("V2V result received via WebSocket", {
           scoreDelta: String(data.score_delta),
         });
       } catch (parseError) {
-        wsLogger.error('Failed to parse WebSocket message', parseError);
+        wsLogger.error("Failed to parse WebSocket message", parseError);
       }
     };
 
@@ -69,7 +64,7 @@ export function useV2VWebSocket(
     };
 
     ws.onerror = (wsError) => {
-      wsLogger.error('V2V WebSocket error', wsError);
+      wsLogger.error("V2V WebSocket error", wsError);
     };
 
     wsRef.current = ws;

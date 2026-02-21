@@ -1,10 +1,10 @@
-import XCTest
 @testable import BayitNetworking
+import XCTest
 
 /// Test double conforming to NetworkConfiguration for RetryPolicy tests.
 /// Only used in test target - never exported to production.
 private struct TestNetworkConfiguration: NetworkConfiguration {
-    var baseURL: URL = URL(string: "https://test.example.com")!
+    var baseURL: URL = .init(string: "https://test.example.com")!
     var timeout: TimeInterval = 30
     var maxRetries: Int = 3
     var retryBaseDelay: TimeInterval = 1.0
@@ -15,10 +15,10 @@ private struct TestNetworkConfiguration: NetworkConfiguration {
     var webSocketMaxReconnectAttempts: Int = 5
     var webSocketReconnectBaseDelay: TimeInterval = 1.0
     var webSocketInactiveGracePeriod: TimeInterval = 10
+    var webSocketBaseURL: URL = .init(string: "wss://test.example.com")!
 }
 
 final class RetryPolicyTests: XCTestCase {
-
     private func makePolicy(
         maxRetries: Int = 3,
         baseDelay: TimeInterval = 1.0,

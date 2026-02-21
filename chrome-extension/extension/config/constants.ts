@@ -5,7 +5,7 @@
  * Per CLAUDE.md requirements
  */
 
-import { createLogger } from '@/lib/logger';
+import { createLogger } from "@/lib/logger";
 
 export interface ExtensionConfig {
   AUDIO: {
@@ -59,21 +59,21 @@ function getEnvNumber(key: string, defaultValue: number): number {
 
 function getEnvBoolean(key: string, defaultValue: boolean): boolean {
   const value = import.meta.env[key];
-  return value ? value === 'true' : defaultValue;
+  return value ? value === "true" : defaultValue;
 }
 
 // Configuration object (build-time values from environment variables)
 export const CONFIG: ExtensionConfig = {
   AUDIO: {
-    SAMPLE_RATE: getEnvNumber('VITE_AUDIO_SAMPLE_RATE', 16000),
-    BUFFER_SIZE: getEnvNumber('VITE_AUDIO_BUFFER_SIZE', 2048),
+    SAMPLE_RATE: getEnvNumber("VITE_AUDIO_SAMPLE_RATE", 16000),
+    BUFFER_SIZE: getEnvNumber("VITE_AUDIO_BUFFER_SIZE", 2048),
     CHANNELS: 1, // Immutable requirement
   },
 
   API: {
-    BASE_URL: getEnvVar('VITE_API_BASE_URL', 'https://api.bayit.tv'),
-    WEBSOCKET_URL: getEnvVar('VITE_WS_BASE_URL', 'wss://api.bayit.tv'),
-    TIMEOUT_MS: getEnvNumber('VITE_API_TIMEOUT_MS', 30000),
+    BASE_URL: getEnvVar("VITE_API_BASE_URL", "https://api.bayit.tv"),
+    WEBSOCKET_URL: getEnvVar("VITE_WS_BASE_URL", "wss://ws.bayit.tv"),
+    TIMEOUT_MS: getEnvNumber("VITE_API_TIMEOUT_MS", 30000),
   },
 
   QUOTA: {
@@ -83,27 +83,27 @@ export const CONFIG: ExtensionConfig = {
   },
 
   RECONNECTION: {
-    INITIAL_DELAY_MS: getEnvNumber('VITE_RECONNECT_INITIAL_DELAY_MS', 1000),
-    MAX_DELAY_MS: getEnvNumber('VITE_RECONNECT_MAX_DELAY_MS', 30000),
-    MAX_ATTEMPTS: getEnvNumber('VITE_RECONNECT_MAX_ATTEMPTS', 5),
+    INITIAL_DELAY_MS: getEnvNumber("VITE_RECONNECT_INITIAL_DELAY_MS", 1000),
+    MAX_DELAY_MS: getEnvNumber("VITE_RECONNECT_MAX_DELAY_MS", 30000),
+    MAX_ATTEMPTS: getEnvNumber("VITE_RECONNECT_MAX_ATTEMPTS", 5),
   },
 
   USAGE_TRACKING: {
-    SYNC_INTERVAL_MS: getEnvNumber('VITE_USAGE_SYNC_INTERVAL_MS', 10000),
-    POLL_INTERVAL_MS: getEnvNumber('VITE_SUBSCRIPTION_POLL_INTERVAL_MS', 5000),
+    SYNC_INTERVAL_MS: getEnvNumber("VITE_USAGE_SYNC_INTERVAL_MS", 10000),
+    POLL_INTERVAL_MS: getEnvNumber("VITE_SUBSCRIPTION_POLL_INTERVAL_MS", 5000),
   },
 
   MONITORING: {
-    SENTRY_DSN: getEnvVar('VITE_SENTRY_DSN', ''),
-    POSTHOG_KEY: getEnvVar('VITE_POSTHOG_KEY', ''),
+    SENTRY_DSN: getEnvVar("VITE_SENTRY_DSN", ""),
+    POSTHOG_KEY: getEnvVar("VITE_POSTHOG_KEY", ""),
   },
 
   SUPPORT: {
-    EMAIL: getEnvVar('VITE_SUPPORT_EMAIL', 'support@bayit.tv'),
+    EMAIL: getEnvVar("VITE_SUPPORT_EMAIL", "support@bayit.tv"),
   },
 
-  ENV: getEnvVar('VITE_ENV', 'development'),
-  DEBUG: getEnvBoolean('VITE_DEBUG', false),
+  ENV: getEnvVar("VITE_ENV", "development"),
+  DEBUG: getEnvBoolean("VITE_DEBUG", false),
 };
 
 /**
@@ -123,15 +123,18 @@ interface BackendConfig {
  * MUST be called during extension initialization
  */
 export async function loadRuntimeConfig(): Promise<void> {
-  const configLogger = createLogger('Config');
+  const configLogger = createLogger("Config");
   try {
-    const response = await fetch(`${CONFIG.API.BASE_URL}/api/v1/config/extension`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${CONFIG.API.BASE_URL}/api/v1/config/extension`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: AbortSignal.timeout(CONFIG.API.TIMEOUT_MS),
       },
-      signal: AbortSignal.timeout(CONFIG.API.TIMEOUT_MS),
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to load runtime config: ${response.status}`);
@@ -145,15 +148,19 @@ export async function loadRuntimeConfig(): Promise<void> {
 
     // Validate critical configuration
     if (!CONFIG.QUOTA.FREE_TIER_MINUTES_PER_DAY) {
-      throw new Error('Invalid runtime config: missing free_tier_minutes_per_day');
+      throw new Error(
+        "Invalid runtime config: missing free_tier_minutes_per_day",
+      );
     }
     if (!CONFIG.QUOTA.PREMIUM_TIER_PRICE_USD) {
-      throw new Error('Invalid runtime config: missing premium_tier_price_usd');
+      throw new Error("Invalid runtime config: missing premium_tier_price_usd");
     }
 
-    configLogger.info('Runtime configuration loaded successfully');
+    configLogger.info("Runtime configuration loaded successfully");
   } catch (error) {
-    configLogger.warn('Failed to load runtime configuration, using defaults', { error: String(error) });
+    configLogger.warn("Failed to load runtime configuration, using defaults", {
+      error: String(error),
+    });
   }
 }
 
@@ -162,28 +169,28 @@ export async function loadRuntimeConfig(): Promise<void> {
  */
 export const SUPPORTED_SITES = [
   {
-    hostname: 'screenil.com',
-    name: 'Screenil',
-    videoSelector: 'video',
-    containerHint: '.video-player',
+    hostname: "screenil.com",
+    name: "Screenil",
+    videoSelector: "video",
+    containerHint: ".video-player",
   },
   {
-    hostname: 'mako.co.il',
-    name: 'Mako',
-    videoSelector: 'video',
-    containerHint: '.kaltura-player',
+    hostname: "mako.co.il",
+    name: "Mako",
+    videoSelector: "video",
+    containerHint: ".kaltura-player",
   },
   {
-    hostname: '13tv.co.il',
-    name: '13TV',
-    videoSelector: 'video',
-    containerHint: '.video-player',
+    hostname: "13tv.co.il",
+    name: "13TV",
+    videoSelector: "video",
+    containerHint: ".video-player",
   },
   {
-    hostname: 'kan.org.il',
-    name: 'Kan',
-    videoSelector: 'video',
-    containerHint: '.video-wrapper',
+    hostname: "kan.org.il",
+    name: "Kan",
+    videoSelector: "video",
+    containerHint: ".video-wrapper",
   },
 ] as const;
 
@@ -191,8 +198,8 @@ export const SUPPORTED_SITES = [
  * Supported Languages Configuration
  */
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
+  { code: "en", name: "English" },
+  { code: "es", name: "Spanish" },
 ] as const;
 
 /**
@@ -202,6 +209,6 @@ export interface Voice {
   id: string;
   name: string;
   language: string;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   preview_url?: string;
 }

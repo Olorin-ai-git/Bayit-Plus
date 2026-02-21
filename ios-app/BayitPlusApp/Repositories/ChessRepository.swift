@@ -3,7 +3,6 @@ import Foundation
 
 /// Repository protocol for chess game API operations and WebSocket connectivity.
 protocol ChessRepository: Sendable {
-
     /// Create a new chess game with the specified mode and color.
     /// - Parameters:
     ///   - color: Preferred piece color (white or black).
@@ -30,7 +29,6 @@ protocol ChessRepository: Sendable {
 
 /// API implementation of chess repository using `APIClient` and `WebSocketManager`.
 final class APIChessRepository: ChessRepository, @unchecked Sendable {
-
     private let client: APIClient
     private let webSocketManager: WebSocketManager
 
@@ -71,13 +69,9 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
         gameCode: String,
         authToken: String
     ) async throws -> WebSocketConnection {
-        let wsBaseURL = await client.configuration.baseURL
-        let wsURLString = wsBaseURL.absoluteString
-            .replacingOccurrences(of: "http://", with: "ws://")
-            .replacingOccurrences(of: "https://", with: "wss://")
-            .replacingOccurrences(of: "/api/v1", with: "")
+        let wsBaseURL = await webSocketManager.configuration.webSocketBaseURL
 
-        guard let url = URL(string: "\(wsURLString)/ws/chess/\(gameCode)") else {
+        guard let url = URL(string: "\(wsBaseURL.absoluteString)/ws/chess/\(gameCode)") else {
             throw APIError.networkError(underlying: "Invalid chess WebSocket URL")
         }
 

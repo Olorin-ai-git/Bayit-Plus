@@ -4,9 +4,10 @@
  * Connects to /ws/talk-back/{contentId} for audio capture and evaluation.
  */
 
-import logger from '@/utils/logger';
+import logger from "@/utils/logger";
+import { buildWsUrl } from "./wsUrl";
 
-const AUTH_STORAGE_KEY = 'bayit-auth';
+const AUTH_STORAGE_KEY = "bayit-auth";
 
 interface TalkBackEvaluation {
   quality: string;
@@ -37,41 +38,42 @@ class TalkBackService {
     profileId: string,
     callbacks: TalkBackServiceCallbacks,
   ): Promise<void> {
-    const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}');
+    const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || "{}");
     const token = authData?.state?.token;
     if (!token) {
-      callbacks.onError('Not authenticated', false);
+      callbacks.onError("Not authenticated", false);
       return;
     }
 
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProtocol}//${window.location.host}/api/v1/ws/talk-back/${contentId}?profile_id=${profileId}`;
+    const wsUrl = buildWsUrl(
+      `/api/v1/ws/talk-back/${contentId}?profile_id=${profileId}`,
+    );
 
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
-      logger.debug('Talk Back WS connected, authenticating', 'talkBackService');
-      this.ws?.send(JSON.stringify({ type: 'authenticate', token }));
+      logger.debug("Talk Back WS connected, authenticating", "talkBackService");
+      this.ws?.send(JSON.stringify({ type: "authenticate", token }));
       this.isConnected = true;
     };
 
     this.ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
-        if (msg.type === 'connected') {
+        if (msg.type === "connected") {
           callbacks.onConnected(msg.session_id);
-        } else if (msg.type === 'evaluation') {
+        } else if (msg.type === "evaluation") {
           callbacks.onEvaluation(msg as TalkBackEvaluation);
-        } else if (msg.type === 'error') {
+        } else if (msg.type === "error") {
           callbacks.onError(msg.message, msg.recoverable ?? true);
         }
       } catch (error) {
-        logger.error('Talk Back WS parse error', 'talkBackService', error);
+        logger.error("Talk Back WS parse error", "talkBackService", error);
       }
     };
 
     this.ws.onerror = () => {
-      callbacks.onError('Connection error', true);
+      callbacks.onError("Connection error", true);
       this.isConnected = false;
     };
 
@@ -90,10 +92,12 @@ class TalkBackService {
       });
 
       this.mediaRecorder = new MediaRecorder(this.audioStream, {
-        mimeType: 'audio/webm;codecs=opus',
+        mimeType: "audio/webm;codecs=opus",
       });
 
-      this.ws.send(JSON.stringify({ type: 'start_recording', point_id: pointId }));
+      this.ws.send(
+        JSON.stringify({ type: "start_recording", point_id: pointId }),
+      );
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0 && this.ws?.readyState === WebSocket.OPEN) {
@@ -102,14 +106,14 @@ class TalkBackService {
       };
 
       this.mediaRecorder.start(250);
-      logger.info('Talk Back recording started', 'talkBackService');
+      logger.info("Talk Back recording started", "talkBackService");
     } catch (error) {
-      logger.error('Failed to start recording', 'talkBackService', error);
+      logger.error("Failed to start recording", "talkBackService", error);
     }
   }
 
   stopRecording(): void {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+    if (this.mediaRecorder && this.mediaRecorder.state !== "inactive") {
       this.mediaRecorder.stop();
     }
 
@@ -119,16 +123,16 @@ class TalkBackService {
     }
 
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'stop_recording' }));
+      this.ws.send(JSON.stringify({ type: "stop_recording" }));
     }
 
     this.mediaRecorder = null;
-    logger.info('Talk Back recording stopped', 'talkBackService');
+    logger.info("Talk Back recording stopped", "talkBackService");
   }
 
   requestHint(pointId: string): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'request_hint', point_id: pointId }));
+      this.ws.send(JSON.stringify({ type: "request_hint", point_id: pointId }));
     }
   }
 
@@ -139,7 +143,7 @@ class TalkBackService {
       this.ws = null;
     }
     this.isConnected = false;
-    logger.debug('Talk Back disconnected', 'talkBackService');
+    logger.debug("Talk Back disconnected", "talkBackService");
   }
 
   isServiceConnected(): boolean {

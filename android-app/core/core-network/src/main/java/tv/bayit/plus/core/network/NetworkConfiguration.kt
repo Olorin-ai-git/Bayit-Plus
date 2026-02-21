@@ -16,7 +16,7 @@ data class NetworkConfiguration(
     /** Base URL for all API requests (e.g. "https://api.bayit.tv/api/v1"). */
     override val baseUrl: String,
 
-    /** Base URL for WebSocket connections (e.g. "wss://api.bayit.tv/ws"). */
+    /** Base URL for WebSocket connections (e.g. "wss://ws.bayit.tv"). */
     override val webSocketBaseUrl: String,
 
     /** Timeout for connect, read, and write operations. */
