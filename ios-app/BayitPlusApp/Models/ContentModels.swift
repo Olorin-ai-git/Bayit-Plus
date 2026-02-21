@@ -169,7 +169,13 @@ struct ContentDetail: Decodable, Sendable, Identifiable {
     let streamType: String?
     let previewUrl: String?
     let trailerUrl: String?
+    let trailerStreamUrl: String?
     let isTranscoded: Bool?
+}
+
+/// Response from the trailer stream resolution endpoint
+struct TrailerStreamResponse: Decodable, Sendable {
+    let streamUrl: String?
 }
 
 /// Related content item shown on detail pages

@@ -158,6 +158,7 @@ async def get_content(
         response["stream_type"] = "transcode" if use_transcode else content.stream_type
         response["preview_url"] = content.preview_url
         response["trailer_url"] = content.trailer_url
+        response["trailer_stream_url"] = content.trailer_stream_url
         response["is_transcoded"] = use_transcode
         # For transcoded streams, provide duration in seconds for proper slider
         if use_transcode and content.video_metadata:

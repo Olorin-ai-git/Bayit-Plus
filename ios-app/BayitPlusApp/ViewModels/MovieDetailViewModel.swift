@@ -74,7 +74,7 @@ final class MovieDetailViewModel {
     }
 
     var hasTrailer: Bool {
-        detail?.trailerUrl != nil
+        detail?.trailerUrl != nil || detail?.trailerStreamUrl != nil
     }
 
     var hasSubtitles: Bool {

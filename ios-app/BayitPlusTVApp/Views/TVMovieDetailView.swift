@@ -1,3 +1,4 @@
+import AVFoundation
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -8,8 +9,10 @@ struct TVMovieDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
-    @Environment(DownloadManager.self) private var downloadManager
     @State private var viewModel: MovieDetailViewModel?
+    @State private var trailerPlayer: AVPlayer?
+    @State private var showTrailer = false
+    @State private var resolvedTrailerUrl: String?
 
     let movieId: String
     private let logger = BayitLogger(category: "TVMovieDetail")
@@ -41,6 +44,19 @@ struct TVMovieDetailView: View {
                 )
             }
             await viewModel?.loadDetail()
+            setupTrailerPlayer()
+        }
+        .onDisappear {
+            trailerPlayer?.pause()
+            trailerPlayer = nil
+        }
+        .fullScreenCover(isPresented: $showTrailer) {
+            if let streamUrl = resolvedTrailerUrl {
+                TVDirectTrailerPlayerView(
+                    url: streamUrl,
+                    onDismiss: { showTrailer = false }
+                )
+            }
         }
     }
 
@@ -61,12 +77,19 @@ struct TVMovieDetailView: View {
     }
 
     private func backdropSection(_ detail: ContentDetail) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            if let urlStr = detail.backdrop ?? detail.thumbnail,
-               let url = URL(string: urlStr) {
+        let hasBackdrop = detail.backdrop != nil
+        let imageUrl = detail.backdrop ?? detail.thumbnail
+        let hasTrailerPlayer = trailerPlayer != nil
+
+        return ZStack(alignment: .bottomLeading) {
+            // Always keep the image in the tree; hide via opacity when trailer plays.
+            // Avoids tvOS focus-system crash from structural view-tree swaps.
+            if let urlStr = imageUrl,
+               let url = URL(string: urlStr)
+            {
                 AsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -76,8 +99,16 @@ struct TVMovieDetailView: View {
                         DesignTokens.Glass.bg
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+                .opacity(hasTrailerPlayer ? 0 : 1)
             } else {
                 DesignTokens.Glass.bg
+                    .opacity(hasTrailerPlayer ? 0 : 1)
+            }
+
+            if let player = trailerPlayer {
+                TVVideoPlayerRepresentable(player: player)
             }
 
             LinearGradient(
@@ -115,16 +146,14 @@ struct TVMovieDetailView: View {
             }
             .padding(TVDesignTokens.Spacing.xxl)
         }
-        .frame(height: 600)
+        .frame(maxWidth: .infinity)
+        .frame(height: 700)
         .clipped()
+        .ignoresSafeArea(edges: [.top, .horizontal])
     }
 
     private func actionButtons(_ detail: ContentDetail, vm: MovieDetailViewModel) -> some View {
-        let dlStatus = downloadManager.downloads.first(where: { $0.contentId == movieId })?.status
-        let isDownloaded = dlStatus == .completed
-        let isDownloading = dlStatus == .downloading || dlStatus == .queued || dlStatus == .paused
-
-        return HStack(spacing: TVDesignTokens.Spacing.xl) {
+        HStack(spacing: TVDesignTokens.Spacing.xl) {
             GlassButton(
                 "Play",
                 variant: .primary,
@@ -143,39 +172,20 @@ struct TVMovieDetailView: View {
 
             if vm.hasTrailer {
                 GlassButton(
-                    "Trailer",
+                    localization.t("content.trailer"),
                     variant: .secondary,
                     size: .large,
                     action: {
-                        logger.info("Playing trailer", context: ["movieId": movieId])
+                        logger.info("Opening trailer", context: ["movieId": movieId])
+                        Task {
+                            await resolveAndShowTrailer(contentId: detail.id)
+                        }
                     }
                 )
                 .frame(width: 300)
                 .buttonStyle(.card)
                 .tvFocusStyle()
             }
-
-            GlassButton(
-                isDownloaded ? "Downloaded" : (isDownloading ? "Downloading..." : "Download"),
-                variant: .secondary,
-                size: .large,
-                action: {
-                    guard !isDownloaded, !isDownloading else { return }
-                    logger.info("Downloading movie", context: ["movieId": movieId])
-                    Task {
-                        await downloadManager.startDownload(DownloadRequest(
-                            contentId: movieId,
-                            title: detail.title ?? "Movie",
-                            thumbnail: detail.thumbnail ?? detail.backdrop,
-                            contentType: .movie
-                        ))
-                    }
-                }
-            )
-            .frame(width: 300)
-            .buttonStyle(.card)
-            .tvFocusStyle()
-            .disabled(isDownloaded || isDownloading)
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
@@ -239,6 +249,86 @@ struct TVMovieDetailView: View {
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             }
+        }
+    }
+
+    private func setupTrailerPlayer() {
+        guard let detail = viewModel?.detail,
+              detail.trailerUrl != nil || detail.trailerStreamUrl != nil
+        else { return }
+
+        Task {
+            do {
+                let response = try await repos.content.fetchTrailerStream(
+                    contentId: detail.id
+                )
+                guard let streamUrl = response.streamUrl,
+                      let url = URL(string: streamUrl)
+                else { return }
+
+                resolvedTrailerUrl = streamUrl
+
+                let item = AVPlayerItem(url: url)
+                let player = AVPlayer(playerItem: item)
+                player.isMuted = true
+
+                // Wait until the player has video frames before showing
+                let statusOk = await withCheckedContinuation { cont in
+                    var observer: NSKeyValueObservation?
+                    observer = item.observe(\.status) { item, _ in
+                        observer?.invalidate()
+                        cont.resume(returning: item.status == .readyToPlay)
+                    }
+                }
+
+                guard statusOk else {
+                    logger.warning(
+                        "Trailer AVPlayerItem failed to load",
+                        context: ["movieId": detail.id]
+                    )
+                    return
+                }
+
+                player.play()
+
+                NotificationCenter.default.addObserver(
+                    forName: .AVPlayerItemDidPlayToEndTime,
+                    object: player.currentItem,
+                    queue: .main
+                ) { _ in
+                    player.seek(to: .zero)
+                    player.play()
+                }
+
+                trailerPlayer = player
+            } catch {
+                logger.warning(
+                    "Trailer resolution failed, using backdrop image",
+                    context: ["movieId": detail.id]
+                )
+            }
+        }
+    }
+
+    private func resolveAndShowTrailer(contentId: String) async {
+        if resolvedTrailerUrl != nil {
+            showTrailer = true
+            return
+        }
+
+        do {
+            let response = try await repos.content.fetchTrailerStream(
+                contentId: contentId
+            )
+            if let streamUrl = response.streamUrl {
+                resolvedTrailerUrl = streamUrl
+                showTrailer = true
+            }
+        } catch {
+            logger.warning(
+                "Could not resolve trailer for fullscreen",
+                context: ["contentId": contentId]
+            )
         }
     }
 
