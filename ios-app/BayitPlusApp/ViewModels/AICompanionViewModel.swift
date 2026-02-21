@@ -6,7 +6,6 @@ import Observation
 @MainActor
 @Observable
 final class AICompanionViewModel {
-
     enum Tab: String, CaseIterable {
         case context = "Context"
         case quiz = "Quiz"
@@ -14,8 +13,19 @@ final class AICompanionViewModel {
     }
 
     private(set) var selectedTab: Tab = .context
-    private(set) var isLoading = false
+    private(set) var isContextLoading = false
+    private(set) var isQuizLoading = false
+    private(set) var isVocabularyLoading = false
     private(set) var error: String?
+
+    /// Whether the currently selected tab is loading.
+    var isLoading: Bool {
+        switch selectedTab {
+        case .context: return isContextLoading
+        case .quiz: return isQuizLoading
+        case .vocabulary: return isVocabularyLoading
+        }
+    }
 
     // Context tab
     private(set) var contextText: String?
@@ -27,7 +37,7 @@ final class AICompanionViewModel {
     private(set) var selectedAnswers: [String: Int] = [:]
     private(set) var showResults = false
 
-    // Vocabulary tab
+    /// Vocabulary tab
     private(set) var words: [VocabularyWord] = []
 
     private let repository: any ChatRepository
@@ -42,7 +52,7 @@ final class AICompanionViewModel {
     }
 
     func loadContent(contentId: String) async {
-        isLoading = true
+        isContextLoading = true
         error = nil
 
         do {
@@ -60,11 +70,11 @@ final class AICompanionViewModel {
             logger.error("Companion load failed", error: error)
         }
 
-        isLoading = false
+        isContextLoading = false
     }
 
     func loadQuiz(contentId: String) async {
-        isLoading = true
+        isQuizLoading = true
 
         do {
             let request = ChatRequest(
@@ -80,7 +90,7 @@ final class AICompanionViewModel {
             logger.error("Quiz load failed", error: error)
         }
 
-        isLoading = false
+        isQuizLoading = false
     }
 
     func selectAnswer(questionId: String, answerIndex: Int) {
@@ -97,7 +107,7 @@ final class AICompanionViewModel {
     }
 
     func loadVocabulary(contentId: String) async {
-        isLoading = true
+        isVocabularyLoading = true
 
         do {
             let request = ChatRequest(
@@ -113,6 +123,6 @@ final class AICompanionViewModel {
             logger.error("Vocabulary load failed", error: error)
         }
 
-        isLoading = false
+        isVocabularyLoading = false
     }
 }

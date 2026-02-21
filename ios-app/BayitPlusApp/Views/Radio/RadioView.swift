@@ -9,7 +9,7 @@ struct RadioView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
     ]
 
     var body: some View {
@@ -57,7 +57,7 @@ struct RadioView: View {
 
     private var loadingGrid: some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<6, id: \.self) { _ in
+            ForEach(0 ..< 6, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 120)
@@ -126,9 +126,9 @@ private struct StationCard: View {
     private var stationLogo: some View {
         Group {
             if let urlStr = station.logo, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable().aspectRatio(contentMode: .fill)
                     default:
                         logoPlaceholder

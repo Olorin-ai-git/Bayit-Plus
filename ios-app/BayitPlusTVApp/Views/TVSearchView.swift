@@ -8,8 +8,8 @@ import SwiftUI
 /// Reuses SearchViewModel from shared ViewModels.
 struct TVSearchView: View {
     @Environment(TVRepositoryProvider.self) private var repos
-    @Environment(TVNavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(TVNavigationCoordinator.self) var coordinator
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: SearchViewModel?
     @State private var searchText = ""
     @State var showAISearch = false

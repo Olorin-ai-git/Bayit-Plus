@@ -15,7 +15,7 @@ struct HeroSection: View {
                     .clear,
                     DesignTokens.Background.primary.opacity(0.3),
                     DesignTokens.Background.primary.opacity(0.8),
-                    DesignTokens.Background.primary
+                    DesignTokens.Background.primary,
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -25,17 +25,18 @@ struct HeroSection: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
                 .padding(.bottom, DesignTokens.Spacing.lg)
         }
-        .frame(height: 320)  // Reduced from 400 for better mobile UX
+        .frame(height: 320) // Reduced from 400 for better mobile UX
         .clipped()
     }
 
     private var heroImage: some View {
         Group {
             if let urlString = hero.backdrop ?? hero.thumbnail,
-               let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
+               let url = URL(string: urlString)
+            {
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image.resizable().aspectRatio(contentMode: .fill)
                     default:
                         heroPlaceholder
@@ -60,7 +61,7 @@ struct HeroSection: View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             if let title = hero.title {
                 Text(title)
-                    .font(.system(size: 28, weight: .bold))  // Smaller than hero size for mobile
+                    .font(.system(size: 28, weight: .bold)) // Smaller than hero size for mobile
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(2)
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)

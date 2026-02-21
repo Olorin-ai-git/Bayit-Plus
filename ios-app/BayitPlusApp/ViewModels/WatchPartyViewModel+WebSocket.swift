@@ -3,7 +3,6 @@ import Foundation
 
 /// WebSocket connection and message handling for WatchPartyViewModel.
 extension WatchPartyViewModel {
-
     @MainActor
     func connectWebSocket(
         manager: WebSocketManager,
@@ -34,7 +33,7 @@ extension WatchPartyViewModel {
         receiveTask?.cancel()
         receiveTask = nil
         if let conn = connection {
-            Task { await conn.disconnect() }
+            disconnectTask = Task { await conn.disconnect() }
         }
         connection = nil
         isConnected = false
@@ -55,11 +54,8 @@ extension WatchPartyViewModel {
     @MainActor
     func handleWSMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else { return }
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
 
-        guard let message = try? decoder.decode(WatchPartyWSMessage.self, from: data) else {
+        guard let message = try? WebSocketDecoder.shared.decode(WatchPartyWSMessage.self, from: data) else {
             logger.warning("Failed to decode WS message")
             return
         }
@@ -75,11 +71,11 @@ extension WatchPartyViewModel {
             handleParticipantLeft(message)
         case .playbackSync:
             logger.debug("Playback sync received", context: [
-                "position": String(message.position ?? 0)
+                "position": String(message.position ?? 0),
             ])
         case .hostChanged:
             logger.info("Host changed", context: [
-                "newHost": message.newHostName ?? "unknown"
+                "newHost": message.newHostName ?? "unknown",
             ])
         case .partyEnded:
             activeParty = nil
@@ -87,7 +83,7 @@ extension WatchPartyViewModel {
             participants = []
             disconnectWebSocket()
         case .error:
-            self.error = message.message
+            error = message.message
         }
     }
 

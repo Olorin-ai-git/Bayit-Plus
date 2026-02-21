@@ -8,23 +8,23 @@ import Observation
 @MainActor
 @Observable
 final class LiveSubtitlesViewModel {
-    private(set) var isEnabled = false
-    private(set) var isConnecting = false
-    private(set) var selectedLanguage: String = "en"
-    private(set) var activeCueText: String = ""
-    private(set) var originalCueText: String?
-    private(set) var showOverlay = false
+    var isEnabled = false
+    var isConnecting = false
+    var selectedLanguage: String = "en"
+    var activeCueText: String = ""
+    var originalCueText: String?
+    var showOverlay = false
     var isSplitMode = false
-    private(set) var error: String?
-    private(set) var isPremiumRequired = false
-    private(set) var isQuotaExceeded = false
+    var error: String?
+    var isPremiumRequired = false
+    var isQuotaExceeded = false
 
     let webSocketService: LiveSubtitlesWebSocketService
     private let authManager: AuthManager?
-    private var cueDismissTask: Task<Void, Never>?
-    private var cueObserveTask: Task<Void, Never>?
+    var cueDismissTask: Task<Void, Never>?
+    var cueObserveTask: Task<Void, Never>?
     private let logger = BayitLogger(category: "LiveSubtitles")
-    private let cueDuration: Duration = .seconds(5)
+    let cueDuration: Duration = .seconds(5)
     let sourceLang = "he"
 
     init(webSocketService: LiveSubtitlesWebSocketService, authManager: AuthManager? = nil) {
@@ -103,7 +103,11 @@ final class LiveSubtitlesViewModel {
 
     private func observeConnection() {
         Task { @MainActor in
-            while isConnecting && isEnabled {
+            for await _ in observationStream({ [webSocketService] in
+                _ = webSocketService.isConnected
+                _ = webSocketService.error
+            }) {
+                guard isConnecting, isEnabled else { break }
                 if webSocketService.isConnected {
                     isConnecting = false
                     return
@@ -113,7 +117,6 @@ final class LiveSubtitlesViewModel {
                     error = webSocketService.error
                     return
                 }
-                try? await Task.sleep(for: .milliseconds(100))
             }
         }
     }
@@ -124,7 +127,12 @@ final class LiveSubtitlesViewModel {
             var lastCueTimestamp: Double?
             var lastCueIsPartial: Bool?
 
-            while isEnabled && !Task.isCancelled {
+            for await _ in observationStream({ [webSocketService] in
+                _ = webSocketService.currentCue
+                _ = webSocketService.isQuotaExceeded
+            }) {
+                guard isEnabled, !Task.isCancelled else { break }
+
                 if webSocketService.isQuotaExceeded {
                     isQuotaExceeded = true
                     isEnabled = false
@@ -134,42 +142,33 @@ final class LiveSubtitlesViewModel {
                 }
                 if let cue = webSocketService.currentCue,
                    cue.timestamp != lastCueTimestamp
-                    || cue.isPartial != lastCueIsPartial {
+                   || cue.isPartial != lastCueIsPartial
+                {
                     lastCueTimestamp = cue.timestamp
                     lastCueIsPartial = cue.isPartial
                     handleCue(cue)
                 }
-                try? await Task.sleep(for: .milliseconds(200))
             }
         }
     }
 
-    @MainActor
-    private func handleCue(_ cue: LiveSubtitleCueData) {
-        if cue.isPartial == true {
-            // Partial (pre-translation) cues only carry source-language text.
-            // Update the original pane immediately; the translated pane waits
-            // for the final subtitle so it never shows the wrong language.
-            if let original = cue.originalText, !original.isEmpty {
-                originalCueText = original
+    /// Creates an AsyncStream that yields a value each time any @Observable property
+    /// accessed inside `tracking` changes, replacing busy-wait polling with
+    /// Observation-framework driven notifications.
+    private func observationStream(
+        _ tracking: @Sendable @escaping () -> Void
+    ) -> AsyncStream<Void> {
+        AsyncStream { continuation in
+            @Sendable func observe() {
+                withObservationTracking {
+                    tracking()
+                } onChange: {
+                    continuation.yield()
+                    Task { @MainActor in observe() }
+                }
             }
-        } else {
-            activeCueText = cue.text ?? ""
-            // Only update original if non-empty; translated text may produce
-            // more chunks than the source, leaving trailing chunks with no
-            // paired original text.
-            if let original = cue.originalText, !original.isEmpty {
-                originalCueText = original
-            }
-        }
-        showOverlay = true
-
-        cueDismissTask?.cancel()
-        cueDismissTask = Task {
-            try? await Task.sleep(for: cueDuration)
-            if !Task.isCancelled {
-                self.showOverlay = false
-            }
+            continuation.onTermination = { @Sendable _ in }
+            observe()
         }
     }
 }

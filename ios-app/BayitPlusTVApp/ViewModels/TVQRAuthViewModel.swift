@@ -24,10 +24,10 @@ enum PairingStatus: Equatable {
 final class TVQRAuthViewModel {
     // MARK: - Published State
 
-    private(set) var qrCodeData: String?
-    private(set) var sessionId: String?
-    private(set) var status: PairingStatus = .idle
-    private(set) var error: String?
+    var qrCodeData: String?
+    var sessionId: String?
+    var status: PairingStatus = .idle
+    var error: String?
 
     // MARK: - Dependencies
 

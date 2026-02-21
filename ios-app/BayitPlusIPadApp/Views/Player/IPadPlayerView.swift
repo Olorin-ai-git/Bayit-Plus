@@ -33,7 +33,8 @@ struct IPadPlayerView: View {
                     radioRepository: repos.radio,
                     podcastRepository: repos.podcasts,
                     audiobookRepository: repos.audiobook,
-                    widgetSync: widgetSync
+                    widgetSync: widgetSync,
+                    progressIntervalSeconds: 10
                 )
                 .frame(width: geometry.size.width * 0.7)
 
@@ -72,7 +73,6 @@ struct IPadPlayerView: View {
         }
     }
 
-    @ViewBuilder
     private func contentHeader(_ detail: ContentDetail) -> some View {
         Text(detail.title ?? "")
             .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))

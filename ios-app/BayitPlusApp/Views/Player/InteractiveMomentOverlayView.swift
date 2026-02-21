@@ -8,6 +8,9 @@
     /// Dual-circle overlay for interactive moments: child avatar (left) and
     /// movie character (right). The movie never pauses -- volume ducks while
     /// the conversation plays, then restores on dismiss.
+    ///
+    /// Circle display views are in `InteractiveMomentDisplay.swift`.
+    /// Player setup and lifecycle logic are in `InteractiveMomentActions.swift`.
     struct InteractiveMomentOverlayView: View {
         let avatarVideoUrl: String
         let avatarImageUrl: String
@@ -15,17 +18,17 @@
         let characterImageUrl: String?
         let onDismiss: () -> Void
 
-        private let circleSize: CGFloat = 120
-        private let transitionDelay: TimeInterval = 0.5
-        private let logger = BayitLogger(category: "InteractiveMoment")
+        let circleSize: CGFloat = 120
+        let transitionDelay: TimeInterval = 0.5
+        let logger = BayitLogger(category: "InteractiveMoment")
 
-        @State private var phase: InteractionOverlayPhase = .avatarSpeaking
-        @State private var avatarPlayer: AVPlayer?
-        @State private var characterPlayer: AVPlayer?
-        @State private var isAvatarVideoReady = false
-        @State private var isCharacterVideoReady = false
-        @State private var avatarEndObserver: NSObjectProtocol?
-        @State private var characterEndObserver: NSObjectProtocol?
+        @State var phase: InteractionOverlayPhase = .avatarSpeaking
+        @State var avatarPlayer: AVPlayer?
+        @State var characterPlayer: AVPlayer?
+        @State var isAvatarVideoReady = false
+        @State var isCharacterVideoReady = false
+        @State var avatarEndObserver: NSObjectProtocol?
+        @State var characterEndObserver: NSObjectProtocol?
 
         var body: some View {
             VStack {
@@ -49,257 +52,6 @@
             .allowsHitTesting(false)
             .onAppear { setupAvatarPlayer() }
             .onDisappear { cleanupPlayers() }
-        }
-
-        // MARK: - Circles
-
-        private var avatarCircle: some View {
-            ZStack {
-                stillImage(url: avatarImageUrl)
-                if isAvatarVideoReady, let player = avatarPlayer {
-                    FillVideoLayer(player: player)
-                }
-            }
-            .frame(width: circleSize, height: circleSize)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 2))
-            .shadow(
-                color: DesignTokens.Primary.default.opacity(0.4),
-                radius: 12, x: 0, y: 4
-            )
-        }
-
-        private var characterCircle: some View {
-            ZStack {
-                if let imgUrl = characterImageUrl {
-                    stillImage(url: imgUrl)
-                }
-                if isCharacterVideoReady, let player = characterPlayer {
-                    FillVideoLayer(player: player)
-                }
-            }
-            .frame(width: circleSize, height: circleSize)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 2))
-            .shadow(
-                color: DesignTokens.Primary.default.opacity(0.4),
-                radius: 12, x: 0, y: 4
-            )
-        }
-
-        private func stillImage(url: String) -> some View {
-            AsyncImage(url: URL(string: url)) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.black
-                }
-            }
-        }
-
-        // MARK: - Avatar Player
-
-        private func setupAvatarPlayer() {
-            guard let url = URL(string: avatarVideoUrl) else {
-                logger.error("Invalid avatar video URL: \(avatarVideoUrl)")
-                onDismiss()
-                return
-            }
-
-            let player = AVPlayer(url: url)
-            avatarPlayer = player
-
-            avatarEndObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem,
-                queue: .main
-            ) { [weak player] _ in
-                guard player != nil else { return }
-                Task { @MainActor in onAvatarFinished() }
-            }
-
-            Task {
-                let ready = await waitForPlayerReady(player, label: "avatar")
-                await MainActor.run {
-                    guard ready else {
-                        logger.error("Avatar video failed to load")
-                        onDismiss()
-                        return
-                    }
-                    withAnimation(.easeIn(duration: 0.3)) {
-                        isAvatarVideoReady = true
-                    }
-                    player.play()
-                }
-            }
-        }
-
-        private func onAvatarFinished() {
-            guard let charUrl = characterVideoUrl,
-                  URL(string: charUrl) != nil
-            else {
-                logger.info(
-                    "No character response video, dismissing"
-                )
-                dismissAfterDelay()
-                return
-            }
-
-            logger.info("Avatar finished, transitioning to character")
-            phase = .transition
-            Task {
-                try? await Task.sleep(for: .seconds(transitionDelay))
-                await MainActor.run {
-                    setupCharacterPlayer(urlString: charUrl)
-                }
-            }
-        }
-
-        // MARK: - Character Player
-
-        private func setupCharacterPlayer(urlString: String) {
-            guard let url = URL(string: urlString) else {
-                logger.error("Invalid character video URL: \(urlString)")
-                dismissAfterDelay()
-                return
-            }
-
-            logger.info("Setting up character player: \(urlString)")
-            let player = AVPlayer(url: url)
-            characterPlayer = player
-            phase = .characterSpeaking
-
-            characterEndObserver = NotificationCenter.default.addObserver(
-                forName: .AVPlayerItemDidPlayToEndTime,
-                object: player.currentItem,
-                queue: .main
-            ) { [weak player] _ in
-                guard player != nil else { return }
-                Task { @MainActor in dismissAfterDelay() }
-            }
-
-            Task {
-                let ready = await waitForPlayerReady(player, label: "character")
-                await MainActor.run {
-                    guard ready else {
-                        logger.error("Character video failed to load")
-                        dismissAfterDelay()
-                        return
-                    }
-                    withAnimation(.easeIn(duration: 0.3)) {
-                        isCharacterVideoReady = true
-                    }
-                    player.play()
-                    logger.info("Character video playing")
-                }
-            }
-        }
-
-        // MARK: - Player Readiness
-
-        private func waitForPlayerReady(
-            _ player: AVPlayer,
-            label: String
-        ) async -> Bool {
-            guard let item = player.currentItem else {
-                logger.error("\(label) player has no current item")
-                return false
-            }
-
-            let maxWaitSeconds = 10.0
-            let pollInterval = 0.1
-            var elapsed = 0.0
-
-            while elapsed < maxWaitSeconds {
-                switch item.status {
-                case .readyToPlay:
-                    logger.info(
-                        "\(label) video ready after \(String(format: "%.1f", elapsed))s"
-                    )
-                    return true
-                case .failed:
-                    let errorDesc = item.error?.localizedDescription ?? "unknown"
-                    logger.error(
-                        "\(label) video failed to load: \(errorDesc)"
-                    )
-                    return false
-                case .unknown:
-                    try? await Task.sleep(for: .seconds(pollInterval))
-                    elapsed += pollInterval
-                @unknown default:
-                    try? await Task.sleep(for: .seconds(pollInterval))
-                    elapsed += pollInterval
-                }
-            }
-
-            logger.error(
-                "\(label) video timed out after \(maxWaitSeconds)s"
-            )
-            return false
-        }
-
-        // MARK: - Lifecycle
-
-        private func dismissAfterDelay() {
-            phase = .done
-            Task {
-                try? await Task.sleep(for: .seconds(0.3))
-                await MainActor.run { onDismiss() }
-            }
-        }
-
-        private func cleanupPlayers() {
-            if let obs = avatarEndObserver {
-                NotificationCenter.default.removeObserver(obs)
-                avatarEndObserver = nil
-            }
-            if let obs = characterEndObserver {
-                NotificationCenter.default.removeObserver(obs)
-                characterEndObserver = nil
-            }
-            avatarPlayer?.pause()
-            avatarPlayer = nil
-            characterPlayer?.pause()
-            characterPlayer = nil
-        }
-    }
-
-    // MARK: - Overlay Phase
-
-    enum InteractionOverlayPhase {
-        case avatarSpeaking
-        case transition
-        case characterSpeaking
-        case done
-    }
-
-    /// AVPlayerLayer wrapper using resizeAspectFill gravity so the video
-    /// fills its frame without the scaleEffect(2) hack that mis-centers faces.
-    struct FillVideoLayer: UIViewRepresentable {
-        let player: AVPlayer
-
-        func makeUIView(context _: Context) -> UIView {
-            let view = PlayerLayerView()
-            view.playerLayer.player = player
-            view.playerLayer.videoGravity = .resizeAspectFill
-            view.backgroundColor = .clear
-            return view
-        }
-
-        func updateUIView(_ uiView: UIView, context _: Context) {
-            guard let view = uiView as? PlayerLayerView else { return }
-            view.playerLayer.player = player
-        }
-
-        private class PlayerLayerView: UIView {
-            override class var layerClass: AnyClass {
-                AVPlayerLayer.self
-            }
-
-            var playerLayer: AVPlayerLayer {
-                layer as! AVPlayerLayer
-            }
         }
     }
 #endif

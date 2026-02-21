@@ -8,20 +8,20 @@ import Observation
 @MainActor
 @Observable
 final class LiveDubbingViewModel {
-    private(set) var availability: DubbingAvailability?
-    private(set) var voices: [DubbingVoice] = []
-    private(set) var selectedVoice: DubbingVoice?
-    private(set) var syncDelayMs: Int = 0
-    private(set) var qualityTier: DubbingQualityTier?
-    private(set) var isEnabled = false
-    private(set) var isConnecting = false
-    private(set) var selectedLanguage: String = "en"
-    private(set) var isLoading = false
-    private(set) var error: String?
-    private(set) var overlayText: String?
-    private(set) var translatedText: String?
-    private(set) var showOverlay = false
-    private(set) var isPremiumRequired = false
+    var availability: DubbingAvailability?
+    var voices: [DubbingVoice] = []
+    var selectedVoice: DubbingVoice?
+    var syncDelayMs: Int = 0
+    var qualityTier: DubbingQualityTier?
+    var isEnabled = false
+    var isConnecting = false
+    var selectedLanguage: String = "en"
+    var isLoading = false
+    var error: String?
+    var overlayText: String?
+    var translatedText: String?
+    var showOverlay = false
+    var isPremiumRequired = false
     var originalVolume: Float = 0.3
     var dubbedVolume: Float = 0.8
 
@@ -64,14 +64,14 @@ final class LiveDubbingViewModel {
             logger.info("Dubbing availability loaded", context: [
                 "channelId": channelId,
                 "isAvailable": String(availability?.isAvailable ?? false),
-                "voiceCount": String(voices.count)
+                "voiceCount": String(voices.count),
             ])
         } catch {
             if let message = error.userFriendlyMessage {
                 self.error = message
             }
             logger.error("Failed to check dubbing availability", error: error, context: [
-                "channelId": channelId
+                "channelId": channelId,
             ])
         }
 
@@ -144,7 +144,8 @@ final class LiveDubbingViewModel {
             syncDelayMs = delay
         }
         if let tierString = info.qualityTier,
-           let tier = DubbingQualityTier(rawValue: tierString) {
+           let tier = DubbingQualityTier(rawValue: tierString)
+        {
             qualityTier = tier
         }
     }
@@ -160,23 +161,6 @@ final class LiveDubbingViewModel {
             try? await Task.sleep(for: overlayDuration)
             if !Task.isCancelled {
                 self.showOverlay = false
-            }
-        }
-    }
-
-    private func observeConnection() {
-        Task { @MainActor in
-            // Poll WebSocket isConnected until connected or disabled
-            while isConnecting && isEnabled {
-                if webSocketService.isConnected {
-                    isConnecting = false
-                    return
-                }
-                if webSocketService.error != nil {
-                    isConnecting = false
-                    return
-                }
-                try? await Task.sleep(for: .milliseconds(100))
             }
         }
     }

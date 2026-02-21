@@ -13,13 +13,15 @@ struct OutfitGridItem: View {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.sm) {
                 ZStack(alignment: .topTrailing) {
-                    AsyncImage(url: URL(string: outfit.thumbnailUrl)) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(DesignTokens.Glass.bgStrong)
+                    CachedAsyncImage(url: URL(string: outfit.thumbnailUrl)) { phase in
+                        if case let .success(image) = phase {
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } else {
+                            Rectangle()
+                                .fill(DesignTokens.Glass.bgStrong)
+                        }
                     }
                     .frame(height: 120)
                     .clipped()
@@ -107,13 +109,15 @@ struct OutfitDetailCard: View {
                     }
                 }
 
-                AsyncImage(url: URL(string: outfit.thumbnailUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    Rectangle()
-                        .fill(DesignTokens.Glass.bgStrong)
+                CachedAsyncImage(url: URL(string: outfit.thumbnailUrl)) { phase in
+                    if case let .success(image) = phase {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Rectangle()
+                            .fill(DesignTokens.Glass.bgStrong)
+                    }
                 }
                 .frame(height: 200)
                 .cornerRadius(DesignTokens.Radius.lg)

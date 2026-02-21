@@ -5,14 +5,15 @@ import Observation
 @MainActor
 @Observable
 final class DownloadsViewModel {
-
     private let downloadManager: DownloadManager
 
     init(downloadManager: DownloadManager) {
         self.downloadManager = downloadManager
     }
 
-    var downloads: [LocalDownload] { downloadManager.downloads }
+    var downloads: [LocalDownload] {
+        downloadManager.downloads
+    }
 
     var activeDownloads: [LocalDownload] {
         downloads.filter { $0.status == .downloading || $0.status == .queued || $0.status == .paused }
@@ -26,16 +27,16 @@ final class DownloadsViewModel {
         downloads.filter { $0.status == .failed }
     }
 
-    func deleteDownload(_ download: LocalDownload) {
-        Task { await downloadManager.deleteDownload(id: download.id) }
+    func deleteDownload(_ download: LocalDownload) async {
+        await downloadManager.deleteDownload(id: download.id)
     }
 
-    func retryDownload(_ download: LocalDownload) {
-        Task { await downloadManager.retryDownload(id: download.id) }
+    func retryDownload(_ download: LocalDownload) async {
+        await downloadManager.retryDownload(id: download.id)
     }
 
-    func clearAllDownloads() {
-        Task { await downloadManager.clearAllDownloads() }
+    func clearAllDownloads() async {
+        await downloadManager.clearAllDownloads()
     }
 
     func localFileURL(for download: LocalDownload) -> URL? {

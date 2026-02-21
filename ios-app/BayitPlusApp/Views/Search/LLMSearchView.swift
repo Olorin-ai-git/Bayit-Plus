@@ -7,7 +7,7 @@ import UIKit
 /// example queries, AI interpretation display, confidence meter, and results.
 struct LLMSearchView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(NavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: LLMSearchViewModel?
 
@@ -178,30 +178,6 @@ struct LLMSearchView: View {
         if let vm = viewModel, let interpretation = vm.interpretation {
             LLMSearchInterpretationView(interpretation: interpretation)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
-        }
-    }
-
-    // MARK: - Helpers
-
-    private var sampleQueries: [String] {
-        [
-            "Family-friendly Israeli comedies",
-            "Documentaries about Jerusalem",
-            "Hebrew music podcasts",
-            "Drama series from 2024"
-        ]
-    }
-
-    private func navigateToItem(_ item: ContentItem) {
-        let ct = item.type?.lowercased() ?? ""
-        if ct == "series" {
-            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
-        } else if ct == "collection" || item.isCollectionParent == true {
-            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if ct == "audiobook" {
-            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
-        } else {
-            coordinator.navigate(to: .movieDetail(movieId: item.id))
         }
     }
 }

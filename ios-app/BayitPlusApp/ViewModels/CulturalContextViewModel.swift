@@ -14,7 +14,7 @@ struct CulturalExplanationData: Identifiable, Sendable {
     let imageUrl: String?
 
     init(referenceId: String, canonicalName: String, canonicalNameEn: String, category: String, subcategory: String, shortExplanation: String, shortExplanationEn: String, imageUrl: String?) {
-        self.id = referenceId
+        id = referenceId
         self.referenceId = referenceId
         self.canonicalName = canonicalName
         self.canonicalNameEn = canonicalNameEn
@@ -26,6 +26,7 @@ struct CulturalExplanationData: Identifiable, Sendable {
     }
 }
 
+@MainActor
 @Observable
 final class CulturalContextViewModel {
     var references: [CulturalExplanationData] = []

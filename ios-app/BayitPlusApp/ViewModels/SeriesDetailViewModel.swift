@@ -17,19 +17,19 @@ final class SeriesDetailViewModel {
     var selectedSeason: Int = 1
 
     private let seriesRepository: any SeriesRepository
-    private let contentRepository: any ContentRepository
+    private let mediaRepository: any MediaRepository
     private let userRepository: any UserRepository
     let seriesId: String
 
     init(
         seriesId: String,
         repository: any SeriesRepository,
-        contentRepository: any ContentRepository,
+        mediaRepository: any MediaRepository,
         userRepository: any UserRepository
     ) {
         self.seriesId = seriesId
-        self.seriesRepository = repository
-        self.contentRepository = contentRepository
+        seriesRepository = repository
+        self.mediaRepository = mediaRepository
         self.userRepository = userRepository
     }
 
@@ -87,7 +87,7 @@ final class SeriesDetailViewModel {
     @MainActor
     private func loadWatchProgress() async {
         do {
-            let response = try await contentRepository.fetchContinueWatching()
+            let response = try await mediaRepository.fetchContinueWatching()
             var progressMap: [String: Double] = [:]
             for item in response.items {
                 if let progress = item.progress {

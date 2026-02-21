@@ -40,9 +40,9 @@ struct AudiobookCardView: View {
     private var coverImage: some View {
         Group {
             if let urlStr = audiobook.thumbnail, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable().aspectRatio(contentMode: .fill)
                     default:
                         coverPlaceholder

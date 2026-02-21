@@ -10,46 +10,45 @@ import Observation
 @MainActor
 @Observable
 final class CatchUpViewModel {
-
     // MARK: - Published State
 
     /// Whether the auto-prompt overlay should be visible.
-    private(set) var showAutoPrompt = false
+    var showAutoPrompt = false
 
     /// Whether the summary card should be visible.
-    private(set) var showSummary = false
+    var showSummary = false
 
     /// The loaded AI summary response (nil until fetched).
-    private(set) var summary: CatchUpSummaryResponse?
+    var summary: CatchUpSummaryResponse?
 
     /// Loading indicator for summary generation.
-    private(set) var isLoading = false
+    var isLoading = false
 
     /// User-facing error message.
-    private(set) var error: String?
+    var error: String?
 
     /// Typed error for UI branching (insufficient credits vs general).
-    private(set) var errorType: CatchUpErrorType = .none
+    var errorType: CatchUpErrorType = .none
 
     /// Whether catch-up is available for this channel/user.
-    private(set) var isAvailable = false
+    var isAvailable = false
 
     /// Whether the user has credits remaining.
-    private(set) var hasCredits = false
+    var hasCredits = false
 
     /// Current credit balance.
-    private(set) var creditBalance: Int = 0
+    var creditBalance: Int = 0
 
     // MARK: - Legacy State (backward compat for CatchUpView transcript timeline)
 
-    private(set) var segments: [CatchUpSegment] = []
-    private(set) var legacySummary: String?
+    var segments: [CatchUpSegment] = []
+    var legacySummary: String?
 
     // MARK: - Dependencies
 
-    private let repository: any LiveTVRepository
-    private let preferences: CatchUpPreferencesService
-    private let logger: BayitLogger
+    let repository: any LiveTVRepository
+    let preferences: CatchUpPreferencesService
+    let logger: BayitLogger
 
     // MARK: - Init
 
@@ -88,7 +87,7 @@ final class CatchUpViewModel {
             logger.info("Availability checked", context: [
                 "channelId": channelId,
                 "available": String(response.available),
-                "balance": String(creditBalance)
+                "balance": String(creditBalance),
             ])
         } catch {
             // Availability check failure is non-fatal; hide auto-prompt
@@ -128,7 +127,7 @@ final class CatchUpViewModel {
             logger.info("Summary loaded", context: [
                 "channelId": channelId,
                 "cached": String(response.cached ?? false),
-                "creditsUsed": String(response.creditsUsed ?? 0)
+                "creditsUsed": String(response.creditsUsed ?? 0),
             ])
         } catch let apiError as APIError {
             handleAPIError(apiError)
@@ -136,31 +135,6 @@ final class CatchUpViewModel {
             self.error = "Unable to generate summary"
             errorType = .general
             logger.error("Summary fetch failed", error: error)
-        }
-
-        isLoading = false
-    }
-
-    // MARK: - Legacy Fetch (transcript timeline)
-
-    /// Load the legacy catch-up endpoint for transcript segments.
-    func loadCatchUp(channelId: String) async {
-        isLoading = true
-        error = nil
-
-        do {
-            let response = try await repository.fetchCatchUp(
-                channelId: channelId
-            )
-            segments = response.segments ?? []
-            legacySummary = response.summary
-            logger.info("Legacy catch-up loaded", context: [
-                "channelId": channelId,
-                "segmentCount": "\(segments.count)"
-            ])
-        } catch {
-            self.error = "Unable to load catch-up content"
-            logger.error("Legacy catch-up load failed", error: error)
         }
 
         isLoading = false
@@ -193,23 +167,5 @@ final class CatchUpViewModel {
         creditBalance = 0
         segments = []
         legacySummary = nil
-    }
-
-    // MARK: - Error Handling
-
-    private func handleAPIError(_ apiError: APIError) {
-        switch apiError {
-        case .paymentRequired:
-            error = "Insufficient credits"
-            errorType = .insufficientCredits
-            hasCredits = false
-        case .serverError(let statusCode, _) where statusCode == 503:
-            error = "Catch-up service is temporarily unavailable"
-            errorType = .serviceUnavailable
-        default:
-            error = apiError.localizedDescription
-            errorType = .general
-        }
-        logger.error("API error during summary", error: apiError)
     }
 }

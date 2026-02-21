@@ -128,7 +128,7 @@ struct InteractiveSubtitlesOverlay: View {
                 WrappingHStack(words: words) { word in
                     wordButton(word)
                 }
-                .frame(maxWidth: UIScreen.main.bounds.width * 0.9)
+                .containerRelativeFrame(.horizontal) { width, _ in width * 0.9 }
                 .padding(.horizontal, DesignTokens.Spacing.md)
                 .padding(.vertical, DesignTokens.Spacing.sm)
                 .background(Color.black.opacity(0.6))
@@ -139,7 +139,7 @@ struct InteractiveSubtitlesOverlay: View {
                     .font(.system(size: DesignTokens.FontSize.lg))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: UIScreen.main.bounds.width * 0.9)
+                    .containerRelativeFrame(.horizontal) { width, _ in width * 0.9 }
                     .padding(.horizontal, DesignTokens.Spacing.md)
                     .padding(.vertical, DesignTokens.Spacing.sm)
                     .background(Color.black.opacity(0.6))

@@ -8,13 +8,13 @@
     /// Uses TabView with tvOS-native top shelf styling.
     /// Overlays the widget dock at the bottom, language picker at the top-right.
     struct TVMainTabView: View {
-        @Environment(TVNavigationCoordinator.self) private var coordinator
-        @Environment(TVRepositoryProvider.self) private var repos
-        @Environment(LocalizationManager.self) private var localization
-        @State private var dockViewModel: WidgetDockViewModel?
-        @State private var showLanguagePicker = false
-        @State private var widgetAutoHideTask: Task<Void, Never>?
-        @State private var isWidgetAreaFocused = false
+        @Environment(TVNavigationCoordinator.self) var coordinator
+        @Environment(TVRepositoryProvider.self) var repos
+        @Environment(LocalizationManager.self) var localization
+        @State var dockViewModel: WidgetDockViewModel?
+        @State var showLanguagePicker = false
+        @State var widgetAutoHideTask: Task<Void, Never>?
+        @State var isWidgetAreaFocused = false
 
         var body: some View {
             @Bindable var coord = coordinator
@@ -79,8 +79,7 @@
                 if let vm = dockViewModel, vm.isDockVisible, !vm.restoredWidgets.isEmpty {
                     TVWidgetSidebarView(
                         widgets: vm.restoredWidgets,
-                        onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) },
-                        onFocusChanged: { focused in handleWidgetFocusChanged(focused) }
+                        onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) }
                     )
                 }
             }
@@ -125,119 +124,6 @@
                 coordinator.showWidgetDock = false
                 dockViewModel?.showDock()
             }
-        }
-
-        // MARK: - Language Button
-
-        private var languageButton: some View {
-            Button {
-                showLanguagePicker = true
-            } label: {
-                HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Image(systemName: "globe")
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                    Text(localization.currentLanguage.rawValue.uppercased())
-                        .font(.system(
-                            size: TVDesignTokens.FontSize.xs,
-                            weight: .semibold
-                        ))
-                }
-                .foregroundStyle(DesignTokens.Text.primary)
-                .padding(.horizontal, TVDesignTokens.Spacing.md)
-                .padding(.vertical, TVDesignTokens.Spacing.sm)
-                .background(DesignTokens.Glass.bgMedium)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
-                )
-            }
-            .buttonStyle(.card)
-            .accessibilityLabel(localization.t("settings.chooseLanguage"))
-        }
-
-        // MARK: - Widgets Button
-
-        private func widgetsButton(viewModel vm: WidgetDockViewModel) -> some View {
-            Button {
-                vm.isDockVisible ? vm.hideDock() : vm.showDock()
-            } label: {
-                HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Image(systemName: "square.grid.2x2")
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                    Text("\(vm.widgets.count)")
-                        .font(.system(
-                            size: TVDesignTokens.FontSize.xs,
-                            weight: .semibold
-                        ))
-                }
-                .foregroundStyle(
-                    vm.isDockVisible
-                        ? DesignTokens.Primary.p300
-                        : DesignTokens.Text.primary
-                )
-                .padding(.horizontal, TVDesignTokens.Spacing.md)
-                .padding(.vertical, TVDesignTokens.Spacing.sm)
-                .background(
-                    vm.isDockVisible
-                        ? DesignTokens.Primary.p400.opacity(0.15)
-                        : DesignTokens.Glass.bgMedium
-                )
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule().stroke(
-                        vm.isDockVisible
-                            ? DesignTokens.Primary.p400.opacity(0.4)
-                            : DesignTokens.Glass.border,
-                        lineWidth: 1
-                    )
-                )
-            }
-            .buttonStyle(.card)
-            .accessibilityLabel(localization.t("nav.widgets"))
-        }
-
-        // MARK: - Widget Auto-Hide
-
-        private func handleWidgetFocusChanged(_ focused: Bool) {
-            isWidgetAreaFocused = focused
-            if focused {
-                widgetAutoHideTask?.cancel()
-                widgetAutoHideTask = nil
-            } else {
-                resetWidgetAutoHideTimer()
-            }
-        }
-
-        private func resetWidgetAutoHideTimer() {
-            widgetAutoHideTask?.cancel()
-            guard !isWidgetAreaFocused else { return }
-            widgetAutoHideTask = Task {
-                try? await Task.sleep(for: .seconds(10))
-                guard !Task.isCancelled else { return }
-                guard !isWidgetAreaFocused else { return }
-                dockViewModel?.hideDock()
-            }
-        }
-
-        // MARK: - Language Picker Sheet
-
-        private var languagePickerSheet: some View {
-            ZStack(alignment: .topTrailing) {
-                TVLanguageSettingsView()
-
-                Button {
-                    showLanguagePicker = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: TVDesignTokens.FontSize.xl))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-                .buttonStyle(.card)
-                .padding(.top, TVDesignTokens.Spacing.xl)
-                .padding(.trailing, TVDesignTokens.Spacing.xl)
-                .accessibilityLabel(localization.t("common.dismiss"))
-            }
-            .background(DesignTokens.Background.primary)
         }
     }
 #endif

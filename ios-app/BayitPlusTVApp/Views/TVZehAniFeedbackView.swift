@@ -8,7 +8,7 @@
 
     struct TVFeedbackView: View {
         @Environment(TVRepositoryProvider.self) private var repos
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
 
         let profileId: String
 

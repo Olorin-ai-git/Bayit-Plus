@@ -1,5 +1,7 @@
+import BayitCore
 import Foundation
 import Observation
+import UIKit
 
 /// Singleton service that polls zmanim data and tracks Shabbat state.
 ///
@@ -8,7 +10,6 @@ import Observation
 /// havdalah, parasha, and countdown information throughout the app.
 @Observable
 final class ShabbatModeService {
-
     // MARK: - Configuration
 
     private enum Configuration {
@@ -72,15 +73,18 @@ final class ShabbatModeService {
     // MARK: - Private
 
     private let userDefaultsAutoModeKey = "tv.bayit.shabbat.autoModeEnabled"
+    private let logger = BayitLogger(category: "ShabbatModeService")
     private var pollingTask: Task<Void, Never>?
     private var repository: (any ShabbatRepository)?
+    private var backgroundObserver: NSObjectProtocol?
+    private var foregroundObserver: NSObjectProtocol?
 
     // MARK: - Singleton
 
     static let shared = ShabbatModeService()
 
     private init() {
-        self.autoModeEnabled = UserDefaults.standard.bool(
+        autoModeEnabled = UserDefaults.standard.bool(
             forKey: userDefaultsAutoModeKey
         )
     }
@@ -95,21 +99,14 @@ final class ShabbatModeService {
     func startPolling(repository: any ShabbatRepository) {
         guard pollingTask == nil else { return }
         self.repository = repository
-        pollingTask = Task { [weak self] in
-            guard let self else { return }
-            while !Task.isCancelled {
-                await self.fetchZmanTime()
-                try? await Task.sleep(
-                    for: .seconds(Configuration.pollingIntervalSeconds)
-                )
-            }
-        }
+        beginPollingLoop()
+        registerLifecycleObservers()
     }
 
-    /// Stops the background polling loop.
+    /// Stops the background polling loop and removes lifecycle observers.
     func stopPolling() {
-        pollingTask?.cancel()
-        pollingTask = nil
+        cancelPollingLoop()
+        removeLifecycleObservers()
     }
 
     /// Performs a single immediate refresh of zmanim data.
@@ -124,7 +121,59 @@ final class ShabbatModeService {
         isShabbatActive.toggle()
     }
 
+    // MARK: - Lifecycle Coordination
+
+    private func registerLifecycleObservers() {
+        backgroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.logger.info("App entered background, pausing zmanim polling")
+            self?.cancelPollingLoop()
+        }
+
+        foregroundObserver = NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self, self.repository != nil else { return }
+            self.logger.info("App entering foreground, resuming zmanim polling")
+            self.beginPollingLoop()
+        }
+    }
+
+    private func removeLifecycleObservers() {
+        if let observer = backgroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+            backgroundObserver = nil
+        }
+        if let observer = foregroundObserver {
+            NotificationCenter.default.removeObserver(observer)
+            foregroundObserver = nil
+        }
+    }
+
     // MARK: - Private
+
+    private func beginPollingLoop() {
+        guard pollingTask == nil else { return }
+        pollingTask = Task { [weak self] in
+            guard let self else { return }
+            while !Task.isCancelled {
+                await self.fetchZmanTime()
+                try? await Task.sleep(
+                    for: .seconds(Configuration.pollingIntervalSeconds)
+                )
+            }
+        }
+    }
+
+    private func cancelPollingLoop() {
+        pollingTask?.cancel()
+        pollingTask = nil
+    }
 
     @MainActor
     private func fetchZmanTime() async {

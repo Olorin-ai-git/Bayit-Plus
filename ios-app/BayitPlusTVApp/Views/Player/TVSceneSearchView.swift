@@ -96,9 +96,7 @@
             Button { onSeek(result.timestamp) } label: {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
                     if let thumbnail = result.thumbnail, let url = URL(string: thumbnail) {
-                        CachedAsyncImage(url: url) { image in
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } placeholder: {
+                        CachedAsyncImage(url: url) {
                             Rectangle().fill(DesignTokens.Glass.bgMedium)
                         }
                         .frame(width: 160, height: 90)

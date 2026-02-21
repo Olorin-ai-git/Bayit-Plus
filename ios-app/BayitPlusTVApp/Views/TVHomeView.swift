@@ -9,6 +9,7 @@ struct TVHomeView: View {
     @Environment(TVRepositoryProvider.self) var repos
     @Environment(TVNavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
+    @Environment(\.appConfiguration) private var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var featuredCollections: [CollectionDetail] = []
 
@@ -30,10 +31,14 @@ struct TVHomeView: View {
             if viewModel == nil {
                 viewModel = HomeViewModel(
                     repository: repos.content,
+                    mediaRepository: repos.media,
                     liveTVRepository: repos.liveTV,
                     radioRepository: repos.radio,
                     locationProvider: TVLocationProvider(),
-                    featureFlags: FeatureFlags()
+                    featureFlags: FeatureFlags(),
+                    contentRowLimit: appConfiguration.homeContentRowLimit,
+                    defaultCultureId: appConfiguration.defaultCultureId,
+                    hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
                 )
             }
             await viewModel?.loadFeatured()

@@ -68,10 +68,13 @@ struct HighlightReelView: View {
     private func reelCard(_ reel: HighlightReelItem) -> some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             if let thumbnailUrl = reel.thumbnailUrl {
-                AsyncImage(url: URL(string: thumbnailUrl)) { image in
-                    image.resizable().aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Color.white.opacity(0.1)
+                CachedAsyncImage(url: URL(string: thumbnailUrl)) { phase in
+                    switch phase {
+                    case let .success(image):
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    default:
+                        Color.white.opacity(0.1)
+                    }
                 }
                 .frame(width: 80, height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
@@ -144,7 +147,8 @@ struct HighlightReelView: View {
         let items: [Any] = [shareText, shareUrl]
         let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let root = scene.windows.first?.rootViewController {
+           let root = scene.windows.first?.rootViewController
+        {
             root.present(controller, animated: true)
         }
     }

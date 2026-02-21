@@ -4,8 +4,9 @@ import BayitNetworking
 import Foundation
 import SwiftUI
 
+@MainActor
 @Observable
-class V2VPracticeViewModel {
+final class V2VPracticeViewModel {
     var practiceState: PracticeState = .idle
     var currentPhrase: V2VPracticePhrase?
     var phrases: [V2VPracticePhrase] = []
@@ -17,11 +18,11 @@ class V2VPracticeViewModel {
     var isConnected = false
     var error: String?
 
-    private var audioRecorder: AVAudioRecorder?
-    private var recordingURL: URL?
-    private var wsConnection: WebSocketConnection?
-    private var receiveTask: Task<Void, Never>?
-    private var webSocketManager: WebSocketManager?
+    var audioRecorder: AVAudioRecorder?
+    var recordingURL: URL?
+    var wsConnection: WebSocketConnection?
+    var receiveTask: Task<Void, Never>?
+    var webSocketManager: WebSocketManager?
 
     enum PracticeState {
         case idle, recording, transforming, result
@@ -31,9 +32,9 @@ class V2VPracticeViewModel {
         let session = AVAudioSession.sharedInstance()
         do {
             #if os(iOS)
-            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+                try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
             #else
-            try session.setCategory(.playAndRecord, mode: .default)
+                try session.setCategory(.playAndRecord, mode: .default)
             #endif
             try session.setActive(true)
         } catch {
@@ -92,20 +93,20 @@ class V2VPracticeViewModel {
         }
     }
 
-    func stopRecording() -> Data? {
+    func stopRecording() async -> Data? {
         audioRecorder?.stop()
         isRecording = false
 
-        guard let url = recordingURL,
-              let data = try? Data(contentsOf: url) else {
-            return nil
-        }
+        guard let url = recordingURL else { return nil }
 
-        try? FileManager.default.removeItem(at: url)
-        return data
+        return await Task.detached(priority: .userInitiated) {
+            guard let data = try? Data(contentsOf: url) else { return nil as Data? }
+            try? FileManager.default.removeItem(at: url)
+            return data
+        }.value
     }
 
-    func submitForTransform(audioData: Data, avatarId: String) async {
+    func submitForTransform(audioData: Data, avatarId _: String) async {
         practiceState = .transforming
 
         guard let phrase = currentPhrase else {
@@ -118,12 +119,13 @@ class V2VPracticeViewModel {
         let payload: [String: Any] = [
             "type": "audio_chunk",
             "audio": audioBase64,
-            "target_phrase_he": phrase.phraseHe
+            "target_phrase_he": phrase.phraseHe,
         ]
 
         do {
             if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
+               let jsonString = String(data: jsonData, encoding: .utf8)
+            {
                 try await wsConnection?.send(message: jsonString)
             }
         } catch {
@@ -156,61 +158,12 @@ class V2VPracticeViewModel {
         resetState()
     }
 
-    private func resetState() {
+    func resetState() {
         scoreBefore = 0
         scoreAfter = 0
         scoreDelta = 0
         latencyMs = 0
         practiceState = .idle
-    }
-
-    private func startReceiving(connection: WebSocketConnection) {
-        receiveTask = Task { [weak self] in
-            let stream = await connection.receive()
-            for await text in stream {
-                await self?.handleWSMessage(text)
-            }
-            await MainActor.run { [weak self] in
-                self?.isConnected = false
-            }
-        }
-    }
-
-    @MainActor
-    private func handleWSMessage(_ text: String) {
-        guard let data = text.data(using: .utf8),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let type = json["type"] as? String else {
-            return
-        }
-
-        switch type {
-        case "authenticated":
-            break
-        case "v2v_result":
-            handleV2VResult(json)
-        case "session_completed":
-            break
-        case "heartbeat_ack":
-            break
-        case "error":
-            error = json["message"] as? String
-            if practiceState == .transforming {
-                practiceState = .idle
-            }
-        default:
-            break
-        }
-    }
-
-    private func buildWebSocketURL(avatarId: String) async -> URL? {
-        guard let wsManager = webSocketManager else { return nil }
-        let baseURL = await wsManager.configuration.baseURL
-
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-        components?.scheme = baseURL.scheme == "https" ? "wss" : "ws"
-        components?.path = "/ws/v2v/\(avatarId)"
-        return components?.url
     }
 
     func cleanup() {

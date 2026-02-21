@@ -6,12 +6,12 @@ import SwiftUI
 struct YoungtersView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: YoungstersViewModel?
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
     ]
 
     var body: some View {
@@ -47,7 +47,7 @@ struct YoungtersView: View {
                     thumbnailURL: hero.thumbnail,
                     title: hero.title,
                     subtitle: hero.category,
-                    aspectRatio: 21/9,
+                    aspectRatio: 21 / 9,
                     width: .infinity,
                     onTap: {
                         coordinator.pushToCurrentTab(.movieDetail(movieId: hero.id))
@@ -142,56 +142,6 @@ struct YoungtersView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    private func newsSection(_ vm: YoungstersViewModel) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text(localization.t("youngsters.news"))
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-
-            LazyVStack(spacing: DesignTokens.Spacing.sm) {
-                ForEach(vm.news) { item in
-                    newsRow(item)
-                }
-            }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-        }
-    }
-
-    private func newsRow(_ item: NewsItem) -> some View {
-        GlassCard {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                if let thumb = item.thumbnail, let url = URL(string: thumb) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let image) = phase {
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } else {
-                            DesignTokens.Glass.bg
-                        }
-                    }
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-                }
-
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                    Text(item.title ?? "")
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .lineLimit(2)
-
-                    if let source = item.source {
-                        Text(source)
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
-                    }
-                }
-
-                Spacer()
-            }
-            .padding(DesignTokens.Spacing.md)
-        }
-    }
-
     private var loadingState: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
@@ -200,10 +150,10 @@ struct YoungtersView: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
             LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-                ForEach(0..<4, id: \.self) { _ in
+                ForEach(0 ..< 4, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                         .fill(DesignTokens.Glass.bg)
-                        .aspectRatio(16/9, contentMode: .fit)
+                        .aspectRatio(16 / 9, contentMode: .fit)
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)

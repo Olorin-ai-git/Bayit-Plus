@@ -5,7 +5,7 @@ import SwiftUI
 /// tvOS security settings screen with password management and device list.
 /// Reuses SecurityViewModel from shared ViewModels.
 struct TVSecurityView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: SecurityViewModel?
 

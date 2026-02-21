@@ -17,7 +17,7 @@ struct DynamicCityContentRow: View {
                         colors: [
                             accentColor.opacity(0.4),
                             accentColor.opacity(0.2),
-                            DesignTokens.Background.primary.opacity(0.8)
+                            DesignTokens.Background.primary.opacity(0.8),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -28,7 +28,7 @@ struct DynamicCityContentRow: View {
                         stops: [
                             .init(color: .black.opacity(0.4), location: 0),
                             .init(color: .black.opacity(0.2), location: 0.4),
-                            .init(color: .black.opacity(0.5), location: 1.0)
+                            .init(color: .black.opacity(0.5), location: 1.0),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -73,9 +73,9 @@ private struct CultureCityCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             if let imageUrl = item.imageUrl, let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)

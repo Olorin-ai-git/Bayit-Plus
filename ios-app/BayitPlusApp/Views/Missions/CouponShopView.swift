@@ -84,8 +84,8 @@ struct CouponShopView: View {
         return GlassCard {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                 if let urlStr = coupon.imageUrl, let url = URL(string: urlStr) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let img) = phase {
+                    CachedAsyncImage(url: url) { phase in
+                        if case let .success(img) = phase {
                             img.resizable().aspectRatio(contentMode: .fill)
                         } else {
                             couponImageFallback

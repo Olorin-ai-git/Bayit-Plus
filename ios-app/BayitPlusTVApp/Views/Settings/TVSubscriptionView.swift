@@ -7,7 +7,7 @@ import SwiftUI
 /// Subscription actions redirect users to bayit.tv or their mobile device
 /// since tvOS cannot open external checkout URLs.
 struct TVSubscriptionView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: SubscriptionViewModel?
 

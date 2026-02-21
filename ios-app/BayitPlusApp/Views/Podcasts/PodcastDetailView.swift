@@ -65,9 +65,9 @@ struct PodcastDetailView: View {
     private func coverSection(_ detail: PodcastDetail) -> some View {
         Group {
             if let urlStr = detail.cover, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
+                CachedAsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: 200)
@@ -170,7 +170,7 @@ struct PodcastDetailView: View {
                 .frame(height: 120)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
-            ForEach(0..<3, id: \.self) { _ in
+            ForEach(0 ..< 3, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 70)

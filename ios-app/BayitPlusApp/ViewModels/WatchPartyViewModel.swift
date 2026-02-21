@@ -22,6 +22,7 @@ final class WatchPartyViewModel {
     let logger = BayitLogger(category: "WatchParty")
     var connection: WebSocketConnection?
     var receiveTask: Task<Void, Never>?
+    var disconnectTask: Task<Void, Never>?
     var webSocketManager: WebSocketManager?
     var currentUserId: String?
 
@@ -55,7 +56,7 @@ final class WatchPartyViewModel {
             participants = party.participants
             showCreateSheet = false
             logger.info("Party created", context: [
-                "partyId": party.id, "roomCode": party.roomCode
+                "partyId": party.id, "roomCode": party.roomCode,
             ])
         } catch {
             if let message = error.userFriendlyMessage {

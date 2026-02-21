@@ -2,18 +2,22 @@ import BayitCore
 import BayitNetworking
 import Foundation
 
-/// WebSocket service for receiving live trivia facts during live channel playback
+/// WebSocket service for receiving live trivia facts during live channel playback.
+/// Delegates connection management to the centralized `WebSocketManager`.
 final class LiveTriviaWebSocketService: @unchecked Sendable {
-    private var webSocket: URLSessionWebSocketTask?
+    private var connection: WebSocketConnection?
+    private var connectionId: UUID?
+    private var receiveTask: Task<Void, Never>?
+    private let webSocketManager: WebSocketManager
     private let configuration: any EnvironmentConfiguration
     private let authTokenProvider: AuthTokenProvider
     private let logger = BayitLogger(category: "LiveTrivia")
 
     private static var platformIdentifier: String {
         #if os(tvOS)
-        return "tvos"
+            return "tvos"
         #else
-        return "ios"
+            return "ios"
         #endif
     }
 
@@ -24,13 +28,18 @@ final class LiveTriviaWebSocketService: @unchecked Sendable {
         case disconnected, connecting, connected, error(String)
     }
 
-    init(configuration: any EnvironmentConfiguration, authTokenProvider: AuthTokenProvider) {
+    init(
+        webSocketManager: WebSocketManager,
+        configuration: any EnvironmentConfiguration,
+        authTokenProvider: AuthTokenProvider
+    ) {
+        self.webSocketManager = webSocketManager
         self.configuration = configuration
         self.authTokenProvider = authTokenProvider
     }
 
     func connect(channelId: String, targetLanguage: String) {
-        guard webSocket == nil else { return }
+        guard connection == nil else { return }
 
         onConnectionStatusChanged?(.connecting)
 
@@ -40,37 +49,62 @@ final class LiveTriviaWebSocketService: @unchecked Sendable {
             .appendingPathComponent(channelId)
             .appendingPathComponent("trivia")
 
-        var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: true)!
-        urlComponents.queryItems = [
+        var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: true)
+        urlComponents?.queryItems = [
             URLQueryItem(name: "target_language", value: targetLanguage),
-            URLQueryItem(name: "platform", value: Self.platformIdentifier)
+            URLQueryItem(name: "platform", value: Self.platformIdentifier),
         ]
 
-        let session = URLSession(configuration: .default)
-        webSocket = session.webSocketTask(with: urlComponents.url!)
-        webSocket?.resume()
-
-        Task {
-            await sendAuthMessage()
+        guard let url = urlComponents?.url else {
+            onConnectionStatusChanged?(.error("Invalid WebSocket URL"))
+            return
         }
 
-        receiveMessage()
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                guard let token = try await authTokenProvider.currentToken() else {
+                    self.onConnectionStatusChanged?(.error("No auth token"))
+                    return
+                }
 
-        logger.info("Connecting to live trivia WebSocket", context: [
-            "channelId": channelId,
-            "language": targetLanguage
-        ])
+                let conn = try await webSocketManager.connect(to: url, authToken: token)
+                let connId = await conn.id
+                self.connection = conn
+                self.connectionId = connId
+                self.onConnectionStatusChanged?(.connected)
+                self.startReceiving(connection: conn)
+
+                self.logger.info("Connecting to live trivia WebSocket", context: [
+                    "channelId": channelId,
+                    "language": targetLanguage,
+                ])
+            } catch {
+                self.onConnectionStatusChanged?(.error(error.localizedDescription))
+                self.logger.error("Trivia WebSocket connect failed", error: error)
+            }
+        }
     }
 
     func disconnect() {
-        webSocket?.cancel(with: .goingAway, reason: nil)
-        webSocket = nil
+        receiveTask?.cancel()
+        receiveTask = nil
+
+        if let connId = connectionId {
+            let manager = webSocketManager
+            Task { await manager.disconnect(id: connId) }
+        }
+
+        connection = nil
+        connectionId = nil
         onConnectionStatusChanged?(.disconnected)
         logger.info("Disconnected from live trivia WebSocket")
     }
 
     /// Request a follow-up fact for a given fact chain via the WebSocket.
     func requestFollowUp(factId: String, chainId: String?) {
+        guard let conn = connection else { return }
+
         var message: [String: Any] = [
             "type": "follow_up",
             "fact_id": factId,
@@ -80,13 +114,16 @@ final class LiveTriviaWebSocketService: @unchecked Sendable {
         }
 
         guard let data = try? JSONSerialization.data(withJSONObject: message),
-              let jsonString = String(data: data, encoding: .utf8) else {
+              let jsonString = String(data: data, encoding: .utf8)
+        else {
             return
         }
 
-        webSocket?.send(.string(jsonString)) { [weak self] error in
-            if let error {
-                self?.logger.error("Failed to send follow-up request", context: [
+        Task {
+            do {
+                try await conn.send(message: jsonString)
+            } catch {
+                self.logger.error("Failed to send follow-up request", context: [
                     "error": error.localizedDescription,
                     "factId": factId,
                 ])
@@ -94,57 +131,23 @@ final class LiveTriviaWebSocketService: @unchecked Sendable {
         }
     }
 
-    private func sendAuthMessage() async {
-        guard let token = try? await authTokenProvider.currentToken() else {
-            onConnectionStatusChanged?(.error("No auth token"))
-            return
-        }
-
-        let authMessage = ["type": "authenticate", "token": token]
-        guard let data = try? JSONSerialization.data(withJSONObject: authMessage),
-              let jsonString = String(data: data, encoding: .utf8) else {
-            return
-        }
-
-        webSocket?.send(.string(jsonString)) { [weak self] error in
-            if let error = error {
-                self?.logger.error("Failed to send auth", context: ["error": error.localizedDescription])
-                self?.onConnectionStatusChanged?(.error(error.localizedDescription))
-            } else {
-                self?.onConnectionStatusChanged?(.connected)
+    private func startReceiving(connection: WebSocketConnection) {
+        receiveTask = Task { [weak self] in
+            let stream = await connection.receive()
+            for await text in stream {
+                guard !Task.isCancelled else { break }
+                self?.handleMessage(text)
             }
-        }
-    }
 
-    private func receiveMessage() {
-        webSocket?.receive { [weak self] result in
-            guard let self = self else { return }
-
-            switch result {
-            case .success(let message):
-                switch message {
-                case .string(let text):
-                    self.handleMessage(text)
-                case .data(let data):
-                    if let text = String(data: data, encoding: .utf8) {
-                        self.handleMessage(text)
-                    }
-                @unknown default:
-                    break
-                }
-                self.receiveMessage() // Continue listening
-
-            case .failure(let error):
-                self.logger.error("WebSocket receive error", context: ["error": error.localizedDescription])
-                self.onConnectionStatusChanged?(.error(error.localizedDescription))
-            }
+            self?.onConnectionStatusChanged?(.disconnected)
         }
     }
 
     private func handleMessage(_ text: String) {
         guard let data = text.data(using: .utf8),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let type = json["type"] as? String else {
+              let type = json["type"] as? String
+        else {
             return
         }
 

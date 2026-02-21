@@ -87,8 +87,8 @@ struct EPGView: View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 if let logo = channel.channelLogo, let url = URL(string: logo) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let image) = phase {
+                    CachedAsyncImage(url: url) { phase in
+                        if case let .success(image) = phase {
                             image.resizable().aspectRatio(contentMode: .fit)
                         } else {
                             DesignTokens.Glass.bg
@@ -175,7 +175,7 @@ struct EPGView: View {
 
     private var loadingState: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<4, id: \.self) { _ in
+            ForEach(0 ..< 4, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 100)
@@ -183,22 +183,5 @@ struct EPGView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
-    }
-
-    private var dateOptions: [(label: String, value: String?)] {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let calendar = Calendar.current
-        let today = Date()
-
-        return (0..<7).map { offset in
-            let date = calendar.date(byAdding: .day, value: offset, to: today) ?? today
-            let dayFormatter = DateFormatter()
-            dayFormatter.dateFormat = offset == 0 ? "'Today'" : "EEE d"
-            return (
-                label: dayFormatter.string(from: date),
-                value: offset == 0 ? nil : formatter.string(from: date)
-            )
-        }
     }
 }

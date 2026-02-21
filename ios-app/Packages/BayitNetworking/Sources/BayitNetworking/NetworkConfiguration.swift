@@ -46,4 +46,12 @@ public protocol NetworkConfiguration: Sendable {
 
     /// Base URL for WebSocket connections (e.g. `wss://ws.bayit.tv`).
     var webSocketBaseURL: URL { get }
+
+    // MARK: - URLCache Configuration
+
+    /// Memory capacity in bytes for the URL cache.
+    var urlCacheMemoryCapacity: Int { get }
+
+    /// Disk capacity in bytes for the URL cache.
+    var urlCacheDiskCapacity: Int { get }
 }

@@ -58,7 +58,6 @@ struct StarStoryHomeView: View {
         }
     }
 
-    @ViewBuilder
     private func contentSections(_ vm: StarStoryViewModel) -> some View {
         LazyVStack(spacing: DesignTokens.Spacing.lg) {
             heroSection
@@ -112,8 +111,8 @@ struct StarStoryHomeView: View {
     private func avatarCard(_ avatar: StarStoryAvatar) -> some View {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.sm) {
-                AsyncImage(url: URL(string: avatar.primaryAvatarUrl ?? "")) { phase in
-                    if case .success(let img) = phase {
+                CachedAsyncImage(url: URL(string: avatar.primaryAvatarUrl ?? "")) { phase in
+                    if case let .success(img) = phase {
                         img.resizable().aspectRatio(contentMode: .fill)
                     } else {
                         Image(systemName: "sparkles")
@@ -160,7 +159,7 @@ struct StarStoryHomeView: View {
             LazyVGrid(
                 columns: [
                     GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-                    GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+                    GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
                 ],
                 spacing: DesignTokens.Spacing.md
             ) {

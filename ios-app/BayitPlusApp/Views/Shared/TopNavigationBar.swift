@@ -74,9 +74,9 @@ struct TopNavigationBar: View {
     @ViewBuilder
     private var profileAvatar: some View {
         if let photoURL = authManager.user?.photoURL {
-            AsyncImage(url: photoURL) { phase in
+            CachedAsyncImage(url: photoURL) { phase in
                 switch phase {
-                case .success(let image):
+                case let .success(image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)

@@ -5,7 +5,7 @@ import SwiftUI
 /// and AI recommendations using glass-styled cards.
 struct TrendingRowView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(NavigationCoordinator.self) var coordinator
     @State private var viewModel: TrendingViewModel?
 
     var body: some View {
@@ -173,30 +173,5 @@ struct TrendingRowView: View {
                 .foregroundStyle(DesignTokens.Text.primary)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    private var loadingPlaceholder: some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<2, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .fill(DesignTokens.Glass.bg)
-                    .frame(height: 100)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-            }
-        }
-        .accessibilityHidden(true)
-    }
-
-    private func navigateToItem(_ item: ContentItem) {
-        let ct = item.type?.lowercased() ?? ""
-        if ct == "series" {
-            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
-        } else if ct == "collection" || item.isCollectionParent == true {
-            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if ct == "audiobook" {
-            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
-        } else {
-            coordinator.navigate(to: .movieDetail(movieId: item.id))
-        }
     }
 }

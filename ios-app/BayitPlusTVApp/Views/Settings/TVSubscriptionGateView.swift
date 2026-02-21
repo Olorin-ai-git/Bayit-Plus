@@ -6,7 +6,7 @@
 
     struct TVSubscriptionGateView: View {
         @Environment(TVRepositoryProvider.self) private var repos
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
 
         let contentId: String
         let requiredTier: String

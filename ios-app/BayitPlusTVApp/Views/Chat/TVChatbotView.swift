@@ -6,7 +6,7 @@
     /// tvOS AI chatbot conversation view with text and voice input.
     struct TVChatbotView: View {
         @Environment(TVRepositoryProvider.self) private var repos
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
         @State private var viewModel: TVChatbotViewModel?
 
         var body: some View {

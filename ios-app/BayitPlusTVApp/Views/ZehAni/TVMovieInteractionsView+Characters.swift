@@ -119,20 +119,8 @@
         func asyncImage(url: String?, fallback: String) -> some View {
             Group {
                 if let u = url, !u.isEmpty, let parsed = URL(string: u) {
-                    CachedAsyncImage(url: parsed) { phase in
-                        switch phase {
-                        case let .success(image):
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        case .empty:
-                            ProgressView()
-                                .tint(DesignTokens.Text.muted)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(DesignTokens.Glass.bgStrong)
-                        case .failure:
-                            placeholder(fallback)
-                        @unknown default:
-                            placeholder(fallback)
-                        }
+                    CachedAsyncImage(url: parsed) {
+                        placeholder(fallback)
                     }
                 } else { placeholder(fallback) }
             }

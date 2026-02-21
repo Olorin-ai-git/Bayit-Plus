@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Layout mode for split subtitles.
 enum SplitSubtitleLayout: String, CaseIterable {
-    case stacked    // Primary on top, secondary below
+    case stacked // Primary on top, secondary below
     case sideBySide // Left and right columns
 
     var label: String {
@@ -45,23 +45,15 @@ struct SplitSubtitleOverlayView: View {
     }
 
     private var activePrimaryCues: [SubtitleCue] {
-        let active = primaryCues.filter { cue in
+        primaryCues.filter { cue in
             currentTime >= (cue.startTime ?? 0) && currentTime <= (cue.endTime ?? 0)
         }
-        if !active.isEmpty {
-            print("🔵 Primary (\(primaryLanguage)) at \(currentTime)s: \(active.first?.text ?? "") [\(active.first?.startTime ?? 0)-\(active.first?.endTime ?? 0)]")
-        }
-        return active
     }
 
     private var activeSecondaryCues: [SubtitleCue] {
-        let active = secondaryCues.filter { cue in
+        secondaryCues.filter { cue in
             currentTime >= (cue.startTime ?? 0) && currentTime <= (cue.endTime ?? 0)
         }
-        if !active.isEmpty {
-            print("🟠 Secondary (\(secondaryLanguage)) at \(currentTime)s: \(active.first?.text ?? "") [\(active.first?.startTime ?? 0)-\(active.first?.endTime ?? 0)]")
-        }
-        return active
     }
 
     var body: some View {

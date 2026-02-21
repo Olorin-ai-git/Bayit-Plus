@@ -147,6 +147,7 @@ extension TVPlayerView {
         }
 
         let dubbingWS = LiveDubbingWebSocketService(
+            webSocketManager: repos.webSocketManager,
             configuration: repos.configuration,
             authTokenProvider: repos.authTokenProvider
         )
@@ -158,6 +159,7 @@ extension TVPlayerView {
 
         if isLive {
             let subtitleWS = LiveSubtitlesWebSocketService(
+                webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,
                 authTokenProvider: repos.authTokenProvider
             )

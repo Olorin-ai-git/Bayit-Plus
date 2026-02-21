@@ -24,9 +24,9 @@ struct CollectionPromoBannerView: View {
         Button(action: navigateToCollection) {
             HStack(spacing: DesignTokens.Spacing.md) {
                 if let posterUrl, let url = URL(string: posterUrl) {
-                    AsyncImage(url: url) { phase in
+                    CachedAsyncImage(url: url) { phase in
                         switch phase {
-                        case .success(let image):
+                        case let .success(image):
                             image.resizable().aspectRatio(contentMode: .fill)
                         default:
                             Rectangle().fill(DesignTokens.Glass.bgMedium)
@@ -144,7 +144,7 @@ struct FeaturedCollectionsCarousel: View {
 
                 if collections.count > 1 {
                     HStack(spacing: 6) {
-                        ForEach(0..<collections.count, id: \.self) { index in
+                        ForEach(0 ..< collections.count, id: \.self) { index in
                             Circle()
                                 .fill(
                                     index == currentIndex

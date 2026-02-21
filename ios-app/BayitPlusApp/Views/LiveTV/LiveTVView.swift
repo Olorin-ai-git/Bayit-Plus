@@ -8,6 +8,7 @@ struct LiveTVView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(FeatureFlags.self) private var featureFlags
     @Environment(LocalizationManager.self) private var localization
+    @Environment(\.appConfiguration) private var appConfiguration
     @State private var viewModel: LiveTVViewModel?
 
     private let columns = [
@@ -52,7 +53,8 @@ struct LiveTVView: View {
             if viewModel == nil {
                 viewModel = LiveTVViewModel(
                     repository: repos.liveTV,
-                    featureFlags: featureFlags
+                    featureFlags: featureFlags,
+                    hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
                 )
             }
             await viewModel?.loadChannels()
@@ -77,7 +79,7 @@ struct LiveTVView: View {
 
     private var loadingGrid: some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<6, id: \.self) { _ in
+            ForEach(0 ..< 6, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .aspectRatio(16 / 9, contentMode: .fit)
@@ -121,7 +123,8 @@ private struct ChannelCard: View {
     private var channelLogo: some View {
         Group {
             if let urlStr = channel.logo ?? channel.thumbnail,
-               let url = URL(string: urlStr) {
+               let url = URL(string: urlStr)
+            {
                 CachedAsyncImage(url: url) {
                     channelPlaceholder
                 }

@@ -105,29 +105,15 @@
         @ViewBuilder
         private var posterImage: some View {
             if let url = playerVM?.resolvedCoverURL {
-                CachedAsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity, maxHeight: posterHeight)
-                    default:
-                        posterFallback
-                    }
+                CachedAsyncImage(url: url) {
+                    posterFallback
                 }
+                .frame(maxWidth: .infinity, maxHeight: posterHeight)
             } else if let urlStr = widget.coverUrl, let url = URL(string: urlStr) {
-                CachedAsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity, maxHeight: posterHeight)
-                    default:
-                        posterFallback
-                    }
+                CachedAsyncImage(url: url) {
+                    posterFallback
                 }
+                .frame(maxWidth: .infinity, maxHeight: posterHeight)
             } else {
                 posterFallback
             }

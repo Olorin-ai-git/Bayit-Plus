@@ -8,9 +8,13 @@ import Foundation
 /// `BayitCore` and `BayitNetworking`, which do not depend on each other.
 struct AppNetworkConfiguration: NetworkConfiguration {
     private let appConfig: EnvironmentConfiguration
+    private let clientVersion: String
 
     init(appConfig: EnvironmentConfiguration) {
         self.appConfig = appConfig
+        clientVersion = Bundle.main.object(
+            forInfoDictionaryKey: "CFBundleShortVersionString"
+        ) as? String ?? "0.0.0"
     }
 
     var baseURL: URL {
@@ -36,7 +40,7 @@ struct AppNetworkConfiguration: NetworkConfiguration {
     var defaultHeaders: [String: String] {
         [
             "X-Client-Platform": "ios",
-            "X-Client-Version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.0",
+            "X-Client-Version": clientVersion,
         ]
     }
 
@@ -64,5 +68,15 @@ struct AppNetworkConfiguration: NetworkConfiguration {
 
     var webSocketBaseURL: URL {
         appConfig.webSocketBaseURL
+    }
+
+    // MARK: - URLCache Configuration
+
+    var urlCacheMemoryCapacity: Int {
+        10 * 1024 * 1024
+    }
+
+    var urlCacheDiskCapacity: Int {
+        50 * 1024 * 1024
     }
 }

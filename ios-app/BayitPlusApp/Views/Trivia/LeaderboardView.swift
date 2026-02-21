@@ -108,14 +108,17 @@ struct LeaderboardView: View {
             HStack(spacing: DesignTokens.Spacing.md) {
                 rankView(entry.rank)
 
-                AsyncImage(url: URL(string: entry.avatarUrl ?? "")) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .foregroundStyle(DesignTokens.Text.muted)
+                CachedAsyncImage(url: URL(string: entry.avatarUrl ?? "")) { phase in
+                    switch phase {
+                    case let .success(image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    default:
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .foregroundStyle(DesignTokens.Text.muted)
+                    }
                 }
                 .frame(width: 48, height: 48)
                 .clipShape(Circle())
@@ -162,71 +165,5 @@ struct LeaderboardView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Rank \(entry.rank): \(entry.displayName), rating \(Int(entry.rating)), \(entry.gamesWon) wins out of \(entry.gamesPlayed) games")
-    }
-
-    // MARK: - Rank View
-
-    private func rankView(_ rank: Int) -> some View {
-        ZStack {
-            Circle()
-                .fill(rankBackground(for: rank))
-                .frame(width: 40, height: 40)
-
-            if rank <= 3 {
-                Image(systemName: medalIcon(for: rank))
-                    .font(.system(size: 20))
-                    .foregroundStyle(medalColor(for: rank))
-            } else {
-                Text("\(rank)")
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-            }
-        }
-    }
-
-    private func rankBackground(for rank: Int) -> Color {
-        if rank <= 3 {
-            return medalColor(for: rank).opacity(0.2)
-        }
-        return DesignTokens.Glass.bg
-    }
-
-    private func medalIcon(for rank: Int) -> String {
-        switch rank {
-        case 1: return "1.circle.fill"
-        case 2: return "2.circle.fill"
-        case 3: return "3.circle.fill"
-        default: return "circle"
-        }
-    }
-
-    private func medalColor(for rank: Int) -> Color {
-        switch rank {
-        case 1: return DesignTokens.gold // Gold
-        case 2: return Color.gray // Silver
-        case 3: return Color.orange.opacity(0.7) // Bronze
-        default: return DesignTokens.Text.muted
-        }
-    }
-
-    private func topThreeAccent(for rank: Int) -> Color {
-        if rank <= 3 {
-            return medalColor(for: rank)
-        }
-        return .clear
-    }
-
-    // MARK: - Stats View
-
-    private func statsView(icon: String, value: String, color: Color) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 12))
-                .foregroundStyle(color)
-
-            Text(value)
-                .font(.system(size: DesignTokens.FontSize.xs))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
     }
 }

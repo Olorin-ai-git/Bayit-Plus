@@ -25,6 +25,19 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         rawValue
     }
 
+    var title: String {
+        switch self {
+        case .home: return "Home"
+        case .liveTV: return "Live TV"
+        case .vod: return "Movies"
+        case .zehAni: return "Zeh Ani"
+        case .podcasts: return "Podcasts"
+        case .kids: return "Kids"
+        case .search: return "Search"
+        case .profile: return "Profile"
+        }
+    }
+
     var iconName: String {
         switch self {
         case .home: return "house"

@@ -11,47 +11,47 @@ struct SearchResultsGridView: View {
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
     ]
 
-    /// Concrete card width computed from screen bounds, horizontal padding, and column spacing
-    private var cardWidth: CGFloat {
-        let screenWidth = UIScreen.main.bounds.width
+    private func cardWidth(containerWidth: CGFloat) -> CGFloat {
         let horizontalPadding = DesignTokens.Spacing.lg * 2
         let totalSpacing = DesignTokens.Spacing.md * (columnCount - 1)
-        return floor((screenWidth - horizontalPadding - totalSpacing) / columnCount)
+        return floor((containerWidth - horizontalPadding - totalSpacing) / columnCount)
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(results) { result in
-                ZStack(alignment: .topTrailing) {
-                    GlassContentCard(
-                        thumbnailURL: result.thumbnail,
-                        title: result.title,
-                        subtitle: resultSubtitle(result),
-                        badge: result.contentType,
-                        subtitleFlags: result.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                        aspectRatio: 2 / 3,
-                        width: cardWidth,
-                        onTap: {
-                            onNavigate(routeForResult(result))
-                        }
-                    )
-
-                    if let languages = result.availableSubtitleLanguages, !languages.isEmpty {
-                        SubtitleFlagsPill(
-                            languages: languages,
-                            aiLanguages: aiLanguages(for: result),
-                            size: .small
+        GeometryReader { geometry in
+            LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
+                ForEach(results) { result in
+                    ZStack(alignment: .topTrailing) {
+                        GlassContentCard(
+                            thumbnailURL: result.thumbnail,
+                            title: result.title,
+                            subtitle: resultSubtitle(result),
+                            badge: result.contentType,
+                            subtitleFlags: result.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
+                            aspectRatio: 2 / 3,
+                            width: cardWidth(containerWidth: geometry.size.width),
+                            onTap: {
+                                onNavigate(routeForResult(result))
+                            }
                         )
-                        .padding(DesignTokens.Spacing.xs)
+
+                        if let languages = result.availableSubtitleLanguages, !languages.isEmpty {
+                            SubtitleFlagsPill(
+                                languages: languages,
+                                aiLanguages: aiLanguages(for: result),
+                                size: .small
+                            )
+                            .padding(DesignTokens.Spacing.xs)
+                        }
                     }
                 }
             }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.top, DesignTokens.Spacing.md)
         }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-        .padding(.top, DesignTokens.Spacing.md)
     }
 
     // MARK: - Helpers

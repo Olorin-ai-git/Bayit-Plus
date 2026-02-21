@@ -15,13 +15,13 @@
     final class TVAudioPlaybackManager {
         // MARK: - Observable State
 
-        private(set) var isActive = false
-        private(set) var isLoading = false
-        private(set) var title: String?
-        private(set) var subtitle: String?
-        private(set) var artworkURL: URL?
-        private(set) var activeContentId: String?
-        private(set) var activeContentType: MediaContentType?
+        var isActive = false
+        var isLoading = false
+        var title: String?
+        var subtitle: String?
+        var artworkURL: URL?
+        var activeContentId: String?
+        var activeContentType: MediaContentType?
 
         var isPlaying: Bool {
             mediaPlayer.state == .playing || mediaPlayer.state == .buffering

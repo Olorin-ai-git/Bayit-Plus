@@ -6,13 +6,13 @@ import Observation
 @MainActor
 @Observable
 final class SettingsViewModel {
-    private(set) var isLoading = false
-    private(set) var error: String?
-    private(set) var isSaving = false
-    private(set) var isDeletingAccount = false
-    private(set) var preferences: UserPreferencesDetail?
-    private(set) var interactiveMomentsBlocked = false
-    private(set) var interactiveMomentsBlockedMessage: String?
+    var isLoading = false
+    var error: String?
+    var isSaving = false
+    var isDeletingAccount = false
+    var preferences: UserPreferencesDetail?
+    var interactiveMomentsBlocked = false
+    var interactiveMomentsBlockedMessage: String?
 
     var autoTranslate = false
     var showIsraelTime = false
@@ -22,9 +22,9 @@ final class SettingsViewModel {
     var notifications = false
     var interactiveMoments = false
 
-    private let settingsRepository: any SettingsRepository
-    private let userRepository: any UserRepository
-    private let avatarRepository: (any AvatarRepository)?
+    let settingsRepository: any SettingsRepository
+    let userRepository: any UserRepository
+    let avatarRepository: (any AvatarRepository)?
 
     init(
         settingsRepository: any SettingsRepository,
@@ -117,67 +117,6 @@ final class SettingsViewModel {
                 && status.status == "ready"
         } catch {
             return false
-        }
-    }
-
-    @MainActor
-    func updateAutoplay(_ enabled: Bool) async {
-        autoplay = enabled
-        let update = ProfilePreferencesUpdate(
-            language: nil, subtitleLanguage: nil,
-            autoplay: enabled, notifications: nil,
-            contentRating: nil, quality: nil
-        )
-        do {
-            _ = try await userRepository.updateProfile(
-                request: ProfileUpdateRequest(
-                    displayName: nil, avatar: nil, language: nil,
-                    preferences: update, phoneNumber: nil
-                )
-            )
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
-    }
-
-    @MainActor
-    func updateNotifications(_ enabled: Bool) async {
-        notifications = enabled
-        let update = ProfilePreferencesUpdate(
-            language: nil, subtitleLanguage: nil,
-            autoplay: nil, notifications: enabled,
-            contentRating: nil, quality: nil
-        )
-        do {
-            _ = try await userRepository.updateProfile(
-                request: ProfileUpdateRequest(
-                    displayName: nil, avatar: nil, language: nil,
-                    preferences: update, phoneNumber: nil
-                )
-            )
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
-    }
-
-    @MainActor
-    func deleteAccount() async throws {
-        isDeletingAccount = true
-        error = nil
-
-        do {
-            _ = try await userRepository.deleteAccount()
-            isDeletingAccount = false
-        } catch {
-            isDeletingAccount = false
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-            throw error
         }
     }
 

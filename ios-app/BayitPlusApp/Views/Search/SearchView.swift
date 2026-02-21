@@ -36,7 +36,8 @@ struct SearchView: View {
             if let vm = viewModel {
                 SortOptionsSheet(
                     selectedSort: Binding(get: { vm.sortOption }, set: { vm.sortOption = $0 }),
-                    onDismiss: { vm.showSortSheet = false; vm.onSortChanged() })
+                    onDismiss: { vm.showSortSheet = false; vm.onSortChanged() }
+                )
             }
         }
         .sheet(isPresented: sheetBinding(\.showFilterSheet)) {
@@ -44,7 +45,8 @@ struct SearchView: View {
                 SearchFilterSheet(
                     filters: Binding(get: { vm.advancedFilters }, set: { vm.advancedFilters = $0 }),
                     onApply: { vm.showFilterSheet = false; vm.onFiltersApplied() },
-                    onDismiss: { vm.showFilterSheet = false })
+                    onDismiss: { vm.showFilterSheet = false }
+                )
             }
         }
     }
@@ -77,7 +79,7 @@ struct SearchView: View {
                         title: localization.t(filter.localizationKey),
                         isSelected: vm.selectedFilter == filter
                     ) { vm.onFilterChanged(filter) }
-                    .accessibilityAddTraits(vm.selectedFilter == filter ? .isSelected : [])
+                        .accessibilityAddTraits(vm.selectedFilter == filter ? .isSelected : [])
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -134,7 +136,8 @@ struct SearchView: View {
         } else if vm.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.hasSearched {
             SearchSuggestionsView(
                 trendingSearches: vm.trendingSearches, recentSearches: vm.recentSearches,
-                onSelect: { vm.selectSuggestion($0) }, onClearRecent: { vm.clearRecentSearches() })
+                onSelect: { vm.selectSuggestion($0) }, onClearRecent: { vm.clearRecentSearches() }
+            )
         } else if !vm.results.isEmpty {
             Text("\(vm.totalResults) \(localization.t("search.resultsFor"))")
                 .font(.system(size: DesignTokens.FontSize.sm))
@@ -171,37 +174,5 @@ struct SearchView: View {
         }
         .frame(maxWidth: .infinity).padding(.top, 80)
         .accessibilityElement(children: .combine)
-    }
-}
-
-// MARK: - Autocomplete Suggestions
-
-private struct SearchAutocompleteSuggestions: View {
-    let suggestions: [String]
-    let onSelect: (String) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ForEach(suggestions, id: \.self) { suggestion in
-                Button { onSelect(suggestion) } label: {
-                    HStack(spacing: DesignTokens.Spacing.md) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundColor(DesignTokens.Text.muted)
-                        Text(suggestion)
-                            .font(.system(size: DesignTokens.FontSize.md))
-                            .foregroundColor(DesignTokens.Text.primary).lineLimit(1)
-                        Spacer()
-                        Image(systemName: "arrow.up.left")
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
-                    }
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.vertical, DesignTokens.Spacing.md)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .background(DesignTokens.Glass.bg)
     }
 }

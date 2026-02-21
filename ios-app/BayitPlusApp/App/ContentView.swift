@@ -12,6 +12,7 @@ struct ContentView: View {
     @Environment(MediaPlayer.self) private var mediaPlayer
     @Environment(WidgetDataSyncService.self) private var widgetSync
     @Environment(DownloadManager.self) private var downloadManager
+    @Environment(\.appConfiguration) private var appConfiguration
 
     @State private var showingSplash = true
 
@@ -60,7 +61,8 @@ struct ContentView: View {
 
             // Shabbat banner overlay (top)
             if ShabbatModeService.shared.isShabbatActive
-                || ShabbatModeService.shared.isErevShabbat {
+                || ShabbatModeService.shared.isErevShabbat
+            {
                 VStack {
                     ShabbatBannerView()
                     Spacer()
@@ -70,11 +72,6 @@ struct ContentView: View {
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuth in
             coordinator.showingAuth = !isAuth
-        }
-        .onChange(of: coordinator.pendingTVLogin) { _, newValue in
-            if newValue != nil {
-                // TV login route detected
-            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)
@@ -96,7 +93,7 @@ struct ContentView: View {
     @ViewBuilder
     private func fullscreenView(for route: Route) -> some View {
         switch route {
-        case .player(let contentId, let contentType, let resume):
+        case let .player(contentId, contentType, resume):
             PlayerView(
                 contentId: contentId,
                 contentType: contentType,
@@ -109,7 +106,8 @@ struct ContentView: View {
                 podcastRepository: repositories.podcasts,
                 audiobookRepository: repositories.audiobook,
                 widgetSync: widgetSync,
-                downloadManager: downloadManager
+                downloadManager: downloadManager,
+                progressIntervalSeconds: appConfiguration.progressTrackingIntervalSeconds
             )
         case .search:
             SearchView()
@@ -118,10 +116,9 @@ struct ContentView: View {
         }
     }
 
-    @ViewBuilder
     private func tvLoginView(for route: Route) -> some View {
         NavigationStack {
-            if case .tvLogin(let sessionId, let token, let expires) = route {
+            if case let .tvLogin(sessionId, token, expires) = route {
                 TVLoginView(sessionId: sessionId, token: token, expires: expires)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {

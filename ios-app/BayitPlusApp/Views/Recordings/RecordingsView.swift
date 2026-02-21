@@ -135,9 +135,9 @@ struct RecordingsView: View {
     private func thumbnailView(_ url: String?) -> some View {
         Group {
             if let urlStr = url, let imageURL = URL(string: urlStr) {
-                AsyncImage(url: imageURL) { phase in
+                CachedAsyncImage(url: imageURL) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image.resizable().aspectRatio(contentMode: .fill)
                     default:
                         RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
@@ -170,7 +170,7 @@ struct RecordingsView: View {
 
     private var loadingList: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            ForEach(0..<5, id: \.self) { _ in
+            ForEach(0 ..< 5, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 72)

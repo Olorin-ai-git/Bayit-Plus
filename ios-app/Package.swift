@@ -5,7 +5,7 @@ let package = Package(
     name: "BayitPlus",
     platforms: [
         .iOS(.v17),
-        .tvOS(.v17)
+        .tvOS(.v17),
     ],
     products: [
         .library(name: "BayitCore", targets: ["BayitCore"]),
@@ -27,12 +27,14 @@ let package = Package(
     ],
     targets: [
         // MARK: - BayitCore
+
         .target(
             name: "BayitCore",
             path: "Packages/BayitCore/Sources/BayitCore"
         ),
 
         // MARK: - BayitNetworking
+
         .target(
             name: "BayitNetworking",
             dependencies: ["BayitCore"],
@@ -40,6 +42,7 @@ let package = Package(
         ),
 
         // MARK: - BayitAuth
+
         .target(
             name: "BayitAuth",
             dependencies: [
@@ -56,6 +59,7 @@ let package = Package(
         ),
 
         // MARK: - BayitLocalization
+
         .target(
             name: "BayitLocalization",
             dependencies: ["BayitCore"],
@@ -64,6 +68,7 @@ let package = Package(
         ),
 
         // MARK: - BayitDesignSystem
+
         .target(
             name: "BayitDesignSystem",
             dependencies: ["BayitCore"],
@@ -71,6 +76,7 @@ let package = Package(
         ),
 
         // MARK: - BayitMedia
+
         .target(
             name: "BayitMedia",
             dependencies: [
@@ -81,6 +87,7 @@ let package = Package(
         ),
 
         // MARK: - BayitVoice
+
         .target(
             name: "BayitVoice",
             dependencies: ["BayitCore", "BayitNetworking"],
@@ -88,6 +95,7 @@ let package = Package(
         ),
 
         // MARK: - BayitPersistence
+
         .target(
             name: "BayitPersistence",
             dependencies: ["BayitCore"],
@@ -95,6 +103,7 @@ let package = Package(
         ),
 
         // MARK: - BayitAnalytics
+
         .target(
             name: "BayitAnalytics",
             dependencies: [
@@ -106,6 +115,7 @@ let package = Package(
         ),
 
         // MARK: - BayitWidgetShared
+
         .target(
             name: "BayitWidgetShared",
             dependencies: ["BayitCore"],
@@ -113,6 +123,7 @@ let package = Package(
         ),
 
         // MARK: - BayitNotifications
+
         .target(
             name: "BayitNotifications",
             dependencies: [
@@ -124,13 +135,25 @@ let package = Package(
         ),
 
         // MARK: - BayitCast
+
         .target(
             name: "BayitCast",
             dependencies: [
                 "BayitCore",
                 "BayitMedia",
+                .target(name: "GoogleCast", condition: .when(platforms: [.iOS])),
             ],
             path: "Packages/BayitCast/Sources/BayitCast"
+        ),
+
+        // MARK: - GoogleCast (dynamic XCFramework, iOS only)
+
+        // Source: SRGSSR community wrapper of official Google Cast SDK binaries
+        // SDK version: 4.8.4 | Minimum iOS: 15
+        .binaryTarget(
+            name: "GoogleCast",
+            url: "https://github.com/SRGSSR/google-cast-sdk/releases/download/4.8.4/GoogleCast.xcframework.zip",
+            checksum: "c9c3a794e8585198b59c6bb7da5418a3194ffa1ffa6f9a1cbdf4dc0ea26dc6cf"
         ),
 
         // MARK: - Tests

@@ -27,6 +27,7 @@ import tv.bayit.plus.core.model.RadioStationItem
 import tv.bayit.plus.core.model.SectionContentItem
 import tv.bayit.plus.core.model.ShabbatInfo
 import tv.bayit.plus.core.model.WatchHistoryItem
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -316,6 +317,7 @@ class HomeViewModel @Inject constructor(
     private suspend fun getUserLocation(): tv.bayit.plus.core.model.UserLocation? {
         locationManager.getCachedLocation()?.let { cached ->
             logger.debug("Using cached location", mapOf("city" to cached.city, "state" to cached.state))
+            updateState { copy(localLocationLabel = "${cached.city}, ${cached.state}") }
             return cached
         }
 
@@ -342,6 +344,7 @@ class HomeViewModel @Inject constructor(
         } ?: return null
 
         locationManager.cacheLocation(userLocation)
+        updateState { copy(localLocationLabel = "${userLocation.city}, ${userLocation.state}") }
 
         return userLocation
     }
@@ -393,6 +396,8 @@ sealed interface HomeUiState {
         val locationPermissionNeeded: Boolean = false,
         val locationPermissionPreviouslyDenied: Boolean = false,
         val isRefreshing: Boolean = false,
+        val localTimezone: String = TimeZone.getDefault().id,
+        val localLocationLabel: String = timezoneDisplayCity(TimeZone.getDefault().id),
     ) : HomeUiState
 
     data class Error(

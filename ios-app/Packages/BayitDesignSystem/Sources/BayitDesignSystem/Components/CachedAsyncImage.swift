@@ -28,9 +28,17 @@ private actor ImageCacheStore {
 /// When views in ``LazyHStack`` / ``LazyVGrid`` are recycled, SwiftUI's built-in
 /// ``AsyncImage`` cancels and restarts downloads. ``CachedAsyncImage`` keeps recently
 /// loaded images in a shared ``NSCache`` so recycled views display instantly.
+/// Loading phase for ``CachedAsyncImage``, mirroring ``AsyncImagePhase``.
+public enum CachedAsyncImagePhase {
+    case empty
+    case success(Image)
+    case failure(Error)
+}
+
 public struct CachedAsyncImage<Placeholder: View>: View {
     private let url: URL?
     private let placeholder: () -> Placeholder
+    private let phaseContent: ((CachedAsyncImagePhase) -> AnyView)?
 
     @State private var loadedImage: UIImage?
     @State private var loadFailed = false
@@ -46,16 +54,27 @@ public struct CachedAsyncImage<Placeholder: View>: View {
     ) {
         self.url = url
         self.placeholder = placeholder
+        phaseContent = nil
     }
 
     public var body: some View {
         Group {
-            if let uiImage = loadedImage {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+            if let phaseContent {
+                if let uiImage = loadedImage {
+                    phaseContent(.success(Image(uiImage: uiImage)))
+                } else if loadFailed {
+                    phaseContent(.failure(URLError(.badServerResponse)))
+                } else {
+                    phaseContent(.empty)
+                }
             } else {
-                placeholder()
+                if let uiImage = loadedImage {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } else {
+                    placeholder()
+                }
             }
         }
         .onAppear { startLoad() }
@@ -104,12 +123,30 @@ public struct CachedAsyncImage<Placeholder: View>: View {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
+                  (200 ... 299).contains(httpResponse.statusCode)
+            else {
                 return nil
             }
             return UIImage(data: data)
         } catch {
             return nil
         }
+    }
+}
+
+// MARK: - Phase-based initializer (AsyncImage-compatible API)
+
+public extension CachedAsyncImage where Placeholder == EmptyView {
+    /// Creates a cached async image view using an AsyncImage-style phase closure.
+    /// - Parameters:
+    ///   - url: The remote image URL to load.
+    ///   - content: A closure receiving a ``CachedAsyncImagePhase`` value.
+    init<Content: View>(
+        url: URL?,
+        @ViewBuilder content: @escaping (CachedAsyncImagePhase) -> Content
+    ) {
+        self.url = url
+        placeholder = { EmptyView() }
+        phaseContent = { phase in AnyView(content(phase)) }
     }
 }

@@ -1,12 +1,14 @@
 import BayitCore
 import BayitNetworking
 import Foundation
+import Observation
 
 /// Provides repository instances for the tvOS app via SwiftUI Environment.
 ///
 /// Mirrors the iOS RepositoryProvider but excludes iOS-only features
 /// (voice orchestration, downloads, device pairing).
 /// Shares all repository protocols and implementations from BayitPlusApp.
+@Observable
 final class TVRepositoryProvider {
     let content: any ContentRepository
     let liveTV: any LiveTVRepository
@@ -51,6 +53,7 @@ final class TVRepositoryProvider {
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let zehAniRepository: any ZehAniRepository
     let movieInteraction: any MovieInteractionRepository
+    let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -104,6 +107,7 @@ final class TVRepositoryProvider {
         phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         zehAniRepository = APIZehAniRepository(client: client)
         movieInteraction = APIMovieInteractionRepository(client: client)
+        self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         offlineCache = OfflineCacheService()

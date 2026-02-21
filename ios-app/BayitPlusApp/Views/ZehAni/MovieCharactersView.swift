@@ -88,9 +88,9 @@ struct MovieCharactersView: View {
     private func characterAvatar(url: String) -> some View {
         Group {
             if let imageUrl = URL(string: url) {
-                AsyncImage(url: imageUrl) { phase in
+                CachedAsyncImage(url: imageUrl) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable().scaledToFill()
                     case .failure:
                         avatarPlaceholder

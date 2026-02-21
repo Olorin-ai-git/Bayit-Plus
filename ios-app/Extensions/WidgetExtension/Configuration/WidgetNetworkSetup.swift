@@ -1,5 +1,5 @@
-import Foundation
 import BayitCore
+import Foundation
 
 /// Lightweight network client for widget data fetching.
 ///
@@ -8,7 +8,6 @@ import BayitCore
 /// info or environment following the same pattern as
 /// `AppConfiguration` in BayitCore.
 enum WidgetNetworkClient {
-
     // MARK: - Error Types
 
     enum NetworkError: Error, LocalizedError {
@@ -17,38 +16,41 @@ enum WidgetNetworkClient {
         case noData
         case decodingFailed(underlying: Error)
         case notAuthenticated
+        case configurationMissing
 
         var errorDescription: String? {
             switch self {
-            case .invalidURL(let path):
+            case let .invalidURL(path):
                 return "Invalid URL for path: \(path)"
-            case .httpError(let statusCode):
+            case let .httpError(statusCode):
                 return "HTTP error with status code: \(statusCode)"
             case .noData:
                 return "No data received from server"
-            case .decodingFailed(let underlying):
+            case let .decodingFailed(underlying):
                 return "Decoding failed: \(underlying.localizedDescription)"
             case .notAuthenticated:
                 return "No auth token available for authenticated request"
+            case .configurationMissing:
+                return "Widget network configuration is missing"
             }
         }
     }
 
     // MARK: - Configuration
 
-    private static var baseURL: URL {
+    private static var baseURL: URL? {
         let info = Bundle.main.infoDictionary ?? [:]
 
         guard let urlString = info["API_BASE_URL"] as? String
-            ?? ProcessInfo.processInfo.environment["API_BASE_URL"] else {
-            fatalError("""
-                API_BASE_URL not configured for widget extension.
-                Add to Info.plist or set API_BASE_URL environment variable.
-                """)
+            ?? ProcessInfo.processInfo.environment["API_BASE_URL"]
+        else {
+            logger.error("API_BASE_URL not configured for widget extension")
+            return nil
         }
 
         guard let url = URL(string: urlString) else {
-            fatalError("Invalid API_BASE_URL for widget: \(urlString)")
+            logger.error("Invalid API_BASE_URL for widget", context: ["url": urlString])
+            return nil
         }
         return url
     }
@@ -58,15 +60,13 @@ enum WidgetNetworkClient {
     private static let session: URLSession = {
         let info = Bundle.main.infoDictionary ?? [:]
 
-        guard let requestTimeout = (info["WIDGET_REQUEST_TIMEOUT"] as? TimeInterval)
-            ?? (ProcessInfo.processInfo.environment["WIDGET_REQUEST_TIMEOUT"].flatMap { TimeInterval($0) }) else {
-            fatalError("WIDGET_REQUEST_TIMEOUT not configured. Add to Info.plist.")
-        }
+        let requestTimeout = (info["WIDGET_REQUEST_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_REQUEST_TIMEOUT"].flatMap { TimeInterval($0) })
+            ?? 15
 
-        guard let resourceTimeout = (info["WIDGET_RESOURCE_TIMEOUT"] as? TimeInterval)
-            ?? (ProcessInfo.processInfo.environment["WIDGET_RESOURCE_TIMEOUT"].flatMap { TimeInterval($0) }) else {
-            fatalError("WIDGET_RESOURCE_TIMEOUT not configured. Add to Info.plist.")
-        }
+        let resourceTimeout = (info["WIDGET_RESOURCE_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_RESOURCE_TIMEOUT"].flatMap { TimeInterval($0) })
+            ?? 30
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = requestTimeout
@@ -86,7 +86,11 @@ enum WidgetNetworkClient {
         path: String,
         authenticated: Bool = false
     ) async throws -> T {
-        guard let url = URL(string: path, relativeTo: baseURL) else {
+        guard let base = baseURL else {
+            throw NetworkError.configurationMissing
+        }
+
+        guard let url = URL(string: path, relativeTo: base) else {
             throw NetworkError.invalidURL(path: path)
         }
 
@@ -118,7 +122,7 @@ enum WidgetNetworkClient {
             throw NetworkError.noData
         }
 
-        guard (200..<300).contains(httpResponse.statusCode) else {
+        guard (200 ..< 300).contains(httpResponse.statusCode) else {
             logger.error(
                 "Widget network request failed",
                 context: [

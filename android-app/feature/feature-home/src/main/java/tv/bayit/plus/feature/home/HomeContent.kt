@@ -86,12 +86,12 @@ internal fun HomeSuccessContent(
                             modifier = Modifier.weight(1f),
                         )
                         CultureClock(
-                            flagText = "🇺🇸",
+                            flagText = timezoneDisplayFlag(uiState.localTimezone),
                             locationLabel = bayitString(
                                 "cultureClock.timeIn",
-                                mapOf("location" to "New York, NY"),
+                                mapOf("location" to uiState.localLocationLabel),
                             ),
-                            timezoneId = "America/New_York",
+                            timezoneId = uiState.localTimezone,
                             isIsraeli = false,
                             modifier = Modifier.weight(1f),
                         )

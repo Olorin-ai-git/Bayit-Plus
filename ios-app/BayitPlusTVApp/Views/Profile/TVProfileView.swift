@@ -33,7 +33,7 @@ struct TVProfileView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
-    @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(TVNavigationCoordinator.self) var coordinator
     @State var viewModel: ProfileViewModel?
     @State var activeSheet: ProfileSheet?
 

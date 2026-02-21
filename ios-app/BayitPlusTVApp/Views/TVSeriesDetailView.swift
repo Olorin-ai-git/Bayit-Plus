@@ -36,7 +36,7 @@ struct TVSeriesDetailView: View {
                 viewModel = SeriesDetailViewModel(
                     seriesId: seriesId,
                     repository: repos.series,
-                    contentRepository: repos.content,
+                    mediaRepository: repos.media,
                     userRepository: repos.user
                 )
             }

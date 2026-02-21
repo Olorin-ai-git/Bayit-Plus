@@ -2,7 +2,6 @@ import Foundation
 
 /// WebSocket connection and message handling for direct messages.
 extension DirectMessagesViewModel {
-
     @MainActor
     func connectWebSocket(friendId: String) async {
         do {
@@ -51,10 +50,7 @@ extension DirectMessagesViewModel {
 
     @MainActor
     private func decodeAndAppendMessage(_ data: Data) {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
-        if let msg = try? decoder.decode(DirectMessageModel.self, from: data) {
+        if let msg = try? WebSocketDecoder.shared.decode(DirectMessageModel.self, from: data) {
             messages.append(msg)
         }
     }
@@ -78,10 +74,7 @@ extension DirectMessagesViewModel {
 
     @MainActor
     private func decodeAndUpdateMessage(_ data: Data) {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
-        if let msg = try? decoder.decode(DirectMessageModel.self, from: data) {
+        if let msg = try? WebSocketDecoder.shared.decode(DirectMessageModel.self, from: data) {
             if let idx = messages.firstIndex(where: { $0.id == msg.id }) {
                 messages[idx] = msg
             }

@@ -15,7 +15,13 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            tabContent(for: coordinator.selectedTab)
+            ZStack {
+                ForEach(AppTab.allCases) { tab in
+                    tabContent(for: tab)
+                        .opacity(coordinator.selectedTab == tab ? 1 : 0)
+                        .allowsHitTesting(coordinator.selectedTab == tab)
+                }
+            }
 
             VStack(spacing: DesignTokens.Spacing.xs) {
                 MiniAudioPlayerBar()
@@ -66,7 +72,7 @@ struct MainTabView: View {
                             isVoiceModalPresented = true
                         }
                         .padding(.trailing, DesignTokens.Spacing.lg)
-                        .padding(.bottom, 100)  // Above 6-tab bar
+                        .padding(.bottom, 100) // Above 6-tab bar
                     }
                 }
             }
@@ -89,7 +95,6 @@ struct MainTabView: View {
         }
     }
 
-    @ViewBuilder
     private func tabContent(for tab: AppTab) -> some View {
         NavigationStack(path: binding(for: tab)) {
             VStack(spacing: 0) {

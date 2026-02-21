@@ -12,7 +12,6 @@
 
         let widgets: [WidgetItem]
         let onMinimize: (String) -> Void
-        var onFocusChanged: ((Bool) -> Void)?
 
         @State private var isExpanded = false
 
@@ -84,7 +83,6 @@
             )
             .shadow(color: .black.opacity(0.5), radius: 32, x: -12, y: 0)
             .ignoresSafeArea(.all, edges: .trailing)
-            .onFocusChange { focused in onFocusChanged?(focused) }
         }
 
         // MARK: - Header

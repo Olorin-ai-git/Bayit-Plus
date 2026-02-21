@@ -21,6 +21,7 @@ class InteractiveMissionViewModel {
     private var recognitionTask: SFSpeechRecognitionTask?
     private var audioEngine: AVAudioEngine?
     private var timeObserver: Any?
+    private var countdownTimer: Timer?
 
     enum PlayState { case loading, playing, decision, complete }
 
@@ -61,8 +62,9 @@ class InteractiveMissionViewModel {
     }
 
     func startCountdown() {
+        countdownTimer?.invalidate()
         countdown = 10
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()
                 return
@@ -71,6 +73,7 @@ class InteractiveMissionViewModel {
                 self.countdown -= 1
             } else {
                 timer.invalidate()
+                self.countdownTimer = nil
             }
         }
     }
@@ -142,6 +145,8 @@ class InteractiveMissionViewModel {
     }
 
     func cleanup() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
         player?.pause()
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)

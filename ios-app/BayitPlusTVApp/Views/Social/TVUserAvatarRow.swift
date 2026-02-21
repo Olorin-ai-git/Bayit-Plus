@@ -28,11 +28,7 @@ struct TVUserAvatarRow: View {
     @ViewBuilder
     private var avatarView: some View {
         if let avatarURL, let url = URL(string: avatarURL) {
-            CachedAsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
+            CachedAsyncImage(url: url) {
                 avatarPlaceholder
             }
             .frame(width: 80, height: 80)

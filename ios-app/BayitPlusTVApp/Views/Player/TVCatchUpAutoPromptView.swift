@@ -6,7 +6,7 @@
     /// tvOS auto-prompt overlay shown when a user joins a live channel in progress.
     /// Uses focus-based navigation for Siri Remote. Countdown auto-declines.
     struct TVCatchUpAutoPromptView: View {
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
 
         let programName: String?
         let creditCost: Int

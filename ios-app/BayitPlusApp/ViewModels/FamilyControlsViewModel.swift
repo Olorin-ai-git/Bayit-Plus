@@ -2,7 +2,7 @@ import BayitNetworking
 import Foundation
 import Observation
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 
 /// ViewModel for the Family Controls screen.
@@ -31,6 +31,7 @@ final class FamilyControlsViewModel {
         components.minute = 0
         return Calendar.current.date(from: components) ?? Date()
     }()
+
     var allowedHoursEnd: Date = {
         var components = DateComponents()
         components.hour = 20
@@ -94,7 +95,7 @@ final class FamilyControlsViewModel {
             isPinSet = true
             isPinVerified = true
             #if os(iOS)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } catch {
             if let message = error.userFriendlyMessage {
@@ -122,12 +123,12 @@ final class FamilyControlsViewModel {
             if response.status == "success" {
                 isPinVerified = true
                 #if os(iOS)
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 #endif
             } else {
                 error = "Invalid PIN"
                 #if os(iOS)
-                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                    UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                 #endif
             }
         } catch {
@@ -164,7 +165,7 @@ final class FamilyControlsViewModel {
             preferences = saved
             successMessage = "Settings saved"
             #if os(iOS)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
             #endif
         } catch {
             if let message = error.userFriendlyMessage {
@@ -173,39 +174,5 @@ final class FamilyControlsViewModel {
         }
 
         isSaving = false
-    }
-
-    // MARK: - Private
-
-    private func syncLocalState(from prefs: FamilyControlsPreferences) {
-        if let kids = prefs.kidsAgeLimit {
-            kidsMaxAge = Double(kids)
-        }
-        if let youngsters = prefs.youngstersAgeLimit {
-            youngstersMaxAge = Double(youngsters)
-        }
-        if let ratingStr = prefs.maxContentRating,
-           let rating = ContentRating(rawValue: ratingStr) {
-            selectedRating = rating
-        }
-        if let enabled = prefs.viewingHoursEnabled {
-            viewingHoursEnabled = enabled
-        }
-        if let start = prefs.viewingStartHour {
-            var components = DateComponents()
-            components.hour = start
-            components.minute = 0
-            if let date = Calendar.current.date(from: components) {
-                allowedHoursStart = date
-            }
-        }
-        if let end = prefs.viewingEndHour {
-            var components = DateComponents()
-            components.hour = end
-            components.minute = 0
-            if let date = Calendar.current.date(from: components) {
-                allowedHoursEnd = date
-            }
-        }
     }
 }

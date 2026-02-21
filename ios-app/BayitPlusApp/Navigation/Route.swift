@@ -17,7 +17,7 @@ public enum Route: Hashable {
     case podcastDetail(showId: String)
     case epg
 
-    // Search
+    /// Search
     case search
 
     // User features
@@ -47,22 +47,22 @@ public enum Route: Hashable {
     case flows
     case morningRitual
 
-    // Voice
+    /// Voice
     case voiceOnboarding
 
-    // Support
+    /// Support
     case support
 
-    // Trivia & Quiz
+    /// Trivia & Quiz
     case trivia(contentId: String)
 
-    // LLM Search
+    /// LLM Search
     case llmSearch
 
-    // Family Controls
+    /// Family Controls
     case familyControls
 
-    // Shabbat Mode
+    /// Shabbat Mode
     case shabbatMode
 
     // Culture Content
@@ -73,44 +73,44 @@ public enum Route: Hashable {
     case audiobooks
     case audiobookDetail(audiobookId: String)
 
-    // Trending
+    /// Trending
     case trending
 
-    // Interactive Subtitles
+    /// Interactive Subtitles
     case interactiveSubtitles(contentId: String)
 
-    // Chapter Navigation
+    /// Chapter Navigation
     case chapters(contentId: String)
 
-    // AI Chat
+    /// AI Chat
     case chatbot
 
-    // Avatar Mode
+    /// Avatar Mode
     case avatarMode
 
-    // Beta Credits
+    /// Beta Credits
     case betaCredits
 
-    // Subscription Gate
+    /// Subscription Gate
     case subscriptionGate(contentId: String, requiredTier: String)
 
-    // Household
+    /// Household
     case household
 
     // Device Pairing
     case devicePairing
     case tvLogin(sessionId: String, token: String, expires: String)
 
-    // Help Center
+    /// Help Center
     case helpCenter
 
-    // Rewards
+    /// Rewards
     case rewards
 
-    // Widgets
+    /// Widgets
     case widgets
 
-    // Onboarding AI
+    /// Onboarding AI
     case onboardingAI
 
     // Social
@@ -118,7 +118,7 @@ public enum Route: Hashable {
     case watchParty
     case watchPartyDetail(partyId: String)
 
-    // Chess
+    /// Chess
     case chess(gameId: String?)
 
     // Direct Messages
@@ -142,90 +142,3 @@ public enum Route: Hashable {
     case zehAniMovieCharacters(profileId: String, contentId: String)
     case zehAniCharacterDialogue(profileId: String, contentId: String, characterName: String)
 }
-
-// MARK: - Breadcrumb Labels
-
-extension Route {
-    /// Human-readable label for breadcrumb display
-    var breadcrumbLabel: String {
-        switch self {
-        case .home: return "Home"
-        case .liveTV: return "Live TV"
-        case .vod: return "VOD"
-        case .radio: return "Radio"
-        case .podcasts: return "Podcasts"
-        case .player: return "Player"
-        case .movieDetail: return "Movie"
-        case .seriesDetail: return "Series"
-        case .collectionDetail: return "Collection"
-        case .podcastDetail: return "Podcast"
-        case .epg: return "TV Guide"
-        case .search: return "Search"
-        case .profile: return "Profile"
-        case .favorites: return "Favorites"
-        case .playlist: return "Playlist"
-        case .downloads: return "Downloads"
-        case .recordings: return "Recordings"
-        case .settings: return "Settings"
-        case .languageSettings: return "Language"
-        case .notificationSettings: return "Notifications"
-        case .billing: return "Billing"
-        case .subscription: return "Subscription"
-        case .security: return "Security"
-        case .connectedAccounts: return "Connected Accounts"
-        case .playbackSettings: return "Playback"
-        case .audioSettings: return "Audio"
-        case .accessibilitySettings: return "Accessibility"
-        case .privacySettings: return "Privacy"
-        case .children: return "Children"
-        case .youngsters: return "Youngsters"
-        case .judaism: return "Judaism"
-        case .flows: return "Flows"
-        case .morningRitual: return "Morning Ritual"
-        case .voiceOnboarding: return "Voice Setup"
-        case .support: return "Support"
-        case .trivia: return "Trivia"
-        case .llmSearch: return "AI Search"
-        case .familyControls: return "Family Controls"
-        case .shabbatMode: return "Shabbat"
-        case .jerusalemContent: return "Jerusalem"
-        case .telAvivContent: return "Tel Aviv"
-        case .audiobooks: return "Audiobooks"
-        case .audiobookDetail: return "Audiobook"
-        case .trending: return "Trending"
-        case .interactiveSubtitles: return "Subtitles"
-        case .chapters: return "Chapters"
-        case .chatbot: return "AI Chat"
-        case .avatarMode: return "Avatar"
-        case .betaCredits: return "Credits"
-        case .subscriptionGate: return "Subscribe"
-        case .household: return "Household"
-        case .devicePairing: return "Devices"
-        case .tvLogin: return "TV Sign In"
-        case .helpCenter: return "Help"
-        case .rewards: return "Rewards"
-        case .widgets: return "Widgets"
-        case .onboardingAI: return "Setup"
-        case .friends: return "Friends"
-        case .watchParty: return "Watch Party"
-        case .watchPartyDetail: return "Party"
-        case .chess: return "Chess"
-        case .directMessages: return "Messages"
-        case .conversation: return "Conversation"
-        case .mfaSetup: return "MFA Setup"
-        case .phoneVerification: return "Phone Verification"
-        case .zehAni: return "Me in the Story"
-        case .zehAniMagicMirror: return "Magic Mirror"
-        case .zehAniV2V: return "Voice Practice"
-        case .zehAniAvatar3D: return "3D Avatar"
-        case .zehAniHighlights: return "Highlights"
-        case .zehAniContacts: return "Contacts"
-        case .zehAniFeedback: return "Feedback"
-        case .zehAniAvatarSettings: return "Avatar Settings"
-        case .zehAniMovieInteractions: return "Movie Interactions"
-        case .zehAniMovieCharacters: return "Characters"
-        case .zehAniCharacterDialogue: return "Dialogue"
-        }
-    }
-}
-

@@ -9,10 +9,14 @@ struct HeroCarousel: View {
     let items: [SpotlightItem]
     let coordinator: NavigationCoordinator
 
-    @State private var currentIndex = 0
-    @State private var timer: Timer?
-    @State private var favoritesViewModel: FavoritesViewModel?
-    @State private var favoriteStates: [String: Bool] = [:]
+    @State var currentIndex = 0
+    @State var timer: Timer?
+    @State var favoritesViewModel: FavoritesViewModel?
+    @State var favoriteStates: [String: Bool] = [:]
+
+    enum NavigationDirection {
+        case previous, next
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -44,13 +48,13 @@ struct HeroCarousel: View {
                         .clear,
                         DesignTokens.Background.primary.opacity(0.3),
                         DesignTokens.Background.primary.opacity(0.8),
-                        DesignTokens.Background.primary
+                        DesignTokens.Background.primary,
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
 
-                // Navigation arrows (vertically centered to avoid overlap with bottom metadata)
+                // Navigation arrows
                 HStack {
                     navigationButton(direction: .previous)
                     Spacer()
@@ -65,48 +69,7 @@ struct HeroCarousel: View {
                         heroMetadata(items[currentIndex])
                     }
 
-                    // Action buttons (Watch Now + More Info)
-                    HStack(spacing: DesignTokens.Spacing.sm) {
-                        // Watch Now button (primary)
-                        Button {
-                            if !items.isEmpty {
-                                navigateToItem(items[currentIndex])
-                            }
-                        } label: {
-                            HStack(spacing: DesignTokens.Spacing.xs) {
-                                Image(systemName: "play.fill")
-                                    .font(.system(size: 16))
-
-                                Text(localization.t("hero.watch"))
-                                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                            }
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, DesignTokens.Spacing.md)
-                            .background(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-                        }
-
-                        // More Info button (secondary)
-                        Button {
-                            if !items.isEmpty {
-                                navigateToDetailPage(items[currentIndex])
-                            }
-                        } label: {
-                            HStack(spacing: DesignTokens.Spacing.xs) {
-                                Image(systemName: "info.circle.fill")
-                                    .font(.system(size: 16))
-
-                                Text(localization.t("hero.moreInfo"))
-                                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                            }
-                            .foregroundColor(DesignTokens.Text.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, DesignTokens.Spacing.md)
-                            .background(DesignTokens.Glass.bgStrong)
-                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-                        }
-                    }
+                    actionButtons
                 }
                 .padding(.leading, DesignTokens.Spacing.lg + 4)
                 .padding(.trailing, DesignTokens.Spacing.lg)
@@ -116,7 +79,6 @@ struct HeroCarousel: View {
         .frame(height: UIDevice.current.userInterfaceIdiom == .pad ? 500 : 320)
         .clipped()
         .overlay(alignment: .topTrailing) {
-            // Favorites and bookmark actions
             if !items.isEmpty {
                 heroActions(items[currentIndex])
             }
@@ -132,203 +94,45 @@ struct HeroCarousel: View {
         }
     }
 
-    private func heroImage(_ item: SpotlightItem) -> some View {
-        Group {
-            if let urlString = item.backdrop ?? item.thumbnail,
-               let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        heroPlaceholder
-                    }
-                }
-            } else {
-                heroPlaceholder
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .clipped()
-    }
+    // MARK: - Action Buttons
 
-    private var heroPlaceholder: some View {
-        LinearGradient(
-            colors: [DesignTokens.Glass.purpleLight, DesignTokens.Glass.purpleStrong],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-
-    private func heroMetadata(_ item: SpotlightItem) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            if let title = item.title {
-                Text(title)
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .lineLimit(2)
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-            }
-
-            HStack(spacing: DesignTokens.Spacing.sm) {
-                if let year = item.year {
-                    metadataText(String(year))
-                }
-
-                if let duration = item.duration {
-                    metadataText(duration)
-                }
-
-                if let rating = item.rating {
-                    ratingBadge(rating.value)
-                }
-            }
-
-            if let description = item.description {
-                Text(description)
-                    .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundColor(DesignTokens.Text.secondary)
-                    .lineLimit(2)
-                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-            }
-        }
-    }
-
-    private func metadataText(_ text: String) -> some View {
-        Text(text)
-            .font(.system(size: DesignTokens.FontSize.sm))
-            .foregroundColor(DesignTokens.Text.secondary)
-            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-    }
-
-    private func ratingBadge(_ text: String) -> some View {
-        Text(text)
-            .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
-            .foregroundColor(DesignTokens.Text.primary)
-            .padding(.horizontal, DesignTokens.Spacing.sm)
-            .padding(.vertical, 3)
-            .background(DesignTokens.Glass.bgStrong)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-    }
-
-    private enum NavigationDirection {
-        case previous, next
-    }
-
-    private func navigationButton(direction: NavigationDirection) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                switch direction {
-                case .previous:
-                    currentIndex = (currentIndex - 1 + items.count) % items.count
-                case .next:
-                    currentIndex = (currentIndex + 1) % items.count
-                }
-            }
-            resetAutoRotation()
-        } label: {
-            Image(systemName: direction == .previous ? "chevron.left" : "chevron.right")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .frame(width: 40, height: 40)
-                .background(DesignTokens.Glass.bgStrong)
-                .clipShape(Circle())
-        }
-    }
-
-    private func navigateToItem(_ item: SpotlightItem) {
-        let ct = item.type?.lowercased() ?? ""
-        if ct == "series" {
-            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
-        } else if ct == "collection" {
-            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if ct == "audiobook" {
-            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
-        } else {
-            let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
-            coordinator.navigate(to: .player(contentId: item.id, contentType: contentType))
-        }
-    }
-
-    private func navigateToDetailPage(_ item: SpotlightItem) {
-        let ct = item.type?.lowercased() ?? ""
-        if ct == "series" {
-            coordinator.navigate(to: .seriesDetail(seriesId: item.id))
-        } else if ct == "collection" {
-            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
-        } else if ct == "audiobook" {
-            coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
-        } else {
-            coordinator.navigate(to: .movieDetail(movieId: item.id))
-        }
-    }
-
-    private func startAutoRotation() {
-        guard items.count > 1 else { return }
-        timer = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.3)) {
-                currentIndex = (currentIndex + 1) % items.count
-            }
-        }
-    }
-
-    private func stopAutoRotation() {
-        timer?.invalidate()
-        timer = nil
-    }
-
-    private func resetAutoRotation() {
-        stopAutoRotation()
-        startAutoRotation()
-    }
-
-    // MARK: - Hero Actions
-
-    private func heroActions(_ item: SpotlightItem) -> some View {
+    var actionButtons: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
-            // Favorite star button
             Button {
-                Task {
-                    if let result = await favoritesViewModel?.toggleFavorite(
-                        contentId: item.id,
-                        contentType: item.type
-                    ) {
-                        favoriteStates[item.id] = result
-                    }
+                if !items.isEmpty {
+                    navigateToItem(items[currentIndex])
                 }
             } label: {
-                Image(systemName: isFavorite(item.id) ? "star.fill" : "star")
-                    .font(.system(size: DesignTokens.FontSize.lg))
-                    .foregroundStyle(isFavorite(item.id) ? DesignTokens.Warning.default : DesignTokens.Text.primary)
-                    .frame(width: 36, height: 36)
-                    .background(DesignTokens.Glass.bgStrong)
-                    .clipShape(Circle())
+                HStack(spacing: DesignTokens.Spacing.xs) {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 16))
+                    Text(localization.t("hero.watch"))
+                        .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                }
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignTokens.Spacing.md)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             }
 
-            // Bookmark/watchlist button
             Button {
-                // Bookmark uses same favorite API
-                Task {
-                    if let result = await favoritesViewModel?.toggleFavorite(
-                        contentId: item.id,
-                        contentType: item.type
-                    ) {
-                        favoriteStates[item.id] = result
-                    }
+                if !items.isEmpty {
+                    navigateToDetailPage(items[currentIndex])
                 }
             } label: {
-                Image(systemName: isFavorite(item.id) ? "bookmark.fill" : "bookmark")
-                    .font(.system(size: DesignTokens.FontSize.lg))
-                    .foregroundStyle(isFavorite(item.id) ? DesignTokens.Primary.p400 : DesignTokens.Text.primary)
-                    .frame(width: 36, height: 36)
-                    .background(DesignTokens.Glass.bgStrong)
-                    .clipShape(Circle())
+                HStack(spacing: DesignTokens.Spacing.xs) {
+                    Image(systemName: "info.circle.fill")
+                        .font(.system(size: 16))
+                    Text(localization.t("hero.moreInfo"))
+                        .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                }
+                .foregroundColor(DesignTokens.Text.primary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignTokens.Spacing.md)
+                .background(DesignTokens.Glass.bgStrong)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             }
         }
-        .padding(DesignTokens.Spacing.md)
-    }
-
-    private func isFavorite(_ contentId: String) -> Bool {
-        favoriteStates[contentId] ?? false
     }
 }

@@ -3,8 +3,9 @@ import BayitNetworking
 import Foundation
 import SwiftUI
 
+@MainActor
 @Observable
-class LiveLayerViewModel {
+final class LiveLayerViewModel {
     var activeTrigger: LiveLayerTrigger?
     var lipsyncWeights: [String: Float] = [:]
     var isConnected = false
@@ -13,6 +14,7 @@ class LiveLayerViewModel {
 
     private var wsConnection: WebSocketConnection?
     private var receiveTask: Task<Void, Never>?
+    private var disconnectTask: Task<Void, Never>?
     private var webSocketManager: WebSocketManager?
 
     @MainActor
@@ -44,7 +46,7 @@ class LiveLayerViewModel {
         receiveTask?.cancel()
         receiveTask = nil
         if let conn = wsConnection {
-            Task { await conn.disconnect() }
+            disconnectTask = Task { await conn.disconnect() }
         }
         wsConnection = nil
         isConnected = false
@@ -54,12 +56,13 @@ class LiveLayerViewModel {
         currentTimestamp = seconds
         let payload: [String: Any] = [
             "type": "timestamp_update",
-            "current_time": seconds
+            "current_time": seconds,
         ]
 
         do {
             if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
+               let jsonString = String(data: jsonData, encoding: .utf8)
+            {
                 try await wsConnection?.send(message: jsonString)
             }
         } catch {
@@ -73,12 +76,13 @@ class LiveLayerViewModel {
         let payload: [String: Any] = [
             "type": "trigger_response",
             "trigger_id": triggerId,
-            "audio": audioBase64
+            "audio": audioBase64,
         ]
 
         do {
             if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-               let jsonString = String(data: jsonData, encoding: .utf8) {
+               let jsonString = String(data: jsonData, encoding: .utf8)
+            {
                 try await wsConnection?.send(message: jsonString)
             }
         } catch {
@@ -103,10 +107,8 @@ class LiveLayerViewModel {
     @MainActor
     private func handleWSMessage(_ text: String) {
         guard let data = text.data(using: .utf8) else { return }
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-        guard let message = try? decoder.decode(LiveLayerWSMessage.self, from: data) else {
+        guard let message = try? WebSocketDecoder.shared.decode(LiveLayerWSMessage.self, from: data) else {
             return
         }
 

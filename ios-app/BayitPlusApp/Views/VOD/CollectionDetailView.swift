@@ -45,7 +45,7 @@ struct CollectionDetailView: View {
 
     private func collectionContent(
         _ collection: CollectionDetail,
-        _ vm: CollectionDetailViewModel
+        _: CollectionDetailViewModel
     ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if let backdrop = collection.backdrop {
@@ -68,10 +68,10 @@ struct CollectionDetailView: View {
         }
     }
 
-    private func backdropHero(_ backdropUrl: String, title: String) -> some View {
-        AsyncImage(url: URL(string: backdropUrl)) { phase in
+    private func backdropHero(_ backdropUrl: String, title _: String) -> some View {
+        CachedAsyncImage(url: URL(string: backdropUrl)) { phase in
             switch phase {
-            case .success(let image):
+            case let .success(image):
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -100,7 +100,8 @@ struct CollectionDetailView: View {
 
             HStack(spacing: DesignTokens.Spacing.sm) {
                 if let available = collection.availableMovies,
-                   let total = collection.totalMovies {
+                   let total = collection.totalMovies
+                {
                     Text(total > available ? "\(available) \(localization.t("vod.collection.of")) \(total) \(localization.t("vod.collection.movies"))" : "\(available) \(localization.t("vod.collection.movies"))")
                         .font(.system(size: DesignTokens.FontSize.md))
                         .foregroundColor(DesignTokens.Text.muted)
@@ -124,7 +125,6 @@ struct CollectionDetailView: View {
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
-
                 }
                 .padding(.top, DesignTokens.Spacing.sm)
             }
@@ -159,7 +159,7 @@ struct CollectionDetailView: View {
                 .foregroundColor(DesignTokens.Text.primary)
 
             ForEach(movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) })) { movie in
-                MovieRow(movie: movie) {
+                CollectionMovieRow(movie: movie) {
                     coordinator.navigate(to: .movieDetail(movieId: movie.id))
                 }
             }
@@ -176,56 +176,5 @@ struct CollectionDetailView: View {
         } catch {
             logger.error("Failed to create playlist: \(error.localizedDescription)")
         }
-    }
-}
-
-private struct MovieRow: View {
-    let movie: CollectionMovie
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                Text("\(movie.collectionOrder ?? 0).")
-                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                    .foregroundColor(DesignTokens.Text.muted)
-                    .frame(width: 30, alignment: .trailing)
-
-                if let thumbnail = movie.thumbnail, let url = URL(string: thumbnail) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        default:
-                            Rectangle().fill(DesignTokens.Glass.bgMedium)
-                        }
-                    }
-                    .frame(width: 100, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(movie.title ?? "Untitled")
-                        .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .lineLimit(2)
-
-                    if let year = movie.year, let duration = movie.duration {
-                        Text("\(year) • \(duration)")
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundColor(DesignTokens.Text.muted)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .foregroundColor(DesignTokens.Text.muted)
-            }
-            .padding(DesignTokens.Spacing.sm)
-            .background(DesignTokens.Glass.bg)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-        }
-        .buttonStyle(.plain)
     }
 }

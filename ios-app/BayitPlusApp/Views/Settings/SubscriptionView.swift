@@ -6,10 +6,10 @@ import SwiftUI
 /// and billing period toggle.
 struct SubscriptionView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(LocalizationManager.self) private var localization
-    @State private var viewModel: SubscriptionViewModel?
-    @State private var showDisclosure = false
-    @State private var pendingCheckoutURL: URL?
+    @Environment(LocalizationManager.self) var localization
+    @State var viewModel: SubscriptionViewModel?
+    @State var showDisclosure = false
+    @State var pendingCheckoutURL: URL?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -97,100 +97,25 @@ struct SubscriptionView: View {
                 } label: {
                     Text(period == .monthly
                         ? localization.t("subscription.monthly")
-                        : localization.t("subscription.yearly")
-                    )
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                    .foregroundStyle(
-                        isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
-                    )
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, DesignTokens.Spacing.sm)
-                    .background(
-                        isSelected
-                            ? DesignTokens.Glass.bgMedium
-                            : Color.clear
-                    )
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    )
+                        : localization.t("subscription.yearly"))
+                        .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                        .foregroundStyle(
+                            isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DesignTokens.Spacing.sm)
+                        .background(
+                            isSelected
+                                ? DesignTokens.Glass.bgMedium
+                                : Color.clear
+                        )
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                        )
                 }
             }
         }
         .glassCard(radius: DesignTokens.Radius.md, padding: DesignTokens.Spacing.xs)
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    // MARK: - Plan Cards
-
-    private func planCards(_ vm: SubscriptionViewModel) -> some View {
-        ForEach(vm.plans) { plan in
-            planCard(plan, viewModel: vm)
-        }
-    }
-
-    private func planCard(
-        _ plan: SubscriptionPlan, viewModel vm: SubscriptionViewModel
-    ) -> some View {
-        let isCurrent = vm.currentSubscription?.plan == plan.id
-
-        return GlassCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                HStack {
-                    Text(plan.name)
-                        .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-
-                    Spacer()
-
-                    if isCurrent {
-                        GlassBadge(text: localization.t("subscription.current"), variant: .success)
-                    }
-                }
-
-                Text(vm.displayPrice(for: plan))
-                    .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Primary.default)
-
-                ForEach(plan.features, id: \.self) { feature in
-                    HStack(spacing: DesignTokens.Spacing.sm) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 14))
-                            .foregroundStyle(DesignTokens.Success.default)
-
-                        Text(feature)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-                }
-
-                if !isCurrent {
-                    GlassButton(
-                        localization.t("subscription.subscribe"),
-                        variant: .primary,
-                        isLoading: vm.isProcessing
-                    ) {
-                        Task { @MainActor in
-                            guard !vm.isProcessing else { return }
-                            if let url = await vm.subscribe(to: plan) {
-                                pendingCheckoutURL = url
-                                showDisclosure = true
-                            } else if vm.error == nil {
-                                vm.setError("Unable to start subscription. Please try again later.")
-                            }
-                        }
-                    }
-                    .disabled(vm.isProcessing)
-                }
-            }
-            .padding(DesignTokens.Spacing.lg)
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(
-                    isCurrent ? DesignTokens.Primary.default : Color.clear,
-                    lineWidth: 2
-                )
-        )
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
@@ -205,74 +130,5 @@ struct SubscriptionView: View {
             Task { await vm.cancelSubscription() }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    // MARK: - External Payment Disclosure
-
-    private var externalPaymentDisclosure: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                Spacer()
-                Button(action: { showDisclosure = false }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 28))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                }
-            }
-            .padding(DesignTokens.Spacing.lg)
-
-            // Content
-            VStack(spacing: DesignTokens.Spacing.xl) {
-                Image(systemName: "safari.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(DesignTokens.Primary.default)
-
-                VStack(spacing: DesignTokens.Spacing.md) {
-                    Text(localization.t("subscription.externalPaymentTitle"))
-                        .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                        .multilineTextAlignment(.center)
-
-                    Text(localization.t("subscription.externalPaymentMessage"))
-                        .font(.system(size: DesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                VStack(spacing: DesignTokens.Spacing.sm) {
-                    GlassButton(
-                        localization.t("subscription.continueToWebsite"),
-                        variant: .primary
-                    ) {
-                        if let url = pendingCheckoutURL {
-                            UIApplication.shared.open(url, options: [:]) { success in
-                                if !success {
-                                    Task { @MainActor in
-                                        viewModel?.setError("Failed to open subscription page. Please try again.")
-                                    }
-                                }
-                            }
-                        }
-                        showDisclosure = false
-                    }
-
-                    GlassButton(
-                        localization.t("common.cancel"),
-                        variant: .ghost
-                    ) {
-                        showDisclosure = false
-                        pendingCheckoutURL = nil
-                    }
-                }
-            }
-            .padding(DesignTokens.Spacing.xl)
-
-            Spacer()
-        }
-        .background(DesignTokens.Background.primary)
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.visible)
     }
 }

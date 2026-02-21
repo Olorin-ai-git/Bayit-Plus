@@ -82,9 +82,9 @@ struct MovieInteractionsView: View {
     private func posterImage(url: String?) -> some View {
         Group {
             if let urlStr = url, let imageUrl = URL(string: urlStr) {
-                AsyncImage(url: imageUrl) { phase in
+                CachedAsyncImage(url: imageUrl) { phase in
                     switch phase {
-                    case .success(let img):
+                    case let .success(img):
                         img.resizable().scaledToFill()
                     case .failure:
                         posterPlaceholder

@@ -42,10 +42,17 @@ struct IPadHomeView: View {
             if viewModel == nil {
                 locationProvider.requestLocationIfNeeded()
                 viewModel = HomeViewModel(
-                    repository: repos.content, liveTVRepository: repos.liveTV,
-                    radioRepository: repos.radio, locationProvider: locationProvider,
-                    featureFlags: featureFlags, categoryRepository: repos.category,
-                    widgetSync: widgetSync
+                    repository: repos.content,
+                    mediaRepository: repos.media,
+                    liveTVRepository: repos.liveTV,
+                    radioRepository: repos.radio,
+                    locationProvider: locationProvider,
+                    featureFlags: featureFlags,
+                    categoryRepository: repos.category,
+                    widgetSync: widgetSync,
+                    contentRowLimit: 20,
+                    defaultCultureId: "israeli",
+                    hiddenChannelKeywords: []
                 )
             }
             await viewModel?.loadFeatured()
@@ -119,7 +126,7 @@ struct IPadHomeView: View {
 
     private var loadingState: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
-            ForEach(0..<3, id: \.self) { _ in
+            ForEach(0 ..< 3, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 200)

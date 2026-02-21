@@ -66,7 +66,7 @@ struct IPadVODView: View {
     }
 
     private func loadContinueWatching() async {
-        guard let items = try? await repos.content.fetchContinueWatching() else { return }
+        guard let items = try? await repos.media.fetchContinueWatching() else { return }
         continueWatchingItems = items.items
     }
 
@@ -161,7 +161,7 @@ struct IPadVODView: View {
 
     private var loadingGrid: some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(0..<12, id: \.self) { _ in
+            ForEach(0 ..< 12, id: \.self) { _ in
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
                     .aspectRatio(2 / 3, contentMode: .fit)

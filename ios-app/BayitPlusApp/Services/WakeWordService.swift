@@ -12,7 +12,6 @@ import UIKit
 /// enforces a configurable cooldown between activations.
 @Observable
 final class WakeWordService {
-
     // MARK: - Public State
 
     private(set) var isListening = false
@@ -30,6 +29,7 @@ final class WakeWordService {
     private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     private var cooldownActive = false
+    private var audioSessionConfigured = false
     private let wakePhrase: String
     private let cooldownInterval: TimeInterval
 
@@ -41,7 +41,7 @@ final class WakeWordService {
         cooldownInterval: TimeInterval = WakeWordService.configuredCooldown,
         sensitivity: Double = WakeWordService.configuredSensitivity
     ) {
-        self.recognizer = SFSpeechRecognizer(locale: locale)
+        recognizer = SFSpeechRecognizer(locale: locale)
         self.wakePhrase = wakePhrase.lowercased()
         self.cooldownInterval = cooldownInterval
         self.sensitivity = max(0.0, min(1.0, sensitivity))
@@ -55,7 +55,8 @@ final class WakeWordService {
 
     private static var configuredCooldown: TimeInterval {
         if let value = ProcessInfo.processInfo.environment["WAKE_WORD_COOLDOWN_SECONDS"],
-           let interval = TimeInterval(value) {
+           let interval = TimeInterval(value)
+        {
             return interval
         }
         return 3.0
@@ -63,7 +64,8 @@ final class WakeWordService {
 
     private static var configuredSensitivity: Double {
         if let value = ProcessInfo.processInfo.environment["WAKE_WORD_SENSITIVITY"],
-           let sens = Double(value) {
+           let sens = Double(value)
+        {
             return max(0.0, min(1.0, sens))
         }
         return 0.5
@@ -91,7 +93,7 @@ final class WakeWordService {
             isDetected = false
             logger.info("Wake word listening started", context: [
                 "wakePhrase": wakePhrase,
-                "sensitivity": "\(sensitivity)"
+                "sensitivity": "\(sensitivity)",
             ])
         } catch {
             logger.error("Failed to start wake word listening", error: error)
@@ -113,9 +115,11 @@ final class WakeWordService {
     // MARK: - Private
 
     private func configureAudioSession() throws {
+        guard !audioSessionConfigured else { return }
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothA2DP])
         try session.setActive(true, options: .notifyOthersOnDeactivation)
+        audioSessionConfigured = true
     }
 
     private func startRecognition(recognizer: SFSpeechRecognizer) throws {
@@ -125,7 +129,7 @@ final class WakeWordService {
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         request.requiresOnDeviceRecognition = recognizer.supportsOnDeviceRecognition
-        self.recognitionRequest = request
+        recognitionRequest = request
 
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
@@ -171,7 +175,7 @@ final class WakeWordService {
             self.onDetection?()
 
             self.logger.info("Wake word detected", context: [
-                "wakePhrase": self.wakePhrase
+                "wakePhrase": self.wakePhrase,
             ])
 
             self.stopListening()

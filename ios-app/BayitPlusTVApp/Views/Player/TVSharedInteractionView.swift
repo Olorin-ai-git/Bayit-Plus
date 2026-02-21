@@ -7,7 +7,7 @@
     /// Shows participants, turn indicator, and shared conversation.
     /// 10-foot UI with focusable elements for Siri Remote navigation.
     struct TVSharedInteractionView: View {
-        @Environment(LocalizationManager.self) private var localization
+        @Environment(LocalizationManager.self) var localization
 
         @Bindable var viewModel: SharedInteractionViewModel
         let onDismiss: () -> Void

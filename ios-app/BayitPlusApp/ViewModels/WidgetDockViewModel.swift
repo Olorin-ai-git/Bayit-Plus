@@ -18,9 +18,17 @@ final class WidgetDockViewModel {
 
     private let repository: any WidgetRepository
     private let logger = BayitLogger(category: "WidgetDock")
+    private var persistTask: Task<Void, Never>?
 
-    init(repository: any WidgetRepository) {
+    init(repository: any WidgetRepository, initiallyVisible: Bool = true) {
         self.repository = repository
+        isDockVisible = initiallyVisible
+    }
+
+    /// Show the dock explicitly.
+    @MainActor
+    func showDock() {
+        isDockVisible = true
     }
 
     /// Widgets currently minimized in the dock (excludes restored ones).
@@ -70,7 +78,7 @@ final class WidgetDockViewModel {
         }
 
         // Persist to backend
-        Task {
+        persistTask = Task {
             do {
                 _ = try await repository.toggleMinimize(
                     widgetId: widgetId,

@@ -7,7 +7,6 @@ import Foundation
 /// Bridges MediaPlayer with CastSessionManager to sync playback state.
 @MainActor
 public final class MediaPlayerCastBridge: ObservableObject {
-
     private let mediaPlayer: MediaPlayer
     private let castManager: CastSessionManager
     private let logger = BayitLogger(category: "MediaPlayerCastBridge")
@@ -49,7 +48,7 @@ public final class MediaPlayerCastBridge: ObservableObject {
 
         logger.info("Cast state changed", context: [
             "newState": state.rawValue,
-            "isCasting": "\(isCasting)"
+            "isCasting": "\(isCasting)",
         ])
 
         if state.isConnected {
@@ -61,14 +60,15 @@ public final class MediaPlayerCastBridge: ObservableObject {
 
     private func loadCurrentMedia() async {
         guard let currentItem = mediaPlayer.avPlayer.currentItem,
-              let url = (currentItem.asset as? AVURLAsset)?.url else {
+              let url = (currentItem.asset as? AVURLAsset)?.url
+        else {
             logger.warning("Cannot load media to cast - no current item")
             return
         }
 
         let media = CastMedia(
-            contentId: UUID().uuidString,
-            title: "Bayit+ Content",
+            contentId: castManager.contentId ?? url.lastPathComponent,
+            title: castManager.contentTitle ?? url.deletingPathExtension().lastPathComponent,
             streamUrl: url,
             posterUrl: nil,
             duration: mediaPlayer.duration > 0 ? mediaPlayer.duration : nil
@@ -114,7 +114,7 @@ public final class MediaPlayerCastBridge: ObservableObject {
 
         try await castManager.loadMedia(media)
         logger.info("Media loaded to cast device via bridge", context: [
-            "contentId": media.contentId
+            "contentId": media.contentId,
         ])
     }
 }

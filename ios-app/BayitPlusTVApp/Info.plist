@@ -4,6 +4,8 @@
 <dict>
 	<key>API_BASE_URL</key>
 	<string>$(API_BASE_URL)</string>
+	<key>API_RETRYABLE_STATUS_CODES</key>
+	<string>$(API_RETRYABLE_STATUS_CODES)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -36,11 +38,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>5</string>
+	<key>DEFAULT_CULTURE_ID</key>
+	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
+	<key>HIDDEN_CHANNEL_KEYWORDS</key>
+	<string>$(HIDDEN_CHANNEL_KEYWORDS)</string>
+	<key>HOME_CONTENT_ROW_LIMIT</key>
+	<string>$(HOME_CONTENT_ROW_LIMIT)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -48,6 +56,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>PROGRESS_TRACKING_INTERVAL_SECONDS</key>
+	<string>$(PROGRESS_TRACKING_INTERVAL_SECONDS)</string>
+	<key>SUPPORT_EMAIL</key>
+	<string>$(SUPPORT_EMAIL)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -55,8 +67,6 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
-	<key>SUPPORT_EMAIL</key>
-	<string>$(SUPPORT_EMAIL)</string>
 	<key>WEBSOCKET_BASE_URL</key>
 	<string>$(WEBSOCKET_BASE_URL)</string>
 </dict>

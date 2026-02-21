@@ -6,16 +6,16 @@ import SwiftUI
 struct PhoneVerificationView: View {
     @Environment(RepositoryProvider.self) var repos
     @Environment(LocalizationManager.self) var localization
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
 
-    @State private var phoneNumber = ""
-    @State private var verificationCode = ""
-    @State private var isLoading = false
-    @State private var error: String?
-    @State private var codeSent = false
-    @State private var isVerifying = false
-    @State private var resendTimer = 0
-    @State private var timerActive = false
+    @State var phoneNumber = ""
+    @State var verificationCode = ""
+    @State var isLoading = false
+    @State var error: String?
+    @State var codeSent = false
+    @State var isVerifying = false
+    @State var resendTimer = 0
+    @State var timerActive = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -164,53 +164,6 @@ struct PhoneVerificationView: View {
                 Spacer()
             }
             .padding(DesignTokens.Spacing.md)
-        }
-    }
-
-    private func sendVerificationCode() async {
-        isLoading = true
-        error = nil
-
-        do {
-            _ = try await repos.user.sendPhoneVerification(phoneNumber: phoneNumber)
-            codeSent = true
-            startResendTimer()
-        } catch {
-            self.error = error.localizedDescription
-        }
-
-        isLoading = false
-    }
-
-    private func verifyCode() async {
-        isVerifying = true
-        error = nil
-
-        do {
-            _ = try await repos.user.verifyPhone(code: verificationCode)
-            dismiss()
-        } catch {
-            self.error = error.localizedDescription
-        }
-
-        isVerifying = false
-    }
-
-    private func resendCode() async {
-        verificationCode = ""
-        await sendVerificationCode()
-    }
-
-    private func startResendTimer() {
-        resendTimer = 60
-        timerActive = true
-
-        Task {
-            while resendTimer > 0 {
-                try? await Task.sleep(for: .seconds(1))
-                resendTimer -= 1
-            }
-            timerActive = false
         }
     }
 }

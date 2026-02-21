@@ -5,7 +5,7 @@
     import SwiftUI
 
     struct TVMagicMirrorView: View {
-        @Environment(TVRepositoryProvider.self) private var repos
+        @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) private var localization
 
         let profileId: String

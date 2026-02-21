@@ -105,7 +105,6 @@ struct V2VPracticeView: View {
         }
     }
 
-    @ViewBuilder
     private var resultView: some View {
         VStack(spacing: 20) {
             V2VResultView(
@@ -167,8 +166,8 @@ struct V2VPracticeView: View {
     }
 
     private func handleStopRecording() {
-        guard let audioData = viewModel.stopRecording() else { return }
         Task {
+            guard let audioData = await viewModel.stopRecording() else { return }
             await viewModel.submitForTransform(
                 audioData: audioData,
                 avatarId: avatarId
@@ -176,4 +175,3 @@ struct V2VPracticeView: View {
         }
     }
 }
-

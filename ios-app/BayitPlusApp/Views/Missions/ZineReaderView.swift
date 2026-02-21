@@ -97,9 +97,9 @@ struct ZineReaderView: View {
 
     private func pageCard(_ page: ZinePage) -> some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            AsyncImage(url: URL(string: page.imageUrl)) { phase in
+            CachedAsyncImage(url: URL(string: page.imageUrl)) { phase in
                 switch phase {
-                case .success(let image):
+                case let .success(image):
                     image.resizable().aspectRatio(contentMode: .fit)
                 default:
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
@@ -124,7 +124,7 @@ struct ZineReaderView: View {
 
     private func pageIndicator(_ zine: WeeklyZine) -> some View {
         HStack(spacing: DesignTokens.Spacing.xs) {
-            ForEach(0..<zine.pages.count, id: \.self) { index in
+            ForEach(0 ..< zine.pages.count, id: \.self) { index in
                 Circle()
                     .fill(
                         index == currentPageIndex
@@ -194,5 +194,4 @@ struct ZineReaderView: View {
         }
         .frame(maxHeight: .infinity)
     }
-
 }

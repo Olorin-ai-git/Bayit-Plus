@@ -6,12 +6,14 @@ struct BreadcrumbEntry: Identifiable {
     let id = UUID()
     let label: String
     let icon: String?
-    let popCount: Int  // How many levels to pop (0 = root)
+    let popCount: Int // How many levels to pop (0 = root)
 }
 
 /// Manages navigation state across the app
 @Observable
 public final class NavigationCoordinator {
+    /// Maximum number of breadcrumb entries retained per tab to prevent unbounded growth.
+    private static let maxBreadcrumbsPerTab = 20
     /// Navigation path per tab
     var paths: [AppTab: NavigationPath] = [:]
 
@@ -74,21 +76,26 @@ public final class NavigationCoordinator {
             selectedTab = .home
             paths[.home] = NavigationPath()
             breadcrumbTrails[.home] = []
+
         case .liveTV:
             selectedTab = .liveTV
             paths[.liveTV] = NavigationPath()
             breadcrumbTrails[.liveTV] = []
+
         case .vod:
             selectedTab = .vod
             paths[.vod] = NavigationPath()
             breadcrumbTrails[.vod] = []
+
         case .radio:
             // Radio is no longer a tab -- push as content on current tab
             pushToCurrentTab(route)
+
         case .zehAni:
             selectedTab = .zehAni
             paths[.zehAni] = NavigationPath()
             breadcrumbTrails[.zehAni] = []
+
         case .podcasts:
             selectedTab = .podcasts
             paths[.podcasts] = NavigationPath()
@@ -145,6 +152,14 @@ public final class NavigationCoordinator {
         }
         paths[selectedTab, default: NavigationPath()].append(route)
         breadcrumbTrails[selectedTab, default: []].append(route)
+
+        // Cap breadcrumb trail to prevent unbounded memory growth
+        if let trail = breadcrumbTrails[selectedTab],
+           trail.count > Self.maxBreadcrumbsPerTab
+        {
+            let overflow = trail.count - Self.maxBreadcrumbsPerTab
+            breadcrumbTrails[selectedTab]?.removeFirst(overflow)
+        }
     }
 
     /// Pop the current tab's navigation stack
@@ -158,7 +173,7 @@ public final class NavigationCoordinator {
 
     /// Pop multiple levels from the current tab
     func pop(count: Int) {
-        for _ in 0..<count {
+        for _ in 0 ..< count {
             pop()
         }
     }
@@ -172,44 +187,5 @@ public final class NavigationCoordinator {
     /// Present a route as a fullscreen modal (player)
     func presentFullscreen(_ route: Route) {
         fullscreenRoute = route
-    }
-
-    /// Minimize fullscreen player to PiP bar (keeps playback alive)
-    func minimizeFullscreen(title: String?, thumbnail: String?) {
-        minimizedRoute = fullscreenRoute
-        minimizedTitle = title
-        minimizedThumbnail = thumbnail
-        fullscreenRoute = nil
-    }
-
-    /// Restore minimized player to fullscreen
-    func restoreMinimizedPlayer() {
-        fullscreenRoute = minimizedRoute
-        minimizedRoute = nil
-        minimizedTitle = nil
-        minimizedThumbnail = nil
-    }
-
-    /// Close minimized player completely
-    func closeMinimizedPlayer() {
-        minimizedRoute = nil
-        minimizedTitle = nil
-        minimizedThumbnail = nil
-    }
-
-    /// Dismiss fullscreen modal
-    func dismissFullscreen() {
-        fullscreenRoute = nil
-    }
-
-    /// Dismiss pending TV login
-    func dismissTVLogin() {
-        pendingTVLogin = nil
-    }
-
-    /// Handle a deep link URL
-    func handleDeepLink(_ url: URL) {
-        guard let route = DeepLink.route(from: url) else { return }
-        navigate(to: route)
     }
 }

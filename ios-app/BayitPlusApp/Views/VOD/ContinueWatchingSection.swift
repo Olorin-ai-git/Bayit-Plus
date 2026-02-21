@@ -79,9 +79,9 @@ private struct ContinueWatchingCard: View {
     @ViewBuilder
     private var thumbnailImage: some View {
         if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
-            AsyncImage(url: url) { phase in
+            CachedAsyncImage(url: url) { phase in
                 switch phase {
-                case .success(let img):
+                case let .success(img):
                     img.resizable().aspectRatio(contentMode: .fill)
                 default:
                     thumbnailPlaceholder

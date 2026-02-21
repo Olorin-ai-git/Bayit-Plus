@@ -7,7 +7,9 @@ enum VODFilterType: String, CaseIterable, Identifiable {
     case series
     case collections
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var localizationKey: String {
         switch self {
@@ -23,18 +25,18 @@ enum VODFilterType: String, CaseIterable, Identifiable {
 @MainActor
 @Observable
 final class VODViewModel {
-    private(set) var items: [ContentItem] = []
-    private(set) var allItems: [ContentItem] = []
-    private(set) var categories: [ContentCategory] = []
-    private(set) var isLoading = false
-    private(set) var isLoadingMore = false
-    private(set) var error: String?
-    private(set) var currentPage = 1
-    private(set) var hasMore = true
+    var items: [ContentItem] = []
+    var allItems: [ContentItem] = []
+    var categories: [ContentCategory] = []
+    var isLoading = false
+    var isLoadingMore = false
+    var error: String?
+    var currentPage = 1
+    var hasMore = true
 
     var selectedType: VODFilterType = .all
-    var selectedCategory: String? = nil
-    var selectedGenre: String? = nil
+    var selectedCategory: String?
+    var selectedGenre: String?
 
     /// Unique genre names extracted from loaded content
     var availableGenres: [String] {
@@ -45,8 +47,8 @@ final class VODViewModel {
         return Array(Set(allGenres)).sorted()
     }
 
-    private let repository: any ContentRepository
-    private let pageSize = 20
+    let repository: any ContentRepository
+    let pageSize = 20
 
     init(repository: any ContentRepository) {
         self.repository = repository
@@ -115,139 +117,4 @@ final class VODViewModel {
     func applyFilters() {
         items = filterItems(allItems)
     }
-
-    @MainActor
-    func loadMore() async {
-        guard !isLoadingMore, hasMore else { return }
-        isLoadingMore = true
-
-        let nextPage = currentPage + 1
-
-        do {
-            if selectedType == .collections {
-                let collections = try await repository.fetchCollections(
-                    skip: items.count,
-                    limit: pageSize
-                )
-                let mapped = collections.map { $0.toContentItem() }
-                items.append(contentsOf: mapped)
-                currentPage = nextPage
-                hasMore = collections.count >= pageSize
-            } else {
-                let response: ContentListResponse
-                if selectedType == .series {
-                    response = try await repository.fetchSeries(
-                        page: nextPage,
-                        limit: pageSize
-                    )
-                } else {
-                    response = try await repository.fetchAllContent(
-                        page: nextPage,
-                        limit: pageSize
-                    )
-                }
-                let filteredItems = selectedType == .all
-                    ? response.items
-                    : filterItemsByType(response.items)
-                items.append(contentsOf: filteredItems)
-                currentPage = nextPage
-                hasMore = response.page < (response.total / pageSize + 1)
-            }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
-
-        isLoadingMore = false
-    }
-
-    @MainActor
-    func refresh() async {
-        error = nil
-        currentPage = 1
-        isLoading = true
-
-        do {
-            if selectedType == .collections {
-                let collections = try await repository.fetchCollections(
-                    skip: 0,
-                    limit: pageSize
-                )
-                let mapped = collections.map { $0.toContentItem() }
-                items = mapped
-                hasMore = collections.count >= pageSize
-            } else {
-                let response: ContentListResponse
-                if selectedType == .series {
-                    response = try await repository.fetchSeries(
-                        page: 1,
-                        limit: pageSize
-                    )
-                } else {
-                    response = try await repository.fetchAllContent(
-                        page: 1,
-                        limit: pageSize
-                    )
-                }
-                items = selectedType == .all
-                    ? response.items
-                    : filterItemsByType(response.items)
-                hasMore = response.page < (response.total / pageSize + 1)
-            }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
-
-        isLoading = false
-    }
-
-    private func filterItems(_ items: [ContentItem]) -> [ContentItem] {
-        var filtered = items
-
-        // Filter by content type
-        switch selectedType {
-        case .all:
-            break
-        case .movies:
-            filtered = filtered.filter { $0.type == "movie" }
-        case .series:
-            filtered = filtered.filter { $0.type?.lowercased() == "series" }
-        case .collections:
-            filtered = filtered.filter { $0.isCollectionParent == true }
-        }
-
-        // Filter by category - resolve name from ID since ContentItem.category
-        // contains the category name, not the ID
-        if let categoryId = selectedCategory,
-           let categoryName = categories.first(where: { $0.id == categoryId })?.name {
-            filtered = filtered.filter { $0.category == categoryName }
-        }
-
-        // Filter by genre
-        if let genre = selectedGenre {
-            filtered = filtered.filter { item in
-                guard let itemGenre = item.genre else { return false }
-                return itemGenre.localizedCaseInsensitiveContains(genre)
-            }
-        }
-
-        return filtered
-    }
-
-    private func filterItemsByType(_ items: [ContentItem]) -> [ContentItem] {
-        switch selectedType {
-        case .all:
-            return items
-        case .movies:
-            return items.filter { $0.type == "movie" }
-        case .series:
-            return items.filter { $0.type?.lowercased() == "series" }
-        case .collections:
-            return items.filter { $0.isCollectionParent == true }
-        }
-    }
 }
-

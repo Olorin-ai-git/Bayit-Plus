@@ -92,6 +92,7 @@ extension TVPlayerView {
             vm.disconnectLiveTrivia()
         } else {
             let triviaWS = LiveTriviaWebSocketService(
+                webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,
                 authTokenProvider: repos.authTokenProvider
             )

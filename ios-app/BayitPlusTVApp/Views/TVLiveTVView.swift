@@ -9,6 +9,7 @@ struct TVLiveTVView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(\.appConfiguration) private var appConfiguration
     @State private var viewModel: LiveTVViewModel?
 
     private let columns = [
@@ -35,7 +36,11 @@ struct TVLiveTVView: View {
             .background(DesignTokens.Background.primary)
             .task {
                 if viewModel == nil {
-                    viewModel = LiveTVViewModel(repository: repos.liveTV, featureFlags: FeatureFlags())
+                    viewModel = LiveTVViewModel(
+                        repository: repos.liveTV,
+                        featureFlags: FeatureFlags(),
+                        hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
+                    )
                 }
                 await viewModel?.loadChannels()
             }

@@ -7,7 +7,6 @@ import Observation
 @MainActor
 @Observable
 final class SharedInteractionViewModel {
-
     // MARK: - Public State
 
     private(set) var sessionId: String?
@@ -32,6 +31,7 @@ final class SharedInteractionViewModel {
     private var currentUserId: String = ""
     private var partyId: String = ""
     private var countdownTask: Task<Void, Never>?
+    private var refreshTask: Task<Void, Never>?
 
     init(repository: any AvatarRepository) {
         self.repository = repository
@@ -50,7 +50,7 @@ final class SharedInteractionViewModel {
         displayName: String
     ) async {
         self.partyId = partyId
-        self.currentUserId = userId
+        currentUserId = userId
         self.characterName = characterName
 
         do {
@@ -175,7 +175,7 @@ final class SharedInteractionViewModel {
 
     private func refreshState() {
         guard let sessionId else { return }
-        Task {
+        refreshTask = Task {
             do {
                 let state = try await repository.getSharedInteractionState(
                     partyId: partyId,

@@ -13,7 +13,6 @@ import Foundation
 /// - Returns decoded model directly (like api.js returns `response.data`)
 /// - Posts `unauthorizedNotification` on 401 so the app can redirect to login
 public actor APIClient {
-
     /// Posted on the main thread when a 401 response is received.
     /// The app layer should observe this to trigger re-authentication.
     public static let unauthorizedNotification = Notification.Name("BayitAPIClientUnauthorized")
@@ -42,21 +41,26 @@ public actor APIClient {
         self.authTokenProvider = authTokenProvider
         self.locationProvider = locationProvider
         self.logger = logger
-        self.retryPolicy = RetryPolicy(configuration: configuration)
+        retryPolicy = RetryPolicy(configuration: configuration)
 
         let sessionConfig = URLSessionConfiguration.default
         sessionConfig.timeoutIntervalForRequest = configuration.timeout
+        sessionConfig.urlCache = URLCache(
+            memoryCapacity: configuration.urlCacheMemoryCapacity,
+            diskCapacity: configuration.urlCacheDiskCapacity
+        )
+        sessionConfig.requestCachePolicy = .useProtocolCachePolicy
         self.session = session ?? URLSession(configuration: sessionConfig)
 
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         encoder.dateEncodingStrategy = .iso8601
-        self.jsonEncoder = encoder
+        jsonEncoder = encoder
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .iso8601
-        self.jsonDecoder = decoder
+        jsonDecoder = decoder
     }
 
     // MARK: - Public API
@@ -77,7 +81,7 @@ public actor APIClient {
             metadata: [
                 "correlationId": correlationID,
                 "method": apiRequest.method.rawValue,
-                "path": apiRequest.path
+                "path": apiRequest.path,
             ]
         )
 
@@ -101,7 +105,7 @@ public actor APIClient {
             metadata: [
                 "correlationId": correlationID,
                 "method": apiRequest.method.rawValue,
-                "path": apiRequest.path
+                "path": apiRequest.path,
             ]
         )
 

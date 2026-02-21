@@ -2,7 +2,6 @@ import Foundation
 
 /// WebSocket connection and message handling for chess games.
 extension ChessViewModel {
-
     @MainActor
     func connectWebSocket(gameCode: String) async {
         do {
@@ -59,10 +58,7 @@ extension ChessViewModel {
     @MainActor
     private func decodeGameState(_ payload: [String: Any]) {
         guard let payloadData = try? JSONSerialization.data(withJSONObject: payload) else { return }
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
-        if let gameData = try? decoder.decode(ChessGame.self, from: payloadData) {
+        if let gameData = try? WebSocketDecoder.shared.decode(ChessGame.self, from: payloadData) {
             applyGameState(gameData)
         }
     }

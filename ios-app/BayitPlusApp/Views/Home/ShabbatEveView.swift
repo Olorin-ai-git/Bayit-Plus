@@ -5,12 +5,12 @@ import SwiftUI
 /// Shabbat Eve section (Friday before candle lighting) with countdown and quick actions.
 /// Shows preparation content: songs, parasha, recipes, prayers.
 struct ShabbatEveView: View {
-    @Environment(RepositoryProvider.self) private var repos
+    @Environment(RepositoryProvider.self) var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
-    @State private var viewModel: ShabbatViewModel?
-    @State private var countdown: String = ""
-    @State private var timer: Timer?
+    @State var viewModel: ShabbatViewModel?
+    @State var countdown: String = ""
+    @State var timer: Timer?
 
     var body: some View {
         if let vm = viewModel, shouldShowSection(vm) {
@@ -103,7 +103,7 @@ struct ShabbatEveView: View {
             LinearGradient(
                 colors: [
                     DesignTokens.Warning.default.opacity(0.15),
-                    DesignTokens.Primary.p400.opacity(0.1)
+                    DesignTokens.Primary.p400.opacity(0.1),
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -148,81 +148,5 @@ struct ShabbatEveView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - Logic
-
-    private func shouldShowSection(_ vm: ShabbatViewModel) -> Bool {
-        guard let candleTime = vm.candleLightingTime else { return false }
-
-        guard let candleDate = ISO8601DateFormatter().date(from: candleTime) else {
-            return false
-        }
-
-        let now = Date()
-        let timeUntilCandles = candleDate.timeIntervalSince(now)
-
-        let sixHours: TimeInterval = 6 * 60 * 60
-        return timeUntilCandles > 0 && timeUntilCandles <= sixHours
-    }
-
-    private func getParasha(_ vm: ShabbatViewModel) -> String? {
-        let locale = Locale.current.language.languageCode?.identifier ?? "en"
-        if locale == "he", let hebrewName = vm.parashaNameHebrew {
-            return hebrewName
-        }
-        return vm.parashaNameEnglish
-    }
-
-    private func startCountdownTimer(_ vm: ShabbatViewModel) {
-        updateCountdown(vm)
-
-        timer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { _ in
-            updateCountdown(vm)
-        }
-    }
-
-    private func stopCountdownTimer() {
-        timer?.invalidate()
-        timer = nil
-    }
-
-    private func updateCountdown(_ vm: ShabbatViewModel) {
-        guard let candleTime = vm.candleLightingTime,
-              let candleDate = ISO8601DateFormatter().date(from: candleTime) else {
-            countdown = ""
-            return
-        }
-
-        let now = Date()
-        let timeRemaining = candleDate.timeIntervalSince(now)
-
-        if timeRemaining <= 0 {
-            countdown = ""
-            return
-        }
-
-        let hours = Int(timeRemaining) / 3600
-        let minutes = (Int(timeRemaining) % 3600) / 60
-
-        if hours > 0 {
-            countdown = "\(hours)h \(minutes)m"
-        } else {
-            countdown = "\(minutes)m"
-        }
-    }
-}
-
-// MARK: - Auto Load Extension
-
-extension ShabbatEveView {
-    /// Creates the ViewModel from RepositoryProvider and loads zmanim data.
-    func withAutoLoad() -> some View {
-        self.task {
-            if viewModel == nil {
-                viewModel = ShabbatViewModel(repository: repos.shabbat)
-            }
-            await viewModel?.loadZmanim()
-        }
     }
 }

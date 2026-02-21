@@ -4,7 +4,10 @@ import BayitNetworking
 import Foundation
 
 struct GlossaryEntry: Codable, Identifiable {
-    var id: String { phrase }
+    var id: String {
+        phrase
+    }
+
     let phrase: String
     let transliteration: String
     let translation: String
@@ -38,33 +41,33 @@ final class GlossaryViewModel {
         self.client = client
     }
 
-    // Convenience initializer for standalone use
+    /// Convenience initializer for standalone use
     convenience init() {
         let appConfig = AppConfiguration()
         #if os(tvOS)
-        let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
-        let apiLogger = TVAppAPILogger()
-        let authConfig = TVAppAuthConfiguration()
-        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+            let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
+            let apiLogger = TVAppAPILogger()
+            let authConfig = AppAuthConfiguration()
+            let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
 
-        let client = APIClient(
-            configuration: networkConfig,
-            authTokenProvider: authMgr.authTokenProvider,
-            locationProvider: TVLocationProvider(),
-            logger: apiLogger
-        )
+            let client = APIClient(
+                configuration: networkConfig,
+                authTokenProvider: authMgr.authTokenProvider,
+                locationProvider: TVLocationProvider(),
+                logger: apiLogger
+            )
         #else
-        let networkConfig = AppNetworkConfiguration(appConfig: appConfig)
-        let apiLogger = AppAPILogger()
-        let authConfig = AppAuthConfiguration()
-        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+            let networkConfig = AppNetworkConfiguration(appConfig: appConfig)
+            let apiLogger = AppAPILogger()
+            let authConfig = AppAuthConfiguration()
+            let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
 
-        let client = APIClient(
-            configuration: networkConfig,
-            authTokenProvider: authMgr.authTokenProvider,
-            locationProvider: AppLocationProvider(),
-            logger: apiLogger
-        )
+            let client = APIClient(
+                configuration: networkConfig,
+                authTokenProvider: authMgr.authTokenProvider,
+                locationProvider: AppLocationProvider(),
+                logger: apiLogger
+            )
         #endif
 
         self.init(client: client)
@@ -81,7 +84,7 @@ final class GlossaryViewModel {
         do {
             var params: [String: String] = [
                 "limit": "\(pageSize)",
-                "skip": "\(currentSkip)"
+                "skip": "\(currentSkip)",
             ]
             if !searchQuery.isEmpty { params["query"] = searchQuery }
             if activeCategory != "All" { params["tags"] = activeCategory.lowercased() }

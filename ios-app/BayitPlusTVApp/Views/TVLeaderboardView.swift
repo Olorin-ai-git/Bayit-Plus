@@ -139,9 +139,7 @@ struct TVLeaderboardRow: View {
     private var avatarView: some View {
         Group {
             if let avatarUrl = user.avatarUrl, let url = URL(string: avatarUrl) {
-                CachedAsyncImage(url: url) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
+                CachedAsyncImage(url: url) {
                     avatarPlaceholder
                 }
             } else {

@@ -19,60 +19,6 @@ import Foundation
 /// - Premium features (subscription entitlement)
 /// - AI features (cost control)
 final class FeatureValidationService {
-
-    // MARK: - Types
-
-    enum FeatureName: String, Codable {
-        case beta500 = "beta_500"
-        case familyControls = "family_controls"
-        case liveDubbing = "live_dubbing"
-        case audiobooks = "audiobooks"
-        case llmSearch = "llm_search"
-        case rewards = "rewards"
-        case household = "household"
-        case carPlay = "carplay"
-        case avatarMode = "avatar_mode"
-        case proactiveVoice = "proactive_voice"
-        case devicePairing = "device_pairing"
-        case trivia = "trivia"
-        case wakeWord = "wake_word"
-        case legacyFeatures = "legacy_features"
-        case chapterNavigation = "chapter_navigation"
-        case interactiveSubtitles = "interactive_subtitles"
-        case shabbatMode = "shabbat_mode"
-    }
-
-    struct ValidationResult: Codable {
-        let feature: String
-        let enabled: Bool
-        let reason: String?
-        let metadata: [String: AnyCodable]?
-    }
-
-    struct BatchValidationRequest: Codable {
-        let features: [FeatureName]
-    }
-
-    struct BatchValidationResponse: Codable {
-        let results: [ValidationResult]
-    }
-
-    struct DeductCreditRequest: Codable {
-        let feature: String
-    }
-
-    struct DeductCreditResponse: Codable {
-        let success: Bool
-        let remainingCredits: Int
-        let message: String
-
-        enum CodingKeys: String, CodingKey {
-            case success
-            case remainingCredits = "remaining_credits"
-            case message
-        }
-    }
-
     // MARK: - Properties
 
     private let apiClient: APIClient
@@ -87,17 +33,6 @@ final class FeatureValidationService {
     // MARK: - Public API
 
     /// Validate single feature with server-side security check.
-    ///
-    /// **Usage:**
-    /// ```swift
-    /// let result = try await featureValidation.validate(.beta500)
-    /// if result.enabled {
-    ///     // Execute feature
-    /// } else {
-    ///     // Show upgrade prompt or error
-    ///     print("Feature disabled: \(result.reason ?? "unknown")")
-    /// }
-    /// ```
     ///
     /// - Parameter feature: Feature to validate
     /// - Returns: ValidationResult with enabled status and reason
@@ -115,7 +50,7 @@ final class FeatureValidationService {
             context: [
                 "feature": feature.rawValue,
                 "enabled": String(result.enabled),
-                "reason": result.reason ?? "none"
+                "reason": result.reason ?? "none",
             ]
         )
 
@@ -123,16 +58,6 @@ final class FeatureValidationService {
     }
 
     /// Validate multiple features in single request (optimization).
-    ///
-    /// **Usage:**
-    /// ```swift
-    /// let features: [FeatureName] = [.beta500, .liveDubbing, .familyControls]
-    /// let response = try await featureValidation.validateBatch(features)
-    ///
-    /// for result in response.results {
-    ///     print("\(result.feature): \(result.enabled)")
-    /// }
-    /// ```
     ///
     /// - Parameter features: Array of features to validate
     /// - Returns: BatchValidationResponse with results for each feature
@@ -151,7 +76,7 @@ final class FeatureValidationService {
             "Batch validation complete",
             context: [
                 "total": String(response.results.count),
-                "enabled": String(response.results.filter { $0.enabled }.count)
+                "enabled": String(response.results.filter { $0.enabled }.count),
             ]
         )
 
@@ -162,18 +87,6 @@ final class FeatureValidationService {
     ///
     /// **CRITICAL:** This MUST be called BEFORE executing any AI-powered feature.
     /// Credits are deducted server-side to prevent client tampering.
-    ///
-    /// **Usage:**
-    /// ```swift
-    /// // Before AI search
-    /// do {
-    ///     let response = try await featureValidation.deductCredit(for: "ai_search")
-    ///     print("Credits remaining: \(response.remainingCredits)")
-    ///     // Execute AI search
-    /// } catch {
-    ///     // Show "insufficient credits" error
-    /// }
-    /// ```
     ///
     /// - Parameter feature: Feature name (for usage tracking)
     /// - Returns: DeductCreditResponse with remaining credits
@@ -192,73 +105,10 @@ final class FeatureValidationService {
             "Credit deducted",
             context: [
                 "feature": feature,
-                "remaining": String(response.remainingCredits)
+                "remaining": String(response.remainingCredits),
             ]
         )
 
         return response
-    }
-}
-
-// MARK: - Helper Types
-
-private struct EmptyBody: Codable {}
-
-/// Type-erased codable value for flexible metadata
-struct AnyCodable: Codable {
-    let value: Any
-
-    init(_ value: Any) {
-        self.value = value
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-
-        if let int = try? container.decode(Int.self) {
-            value = int
-        } else if let double = try? container.decode(Double.self) {
-            value = double
-        } else if let string = try? container.decode(String.self) {
-            value = string
-        } else if let bool = try? container.decode(Bool.self) {
-            value = bool
-        } else if let array = try? container.decode([AnyCodable].self) {
-            value = array.map { $0.value }
-        } else if let dict = try? container.decode([String: AnyCodable].self) {
-            value = dict.mapValues { $0.value }
-        } else {
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Unsupported type"
-            )
-        }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-
-        switch value {
-        case let int as Int:
-            try container.encode(int)
-        case let double as Double:
-            try container.encode(double)
-        case let string as String:
-            try container.encode(string)
-        case let bool as Bool:
-            try container.encode(bool)
-        case let array as [Any]:
-            try container.encode(array.map { AnyCodable($0) })
-        case let dict as [String: Any]:
-            try container.encode(dict.mapValues { AnyCodable($0) })
-        default:
-            throw EncodingError.invalidValue(
-                value,
-                EncodingError.Context(
-                    codingPath: container.codingPath,
-                    debugDescription: "Unsupported type"
-                )
-            )
-        }
     }
 }

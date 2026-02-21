@@ -11,13 +11,15 @@ struct SnapGridItem: View {
     var body: some View {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.sm) {
-                AsyncImage(url: URL(string: snap.imageUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle()
-                        .fill(DesignTokens.Glass.bgStrong)
+                CachedAsyncImage(url: URL(string: snap.imageUrl)) { phase in
+                    if case let .success(image) = phase {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else {
+                        Rectangle()
+                            .fill(DesignTokens.Glass.bgStrong)
+                    }
                 }
                 .frame(height: 180)
                 .clipped()
@@ -66,13 +68,15 @@ struct SnapDetailCard: View {
                     }
                 }
 
-                AsyncImage(url: URL(string: snap.imageUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    Rectangle()
-                        .fill(DesignTokens.Glass.bgStrong)
+                CachedAsyncImage(url: URL(string: snap.imageUrl)) { phase in
+                    if case let .success(image) = phase {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Rectangle()
+                            .fill(DesignTokens.Glass.bgStrong)
+                    }
                 }
                 .frame(maxHeight: 300)
                 .cornerRadius(DesignTokens.Radius.lg)
@@ -130,10 +134,9 @@ struct EmptySnapsView: View {
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
 
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        return controller
+    func makeUIViewController(context _: Context) -> UIActivityViewController {
+        return UIActivityViewController(activityItems: items, applicationActivities: nil)
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }

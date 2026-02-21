@@ -4,16 +4,26 @@ import Foundation
 /// Actor-based offline caching service for storing and retrieving data with TTL support.
 /// Uses the app's caches directory for storage with automatic expiration.
 actor OfflineCacheService {
-
     private let cacheDirectory: URL
     private let logger = BayitLogger(category: "OfflineCache")
+    private let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        return encoder
+    }()
+
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
 
     init() {
         let caches = FileManager.default.urls(
             for: .cachesDirectory,
             in: .userDomainMask
         ).first!
-        self.cacheDirectory = caches.appendingPathComponent("bayit_offline_cache")
+        cacheDirectory = caches.appendingPathComponent("bayit_offline_cache")
 
         Task {
             await createCacheDirectory()
@@ -26,8 +36,6 @@ actor OfflineCacheService {
         let metadataURL = metadataURL(forKey: key)
 
         do {
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
             let jsonData = try encoder.encode(data)
 
             try jsonData.write(to: fileURL, options: .atomic)
@@ -53,8 +61,6 @@ actor OfflineCacheService {
 
         do {
             let data = try Data(contentsOf: fileURL)
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
             let decoded = try decoder.decode(type, from: data)
 
             logger.info("Cache hit", context: ["key": key])
@@ -95,7 +101,8 @@ actor OfflineCacheService {
             let metadataURL = metadataURL(forKey: key)
 
             guard let metadataData = try? Data(contentsOf: metadataURL),
-                  let metadata = try? JSONDecoder().decode(CacheMetadata.self, from: metadataData) else {
+                  let metadata = try? decoder.decode(CacheMetadata.self, from: metadataData)
+            else {
                 continue
             }
 

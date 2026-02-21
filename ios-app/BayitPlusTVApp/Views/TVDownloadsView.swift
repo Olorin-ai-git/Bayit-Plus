@@ -60,7 +60,7 @@ struct TVDownloadsView: View {
             Button(localization.t("common.delete"), role: .destructive) {
                 guard let download = itemToDelete else { return }
                 itemToDelete = nil
-                viewModel?.deleteDownload(download)
+                Task { await viewModel?.deleteDownload(download) }
             }
         }
     }
@@ -85,45 +85,50 @@ struct TVDownloadsView: View {
     // MARK: - Grid
 
     private func downloadsGrid(_ items: [LocalDownload], title: String) -> some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text(title)
-                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        let header = Text(title)
+            .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+            .foregroundStyle(DesignTokens.Text.secondary)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            header
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(items) { item in
-                    GlassFocusPoster(
-                        thumbnailURL: item.thumbnail,
-                        title: item.title,
-                        subtitle: item.fileSize.map { formattedBytes(Int($0)) },
-                        badge: item.status == .downloading ? "↓" : nil,
-                        aspectRatio: 2 / 3,
-                        onSelect: {
-                            guard item.status == .completed else { return }
-                            coordinator.presentPlayer(
-                                contentId: item.contentId,
-                                contentType: TVContentTypeMapper.map(item.contentType.rawValue)
-                            )
-                        }
-                    )
-                    .contextMenu {
-                        Button(role: .destructive) {
-                            itemToDelete = item
-                        } label: {
-                            Label(localization.t("common.delete"), systemImage: "trash")
-                        }
-                        if item.status == .failed {
-                            Button {
-                                viewModel?.retryDownload(item)
-                            } label: {
-                                Label(localization.t("common.retry"), systemImage: "arrow.clockwise")
-                            }
-                        }
-                    }
+                    downloadPoster(item)
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.bottom, TVDesignTokens.Spacing.xl)
+        }
+    }
+
+    private func downloadPoster(_ item: LocalDownload) -> some View {
+        let contentType = TVContentTypeMapper.map(item.contentType.rawValue)
+        let subtitle = item.fileSize.map { formattedBytes(Int($0)) }
+        let badge: String? = item.status == .downloading ? "↓" : nil
+        return GlassFocusPoster(
+            thumbnailURL: item.thumbnail,
+            title: item.title,
+            subtitle: subtitle,
+            badge: badge,
+            aspectRatio: 2 / 3,
+            onSelect: {
+                guard item.status == .completed else { return }
+                coordinator.presentPlayer(contentId: item.contentId, contentType: contentType)
+            }
+        )
+        .contextMenu {
+            Button(role: .destructive) {
+                itemToDelete = item
+            } label: {
+                Label(localization.t("common.delete"), systemImage: "trash")
+            }
+            if item.status == .failed {
+                Button {
+                    Task { await viewModel?.retryDownload(item) }
+                } label: {
+                    Label(localization.t("common.retry"), systemImage: "arrow.clockwise")
+                }
+            }
         }
     }
 

@@ -32,9 +32,7 @@
         @ViewBuilder
         private var thumbnailView: some View {
             if let thumbnailUrl = reel.thumbnailUrl {
-                CachedAsyncImage(url: URL(string: thumbnailUrl)) { image in
-                    image.resizable().aspectRatio(contentMode: .fill)
-                } placeholder: {
+                CachedAsyncImage(url: URL(string: thumbnailUrl)) {
                     DesignTokens.Glass.bgMedium
                 }
                 .frame(width: 160, height: 160)

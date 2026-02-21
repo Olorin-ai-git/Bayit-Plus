@@ -74,11 +74,14 @@ struct MeshGenerationView: View {
 
             if creationState == .ready,
                let imageUrl = avatarStatus?.avatarImageUrl,
-               let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { image in
-                    image.resizable().scaledToFit()
-                } placeholder: {
-                    ProgressView()
+               let url = URL(string: imageUrl)
+            {
+                CachedAsyncImage(url: url) { phase in
+                    if case let .success(image) = phase {
+                        image.resizable().scaledToFit()
+                    } else {
+                        ProgressView()
+                    }
                 }
                 .frame(width: 200, height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))

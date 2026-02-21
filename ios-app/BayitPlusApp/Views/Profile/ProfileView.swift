@@ -79,9 +79,9 @@ struct ProfileView: View {
     private func avatarView(_ url: String?) -> some View {
         Group {
             if let urlStr = url, let imageURL = URL(string: urlStr) {
-                AsyncImage(url: imageURL) { phase in
+                CachedAsyncImage(url: imageURL) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image.resizable().aspectRatio(contentMode: .fill)
                     default:
                         avatarPlaceholder
@@ -176,27 +176,5 @@ struct ProfileView: View {
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
         }
-    }
-
-    private var loadingState: some View {
-        VStack(spacing: DesignTokens.Spacing.xl) {
-            Circle()
-                .fill(DesignTokens.Glass.bg)
-                .frame(width: 96, height: 96)
-
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                .fill(DesignTokens.Glass.bg)
-                .frame(width: 200, height: 24)
-
-            HStack(spacing: DesignTokens.Spacing.md) {
-                ForEach(0..<3, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                        .fill(DesignTokens.Glass.bg)
-                        .frame(height: 80)
-                }
-            }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-        }
-        .padding(.top, DesignTokens.Spacing.xxl)
     }
 }

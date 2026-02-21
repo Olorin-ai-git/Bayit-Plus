@@ -119,9 +119,7 @@ struct TVHouseholdView: View {
     private func avatarView(_ member: HouseholdMember) -> some View {
         Group {
             if let avatarUrl = member.avatar, let url = URL(string: avatarUrl) {
-                CachedAsyncImage(url: url) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
+                CachedAsyncImage(url: url) {
                     avatarPlaceholder(member)
                 }
             } else {

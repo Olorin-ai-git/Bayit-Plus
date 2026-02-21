@@ -7,8 +7,8 @@ import SwiftUI
 /// Reuses VODViewModel from shared ViewModels.
 struct TVVODView: View {
     @Environment(TVRepositoryProvider.self) private var repos
-    @Environment(TVNavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(TVNavigationCoordinator.self) var coordinator
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: VODViewModel?
     @State private var featuredCollections: [CollectionDetail] = []
 

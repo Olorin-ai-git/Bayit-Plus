@@ -5,7 +5,7 @@ import SwiftUI
 /// OpenSubtitles fetch UI for tvOS - downloads additional subtitle tracks from OpenSubtitles.org.
 /// Optimized for 10-foot UI with proper focus targets and tvOS design tokens.
 struct TVOpenSubtitlesDownloadView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     let contentId: String
     let repository: any SubtitleRepository
     let onSuccess: () -> Void

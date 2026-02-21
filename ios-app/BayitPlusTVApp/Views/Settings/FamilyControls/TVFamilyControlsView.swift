@@ -10,7 +10,7 @@ import SwiftUI
 /// Follows the TVSecurityView pattern for layout and state management.
 struct TVFamilyControlsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: FamilyControlsViewModel?
     @State private var showPinModal = false
 

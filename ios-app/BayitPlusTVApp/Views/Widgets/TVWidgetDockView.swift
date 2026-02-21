@@ -19,7 +19,7 @@
             if isDockVisible && !widgets.isEmpty {
                 dockBar
                     .focusSection()
-                    .onFocusChange { focused in onFocusChanged?(focused) }
+                    
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .animation(.spring(duration: 0.35, bounce: 0.12), value: isDockVisible)
             }

@@ -5,6 +5,33 @@ import SwiftUI
 // MARK: - TVYoungstersView + News & Shelves
 
 extension TVYoungstersView {
+    func contentShelf(_ vm: YoungstersViewModel) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            Text(localization.t("youngsters.categories.all"))
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
+            LazyVGrid(columns: contentColumns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(vm.items) { item in
+                    GlassFocusPoster(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title ?? localization.t("youngsters.title"),
+                        subtitle: item.duration,
+                        aspectRatio: 16 / 9,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        }
+    }
+
     func trendingShelf(_ vm: YoungstersViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(localization.t("youngsters.categories.trending"))

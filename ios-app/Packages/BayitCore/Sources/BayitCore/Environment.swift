@@ -61,6 +61,13 @@ public protocol EnvironmentConfiguration: Sendable {
 
     var googleCastReceiverAppId: String { get }
     var supportEmail: String { get }
+
+    // MARK: - Content Configuration
+
+    var progressTrackingIntervalSeconds: TimeInterval { get }
+    var homeContentRowLimit: Int { get }
+    var defaultCultureId: String { get }
+    var hiddenChannelKeywords: [String] { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -82,96 +89,10 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let catchUpDefaultWindowMinutes: Int
     public let googleCastReceiverAppId: String
     public let supportEmail: String
-
-    public init() {
-        let env = AppEnvironment.current
-        let info = Bundle.main.infoDictionary ?? [:]
-
-        let apiURLString = info["API_BASE_URL"] as? String
-            ?? ProcessInfo.processInfo.environment["API_BASE_URL"]
-            ?? Self.defaultAPIBaseURL(for: env)
-
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("Invalid API_BASE_URL configuration: \(apiURLString)")
-        }
-
-        let wsURLString = info["WEBSOCKET_BASE_URL"] as? String
-            ?? ProcessInfo.processInfo.environment["WEBSOCKET_BASE_URL"]
-            ?? Self.defaultWebSocketURL(for: env)
-
-        guard let wsURL = URL(string: wsURLString) else {
-            fatalError("Invalid WEBSOCKET_BASE_URL configuration: \(wsURLString)")
-        }
-
-        let timeoutValue = info["API_TIMEOUT"] as? String
-            ?? ProcessInfo.processInfo.environment["API_TIMEOUT"]
-
-        let maxRetriesValue = info["API_MAX_RETRIES"] as? String
-            ?? ProcessInfo.processInfo.environment["API_MAX_RETRIES"]
-
-        let retryDelayValue = info["API_RETRY_BASE_DELAY"] as? String
-            ?? ProcessInfo.processInfo.environment["API_RETRY_BASE_DELAY"]
-
-        let wsMaxConnValue = info["WS_MAX_CONCURRENT_CONNECTIONS"] as? String
-            ?? ProcessInfo.processInfo.environment["WS_MAX_CONCURRENT_CONNECTIONS"]
-
-        let wsPingValue = info["WS_PING_INTERVAL"] as? String
-            ?? ProcessInfo.processInfo.environment["WS_PING_INTERVAL"]
-
-        let wsMaxReconnectValue = info["WS_MAX_RECONNECT_ATTEMPTS"] as? String
-            ?? ProcessInfo.processInfo.environment["WS_MAX_RECONNECT_ATTEMPTS"]
-
-        let wsReconnectDelayValue = info["WS_RECONNECT_BASE_DELAY"] as? String
-            ?? ProcessInfo.processInfo.environment["WS_RECONNECT_BASE_DELAY"]
-
-        let wsGracePeriodValue = info["WS_INACTIVE_GRACE_PERIOD"] as? String
-            ?? ProcessInfo.processInfo.environment["WS_INACTIVE_GRACE_PERIOD"]
-
-        let catchUpCreditCostValue = info["CATCHUP_CREDIT_COST"] as? String
-            ?? ProcessInfo.processInfo.environment["CATCHUP_CREDIT_COST"]
-
-        let catchUpAutoPromptValue = info["CATCHUP_AUTO_PROMPT_SECONDS"] as? String
-            ?? ProcessInfo.processInfo.environment["CATCHUP_AUTO_PROMPT_SECONDS"]
-
-        let catchUpWindowValue = info["CATCHUP_DEFAULT_WINDOW_MINUTES"] as? String
-            ?? ProcessInfo.processInfo.environment["CATCHUP_DEFAULT_WINDOW_MINUTES"]
-
-        let castReceiverAppIdValue = info["GOOGLE_CAST_RECEIVER_APP_ID"] as? String
-            ?? ProcessInfo.processInfo.environment["GOOGLE_CAST_RECEIVER_APP_ID"]
-
-        let supportEmailValue = info["SUPPORT_EMAIL"] as? String
-            ?? ProcessInfo.processInfo.environment["SUPPORT_EMAIL"]
-
-        guard let resolvedSupportEmail = supportEmailValue, !resolvedSupportEmail.isEmpty else {
-            fatalError("SUPPORT_EMAIL must be set in Info.plist or SUPPORT_EMAIL env var")
-        }
-
-        environment = env
-        supportEmail = resolvedSupportEmail
-        apiBaseURL = apiURL
-        apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
-        apiMaxRetries = Int(maxRetriesValue ?? "") ?? 3
-        apiRetryBaseDelay = TimeInterval(retryDelayValue ?? "") ?? 1.0
-        apiRetryableStatusCodes = [408, 429, 500, 502, 503, 504]
-        webSocketBaseURL = wsURL
-        webSocketMaxConcurrentConnections = Int(wsMaxConnValue ?? "") ?? 5
-        webSocketPingInterval = TimeInterval(wsPingValue ?? "") ?? 30.0
-        webSocketMaxReconnectAttempts = Int(wsMaxReconnectValue ?? "") ?? 5
-        webSocketReconnectBaseDelay = TimeInterval(wsReconnectDelayValue ?? "") ?? 1.0
-        webSocketInactiveGracePeriod = TimeInterval(wsGracePeriodValue ?? "") ?? 10.0
-        catchUpCreditCost = Int(catchUpCreditCostValue ?? "") ?? 1
-        catchUpAutoPromptSeconds = Int(catchUpAutoPromptValue ?? "") ?? 15
-        catchUpDefaultWindowMinutes = Int(catchUpWindowValue ?? "") ?? 15
-        googleCastReceiverAppId = castReceiverAppIdValue ?? ""
-    }
-
-    private static func defaultAPIBaseURL(for _: AppEnvironment) -> String {
-        fatalError("API_BASE_URL must be set in Info.plist or API_BASE_URL env var")
-    }
-
-    private static func defaultWebSocketURL(for _: AppEnvironment) -> String {
-        fatalError("WEBSOCKET_BASE_URL must be set in Info.plist or WEBSOCKET_BASE_URL env var")
-    }
+    public let progressTrackingIntervalSeconds: TimeInterval
+    public let homeContentRowLimit: Int
+    public let defaultCultureId: String
+    public let hiddenChannelKeywords: [String]
 }
 
 // MARK: - SwiftUI Environment Key

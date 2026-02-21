@@ -8,7 +8,6 @@ import Observation
 @MainActor
 @Observable
 final class BilingualDubbingViewModel {
-
     private(set) var proficiency: ProficiencyStatus?
     private(set) var activeSession: BilingualSession?
     private(set) var isActive = false
@@ -36,7 +35,7 @@ final class BilingualDubbingViewModel {
             )
             logger.info("Proficiency fetched", context: [
                 "level": proficiency?.level ?? "unknown",
-                "totalWords": String(proficiency?.totalWordsLearned ?? 0)
+                "totalWords": String(proficiency?.totalWordsLearned ?? 0),
             ])
         } catch {
             if let message = error.userFriendlyMessage {
@@ -66,7 +65,7 @@ final class BilingualDubbingViewModel {
             )
             isActive = true
             logger.info("Session started", context: [
-                "sessionId": activeSession?.sessionId ?? ""
+                "sessionId": activeSession?.sessionId ?? "",
             ])
         } catch {
             if let message = error.userFriendlyMessage {
@@ -127,7 +126,7 @@ final class BilingualDubbingViewModel {
             }
         } catch {
             logger.error("Failed to translate segment", error: error, context: [
-                "sessionId": sessionId
+                "sessionId": sessionId,
             ])
         }
     }
@@ -140,6 +139,3 @@ final class BilingualDubbingViewModel {
         }
     }
 }
-
-/// Empty body for POST requests that require no payload
-private struct EmptyBody: Encodable, Sendable {}

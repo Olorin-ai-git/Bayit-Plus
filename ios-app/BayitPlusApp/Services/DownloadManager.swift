@@ -7,20 +7,19 @@ import Observation
 /// Uses AVAssetDownloadURLSession for HLS (.m3u8) streams and URLSession for direct files.
 @Observable
 final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
+    var downloads: [LocalDownload] = []
 
-    private(set) var downloads: [LocalDownload] = []
-
-    private let userRepository: any UserRepository
-    private let store: DownloadStore
-    private let logger = BayitLogger(category: "DownloadManager")
-    private var urlSession: URLSession!
+    let userRepository: any UserRepository
+    let store: DownloadStore
+    let logger = BayitLogger(category: "DownloadManager")
+    var urlSession: URLSession!
     #if os(iOS)
-    private var avSession: AVAssetDownloadURLSession!
+        var avSession: AVAssetDownloadURLSession!
     #endif
 
-    private let taskLock = NSLock()
-    private var tasksByDownloadId: [String: URLSessionTask] = [:]
-    private var downloadIdByTaskId: [Int: String] = [:]
+    let taskLock = NSLock()
+    var tasksByDownloadId: [String: URLSessionTask] = [:]
+    var downloadIdByTaskId: [Int: String] = [:]
 
     init(userRepository: any UserRepository, store: DownloadStore) {
         self.userRepository = userRepository
@@ -32,10 +31,10 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
         urlSession = URLSession(configuration: bgConfig, delegate: self, delegateQueue: nil)
 
         #if os(iOS)
-        let avConfig = URLSessionConfiguration.background(withIdentifier: "tv.bayit.plus.av-downloads")
-        avConfig.isDiscretionary = false
-        avConfig.sessionSendsLaunchEvents = true
-        avSession = AVAssetDownloadURLSession(configuration: avConfig, assetDownloadDelegate: self, delegateQueue: nil)
+            let avConfig = URLSessionConfiguration.background(withIdentifier: "tv.bayit.plus.av-downloads")
+            avConfig.isDiscretionary = false
+            avConfig.sessionSendsLaunchEvents = true
+            avSession = AVAssetDownloadURLSession(configuration: avConfig, assetDownloadDelegate: self, delegateQueue: nil)
         #endif
     }
 
@@ -85,28 +84,28 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
             upsertLocal(download)
 
             #if os(iOS)
-            if isHLSURL(downloadURL) {
-                let asset = AVURLAsset(url: downloadURL)
-                guard let task = avSession.makeAssetDownloadTask(
-                    asset: asset,
-                    assetTitle: request.title,
-                    assetArtworkData: nil,
-                    options: nil
-                ) else {
-                    throw NSError(domain: "DownloadManager", code: -1,
-                                  userInfo: [NSLocalizedDescriptionKey: "Failed to create HLS download task"])
+                if isHLSURL(downloadURL) {
+                    let asset = AVURLAsset(url: downloadURL)
+                    guard let task = avSession.makeAssetDownloadTask(
+                        asset: asset,
+                        assetTitle: request.title,
+                        assetArtworkData: nil,
+                        options: nil
+                    ) else {
+                        throw NSError(domain: "DownloadManager", code: -1,
+                                      userInfo: [NSLocalizedDescriptionKey: "Failed to create HLS download task"])
+                    }
+                    registerTask(task, for: download.id)
+                    task.resume()
+                } else {
+                    let task = urlSession.downloadTask(with: downloadURL)
+                    registerTask(task, for: download.id)
+                    task.resume()
                 }
-                registerTask(task, for: download.id)
-                task.resume()
-            } else {
+            #else
                 let task = urlSession.downloadTask(with: downloadURL)
                 registerTask(task, for: download.id)
                 task.resume()
-            }
-            #else
-            let task = urlSession.downloadTask(with: downloadURL)
-            registerTask(task, for: download.id)
-            task.resume()
             #endif
         } catch {
             download.status = .failed
@@ -117,9 +116,9 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
     }
 
     @MainActor
-    func downloadAll(_ requests: [DownloadRequest]) {
-        Task { @MainActor in
-            for request in requests { await startDownload(request) }
+    func downloadAll(_ requests: [DownloadRequest]) async {
+        for request in requests {
+            await startDownload(request)
         }
     }
 
@@ -195,140 +194,4 @@ final class DownloadManager: NSObject, URLSessionDownloadDelegate, @unchecked Se
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         return docs.appendingPathComponent(path)
     }
-
-    // MARK: - Task Registry
-
-    private func registerTask(_ task: URLSessionTask, for downloadId: String) {
-        taskLock.withLock {
-            tasksByDownloadId[downloadId] = task
-            downloadIdByTaskId[task.taskIdentifier] = downloadId
-        }
-    }
-
-    private func unregisterTask(downloadId: String) {
-        taskLock.withLock {
-            if let task = tasksByDownloadId.removeValue(forKey: downloadId) {
-                downloadIdByTaskId.removeValue(forKey: task.taskIdentifier)
-            }
-        }
-    }
-
-    private func taskForDownload(_ id: String) -> URLSessionTask? {
-        taskLock.withLock { tasksByDownloadId[id] }
-    }
-
-    private func downloadId(forTaskId taskId: Int) -> String? {
-        taskLock.withLock { downloadIdByTaskId[taskId] }
-    }
-
-    // MARK: - Helpers
-
-    private func isHLSURL(_ url: URL) -> Bool {
-        url.pathExtension.lowercased() == "m3u8" || url.absoluteString.contains(".m3u8")
-    }
-
-    @MainActor
-    private func upsertLocal(_ download: LocalDownload) {
-        if let idx = downloads.firstIndex(where: { $0.id == download.id }) {
-            downloads[idx] = download
-        }
-        Task { await store.upsert(download) }
-    }
-
-    private func removeLocalFile(at path: String?, isAbsolute: Bool) {
-        guard let path else { return }
-        let url = isAbsolute
-            ? URL(fileURLWithPath: path)
-            : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(path)
-        try? FileManager.default.removeItem(at: url)
-    }
-
-    // MARK: - URLSessionDownloadDelegate (direct file downloads)
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
-                    didWriteData bytesWritten: Int64, totalBytesWritten: Int64,
-                    totalBytesExpectedToWrite: Int64) {
-        guard let id = downloadId(forTaskId: downloadTask.taskIdentifier) else { return }
-        let progress = totalBytesExpectedToWrite > 0
-            ? Double(totalBytesWritten) / Double(totalBytesExpectedToWrite) : 0
-        Task { @MainActor [weak self] in
-            guard let self, let idx = downloads.firstIndex(where: { $0.id == id }) else { return }
-            downloads[idx].progress = progress
-            downloads[idx].fileSize = totalBytesExpectedToWrite
-        }
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
-                    didFinishDownloadingTo location: URL) {
-        guard let id = downloadId(forTaskId: downloadTask.taskIdentifier) else { return }
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let destDir = docs.appendingPathComponent("BayitDownloads", isDirectory: true)
-        try? FileManager.default.createDirectory(at: destDir, withIntermediateDirectories: true)
-        let ext = location.pathExtension.isEmpty ? "mp4" : location.pathExtension
-        let relativePath = "BayitDownloads/\(id).\(ext)"
-        try? FileManager.default.moveItem(at: location, to: docs.appendingPathComponent(relativePath))
-        unregisterTask(downloadId: id)
-        Task { @MainActor [weak self] in
-            guard let self, let idx = downloads.firstIndex(where: { $0.id == id }) else { return }
-            downloads[idx].status = .completed
-            downloads[idx].progress = 1.0
-            downloads[idx].filePath = relativePath
-            let d = downloads[idx]
-            await store.upsert(d)
-        }
-    }
-
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        guard let error else { return }
-        let nsError = error as NSError
-        guard nsError.code != NSURLErrorCancelled,
-              let id = downloadId(forTaskId: task.taskIdentifier) else { return }
-        unregisterTask(downloadId: id)
-        Task { @MainActor [weak self] in
-            guard let self, let idx = downloads.firstIndex(where: { $0.id == id }) else { return }
-            downloads[idx].status = .failed
-            downloads[idx].error = error.localizedDescription
-            let d = downloads[idx]
-            await store.upsert(d)
-        }
-        logger.error("Download failed", error: error, context: ["downloadId": id])
-    }
-
 }
-
-// MARK: - AVAssetDownloadDelegate (HLS downloads, iOS only)
-
-#if os(iOS)
-extension DownloadManager: AVAssetDownloadDelegate {
-    func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask,
-                    didLoad timeRange: CMTimeRange,
-                    totalTimeRangesLoaded loadedTimeRanges: [NSValue],
-                    timeRangeExpectedToLoad: CMTimeRange) {
-        guard let id = downloadId(forTaskId: assetDownloadTask.taskIdentifier),
-              timeRangeExpectedToLoad.duration.seconds > 0 else { return }
-        let progress = loadedTimeRanges.reduce(0.0) { acc, val in
-            acc + val.timeRangeValue.duration.seconds / timeRangeExpectedToLoad.duration.seconds
-        }
-        Task { @MainActor [weak self] in
-            guard let self, let idx = downloads.firstIndex(where: { $0.id == id }) else { return }
-            downloads[idx].progress = min(progress, 0.99)
-        }
-    }
-
-    func urlSession(_ session: URLSession, assetDownloadTask: AVAssetDownloadTask,
-                    didFinishDownloadingTo location: URL) {
-        guard let id = downloadId(forTaskId: assetDownloadTask.taskIdentifier) else { return }
-        let absolutePath = location.path
-        unregisterTask(downloadId: id)
-        Task { @MainActor [weak self] in
-            guard let self, let idx = downloads.firstIndex(where: { $0.id == id }) else { return }
-            downloads[idx].status = .completed
-            downloads[idx].progress = 1.0
-            downloads[idx].filePath = absolutePath
-            downloads[idx].isHLSDownload = true
-            let d = downloads[idx]
-            await store.upsert(d)
-        }
-    }
-}
-#endif

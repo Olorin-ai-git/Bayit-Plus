@@ -8,18 +8,17 @@ import Observation
 @MainActor
 @Observable
 final class WidgetPlayerViewModel {
-
     let player = MediaPlayer()
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     private(set) var resolvedCoverURL: URL?
 
-    private let mediaRepo: any MediaRepository
-    private let contentRepo: any ContentRepository
-    private let liveTVRepo: any LiveTVRepository
-    private let radioRepo: any RadioRepository
-    private let podcastRepo: any PodcastRepository
-    private let audiobookRepo: any AudiobookRepository
+    let mediaRepo: any MediaRepository
+    let contentRepo: any ContentRepository
+    let liveTVRepo: any LiveTVRepository
+    let radioRepo: any RadioRepository
+    let podcastRepo: any PodcastRepository
+    let audiobookRepo: any AudiobookRepository
     private let logger = BayitLogger(category: "WidgetPlayer")
 
     init(
@@ -38,7 +37,9 @@ final class WidgetPlayerViewModel {
         self.audiobookRepo = audiobookRepo
     }
 
-    var isPlaying: Bool { player.state == .playing }
+    var isPlaying: Bool {
+        player.state == .playing
+    }
 
     /// Resolve cover art URL from widget data or content APIs.
     @MainActor
@@ -105,122 +106,24 @@ final class WidgetPlayerViewModel {
         }
     }
 
-    func skipForward() async { await player.skipForward() }
-    func skipBackward() async { await player.skipBackward() }
-
-    func toggleMute() { player.avPlayer.isMuted.toggle() }
-    var isMuted: Bool { player.avPlayer.isMuted }
-
-    func cleanup() { player.stop() }
-
-    // MARK: - Private - Cover Resolution
-
-    private func fetchCoverFromAPI(for widget: WidgetItem) async throws -> String {
-        guard let content = widget.content, let contentType = content.contentType else {
-            throw WidgetStreamError.noContent
-        }
-
-        switch contentType {
-        case .liveChannel, .live:
-            guard let channelId = content.liveChannelId ?? content.contentId else {
-                throw WidgetStreamError.missingId("live_channel_id")
-            }
-            let detail = try await liveTVRepo.fetchChannelDetail(id: channelId)
-            return detail.thumbnail ?? detail.logo ?? ""
-
-        case .radio:
-            guard let stationId = content.stationId ?? content.contentId else {
-                throw WidgetStreamError.missingId("station_id")
-            }
-            let detail = try await radioRepo.fetchStationDetail(id: stationId)
-            return detail.logo ?? ""
-
-        case .podcast:
-            guard let podcastId = content.podcastId ?? content.contentId else {
-                throw WidgetStreamError.missingId("podcast_id")
-            }
-            let detail = try await podcastRepo.fetchPodcastDetail(id: podcastId)
-            return detail.cover ?? ""
-
-        case .vod:
-            guard let id = content.contentId else {
-                throw WidgetStreamError.missingId("content_id")
-            }
-            let detail = try await contentRepo.fetchContentDetail(id: id)
-            return detail.thumbnail ?? detail.backdrop ?? ""
-
-        case .audiobook:
-            guard let id = content.audiobookId ?? content.contentId else {
-                throw WidgetStreamError.missingId("audiobook_id")
-            }
-            let audiobook = try await audiobookRepo.fetchDetail(id: id)
-            return audiobook.thumbnail ?? audiobook.backdrop ?? ""
-
-        case .iframe, .custom:
-            return ""
-        }
+    func skipForward() async {
+        await player.skipForward()
     }
 
-    // MARK: - Private - Stream Resolution
+    func skipBackward() async {
+        await player.skipBackward()
+    }
 
-    private func resolveStream(
-        for widget: WidgetItem
-    ) async throws -> (String, MediaContentType) {
-        guard let content = widget.content,
-              let contentType = content.contentType
-        else {
-            throw WidgetStreamError.noContent
-        }
+    func toggleMute() {
+        player.avPlayer.isMuted.toggle()
+    }
 
-        switch contentType {
-        case .liveChannel, .live:
-            guard let channelId = content.liveChannelId ?? content.contentId else {
-                throw WidgetStreamError.missingId("live_channel_id")
-            }
-            let stream = try await mediaRepo.fetchLiveStream(channelId: channelId)
-            return (stream.resolvedURL ?? "", .liveTV)
+    var isMuted: Bool {
+        player.avPlayer.isMuted
+    }
 
-        case .radio:
-            guard let stationId = content.stationId ?? content.contentId else {
-                throw WidgetStreamError.missingId("station_id")
-            }
-            let stream = try await mediaRepo.fetchRadioStream(stationId: stationId)
-            return (stream.url ?? "", .radio)
-
-        case .vod:
-            guard let id = content.contentId else {
-                throw WidgetStreamError.missingId("content_id")
-            }
-            let stream = try await mediaRepo.fetchStream(contentId: id, quality: nil)
-            return (stream.resolvedURL ?? "", .vod)
-
-        case .podcast:
-            // Match web: fetch podcast show, get latest episode, use episode audio URL
-            guard let podcastId = content.podcastId ?? content.contentId else {
-                throw WidgetStreamError.missingId("podcast_id")
-            }
-            let episodes = try await podcastRepo.fetchEpisodes(
-                showId: podcastId, page: 1, limit: 1
-            )
-            guard let episode = episodes.episodes.first,
-                  let audioUrl = episode.audioUrl
-            else {
-                throw WidgetStreamError.noStream
-            }
-            return (audioUrl, .podcast)
-
-        case .audiobook:
-            guard let id = content.audiobookId ?? content.contentId else {
-                throw WidgetStreamError.missingId("audiobook_id")
-            }
-            let audiobook = try await audiobookRepo.fetchWithChapters(id: id)
-            let url = audiobook.chapters?.first?.streamUrl
-                ?? audiobook.streamUrl ?? ""
-            return (url, .audiobook)
-
-        case .iframe, .custom:
-            throw WidgetStreamError.nonPlayable
-        }
+    func cleanup() {
+        player.stop()
     }
 }
 
@@ -235,7 +138,7 @@ enum WidgetStreamError: LocalizedError {
         switch self {
         case .noContent: return "No content configured"
         case .nonPlayable: return "Content type does not support playback"
-        case .missingId(let field): return "Missing \(field) in widget content"
+        case let .missingId(field): return "Missing \(field) in widget content"
         case .noStream: return "No stream available"
         }
     }

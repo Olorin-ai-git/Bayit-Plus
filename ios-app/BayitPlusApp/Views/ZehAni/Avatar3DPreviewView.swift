@@ -15,9 +15,9 @@ struct Avatar3DPreviewView: View {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
                 if let url = URL(string: avatarImageUrl) {
-                    AsyncImage(url: url) { phase in
+                    CachedAsyncImage(url: url) { phase in
                         switch phase {
-                        case .success(let image):
+                        case let .success(image):
                             image
                                 .resizable()
                                 .scaledToFit()

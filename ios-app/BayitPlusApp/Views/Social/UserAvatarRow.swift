@@ -28,12 +28,15 @@ struct UserAvatarRow: View {
     @ViewBuilder
     private var avatarView: some View {
         if let avatarURL, let url = URL(string: avatarURL) {
-            AsyncImage(url: url) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                avatarPlaceholder
+            CachedAsyncImage(url: url) { phase in
+                switch phase {
+                case let .success(image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                default:
+                    avatarPlaceholder
+                }
             }
             .frame(width: 40, height: 40)
             .clipShape(Circle())

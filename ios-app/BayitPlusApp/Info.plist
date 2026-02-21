@@ -4,6 +4,8 @@
 <dict>
 	<key>API_BASE_URL</key>
 	<string>$(API_BASE_URL)</string>
+	<key>API_RETRYABLE_STATUS_CODES</key>
+	<string>$(API_RETRYABLE_STATUS_CODES)</string>
 	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
 	<string>15</string>
 	<key>CATCHUP_CREDIT_COST</key>
@@ -42,7 +44,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>154</string>
+	<string>161</string>
+	<key>DEFAULT_CULTURE_ID</key>
+	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>FEATURE_CARPLAY</key>
 	<string>true</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
@@ -53,6 +57,10 @@
 	<string>624470113582-c65j6hhdtdbi7kjsaf27rnuo0k2nu23a.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
+	<key>HIDDEN_CHANNEL_KEYWORDS</key>
+	<string>$(HIDDEN_CHANNEL_KEYWORDS)</string>
+	<key>HOME_CONTENT_ROW_LIMIT</key>
+	<string>$(HOME_CONTENT_ROW_LIMIT)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>KEYCHAIN_ACCESS_GROUP</key>
@@ -87,6 +95,10 @@
 	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>PROGRESS_TRACKING_INTERVAL_SECONDS</key>
+	<string>$(PROGRESS_TRACKING_INTERVAL_SECONDS)</string>
+	<key>SUPPORT_EMAIL</key>
+	<string>$(SUPPORT_EMAIL)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

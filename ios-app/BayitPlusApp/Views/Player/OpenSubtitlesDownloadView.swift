@@ -2,7 +2,7 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 
 /// OpenSubtitles fetch UI - downloads additional subtitle tracks from OpenSubtitles.org.
@@ -13,11 +13,11 @@ struct OpenSubtitlesDownloadView: View {
     let repository: any SubtitleRepository
     let onSuccess: () -> Void
 
-    @State private var isLoading = false
-    @State private var result: ExternalSubtitleImportResponse?
-    @State private var error: String?
+    @State var isLoading = false
+    @State var result: ExternalSubtitleImportResponse?
+    @State var error: String?
 
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
@@ -45,7 +45,7 @@ struct OpenSubtitlesDownloadView: View {
             icon: Image(systemName: "arrow.down.circle")
         ) {
             #if os(iOS)
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             #endif
             Task { await downloadSubtitles() }
         }
@@ -174,35 +174,5 @@ struct OpenSubtitlesDownloadView: View {
         Text(localization.t("subtitles.fromOpenSubs"))
             .font(.system(size: DesignTokens.FontSize.xs))
             .foregroundStyle(DesignTokens.Text.muted)
-    }
-
-    // MARK: - Actions
-
-    private func downloadSubtitles() async {
-        isLoading = true
-        error = nil
-        result = nil
-
-        do {
-            let response = try await repository.fetchExternalSubtitles(contentId: contentId)
-            result = response
-            if response.imported?.isEmpty == false {
-                onSuccess()
-            }
-        } catch {
-            // Parse user-friendly error messages
-            let errorDescription = error.localizedDescription
-            if errorDescription.contains("quota") || errorDescription.contains("100 subtitles") {
-                self.error = localization.t("subtitles.quotaExceededLabel")
-            } else if errorDescription.contains("429") || errorDescription.contains("Too Many Requests") {
-                self.error = localization.t("subtitles.rateLimitExceeded")
-            } else if errorDescription.contains("decode") || errorDescription.contains("format") {
-                self.error = localization.t("subtitles.noAdditionalFound")
-            } else {
-                self.error = errorDescription
-            }
-        }
-
-        isLoading = false
     }
 }

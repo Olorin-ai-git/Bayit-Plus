@@ -11,16 +11,15 @@ import Observation
 @MainActor
 @Observable
 final class AudioPlaybackManager {
-
     // MARK: - Observable State
 
-    private(set) var isActive = false
-    private(set) var isLoading = false
-    private(set) var title: String?
-    private(set) var subtitle: String?
-    private(set) var artworkURL: URL?
-    private(set) var activeContentId: String?
-    private(set) var activeContentType: ContentType?
+    var isActive = false
+    var isLoading = false
+    var title: String?
+    var subtitle: String?
+    var artworkURL: URL?
+    var activeContentId: String?
+    var activeContentType: ContentType?
 
     var isPlaying: Bool {
         mediaPlayer.state == .playing || mediaPlayer.state == .buffering
@@ -38,21 +37,21 @@ final class AudioPlaybackManager {
 
     private(set) var sleepTimerManager = SleepTimerManager()
 
-    // MARK: - Dependencies
+    // MARK: - Dependencies (internal for extension access)
 
-    private let mediaPlayer: MediaPlayer
-    private let streamResolver: StreamResolver
-    private let nowPlayingService: NowPlayingService
-    private let remoteCommandService: RemoteCommandService
-    private let logger = BayitLogger(category: "AudioPlayback")
+    let mediaPlayer: MediaPlayer
+    let streamResolver: StreamResolver
+    let nowPlayingService: NowPlayingService
+    let remoteCommandService: RemoteCommandService
+    let logger = BayitLogger(category: "AudioPlayback")
 
     // MARK: - Init
 
     init(mediaPlayer: MediaPlayer, streamResolver: StreamResolver) {
         self.mediaPlayer = mediaPlayer
         self.streamResolver = streamResolver
-        self.nowPlayingService = NowPlayingService()
-        self.remoteCommandService = RemoteCommandService()
+        nowPlayingService = NowPlayingService()
+        remoteCommandService = RemoteCommandService()
     }
 
     // MARK: - Playback Controls
@@ -86,7 +85,7 @@ final class AudioPlaybackManager {
             } catch {
                 logger.error("Failed to resolve stream", error: error, context: [
                     "contentId": contentId,
-                    "contentType": contentType.rawValue
+                    "contentType": contentType.rawValue,
                 ])
                 resetState()
             }
@@ -139,174 +138,4 @@ final class AudioPlaybackManager {
         resetState()
         logger.info("Audio playback stopped")
     }
-
-    // MARK: - Sleep Timer Controls
-
-    func startSleepTimer(minutes: Int) {
-        let originalVolume = mediaPlayer.avPlayer.volume
-        sleepTimerManager.start(
-            durationMinutes: minutes,
-            fadeOutAction: { [weak self] volume in
-                self?.mediaPlayer.avPlayer.volume = volume
-            },
-            completionAction: { [weak self] in
-                self?.mediaPlayer.pause()
-                self?.mediaPlayer.avPlayer.volume = originalVolume
-            }
-        )
-    }
-
-    func extendSleepTimer(minutes: Int) {
-        sleepTimerManager.extend(additionalMinutes: minutes)
-    }
-
-    func cancelSleepTimer() {
-        sleepTimerManager.cancel()
-    }
-
-    /// Restart playback from the beginning.
-    func restart() {
-        Task {
-            await mediaPlayer.seek(to: 0)
-            updateNowPlayingPosition()
-        }
-    }
-
-    /// Skip forward by specified seconds (default 30s).
-    func skipForward(seconds: TimeInterval = 30) {
-        Task {
-            await mediaPlayer.skipForward(seconds: seconds)
-            updateNowPlayingPosition()
-        }
-    }
-
-    /// Skip backward by specified seconds (default 30s).
-    func skipBackward(seconds: TimeInterval = 30) {
-        Task {
-            await mediaPlayer.skipBackward(seconds: seconds)
-            updateNowPlayingPosition()
-        }
-    }
-
-    // MARK: - Private
-
-    private func startPlayback(
-        url: URL,
-        title: String,
-        subtitle: String?,
-        artworkURL: URL?,
-        contentType: ContentType
-    ) async {
-        self.title = title
-        self.subtitle = subtitle
-        self.artworkURL = artworkURL
-
-        let mediaContentType = contentType.mediaContentType
-        mediaPlayer.load(url: url, contentType: mediaContentType)
-        mediaPlayer.play()
-
-        isLoading = false
-
-        // Set up Now Playing info
-        let metadata = NowPlayingMetadata(
-            title: title,
-            artist: subtitle,
-            artworkURL: artworkURL,
-            contentType: mediaContentType,
-            isLiveStream: mediaContentType.isLive
-        )
-        nowPlayingService.update(
-            metadata: metadata,
-            currentTime: mediaPlayer.currentTime,
-            duration: mediaPlayer.duration,
-            rate: mediaPlayer.rate
-        )
-
-        // Register remote commands
-        remoteCommandService.delegate = self
-        remoteCommandService.register()
-        remoteCommandService.configureForContentType(mediaContentType)
-
-        logger.info("Audio playback started", context: [
-            "title": title,
-            "contentType": contentType.rawValue
-        ])
-    }
-
-    private func updateNowPlayingPosition() {
-        nowPlayingService.updatePosition(
-            currentTime: mediaPlayer.currentTime,
-            rate: mediaPlayer.rate
-        )
-    }
-
-    private func resetState() {
-        isActive = false
-        isLoading = false
-        title = nil
-        subtitle = nil
-        artworkURL = nil
-        activeContentId = nil
-        activeContentType = nil
-    }
 }
-
-// MARK: - RemoteCommandDelegate
-
-extension AudioPlaybackManager: RemoteCommandDelegate {
-
-    func remoteCommandPlay() {
-        mediaPlayer.play()
-        updateNowPlayingPosition()
-    }
-
-    func remoteCommandPause() {
-        mediaPlayer.pause()
-        updateNowPlayingPosition()
-    }
-
-    func remoteCommandTogglePlayPause() {
-        togglePlayPause()
-    }
-
-    func remoteCommandSkipForward(interval: TimeInterval) {
-        Task {
-            await mediaPlayer.skipForward(seconds: interval)
-            updateNowPlayingPosition()
-        }
-    }
-
-    func remoteCommandSkipBackward(interval: TimeInterval) {
-        Task {
-            await mediaPlayer.skipBackward(seconds: interval)
-            updateNowPlayingPosition()
-        }
-    }
-
-    func remoteCommandSeek(to time: TimeInterval) {
-        Task {
-            await mediaPlayer.seek(to: time)
-            updateNowPlayingPosition()
-        }
-    }
-}
-
-// MARK: - ContentType Mapping
-
-private extension ContentType {
-    var mediaContentType: MediaContentType {
-        switch self {
-        case .radio:
-            return .radio
-        case .podcast:
-            return .podcast
-        case .audiobook:
-            return .audiobook
-        case .live, .liveTV:
-            return .liveTV
-        case .movie, .series, .episode:
-            return .vod
-        }
-    }
-}
-
