@@ -55,8 +55,7 @@
             ZStack {
                 stillImage(url: avatarImageUrl)
                 if isAvatarVideoReady, let player = avatarPlayer {
-                    VideoPlayer(player: player)
-                        .scaleEffect(2)
+                    FillVideoLayer(player: player)
                 }
             }
             .frame(width: circleSize, height: circleSize)

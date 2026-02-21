@@ -494,7 +494,6 @@ struct TVPlayerView: View {
         }) else { return nil }
         return { [self] in
             let target = max(0, moment.timestamp - interactionSeekOffset)
-            logger.info("Jumping to \(moment.characterName) at \(target)s")
             resetOverlayTimer()
             seekPreviewPosition = target
             Task {

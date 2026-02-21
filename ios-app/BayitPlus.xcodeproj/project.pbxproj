@@ -370,6 +370,7 @@
 		4EB03A6A7D24894E294D0E21 /* WakeWordSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D47D907652EE218BD5BA042 /* WakeWordSettingsView.swift */; };
 		4F2DC4163B7909F72BFDF0BC /* GrandparentBridgeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C01BCA3C5CC256125D1C01 /* GrandparentBridgeRepository.swift */; };
 		4F39F4C510E94F46CDA8E808 /* PhoneticMirrorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4504E925857AAC7A0AADA540 /* PhoneticMirrorModels.swift */; };
+		2DEBB8C1212540498480A1E9 /* DirectTrailerPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C115EB4FD6424E44A8F4E6A0 /* DirectTrailerPlayerView.swift */; };
 		4F49E780BD1DA88303899522 /* MovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7471B49A94173E891AC122C /* MovieDetailView.swift */; };
 		4F9052AD1F76AEA006F3E742 /* TopNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7045956FCEFD2578BEC55300 /* TopNavigationBar.swift */; };
 		4FE359EFCC43A8CBA2DAC1F2 /* PodcastsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02D9C4022D5A1F016EE3196 /* PodcastsView.swift */; };
@@ -1946,6 +1947,7 @@
 		E615385E6EA52AA59AD5DB1F /* EPGViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPGViewModel.swift; sourceTree = "<group>"; };
 		E6C7D43DAD2D39EBDE3EFABB /* PhoneticMirrorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneticMirrorViewModel.swift; sourceTree = "<group>"; };
 		E7177389F6DC66B311117A98 /* PodcastDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailViewModel.swift; sourceTree = "<group>"; };
+		C115EB4FD6424E44A8F4E6A0 /* DirectTrailerPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectTrailerPlayerView.swift; sourceTree = "<group>"; };
 		E7471B49A94173E891AC122C /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
 		E787ED7BBE96DD993D5035D7 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
 		E7A2B642020C13C1D5829E49 /* LLMSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchRepository.swift; sourceTree = "<group>"; };
@@ -2839,6 +2841,7 @@
 				3BD67AA36BA6B8FA6EDEAD91 /* MiniAudioPlayerBar.swift */,
 				2030087F85C26A5A78D7C615 /* MiniVideoPlayerBar.swift */,
 				2457D7182E43B35587FB1F11 /* MovieDetailLoadingView.swift */,
+				C115EB4FD6424E44A8F4E6A0 /* DirectTrailerPlayerView.swift */,
 				E7471B49A94173E891AC122C /* MovieDetailView.swift */,
 				630E8B4B28B18D8BD49879BE /* MultiCharacterCirclesView.swift */,
 				E1647213A7910EA192645E78 /* OpenSubtitlesDownloadView.swift */,
@@ -4981,6 +4984,7 @@
 				2578CC86F921B1731A2F4CA0 /* MorningRitualViewModel.swift in Sources */,
 				30AD6035ED0A2165C6A11A81 /* MovieCharactersView.swift in Sources */,
 				DF21351C952360106133759F /* MovieDetailLoadingView.swift in Sources */,
+				2DEBB8C1212540498480A1E9 /* DirectTrailerPlayerView.swift in Sources */,
 				4F49E780BD1DA88303899522 /* MovieDetailView.swift in Sources */,
 				95575FEDFC1B087907DD5EDF /* MovieDetailViewModel.swift in Sources */,
 				81420EC6F34AAF9D361BD808 /* MovieInteraction.swift in Sources */,
@@ -5253,7 +5257,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -5276,7 +5280,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -5388,7 +5392,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -5470,7 +5474,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
