@@ -9,6 +9,8 @@ struct TopNavigationBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
 
+    @State private var showingLanguagePicker = false
+
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             Image("logo")
@@ -19,7 +21,7 @@ struct TopNavigationBar: View {
             Spacer()
 
             Button {
-                coordinator.navigate(to: .languageSettings)
+                showingLanguagePicker = true
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "globe")
@@ -64,11 +66,19 @@ struct TopNavigationBar: View {
             } label: {
                 profileAvatar
             }
+            .frame(width: 44, height: 44)
+            .contentShape(Rectangle())
             .accessibilityLabel("Profile")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.sm)
         .background(DesignTokens.Background.primary)
+        .sheet(isPresented: $showingLanguagePicker) {
+            LanguageSettingsView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(.ultraThinMaterial)
+        }
     }
 
     @ViewBuilder

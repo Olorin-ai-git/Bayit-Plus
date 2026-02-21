@@ -115,6 +115,7 @@ struct HeroCarousel: View {
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             }
+            .buttonStyle(.plain)
 
             Button {
                 if !items.isEmpty {
@@ -133,6 +134,7 @@ struct HeroCarousel: View {
                 .background(DesignTokens.Glass.bgStrong)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             }
+            .buttonStyle(.plain)
         }
     }
 }

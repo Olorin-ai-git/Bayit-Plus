@@ -20,7 +20,7 @@ final class WidgetDockViewModel {
     private let logger = BayitLogger(category: "WidgetDock")
     private var persistTask: Task<Void, Never>?
 
-    init(repository: any WidgetRepository, initiallyVisible: Bool = true) {
+    init(repository: any WidgetRepository, initiallyVisible: Bool = false) {
         self.repository = repository
         isDockVisible = initiallyVisible
     }
@@ -55,6 +55,11 @@ final class WidgetDockViewModel {
             restoredWidgetIds = Set(
                 widgets.filter { $0.isMinimized == false }.map(\.id)
             )
+
+            // Only show dock if there are widgets sitting in minimized state
+            if !isDockVisible {
+                isDockVisible = !minimizedWidgets.isEmpty
+            }
 
             logger.info("Loaded \(widgets.count) dock widgets")
         } catch {

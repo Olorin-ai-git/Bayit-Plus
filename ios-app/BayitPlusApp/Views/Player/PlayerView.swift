@@ -141,6 +141,17 @@ struct PlayerView: View {
 
     var body: some View {
         playerZStack
+            .gesture(
+                DragGesture(minimumDistance: 60, coordinateSpace: .local)
+                    .onEnded { value in
+                        let isDownward = value.translation.height > 100
+                        let isNarrow = abs(value.translation.width) < 80
+                        if isDownward, isNarrow {
+                            coordinator.dismissFullscreen()
+                        }
+                    },
+                including: mediaContentType.isLive ? .all : .subviews
+            )
             .statusBarHidden(true)
             .onAppear { requestLandscapeOrientation() }
             .task {

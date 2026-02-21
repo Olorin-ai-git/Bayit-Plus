@@ -10,6 +10,7 @@ import SwiftUI
 struct VideoPlayerView: UIViewControllerRepresentable {
     let player: AVPlayer
     var allowsPiP: Bool = true
+    var videoGravity: AVLayerVideoGravity = .resizeAspect
     @Binding var isPiPActive: Bool
     var onRestoreUserInterface: ((@escaping (Bool) -> Void) -> Void)?
 
@@ -23,7 +24,7 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         controller.showsPlaybackControls = false
         controller.allowsPictureInPicturePlayback = allowsPiP
         controller.canStartPictureInPictureAutomaticallyFromInline = allowsPiP
-        controller.videoGravity = .resizeAspect
+        controller.videoGravity = videoGravity
         controller.delegate = context.coordinator
         context.coordinator.playerViewController = controller
         return controller
@@ -36,6 +37,7 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         if uiViewController.player !== player {
             uiViewController.player = player
         }
+        uiViewController.videoGravity = videoGravity
         uiViewController.allowsPictureInPicturePlayback = allowsPiP
         uiViewController.canStartPictureInPictureAutomaticallyFromInline = allowsPiP
         context.coordinator.parent = self

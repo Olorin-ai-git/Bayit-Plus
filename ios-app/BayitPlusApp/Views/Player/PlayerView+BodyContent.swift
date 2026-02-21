@@ -15,6 +15,7 @@ extension PlayerView {
             VideoPlayerView(
                 player: viewModel.player.avPlayer,
                 allowsPiP: PiPController.isSupported,
+                videoGravity: mediaContentType.isLive ? .resizeAspectFill : .resizeAspect,
                 isPiPActive: $isPiPActive,
                 onRestoreUserInterface: { [weak coordinator] completion in
                     guard let coordinator else {
