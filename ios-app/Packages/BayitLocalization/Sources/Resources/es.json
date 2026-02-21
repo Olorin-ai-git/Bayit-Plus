@@ -6186,11 +6186,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -6202,10 +6198,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -9113,6 +9106,9 @@
       "tech": "Tecnología",
       "judaism": "Judaísmo"
     },
+    "content": {
+      "allContent": "Todo el contenido"
+    },
     "ageGroups": {
       "middle-school": "Escuela Secundaria (12-14)",
       "high-school": "Preparatoria (15-17)"
@@ -9221,7 +9217,8 @@
       "charactersSection": "Personajes",
       "questionsSection": "Preguntas",
       "empty": "No hay peliculas interactivas disponibles aun",
-      "characterCount": "{{count}} personajes"
+      "characterCount": "{{count}} personajes",
+      "selectCharacter": "Selecciona un personaje para interactuar"
     },
     "dialogue": {
       "specificQuestions": "Preguntas del personaje",

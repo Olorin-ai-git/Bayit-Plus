@@ -15,6 +15,7 @@
         @State var showLanguagePicker = false
         @State var widgetAutoHideTask: Task<Void, Never>?
         @State var isWidgetAreaFocused = false
+        @State var hasAppeared = false
 
         var body: some View {
             @Bindable var coord = coordinator
@@ -45,7 +46,7 @@
                         .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
                         .tag(TVTab.podcasts)
 
-                    TVKidsHubView()
+                    TVYoungstersView()
                         .tabItem { Label(localization.t("nav.children"), systemImage: TVTab.kids.iconName) }
                         .tag(TVTab.kids)
 
@@ -54,6 +55,8 @@
                         .tag(TVTab.profile)
                 }
                 .onAppear {
+                    guard !hasAppeared else { return }
+                    hasAppeared = true
                     coord.selectedTab = .home
                 }
                 // Top-right navigation pills: widgets toggle + language picker
@@ -98,10 +101,8 @@
                     .padding(.bottom, TVDesignTokens.Spacing.xs)
                 }
             }
-            .onExitCommand {
-                // Prevent Menu/Back button from navigating past the main tab view
-                // to the login screen. At the tab bar root, this is a no-op.
-            }
+            // NavigationStack handles Menu/Back button navigation automatically.
+            // No .onExitCommand override needed - it would trap users in sub-pages.
             .task {
                 if dockViewModel == nil {
                     dockViewModel = WidgetDockViewModel(

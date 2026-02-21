@@ -6100,17 +6100,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6122,10 +6113,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -8987,6 +8975,9 @@
       "tech": "科技",
       "judaism": "犹太教"
     },
+    "content": {
+      "allContent": "全部内容"
+    },
     "ageGroups": {
       "middle-school": "初中 (12-14)",
       "high-school": "高中 (15-17)"
@@ -9095,7 +9086,8 @@
       "charactersSection": "角色",
       "questionsSection": "问题",
       "empty": "暂无可互动电影",
-      "characterCount": "{{count}}个角色"
+      "characterCount": "{{count}}个角色",
+      "selectCharacter": "选择要互动的角色"
     },
     "dialogue": {
       "specificQuestions": "角色问题",

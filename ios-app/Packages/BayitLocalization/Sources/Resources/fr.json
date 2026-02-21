@@ -6515,10 +6515,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -9853,6 +9850,9 @@
       "tech": "Technologie",
       "judaism": "Judaïsme"
     },
+    "content": {
+      "allContent": "Tout le contenu"
+    },
     "safeMode": "Mode sécurisé",
     "timeLimits": "Limites de temps",
     "setTimeLimit": "Définir une limite de temps",
@@ -9976,7 +9976,8 @@
       "charactersSection": "Personnages",
       "questionsSection": "Questions",
       "empty": "Aucun film interactif disponible pour le moment",
-      "characterCount": "{{count}} personnages"
+      "characterCount": "{{count}} personnages",
+      "selectCharacter": "Sélectionnez un personnage avec lequel interagir"
     },
     "dialogue": {
       "specificQuestions": "Questions du personnage",

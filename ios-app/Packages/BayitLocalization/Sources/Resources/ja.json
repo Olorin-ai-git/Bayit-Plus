@@ -9906,6 +9906,9 @@
       "tech": "テクノロジー",
       "judaism": "ユダヤ教"
     },
+    "content": {
+      "allContent": "すべてのコンテンツ"
+    },
     "ageGroups": {
       "middle-school": "中学生（12-14歳）",
       "high-school": "高校生（15-17歳）"
@@ -10014,7 +10017,8 @@
       "charactersSection": "キャラクター",
       "questionsSection": "質問",
       "empty": "インタラクティブな映画はまだありません",
-      "characterCount": "{{count}}人のキャラクター"
+      "characterCount": "{{count}}人のキャラクター",
+      "selectCharacter": "対話するキャラクターを選択"
     },
     "dialogue": {
       "specificQuestions": "キャラクターの質問",

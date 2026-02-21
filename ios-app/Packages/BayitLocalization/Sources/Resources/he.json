@@ -6163,11 +6163,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -6179,10 +6175,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",
@@ -9070,6 +9063,9 @@
       "tech": "טכנולוגיה",
       "judaism": "יהדות"
     },
+    "content": {
+      "allContent": "כל התכנים"
+    },
     "ageGroups": {
       "middle-school": "חטיבת ביניים (12-14)",
       "high-school": "תיכון (15-17)"
@@ -9178,7 +9174,8 @@
       "charactersSection": "דמויות",
       "questionsSection": "שאלות",
       "empty": "אין סרטים אינטראקטיביים זמינים עדיין",
-      "characterCount": "{{count}} דמויות"
+      "characterCount": "{{count}} דמויות",
+      "selectCharacter": "בחרו דמות לאינטראקציה"
     },
     "dialogue": {
       "specificQuestions": "שאלות לדמות",

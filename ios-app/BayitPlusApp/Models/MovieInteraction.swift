@@ -1,6 +1,6 @@
 import Foundation
 
-struct InteractableMovieItem: Codable, Identifiable, Equatable {
+struct InteractableMovieItem: Codable, Identifiable, Equatable, Hashable {
     let contentId: String
     let title: String
     let posterUrl: String?
@@ -19,7 +19,7 @@ struct MovieTagStatusItem: Codable {
     let error: String?
 }
 
-struct InteractiveCharacterItem: Codable, Identifiable, Equatable {
+struct InteractiveCharacterItem: Codable, Identifiable, Equatable, Hashable {
     let name: String
     let voiceId: String
     let frameUrl: String

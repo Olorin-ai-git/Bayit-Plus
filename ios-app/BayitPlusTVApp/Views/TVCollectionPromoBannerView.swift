@@ -52,7 +52,7 @@ struct TVCollectionPromoBannerView: View {
                         .foregroundColor(DesignTokens.Text.primary)
                         .lineLimit(2)
 
-                    Text(promoText)
+                    Text(promoTextFormatted)
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundColor(DesignTokens.Text.secondary)
                         .lineLimit(4)
@@ -87,6 +87,20 @@ struct TVCollectionPromoBannerView: View {
         }
         .buttonStyle(.plain)
         .tvFocusStyle()
+    }
+
+    /// Parses markdown bold/italic syntax into an AttributedString for display.
+    /// Falls back to regex-based stripping of all common markdown syntax if parsing fails.
+    private var promoTextFormatted: AttributedString {
+        if let attributed = try? AttributedString(markdown: promoText) {
+            return attributed
+        }
+        let stripped = promoText
+            .replacingOccurrences(of: #"\*\*([^*]+)\*\*"#, with: "$1", options: .regularExpression)
+            .replacingOccurrences(of: #"\*([^*]+)\*"#, with: "$1", options: .regularExpression)
+            .replacingOccurrences(of: #"__([^_]+)__"#, with: "$1", options: .regularExpression)
+            .replacingOccurrences(of: #"_([^_]+)_"#, with: "$1", options: .regularExpression)
+        return AttributedString(stripped)
     }
 
     private func navigateToCollection() {

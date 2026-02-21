@@ -7,7 +7,7 @@ import SwiftUI
 extension TVYoungstersView {
     func contentShelf(_ vm: YoungstersViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text(localization.t("youngsters.categories.all"))
+            Text(localization.t("youngsters.content.allContent"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)

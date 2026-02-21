@@ -6105,11 +6105,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -6121,10 +6117,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -8728,6 +8721,9 @@
       "tech": "Technology",
       "judaism": "Judaism"
     },
+    "content": {
+      "allContent": "All Content"
+    },
     "ageGroups": {
       "middle-school": "Middle School (12-14)",
       "high-school": "High School (15-17)"
@@ -8836,7 +8832,8 @@
       "charactersSection": "Characters",
       "questionsSection": "Questions",
       "empty": "No interactive movies available yet",
-      "characterCount": "{{count}} characters"
+      "characterCount": "{{count}} characters",
+      "selectCharacter": "Select a character to interact with"
     },
     "dialogue": {
       "specificQuestions": "Character Questions",

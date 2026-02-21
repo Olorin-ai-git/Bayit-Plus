@@ -59,7 +59,7 @@ struct CollectionPromoBannerView: View {
                         .foregroundColor(DesignTokens.Text.primary)
                         .lineLimit(2)
 
-                    Text(promoText)
+                    Text(promoTextFormatted)
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.secondary)
                         .lineLimit(3)
@@ -101,6 +101,19 @@ struct CollectionPromoBannerView: View {
                 isVisible = true
             }
         }
+    }
+
+    /// Parses markdown bold/italic syntax into an AttributedString for display.
+    /// Falls back to the raw string with markdown characters stripped if parsing fails.
+    private var promoTextFormatted: AttributedString {
+        if let attributed = try? AttributedString(markdown: promoText) {
+            return attributed
+        }
+        return AttributedString(
+            promoText
+                .replacingOccurrences(of: "**", with: "")
+                .replacingOccurrences(of: "__", with: "")
+        )
     }
 
     private func navigateToCollection() {

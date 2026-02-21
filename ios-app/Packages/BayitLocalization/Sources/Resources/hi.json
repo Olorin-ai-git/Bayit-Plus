@@ -6107,11 +6107,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6123,10 +6119,7 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": [
-        "ऑफ़लाइन देखना",
-        "फैमिली प्रोफाइल"
-      ]
+      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
     },
     "family": {
       "name": "फैमिली",
@@ -8996,6 +8989,9 @@
       "tech": "तकनीक",
       "judaism": "यहूदी धर्म"
     },
+    "content": {
+      "allContent": "सभी सामग्री"
+    },
     "ageGroups": {
       "middle-school": "मिडिल स्कूल (12-14)",
       "high-school": "हाई स्कूल (15-17)"
@@ -9104,7 +9100,8 @@
       "charactersSection": "पात्र",
       "questionsSection": "सवाल",
       "empty": "अभी कोई इंटरैक्टिव फिल्म उपलब्ध नहीं",
-      "characterCount": "{{count}} पात्र"
+      "characterCount": "{{count}} पात्र",
+      "selectCharacter": "इंटरैक्ट करने के लिए एक पात्र चुनें"
     },
     "dialogue": {
       "specificQuestions": "पात्र के सवाल",
