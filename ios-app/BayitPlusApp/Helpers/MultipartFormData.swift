@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitNetworking
 import Foundation
 
@@ -20,7 +21,6 @@ extension Data {
 
 /// Extension to provide user-friendly error handling for ViewModels
 extension Error {
-
     /// Check if this error is a cancellation error (expected behavior, not a real error)
     var isCancellation: Bool {
         // Check for CancellationError (Swift concurrency)
@@ -44,6 +44,22 @@ extension Error {
             return true
         }
 
+        return false
+    }
+
+    /// Check if this error indicates an authentication failure (expired token, unauthorized, etc.)
+    var isAuthenticationError: Bool {
+        if let apiError = self as? APIError, case .unauthorized = apiError {
+            return true
+        }
+        if let authError = self as? AuthError {
+            switch authError {
+            case .notAuthenticated, .sessionExpired, .tokenRefreshFailed:
+                return true
+            default:
+                return false
+            }
+        }
         return false
     }
 

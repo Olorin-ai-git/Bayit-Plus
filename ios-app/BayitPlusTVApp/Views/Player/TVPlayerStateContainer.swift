@@ -81,6 +81,15 @@ final class TVPlayerStateContainer {
     var splitSecondaryHebrewMode: SubtitleHebrewMode = .standard
     var splitSecondaryEnglishMode: SubtitleEnglishMode = .standard
 
+    // MARK: - Split Subtitle AI Availability
+
+    /// Per-language AI availability, independent of the active subtitle language.
+    /// Loaded at content start so split picker shows all generated variants.
+    var splitHasNikud = false
+    var splitHasShoresh = false
+    var splitHasHeblish = false
+    var splitHasEngrew = false
+
     // MARK: - Available Languages
 
     var availableSubtitleLanguages: [String] = []

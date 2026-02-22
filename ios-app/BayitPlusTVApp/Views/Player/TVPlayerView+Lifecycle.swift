@@ -1,6 +1,7 @@
 import BayitAuth
 import BayitCore
 import BayitMedia
+import BayitNetworking
 import SwiftUI
 
 /// Stream resolution, view model initialization, and cleanup on disappear.
@@ -42,6 +43,13 @@ extension TVPlayerView {
                 ?? localization.t("player.streamLoadFailed")
             state.isResolvingStream = false
         } catch {
+            // Auth errors: dismiss the player so the global 401 handler
+            // in TVContentView can navigate to the login screen.
+            if error.isAuthenticationError {
+                state.isResolvingStream = false
+                dismiss()
+                return
+            }
             if let message = error.userFriendlyMessage {
                 state.streamError = message
             }

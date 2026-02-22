@@ -56,6 +56,33 @@
                                 aspectRatio: 2 / 3,
                                 onSelect: { selectedMovie = movie }
                             )
+                            .overlay(alignment: .topTrailing) {
+                                if selectedMovie?.contentId == movie.contentId {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: TVDesignTokens.FontSize.xl))
+                                        .foregroundStyle(DesignTokens.Success.default)
+                                        .padding(TVDesignTokens.Spacing.sm)
+                                }
+                            }
+                            .overlay(alignment: .bottomTrailing) {
+                                if movie.interactionCount > 0 {
+                                    Text("\(movie.interactionCount)/\(movie.maxInteractions)")
+                                        .font(.system(
+                                            size: TVDesignTokens.FontSize.xs,
+                                            weight: .bold
+                                        ))
+                                        .foregroundStyle(DesignTokens.Text.primary)
+                                        .padding(.horizontal, TVDesignTokens.Spacing.sm)
+                                        .padding(.vertical, TVDesignTokens.Spacing.xs)
+                                        .background(DesignTokens.Glass.bgStrong)
+                                        .clipShape(
+                                            RoundedRectangle(
+                                                cornerRadius: TVDesignTokens.Radius.sm
+                                            )
+                                        )
+                                        .padding(TVDesignTokens.Spacing.sm)
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, TVDesignTokens.Spacing.xxl)

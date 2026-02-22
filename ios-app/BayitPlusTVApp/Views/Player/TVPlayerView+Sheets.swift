@@ -57,10 +57,10 @@ extension TVPlayerView {
             availableLanguages: state.availableSubtitleLanguages,
             selectedLanguages: state.splitLanguages,
             layout: $state.splitLayout,
-            hasNikud: state.subtitlesVM?.hasNikud ?? false,
-            hasShoresh: state.subtitlesVM?.hasShoresh ?? false,
-            hasHeblish: state.subtitlesVM?.hasHeblish ?? false,
-            hasEngrew: state.subtitlesVM?.hasEngrew ?? false,
+            hasNikud: state.splitHasNikud,
+            hasShoresh: state.splitHasShoresh,
+            hasHeblish: state.splitHasHeblish,
+            hasEngrew: state.splitHasEngrew,
             onConfirm: { items in
                 guard items.count == 2 else { return }
                 state.splitLanguages = items.map { $0.languageInfo.code }

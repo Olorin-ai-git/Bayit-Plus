@@ -48,6 +48,7 @@
             if let movie = selectedMovie {
                 NavigationLink {
                     TVCharacterDetailView(character: character, movie: movie)
+                        .tvBreadcrumb(character.name, icon: "person.fill")
                 } label: {
                     characterCardLabel(character)
                 }

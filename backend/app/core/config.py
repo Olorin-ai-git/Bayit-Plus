@@ -3037,6 +3037,11 @@ class Settings(BaseSettings):
         env="MOVIE_INTERACTION_AI_MODEL",
         description="Claude model for character profile generation",
     )
+    MOVIE_INTERACTION_MAX_PER_CONTENT: int = Field(
+        default=10, ge=1, le=50,
+        env="MOVIE_INTERACTION_MAX_PER_CONTENT",
+        description="Max interactive moments allowed per content item",
+    )
 
     # ============================================
     # VOICE CLONING (Character Voice Matching)

@@ -44,7 +44,57 @@ class InteractableMovie(BaseModel):
     title: str
     poster_url: Optional[str] = None
     character_count: int = 0
+    interaction_count: int = Field(
+        default=0,
+        description="Current number of interactive moments on this content",
+    )
+    max_interactions: int = Field(
+        default=10,
+        description="Max interactive moments allowed per content",
+    )
     status: str = Field(
         default="ready",
         description="ready or processing",
     )
+
+
+class InteractionSelectionRequest(BaseModel):
+    """Request to select questions for video generation."""
+    content_id: str = Field(..., description="Content document ID")
+    character_name: str = Field(..., description="Character to generate for")
+    questions: List[str] = Field(
+        ...,
+        min_length=1,
+        description="Selected question texts to generate interactions for",
+    )
+
+
+class InteractionMomentStatus(BaseModel):
+    """Status of a single interactive moment generation."""
+    character_name: str
+    interaction_prompt: str
+    status: str = Field(
+        ...,
+        description="queued, generating_audio, generating_video, complete, failed",
+    )
+    video_url: Optional[str] = None
+
+
+class InteractionSelectionResponse(BaseModel):
+    """Response after selecting questions for generation."""
+    content_id: str
+    created_count: int
+    total_interaction_count: int
+    max_interactions: int
+    generation_status: str = Field(
+        ...,
+        description="queued, processing, complete",
+    )
+
+
+class InteractionStatusResponse(BaseModel):
+    """Full interaction status for a content item."""
+    content_id: str
+    interaction_count: int
+    max_interactions: int
+    moments: List[InteractionMomentStatus] = Field(default_factory=list)

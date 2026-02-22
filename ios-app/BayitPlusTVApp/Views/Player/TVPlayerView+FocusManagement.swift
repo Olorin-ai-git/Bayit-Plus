@@ -23,6 +23,7 @@ extension TVPlayerView {
         } catch {
             state.availableSubtitleLanguages = []
         }
+        Task { await loadSplitSubtitleAvailability() }
     }
 
     // MARK: - Subtitle Selection (VOD)
@@ -176,6 +177,30 @@ extension TVPlayerView {
             state.secondarySubtitleCues = secondary.cues ?? []
         } catch {
             state.splitModeEnabled = false
+        }
+    }
+
+    // MARK: - Split Subtitle Availability
+
+    func loadSplitSubtitleAvailability() async {
+        guard !contentId.isEmpty, !isLive else { return }
+        let repo = repos.subtitle
+        let langs = state.availableSubtitleLanguages
+        if langs.contains("he"),
+           let c = try? await repo.fetchCues(
+               contentId: contentId, language: "he", hebrewMode: nil, englishMode: nil
+           ).cues
+        {
+            state.splitHasNikud = c.contains { $0.textNikud != nil }
+            state.splitHasShoresh = c.contains { $0.textShoresh != nil }
+            state.splitHasHeblish = c.contains { $0.textHeblish != nil }
+        }
+        if langs.contains("en"),
+           let c = try? await repo.fetchCues(
+               contentId: contentId, language: "en", hebrewMode: nil, englishMode: nil
+           ).cues
+        {
+            state.splitHasEngrew = c.contains { $0.textEngrew != nil }
         }
     }
 }
