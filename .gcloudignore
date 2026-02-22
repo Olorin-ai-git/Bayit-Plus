@@ -30,6 +30,13 @@
 !shared/i18n/locales/**
 !bayit-ws-gateway/
 !bayit-ws-gateway/**
+!infrastructure/
+!infrastructure/scheduled-jobs/
+!infrastructure/scheduled-jobs/library-integrity/
+!infrastructure/scheduled-jobs/library-integrity/**
+!scripts/
+!scripts/backend/
+!scripts/backend/verify_library_integrity.py
 !cloudbuild.yaml
 !Dockerfile
 
