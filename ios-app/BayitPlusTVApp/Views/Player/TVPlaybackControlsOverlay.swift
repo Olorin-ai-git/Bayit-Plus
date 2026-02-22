@@ -106,7 +106,6 @@ private struct TVOverlayButton: View {
             }
         }
         .buttonStyle(.plain)
-        .focusable(true)
         .focused($isFocused)
         .scaleEffect(isFocused ? 1.15 : 1.0)
         .shadow(

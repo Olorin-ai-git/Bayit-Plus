@@ -125,6 +125,8 @@ if [[ "$SCREENSHOTS_ONLY" == false ]]; then
         -scheme "$SCHEME" \
         -configuration Debug \
         -destination "platform=iOS Simulator,id=$DEVICE_ID" \
+        CODE_SIGN_IDENTITY="Apple Development" \
+        CODE_SIGN_STYLE=Automatic \
         build 2>&1)
 
     if echo "$BUILD_OUTPUT" | grep -q "BUILD SUCCEEDED"; then

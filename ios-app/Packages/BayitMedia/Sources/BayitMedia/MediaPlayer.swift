@@ -13,7 +13,6 @@ import Observation
 /// - Buffering and error state handling
 @Observable
 public final class MediaPlayer {
-
     // MARK: - Observable State
 
     public private(set) var state: PlaybackState = .idle
@@ -101,7 +100,7 @@ public final class MediaPlayer {
             "Media loaded",
             context: [
                 "contentType": contentType.rawValue,
-                "url": url.lastPathComponent
+                "url": url.lastPathComponent,
             ]
         )
     }
@@ -131,9 +130,15 @@ public final class MediaPlayer {
     }
 
     /// Seek to a specific time.
+    ///
+    /// Uses a 2-second tolerance window so AVFoundation can land on the nearest
+    /// keyframe within HLS/DASH segments. Zero-tolerance seeks on segment-based
+    /// streams fail silently when no keyframe exists at the exact target time,
+    /// causing both skip buttons and scrubbing to appear broken.
     public func seek(to time: TimeInterval) async {
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
-        await avPlayer.seek(to: cmTime, toleranceBefore: .zero, toleranceAfter: .zero)
+        let tolerance = CMTime(seconds: 2, preferredTimescale: 600)
+        await avPlayer.seek(to: cmTime, toleranceBefore: tolerance, toleranceAfter: tolerance)
         currentTime = time
     }
 
@@ -178,7 +183,6 @@ public final class MediaPlayer {
 // MARK: - Observers
 
 extension MediaPlayer {
-
     private func setupObservers() {
         // Periodic time observer at ~4Hz for smooth progress updates
         let interval = CMTime(seconds: 0.25, preferredTimescale: 600)
@@ -209,7 +213,7 @@ extension MediaPlayer {
         durationObservation = item.observe(\.duration, options: [.new]) { [weak self] item, _ in
             Task { @MainActor in
                 let seconds = item.duration.seconds
-                if seconds.isFinite && seconds > 0 {
+                if seconds.isFinite, seconds > 0 {
                     self?.duration = seconds
                     self?.hasDefinitiveDuration = true
                 }
@@ -262,7 +266,7 @@ extension MediaPlayer {
         switch status {
         case .readyToPlay:
             let seconds = item.duration.seconds
-            if seconds.isFinite && seconds > 0 {
+            if seconds.isFinite, seconds > 0 {
                 duration = seconds
                 hasDefinitiveDuration = true
             } else {

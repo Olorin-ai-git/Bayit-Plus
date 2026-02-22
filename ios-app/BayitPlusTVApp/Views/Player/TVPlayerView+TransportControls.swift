@@ -129,24 +129,31 @@ extension TVPlayerView {
             .focusable()
             .focusEffectDisabled()
             .onMoveCommand { direction in
+                resetOverlayTimer()
+                let current = state.seekPreviewPosition ?? mediaPlayer.currentTime
                 switch direction {
                 case .left:
-                    let current = state.seekPreviewPosition ?? mediaPlayer.currentTime
-                    state.seekPreviewPosition = max(0, current - 10)
+                    let target = max(0, current - 10)
+                    state.seekPreviewPosition = target
+                    Task {
+                        await mediaPlayer.seek(to: target)
+                        state.seekPreviewPosition = nil
+                    }
                 case .right:
-                    let current = state.seekPreviewPosition ?? mediaPlayer.currentTime
-                    state.seekPreviewPosition = min(mediaPlayer.duration, current + 10)
+                    let target = min(mediaPlayer.duration, current + 10)
+                    state.seekPreviewPosition = target
+                    Task {
+                        await mediaPlayer.seek(to: target)
+                        state.seekPreviewPosition = nil
+                    }
                 default:
                     break
                 }
             }
             .onPlayPauseCommand {
-                if let pos = state.seekPreviewPosition {
-                    Task {
-                        await mediaPlayer.seek(to: pos)
-                        state.seekPreviewPosition = nil
-                    }
-                }
+                state.seekPreviewPosition = nil
+                mediaPlayer.togglePlayPause()
+                resetOverlayTimer()
             }
             .onExitCommand {
                 state.seekPreviewPosition = nil

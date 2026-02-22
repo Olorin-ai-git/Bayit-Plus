@@ -46,10 +46,6 @@
                         .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
                         .tag(TVTab.podcasts)
 
-                    TVYoungstersView()
-                        .tabItem { Label(localization.t("nav.children"), systemImage: TVTab.kids.iconName) }
-                        .tag(TVTab.kids)
-
                     TVProfileView()
                         .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
                         .tag(TVTab.profile)

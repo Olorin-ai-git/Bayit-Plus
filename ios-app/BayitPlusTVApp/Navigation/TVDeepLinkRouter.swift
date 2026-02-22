@@ -5,7 +5,6 @@ import Foundation
 /// Simplified version of the iOS `DeepLinkRouter` supporting the routes
 /// available on Apple TV (player, tab switches, Top Shelf content links).
 enum TVDeepLinkRouter {
-
     /// Attempt to parse a URL into a `TVRoute`.
     /// Returns `nil` if the URL does not match any known route.
     static func route(from url: URL) -> TVRoute? {
@@ -95,7 +94,7 @@ enum TVDeepLinkRouter {
         case "vod": return .vod
         case "zeh-ani", "avatar", "chess", "chatbot", "ai-chat": return .zehAni
         case "podcasts", "audiobooks": return .podcasts
-        case "kids", "children", "youngsters": return .kids
+        case "kids", "children", "youngsters": return .home
         case "search": return .search
         case "profile", "settings", "favorites", "messages", "friends",
              "help", "accounts", "credits", "subscribe": return .profile
