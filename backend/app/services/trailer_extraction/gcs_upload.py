@@ -32,7 +32,12 @@ def _build_public_url(gcs_path: str) -> str:
 
 def _upload_sync(local_path: str, gcs_path: str) -> Optional[str]:
     """Upload a file to GCS synchronously. Returns the public URL."""
-    client = gcs_storage.Client()
+    creds_path = settings.GOOGLE_APPLICATION_CREDENTIALS
+    if creds_path and os.path.isfile(creds_path):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
+    else:
+        os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
+    client = gcs_storage.Client(project=settings.GCS_PROJECT_ID or None)
     bucket = client.bucket(settings.GCS_BUCKET_NAME)
     blob = bucket.blob(gcs_path)
 

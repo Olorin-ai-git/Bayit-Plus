@@ -8,6 +8,7 @@ and resumable upload support.
 import asyncio
 import hashlib
 import logging
+import os
 import time
 from datetime import datetime
 from pathlib import Path
@@ -34,7 +35,14 @@ class GCSUploader:
     async def get_client(self) -> gcs_storage.Client:
         """Get or create GCS client."""
         if self._gcs_client is None:
-            self._gcs_client = gcs_storage.Client()
+            creds_path = settings.GOOGLE_APPLICATION_CREDENTIALS
+            if creds_path and os.path.isfile(creds_path):
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
+            else:
+                os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
+            self._gcs_client = gcs_storage.Client(
+                project=settings.GCS_PROJECT_ID or None,
+            )
         return self._gcs_client
 
     def is_retryable_error(self, exception: Exception) -> bool:

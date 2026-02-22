@@ -420,10 +420,11 @@ class GCSStorageProvider(StorageProvider):
             self.datetime = datetime
 
             # Set credentials path if provided (for local development)
-            if settings.GOOGLE_APPLICATION_CREDENTIALS:
-                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
-                    settings.GOOGLE_APPLICATION_CREDENTIALS
-                )
+            creds_path = settings.GOOGLE_APPLICATION_CREDENTIALS
+            if creds_path and os.path.isfile(creds_path):
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = creds_path
+            else:
+                os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
 
             # Client auto-authenticates:
             # - In Cloud Run: via metadata server
