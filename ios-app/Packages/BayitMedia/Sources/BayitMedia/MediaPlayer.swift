@@ -75,10 +75,18 @@ public final class MediaPlayer {
             automaticallyLoadedAssetKeys: ["duration", "playable"]
         )
 
-        // VOD uses automatic buffer management (0) for smoother long-form
-        // playback; live streams cap at 30s to limit delay behind the edge.
-        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 0
+        // Live streams cap forward buffer at 30s to stay near the live edge.
+        // VOD caps at 60s so stall recovery only needs to refill a bounded
+        // window instead of the unbounded default, which on high-bitrate
+        // tvOS streams (4K) can take minutes to fill after a network dip.
+        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 60.0
         item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
+
+        // Start playback from the lowest eligible variant and ramp up.
+        // Without this AVPlayer estimates bandwidth and may pick a 4K
+        // variant that exceeds actual throughput, causing multi-minute
+        // buffering on tvOS before the first frame appears.
+        item.startsOnFirstEligibleVariant = true
 
         tearDownItemObservers()
         avPlayer.replaceCurrentItem(with: item)

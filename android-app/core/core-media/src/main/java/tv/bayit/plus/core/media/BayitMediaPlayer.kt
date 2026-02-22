@@ -9,10 +9,12 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,13 +48,39 @@ class BayitMediaPlayer @Inject constructor(
     /** Builds the underlying [ExoPlayer] if not already initialised. */
     fun initialize() {
         if (exoPlayer != null) return
-        exoPlayer = ExoPlayer.Builder(context).build().apply {
-            addListener(createPlayerStateListener(
-                stateFlow = _playerState,
-                getPlayWhenReady = { exoPlayer?.playWhenReady == true },
-                logger = logger,
-            ))
-        }
+
+        // Cap max buffer at 60s so stall recovery fills a bounded window
+        // instead of the unbounded default, which on high-bitrate streams
+        // (4K) can take minutes to refill after a network dip.
+        val loadControl = DefaultLoadControl.Builder()
+            .setBufferDurationsMs(
+                /* minBufferMs= */ BUFFER_MIN_MS,
+                /* maxBufferMs= */ BUFFER_MAX_MS,
+                /* bufferForPlaybackMs= */ BUFFER_FOR_PLAYBACK_MS,
+                /* bufferForPlaybackAfterRebufferMs= */ BUFFER_AFTER_REBUFFER_MS,
+            )
+            .build()
+
+        // Start with a conservative bandwidth estimate so the adaptive
+        // algorithm picks a lower-quality variant initially and ramps up
+        // as actual throughput is measured. Without this, ExoPlayer may
+        // optimistically select a 4K variant that exceeds actual bandwidth
+        // and stall for minutes on first play.
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(context)
+            .setInitialBitrateEstimate(INITIAL_BITRATE_ESTIMATE)
+            .build()
+
+        exoPlayer = ExoPlayer.Builder(context)
+            .setLoadControl(loadControl)
+            .setBandwidthMeter(bandwidthMeter)
+            .build()
+            .apply {
+                addListener(createPlayerStateListener(
+                    stateFlow = _playerState,
+                    getPlayWhenReady = { exoPlayer?.playWhenReady == true },
+                    logger = logger,
+                ))
+            }
         logger.info("ExoPlayer initialised", mapOf("component" to "BayitMediaPlayer"))
     }
 
@@ -190,3 +218,12 @@ private const val SPEED_MIN = 0.25f
 private const val SPEED_MAX = 3.0f
 private const val PIP_ASPECT_W = 16
 private const val PIP_ASPECT_H = 9
+
+// Buffer configuration: bounded window prevents multi-minute stall recovery.
+private const val BUFFER_MIN_MS = 15_000        // 15s minimum buffer
+private const val BUFFER_MAX_MS = 60_000         // 60s max forward buffer
+private const val BUFFER_FOR_PLAYBACK_MS = 2_500 // 2.5s before initial playback
+private const val BUFFER_AFTER_REBUFFER_MS = 5_000 // 5s before resuming after stall
+
+// Conservative initial bandwidth (1.5 Mbps) -- starts at ~720p and ramps up.
+private const val INITIAL_BITRATE_ESTIMATE = 1_500_000L
