@@ -43,7 +43,6 @@
 
                 pageIndicator
             }
-            .focusSection()
             .onAppear { startAutoAdvance() }
             .onDisappear { stopAutoAdvance() }
         }

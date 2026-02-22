@@ -55,10 +55,19 @@ extension TVPlayerView {
     var splitLanguagePickerSheet: some View {
         TVSplitLanguagePickerView(
             availableLanguages: state.availableSubtitleLanguages,
-            selectedLanguages: $state.splitLanguages,
+            selectedLanguages: state.splitLanguages,
             layout: $state.splitLayout,
-            onConfirm: { languages in
-                state.splitLanguages = languages
+            hasNikud: state.subtitlesVM?.hasNikud ?? false,
+            hasShoresh: state.subtitlesVM?.hasShoresh ?? false,
+            hasHeblish: state.subtitlesVM?.hasHeblish ?? false,
+            hasEngrew: state.subtitlesVM?.hasEngrew ?? false,
+            onConfirm: { items in
+                guard items.count == 2 else { return }
+                state.splitLanguages = items.map { $0.languageInfo.code }
+                state.splitPrimaryHebrewMode = items[0].hebrewMode ?? .standard
+                state.splitPrimaryEnglishMode = items[0].englishMode ?? .standard
+                state.splitSecondaryHebrewMode = items[1].hebrewMode ?? .standard
+                state.splitSecondaryEnglishMode = items[1].englishMode ?? .standard
                 state.splitModeEnabled = true
                 state.showSplitLanguagePicker = false
                 Task { await loadSplitSubtitleCues() }

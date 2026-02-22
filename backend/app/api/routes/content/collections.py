@@ -94,6 +94,7 @@ class CollectionDetailResponse(BaseModel):
     available_movies: int
     total_movies: int
     tmdb_collection_id: Optional[int] = None
+    trailer_stream_url: Optional[str] = None
     movies: List[MovieInCollection] = Field(default_factory=list)
 
 
@@ -344,6 +345,7 @@ async def get_collection_detail(collection_id: str):
         available_movies=len(movies),
         total_movies=collection.collection_total_movies or len(movies),
         tmdb_collection_id=collection.tmdb_collection_id,
+        trailer_stream_url=movies[0].trailer_stream_url if movies else None,
         movies=movie_list,
     )
 

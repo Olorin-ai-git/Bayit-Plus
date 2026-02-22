@@ -1,7 +1,9 @@
 #if os(tvOS)
+    import AVFoundation
     import BayitCore
     import BayitDesignSystem
     import BayitLocalization
+    import BayitMedia
     import SwiftUI
 
     struct TVCollectionDetailView: View {
@@ -9,6 +11,9 @@
         @Environment(TVNavigationCoordinator.self) var coordinator
         @Environment(LocalizationManager.self) var localization
         @State private var viewModel: CollectionDetailViewModel?
+        @State var trailerPlayer: AVPlayer?
+        @State var showTrailer = false
+        @State var resolvedTrailerUrl: String?
 
         let collectionId: String
         let logger = BayitLogger(category: "TVCollectionDetail")
@@ -39,6 +44,21 @@
                     )
                 }
                 await viewModel?.loadCollection()
+                if let streamUrl = viewModel?.collection?.trailerStreamUrl {
+                    setupCollectionTrailer(streamUrl: streamUrl)
+                }
+            }
+            .onDisappear {
+                trailerPlayer?.pause()
+                trailerPlayer = nil
+            }
+            .fullScreenCover(isPresented: $showTrailer) {
+                if let streamUrl = resolvedTrailerUrl {
+                    TVDirectTrailerPlayerView(
+                        url: streamUrl,
+                        onDismiss: { showTrailer = false }
+                    )
+                }
             }
         }
 
@@ -87,6 +107,11 @@
                     } else {
                         DesignTokens.Glass.bg
                     }
+                }
+                .opacity(trailerPlayer != nil ? 0 : 1)
+
+                if let player = trailerPlayer {
+                    TVVideoPlayerRepresentable(player: player)
                 }
 
                 LinearGradient(

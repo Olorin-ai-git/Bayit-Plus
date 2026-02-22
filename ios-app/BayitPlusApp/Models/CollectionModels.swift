@@ -69,6 +69,7 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
     let availableMovies: Int?
     let totalMovies: Int?
     let tmdbCollectionId: Int?
+    let trailerStreamUrl: String?
     let promoText: String?
     let promoTextEn: String?
     let promoTextEs: String?

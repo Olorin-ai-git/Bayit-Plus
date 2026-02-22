@@ -4,13 +4,12 @@
     import SwiftUI
 
     /// Character selection screen for tvOS — lists characters for a given movie.
-    /// Each character navigates to TVCharacterDetailView via NavigationStack push.
+    /// Each character navigates to TVCharacterDetailView via NavigationLink push.
     struct TVMovieCharactersView: View {
         let movie: InteractableMovieItem
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
         @State var characters: [InteractiveCharacterItem] = []
-        @State var selectedCharacter: InteractiveCharacterItem?
         @State var isLoading = true
         @State var error: String?
 
@@ -26,9 +25,6 @@
                 }
             }
             .task { await loadCharacters() }
-            .navigationDestination(item: $selectedCharacter) { character in
-                TVCharacterDetailView(character: character, movie: movie)
-            }
         }
 
         private var characterList: some View {
@@ -42,9 +38,13 @@
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
                             ForEach(characters) { character in
-                                TVCharacterCard(character: character) {
-                                    selectedCharacter = character
+                                NavigationLink {
+                                    TVCharacterDetailView(character: character, movie: movie)
+                                } label: {
+                                    TVCharacterCard(character: character)
                                 }
+                                .buttonStyle(.card)
+                                .tvFocusStyle()
                             }
                         }
                         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
@@ -69,36 +69,32 @@
         }
     }
 
+    /// Pure display card — interactivity is handled by the enclosing NavigationLink.
     private struct TVCharacterCard: View {
         let character: InteractiveCharacterItem
-        let onSelect: () -> Void
 
         var body: some View {
-            Button(action: onSelect) {
-                VStack(spacing: TVDesignTokens.Spacing.md) {
-                    avatarImage
-                    Text(character.name)
-                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                    if let actor = character.actorName {
-                        Text(actor)
-                            .font(.system(size: TVDesignTokens.FontSize.base))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                            .lineLimit(1)
-                    }
+            VStack(spacing: TVDesignTokens.Spacing.md) {
+                avatarImage
+                Text(character.name)
+                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                if let actor = character.actorName {
+                    Text(actor)
+                        .font(.system(size: TVDesignTokens.FontSize.base))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .lineLimit(1)
                 }
-                .frame(width: 200, height: 260)
-                .background(DesignTokens.Glass.bg)
-                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
-                .overlay(
-                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
-                )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .frame(width: 200, height: 260)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
         }
 
         private var avatarImage: some View {

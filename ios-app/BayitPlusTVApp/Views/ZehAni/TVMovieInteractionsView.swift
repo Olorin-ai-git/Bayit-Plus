@@ -3,13 +3,15 @@
     import BayitLocalization
     import SwiftUI
 
-    /// Movie Interactions hub for tvOS — browse interactable movies.
-    /// Each movie navigates to TVMovieCharactersView via NavigationStack push.
+    /// Movie Interactions hub for tvOS — browse interactable movies inline.
+    /// Selecting a movie loads its characters below via characterPreviewSection (in +Characters).
+    /// Each character NavigationLink pushes to TVCharacterDetailView.
     struct TVMovieInteractionsView: View {
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
         @State var movies: [InteractableMovieItem] = []
         @State var selectedMovie: InteractableMovieItem?
+        @State var characters: [InteractiveCharacterItem] = []
         @State var isLoading = true
         @State var error: String?
 
@@ -28,16 +30,18 @@
                 } else if let errorMsg = error {
                     tvErrorState(errorMsg) { Task { await loadMovies() } }
                 } else {
-                    movieGrid
+                    mainContent
                 }
             }
             .task { await loadMovies() }
-            .navigationDestination(item: $selectedMovie) { movie in
-                TVMovieCharactersView(movie: movie)
+            .onChange(of: selectedMovie) { _, movie in
+                characters = []
+                guard let movie else { return }
+                Task { await loadCharacters(contentId: movie.contentId) }
             }
         }
 
-        private var movieGrid: some View {
+        private var mainContent: some View {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
                     TVPageHeader(
@@ -56,6 +60,10 @@
                     }
                     .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                     .focusSection()
+
+                    if !characters.isEmpty {
+                        characterPreviewSection
+                    }
                 }
                 .padding(.vertical, TVDesignTokens.Spacing.xl)
             }

@@ -76,6 +76,10 @@ final class TVPlayerStateContainer {
     var splitLayout: SplitSubtitleLayout = .stacked
     var primarySubtitleCues: [SubtitleCue] = []
     var secondarySubtitleCues: [SubtitleCue] = []
+    var splitPrimaryHebrewMode: SubtitleHebrewMode = .standard
+    var splitPrimaryEnglishMode: SubtitleEnglishMode = .standard
+    var splitSecondaryHebrewMode: SubtitleHebrewMode = .standard
+    var splitSecondaryEnglishMode: SubtitleEnglishMode = .standard
 
     // MARK: - Available Languages
 

@@ -35,6 +35,10 @@ extension TVPlayerView {
             state.splitLanguages = []
             state.primarySubtitleCues = []
             state.secondarySubtitleCues = []
+            state.splitPrimaryHebrewMode = .standard
+            state.splitPrimaryEnglishMode = .standard
+            state.splitSecondaryHebrewMode = .standard
+            state.splitSecondaryEnglishMode = .standard
         }
 
         if let language {
@@ -122,6 +126,19 @@ extension TVPlayerView {
     // MARK: - Split Subtitles
 
     func activeModeLabel(for languageCode: String) -> String? {
+        if state.splitModeEnabled, state.splitLanguages.count == 2 {
+            let isPrimary = state.splitLanguages[0] == languageCode
+            switch languageCode {
+            case "he":
+                let mode = isPrimary ? state.splitPrimaryHebrewMode : state.splitSecondaryHebrewMode
+                return mode != .standard ? mode.displayName : nil
+            case "en":
+                let mode = isPrimary ? state.splitPrimaryEnglishMode : state.splitSecondaryEnglishMode
+                return mode != .standard ? mode.displayName : nil
+            default:
+                return nil
+            }
+        }
         guard let vm = state.subtitlesVM else { return nil }
         switch languageCode {
         case "he" where vm.hebrewMode != .standard:
@@ -136,20 +153,25 @@ extension TVPlayerView {
     func loadSplitSubtitleCues() async {
         guard state.splitLanguages.count == 2 else { return }
 
+        let lang0 = state.splitLanguages[0]
+        let lang1 = state.splitLanguages[1]
+        let hMode0: SubtitleHebrewMode? = lang0 == "he" ? state.splitPrimaryHebrewMode : nil
+        let eMode0: SubtitleEnglishMode? = lang0 == "en" ? state.splitPrimaryEnglishMode : nil
+        let hMode1: SubtitleHebrewMode? = lang1 == "he" ? state.splitSecondaryHebrewMode : nil
+        let eMode1: SubtitleEnglishMode? = lang1 == "en" ? state.splitSecondaryEnglishMode : nil
+
         let repo = repos.subtitle
         async let primaryResult = repo.fetchCues(
-            contentId: contentId, language: state.splitLanguages[0],
-            hebrewMode: nil, englishMode: nil
+            contentId: contentId, language: lang0,
+            hebrewMode: hMode0, englishMode: eMode0
         )
         async let secondaryResult = repo.fetchCues(
-            contentId: contentId, language: state.splitLanguages[1],
-            hebrewMode: nil, englishMode: nil
+            contentId: contentId, language: lang1,
+            hebrewMode: hMode1, englishMode: eMode1
         )
 
         do {
-            let (primary, secondary) = try await (
-                primaryResult, secondaryResult
-            )
+            let (primary, secondary) = try await (primaryResult, secondaryResult)
             state.primarySubtitleCues = primary.cues ?? []
             state.secondarySubtitleCues = secondary.cues ?? []
         } catch {

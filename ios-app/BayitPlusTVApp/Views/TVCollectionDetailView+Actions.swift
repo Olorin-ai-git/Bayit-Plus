@@ -30,6 +30,18 @@
                     .buttonStyle(.card)
                     .tvFocusStyle()
                 }
+
+                if resolvedTrailerUrl != nil {
+                    GlassButton(
+                        localization.t("content.trailer"),
+                        variant: .secondary,
+                        size: .large,
+                        action: { showTrailer = true }
+                    )
+                    .frame(width: 300)
+                    .buttonStyle(.card)
+                    .tvFocusStyle()
+                }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         }
