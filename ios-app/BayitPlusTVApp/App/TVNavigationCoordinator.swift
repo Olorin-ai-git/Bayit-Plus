@@ -18,6 +18,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case podcasts
     case search
     case profile
+    case widgets
 
     var id: String {
         rawValue
@@ -32,6 +33,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "Podcasts"
         case .search: return "Search"
         case .profile: return "Profile"
+        case .widgets: return "Widgets"
         }
     }
 
@@ -44,6 +46,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "headphones"
         case .search: return "magnifyingglass"
         case .profile: return "person.crop.circle"
+        case .widgets: return "square.grid.2x2"
         }
     }
 }
@@ -75,6 +78,14 @@ final class TVNavigationCoordinator {
     /// Set to `true` from any view (e.g. Profile) to surface the widget dock.
     /// TVMainTabView observes this and resets it after showing the dock.
     var showWidgetDock: Bool = false
+
+    /// Reflects the current dock visibility state, kept in sync by TVMainTabView.
+    /// Read by TVWidgetsView to drive the dock toggle button label/icon.
+    var dockIsVisible: Bool = false
+
+    /// Set to `true` from TVWidgetsView to request a dock visibility toggle.
+    /// TVMainTabView observes this, toggles the dock, then resets the flag.
+    var requestDockToggle: Bool = false
 
     /// Breadcrumb trail per tab (tracks labels for the navigation stack).
     var breadcrumbTrails: [TVTab: [TVBreadcrumbEntry]] = [:]

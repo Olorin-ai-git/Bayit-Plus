@@ -14,7 +14,7 @@ struct TVPlayerView: View {
     @Environment(TVRepositoryProvider.self) var repos
     @Environment(AuthManager.self) var authManager
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
 
     let contentId: String
     let contentType: MediaContentType

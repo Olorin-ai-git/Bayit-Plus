@@ -64,6 +64,12 @@
 
         private func contentGrid(_ vm: WidgetsViewModel) -> some View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
+                TVWidgetsPageHeaderView(
+                    widgetCount: vm.totalWidgetCount,
+                    isDockVisible: coordinator.dockIsVisible,
+                    onToggleDock: { coordinator.requestDockToggle = true }
+                )
+
                 if !vm.myWidgets.isEmpty {
                     Text(localization.t("widgets.title"))
                         .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
@@ -93,12 +99,9 @@
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     Spacer()
-
-                    GlassButton("Create", variant: .primary, size: .medium,
-                                icon: Image(systemName: "plus"))
-                    {
-                        showCreateWidget = true
-                    }
+                    GlassButton(localization.t("widgets.create"), variant: .primary, size: .small,
+                                icon: Image(systemName: "plus")) { showCreateWidget = true }
+                        .fixedSize()
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
                 .padding(.top, TVDesignTokens.Spacing.lg)
@@ -143,16 +146,21 @@
                 playWidget(widget)
             } label: {
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                    Image(systemName: widget.content?.contentType?.iconName ?? "square.grid.2x2")
-                        .font(.system(size: 36))
-                        .foregroundStyle(DesignTokens.Primary.p400)
-                        .frame(maxWidth: .infinity, minHeight: 80)
-
+                    Group {
+                        if let urlStr = widget.coverUrl, let url = URL(string: urlStr) {
+                            CachedAsyncImage(url: url) { phase in
+                                if case let .success(image) = phase {
+                                    image.resizable().aspectRatio(contentMode: .fill)
+                                } else { widgetIconFallback(widget) }
+                            }
+                        } else { widgetIconFallback(widget) }
+                    }
+                    .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
                     Text(widget.title)
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .lineLimit(2)
-
                     if let desc = widget.description {
                         Text(desc)
                             .font(.system(size: TVDesignTokens.FontSize.sm))
@@ -166,6 +174,15 @@
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
             .buttonStyle(.card)
+        }
+
+        private func widgetIconFallback(_ widget: WidgetItem) -> some View {
+            ZStack {
+                Rectangle().fill(DesignTokens.Glass.bgStrong)
+                Image(systemName: widget.content?.contentType?.iconName ?? "square.grid.2x2")
+                    .font(.system(size: 36))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+            }
         }
 
         private var loadingState: some View {

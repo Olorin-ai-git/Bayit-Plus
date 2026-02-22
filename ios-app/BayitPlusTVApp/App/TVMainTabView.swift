@@ -49,6 +49,10 @@
                     TVProfileView()
                         .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
                         .tag(TVTab.profile)
+
+                    TVWidgetsView()
+                        .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
+                        .tag(TVTab.widgets)
                 }
                 .onAppear {
                     guard !hasAppeared else { return }
@@ -109,6 +113,7 @@
                 await dockViewModel?.loadWidgets()
             }
             .onChange(of: dockViewModel?.isDockVisible) { _, isVisible in
+                coordinator.dockIsVisible = isVisible ?? false
                 if isVisible == true {
                     resetWidgetAutoHideTimer()
                 } else {
@@ -120,6 +125,11 @@
                 guard shouldShow else { return }
                 coordinator.showWidgetDock = false
                 dockViewModel?.showDock()
+            }
+            .onChange(of: coordinator.requestDockToggle) { _, shouldToggle in
+                guard shouldToggle else { return }
+                coordinator.requestDockToggle = false
+                dockViewModel?.toggleDock()
             }
         }
     }

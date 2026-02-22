@@ -139,9 +139,9 @@
         private func quotaProgressBar(projected: Int) -> some View {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
                         .fill(DesignTokens.Glass.bgStrong)
-                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
                         .fill(quotaColor(projected: projected))
                         .frame(width: geo.size.width * quotaFraction(projected: projected))
                 }
