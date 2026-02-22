@@ -323,6 +323,7 @@ async def get_content_preview(content_id: str):
         "id": str(content.id),
         "preview_url": content.preview_url,
         "trailer_url": content.trailer_url,
+        "trailer_stream_url": content.trailer_stream_url,
         "thumbnail": content.thumbnail,
         "backdrop": content.backdrop,
     }

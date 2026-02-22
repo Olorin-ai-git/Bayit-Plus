@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-} from 'react-native';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView } from "react-native";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useTranslation } from "react-i18next";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import {
   PreviewHero,
   IMDBFactsCard,
   CastCarousel,
   RecommendationsCarousel,
-} from '../components/content';
-import { contentService } from '../services/api';
-import { colors } from '../theme';
-import { isTV } from '../utils/platform';
+} from "../components/content";
+import { contentService } from "../services/api";
+import { colors } from "../theme";
+import { isTV } from "../utils/platform";
 
 type MovieDetailRouteParams = {
   MovieDetail: {
@@ -37,6 +33,7 @@ interface MovieData {
   cast?: string[];
   director?: string;
   trailer_url?: string;
+  trailer_stream_url?: string;
   preview_url?: string;
   imdb_rating?: number;
   imdb_votes?: number;
@@ -46,7 +43,7 @@ interface MovieData {
  * Format IMDb votes for display (e.g., 1200000 → "1.2M", 150000 → "150K")
  */
 const formatVotes = (votes?: number): string => {
-  if (!votes) return '';
+  if (!votes) return "";
   if (votes >= 1000000) return `${(votes / 1000000).toFixed(1)}M`;
   if (votes >= 1000) return `${(votes / 1000).toFixed(0)}K`;
   return votes.toString();
@@ -55,7 +52,7 @@ const formatVotes = (votes?: number): string => {
 export default function MovieDetailScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<MovieDetailRouteParams, 'MovieDetail'>>();
+  const route = useRoute<RouteProp<MovieDetailRouteParams, "MovieDetail">>();
   const { movieId } = route.params;
 
   const [movie, setMovie] = useState<MovieData | null>(null);
@@ -78,7 +75,7 @@ export default function MovieDetailScreen() {
         const formattedCast = data.cast.map((name: string, index: number) => ({
           id: `cast-${index}`,
           name,
-          character: '',
+          character: "",
           photo: undefined,
         }));
         setCastMembers(formattedCast);
@@ -91,11 +88,15 @@ export default function MovieDetailScreen() {
           setRecommendations(recs);
         }
       } catch (error) {
-        logger.error('Failed to load recommendations', 'MovieDetailScreen', error);
+        logger.error(
+          "Failed to load recommendations",
+          "MovieDetailScreen",
+          error,
+        );
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      logger.error('Failed to load movie', 'MovieDetailScreen', error);
+      logger.error("Failed to load movie", "MovieDetailScreen", error);
     } finally {
       setLoading(false);
     }
@@ -103,23 +104,32 @@ export default function MovieDetailScreen() {
 
   const handlePlay = () => {
     if (movie) {
-      navigation.navigate('Player' as never, {
-        contentId: movie.id,
-        type: 'vod',
-      } as never);
+      navigation.navigate(
+        "Player" as never,
+        {
+          contentId: movie.id,
+          type: "vod",
+        } as never,
+      );
     }
   };
 
   const handleCastPress = (castMember: any) => {
     // Navigate to cast member details (future enhancement)
-    logger.debug('Cast member pressed: ' + castMember.name, 'MovieDetailScreen');
+    logger.debug(
+      "Cast member pressed: " + castMember.name,
+      "MovieDetailScreen",
+    );
   };
 
   const handleRecommendationPress = (item: any) => {
     // Navigate to recommended content detail
-    navigation.navigate('MovieDetail' as never, {
-      movieId: item.id,
-    } as never);
+    navigation.navigate(
+      "MovieDetail" as never,
+      {
+        movieId: item.id,
+      } as never,
+    );
   };
 
   if (loading) {
@@ -133,22 +143,25 @@ export default function MovieDetailScreen() {
   if (!movie) {
     return (
       <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
-        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-gray-400`}>
-          {t('content.notFound')}
+        <Text className={`${isTV ? "text-lg" : "text-base"} text-gray-400`}>
+          {t("content.notFound")}
         </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-[#0d0d1a]" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className="flex-1 bg-[#0d0d1a]"
+      showsVerticalScrollIndicator={false}
+    >
       <PreviewHero
         title={movie.title}
         description={movie.description}
         backdropUrl={movie.backdrop}
         thumbnailUrl={movie.thumbnail}
         previewUrl={movie.preview_url}
-        trailerUrl={movie.trailer_url}
+        trailerUrl={movie.trailer_stream_url ?? movie.trailer_url}
         category={movie.category}
         metadata={{
           year: movie.year,
@@ -160,7 +173,7 @@ export default function MovieDetailScreen() {
         onPlay={handlePlay}
       />
 
-      <View className={isTV ? 'p-6' : 'p-4'}>
+      <View className={isTV ? "p-6" : "p-4"}>
         {/* IMDB Facts Card */}
         {(movie.imdb_rating || movie.director || movie.cast) && (
           <IMDBFactsCard
@@ -178,11 +191,13 @@ export default function MovieDetailScreen() {
         {/* Synopsis */}
         {movie.description && (
           <View className="mt-4">
-            <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-semibold text-white mb-3`}>
-              {t('content.synopsis')}
+            <Text
+              className={`${isTV ? "text-xl" : "text-lg"} font-semibold text-white mb-3`}
+            >
+              {t("content.synopsis")}
             </Text>
             <Text
-              className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`}
+              className={`${isTV ? "text-base" : "text-sm"} text-gray-400`}
               style={{ lineHeight: isTV ? 28 : 22 }}
             >
               {movie.description}
@@ -197,17 +212,21 @@ export default function MovieDetailScreen() {
 
         {/* Crew Section */}
         {movie.director && (
-          <View className={`mt-4 ${isTV ? 'px-6' : 'px-4'}`}>
-            <Text className={`${isTV ? 'text-xl' : 'text-lg'} font-semibold text-white mb-3`}>
-              {t('content.crew', 'Crew')}
+          <View className={`mt-4 ${isTV ? "px-6" : "px-4"}`}>
+            <Text
+              className={`${isTV ? "text-xl" : "text-lg"} font-semibold text-white mb-3`}
+            >
+              {t("content.crew", "Crew")}
             </Text>
             <View className="mb-2">
               <Text
-                className={`${isTV ? 'text-sm' : 'text-xs'} text-gray-500 uppercase font-semibold mb-1`}
+                className={`${isTV ? "text-sm" : "text-xs"} text-gray-500 uppercase font-semibold mb-1`}
               >
-                {t('content.director', 'Director')}
+                {t("content.director", "Director")}
               </Text>
-              <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white font-medium`}>
+              <Text
+                className={`${isTV ? "text-base" : "text-sm"} text-white font-medium`}
+              >
                 {movie.director}
               </Text>
             </View>

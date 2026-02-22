@@ -18,6 +18,7 @@ struct SeriesDetail: Decodable, Sendable, Identifiable {
     let totalSeasons: Int?
     let totalEpisodes: Int?
     let trailerUrl: String?
+    let trailerStreamUrl: String?
     let previewUrl: String?
     let tmdbId: String?
     let imdbId: String?
@@ -36,7 +37,9 @@ struct SeasonSummary: Decodable, Sendable, Identifiable {
     let firstEpisodeId: String?
     let firstEpisodeThumbnail: String?
 
-    var id: Int { seasonNumber }
+    var id: Int {
+        seasonNumber
+    }
 }
 
 /// Response from GET /api/v1/content/series/{series_id}/season/{season_num}/episodes

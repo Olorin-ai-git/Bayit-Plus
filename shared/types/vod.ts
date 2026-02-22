@@ -6,45 +6,45 @@
 // ============ CONTENT FORMAT ============
 
 export type ContentFormat =
-  | 'movie'
-  | 'series'
-  | 'documentary'
-  | 'short'
-  | 'clip';
+  | "movie"
+  | "series"
+  | "documentary"
+  | "short"
+  | "clip";
 
 // ============ CONTENT RATING ============
 
 export type ContentRating =
-  | 'G'
-  | 'PG'
-  | 'PG-13'
-  | 'R'
-  | 'NC-17'
-  | 'TV-Y'
-  | 'TV-G'
-  | 'TV-PG'
-  | 'TV-14'
-  | 'TV-MA';
+  | "G"
+  | "PG"
+  | "PG-13"
+  | "R"
+  | "NC-17"
+  | "TV-Y"
+  | "TV-G"
+  | "TV-PG"
+  | "TV-14"
+  | "TV-MA";
 
 // ============ AUDIENCE ============
 
-export type AudienceId = 'general' | 'kids' | 'family' | 'mature';
+export type AudienceId = "general" | "kids" | "family" | "mature";
 
 // ============ QUALITY TIER ============
 
-export type QualityTier = '480p' | '720p' | '1080p' | '4k';
+export type QualityTier = "480p" | "720p" | "1080p" | "4k";
 
 // ============ STREAM TYPE ============
 
-export type StreamType = 'hls' | 'dash';
+export type StreamType = "hls" | "dash";
 
 // ============ DRM TYPE ============
 
-export type DRMType = 'widevine' | 'fairplay';
+export type DRMType = "widevine" | "fairplay";
 
 // ============ SUBSCRIPTION TIER ============
 
-export type SubscriptionTier = 'none' | 'basic' | 'premium' | 'family';
+export type SubscriptionTier = "none" | "basic" | "premium" | "family";
 
 // ============ AUDIO TRACK ============
 
@@ -202,6 +202,7 @@ export interface VODContentItem {
 
   // Trailer
   trailer_url?: string;
+  trailer_stream_url?: string;
 
   // Interactive
   supports_avatar_interaction: boolean;
@@ -226,14 +227,14 @@ export interface VODCategory {
 // ============ VOD COLLECTION ============
 
 export type CollectionType =
-  | 'curated'
-  | 'genre'
-  | 'trending'
-  | 'new_releases'
-  | 'continue_watching'
-  | 'recommended'
-  | 'seasonal'
-  | 'ai_generated';
+  | "curated"
+  | "genre"
+  | "trending"
+  | "new_releases"
+  | "continue_watching"
+  | "recommended"
+  | "seasonal"
+  | "ai_generated";
 
 export interface VODCollection {
   id: string;
@@ -292,9 +293,9 @@ export interface FavoriteStatus {
 // ============ RECOMMENDATION ============
 
 export type RecommendationReason =
-  | 'based_on_watch_history'
-  | 'trending'
-  | 'genre_based'
+  | "based_on_watch_history"
+  | "trending"
+  | "genre_based"
   | string;
 
 export interface Recommendation {
@@ -320,12 +321,12 @@ export interface VODSearchSuggestion {
 // ============ INTERACTIVE MOMENT ============
 
 export type InteractiveMomentType =
-  | 'trivia'
-  | 'poll'
-  | 'cultural_note'
-  | 'behind_the_scenes'
-  | 'recipe'
-  | 'historical_context';
+  | "trivia"
+  | "poll"
+  | "cultural_note"
+  | "behind_the_scenes"
+  | "recipe"
+  | "historical_context";
 
 export interface InteractiveMomentOption {
   text: string;
@@ -373,7 +374,7 @@ export interface PlayerState {
   isMuted: boolean;
   isFullscreen: boolean;
   isPiP: boolean;
-  selectedQuality: QualityTier | 'auto';
+  selectedQuality: QualityTier | "auto";
   selectedAudioTrack: AudioTrack | null;
   selectedSubtitleLanguage: string | null;
   availableQualities: QualityTier[];
@@ -384,7 +385,7 @@ export interface PlayerState {
 // ============ PLAYER SETTINGS ============
 
 export interface PlayerSettings {
-  preferredQuality: QualityTier | 'auto';
+  preferredQuality: QualityTier | "auto";
   preferredSubtitleLanguage: string;
   preferredAudioLanguage: string;
   autoPlayNext: boolean;
@@ -397,7 +398,7 @@ export interface PlayerSettings {
 export interface VODFilters {
   content_format?: ContentFormat;
   genre?: string;
-  sort_by?: 'popularity' | 'rating' | 'year' | 'title' | 'newest';
+  sort_by?: "popularity" | "rating" | "year" | "title" | "newest";
   language?: string;
   page?: number;
   page_size?: number;

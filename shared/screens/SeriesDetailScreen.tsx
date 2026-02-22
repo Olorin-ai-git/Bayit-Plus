@@ -1,12 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-} from 'react-native';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, ScrollView } from "react-native";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useTranslation } from "react-i18next";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import {
   PreviewHero,
   SeasonSelector,
@@ -14,10 +10,10 @@ import {
   IMDBFactsCard,
   CastCarousel,
   RecommendationsCarousel,
-} from '../components/content';
-import { contentService } from '../services/api';
-import { colors } from '../theme';
-import { isTV } from '../utils/platform';
+} from "../components/content";
+import { contentService } from "../services/api";
+import { colors } from "../theme";
+import { isTV } from "../utils/platform";
 
 type SeriesDetailRouteParams = {
   SeriesDetail: {
@@ -54,6 +50,7 @@ interface SeriesData {
   total_seasons: number;
   total_episodes: number;
   trailer_url?: string;
+  trailer_stream_url?: string;
   preview_url?: string;
   seasons: Season[];
 }
@@ -61,7 +58,7 @@ interface SeriesData {
 export default function SeriesDetailScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<SeriesDetailRouteParams, 'SeriesDetail'>>();
+  const route = useRoute<RouteProp<SeriesDetailRouteParams, "SeriesDetail">>();
   const { seriesId } = route.params;
 
   const [series, setSeries] = useState<SeriesData | null>(null);
@@ -97,7 +94,7 @@ export default function SeriesDetailScreen() {
         const formattedCast = data.cast.map((name: string, index: number) => ({
           id: `cast-${index}`,
           name,
-          character: '',
+          character: "",
           photo: undefined,
         }));
         setCastMembers(formattedCast);
@@ -110,11 +107,15 @@ export default function SeriesDetailScreen() {
           setRecommendations(recs);
         }
       } catch (error) {
-        logger.error('Failed to load recommendations', 'SeriesDetailScreen', error);
+        logger.error(
+          "Failed to load recommendations",
+          "SeriesDetailScreen",
+          error,
+        );
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      logger.error('Failed to load series', 'SeriesDetailScreen', error);
+      logger.error("Failed to load series", "SeriesDetailScreen", error);
     } finally {
       setLoading(false);
     }
@@ -123,13 +124,16 @@ export default function SeriesDetailScreen() {
   const loadSeasonEpisodes = async () => {
     setEpisodesLoading(true);
     try {
-      const data = await contentService.getSeasonEpisodes(seriesId, selectedSeason);
+      const data = await contentService.getSeasonEpisodes(
+        seriesId,
+        selectedSeason,
+      );
       setEpisodes(data.episodes || []);
       if (data.episodes && data.episodes.length > 0 && !selectedEpisode) {
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      logger.error('Failed to load episodes', 'SeriesDetailScreen', error);
+      logger.error("Failed to load episodes", "SeriesDetailScreen", error);
     } finally {
       setEpisodesLoading(false);
     }
@@ -137,10 +141,13 @@ export default function SeriesDetailScreen() {
 
   const handlePlay = () => {
     if (selectedEpisode) {
-      navigation.navigate('Player' as never, {
-        contentId: selectedEpisode.id,
-        type: 'vod',
-      } as never);
+      navigation.navigate(
+        "Player" as never,
+        {
+          contentId: selectedEpisode.id,
+          type: "vod",
+        } as never,
+      );
     }
   };
 
@@ -149,10 +156,13 @@ export default function SeriesDetailScreen() {
   };
 
   const handleEpisodePlay = (episode: Episode) => {
-    navigation.navigate('Player' as never, {
-      contentId: episode.id,
-      type: 'vod',
-    } as never);
+    navigation.navigate(
+      "Player" as never,
+      {
+        contentId: episode.id,
+        type: "vod",
+      } as never,
+    );
   };
 
   const handleSeasonChange = (seasonNumber: number) => {
@@ -162,14 +172,20 @@ export default function SeriesDetailScreen() {
 
   const handleCastPress = (castMember: any) => {
     // Navigate to cast member details (future enhancement)
-    logger.debug('Cast member pressed: ' + castMember.name, 'SeriesDetailScreen');
+    logger.debug(
+      "Cast member pressed: " + castMember.name,
+      "SeriesDetailScreen",
+    );
   };
 
   const handleRecommendationPress = (item: any) => {
     // Navigate to recommended content detail
-    navigation.navigate('SeriesDetail' as never, {
-      seriesId: item.id,
-    } as never);
+    navigation.navigate(
+      "SeriesDetail" as never,
+      {
+        seriesId: item.id,
+      } as never,
+    );
   };
 
   if (loading) {
@@ -183,8 +199,8 @@ export default function SeriesDetailScreen() {
   if (!series) {
     return (
       <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
-        <Text className={`${isTV ? 'text-lg' : 'text-base'} text-gray-400`}>
-          {t('content.notFound')}
+        <Text className={`${isTV ? "text-lg" : "text-base"} text-gray-400`}>
+          {t("content.notFound")}
         </Text>
       </View>
     );
@@ -206,14 +222,17 @@ export default function SeriesDetailScreen() {
   }));
 
   return (
-    <ScrollView className="flex-1 bg-[#0d0d1a]" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className="flex-1 bg-[#0d0d1a]"
+      showsVerticalScrollIndicator={false}
+    >
       <PreviewHero
         title={series.title}
         description={series.description}
         backdropUrl={selectedEpisode?.thumbnail || series.backdrop}
         thumbnailUrl={series.thumbnail}
         previewUrl={selectedEpisode?.preview_url || series.preview_url}
-        trailerUrl={series.trailer_url}
+        trailerUrl={series.trailer_stream_url ?? series.trailer_url}
         category={series.category}
         metadata={{
           year: series.year,
@@ -230,15 +249,17 @@ export default function SeriesDetailScreen() {
         />
       </PreviewHero>
 
-      <View className={isTV ? 'p-6' : 'p-4'}>
+      <View className={isTV ? "p-6" : "p-4"}>
         {/* Synopsis */}
         {series.description && (
-          <View className={isTV ? 'mb-6' : 'mb-4'}>
-            <Text className={`${isTV ? 'text-[28px]' : 'text-xl'} font-semibold text-white ${isTV ? 'mb-3' : 'mb-2'}`}>
-              {t('content.synopsis')}
+          <View className={isTV ? "mb-6" : "mb-4"}>
+            <Text
+              className={`${isTV ? "text-[28px]" : "text-xl"} font-semibold text-white ${isTV ? "mb-3" : "mb-2"}`}
+            >
+              {t("content.synopsis")}
             </Text>
             <Text
-              className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`}
+              className={`${isTV ? "text-base" : "text-sm"} text-gray-400`}
               style={{ lineHeight: isTV ? 28 : 22 }}
             >
               {series.description}
@@ -269,7 +290,7 @@ export default function SeriesDetailScreen() {
           <RecommendationsCarousel
             recommendations={recommendations}
             onItemPress={handleRecommendationPress}
-            title={t('content.moreLikeThis', 'More Like This')}
+            title={t("content.moreLikeThis", "More Like This")}
           />
         )}
       </View>

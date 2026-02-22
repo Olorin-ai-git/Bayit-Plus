@@ -204,6 +204,7 @@ async def get_series_details(
         "total_seasons": series.total_seasons or len(seasons),
         "total_episodes": series.total_episodes or len(episodes),
         "trailer_url": series.trailer_url,
+        "trailer_stream_url": series.trailer_stream_url,
         "preview_url": series.preview_url,
         "tmdb_id": str(series.tmdb_id) if series.tmdb_id is not None else None,
         "imdb_id": str(series.imdb_id) if series.imdb_id is not None else None,

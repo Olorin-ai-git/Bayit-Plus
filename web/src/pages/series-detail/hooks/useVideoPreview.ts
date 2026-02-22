@@ -3,9 +3,9 @@
  * Manages video preview playback and HLS streaming
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import Hls from 'hls.js';
-import type { Episode, SeriesData } from '../types/series.types';
+import { useState, useRef, useCallback, useEffect } from "react";
+import Hls from "hls.js";
+import type { Episode, SeriesData } from "../types/series.types";
 
 interface UseVideoPreviewProps {
   selectedEpisode: Episode | null;
@@ -37,6 +37,7 @@ export function useVideoPreview({
   const getPreviewUrl = useCallback((): string | null => {
     if (selectedEpisode?.preview_url) return selectedEpisode.preview_url;
     if (series?.preview_url) return series.preview_url;
+    if (series?.trailer_stream_url) return series.trailer_stream_url;
     if (series?.trailer_url) return series.trailer_url;
     if (selectedEpisode?.stream_url) return selectedEpisode.stream_url;
     if (episodes.length > 0 && (episodes[0] as any).stream_url) {
@@ -85,7 +86,7 @@ export function useVideoPreview({
     video.muted = true;
     video.playsInline = true;
 
-    if (previewUrl.includes('.m3u8') && Hls.isSupported()) {
+    if (previewUrl.includes(".m3u8") && Hls.isSupported()) {
       if (hlsRef.current) {
         hlsRef.current.destroy();
       }
@@ -103,8 +104,8 @@ export function useVideoPreview({
         if (data.fatal) stopPreview();
       });
     } else if (
-      previewUrl.includes('.m3u8') &&
-      video.canPlayType('application/vnd.apple.mpegurl')
+      previewUrl.includes(".m3u8") &&
+      video.canPlayType("application/vnd.apple.mpegurl")
     ) {
       video.src = previewUrl;
       video.load();
@@ -125,7 +126,7 @@ export function useVideoPreview({
 
   // Auto-start preview when episode/series changes (only once per content)
   useEffect(() => {
-    const contentKey = `${selectedEpisode?.id || ''}-${series?.id || ''}`;
+    const contentKey = `${selectedEpisode?.id || ""}-${series?.id || ""}`;
     const previewUrl = getPreviewUrl();
 
     // Only auto-start if:

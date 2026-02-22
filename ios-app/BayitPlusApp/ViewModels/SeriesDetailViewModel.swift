@@ -137,6 +137,6 @@ final class SeriesDetailViewModel {
     }
 
     var hasTrailer: Bool {
-        detail?.trailerUrl != nil
+        detail?.trailerUrl != nil || detail?.trailerStreamUrl != nil
     }
 }

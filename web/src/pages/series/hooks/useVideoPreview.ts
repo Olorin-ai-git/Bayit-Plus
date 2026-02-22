@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import Hls from 'hls.js';
-import type { Episode, SeriesData } from '../types';
+import { useState, useEffect, useCallback, useRef } from "react";
+import Hls from "hls.js";
+import type { Episode, SeriesData } from "../types";
 
 interface UseVideoPreviewParams {
   series: SeriesData | null;
@@ -31,6 +31,7 @@ export function useVideoPreview({
   const getPreviewUrl = useCallback((): string | null => {
     if (selectedEpisode?.preview_url) return selectedEpisode.preview_url;
     if (series?.preview_url) return series.preview_url;
+    if (series?.trailer_stream_url) return series.trailer_stream_url;
     if (series?.trailer_url) return series.trailer_url;
     if (selectedEpisode?.stream_url) return selectedEpisode.stream_url;
     if (episodes.length > 0 && (episodes[0] as any).stream_url) {
@@ -80,7 +81,7 @@ export function useVideoPreview({
     video.muted = true;
     video.playsInline = true;
 
-    if (previewUrl.includes('.m3u8') && Hls.isSupported()) {
+    if (previewUrl.includes(".m3u8") && Hls.isSupported()) {
       if (hlsRef.current) {
         hlsRef.current.destroy();
       }
@@ -97,7 +98,10 @@ export function useVideoPreview({
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) stopPreview();
       });
-    } else if (previewUrl.includes('.m3u8') && video.canPlayType('application/vnd.apple.mpegurl')) {
+    } else if (
+      previewUrl.includes(".m3u8") &&
+      video.canPlayType("application/vnd.apple.mpegurl")
+    ) {
       video.src = previewUrl;
       video.load();
       video.play().catch(() => stopPreview());
@@ -124,7 +128,14 @@ export function useVideoPreview({
       return () => clearTimeout(startTimer);
     }
     return () => stopPreview();
-  }, [selectedEpisode?.id, series?.id, getPreviewUrl, startPreview, stopPreview, showPoster]);
+  }, [
+    selectedEpisode?.id,
+    series?.id,
+    getPreviewUrl,
+    startPreview,
+    stopPreview,
+    showPoster,
+  ]);
 
   useEffect(() => {
     return () => cleanup();

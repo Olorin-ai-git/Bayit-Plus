@@ -32,6 +32,7 @@ export interface SeriesData {
   total_seasons: number;
   total_episodes: number;
   trailer_url?: string;
+  trailer_stream_url?: string;
   preview_url?: string;
   seasons: Season[];
   related: any[];
