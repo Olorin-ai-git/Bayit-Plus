@@ -6100,8 +6100,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6113,7 +6122,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -6358,7 +6370,8 @@
         "short": "西",
         "full": "西班牙语"
       }
-    }
+    },
+    "podcastDetailsShort": "播客"
   },
   "listen": {
     "title": "收听"
@@ -6462,7 +6475,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "播放最新",
     "subscribe": "订阅",
-    "unsubscribe": "取消订阅"
+    "unsubscribe": "取消订阅",
+    "episodeShort": "第{{number}}集",
+    "author": "作者",
+    "category": "类别",
+    "episodeCount": "集数"
   },
   "miniPlayer": {
     "skipBackward": "后退15秒",

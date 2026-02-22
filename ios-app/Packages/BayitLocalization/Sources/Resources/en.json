@@ -6105,7 +6105,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6117,7 +6121,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -6378,7 +6385,8 @@
         "short": "ES",
         "full": "Spanish"
       }
-    }
+    },
+    "podcastDetailsShort": "Podcast"
   },
   "listen": {
     "title": "Listen"
@@ -6465,7 +6473,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "Play Latest",
     "subscribe": "Subscribe",
-    "unsubscribe": "Unsubscribe"
+    "unsubscribe": "Unsubscribe",
+    "episodeShort": "Ep. {{number}}",
+    "author": "Author",
+    "category": "Category",
+    "episodeCount": "Episodes"
   },
   "miniPlayer": {
     "skipBackward": "Skip back 15 seconds",

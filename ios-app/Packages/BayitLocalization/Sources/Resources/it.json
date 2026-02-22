@@ -6359,7 +6359,11 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
+      "notIncluded": [
+        "Canali in diretta",
+        "Assistente AI",
+        "Visione offline"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6371,7 +6375,10 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": ["Visione offline", "Profili familiari"]
+      "notIncluded": [
+        "Visione offline",
+        "Profili familiari"
+      ]
     },
     "family": {
       "name": "Famiglia",
@@ -6616,7 +6623,8 @@
         "short": "ES",
         "full": "Spagnolo"
       }
-    }
+    },
+    "podcastDetailsShort": "Podcast"
   },
   "listen": {
     "title": "Ascolta"
@@ -6720,7 +6728,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "Riproduci ultimo",
     "subscribe": "Iscriviti",
-    "unsubscribe": "Annulla iscrizione"
+    "unsubscribe": "Annulla iscrizione",
+    "episodeShort": "Ep. {{number}}",
+    "author": "Autore",
+    "category": "Categoria",
+    "episodeCount": "Episodi"
   },
   "miniPlayer": {
     "skipBackward": "Indietro di 15 secondi",

@@ -6186,7 +6186,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6198,7 +6202,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",
@@ -6463,7 +6470,8 @@
         "short": "ES",
         "full": "Español"
       }
-    }
+    },
+    "podcastDetailsShort": "Podcast"
   },
   "listen": {
     "title": "Escuchar"
@@ -6567,7 +6575,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "Reproducir ultimo",
     "subscribe": "Suscribirse",
-    "unsubscribe": "Cancelar suscripcion"
+    "unsubscribe": "Cancelar suscripcion",
+    "episodeShort": "Ep. {{number}}",
+    "author": "Autor",
+    "category": "Categoría",
+    "episodeCount": "Episodios"
   },
   "miniPlayer": {
     "skipBackward": "Retroceder 15 segundos",

@@ -107,9 +107,15 @@ extension LoginView {
                 return
             }
 
-            // Strategy 2: Stored refresh token (from prior Google/Apple sign-in)
-            if let refreshToken = KeychainHelper.retrieveBiometricRefreshToken() {
-                // Validate token before using it
+            // Strategy 2: Refresh token restore (from prior Google/Apple/email sign-in)
+            //
+            // Prefer authManager.currentRefreshToken over the biometric-specific backup
+            // because the canonical keychain entry tracks every token rotation, while
+            // the biometric backup is only updated at sign-in time.
+            let refreshToken = authManager.currentRefreshToken
+                ?? KeychainHelper.retrieveBiometricRefreshToken()
+
+            if let refreshToken {
                 if KeychainHelper.isJWTExpired(refreshToken) {
                     KeychainHelper.deleteBiometricRefreshToken()
                     authManager.setError(.sessionExpired)
@@ -121,19 +127,24 @@ extension LoginView {
                     persistRefreshTokenForBiometric()
                     onLoginSuccess()
                 } catch {
-                    // Token was rejected by the server. Clear it so subsequent
-                    // Face ID attempts don't retry the same invalid token.
+                    // Token was rejected by the server. Clear the biometric backup so
+                    // subsequent Face ID attempts don't retry the same invalid token.
                     KeychainHelper.deleteBiometricRefreshToken()
                     // authManager.error is already set by restoreWithRefreshToken.
                 }
                 return
             }
+
+            // No credentials found — biometric was enrolled but credentials are gone.
+            authManager.setError(.sessionExpired)
         } catch {
+            // Ignore deliberate user cancellation; surface all other LA failures.
             guard (error as NSError).code != LAError.userCancel.rawValue else {
                 return
             }
-            // authManager.error is set by the sign-in methods;
-            // the error banner in the card header displays it automatically.
+            if authManager.error == nil {
+                authManager.setError(.notAuthenticated)
+            }
         }
     }
 

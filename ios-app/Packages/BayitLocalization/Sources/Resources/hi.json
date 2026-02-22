@@ -6107,7 +6107,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6119,7 +6123,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -6365,7 +6372,8 @@
         "short": "ES",
         "full": "स्पेनिश"
       }
-    }
+    },
+    "podcastDetailsShort": "पॉडकास्ट"
   },
   "listen": {
     "title": "सुनें"
@@ -6469,7 +6477,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "नवीनतम चलाएं",
     "subscribe": "सदस्यता लें",
-    "unsubscribe": "सदस्यता रद्द करें"
+    "unsubscribe": "सदस्यता रद्द करें",
+    "episodeShort": "एप. {{number}}",
+    "author": "लेखक",
+    "category": "श्रेणी",
+    "episodeCount": "एपिसोड"
   },
   "miniPlayer": {
     "skipBackward": "15 सेकंड पीछे",

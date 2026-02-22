@@ -29,6 +29,8 @@ struct PodcastDetailView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .navigationTitle(localization.t("podcast.podcastDetailsShort"))
+        .navigationBarTitleDisplayMode(.inline)
         .refreshable {
             await viewModel?.refresh()
         }
@@ -107,15 +109,15 @@ struct PodcastDetailView: View {
                     .accessibilityAddTraits(.isHeader)
 
                 if let author = detail.author {
-                    metadataRow(label: "Author", value: author)
+                    metadataRow(label: localization.t("podcasts.author"), value: author)
                 }
 
                 if let category = detail.category {
-                    metadataRow(label: "Category", value: category)
+                    metadataRow(label: localization.t("podcasts.category"), value: category)
                 }
 
                 if let count = detail.episodeCount {
-                    metadataRow(label: "Episodes", value: String(count))
+                    metadataRow(label: localization.t("podcasts.episodeCount"), value: String(count))
                 }
 
                 if let description = detail.description {

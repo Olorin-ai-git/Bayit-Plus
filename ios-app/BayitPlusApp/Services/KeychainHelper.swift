@@ -3,7 +3,6 @@ import Security
 
 /// Helper for securely storing and retrieving credentials in iOS Keychain
 enum KeychainHelper {
-
     private static let service = "tv.bayit.plus.biometric"
     private static let emailKey = "biometric.email"
     private static let passwordKey = "biometric.password"
@@ -63,10 +62,16 @@ enum KeychainHelper {
 
     // MARK: - Validation
 
-    /// Check if a JWT token is expired or will expire soon (within 5 minutes)
+    /// Check if a JWT token is expired or will expire soon (within 5 minutes).
+    ///
+    /// Returns `false` (not expired) when the token cannot be parsed as a JWT or
+    /// has no `exp` claim — the server is the authoritative validator in those cases.
     static func isJWTExpired(_ token: String) -> Bool {
         let segments = token.split(separator: ".")
-        guard segments.count == 3 else { return true }
+        guard segments.count == 3 else {
+            // Opaque token — cannot determine expiry client-side; let server validate.
+            return false
+        }
 
         let payloadSegment = String(segments[1])
 
@@ -79,15 +84,17 @@ enum KeychainHelper {
             base64 += String(repeating: "=", count: 4 - remainder)
         }
 
-        guard let data = Data(base64Encoded: base64) else { return true }
+        guard let data = Data(base64Encoded: base64) else { return false }
 
         struct JWTPayload: Decodable {
             let exp: TimeInterval?
         }
 
         guard let payload = try? JSONDecoder().decode(JWTPayload.self, from: data),
-              let expiration = payload.exp else {
-            return true
+              let expiration = payload.exp
+        else {
+            // No exp claim — treat as non-expiring; let server validate.
+            return false
         }
 
         let expirationDate = Date(timeIntervalSince1970: expiration)
@@ -105,7 +112,7 @@ enum KeychainHelper {
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
             kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
 
         // Delete existing item
@@ -121,7 +128,7 @@ enum KeychainHelper {
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
             kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
+            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
 
         var result: AnyObject?
@@ -129,7 +136,8 @@ enum KeychainHelper {
 
         guard status == errSecSuccess,
               let data = result as? Data,
-              let value = String(data: data, encoding: .utf8) else {
+              let value = String(data: data, encoding: .utf8)
+        else {
             return nil
         }
 
@@ -140,7 +148,7 @@ enum KeychainHelper {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key
+            kSecAttrAccount as String: key,
         ]
 
         SecItemDelete(query as CFDictionary)

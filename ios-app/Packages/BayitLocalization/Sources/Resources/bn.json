@@ -6097,7 +6097,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6109,7 +6113,10 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
+      "notIncluded": [
+        "অফলাইন দেখা",
+        "পরিবার প্রোফাইল"
+      ]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -6351,7 +6358,8 @@
         "short": "ES",
         "full": "স্প্যানিশ"
       }
-    }
+    },
+    "podcastDetailsShort": "পডকাস্ট"
   },
   "listen": {
     "title": "শুনুন"
@@ -6455,7 +6463,11 @@
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
     "playLatest": "সর্বশেষ চালান",
     "subscribe": "সাবস্ক্রাইব",
-    "unsubscribe": "আনসাবস্ক্রাইব"
+    "unsubscribe": "আনসাবস্ক্রাইব",
+    "episodeShort": "পর্ব {{number}}",
+    "author": "লেখক",
+    "category": "বিভাগ",
+    "episodeCount": "পর্বসমূহ"
   },
   "miniPlayer": {
     "skipBackward": "15 সেকেন্ড পিছনে",

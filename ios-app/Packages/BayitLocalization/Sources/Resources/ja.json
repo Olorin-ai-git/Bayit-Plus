@@ -6953,7 +6953,8 @@
         "short": "ES",
         "full": "スペイン語"
       }
-    }
+    },
+    "podcastDetailsShort": "ポッドキャスト"
   },
   "listen": {
     "title": "聴く"
@@ -7095,7 +7096,11 @@
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
-    "playLatest": "最新を再生"
+    "playLatest": "最新を再生",
+    "episodeShort": "第{{number}}話",
+    "author": "著者",
+    "category": "カテゴリ",
+    "episodeCount": "エピソード数"
   },
   "miniPlayer": {
     "skipBackward": "15秒戻る",

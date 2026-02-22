@@ -6515,7 +6515,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -6781,7 +6784,8 @@
         "short": "FR",
         "full": "Français"
       }
-    }
+    },
+    "podcastDetailsShort": "Podcast"
   },
   "listen": {
     "title": "Ecouter"
@@ -6914,7 +6918,11 @@
     "removePodcast": "Remove Podcast",
     "rssUrl": "Podcast RSS URL",
     "rssUrlHint": "Enter the RSS feed URL for your podcast",
-    "playLatest": "Lire le dernier"
+    "playLatest": "Lire le dernier",
+    "episodeShort": "Ép. {{number}}",
+    "author": "Auteur",
+    "category": "Catégorie",
+    "episodeCount": "Épisodes"
   },
   "miniPlayer": {
     "skipBackward": "Reculer de 15 secondes",
