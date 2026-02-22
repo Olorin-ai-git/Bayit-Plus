@@ -29,7 +29,7 @@ async def test_creatify_avatar():
     image_path = "/Users/olorin/Downloads/Etai.png"
     test_text = "Hello! I'm Etai. It's great to meet you!"
     character_name = "Etai"
-    voice_id = settings.CHARACTER_VOICE_MOSHE
+    voice_id = settings.CHARACTER_VOICE_DEFAULT
 
     print(f"\n1. Configuration:")
     print(f"   - Image: {image_path}")

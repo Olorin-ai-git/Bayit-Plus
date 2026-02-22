@@ -52,22 +52,7 @@ extension HeroCarousel {
         favoriteStates[contentId] ?? false
     }
 
-    func startAutoRotation() {
-        guard items.count > 1 else { return }
-        timer = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: true) { _ in
-            withAnimation(.easeInOut(duration: 0.3)) {
-                currentIndex = (currentIndex + 1) % items.count
-            }
-        }
-    }
-
-    func stopAutoRotation() {
-        timer?.invalidate()
-        timer = nil
-    }
-
     func resetAutoRotation() {
-        stopAutoRotation()
-        startAutoRotation()
+        rotationEpoch += 1
     }
 }

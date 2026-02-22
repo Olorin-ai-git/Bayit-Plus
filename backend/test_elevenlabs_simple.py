@@ -24,7 +24,7 @@ async def test_elevenlabs_api():
     print("=" * 60)
 
     api_key = settings.ELEVENLABS_API_KEY
-    voice_id = settings.CHARACTER_VOICE_MOSHE
+    voice_id = settings.CHARACTER_VOICE_DEFAULT
 
     print(f"\n1. Configuration:")
     print(f"   - API Key: {api_key[:20]}...")

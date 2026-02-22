@@ -10,13 +10,17 @@
         let widgetCount: Int
         let isDockVisible: Bool
         let onToggleDock: () -> Void
+        let onCreateWidget: () -> Void
 
         var body: some View {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 iconCircle
                 titleSection
                 Spacer()
-                dockToggleButton
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    createButton
+                    dockToggleButton
+                }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
@@ -44,6 +48,17 @@
                 Text("\(widgetCount) \(localization.t("widgets.itemsTotal"))")
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundColor(DesignTokens.Text.muted)
+            }
+        }
+
+        private var createButton: some View {
+            GlassButton(
+                localization.t("widgets.create"),
+                variant: .primary,
+                size: .small,
+                icon: Image(systemName: "plus")
+            ) {
+                onCreateWidget()
             }
         }
 

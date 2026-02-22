@@ -19,7 +19,7 @@ from app.core.storage import storage_service
 from app.core.logging_config import get_logger
 from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import character_animator_service
-from app.services.vod_interaction.interaction_service import CHARACTER_VOICE_MAP
+from app.models.character import Character
 from app.core.config import settings
 
 logger = get_logger(__name__)
@@ -259,8 +259,13 @@ async def generate_character_responses(
                 continue
 
             try:
-                voice_id = CHARACTER_VOICE_MAP.get(
-                    moment.character_name, settings.CHARACTER_VOICE_DEFAULT
+                char_record = await Character.find_one(
+                    Character.name == moment.character_name
+                )
+                voice_id = (
+                    char_record.voice_id
+                    if char_record
+                    else settings.CHARACTER_VOICE_DEFAULT
                 )
 
                 ai_response = await character_ai_service.generate_response(

@@ -27,7 +27,7 @@ async def test_avatar_creation():
 
     image_path = "/Users/olorin/Downloads/Etai.png"
     test_text = "Hello, I'm Etai. It's nice to meet you!"
-    voice_id = settings.CHARACTER_VOICE_MOSHE
+    voice_id = settings.CHARACTER_VOICE_DEFAULT
 
     print(f"\n1. Configuration:")
     print(f"   - Image: {image_path}")

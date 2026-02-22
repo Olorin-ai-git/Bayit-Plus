@@ -760,48 +760,10 @@ class Settings(BaseSettings):
         description="Creatify stock female persona UUID"
     )
 
-    # Character Voice IDs (ElevenLabs voices for VOD interaction characters)
-    CHARACTER_VOICE_MOSHE: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Moshe Rabbenu (wise, authoritative)"
-    )
-    CHARACTER_VOICE_DAVID: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for David HaMelech (strong, regal)"
-    )
-    CHARACTER_VOICE_MIRIAM: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Miriam (warm, nurturing)"
-    )
-    CHARACTER_VOICE_ESTHER: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Esther (graceful, confident)"
-    )
+    # Default fallback voice ID (used when no character record exists in DB)
     CHARACTER_VOICE_DEFAULT: str = Field(
         default="ashjVK50jp28G73AUTnb",
         description="Default ElevenLabs voice ID for unmatched characters"
-    )
-
-    # Back to the Future character voices
-    CHARACTER_VOICE_DOC_BROWN: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Doc Brown (eccentric, energetic)"
-    )
-    CHARACTER_VOICE_GEORGE_MCFLY: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for George McFly (timid, earnest)"
-    )
-    CHARACTER_VOICE_LORRAINE_BAINES: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Lorraine Baines (warm, kind)"
-    )
-    CHARACTER_VOICE_MARTY_MCFLY: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Marty McFly (energetic, teenage)"
-    )
-    CHARACTER_VOICE_JENNIFER_PARKER: str = Field(
-        default="ashjVK50jp28G73AUTnb",
-        description="ElevenLabs voice ID for Jennifer Parker (warm, supportive)"
     )
 
     @field_validator("CHARACTER_ANIMATION_PROVIDER")

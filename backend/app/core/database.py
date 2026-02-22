@@ -155,6 +155,8 @@ from app.models.scene_trigger import ContentSceneTriggers
 from app.models.magic_mirror import MagicMirrorGreeting
 from app.models.highlight_reel import HighlightReel
 from app.models.whatsapp_contact import WhatsAppContact
+# Character data model (voice IDs, face URLs, franchise grouping)
+from app.models.character import Character
 
 
 class Database:
@@ -460,6 +462,8 @@ async def connect_to_mongo():
         MagicMirrorGreeting,
         HighlightReel,
         WhatsAppContact,
+        # Character data model (VOD interaction voice/face data)
+        Character,
     ]
 
     # Conditionally add Olorin models based on database separation setting

@@ -16,6 +16,7 @@ from app.models.vod_interaction import (
 )
 from app.models.content import Content
 from app.models.child_avatar import ChildAvatar
+from app.models.character import Character
 from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import character_animator_service
 from app.services.beta.credit_service import credit_service
@@ -23,19 +24,6 @@ from app.core.logging_config import get_logger
 from app.core.config import settings
 
 logger = get_logger(__name__)
-
-
-CHARACTER_VOICE_MAP = {
-    "Moshe Rabbenu": settings.CHARACTER_VOICE_MOSHE,
-    "David HaMelech": settings.CHARACTER_VOICE_DAVID,
-    "Miriam": settings.CHARACTER_VOICE_MIRIAM,
-    "Esther": settings.CHARACTER_VOICE_ESTHER,
-    "Doc Brown": settings.CHARACTER_VOICE_DOC_BROWN,
-    "George McFly": settings.CHARACTER_VOICE_GEORGE_MCFLY,
-    "Lorraine Baines": settings.CHARACTER_VOICE_LORRAINE_BAINES,
-    "Marty McFly": settings.CHARACTER_VOICE_MARTY_MCFLY,
-    "Jennifer Parker": settings.CHARACTER_VOICE_JENNIFER_PARKER,
-}
 
 
 BLOCKED_RESPONSE_PATTERNS = re.compile(
@@ -173,7 +161,7 @@ class VODInteractionService:
             else:
                 scene_context = f"{content.title}: {content.description or ''}"
                 char_desc = None
-                voice_id = self._get_character_voice_id(character_name)
+                voice_id = await self._get_character_voice_id(character_name)
                 frame_url = None
 
             session = VODInteractionSession(
@@ -254,7 +242,7 @@ class VODInteractionService:
             frame_url = session.character_frame_url
             voice_id = (
                 session.character_voice_id
-                or self._get_character_voice_id(session.character_name)
+                or await self._get_character_voice_id(session.character_name)
             )
 
             character_response = await character_ai_service.generate_response(
@@ -406,16 +394,16 @@ class VODInteractionService:
             session, user_message, addressed_character,
         )
 
-    def _get_character_voice_id(self, character_name: str) -> str:
-        """Get ElevenLabs voice ID for character"""
-        voice_id = CHARACTER_VOICE_MAP.get(character_name)
-        if not voice_id:
-            voice_id = settings.CHARACTER_VOICE_DEFAULT
-            logger.warning(
-                "Using default voice for character",
-                extra={"character_name": character_name}
-            )
-        return voice_id
+    async def _get_character_voice_id(self, character_name: str) -> str:
+        """Look up ElevenLabs voice ID from the characters collection."""
+        char = await Character.find_one(Character.name == character_name)
+        if char:
+            return char.voice_id
+        logger.warning(
+            "No character record found, using default voice",
+            extra={"character_name": character_name},
+        )
+        return settings.CHARACTER_VOICE_DEFAULT
 
 
 vod_interaction_service = VODInteractionService()

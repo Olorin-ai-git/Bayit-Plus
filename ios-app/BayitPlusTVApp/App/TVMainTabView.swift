@@ -46,13 +46,13 @@
                         .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
                         .tag(TVTab.podcasts)
 
-                    TVProfileView()
-                        .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
-                        .tag(TVTab.profile)
-
                     TVWidgetsView()
                         .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
                         .tag(TVTab.widgets)
+
+                    TVProfileView()
+                        .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
+                        .tag(TVTab.profile)
                 }
                 .onAppear {
                     guard !hasAppeared else { return }

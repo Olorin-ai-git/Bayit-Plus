@@ -10,7 +10,7 @@ struct HeroCarousel: View {
     let coordinator: NavigationCoordinator
 
     @State var currentIndex = 0
-    @State var timer: Timer?
+    @State var rotationEpoch = 0
     @State var favoritesViewModel: FavoritesViewModel?
     @State var favoriteStates: [String: Bool] = [:]
 
@@ -25,6 +25,7 @@ struct HeroCarousel: View {
                 if !items.isEmpty {
                     ZStack(alignment: .topLeading) {
                         heroImage(items[currentIndex])
+                            .id(items[currentIndex].id)
                             .frame(width: geometry.size.width, height: geometry.size.height)
                             .clipped()
 
@@ -87,10 +88,16 @@ struct HeroCarousel: View {
             if favoritesViewModel == nil {
                 favoritesViewModel = FavoritesViewModel(repository: repos.user)
             }
-            startAutoRotation()
         }
-        .onDisappear {
-            stopAutoRotation()
+        .task(id: rotationEpoch) {
+            guard items.count > 1 else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(6))
+                guard !Task.isCancelled else { break }
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    currentIndex = (currentIndex + 1) % items.count
+                }
+            }
         }
     }
 
