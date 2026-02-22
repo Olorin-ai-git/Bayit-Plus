@@ -2,16 +2,15 @@
 """
 Generate character response videos for Back to the Future interactive moments.
 
-Generates AI dialogue -> ElevenLabs TTS -> uploads audio to GCS via gsutil ->
-Creatify lip-sync animation -> uploads video to GCS -> updates MongoDB.
+For each moment: AI dialogue -> ElevenLabs TTS -> GCS upload (gcloud) ->
+Aurora lip-sync (direct fal.ai HTTP) -> GCS upload -> updates MongoDB.
 
 Usage:
-    cd backend && poetry run python scripts/generate_bttf_character_responses.py
+    cd backend && poetry run python ../scripts/backend/generate_bttf_character_responses.py
 """
 
 import asyncio
 import hashlib
-import os
 import subprocess
 import sys
 import tempfile
@@ -33,167 +32,108 @@ logger = get_logger(__name__)
 BTTF_IMDB_ID = "tt0088763"
 GCS_BUCKET = "bayit-plus-media-new"
 
-CREATIFY_PERSONA_MALE = "0251876f-0da4-4c61-8320-8955d8be1f98"
-CREATIFY_PERSONA_FEMALE = "009f502d-3649-4624-a438-80b126f1fa30"
-FEMALE_CHARACTERS = {"Jennifer Parker", "Lorraine Baines"}
-
 
 def upload_to_gcs(local_path: str, gcs_path: str) -> str:
-    """Upload file to GCS using gsutil, return public URL."""
-    gcs_uri = f"gs://{GCS_BUCKET}/{gcs_path}"
-    cmd = ["gsutil", "cp", local_path, gcs_uri]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    """Upload file to GCS using gcloud CLI, return public URL."""
+    full_gcs = f"gs://{GCS_BUCKET}/{gcs_path}"
+    result = subprocess.run(
+        ["gcloud", "storage", "cp", local_path, full_gcs],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
     if result.returncode != 0:
-        raise RuntimeError(f"gsutil upload failed: {result.stderr[:200]}")
+        raise RuntimeError(f"GCS upload failed: {result.stderr}")
     return f"https://storage.googleapis.com/{GCS_BUCKET}/{gcs_path}"
 
 
 async def generate_tts_audio(
-    text: str, voice_id: str, character_name: str, settings
+    text: str, voice_id: str, character_name: str, settings,
 ) -> str:
-    """Generate TTS audio via ElevenLabs, upload to GCS, return public URL."""
+    """Generate TTS audio via ElevenLabs, upload to GCS via gcloud."""
     async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
-        headers = {
-            "xi-api-key": settings.ELEVENLABS_API_KEY,
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "text": text,
-            "model_id": "eleven_multilingual_v2",
-            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
-        }
-        response = await client.post(
+        resp = await client.post(
             f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
-            json=payload,
-            headers=headers,
+            json={
+                "text": text,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
+            },
+            headers={
+                "xi-api-key": settings.ELEVENLABS_API_KEY,
+                "Content-Type": "application/json",
+            },
         )
-        response.raise_for_status()
-        audio_bytes = response.content
+        resp.raise_for_status()
 
     text_hash = hashlib.md5(text.encode()).hexdigest()[:8]
     safe_name = character_name.replace(" ", "_").lower()
+
     with tempfile.NamedTemporaryFile(
-        suffix=".mp3", delete=False, prefix=f"tts_{text_hash}_"
-    ) as tmp:
-        tmp.write(audio_bytes)
-        audio_path = tmp.name
+        suffix=".mp3", delete=False, prefix=f"tts_bttf1_{safe_name}_",
+    ) as f:
+        f.write(resp.content)
+        audio_local = f.name
 
-    gcs_path = f"vod-interactions/character-audio/{safe_name}_{text_hash}.mp3"
-    audio_url = upload_to_gcs(audio_path, gcs_path)
-    os.unlink(audio_path)
-
-    logger.info("TTS audio uploaded: %s", audio_url)
-    return audio_url
-
-
-async def create_creatify_lipsync(
-    audio_url: str, character_name: str, settings
-) -> str:
-    """Create lip-sync video via Creatify, poll for completion, upload to GCS."""
-    persona_id = (
-        CREATIFY_PERSONA_FEMALE
-        if character_name in FEMALE_CHARACTERS
-        else CREATIFY_PERSONA_MALE
+    gcs_path = (
+        f"vod-interactions/character-audio/bttf1_{safe_name}_{text_hash}.mp3"
     )
+    url = upload_to_gcs(audio_local, gcs_path)
+    logger.info("TTS uploaded for %s: %s", character_name, url)
+    return url
 
+
+async def run_aurora_lipsync(
+    image_url: str, audio_url: str, label: str, moment_idx: int, settings,
+) -> str:
+    """Run Aurora lip-sync via direct fal.ai HTTP, upload result to GCS."""
+    headers = {
+        "Authorization": f"Key {settings.FAL_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "image_url": image_url,
+        "audio_url": audio_url,
+        "resolution": settings.FAL_AURORA_RESOLUTION,
+        "guidance_scale": 1,
+        "audio_guidance_scale": 2,
+    }
+
+    logger.info("  Starting Aurora for %s (may take 2-5 min)...", label)
     async with httpx.AsyncClient(
-        timeout=httpx.Timeout(120.0, connect=10.0), follow_redirects=True
+        timeout=httpx.Timeout(600.0, connect=15.0), follow_redirects=True,
     ) as client:
-        headers = {
-            "X-API-ID": settings.CREATIFY_API_ID,
-            "X-API-KEY": settings.CREATIFY_API_KEY,
-            "Content-Type": "application/json",
-        }
-
-        payload = {
-            "audio": audio_url,
-            "creator": persona_id,
-            "aspect_ratio": "1x1",
-            "model_version": "aurora_v1",
-            "green_screen": True,
-            "no_caption": True,
-            "no_music": True,
-        }
-
-        logger.info(
-            "Creating Creatify lipsync job: persona=%s, audio=%s",
-            persona_id,
-            audio_url[:80],
-        )
-
         resp = await client.post(
-            f"{settings.CREATIFY_API_URL}/api/lipsyncs/",
+            "https://fal.run/fal-ai/creatify/aurora",
+            headers=headers,
             json=payload,
-            headers=headers,
         )
         resp.raise_for_status()
-        job = resp.json()
-        lipsync_id = job["id"]
-        logger.info("Creatify job created: %s", lipsync_id)
+        result_data = resp.json()
+        video_url = result_data.get("video", {}).get("url")
+        if not video_url:
+            raise RuntimeError(f"No video URL in Aurora result: {result_data}")
 
-        video_url = await _poll_creatify(lipsync_id, client, headers, settings)
+        logger.info("  Aurora complete: %s...", video_url[:80])
 
-        resp = await client.get(video_url)
-        resp.raise_for_status()
-        video_bytes = resp.content
+        logger.info("  Downloading Aurora video...")
+        video_resp = await client.get(video_url, timeout=120)
+        video_resp.raise_for_status()
 
+    video_hash = hashlib.md5(video_resp.content).hexdigest()[:12]
     with tempfile.NamedTemporaryFile(
-        suffix=".mp4", delete=False, prefix=f"creatify_{lipsync_id[:8]}_"
-    ) as tmp:
-        tmp.write(video_bytes)
-        video_path = tmp.name
+        suffix=".mp4", delete=False, prefix=f"aurora_bttf1_{moment_idx}_",
+    ) as f:
+        f.write(video_resp.content)
+        video_local = f.name
 
-    gcs_path = f"vod-interactions/character-animations/{lipsync_id}.mp4"
-    gcs_url = upload_to_gcs(video_path, gcs_path)
-    os.unlink(video_path)
-
-    logger.info("Creatify video uploaded: %s", gcs_url)
-    return gcs_url
-
-
-async def _poll_creatify(
-    lipsync_id: str, client: httpx.AsyncClient, headers: dict, settings
-) -> str:
-    """Poll Creatify for job completion, return video URL."""
-    max_attempts = 120
-    poll_interval = 5
-
-    for attempt in range(max_attempts):
-        resp = await client.get(
-            f"{settings.CREATIFY_API_URL}/api/lipsyncs/{lipsync_id}",
-            headers=headers,
-        )
-        resp.raise_for_status()
-        result = resp.json()
-        status = result.get("status")
-
-        if status == "done":
-            video_url = result.get("output")
-            logger.info(
-                "Creatify job %s completed after %ds",
-                lipsync_id,
-                attempt * poll_interval,
-            )
-            return video_url
-        elif status == "failed":
-            reason = result.get("failed_reason", "Unknown")
-            raise RuntimeError(f"Creatify job {lipsync_id} failed: {reason}")
-
-        if attempt % 6 == 0:
-            logger.info(
-                "Creatify job %s: status=%s, progress=%s (attempt %d/%d)",
-                lipsync_id,
-                status,
-                result.get("progress", "?"),
-                attempt,
-                max_attempts,
-            )
-
-        await asyncio.sleep(poll_interval)
-
-    raise TimeoutError(
-        f"Creatify job {lipsync_id} timed out after {max_attempts * poll_interval}s"
+    video_gcs_path = (
+        f"vod-interactions/aurora-lipsync/"
+        f"bttf1_moment_{moment_idx}_{video_hash}.mp4"
     )
+    gcs_url = upload_to_gcs(video_local, video_gcs_path)
+    logger.info("  Video uploaded: %s", gcs_url)
+    return gcs_url
 
 
 async def main():
@@ -216,14 +156,17 @@ async def main():
         ts = moment["timestamp"]
         char_name = moment["character_name"]
 
-        if not moment.get("lipsync_video_url"):
-            logger.info("Moment %d (%s): no lipsync_video_url, skipping", idx, char_name)
-            continue
         if moment.get("character_response_video_url"):
-            logger.info("Moment %d (%s): already has response video, skipping", idx, char_name)
+            logger.info(
+                "Moment %d (%s): already has response video, skipping",
+                idx, char_name,
+            )
             continue
         if not moment.get("character_frame_url"):
-            logger.info("Moment %d (%s): no character_frame_url, skipping", idx, char_name)
+            logger.info(
+                "Moment %d (%s): no character_frame_url, skipping",
+                idx, char_name,
+            )
             continue
 
         logger.info(
@@ -232,28 +175,38 @@ async def main():
         )
 
         try:
-            ai_response = await character_ai_service.generate_response(
-                character_name=char_name,
-                scene_context=moment.get("scene_context", ""),
-                user_message=moment.get("interaction_prompt", ""),
-                conversation_history=[],
-            )
-            logger.info(
-                "AI dialogue generated (%d chars): %s...",
-                len(ai_response.text),
-                ai_response.text[:100],
-            )
+            if not moment.get("character_response_text"):
+                ai_response = await character_ai_service.generate_response(
+                    character_name=char_name,
+                    scene_context=moment.get("scene_context", ""),
+                    user_message=moment.get("interaction_prompt", ""),
+                    conversation_history=[],
+                    movie_context="Back to the Future (1985)",
+                )
+                moment["character_response_text"] = ai_response.text
+                logger.info(
+                    "AI dialogue generated (%d chars): %s...",
+                    len(ai_response.text),
+                    ai_response.text[:100],
+                )
+            else:
+                logger.info(
+                    "Using existing dialogue: %s...",
+                    moment["character_response_text"][:80],
+                )
 
             voice_id = moment.get("voice_id", settings.CHARACTER_VOICE_DEFAULT)
             audio_url = await generate_tts_audio(
-                ai_response.text, voice_id, char_name, settings
+                moment["character_response_text"],
+                voice_id, char_name, settings,
             )
 
-            video_url = await create_creatify_lipsync(
-                audio_url, char_name, settings
+            label = f"bttf1_moment_{idx}_{char_name}"
+            video_url = await run_aurora_lipsync(
+                moment["character_frame_url"], audio_url,
+                label, idx, settings,
             )
 
-            moment["character_response_text"] = ai_response.text
             moment["character_response_audio_url"] = audio_url
             moment["character_response_video_url"] = video_url
             generated_count += 1
