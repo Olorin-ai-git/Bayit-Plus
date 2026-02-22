@@ -75,10 +75,11 @@ extension LoginView {
 
     func handleEmailLogin() async throws {
         guard !email.isEmpty, !password.isEmpty else { return }
-        try await authManager.signInWithEmail(email: email, password: password)
+        let normalizedEmail = email.lowercased()
+        try await authManager.signInWithEmail(email: normalizedEmail, password: password)
 
         if biometricService.isBiometricAvailable() {
-            KeychainHelper.storeEmail(email)
+            KeychainHelper.storeEmail(normalizedEmail)
             KeychainHelper.storePassword(password)
         }
 

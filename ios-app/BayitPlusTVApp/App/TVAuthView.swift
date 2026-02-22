@@ -40,7 +40,7 @@ struct TVAuthView: View {
 
                     (Text("Bayit")
                         .foregroundColor(.white)
-                    + Text("+")
+                        + Text("+")
                         .foregroundColor(DesignTokens.Colors.Primary.base))
                         .font(.system(size: DesignTokens.FontSize.hero, weight: .bold))
                 }
@@ -91,7 +91,7 @@ struct TVAuthView: View {
         Task {
             do {
                 try await authManager.signInWithEmail(
-                    email: email,
+                    email: email.lowercased(),
                     password: password
                 )
                 onAuthSuccess()

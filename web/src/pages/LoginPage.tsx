@@ -1,19 +1,24 @@
-import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, ChevronDown, Globe } from 'lucide-react';
-import { useAuthStore } from '@bayit/shared-stores';
-import { colors, spacing } from '@olorin/design-tokens';
-import { AnimatedLogo } from '@bayit/shared';
-import { GlassInput } from '@bayit/shared/ui';
-import { useDirection } from '@/hooks/useDirection';
-import { languages } from '@bayit/i18n';
+import { useState } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useTranslation } from "react-i18next";
+import { Eye, EyeOff, ChevronDown, Globe } from "lucide-react";
+import { useAuthStore } from "@bayit/shared-stores";
+import { colors, spacing } from "@olorin/design-tokens";
+import { AnimatedLogo } from "@bayit/shared";
+import { GlassInput } from "@bayit/shared/ui";
+import { useDirection } from "@/hooks/useDirection";
+import { languages } from "@bayit/i18n";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
-const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
@@ -23,17 +28,22 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { login, loginWithGoogle, isLoading } = useAuthStore();
 
-  const [email, setEmail] = useState(import.meta.env.VITE_DEV_DEFAULT_EMAIL || '');
-  const [password, setPassword] = useState(import.meta.env.VITE_DEV_DEFAULT_PASSWORD || '');
+  const [email, setEmail] = useState(
+    import.meta.env.VITE_DEV_DEFAULT_EMAIL || "",
+  );
+  const [password, setPassword] = useState(
+    import.meta.env.VITE_DEV_DEFAULT_PASSWORD || "",
+  );
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
   // Get redirect path from query params or location state
-  const redirectParam = searchParams.get('redirect');
-  const from = redirectParam || (location.state as any)?.from?.pathname || '/';
+  const redirectParam = searchParams.get("redirect");
+  const from = redirectParam || (location.state as any)?.from?.pathname || "/";
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
   const currentLanguageLabel = t(`settings.languages.${i18n.language}`);
 
   const handleLanguageChange = (langCode: string) => {
@@ -42,35 +52,35 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async () => {
-    setError('');
+    setError("");
 
     if (!email.trim()) {
-      setError(t('login.errors.emailRequired'));
+      setError(t("login.errors.emailRequired"));
       return;
     }
 
     if (!password) {
-      setError(t('login.errors.passwordRequired'));
+      setError(t("login.errors.passwordRequired"));
       return;
     }
 
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.message || t('login.errors.loginFailed'));
+      setError(err.message || t("login.errors.loginFailed"));
     }
   };
 
   const handleGoogleLogin = async () => {
-    setError('');
+    setError("");
     try {
       await loginWithGoogle();
       // Don't navigate here - for web, loginWithGoogle() redirects to Google
       // For native apps, the redirect happens via deep linking
       // Navigation happens after Google callback completes
     } catch (err: any) {
-      setError(err.message || t('login.errors.googleFailed'));
+      setError(err.message || t("login.errors.googleFailed"));
     }
   };
 
@@ -82,13 +92,20 @@ export default function LoginPage() {
       <View style={styles.bgGradient3} />
 
       {/* Language Selector - Top Right */}
-      <View style={[styles.languageSelector, isRTL ? styles.languageSelectorRTL : styles.languageSelectorLTR]}>
+      <View
+        style={[
+          styles.languageSelector,
+          isRTL ? styles.languageSelectorRTL : styles.languageSelectorLTR,
+        ]}
+      >
         <Pressable
           style={styles.languageButton}
           onPress={() => setShowLanguageMenu(!showLanguageMenu)}
         >
           <Globe size={18} color={colors.textSecondary} />
-          <Text style={styles.languageButtonText}>{currentLanguage.flag} {currentLanguageLabel}</Text>
+          <Text style={styles.languageButtonText}>
+            {currentLanguage.flag} {currentLanguageLabel}
+          </Text>
           <ChevronDown size={16} color={colors.textSecondary} />
         </Pressable>
 
@@ -99,15 +116,18 @@ export default function LoginPage() {
                 key={lang.code}
                 style={[
                   styles.languageMenuItem,
-                  lang.code === i18n.language && styles.languageMenuItemActive
+                  lang.code === i18n.language && styles.languageMenuItemActive,
                 ]}
                 onPress={() => handleLanguageChange(lang.code)}
               >
                 <Text style={styles.languageMenuItemFlag}>{lang.flag}</Text>
-                <Text style={[
-                  styles.languageMenuItemText,
-                  lang.code === i18n.language && styles.languageMenuItemTextActive
-                ]}>
+                <Text
+                  style={[
+                    styles.languageMenuItemText,
+                    lang.code === i18n.language &&
+                      styles.languageMenuItemTextActive,
+                  ]}
+                >
                   {t(`settings.languages.${lang.code}`)}
                 </Text>
               </Pressable>
@@ -119,7 +139,7 @@ export default function LoginPage() {
       {/* Main Content */}
       <View style={styles.mainContent}>
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none' }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <View style={styles.logoContainer}>
             <AnimatedLogo size="large" />
           </View>
@@ -127,22 +147,25 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <View style={styles.loginCard}>
-          <Text style={styles.title}>{t('login.title')}</Text>
-          <Text style={styles.subtitle}>
-            {t('login.subtitle')}
-          </Text>
+          <Text style={styles.title}>{t("login.title")}</Text>
+          <Text style={styles.subtitle}>{t("login.subtitle")}</Text>
 
           {/* Error Message */}
           {error && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
-              <View style={[styles.errorSignupPrompt, isRTL && styles.errorSignupPromptRTL]}>
+              <View
+                style={[
+                  styles.errorSignupPrompt,
+                  isRTL && styles.errorSignupPromptRTL,
+                ]}
+              >
                 <Text style={styles.errorSignupText}>
-                  {t('login.errors.noAccount', "Don't have an account?")}
+                  {t("login.errors.noAccount", "Don't have an account?")}
                 </Text>
-                <Link to="/register" style={{ textDecoration: 'none' }}>
+                <Link to="/register" style={{ textDecoration: "none" }}>
                   <Text style={styles.errorSignupLink}>
-                    {t('login.signUpNow', 'Sign up now')}
+                    {t("login.signUpNow", "Sign up now")}
                   </Text>
                 </Link>
               </View>
@@ -152,14 +175,16 @@ export default function LoginPage() {
           {/* Email Input */}
           <View style={styles.inputWrapper}>
             <View style={[styles.inputHeader, isRTL && styles.inputHeaderRTL]}>
-              <Text style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}>
-                {t('login.email')}
+              <Text
+                style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}
+              >
+                {t("login.email")}
               </Text>
             </View>
             <GlassInput
               value={email}
               onChangeText={setEmail}
-              placeholder={t('login.emailPlaceholder')}
+              placeholder={t("login.emailPlaceholder")}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -169,25 +194,33 @@ export default function LoginPage() {
           {/* Password Input */}
           <View style={styles.inputWrapper}>
             <View style={[styles.inputHeader, isRTL && styles.inputHeaderRTL]}>
-              <Text style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}>
-                {t('login.password')}
+              <Text
+                style={IS_TV_BUILD ? styles.inputLabelTV : styles.inputLabel}
+              >
+                {t("login.password")}
               </Text>
-              <Link to="/forgot-password" style={{ textDecoration: 'none' }}>
+              <Link to="/forgot-password" style={{ textDecoration: "none" }}>
                 <Text style={styles.forgotPasswordLink}>
-                  {t('login.forgotPassword')}
+                  {t("login.forgotPassword")}
                 </Text>
               </Link>
             </View>
             <GlassInput
               value={password}
               onChangeText={setPassword}
-              placeholder={t('login.passwordPlaceholder')}
+              placeholder={t("login.passwordPlaceholder")}
               rightIcon={
                 <Pressable onPress={() => setShowPassword(!showPassword)}>
                   {showPassword ? (
-                    <EyeOff size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    <EyeOff
+                      size={IS_TV_BUILD ? 28 : 20}
+                      color={colors.textMuted}
+                    />
                   ) : (
-                    <Eye size={IS_TV_BUILD ? 28 : 20} color={colors.textMuted} />
+                    <Eye
+                      size={IS_TV_BUILD ? 28 : 20}
+                      color={colors.textMuted}
+                    />
                   )}
                 </Pressable>
               }
@@ -198,14 +231,17 @@ export default function LoginPage() {
 
           {/* Login Button */}
           <Pressable
-            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+            style={[
+              styles.loginButton,
+              isLoading && styles.loginButtonDisabled,
+            ]}
             onPress={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? (
               <GlassLoadingSpinner size="small" />
             ) : (
-              <Text style={styles.loginButtonText}>{t('login.submit')}</Text>
+              <Text style={styles.loginButtonText}>{t("login.submit")}</Text>
             )}
           </Pressable>
 
@@ -213,7 +249,7 @@ export default function LoginPage() {
           {!IS_TV_BUILD && (
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('login.or')}</Text>
+              <Text style={styles.dividerText}>{t("login.or")}</Text>
               <View style={styles.dividerLine} />
             </View>
           )}
@@ -221,7 +257,10 @@ export default function LoginPage() {
           {/* Google Sign In Button - hide on TV since OAuth redirects don't work */}
           {!IS_TV_BUILD && (
             <Pressable
-              style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+              style={[
+                styles.googleButton,
+                isLoading && styles.googleButtonDisabled,
+              ]}
               onPress={handleGoogleLogin}
               disabled={isLoading}
             >
@@ -244,7 +283,7 @@ export default function LoginPage() {
                 />
               </svg>
               <Text style={styles.googleButtonText}>
-                {t('login.continueWithGoogle')}
+                {t("login.continueWithGoogle")}
               </Text>
             </Pressable>
           )}
@@ -254,26 +293,24 @@ export default function LoginPage() {
             style={[
               styles.signUpContainer,
               IS_TV_BUILD && styles.signUpContainerTV,
-              isRTL && styles.signUpContainerRTL
+              isRTL && styles.signUpContainerRTL,
             ]}
           >
-            <Text
-              style={IS_TV_BUILD ? styles.signUpTextTV : styles.signUpText}
-            >
-              {t('login.noAccount')}
+            <Text style={IS_TV_BUILD ? styles.signUpTextTV : styles.signUpText}>
+              {t("login.noAccount")}
             </Text>
-            <Link to="/register" style={{ textDecoration: 'none' }}>
-              <Text style={IS_TV_BUILD ? styles.signUpLinkTV : styles.signUpLink}>
-                {t('login.signUp')}
+            <Link to="/register" style={{ textDecoration: "none" }}>
+              <Text
+                style={IS_TV_BUILD ? styles.signUpLinkTV : styles.signUpLink}
+              >
+                {t("login.signUp")}
               </Text>
             </Link>
           </View>
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>
-          {t('login.termsNotice')}
-        </Text>
+        <Text style={styles.footer}>{t("login.termsNotice")}</Text>
       </View>
     </View>
   );
@@ -282,50 +319,50 @@ export default function LoginPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: '100vh',
+    minHeight: "100vh",
     backgroundColor: colors.background,
-    position: 'relative',
-    overflow: 'hidden',
+    position: "relative",
+    overflow: "hidden",
   },
   // Background gradient effects
   bgGradient1: {
-    position: 'absolute',
+    position: "absolute",
     width: 600,
     height: 600,
     borderRadius: 300,
-    backgroundColor: 'rgba(147, 51, 234, 0.08)',
+    backgroundColor: "rgba(147, 51, 234, 0.08)",
     top: -200,
     right: -200,
     // @ts-ignore - Web CSS
-    filter: 'blur(120px)',
+    filter: "blur(120px)",
   },
   bgGradient2: {
-    position: 'absolute',
+    position: "absolute",
     width: 400,
     height: 400,
     borderRadius: 200,
-    backgroundColor: 'rgba(192, 132, 252, 0.06)',
+    backgroundColor: "rgba(192, 132, 252, 0.06)",
     bottom: -100,
     left: -100,
     // @ts-ignore - Web CSS
-    filter: 'blur(100px)',
+    filter: "blur(100px)",
   },
   bgGradient3: {
-    position: 'absolute',
+    position: "absolute",
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(147, 51, 234, 0.04)',
-    top: '50%',
-    left: '50%',
+    backgroundColor: "rgba(147, 51, 234, 0.04)",
+    top: "50%",
+    left: "50%",
     marginLeft: -150,
     marginTop: -150,
     // @ts-ignore - Web CSS
-    filter: 'blur(80px)',
+    filter: "blur(80px)",
   },
   // Language Selector
   languageSelector: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.lg,
     zIndex: 100,
   },
@@ -336,49 +373,49 @@ const styles = StyleSheet.create({
     left: spacing.lg,
   },
   languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: "rgba(255, 255, 255, 0.1)",
   },
   languageButtonText: {
     color: colors.textSecondary,
     fontSize: 14,
   },
   languageMenu: {
-    position: 'absolute',
-    top: '100%',
+    position: "absolute",
+    top: "100%",
     right: 0,
     marginTop: spacing.sm,
-    backgroundColor: 'rgba(17, 24, 39, 0.95)',
+    backgroundColor: "rgba(17, 24, 39, 0.95)",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'auto',
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    overflow: "auto",
     minWidth: 160,
     maxHeight: 320,
     // Use filter instead of backdrop-blur
-    filter: 'blur(0)',
-    backdropFilter: 'blur(12px)',
-    shadowColor: '#000',
+    filter: "blur(0)",
+    backdropFilter: "blur(12px)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
   },
   languageMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
   },
   languageMenuItemActive: {
-    backgroundColor: 'rgba(147, 51, 234, 0.3)',
+    backgroundColor: "rgba(147, 51, 234, 0.3)",
   },
   languageMenuItemFlag: {
     fontSize: 18,
@@ -389,107 +426,107 @@ const styles = StyleSheet.create({
   },
   languageMenuItemTextActive: {
     color: colors.primary.DEFAULT,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Main Content
   mainContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: spacing.lg,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.xl,
   },
   // Login Card
   loginCard: {
-    width: '100%',
+    width: "100%",
     maxWidth: 420,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: "rgba(255, 255, 255, 0.08)",
     padding: spacing.xl * 1.5,
-    backdropFilter: 'blur(12px)',
-    shadowColor: '#000',
+    backdropFilter: "blur(12px)",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
   },
   title: {
     fontSize: 30,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: 15,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.xl,
   },
   // Error Message
   errorContainer: {
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: "rgba(239, 68, 68, 0.15)",
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: "rgba(239, 68, 68, 0.3)",
     borderRadius: 8,
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: '#fca5a5',
+    color: "#fca5a5",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.sm,
   },
   errorSignupPrompt: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.xs,
     marginTop: spacing.xs,
   },
   errorSignupPromptRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   errorSignupText: {
-    color: '#fca5a5',
+    color: "#fca5a5",
     fontSize: 13,
   },
   errorSignupLink: {
     color: colors.primary.DEFAULT,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Input Wrappers
   inputWrapper: {
     marginBottom: spacing.lg,
   },
   inputHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: spacing.sm,
   },
   inputHeaderRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontWeight: "500",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   inputLabelTV: {
     fontSize: 20,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontWeight: "500",
+    color: "rgba(255, 255, 255, 0.7)",
   },
   forgotPasswordLink: {
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.primary.DEFAULT,
   },
   // Login Button
@@ -497,8 +534,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
     paddingVertical: spacing.md,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: spacing.sm,
     minHeight: 52,
   },
@@ -506,20 +543,20 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: '#000',
+    color: "#000",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Divider
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: spacing.lg,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   dividerText: {
     color: colors.textSecondary,
@@ -528,13 +565,13 @@ const styles = StyleSheet.create({
   },
   // Google Button
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: "rgba(255, 255, 255, 0.15)",
     paddingVertical: spacing.md,
     borderRadius: 8,
     minHeight: 52,
@@ -545,18 +582,18 @@ const styles = StyleSheet.create({
   googleButtonText: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   // Sign Up Link
   signUpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.sm,
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: "rgba(255, 255, 255, 0.08)",
   },
   signUpContainerTV: {
     gap: spacing.sm * 1.5,
@@ -564,7 +601,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
   },
   signUpContainerRTL: {
-    flexDirection: 'row-reverse',
+    flexDirection: "row-reverse",
   },
   signUpText: {
     fontSize: 14,
@@ -578,13 +615,13 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 20,
     color: colors.primary.DEFAULT,
   },
   signUpLinkTV: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     lineHeight: 28,
     color: colors.primary.DEFAULT,
   },
@@ -592,7 +629,7 @@ const styles = StyleSheet.create({
   footer: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: spacing.lg,
     maxWidth: 320,
     lineHeight: 18,

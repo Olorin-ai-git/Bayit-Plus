@@ -65,9 +65,10 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
+            val normalizedEmail = current.email.trim().lowercase()
 
             when (val result = olorinAuthService.loginWithEmail(
-                email = current.email,
+                email = normalizedEmail,
                 password = current.password,
             )) {
                 is BayitResult.Success -> {
