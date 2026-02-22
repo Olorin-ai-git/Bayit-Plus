@@ -15,6 +15,7 @@
         @Environment(AuthManager.self) private var authManager
 
         @State private var showVoiceAssistant = false
+        @State private var isHandlingUnauthorized = false
 
         var body: some View {
             ZStack {
@@ -75,7 +76,16 @@
             .onReceive(
                 NotificationCenter.default.publisher(for: APIClient.unauthorizedNotification)
             ) { _ in
-                Task { await authManager.signOut() }
+                guard !isHandlingUnauthorized else { return }
+                isHandlingUnauthorized = true
+                Task {
+                    defer { isHandlingUnauthorized = false }
+                    do {
+                        try await authManager.refreshToken()
+                    } catch {
+                        await authManager.signOut()
+                    }
+                }
             }
         }
 
