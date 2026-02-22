@@ -25,11 +25,13 @@ struct StreamInfo: Decodable, Sendable {
 
 /// Quality variant for stream selection
 struct QualityVariant: Decodable, Sendable, Identifiable {
-    let quality: String
+    let quality: String?
     let resolutionHeight: Int?
     let contentId: String?
 
-    var id: String { quality }
+    var id: String {
+        quality ?? ""
+    }
 }
 
 /// Response from GET /api/v1/radio/{id}/stream

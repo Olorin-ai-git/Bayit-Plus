@@ -160,7 +160,11 @@ extension TVSeriesDetailView {
                             ($0.episodeNumber ?? 0) < ($1.episodeNumber ?? 0)
                         }
                         guard let first = sorted.first else { return }
-                        coordinator.presentPlayer(contentId: first.id, contentType: .vod)
+                        coordinator.presentPlayer(
+                            contentId: first.id,
+                            contentType: .vod,
+                            directUrl: first.streamUrl ?? first.directUrl
+                        )
                         let ids = sorted.map { $0.id }
                         Task { try? await repos.playlist.addBulkToPlaylist(contentIds: ids) }
                     }
