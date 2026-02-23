@@ -68,7 +68,30 @@ extension AudioPlaybackManager {
 
         let mediaContentType = contentType.mediaContentType
         mediaPlayer.load(url: url, contentType: mediaContentType)
-        mediaPlayer.play()
+
+        // Load resume position for seekable content before starting playback
+        if mediaContentType.isSeekable, let contentId = activeContentId {
+            let tracker = ProgressTracker(
+                repository: mediaRepository,
+                player: mediaPlayer,
+                contentId: contentId,
+                contentType: contentType
+            )
+            progressTracker = tracker
+            await tracker.loadResumePosition()
+
+            mediaPlayer.play()
+            if tracker.initialPosition > 0 {
+                await mediaPlayer.seek(to: tracker.initialPosition)
+                logger.info("Resumed audio from saved position", context: [
+                    "contentId": contentId,
+                    "position": String(format: "%.1f", tracker.initialPosition),
+                ])
+            }
+            tracker.startTracking()
+        } else {
+            mediaPlayer.play()
+        }
 
         isLoading = false
 

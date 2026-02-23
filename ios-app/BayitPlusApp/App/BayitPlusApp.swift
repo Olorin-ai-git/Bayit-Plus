@@ -93,7 +93,8 @@ struct BayitPlusApp: App {
         _locationProvider = State(initialValue: locProvider)
         _audioPlaybackManager = State(initialValue: AudioPlaybackManager(
             mediaPlayer: mp,
-            streamResolver: resolver
+            streamResolver: resolver,
+            mediaRepository: repos.media
         ))
         _downloadManager = State(initialValue: DownloadManager(
             userRepository: repos.user,

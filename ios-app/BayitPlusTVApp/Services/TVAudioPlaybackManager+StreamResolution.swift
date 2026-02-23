@@ -86,7 +86,31 @@
             self.artworkURL = artworkURL
 
             mediaPlayer.load(url: url, contentType: contentType)
-            mediaPlayer.play()
+
+            // Load resume position for seekable content before starting playback
+            if contentType.isSeekable, let contentId = activeContentId {
+                let appContentType = contentType.toContentType
+                let tracker = ProgressTracker(
+                    repository: mediaRepository,
+                    player: mediaPlayer,
+                    contentId: contentId,
+                    contentType: appContentType
+                )
+                progressTracker = tracker
+                await tracker.loadResumePosition()
+
+                mediaPlayer.play()
+                if tracker.initialPosition > 0 {
+                    await mediaPlayer.seek(to: tracker.initialPosition)
+                    logger.info("Resumed TV audio from saved position", context: [
+                        "contentId": contentId,
+                        "position": String(format: "%.1f", tracker.initialPosition),
+                    ])
+                }
+                tracker.startTracking()
+            } else {
+                mediaPlayer.play()
+            }
 
             isLoading = false
 
@@ -129,6 +153,21 @@
             artworkURL = nil
             activeContentId = nil
             activeContentType = nil
+        }
+    }
+
+    // MARK: - MediaContentType to ContentType Mapping
+
+    extension MediaContentType {
+        /// Maps MediaContentType back to app-layer ContentType for ProgressTracker.
+        var toContentType: ContentType {
+            switch self {
+            case .radio: return .radio
+            case .podcast: return .podcast
+            case .audiobook: return .audiobook
+            case .liveTV: return .live
+            case .vod: return .movie
+            }
         }
     }
 #endif

@@ -27,6 +27,10 @@
             mediaPlayer.state == .playing || mediaPlayer.state == .buffering
         }
 
+        // MARK: - Progress Tracking
+
+        private(set) var progressTracker: ProgressTracker?
+
         // MARK: - Sleep Timer
 
         private(set) var sleepTimerManager = TVSleepTimerManager()
@@ -134,6 +138,9 @@
         /// Stop playback, clear Now Playing, and reset state.
         func stop() {
             sleepTimerManager.cancel()
+            let tracker = progressTracker
+            progressTracker = nil
+            Task { await tracker?.stopTracking() }
             mediaPlayer.stop()
             nowPlayingService.clear()
             remoteCommandService.unregister()

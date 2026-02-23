@@ -37,19 +37,29 @@ final class AudioPlaybackManager {
 
     private(set) var sleepTimerManager = SleepTimerManager()
 
+    // MARK: - Progress Tracking
+
+    private(set) var progressTracker: ProgressTracker?
+
     // MARK: - Dependencies (internal for extension access)
 
     let mediaPlayer: MediaPlayer
     let streamResolver: StreamResolver
+    let mediaRepository: any MediaRepository
     let nowPlayingService: NowPlayingService
     let remoteCommandService: RemoteCommandService
     let logger = BayitLogger(category: "AudioPlayback")
 
     // MARK: - Init
 
-    init(mediaPlayer: MediaPlayer, streamResolver: StreamResolver) {
+    init(
+        mediaPlayer: MediaPlayer,
+        streamResolver: StreamResolver,
+        mediaRepository: any MediaRepository
+    ) {
         self.mediaPlayer = mediaPlayer
         self.streamResolver = streamResolver
+        self.mediaRepository = mediaRepository
         nowPlayingService = NowPlayingService()
         remoteCommandService = RemoteCommandService()
     }
@@ -132,6 +142,9 @@ final class AudioPlaybackManager {
     /// Stop playback, clear Now Playing, and reset state.
     func stop() {
         sleepTimerManager.cancel()
+        let tracker = progressTracker
+        progressTracker = nil
+        Task { await tracker?.stopTracking() }
         mediaPlayer.stop()
         nowPlayingService.clear()
         remoteCommandService.unregister()
