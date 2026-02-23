@@ -477,6 +477,33 @@ class CreditServiceWrapper:
             metadata=metadata
         )
 
+    async def has_sufficient_credits(
+        self,
+        user_id: str,
+        amount: float,
+    ) -> bool:
+        """
+        Check if user has enough credits for an operation.
+
+        Args:
+            user_id: User ID
+            amount: Credits required
+
+        Returns:
+            True if user has sufficient credits (or service uninitialized)
+        """
+        if self._service is None:
+            logger.warning(
+                "Credit service not initialized - allowing operation",
+                extra={"user_id": user_id, "amount": amount},
+            )
+            return True
+
+        balance = await self._service.get_balance(user_id)
+        if balance is None:
+            return True
+        return balance >= amount
+
 
 # Default instance (will be initialized when database is ready)
 credit_service = CreditServiceWrapper()

@@ -8,13 +8,74 @@
     // MARK: - PauseAskDialogueOverlayView Conversation Extensions
 
     extension PauseAskDialogueOverlayView {
-        func progressView(_ text: String) -> some View {
-            VStack(spacing: DesignTokens.Spacing.md) {
-                ProgressView()
-                    .tint(DesignTokens.Primary.default)
+        // MARK: - Polishing Progress
+
+        var polishingProgressView: some View {
+            let stages = polishingStageKeys
+            let key = stages[polishingStageIndex % stages.count]
+            let text: String = if key.contains("generic") {
+                localization.t(
+                    key,
+                    ["name": viewModel.selectedCharacter?.name ?? ""]
+                )
+            } else {
+                localization.t(key)
+            }
+
+            return VStack(spacing: DesignTokens.Spacing.md) {
+                GlassSpinner(size: .large)
                 Text(text)
                     .font(.system(size: DesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.secondary)
+                    .multilineTextAlignment(.center)
+                    .animation(.easeInOut(duration: 0.4), value: polishingStageIndex)
+            }
+            .onAppear { startPolishingTimer() }
+            .onDisappear { stopPolishingTimer() }
+        }
+
+        func startPolishingTimer() {
+            polishingStageIndex = 0
+            polishingTimer = Timer.scheduledTimer(
+                withTimeInterval: 5, repeats: true
+            ) { _ in
+                Task { @MainActor in
+                    polishingStageIndex += 1
+                }
+            }
+        }
+
+        func stopPolishingTimer() {
+            polishingTimer?.invalidate()
+            polishingTimer = nil
+            polishingStageIndex = 0
+        }
+
+        var polishingStageKeys: [String] {
+            let base = "player.pauseAsk.stages"
+            let generic = [
+                "\(base).polishing", "\(base).thinking",
+            ]
+            let characterKeys = characterStageKeys(base: base)
+            return generic + characterKeys
+        }
+
+        private func characterStageKeys(base: String) -> [String] {
+            let name = viewModel.selectedCharacter?.name.lowercased() ?? ""
+            if name.contains("biff") {
+                return (1 ... 4).map { "\(base).biff\($0)" }
+            } else if name.contains("doc") {
+                return (1 ... 4).map { "\(base).doc\($0)" }
+            } else if name.contains("marty") {
+                return (1 ... 4).map { "\(base).marty\($0)" }
+            } else if name.contains("george") {
+                return (1 ... 4).map { "\(base).george\($0)" }
+            } else if name.contains("lorraine") {
+                return (1 ... 4).map { "\(base).lorraine\($0)" }
+            } else if name.contains("jennifer") {
+                return (1 ... 4).map { "\(base).jennifer\($0)" }
+            } else {
+                return (1 ... 4).map { "\(base).generic\($0)" }
             }
         }
 

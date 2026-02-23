@@ -57,6 +57,20 @@
             logger.info("Audio recording stopped")
         }
 
+        /// Stop recording and return the raw PCM data without sending via WebSocket.
+        /// Used by the Pause & Ask REST transcription flow.
+        func stopRecordingAndReturn() -> Data {
+            guard isRecording else { return Data() }
+            audioEngine?.inputNode.removeTap(onBus: 0)
+            audioEngine?.stop()
+            audioEngine = nil
+            isRecording = false
+            let data = recordedData
+            recordedData = Data()
+            logger.info("Audio recording stopped (returning data)")
+            return data
+        }
+
         func configureAudioSession() {
             let session = AVAudioSession.sharedInstance()
             try? session.setCategory(.playAndRecord, options: .defaultToSpeaker)

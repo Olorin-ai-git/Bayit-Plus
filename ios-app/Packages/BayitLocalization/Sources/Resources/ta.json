@@ -3558,7 +3558,9 @@
       "close": "மூடு",
       "cached": "தற்காலிகமாக சேமிக்கப்பட்டது",
       "remaining": "மீதம்",
-      "window": "சாளரம்"
+      "window": "சாளரம்",
+      "loading": "[TA] Loading summary...",
+      "noContent": "[TA] No summary available"
     },
     "error": {
       "failed": "சுருக்கத்தை உருவாக்க முடியவில்லை",
@@ -4151,7 +4153,8 @@
     "new_password": "புதிய கடவுச்சொல்",
     "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
     "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "queued": "[TA] Queued"
   },
   "components": {
     "select": {
@@ -4205,7 +4208,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[TA] Untitled"
   },
   "cultureCities": {
     "connectionTo": "{{city}} இணைப்பு",
@@ -4357,7 +4361,8 @@
     "play": "ஆஃப்லைனில் இயக்கு",
     "deleteConfirm": "பதிவிறக்கத்தை அகற்று",
     "size": "{{size}} MB",
-    "clearAll": "அனைத்தையும் அழி"
+    "clearAll": "அனைத்தையும் அழி",
+    "active": "[TA] Active Downloads"
   },
   "dubbing": {
     "title": "நேரடி டப்பிங்",
@@ -5579,7 +5584,8 @@
     "unknown": "அறியாத",
     "userIdPlaceholder": "பயனர் மின்னஞ்சல் அல்லது ID உள்ளிடவும்",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[TA] Create Household"
   },
   "jerusalem": {
     "title": "ஜெருசலேம் இணைப்பு",
@@ -5629,7 +5635,11 @@
       "shabbatSongs": "ஷப்பத் பாடல்கள்",
       "parashaStudy": "பராஷா",
       "shabbatRecipes": "சமையல் குறிப்புகள்",
-      "prayers": "பிரார்த்தனைகள்"
+      "prayers": "பிரார்த்தனைகள்",
+      "candlesIn": "[TA] Candles in {{minutes}} minutes",
+      "songs": "[TA] Songs",
+      "parasha": "[TA] Parasha",
+      "recipes": "[TA] Recipes"
     },
     "calendar": "யூத நாட்காட்டி",
     "community": {
@@ -5853,7 +5863,8 @@
       "kids": "குழந்தைகள்",
       "documentary": "ஆவணப்படம்"
     },
-    "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன..."
+    "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன...",
+    "channel": "[TA] Channel"
   },
   "location": {
     "consentModal": {
@@ -5952,7 +5963,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[TA] New to Bayit+?"
   },
   "nav": {
     "home": "முகப்பு",
@@ -6184,11 +6196,7 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6200,10 +6208,7 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": [
-        "ஆஃப்லைன் பார்வை",
-        "குடும்ப சுயவிவரங்கள்"
-      ]
+      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
     },
     "family": {
       "name": "குடும்பம்",
@@ -6384,7 +6389,39 @@
       "processing": "செயலாக்கம்...",
       "askAnother": "மேலும் கேளுங்கள்",
       "resumeMovie": "தொடர்க",
-      "selectCharacter": "கதாபாத்திரம் தேர்ந்தெடுக்கவும்"
+      "selectCharacter": "கதாபாத்திரம் தேர்ந்தெடுக்கவும்",
+      "stages": {
+        "polishing": "உங்கள் கேள்வியை மெருகேற்றுகிறது...",
+        "thinking": "உங்கள் கேள்வி பற்றி யோசிக்கிறது...",
+        "biff1": "பிஃப்புக்கு உங்கள் கேள்வி பிடிக்கவில்லை...",
+        "biff2": "பிஃப் கண்ணாடியில் தன்னைப் பார்க்கிறான்...",
+        "biff3": "பிஃப் பதிலை எழுத முயற்சிக்கிறான்...",
+        "biff4": "பிஃப் யாரையோ முட்டாள் என்று கூறிவிட்டான்...",
+        "doc1": "டாக் ஃப்ளக்ஸ் கெப்பாசிட்டரை ஆலோசிக்கிறார்...",
+        "doc2": "கிரேட் ஸ்காட்! இன்னும் கணக்கிடுகிறது...",
+        "doc3": "டாக் 1.21 ஜிகாவாட்களை சரிசெய்கிறார்...",
+        "doc4": "டாக் விண்வெளி-நேரத் தொடர்ச்சியை சரிபார்க்கிறார்...",
+        "marty1": "மார்ட்டி முதலில் கிட்டார் டியூன் செய்கிறான்...",
+        "marty2": "இது கனமானது...",
+        "marty3": "மார்ட்டி தான் இன்னும் இருக்கிறானா என்று பார்க்கிறான்...",
+        "marty4": "மார்ட்டி சொல்கிறான் யாரும் தன்னை கோழை என்று கூப்பிடக்கூடாது...",
+        "george1": "ஜார்ஜ் பதிலளிக்க தைரியம் சேகரிக்கிறான்...",
+        "george2": "ஜார்ஜ் நோட்டுப்புத்தகத்தில் பதிலை எழுதுகிறான்...",
+        "george3": "ஜார்ஜ் தன் அடர்த்தி தன்னை இங்கு கொண்டு வந்தது என்கிறான்...",
+        "george4": "ஜார்ஜுக்கு இறுதியாக நம்பிக்கை வந்தது...",
+        "lorraine1": "லோரேன் முதலில் தலைமுடியை சரிசெய்கிறாள்...",
+        "lorraine2": "லோரேன் கடலுக்கு அடியில் மந்திரத்தை நினைக்கிறாள்...",
+        "lorraine3": "லோரேன் இது விதி என்கிறாள்...",
+        "lorraine4": "லோரேன் நடனத்திற்கு தயாராகிறாள்...",
+        "jennifer1": "ஜெனிஃபர் காரில் காத்திருக்கிறாள்...",
+        "jennifer2": "ஜெனிஃபர் எதிர்காலத்தைப் பற்றி யோசிக்கிறாள்...",
+        "jennifer3": "ஜெனிஃபர் சமாளிக்க முடியும் என்கிறாள்...",
+        "jennifer4": "ஜெனிஃபர் பொறுமையாக இருக்கிறாள்...",
+        "generic1": "{{name}} யோசிக்கிறது...",
+        "generic2": "{{name}} பதிலை உருவாக்குகிறது...",
+        "generic3": "கிட்டத்தட்ட முடிந்தது...",
+        "generic4": "இன்னும் சிறிது நேரம்..."
+      }
     },
     "sleepTimer": {
       "title": "தூக்க டைமர்",
@@ -6398,7 +6435,21 @@
       "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
       "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
     },
-    "startOver": "மீண்டும் தொடங்கு"
+    "startOver": "மீண்டும் தொடங்கு",
+    "dialogue": {
+      "voiceMode": "[TA] Voice Mode",
+      "holdToSpeak": "[TA] Hold to Speak"
+    },
+    "multiCharacter": {
+      "selectCharacter": "[TA] Select Character",
+      "talkingTo": "[TA] Talking to"
+    },
+    "shared": {
+      "participants": "[TA] Participants",
+      "yourTurn": "[TA] Your Turn",
+      "waitingForTurn": "[TA] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[TA] Failed to load stream"
   },
   "playlist": {
     "title": "எனது பட்டியல்",
@@ -7428,18 +7479,7 @@
       "infoTitle": "AI-Powered Search",
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "kids": "Kids",
-      "liveTV": "Live TV",
-      "movies": "Movies",
-      "news": "News",
-      "series": "Series",
-      "sports": "Sports"
-    },
+    "suggestions": "[TA] Suggestions",
     "empty": {
       "clearSearch": "Clear search",
       "checkSpelling": "எழுத்துப்பிழையை சரிபார்",
@@ -7519,7 +7559,22 @@
       "titleAsc": "தலைப்பு A-Z",
       "titleDesc": "தலைப்பு Z-A",
       "popularity": "மிகவும் பிரபலமானது"
-    }
+    },
+    "filter": {
+      "title": "[TA] Filter",
+      "reset": "[TA] Reset",
+      "language": "[TA] Language",
+      "accessibility": "[TA] Accessibility",
+      "subtitles": "[TA] Subtitles",
+      "dubbing": "[TA] Dubbing",
+      "yearRange": "[TA] Year Range",
+      "yearFrom": "[TA] From year",
+      "yearTo": "[TA] To year",
+      "duration": "[TA] Duration",
+      "apply": "[TA] Apply Filters"
+    },
+    "previousPage": "[TA] Previous Page",
+    "nextPage": "[TA] Next Page"
   },
   "security": {
     "changePassword": "கடவுச்சொல்லை மாற்று",
@@ -7558,16 +7613,65 @@
       "ja": "日本語"
     },
     "notifications": "அறிவிப்புகள்",
-    "playback": "பின்னணி",
+    "playback": {
+      "title": "[TA] Playback",
+      "videoQuality": "[TA] Video Quality",
+      "autoplaySection": "[TA] Autoplay",
+      "autoplay": "[TA] Autoplay",
+      "autoplayNext": "[TA] Autoplay Next Episode",
+      "countdown": "[TA] Countdown before next episode",
+      "controls": "[TA] Controls",
+      "skipIntro": "[TA] Skip Intro",
+      "skipCredits": "[TA] Skip Credits",
+      "continueWatching": "[TA] Continue Watching",
+      "speed": "[TA] Playback Speed",
+      "liveTV": "[TA] Live TV",
+      "bufferSize": "[TA] Buffer Size"
+    },
     "quality": "தரம்",
     "subtitles": "வசனங்கள்",
     "autoplay": "தானியங்கி",
     "appearance": "தோற்றம்",
     "darkMode": "இருள் பயன்முறை",
-    "privacy": "தனியுரிமை",
+    "privacy": {
+      "clearWatchHistoryTitle": "[TA] Clear Watch History",
+      "clear": "[TA] Clear",
+      "clearWatchHistoryMessage": "[TA] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[TA] Clear Search History",
+      "clearSearchHistoryMessage": "[TA] This will permanently delete your search history.",
+      "title": "[TA] Privacy",
+      "description": "[TA] Control your data collection and privacy preferences",
+      "dataCollection": "[TA] Data Collection",
+      "analytics": "[TA] Usage Analytics",
+      "analyticsDesc": "[TA] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[TA] Crash Reports",
+      "crashReportsDesc": "[TA] Automatically send crash reports to help fix issues",
+      "personalization": "[TA] Personalization",
+      "personalizationDesc": "[TA] Allow Bayit+ to personalize your experience",
+      "history": "[TA] History",
+      "watchHistory": "[TA] Watch History",
+      "clearWatchHistory": "[TA] Clear Watch History",
+      "searchHistory": "[TA] Search History",
+      "clearSearchHistory": "[TA] Clear Search History"
+    },
     "privacyPolicy": "தனியுரிமைக் கொள்கை",
     "termsOfService": "சேவை விதிமுறைகள்",
-    "about": "பற்றி",
+    "about": {
+      "title": "[TA] About",
+      "appInfo": "[TA] App Info",
+      "version": "[TA] Version",
+      "build": "[TA] Build",
+      "environment": "[TA] Environment",
+      "legal": "[TA] Legal",
+      "privacyPolicy": "[TA] Privacy Policy",
+      "termsOfService": "[TA] Terms of Service",
+      "cookiePolicy": "[TA] Cookie Policy",
+      "licenses": "[TA] Open Source Licenses",
+      "deviceInfo": "[TA] Device Info",
+      "model": "[TA] Model",
+      "osVersion": "[TA] OS Version",
+      "locale": "[TA] Locale"
+    },
     "chatTranslation": "அரட்டை மொழிபெயர்ப்பு",
     "autoTranslate": "செய்திகளை தானாக மொழிபெயர்",
     "autoTranslateDescription": "அரட்டை செய்திகளை உங்கள் விருப்பமான மொழிக்கு தானாக மொழிபெயர்க்கவும்",
@@ -7599,11 +7703,7 @@
       "title": "தலைப்பு",
       "videos": "வீடியோக்கள்"
     },
-    "accessibility": {
-      "small": "சிறியது",
-      "medium": "நடுத்தரம்",
-      "large": "பெரியது"
-    },
+    "accessibility": "[TA] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "கணக்கு",
@@ -7651,13 +7751,7 @@
     "unlinkConfirm": "இணைப்பை நீக்கு",
     "connected": "இணைக்கப்பட்டது",
     "notConnected": "இணைக்கப்படவில்லை",
-    "help": {
-      "title": "உதவி மையம்",
-      "subtitle": "பொதுவான கேள்விகளுக்கு பதில்களைக் கண்டறியுங்கள்",
-      "loading": "உதவி ஏற்றப்படுகிறது...",
-      "noFaqs": "அடிக்கடி கேட்கப்படும் கேள்விகள் எதுவும் இல்லை",
-      "contactSupport": "ஆதரவைத் தொடர்புகொள்ளுங்கள்"
-    },
+    "help": "[TA] Help & Support",
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7688,7 +7782,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[TA] Audio",
+    "mediaSection": "[TA] Media",
+    "privacyData": "[TA] Privacy & Data",
+    "general": "[TA] General",
+    "children": "[TA] Children",
+    "loading": "[TA] Loading settings...",
+    "not_connected": "[TA] Not connected",
+    "privacySecurity": "[TA] Privacy & Security"
   },
   "shabbat": {
     "activate": "செயல்படுத்து",
@@ -8276,14 +8378,15 @@
     "quiz": {
       "title": "ட்ரிவியா வினாடி வினா"
     },
-    "question": {
-      "counter": "கேள்வி {{current}} / {{total}}"
-    },
+    "question": "[TA] Question",
     "results": {
       "title": "வினாடி வினா முடிந்தது!",
       "playAgain": "மீண்டும் விளையாடு",
       "shekelsEarned": "{{amount}} ஷெக்கல்கள் சம்பாதித்தீர்கள்"
-    }
+    },
+    "explanation": "[TA] Explanation",
+    "submit": "[TA] Submit",
+    "tryAgain": "[TA] Try Again"
   },
   "tvLogin": {
     "invalidQR": "தவறான QR குறியீடு. உங்கள் TV-யில் இருந்து மீண்டும் ஸ்கேன் செய்யவும்.",
@@ -8729,7 +8832,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[TA] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[TA] Microphone Permission",
+      "speechRecognition": "[TA] Speech Recognition",
+      "currentState": "[TA] Current State",
+      "transcript": "[TA] Transcript",
+      "title": "[TA] Voice Diagnostics",
+      "audioSession": "[TA] Audio Session",
+      "runDiagnostics": "[TA] Run Diagnostics",
+      "copyReport": "[TA] Copy Report"
+    },
+    "stopListening": "[TA] Stop Listening",
+    "startListening": "[TA] Start Listening",
+    "searchPrompt": "[TA] What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "குரல் மட்டும்",
@@ -9190,7 +9309,11 @@
       "questionsSection": "கேள்விகள்",
       "empty": "இன்னும் இடையொழிப்பு திரைப்படங்கள் இல்லை",
       "characterCount": "{{count}} கதாபாத்திரங்கள்",
-      "selectCharacter": "தொடர்பு கொள்ள ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்"
+      "selectCharacter": "தொடர்பு கொள்ள ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்",
+      "quotaLabel": "[TA] Interactions remaining",
+      "generationTitle": "[TA] Generating interaction...",
+      "selectedCount": "[TA] {{count}} selected",
+      "confirmButton": "[TA] Confirm"
     },
     "dialogue": {
       "specificQuestions": "கதாபாத்திர கேள்விகள்",
@@ -9210,7 +9333,110 @@
       "contacts": "தொடர்புகள்",
       "contactsDesc": "பகிர்வதற்கான குடும்ப தொடர்புகளை நிர்வகிக்கவும்",
       "feedback": "கருத்து",
-      "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்"
+      "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்",
+      "title": "[TA] Me in the Story",
+      "consent": "[TA] Consent Required",
+      "consentDesc": "[TA] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[TA] Processing..."
+    },
+    "preview": {
+      "title": "[TA] 3D Preview",
+      "loading": "[TA] Loading your avatar...",
+      "error": "[TA] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[TA] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[TA] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[TA] PIN",
+        "pinPlaceholder": "[TA] Enter your PIN",
+        "consentTypes": "[TA] I consent to the following",
+        "meshGeneration": "[TA] 3D Mesh Generation",
+        "voiceV2V": "[TA] Voice-to-Voice Practice",
+        "latentFeatures": "[TA] AI Feature Personalization",
+        "currentStatus": "[TA] Current Consent Status",
+        "submit": "[TA] Grant Consent",
+        "title": "[TA] Biometric Consent",
+        "familyControlsRequired": "[TA] Family Controls Required",
+        "familyControlsExplain": "[TA] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[TA] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[TA] My Contacts",
+      "add": "[TA] Add Contact",
+      "empty": "[TA] No contacts yet",
+      "delete": "[TA] Delete Contact",
+      "name": "[TA] Display Name",
+      "phone": "[TA] Phone Number",
+      "pin": "[TA] PIN"
+    },
+    "feedback": {
+      "title": "[TA] Feedback",
+      "empty": "[TA] No feedback yet",
+      "from": "[TA] From",
+      "voiceMessage": "[TA] Voice Message",
+      "textMessage": "[TA] Text Message"
+    },
+    "highlights": {
+      "title": "[TA] Highlights",
+      "generate": "[TA] Generate Highlight Reel",
+      "empty": "[TA] No highlights yet",
+      "share": "[TA] Share",
+      "sendToFamily": "[TA] Send to Family",
+      "generating": "[TA] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[TA] Word of the Day",
+      "noAvatar": "[TA] No Avatar",
+      "noAvatarDesc": "[TA] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[TA] Create Avatar",
+      "noCreditsTitle": "[TA] Out of Credits",
+      "noCreditsDesc": "[TA] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[TA] Play Greeting",
+      "refresh": "[TA] Refresh",
+      "meshUnavailable": "[TA] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[TA] Generate 3D Mesh",
+      "viewPreview": "[TA] View Preview",
+      "statusIdle": "[TA] Ready",
+      "statusGenerating": "[TA] Generating...",
+      "statusReady": "[TA] Complete",
+      "statusFailed": "[TA] Failed"
+    },
+    "movieCharacters": {
+      "title": "[TA] Characters",
+      "empty": "[TA] No characters available"
+    },
+    "trigger": {
+      "prompt": "[TA] Say the phrase",
+      "dismiss": "[TA] Dismiss",
+      "success": "[TA] Excellent!",
+      "continue": "[TA] Continue",
+      "incorrect": "[TA] Not quite",
+      "correct": "[TA] Correct answer",
+      "tryAgain": "[TA] Try Again",
+      "skip": "[TA] Skip",
+      "errors": {
+        "microphoneFailed": "[TA] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[TA] Transforming voice...",
+      "latency": "[TA] Latency",
+      "retry": "[TA] Retry",
+      "nextPhrase": "[TA] Next Phrase",
+      "beforeAfter": "[TA] Before / After",
+      "before": "[TA] Before",
+      "after": "[TA] After",
+      "improvement": "[TA] Improvement"
+    },
+    "avatar3d": {
+      "title": "[TA] 3D Avatar",
+      "errorTitle": "[TA] Avatar Error"
     }
   },
   "starStory": {
@@ -10173,5 +10399,20 @@
     "success_title": "கடவுச்சொல் மீட்டமைக்கப்பட்டது!",
     "success_message": "உங்கள் கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது. இப்போது உங்கள் புதிய கடவுச்சொல்லுடன் உள்நுழையலாம்.",
     "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
+  },
+  "voiceFallback": {
+    "title": "[TA] Voice Unavailable",
+    "subtitle": "[TA] Type your message instead",
+    "micUnavailable": "[TA] Microphone unavailable",
+    "inputPlaceholder": "[TA] Type a message...",
+    "send": "[TA] Send",
+    "suggestions": "[TA] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[TA] Voice Search Settings",
+      "language": "[TA] Recognition Language",
+      "sensitivity": "[TA] Sensitivity"
+    }
   }
 }

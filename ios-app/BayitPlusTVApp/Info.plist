@@ -38,7 +38,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>29</string>
+	<string>30</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>GOOGLE_CLIENT_ID</key>

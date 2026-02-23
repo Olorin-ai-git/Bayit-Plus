@@ -34,6 +34,8 @@
         @State var characterEndObserver: NSObjectProtocol?
         @State var userStatusObserver: NSKeyValueObservation?
         @State var characterStatusObserver: NSKeyValueObservation?
+        @State var polishingStageIndex = 0
+        @State var polishingTimer: Timer?
 
         let logger = BayitLogger(category: "TVPauseAskOverlay")
 
@@ -61,7 +63,7 @@
             case .input:
                 inputPanel
             case .polishing:
-                progressView(localization.t("player.pauseAsk.processing"))
+                polishingProgressView
             case .userSpeaking, .transition, .characterSpeaking:
                 TVPauseAskVideoPlaybackView(
                     avatarImageUrl: avatarImageUrl,
@@ -90,26 +92,88 @@
             )
         }
 
-        // MARK: - Progress & Idle
+        // MARK: - Polishing Progress
 
-        private func progressView(_ text: String) -> some View {
-            VStack(spacing: TVDesignTokens.Spacing.lg) {
-                ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-                Text(text).font(.system(size: TVDesignTokens.FontSize.lg))
+        private var polishingProgressView: some View {
+            let stages = polishingStageKeys
+            let key = stages[polishingStageIndex % stages.count]
+            let text: String = if key.contains("generic") {
+                localization.t(
+                    key,
+                    ["name": viewModel.selectedCharacter?.name ?? ""]
+                )
+            } else {
+                localization.t(key)
+            }
+
+            return VStack(spacing: TVDesignTokens.Spacing.lg) {
+                GlassSpinner(size: .large)
+                Text(text)
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.secondary)
+                    .multilineTextAlignment(.center)
+                    .animation(
+                        .easeInOut(duration: 0.4), value: polishingStageIndex
+                    )
+            }
+            .onAppear { startPolishingTimer() }
+            .onDisappear { stopPolishingTimer() }
+        }
+
+        private func startPolishingTimer() {
+            polishingStageIndex = 0
+            polishingTimer = Timer.scheduledTimer(
+                withTimeInterval: 5, repeats: true
+            ) { _ in
+                Task { @MainActor in polishingStageIndex += 1 }
             }
         }
+
+        private func stopPolishingTimer() {
+            polishingTimer?.invalidate()
+            polishingTimer = nil
+            polishingStageIndex = 0
+        }
+
+        private var polishingStageKeys: [String] {
+            let base = "player.pauseAsk.stages"
+            let generic = ["\(base).polishing", "\(base).thinking"]
+            return generic + characterStageKeys(base: base)
+        }
+
+        private func characterStageKeys(base: String) -> [String] {
+            let name = viewModel.selectedCharacter?.name.lowercased() ?? ""
+            if name.contains("biff") {
+                return (1 ... 4).map { "\(base).biff\($0)" }
+            } else if name.contains("doc") {
+                return (1 ... 4).map { "\(base).doc\($0)" }
+            } else if name.contains("marty") {
+                return (1 ... 4).map { "\(base).marty\($0)" }
+            } else if name.contains("george") {
+                return (1 ... 4).map { "\(base).george\($0)" }
+            } else if name.contains("lorraine") {
+                return (1 ... 4).map { "\(base).lorraine\($0)" }
+            } else if name.contains("jennifer") {
+                return (1 ... 4).map { "\(base).jennifer\($0)" }
+            } else {
+                return (1 ... 4).map { "\(base).generic\($0)" }
+            }
+        }
+
+        // MARK: - Idle
 
         private var idlePanel: some View {
             VStack(spacing: TVDesignTokens.Spacing.lg) {
                 Spacer()
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    Button(localization.t("player.pauseAsk.askAnother")) {
-                        phase = .input; messageText = ""
-                    }.buttonStyle(.card)
-                    Button(localization.t("player.pauseAsk.resumeMovie")) {
-                        onDismiss()
-                    }.buttonStyle(.card)
+                    GlassButton(
+                        localization.t("player.pauseAsk.askAnother"),
+                        variant: .primary, size: .large
+                    ) { phase = .input; messageText = "" }
+                    GlassButton(
+                        localization.t("player.pauseAsk.resumeMovie"),
+                        variant: .secondary, size: .large
+                    ) { onDismiss() }
                 }.padding(.bottom, TVDesignTokens.Spacing.xxl)
             }
         }

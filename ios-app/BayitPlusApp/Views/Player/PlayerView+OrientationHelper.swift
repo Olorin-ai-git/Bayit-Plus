@@ -74,10 +74,12 @@ extension PlayerView {
     // MARK: - View Model Initialization
 
     func initializeViewModels() {
-        triviaVM = TriviaFactsViewModel(
-            repository: repositories.trivia,
-            offlineCache: repositories.offlineCache
-        )
+        if triviaVM == nil {
+            triviaVM = TriviaFactsViewModel(
+                repository: repositories.trivia,
+                offlineCache: repositories.offlineCache
+            )
+        }
 
         if !mediaContentType.isLive {
             Task {

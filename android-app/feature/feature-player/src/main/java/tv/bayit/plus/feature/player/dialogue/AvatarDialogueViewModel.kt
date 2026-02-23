@@ -135,8 +135,8 @@ class AvatarDialogueViewModel @Inject constructor(
                     "Pause-ask response received",
                     mapOf(
                         "sessionId" to activeSessionId,
-                        "hasUserVideo" to (response.userLipsyncVideoUrl != null).toString(),
-                        "hasCharVideo" to (response.characterResponseVideoUrl != null).toString(),
+                        "hasUserVideo" to response.userAnimatedVideoUrl.isNotEmpty().toString(),
+                        "hasCharVideo" to response.characterAnimatedVideoUrl.isNotEmpty().toString(),
                     ),
                 )
             } catch (e: Exception) {

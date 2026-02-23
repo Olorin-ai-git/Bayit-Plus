@@ -14,6 +14,9 @@
         let inputMode: InputMode
         let onToggleMode: () -> Void
         let onSend: () -> Void
+        /// When set, voice stop uses `stopRecordingAndReturn()` and passes
+        /// the raw audio data to this callback instead of the WebSocket path.
+        var onVoiceRecorded: ((Data) -> Void)?
 
         enum InputMode { case text, voice }
 
@@ -67,8 +70,16 @@
                 }
                 Spacer()
                 Button {
-                    if service.isRecording { service.stopRecording() }
-                    else { service.startRecording() }
+                    if service.isRecording {
+                        if let callback = onVoiceRecorded {
+                            let data = service.stopRecordingAndReturn()
+                            if !data.isEmpty { callback(data) }
+                        } else {
+                            service.stopRecording()
+                        }
+                    } else {
+                        service.startRecording()
+                    }
                 } label: {
                     Image(systemName: service.isRecording
                         ? "stop.circle.fill" : "mic.circle.fill")

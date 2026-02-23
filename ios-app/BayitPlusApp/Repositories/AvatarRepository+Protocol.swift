@@ -74,6 +74,11 @@ protocol AvatarRepository: Sendable {
 
     // MARK: - Pause & Ask
 
+    func transcribeAudio(
+        sessionId: String,
+        audioData: Data
+    ) async throws -> TranscriptionResponse
+
     func sendPauseAskMessage(
         sessionId: String,
         message: String,

@@ -7,7 +7,9 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 import logging
 
+from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc
+from app.services.subtitle_service import apply_subtitle_time_offset
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -60,8 +62,12 @@ async def stream_vtt_subtitles(
 
         track = tracks[0]
 
-        # Convert to VTT format
-        vtt_content = _generate_vtt_from_track(track)
+        # Look up subtitle time offset for multi-part movies
+        content_doc = await Content.get(content_id)
+        time_offset = content_doc.subtitle_time_offset if content_doc else None
+
+        # Convert to VTT format (with offset for split movie files)
+        vtt_content = _generate_vtt_from_track(track, time_offset=time_offset)
 
         # Return with proper headers for video track consumption
         return Response(
@@ -82,12 +88,16 @@ async def stream_vtt_subtitles(
         raise HTTPException(status_code=500, detail="Failed to stream subtitles")
 
 
-def _generate_vtt_from_track(track: SubtitleTrackDoc) -> str:
+def _generate_vtt_from_track(
+    track: SubtitleTrackDoc,
+    time_offset: float = None,
+) -> str:
     """
     Generate WebVTT content from SubtitleTrackDoc.
 
     Args:
         track: SubtitleTrackDoc with cues
+        time_offset: Optional seconds to subtract from cue times (multi-part movies)
 
     Returns:
         WebVTT formatted string
@@ -97,26 +107,32 @@ def _generate_vtt_from_track(track: SubtitleTrackDoc) -> str:
 
     # Add language metadata if available
     if hasattr(track, 'language') and track.language:
-        vtt += f"X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000\n"
+        vtt += "X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000\n"
 
     vtt += "\n"
 
-    for cue in track.cues:
-        # Add cue identifier
-        vtt += f"{cue.index}\n"
-
-        # Add timestamp line
-        start_time = _format_vtt_timestamp(cue.start_time)
-        end_time = _format_vtt_timestamp(cue.end_time)
-        vtt += f"{start_time} --> {end_time}"
-
-        # Add VTT settings if available (check if attribute exists)
-        if hasattr(cue, 'settings') and cue.settings:
-            vtt += f" {cue.settings}"
-        vtt += "\n"
-
-        # Add subtitle text
-        vtt += f"{cue.text}\n\n"
+    # Apply time offset for multi-part movies (e.g. LOTR Extended PT.2)
+    if time_offset and time_offset > 0:
+        adjusted = apply_subtitle_time_offset(track.cues, time_offset)
+        for ac in adjusted:
+            vtt += f"{ac.index}\n"
+            start_ts = _format_vtt_timestamp(ac.start_time)
+            end_ts = _format_vtt_timestamp(ac.end_time)
+            vtt += f"{start_ts} --> {end_ts}"
+            if hasattr(ac.original, 'settings') and ac.original.settings:
+                vtt += f" {ac.original.settings}"
+            vtt += "\n"
+            vtt += f"{ac.original.text}\n\n"
+    else:
+        for cue in track.cues:
+            vtt += f"{cue.index}\n"
+            start_time = _format_vtt_timestamp(cue.start_time)
+            end_time = _format_vtt_timestamp(cue.end_time)
+            vtt += f"{start_time} --> {end_time}"
+            if hasattr(cue, 'settings') and cue.settings:
+                vtt += f" {cue.settings}"
+            vtt += "\n"
+            vtt += f"{cue.text}\n\n"
 
     return vtt
 

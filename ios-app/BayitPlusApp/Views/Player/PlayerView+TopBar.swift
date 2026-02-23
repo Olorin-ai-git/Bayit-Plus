@@ -94,14 +94,12 @@ extension PlayerView {
                 .accessibilityLabel(localization.t("player.interaction.previous"))
             }
 
-            // Interact button (VOD only, when interactions enabled)
-            if !mediaContentType.isLive, interactionVM != nil {
+            // Interact button (VOD only, when interactions or characters enabled)
+            if !mediaContentType.isLive,
+               interactionVM != nil || hasInteractiveCharacters
+            {
                 Button {
-                    if hasVoiceClone {
-                        Task { await startPauseAskInteraction() }
-                    } else {
-                        Task { await openCharacterSheet() }
-                    }
+                    Task { await startPauseAskInteraction() }
                 } label: {
                     Image(systemName: (showDialogueOverlay || showPauseAskOverlay)
                         ? "bubble.left.and.bubble.right.fill"

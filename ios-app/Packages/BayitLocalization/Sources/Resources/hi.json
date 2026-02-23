@@ -3470,7 +3470,9 @@
       "close": "बंद करें",
       "cached": "कैश्ड",
       "remaining": "शेष",
-      "window": "विंडो"
+      "window": "विंडो",
+      "loading": "[HI] Loading summary...",
+      "noContent": "[HI] No summary available"
     },
     "error": {
       "failed": "सारांश नहीं बनाया जा सका",
@@ -4074,7 +4076,8 @@
     "new_password": "नया पासवर्ड",
     "confirm_password": "पासवर्ड की पुष्टि करें",
     "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें",
-    "tryAgain": "पुनः प्रयास करें"
+    "tryAgain": "पुनः प्रयास करें",
+    "queued": "[HI] Queued"
   },
   "components": {
     "select": {
@@ -4128,7 +4131,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[HI] Untitled"
   },
   "cultureCities": {
     "connectionTo": "{{city}} कनेक्शन",
@@ -4280,7 +4284,8 @@
     "play": "ऑफ़लाइन चलाएं",
     "deleteConfirm": "डाउनलोड हटाएं",
     "size": "{{size}} MB",
-    "clearAll": "सभी हटाएं"
+    "clearAll": "सभी हटाएं",
+    "active": "[HI] Active Downloads"
   },
   "dubbing": {
     "title": "लाइव डबिंग",
@@ -5502,7 +5507,8 @@
     "unknown": "अज्ञात",
     "userIdPlaceholder": "उपयोगकर्ता ईमेल या ID दर्ज करें",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[HI] Create Household"
   },
   "jerusalem": {
     "title": "जेरूसलम कनेक्शन",
@@ -5552,7 +5558,11 @@
       "shabbatSongs": "शब्बत गाने",
       "parashaStudy": "पराशा",
       "shabbatRecipes": "व्यंजन विधि",
-      "prayers": "प्रार्थनाएं"
+      "prayers": "प्रार्थनाएं",
+      "candlesIn": "[HI] Candles in {{minutes}} minutes",
+      "songs": "[HI] Songs",
+      "parasha": "[HI] Parasha",
+      "recipes": "[HI] Recipes"
     },
     "calendar": "यहूदी कैलेंडर",
     "community": {
@@ -5776,7 +5786,8 @@
       "kids": "बच्चे",
       "documentary": "डॉक्यूमेंट्री"
     },
-    "loadingChannels": "चैनल लोड हो रहे हैं..."
+    "loadingChannels": "चैनल लोड हो रहे हैं...",
+    "channel": "[HI] Channel"
   },
   "location": {
     "consentModal": {
@@ -5875,7 +5886,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[HI] New to Bayit+?"
   },
   "nav": {
     "home": "होम",
@@ -6107,11 +6119,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6123,10 +6131,7 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": [
-        "ऑफ़लाइन देखना",
-        "फैमिली प्रोफाइल"
-      ]
+      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
     },
     "family": {
       "name": "फैमिली",
@@ -6311,7 +6316,39 @@
       "processing": "प्रसंस्करण...",
       "askAnother": "और पूछें",
       "resumeMovie": "जारी रखें",
-      "selectCharacter": "पात्र चुनें"
+      "selectCharacter": "पात्र चुनें",
+      "stages": {
+        "polishing": "आपका सवाल तैयार हो रहा है...",
+        "thinking": "आपके सवाल पर विचार हो रहा है...",
+        "biff1": "बिफ को आपका सवाल पसंद नहीं आया...",
+        "biff2": "बिफ आईने में मसल्स दिखा रहा है...",
+        "biff3": "बिफ अपना जवाब लिखने की कोशिश कर रहा है...",
+        "biff4": "बिफ ने किसी को बेवकूफ कह दिया...",
+        "doc1": "डॉक फ्लक्स कैपेसिटर से सलाह ले रहा है...",
+        "doc2": "ग्रेट स्कॉट! अभी भी गणना हो रही है...",
+        "doc3": "डॉक 1.21 गीगावॉट एडजस्ट कर रहा है...",
+        "doc4": "डॉक स्पेस-टाइम कंटीन्यूम चेक कर रहा है...",
+        "marty1": "मार्टी पहले गिटार ट्यून कर रहा है...",
+        "marty2": "यह भारी है...",
+        "marty3": "मार्टी देख रहा है कि वो अभी भी मौजूद है या नहीं...",
+        "marty4": "मार्टी कहता है कोई उसे कायर नहीं कह सकता...",
+        "george1": "जॉर्ज जवाब देने की हिम्मत जुटा रहा है...",
+        "george2": "जॉर्ज अपनी नोटबुक में जवाब लिख रहा है...",
+        "george3": "जॉर्ज कहता है उसका घनत्व उसे यहां लाया...",
+        "george4": "जॉर्ज को आखिरकार आत्मविश्वास मिल गया...",
+        "lorraine1": "लोरेन पहले बाल ठीक कर रही है...",
+        "lorraine2": "लोरेन समुद्र के नीचे के जादू के बारे में सोच रही है...",
+        "lorraine3": "लोरेन कहती है यह होना ही था...",
+        "lorraine4": "लोरेन डांस की तैयारी कर रही है...",
+        "jennifer1": "जेनिफर कार में इंतजार कर रही है...",
+        "jennifer2": "जेनिफर भविष्य के बारे में सोच रही है...",
+        "jennifer3": "जेनिफर कहती है वो संभाल सकती है...",
+        "jennifer4": "जेनिफर धैर्य रख रही है...",
+        "generic1": "{{name}} सोच रहा है...",
+        "generic2": "{{name}} जवाब तैयार कर रहा है...",
+        "generic3": "लगभग हो गया...",
+        "generic4": "बस एक पल और..."
+      }
     },
     "sleepTimer": {
       "title": "स्लीप टाइमर",
@@ -6325,7 +6362,21 @@
       "timerExtended": "टाइमर {{minutes}} मिनट बढ़ाया गया",
       "timerCancelled": "स्लीप टाइमर रद्द किया गया"
     },
-    "startOver": "फिर से शुरू करें"
+    "startOver": "फिर से शुरू करें",
+    "dialogue": {
+      "voiceMode": "[HI] Voice Mode",
+      "holdToSpeak": "[HI] Hold to Speak"
+    },
+    "multiCharacter": {
+      "selectCharacter": "[HI] Select Character",
+      "talkingTo": "[HI] Talking to"
+    },
+    "shared": {
+      "participants": "[HI] Participants",
+      "yourTurn": "[HI] Your Turn",
+      "waitingForTurn": "[HI] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[HI] Failed to load stream"
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -7361,18 +7412,7 @@
       "infoTitle": "AI-Powered Search",
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "kids": "Kids",
-      "liveTV": "Live TV",
-      "movies": "Movies",
-      "news": "News",
-      "series": "Series",
-      "sports": "Sports"
-    },
+    "suggestions": "[HI] Suggestions",
     "empty": {
       "clearSearch": "Clear search",
       "checkSpelling": "वर्तनी जाँचें",
@@ -7449,7 +7489,22 @@
       "titleAsc": "शीर्षक A-Z",
       "titleDesc": "शीर्षक Z-A",
       "popularity": "सबसे लोकप्रिय"
-    }
+    },
+    "filter": {
+      "title": "[HI] Filter",
+      "reset": "[HI] Reset",
+      "language": "[HI] Language",
+      "accessibility": "[HI] Accessibility",
+      "subtitles": "[HI] Subtitles",
+      "dubbing": "[HI] Dubbing",
+      "yearRange": "[HI] Year Range",
+      "yearFrom": "[HI] From year",
+      "yearTo": "[HI] To year",
+      "duration": "[HI] Duration",
+      "apply": "[HI] Apply Filters"
+    },
+    "previousPage": "[HI] Previous Page",
+    "nextPage": "[HI] Next Page"
   },
   "security": {
     "changePassword": "पासवर्ड बदलें",
@@ -7489,16 +7544,65 @@
     },
     "notifications": "सूचनाएं",
     "pushNotifications": "पुश नोटिफिकेशन",
-    "playback": "प्लेबैक",
+    "playback": {
+      "title": "[HI] Playback",
+      "videoQuality": "[HI] Video Quality",
+      "autoplaySection": "[HI] Autoplay",
+      "autoplay": "[HI] Autoplay",
+      "autoplayNext": "[HI] Autoplay Next Episode",
+      "countdown": "[HI] Countdown before next episode",
+      "controls": "[HI] Controls",
+      "skipIntro": "[HI] Skip Intro",
+      "skipCredits": "[HI] Skip Credits",
+      "continueWatching": "[HI] Continue Watching",
+      "speed": "[HI] Playback Speed",
+      "liveTV": "[HI] Live TV",
+      "bufferSize": "[HI] Buffer Size"
+    },
     "quality": "गुणवत्ता",
     "subtitles": "सबटाइटल",
     "autoplay": "ऑटोप्ले",
     "appearance": "दिखावट",
     "darkMode": "डार्क मोड",
-    "privacy": "गोपनीयता",
+    "privacy": {
+      "clearWatchHistoryTitle": "[HI] Clear Watch History",
+      "clear": "[HI] Clear",
+      "clearWatchHistoryMessage": "[HI] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[HI] Clear Search History",
+      "clearSearchHistoryMessage": "[HI] This will permanently delete your search history.",
+      "title": "[HI] Privacy",
+      "description": "[HI] Control your data collection and privacy preferences",
+      "dataCollection": "[HI] Data Collection",
+      "analytics": "[HI] Usage Analytics",
+      "analyticsDesc": "[HI] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[HI] Crash Reports",
+      "crashReportsDesc": "[HI] Automatically send crash reports to help fix issues",
+      "personalization": "[HI] Personalization",
+      "personalizationDesc": "[HI] Allow Bayit+ to personalize your experience",
+      "history": "[HI] History",
+      "watchHistory": "[HI] Watch History",
+      "clearWatchHistory": "[HI] Clear Watch History",
+      "searchHistory": "[HI] Search History",
+      "clearSearchHistory": "[HI] Clear Search History"
+    },
     "privacyPolicy": "गोपनीयता नीति",
     "termsOfService": "सेवा की शर्तें",
-    "about": "के बारे में",
+    "about": {
+      "title": "[HI] About",
+      "appInfo": "[HI] App Info",
+      "version": "[HI] Version",
+      "build": "[HI] Build",
+      "environment": "[HI] Environment",
+      "legal": "[HI] Legal",
+      "privacyPolicy": "[HI] Privacy Policy",
+      "termsOfService": "[HI] Terms of Service",
+      "cookiePolicy": "[HI] Cookie Policy",
+      "licenses": "[HI] Open Source Licenses",
+      "deviceInfo": "[HI] Device Info",
+      "model": "[HI] Model",
+      "osVersion": "[HI] OS Version",
+      "locale": "[HI] Locale"
+    },
     "chatTranslation": "चैट अनुवाद",
     "autoTranslate": "संदेशों का स्वतः अनुवाद करें",
     "autoTranslateDescription": "चैट संदेशों को स्वचालित रूप से आपकी पसंदीदा भाषा में अनुवाद करें",
@@ -7529,11 +7633,7 @@
       "title": "शीर्षक",
       "videos": "वीडियो"
     },
-    "accessibility": {
-      "small": "छोटा",
-      "medium": "मध्यम",
-      "large": "बड़ा"
-    },
+    "accessibility": "[HI] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "खाता",
@@ -7581,13 +7681,7 @@
     "unlinkConfirm": "अनलिंक करें",
     "connected": "कनेक्टेड",
     "notConnected": "कनेक्ट नहीं है",
-    "help": {
-      "title": "सहायता केंद्र",
-      "subtitle": "सामान्य प्रश्नों के उत्तर खोजें",
-      "loading": "सहायता लोड हो रही है...",
-      "noFaqs": "कोई अक्सर पूछे जाने वाले प्रश्न उपलब्ध नहीं हैं",
-      "contactSupport": "सहायता से संपर्क करें"
-    },
+    "help": "[HI] Help & Support",
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7618,7 +7712,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[HI] Audio",
+    "mediaSection": "[HI] Media",
+    "privacyData": "[HI] Privacy & Data",
+    "general": "[HI] General",
+    "children": "[HI] Children",
+    "loading": "[HI] Loading settings...",
+    "not_connected": "[HI] Not connected",
+    "privacySecurity": "[HI] Privacy & Security"
   },
   "shabbat": {
     "activate": "सक्रिय करें",
@@ -8208,14 +8310,15 @@
     "quiz": {
       "title": "ट्रिविया क्विज़"
     },
-    "question": {
-      "counter": "प्रश्न {{current}} / {{total}}"
-    },
+    "question": "[HI] Question",
     "results": {
       "title": "क्विज़ पूरा!",
       "playAgain": "फिर से खेलें",
       "shekelsEarned": "{{amount}} शेकेल कमाए"
-    }
+    },
+    "explanation": "[HI] Explanation",
+    "submit": "[HI] Submit",
+    "tryAgain": "[HI] Try Again"
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -8661,7 +8764,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[HI] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[HI] Microphone Permission",
+      "speechRecognition": "[HI] Speech Recognition",
+      "currentState": "[HI] Current State",
+      "transcript": "[HI] Transcript",
+      "title": "[HI] Voice Diagnostics",
+      "audioSession": "[HI] Audio Session",
+      "runDiagnostics": "[HI] Run Diagnostics",
+      "copyReport": "[HI] Copy Report"
+    },
+    "stopListening": "[HI] Stop Listening",
+    "startListening": "[HI] Start Listening",
+    "searchPrompt": "[HI] What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "केवल वॉइस",
@@ -9116,7 +9235,11 @@
       "questionsSection": "सवाल",
       "empty": "अभी कोई इंटरैक्टिव फिल्म उपलब्ध नहीं",
       "characterCount": "{{count}} पात्र",
-      "selectCharacter": "इंटरैक्ट करने के लिए एक पात्र चुनें"
+      "selectCharacter": "इंटरैक्ट करने के लिए एक पात्र चुनें",
+      "quotaLabel": "[HI] Interactions remaining",
+      "generationTitle": "[HI] Generating interaction...",
+      "selectedCount": "[HI] {{count}} selected",
+      "confirmButton": "[HI] Confirm"
     },
     "dialogue": {
       "specificQuestions": "पात्र के सवाल",
@@ -9136,7 +9259,110 @@
       "contacts": "संपर्क",
       "contactsDesc": "साझा करने के लिए पारिवारिक संपर्क प्रबंधित करें",
       "feedback": "प्रतिक्रिया",
-      "feedbackDesc": "परिवार और दोस्तों के संदेश"
+      "feedbackDesc": "परिवार और दोस्तों के संदेश",
+      "title": "[HI] Me in the Story",
+      "consent": "[HI] Consent Required",
+      "consentDesc": "[HI] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[HI] Processing..."
+    },
+    "preview": {
+      "title": "[HI] 3D Preview",
+      "loading": "[HI] Loading your avatar...",
+      "error": "[HI] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[HI] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[HI] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[HI] PIN",
+        "pinPlaceholder": "[HI] Enter your PIN",
+        "consentTypes": "[HI] I consent to the following",
+        "meshGeneration": "[HI] 3D Mesh Generation",
+        "voiceV2V": "[HI] Voice-to-Voice Practice",
+        "latentFeatures": "[HI] AI Feature Personalization",
+        "currentStatus": "[HI] Current Consent Status",
+        "submit": "[HI] Grant Consent",
+        "title": "[HI] Biometric Consent",
+        "familyControlsRequired": "[HI] Family Controls Required",
+        "familyControlsExplain": "[HI] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[HI] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[HI] My Contacts",
+      "add": "[HI] Add Contact",
+      "empty": "[HI] No contacts yet",
+      "delete": "[HI] Delete Contact",
+      "name": "[HI] Display Name",
+      "phone": "[HI] Phone Number",
+      "pin": "[HI] PIN"
+    },
+    "feedback": {
+      "title": "[HI] Feedback",
+      "empty": "[HI] No feedback yet",
+      "from": "[HI] From",
+      "voiceMessage": "[HI] Voice Message",
+      "textMessage": "[HI] Text Message"
+    },
+    "highlights": {
+      "title": "[HI] Highlights",
+      "generate": "[HI] Generate Highlight Reel",
+      "empty": "[HI] No highlights yet",
+      "share": "[HI] Share",
+      "sendToFamily": "[HI] Send to Family",
+      "generating": "[HI] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[HI] Word of the Day",
+      "noAvatar": "[HI] No Avatar",
+      "noAvatarDesc": "[HI] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[HI] Create Avatar",
+      "noCreditsTitle": "[HI] Out of Credits",
+      "noCreditsDesc": "[HI] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[HI] Play Greeting",
+      "refresh": "[HI] Refresh",
+      "meshUnavailable": "[HI] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[HI] Generate 3D Mesh",
+      "viewPreview": "[HI] View Preview",
+      "statusIdle": "[HI] Ready",
+      "statusGenerating": "[HI] Generating...",
+      "statusReady": "[HI] Complete",
+      "statusFailed": "[HI] Failed"
+    },
+    "movieCharacters": {
+      "title": "[HI] Characters",
+      "empty": "[HI] No characters available"
+    },
+    "trigger": {
+      "prompt": "[HI] Say the phrase",
+      "dismiss": "[HI] Dismiss",
+      "success": "[HI] Excellent!",
+      "continue": "[HI] Continue",
+      "incorrect": "[HI] Not quite",
+      "correct": "[HI] Correct answer",
+      "tryAgain": "[HI] Try Again",
+      "skip": "[HI] Skip",
+      "errors": {
+        "microphoneFailed": "[HI] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[HI] Transforming voice...",
+      "latency": "[HI] Latency",
+      "retry": "[HI] Retry",
+      "nextPhrase": "[HI] Next Phrase",
+      "beforeAfter": "[HI] Before / After",
+      "before": "[HI] Before",
+      "after": "[HI] After",
+      "improvement": "[HI] Improvement"
+    },
+    "avatar3d": {
+      "title": "[HI] 3D Avatar",
+      "errorTitle": "[HI] Avatar Error"
     }
   },
   "starStory": {
@@ -10099,5 +10325,20 @@
     "success_title": "पासवर्ड रीसेट हो गया!",
     "success_message": "आपका पासवर्ड सफलतापूर्वक रीसेट कर दिया गया है। अब आप अपने नए पासवर्ड से साइन इन कर सकते हैं।",
     "back_to_login": "लॉगिन पर वापस जाएं"
+  },
+  "voiceFallback": {
+    "title": "[HI] Voice Unavailable",
+    "subtitle": "[HI] Type your message instead",
+    "micUnavailable": "[HI] Microphone unavailable",
+    "inputPlaceholder": "[HI] Type a message...",
+    "send": "[HI] Send",
+    "suggestions": "[HI] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[HI] Voice Search Settings",
+      "language": "[HI] Recognition Language",
+      "sensitivity": "[HI] Sensitivity"
+    }
   }
 }

@@ -23,7 +23,8 @@ from app.services.heblish_service import convert_to_heblish_batch
 from app.services.grammar_flip_service import convert_to_grammar_flip_batch
 from app.services.slang_synthesis_service import convert_to_slang_synthesis_batch
 from app.services.engrew_service import convert_to_engrew_batch
-from app.services.subtitle_service import extract_words, format_time
+from app.services.subtitle_service import apply_subtitle_time_offset, extract_words, format_time
+from app.models.content import Content
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
 logger = get_logger(__name__)
@@ -61,24 +62,49 @@ async def get_subtitle_cues(
     track = tracks[0]
     cues = track.cues
 
-    # Filter by time range if specified
+    # Look up subtitle time offset for multi-part movies
+    content_doc = await Content.get(content_id)
+    time_offset = content_doc.subtitle_time_offset if content_doc else None
+
+    # Apply time offset (shifts cues for split movie files like LOTR Extended PT.2)
+    adjusted_cues = None
+    if time_offset and time_offset > 0:
+        adjusted_cues = apply_subtitle_time_offset(cues, time_offset)
+
+    # Filter by time range if specified (works on adjusted values when offset active)
     if start_time is not None or end_time is not None:
-        filtered_cues = []
-        for cue in cues:
-            if start_time is not None and cue.end_time < start_time:
-                continue
-            if end_time is not None and cue.start_time > end_time:
-                continue
-            filtered_cues.append(cue)
-        cues = filtered_cues
+        if adjusted_cues is not None:
+            filtered = []
+            for ac in adjusted_cues:
+                if start_time is not None and ac.end_time < start_time:
+                    continue
+                if end_time is not None and ac.start_time > end_time:
+                    continue
+                filtered.append(ac)
+            adjusted_cues = filtered
+        else:
+            filtered_cues = []
+            for cue in cues:
+                if start_time is not None and cue.end_time < start_time:
+                    continue
+                if end_time is not None and cue.start_time > end_time:
+                    continue
+                filtered_cues.append(cue)
+            cues = filtered_cues
 
     # Backward compatibility: with_nikud overrides hebrew_mode
     if with_nikud:
         hebrew_mode = "nikud"
 
+    # Build iterable of (cue_data, effective_start, effective_end, effective_index)
+    if adjusted_cues is not None:
+        cue_iter = [(ac.original, ac.start_time, ac.end_time, ac.index) for ac in adjusted_cues]
+    else:
+        cue_iter = [(cue, cue.start_time, cue.end_time, cue.index) for cue in cues]
+
     # Format cues for response
     result_cues = []
-    for cue in cues:
+    for cue, eff_start, eff_end, eff_index in cue_iter:
         # Determine text based on language and mode
         if language == "en":
             if english_mode == "heblish" and cue.text_heblish:
@@ -103,9 +129,9 @@ async def get_subtitle_cues(
 
         result_cues.append(
             {
-                "index": cue.index,
-                "start_time": cue.start_time,
-                "end_time": cue.end_time,
+                "index": eff_index,
+                "start_time": eff_start,
+                "end_time": eff_end,
                 "text": display_text,
                 "text_nikud": cue.text_nikud,
                 "text_shoresh": cue.text_shoresh,
@@ -113,8 +139,8 @@ async def get_subtitle_cues(
                 "text_grammar_flip": cue.text_grammar_flip,
                 "text_slang_synthesis": cue.text_slang_synthesis,
                 "text_engrew": cue.text_engrew,
-                "formatted_start": format_time(cue.start_time),
-                "formatted_end": format_time(cue.end_time),
+                "formatted_start": format_time(eff_start),
+                "formatted_end": format_time(eff_end),
                 "words": extract_words(display_text),
             }
         )

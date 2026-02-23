@@ -3713,7 +3713,9 @@
       "close": "Chiudi",
       "cached": "Memorizzato",
       "remaining": "Rimanente",
-      "window": "Finestra"
+      "window": "Finestra",
+      "loading": "[IT] Loading summary...",
+      "noContent": "[IT] No summary available"
     },
     "error": {
       "failed": "Impossibile generare il riepilogo",
@@ -4315,7 +4317,8 @@
     "new_password": "Nuova Password",
     "confirm_password": "Conferma Password",
     "confirm_password_placeholder": "Reinserisci la tua password",
-    "tryAgain": "Riprova"
+    "tryAgain": "Riprova",
+    "queued": "[IT] Queued"
   },
   "components": {
     "select": {
@@ -4369,7 +4372,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[IT] Untitled"
   },
   "cultureCities": {
     "connectionTo": "Connessione {{city}}",
@@ -4532,7 +4536,8 @@
     "play": "Riproduci offline",
     "deleteConfirm": "Rimuovi download",
     "size": "{{size}} MB",
-    "clearAll": "Cancella tutto"
+    "clearAll": "Cancella tutto",
+    "active": "[IT] Active Downloads"
   },
   "dubbing": {
     "title": "Doppiaggio live",
@@ -5754,7 +5759,8 @@
     "unknown": "Sconosciuto",
     "userIdPlaceholder": "Inserisci email o ID",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[IT] Create Household"
   },
   "jerusalem": {
     "title": "Connessione Gerusalemme",
@@ -5804,7 +5810,11 @@
       "shabbatSongs": "Canti dello Shabbat",
       "parashaStudy": "Parasha",
       "shabbatRecipes": "Ricette",
-      "prayers": "Preghiere"
+      "prayers": "Preghiere",
+      "candlesIn": "[IT] Candles in {{minutes}} minutes",
+      "songs": "[IT] Songs",
+      "parasha": "[IT] Parasha",
+      "recipes": "[IT] Recipes"
     },
     "calendar": "Calendario ebraico",
     "community": {
@@ -6028,7 +6038,8 @@
       "kids": "Bambini",
       "documentary": "Documentari"
     },
-    "loadingChannels": "Caricamento canali..."
+    "loadingChannels": "Caricamento canali...",
+    "channel": "[IT] Channel"
   },
   "location": {
     "consentModal": {
@@ -6127,7 +6138,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[IT] New to Bayit+?"
   },
   "nav": {
     "home": "Home",
@@ -6359,11 +6371,7 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
-      ]
+      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
     },
     "premium": {
       "name": "Premium",
@@ -6375,10 +6383,7 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": [
-        "Visione offline",
-        "Profili familiari"
-      ]
+      "notIncluded": ["Visione offline", "Profili familiari"]
     },
     "family": {
       "name": "Famiglia",
@@ -6562,7 +6567,39 @@
       "processing": "Elaborazione...",
       "askAnother": "Chiedi ancora",
       "resumeMovie": "Riprendi",
-      "selectCharacter": "Seleziona personaggio"
+      "selectCharacter": "Seleziona personaggio",
+      "stages": {
+        "polishing": "Sto perfezionando la tua domanda...",
+        "thinking": "Sto pensando alla tua domanda...",
+        "biff1": "A Biff non e piaciuta molto la tua domanda...",
+        "biff2": "Biff si sta specchiando...",
+        "biff3": "Biff sta cercando di scrivere la risposta...",
+        "biff4": "Biff ha appena dato dello stupido a qualcuno...",
+        "doc1": "Doc sta consultando il flusso canalizzatore...",
+        "doc2": "Grande Giove! Ancora in calcolo...",
+        "doc3": "Doc sta regolando 1,21 gigawatt...",
+        "doc4": "Doc sta controllando il continuum spazio-temporale...",
+        "marty1": "Marty sta accordando la chitarra prima...",
+        "marty2": "Questa e pesante...",
+        "marty3": "Marty sta controllando se esiste ancora...",
+        "marty4": "Marty dice che nessuno lo chiama fifone...",
+        "george1": "George sta raccogliendo il coraggio per rispondere...",
+        "george2": "George sta scrivendo la risposta nel suo quaderno...",
+        "george3": "George dice che la sua densita lo ha portato qui...",
+        "george4": "George finalmente ha fiducia...",
+        "lorraine1": "Lorraine si sta sistemando i capelli...",
+        "lorraine2": "Lorraine sta pensando all'Incanto Sotto il Mare...",
+        "lorraine3": "Lorraine dice che doveva essere cosi...",
+        "lorraine4": "Lorraine si sta preparando per il ballo...",
+        "jennifer1": "Jennifer sta aspettando in macchina...",
+        "jennifer2": "Jennifer si chiede del futuro...",
+        "jennifer3": "Jennifer dice che puo farcela...",
+        "jennifer4": "Jennifer sta avendo pazienza...",
+        "generic1": "{{name}} sta pensando...",
+        "generic2": "{{name}} sta preparando una risposta...",
+        "generic3": "Quasi pronto...",
+        "generic4": "Solo un momento ancora..."
+      }
     },
     "sleepTimer": {
       "title": "Timer di spegnimento",
@@ -6576,7 +6613,21 @@
       "timerExtended": "Timer esteso di {{minutes}} minuti",
       "timerCancelled": "Timer di spegnimento annullato"
     },
-    "startOver": "Ricomincia da capo"
+    "startOver": "Ricomincia da capo",
+    "dialogue": {
+      "voiceMode": "[IT] Voice Mode",
+      "holdToSpeak": "[IT] Hold to Speak"
+    },
+    "multiCharacter": {
+      "selectCharacter": "[IT] Select Character",
+      "talkingTo": "[IT] Talking to"
+    },
+    "shared": {
+      "participants": "[IT] Participants",
+      "yourTurn": "[IT] Your Turn",
+      "waitingForTurn": "[IT] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[IT] Failed to load stream"
   },
   "playlist": {
     "title": "La Mia Lista",
@@ -7588,18 +7639,7 @@
       "excludeKids": "Escludi contenuti per bambini",
       "allContent": "Tutti i contenuti"
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "movies": "Film",
-      "series": "Serie",
-      "liveTV": "TV in diretta",
-      "news": "Notizie",
-      "sports": "Sport",
-      "kids": "Bambini"
-    },
+    "suggestions": "[IT] Suggestions",
     "controls": {
       "placeholder": "Search for content...",
       "hints": {
@@ -7692,7 +7732,22 @@
       "titleAsc": "Titolo A-Z",
       "titleDesc": "Titolo Z-A",
       "popularity": "Più popolare"
-    }
+    },
+    "filter": {
+      "title": "[IT] Filter",
+      "reset": "[IT] Reset",
+      "language": "[IT] Language",
+      "accessibility": "[IT] Accessibility",
+      "subtitles": "[IT] Subtitles",
+      "dubbing": "[IT] Dubbing",
+      "yearRange": "[IT] Year Range",
+      "yearFrom": "[IT] From year",
+      "yearTo": "[IT] To year",
+      "duration": "[IT] Duration",
+      "apply": "[IT] Apply Filters"
+    },
+    "previousPage": "[IT] Previous Page",
+    "nextPage": "[IT] Next Page"
   },
   "security": {
     "changePassword": "Cambia password",
@@ -7735,16 +7790,65 @@
     "autoTranslateDescription": "Traduci automaticamente i messaggi nella tua lingua preferita",
     "notifications": "Notifiche",
     "pushNotifications": "Notifiche push",
-    "playback": "Riproduzione",
+    "playback": {
+      "title": "[IT] Playback",
+      "videoQuality": "[IT] Video Quality",
+      "autoplaySection": "[IT] Autoplay",
+      "autoplay": "[IT] Autoplay",
+      "autoplayNext": "[IT] Autoplay Next Episode",
+      "countdown": "[IT] Countdown before next episode",
+      "controls": "[IT] Controls",
+      "skipIntro": "[IT] Skip Intro",
+      "skipCredits": "[IT] Skip Credits",
+      "continueWatching": "[IT] Continue Watching",
+      "speed": "[IT] Playback Speed",
+      "liveTV": "[IT] Live TV",
+      "bufferSize": "[IT] Buffer Size"
+    },
     "quality": "Qualità",
     "subtitles": "Sottotitoli",
     "autoplay": "Riproduzione automatica",
     "appearance": "Aspetto",
     "darkMode": "Modalità scura",
-    "privacy": "Privacy",
+    "privacy": {
+      "clearWatchHistoryTitle": "[IT] Clear Watch History",
+      "clear": "[IT] Clear",
+      "clearWatchHistoryMessage": "[IT] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[IT] Clear Search History",
+      "clearSearchHistoryMessage": "[IT] This will permanently delete your search history.",
+      "title": "[IT] Privacy",
+      "description": "[IT] Control your data collection and privacy preferences",
+      "dataCollection": "[IT] Data Collection",
+      "analytics": "[IT] Usage Analytics",
+      "analyticsDesc": "[IT] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[IT] Crash Reports",
+      "crashReportsDesc": "[IT] Automatically send crash reports to help fix issues",
+      "personalization": "[IT] Personalization",
+      "personalizationDesc": "[IT] Allow Bayit+ to personalize your experience",
+      "history": "[IT] History",
+      "watchHistory": "[IT] Watch History",
+      "clearWatchHistory": "[IT] Clear Watch History",
+      "searchHistory": "[IT] Search History",
+      "clearSearchHistory": "[IT] Clear Search History"
+    },
     "privacyPolicy": "Informativa sulla Privacy",
     "termsOfService": "Termini di Servizio",
-    "about": "Informazioni",
+    "about": {
+      "title": "[IT] About",
+      "appInfo": "[IT] App Info",
+      "version": "[IT] Version",
+      "build": "[IT] Build",
+      "environment": "[IT] Environment",
+      "legal": "[IT] Legal",
+      "privacyPolicy": "[IT] Privacy Policy",
+      "termsOfService": "[IT] Terms of Service",
+      "cookiePolicy": "[IT] Cookie Policy",
+      "licenses": "[IT] Open Source Licenses",
+      "deviceInfo": "[IT] Device Info",
+      "model": "[IT] Model",
+      "osVersion": "[IT] OS Version",
+      "locale": "[IT] Locale"
+    },
     "display": "Schermo",
     "homePageSections": "Sezioni Home Page",
     "configureSections": "Configura quali sezioni appaiono nella tua home page",
@@ -7772,11 +7876,7 @@
       "title": "Rituale mattutino",
       "videos": "Video"
     },
-    "accessibility": {
-      "small": "Piccolo",
-      "medium": "Medio",
-      "large": "Grande"
-    },
+    "accessibility": "[IT] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "Account",
@@ -7824,13 +7924,7 @@
     "unlinkConfirm": "Scollega",
     "connected": "Connesso",
     "notConnected": "Non Connesso",
-    "help": {
-      "title": "Centro Assistenza",
-      "subtitle": "Trova risposte alle domande frequenti",
-      "loading": "Caricamento Assistenza...",
-      "noFaqs": "Nessuna domanda frequente disponibile",
-      "contactSupport": "Contatta il Supporto"
-    },
+    "help": "[IT] Help & Support",
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7861,7 +7955,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[IT] Audio",
+    "mediaSection": "[IT] Media",
+    "privacyData": "[IT] Privacy & Data",
+    "general": "[IT] General",
+    "children": "[IT] Children",
+    "loading": "[IT] Loading settings...",
+    "not_connected": "[IT] Not connected",
+    "privacySecurity": "[IT] Privacy & Security"
   },
   "shabbat": {
     "activate": "Attiva",
@@ -8449,14 +8551,15 @@
     "quiz": {
       "title": "Quiz di Trivia"
     },
-    "question": {
-      "counter": "Domanda {{current}} di {{total}}"
-    },
+    "question": "[IT] Question",
     "results": {
       "title": "Quiz Completato!",
       "playAgain": "Gioca Ancora",
       "shekelsEarned": "{{amount}} Shekels Guadagnati"
-    }
+    },
+    "explanation": "[IT] Explanation",
+    "submit": "[IT] Submit",
+    "tryAgain": "[IT] Try Again"
   },
   "tvLogin": {
     "invalidQR": "Codice QR non valido. Scansiona nuovamente dalla TV.",
@@ -8902,7 +9005,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[IT] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[IT] Microphone Permission",
+      "speechRecognition": "[IT] Speech Recognition",
+      "currentState": "[IT] Current State",
+      "transcript": "[IT] Transcript",
+      "title": "[IT] Voice Diagnostics",
+      "audioSession": "[IT] Audio Session",
+      "runDiagnostics": "[IT] Run Diagnostics",
+      "copyReport": "[IT] Copy Report"
+    },
+    "stopListening": "[IT] Stop Listening",
+    "startListening": "[IT] Start Listening",
+    "searchPrompt": "[IT] What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "Solo voce",
@@ -9357,7 +9476,11 @@
       "questionsSection": "Domande",
       "empty": "Nessun film interattivo disponibile al momento",
       "characterCount": "{{count}} personaggi",
-      "selectCharacter": "Seleziona un personaggio con cui interagire"
+      "selectCharacter": "Seleziona un personaggio con cui interagire",
+      "quotaLabel": "[IT] Interactions remaining",
+      "generationTitle": "[IT] Generating interaction...",
+      "selectedCount": "[IT] {{count}} selected",
+      "confirmButton": "[IT] Confirm"
     },
     "dialogue": {
       "specificQuestions": "Domande sul personaggio",
@@ -9377,7 +9500,110 @@
       "contacts": "Contatti",
       "contactsDesc": "Gestisci i contatti familiari per la condivisione",
       "feedback": "Feedback",
-      "feedbackDesc": "Messaggi da famiglia e amici"
+      "feedbackDesc": "Messaggi da famiglia e amici",
+      "title": "[IT] Me in the Story",
+      "consent": "[IT] Consent Required",
+      "consentDesc": "[IT] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[IT] Processing..."
+    },
+    "preview": {
+      "title": "[IT] 3D Preview",
+      "loading": "[IT] Loading your avatar...",
+      "error": "[IT] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[IT] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[IT] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[IT] PIN",
+        "pinPlaceholder": "[IT] Enter your PIN",
+        "consentTypes": "[IT] I consent to the following",
+        "meshGeneration": "[IT] 3D Mesh Generation",
+        "voiceV2V": "[IT] Voice-to-Voice Practice",
+        "latentFeatures": "[IT] AI Feature Personalization",
+        "currentStatus": "[IT] Current Consent Status",
+        "submit": "[IT] Grant Consent",
+        "title": "[IT] Biometric Consent",
+        "familyControlsRequired": "[IT] Family Controls Required",
+        "familyControlsExplain": "[IT] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[IT] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[IT] My Contacts",
+      "add": "[IT] Add Contact",
+      "empty": "[IT] No contacts yet",
+      "delete": "[IT] Delete Contact",
+      "name": "[IT] Display Name",
+      "phone": "[IT] Phone Number",
+      "pin": "[IT] PIN"
+    },
+    "feedback": {
+      "title": "[IT] Feedback",
+      "empty": "[IT] No feedback yet",
+      "from": "[IT] From",
+      "voiceMessage": "[IT] Voice Message",
+      "textMessage": "[IT] Text Message"
+    },
+    "highlights": {
+      "title": "[IT] Highlights",
+      "generate": "[IT] Generate Highlight Reel",
+      "empty": "[IT] No highlights yet",
+      "share": "[IT] Share",
+      "sendToFamily": "[IT] Send to Family",
+      "generating": "[IT] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[IT] Word of the Day",
+      "noAvatar": "[IT] No Avatar",
+      "noAvatarDesc": "[IT] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[IT] Create Avatar",
+      "noCreditsTitle": "[IT] Out of Credits",
+      "noCreditsDesc": "[IT] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[IT] Play Greeting",
+      "refresh": "[IT] Refresh",
+      "meshUnavailable": "[IT] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[IT] Generate 3D Mesh",
+      "viewPreview": "[IT] View Preview",
+      "statusIdle": "[IT] Ready",
+      "statusGenerating": "[IT] Generating...",
+      "statusReady": "[IT] Complete",
+      "statusFailed": "[IT] Failed"
+    },
+    "movieCharacters": {
+      "title": "[IT] Characters",
+      "empty": "[IT] No characters available"
+    },
+    "trigger": {
+      "prompt": "[IT] Say the phrase",
+      "dismiss": "[IT] Dismiss",
+      "success": "[IT] Excellent!",
+      "continue": "[IT] Continue",
+      "incorrect": "[IT] Not quite",
+      "correct": "[IT] Correct answer",
+      "tryAgain": "[IT] Try Again",
+      "skip": "[IT] Skip",
+      "errors": {
+        "microphoneFailed": "[IT] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[IT] Transforming voice...",
+      "latency": "[IT] Latency",
+      "retry": "[IT] Retry",
+      "nextPhrase": "[IT] Next Phrase",
+      "beforeAfter": "[IT] Before / After",
+      "before": "[IT] Before",
+      "after": "[IT] After",
+      "improvement": "[IT] Improvement"
+    },
+    "avatar3d": {
+      "title": "[IT] 3D Avatar",
+      "errorTitle": "[IT] Avatar Error"
     }
   },
   "starStory": {
@@ -10340,5 +10566,20 @@
     "success_title": "Password Reimpostata!",
     "success_message": "La tua password è stata reimpostata con successo. Ora puoi accedere con la tua nuova password.",
     "back_to_login": "Torna al Login"
+  },
+  "voiceFallback": {
+    "title": "[IT] Voice Unavailable",
+    "subtitle": "[IT] Type your message instead",
+    "micUnavailable": "[IT] Microphone unavailable",
+    "inputPlaceholder": "[IT] Type a message...",
+    "send": "[IT] Send",
+    "suggestions": "[IT] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[IT] Voice Search Settings",
+      "language": "[IT] Recognition Language",
+      "sensitivity": "[IT] Sensitivity"
+    }
   }
 }

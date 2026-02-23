@@ -57,18 +57,32 @@
                 repository: repositories.avatarMeshRepository
             )
             await vm.loadMoments(contentId: contentId)
-            guard !vm.moments.isEmpty else {
-                logger.info("No interactive moments for content")
+
+            // 4. Check for interactive characters (enables Pause & Ask)
+            let characters = try? await repositories.avatarMeshRepository
+                .fetchInteractiveCharacters(contentId: contentId)
+            let charactersAvailable = !(characters ?? []).isEmpty
+
+            guard !vm.moments.isEmpty || charactersAvailable else {
+                logger.info(
+                    "No interactive moments or characters for content"
+                )
                 return
             }
-            interactionVM = vm
+
+            if !vm.moments.isEmpty {
+                interactionVM = vm
+            }
+            hasInteractiveCharacters = charactersAvailable
+
             voiceService = VoiceInteractionService(
                 webSocketManager: repositories.webSocketManager,
                 configuration: repositories.configuration,
                 authTokenProvider: repositories.authTokenProvider
             )
             logger.info(
-                "Interactive moments enabled: \(vm.moments.count) moments"
+                "Interactions enabled: \(vm.moments.count) moments, "
+                    + "characters=\(charactersAvailable)"
             )
         }
 

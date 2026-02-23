@@ -23,6 +23,9 @@ final class TriviaFactsViewModel {
     /// IDs of facts already shown this session (prevents duplicates).
     private var shownFactIds: Set<String> = []
 
+    /// Content ID for the currently loaded trivia set (prevents redundant resets).
+    private var loadedContentId: String?
+
     /// Last playback time a random fact was shown (for interval gating).
     private var lastRandomFactTime: Double = -.infinity
 
@@ -39,6 +42,14 @@ final class TriviaFactsViewModel {
 
     @MainActor
     func loadFacts(contentId: String, language: String?) async {
+        // Skip redundant loads for the same content to preserve shown-fact tracking.
+        if loadedContentId == contentId, !facts.isEmpty {
+            logger.info("Trivia facts already loaded, skipping reload", context: [
+                "contentId": contentId,
+            ])
+            return
+        }
+
         isLoading = true
         error = nil
 
@@ -52,6 +63,7 @@ final class TriviaFactsViewModel {
             facts = response.facts
             shownFactIds = []
             lastRandomFactTime = -.infinity
+            loadedContentId = contentId
 
             await offlineCache.save(response, forKey: cacheKey)
 
@@ -64,6 +76,7 @@ final class TriviaFactsViewModel {
                 facts = cached.facts
                 shownFactIds = []
                 lastRandomFactTime = -.infinity
+                loadedContentId = contentId
                 logger.info("Using cached trivia facts", context: ["contentId": contentId])
             } else {
                 if let message = error.userFriendlyMessage {
@@ -134,6 +147,7 @@ final class TriviaFactsViewModel {
         autoDismissTask?.cancel()
         activeFact = nil
         shownFactIds = []
+        loadedContentId = nil
     }
 
     // MARK: - Fact Selection Helpers

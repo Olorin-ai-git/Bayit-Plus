@@ -104,6 +104,12 @@ struct SessionStatusPayload: Codable {
     let exchangesCount: Int
 }
 
+// MARK: - Audio Transcription
+
+struct TranscriptionResponse: Codable, Sendable {
+    let transcript: String
+}
+
 // MARK: - Free-Form Dialogue
 
 struct ContentCharacter: Codable, Identifiable {

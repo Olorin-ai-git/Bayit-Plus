@@ -110,14 +110,24 @@ data class PauseAskRequest(
 )
 
 /**
- * Response from the pause-ask endpoint containing the character's reply text
- * and video URLs for both the user's avatar lip-sync and character's response.
+ * Response from the pause-ask endpoint containing polished text, video URLs
+ * for both the user's avatar lip-sync and character's animated response,
+ * plus audio URLs and durations.
+ *
+ * Field names match backend [PauseAskResponseModel] in
+ * `backend/app/api/routes/vod_interaction_pause_ask.py`.
  */
 @Serializable
 data class PauseAskResponse(
-    @SerialName("response_text") val responseText: String,
-    @SerialName("user_lipsync_video_url") val userLipsyncVideoUrl: String? = null,
-    @SerialName("character_response_video_url") val characterResponseVideoUrl: String? = null,
+    @SerialName("user_polished_text") val userPolishedText: String,
+    @SerialName("user_audio_url") val userAudioUrl: String = "",
+    @SerialName("user_animated_video_url") val userAnimatedVideoUrl: String = "",
+    @SerialName("user_video_duration") val userVideoDuration: Double = 0.0,
+    @SerialName("character_name") val characterName: String,
+    @SerialName("character_response_text") val characterResponseText: String,
+    @SerialName("character_audio_url") val characterAudioUrl: String = "",
+    @SerialName("character_animated_video_url") val characterAnimatedVideoUrl: String = "",
+    @SerialName("character_video_duration") val characterVideoDuration: Double = 0.0,
 )
 
 internal const val SPEAKER_USER = "user"

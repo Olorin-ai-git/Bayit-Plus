@@ -138,9 +138,11 @@ extension TVPlayerView {
             }
         }
 
-        state.triviaVM = TriviaFactsViewModel(
-            repository: repos.trivia, offlineCache: repos.offlineCache
-        )
+        if state.triviaVM == nil {
+            state.triviaVM = TriviaFactsViewModel(
+                repository: repos.trivia, offlineCache: repos.offlineCache
+            )
+        }
 
         if !isLive {
             Task {
@@ -187,6 +189,7 @@ extension TVPlayerView {
         mediaPlayer.pause()
         state.liveDubbingVM?.cleanup()
         state.liveSubtitlesVM?.cleanup()
+        state.triviaVM?.cleanup()
         state.triviaVM?.disconnectLiveTrivia()
         state.catchUpVM?.reset()
         state.catchUpVM = nil

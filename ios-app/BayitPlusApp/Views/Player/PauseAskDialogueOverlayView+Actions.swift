@@ -35,6 +35,38 @@
             phase = .input
         }
 
+        func transcribeAndSend(audioData: Data) {
+            phase = .polishing
+
+            Task {
+                guard let sessionId = viewModel.sessionId else {
+                    logger.error("No session ID for transcription")
+                    phase = .input
+                    return
+                }
+
+                do {
+                    let result = try await viewModel.repository
+                        .transcribeAudio(
+                            sessionId: sessionId,
+                            audioData: audioData
+                        )
+                    guard !result.transcript.isEmpty else {
+                        logger.info("Transcription returned empty text")
+                        phase = .input
+                        return
+                    }
+                    messageText = result.transcript
+                    sendQuestion()
+                } catch {
+                    logger.error(
+                        "Transcription failed: \(error.localizedDescription)"
+                    )
+                    phase = .input
+                }
+            }
+        }
+
         func sendQuestion() {
             let text = messageText
             messageText = ""

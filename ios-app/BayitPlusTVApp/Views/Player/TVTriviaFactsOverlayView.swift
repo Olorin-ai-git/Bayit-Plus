@@ -46,9 +46,6 @@ struct TVTriviaFactsOverlayView: View {
         .animation(.spring(duration: 0.5, bounce: 0.12), value: viewModel.activeFact?.id)
         .focusable(false)
         .allowsHitTesting(viewModel.activeFact != nil)
-        .onChange(of: currentTime) { _, newTime in
-            viewModel.updateActiveFact(currentTime: newTime)
-        }
         .onChange(of: viewModel.activeFact?.id) { _, newFactId in
             if newFactId != nil {
                 startProgressAnimation()
@@ -57,11 +54,7 @@ struct TVTriviaFactsOverlayView: View {
                 progressValue = 0
             }
         }
-        .task {
-            await viewModel.loadFacts(contentId: contentId, language: currentLanguage)
-        }
         .onDisappear {
-            viewModel.cleanup()
             progressTask?.cancel()
         }
     }

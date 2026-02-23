@@ -3506,7 +3506,9 @@
       "close": "Cerrar",
       "cached": "En caché",
       "remaining": "Restante",
-      "window": "Ventana"
+      "window": "Ventana",
+      "loading": "[ES] Loading summary...",
+      "noContent": "[ES] No summary available"
     },
     "error": {
       "failed": "No se pudo generar el resumen",
@@ -4143,7 +4145,8 @@
     "new_password": "Nueva Contraseña",
     "confirm_password": "Confirmar Contraseña",
     "confirm_password_placeholder": "Vuelve a ingresar tu contraseña",
-    "tryAgain": "Intentar de nuevo"
+    "tryAgain": "Intentar de nuevo",
+    "queued": "[ES] Queued"
   },
   "components": {
     "select": {
@@ -4199,7 +4202,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[ES] Untitled"
   },
   "cultureCities": {
     "connectionTo": "Conexion con {{city}}",
@@ -4351,7 +4355,8 @@
     "play": "Reproducir sin conexion",
     "deleteConfirm": "Eliminar descarga",
     "size": "{{size}} MB",
-    "clearAll": "Borrar todo"
+    "clearAll": "Borrar todo",
+    "active": "[ES] Active Downloads"
   },
   "dubbing": {
     "title": "Doblaje en Directo",
@@ -5577,7 +5582,8 @@
     "unknown": "Desconocido",
     "userIdPlaceholder": "Ingresa email o ID",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[ES] Create Household"
   },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
@@ -5627,7 +5633,11 @@
       "shabbatSongs": "Canciones de Shabat",
       "parashaStudy": "Parashá",
       "shabbatRecipes": "Recetas",
-      "prayers": "Oraciones"
+      "prayers": "Oraciones",
+      "candlesIn": "[ES] Candles in {{minutes}} minutes",
+      "songs": "[ES] Songs",
+      "parasha": "[ES] Parasha",
+      "recipes": "[ES] Recipes"
     },
     "calendar": "Calendario judío",
     "community": {
@@ -5854,7 +5864,8 @@
       "kids": "Niños",
       "documentary": "Documental"
     },
-    "loadingChannels": "Cargando canales..."
+    "loadingChannels": "Cargando canales...",
+    "channel": "[ES] Channel"
   },
   "location": {
     "consentModal": {
@@ -5954,7 +5965,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[ES] New to Bayit+?"
   },
   "nav": {
     "home": "Inicio",
@@ -6186,11 +6198,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -6202,10 +6210,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -6396,7 +6401,9 @@
       "sending": "Enviando...",
       "characterSpeaking": "El personaje esta hablando...",
       "endDialogue": "Terminar dialogo",
-      "noCharactersAvailable": "No hay personajes disponibles para dialogo"
+      "noCharactersAvailable": "No hay personajes disponibles para dialogo",
+      "voiceMode": "[ES] Voice Mode",
+      "holdToSpeak": "[ES] Hold to Speak"
     },
     "interaction": {
       "previous": "Interaccion anterior",
@@ -6407,7 +6414,39 @@
       "processing": "Procesando...",
       "askAnother": "Preguntar otra vez",
       "resumeMovie": "Continuar",
-      "selectCharacter": "Seleccionar personaje"
+      "selectCharacter": "Seleccionar personaje",
+      "stages": {
+        "polishing": "Puliendo tu pregunta...",
+        "thinking": "Pensando en tu pregunta...",
+        "biff1": "A Biff no le gusto mucho tu pregunta...",
+        "biff2": "Biff esta flexionando frente al espejo...",
+        "biff3": "Biff esta intentando deletrear su respuesta...",
+        "biff4": "Biff acaba de llamar a alguien cabeza hueca...",
+        "doc1": "Doc esta consultando el condensador de flujo...",
+        "doc2": "Santo cielo! Aun calculando...",
+        "doc3": "Doc esta ajustando 1.21 gigavatios...",
+        "doc4": "Doc esta verificando el continuo espacio-tiempo...",
+        "marty1": "Marty esta afinando su guitarra primero...",
+        "marty2": "Esto es pesado...",
+        "marty3": "Marty esta verificando si aun existe...",
+        "marty4": "Marty dice que nadie lo llama gallina...",
+        "george1": "George esta reuniendo valor para responder...",
+        "george2": "George esta escribiendo su respuesta en su cuaderno...",
+        "george3": "George dice que su densidad lo trajo aqui...",
+        "george4": "George finalmente tiene confianza...",
+        "lorraine1": "Lorraine se esta arreglando el pelo primero...",
+        "lorraine2": "Lorraine esta pensando en el Encanto Bajo el Mar...",
+        "lorraine3": "Lorraine dice que estaba destinado a ser...",
+        "lorraine4": "Lorraine se esta preparando para el baile...",
+        "jennifer1": "Jennifer esta esperando en el auto...",
+        "jennifer2": "Jennifer se pregunta sobre el futuro...",
+        "jennifer3": "Jennifer dice que puede manejarlo...",
+        "jennifer4": "Jennifer esta siendo paciente...",
+        "generic1": "{{name}} esta pensando...",
+        "generic2": "{{name}} esta elaborando una respuesta...",
+        "generic3": "Casi listo...",
+        "generic4": "Solo un momento mas..."
+      }
     },
     "premiumRequiredRecording": "Se requiere suscripcion premium",
     "sleepTimer": {
@@ -6422,7 +6461,17 @@
       "timerExtended": "Temporizador extendido {{minutes}} minutos",
       "timerCancelled": "Temporizador de sueño cancelado"
     },
-    "startOver": "Empezar de nuevo"
+    "startOver": "Empezar de nuevo",
+    "multiCharacter": {
+      "selectCharacter": "[ES] Select Character",
+      "talkingTo": "[ES] Talking to"
+    },
+    "shared": {
+      "participants": "[ES] Participants",
+      "yourTurn": "[ES] Your Turn",
+      "waitingForTurn": "[ES] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[ES] Failed to load stream"
   },
   "playlist": {
     "title": "Mi Lista",
@@ -7446,18 +7495,7 @@
       "excludeKids": "Excluir contenido infantil",
       "allContent": "Todo el contenido"
     },
-    "suggestions": {
-      "trendingTitle": "Búsquedas Populares",
-      "categoriesTitle": "Explorar Categorías",
-      "recentTitle": "Búsquedas Recientes",
-      "clearRecent": "Borrar",
-      "movies": "Películas",
-      "series": "Series",
-      "liveTV": "TV en Vivo",
-      "news": "Noticias",
-      "sports": "Deportes",
-      "kids": "Niños"
-    },
+    "suggestions": "[ES] Suggestions",
     "controls": {
       "placeholder": "Buscar contenido...",
       "hints": {
@@ -7550,7 +7588,22 @@
       "titleAsc": "Título A-Z",
       "titleDesc": "Título Z-A",
       "popularity": "Más popular"
-    }
+    },
+    "filter": {
+      "title": "[ES] Filter",
+      "reset": "[ES] Reset",
+      "language": "[ES] Language",
+      "accessibility": "[ES] Accessibility",
+      "subtitles": "[ES] Subtitles",
+      "dubbing": "[ES] Dubbing",
+      "yearRange": "[ES] Year Range",
+      "yearFrom": "[ES] From year",
+      "yearTo": "[ES] To year",
+      "duration": "[ES] Duration",
+      "apply": "[ES] Apply Filters"
+    },
+    "previousPage": "[ES] Previous Page",
+    "nextPage": "[ES] Next Page"
   },
   "security": {
     "changePassword": "Cambiar contraseña",
@@ -7588,16 +7641,65 @@
       "ja": "日本語"
     },
     "notifications": "Notificaciones",
-    "playback": "Reproducción",
+    "playback": {
+      "title": "[ES] Playback",
+      "videoQuality": "[ES] Video Quality",
+      "autoplaySection": "[ES] Autoplay",
+      "autoplay": "[ES] Autoplay",
+      "autoplayNext": "[ES] Autoplay Next Episode",
+      "countdown": "[ES] Countdown before next episode",
+      "controls": "[ES] Controls",
+      "skipIntro": "[ES] Skip Intro",
+      "skipCredits": "[ES] Skip Credits",
+      "continueWatching": "[ES] Continue Watching",
+      "speed": "[ES] Playback Speed",
+      "liveTV": "[ES] Live TV",
+      "bufferSize": "[ES] Buffer Size"
+    },
     "quality": "Calidad",
     "subtitles": "Subtítulos",
     "autoplay": "Reproducción Automática",
-    "about": "Acerca de",
+    "about": {
+      "title": "[ES] About",
+      "appInfo": "[ES] App Info",
+      "version": "[ES] Version",
+      "build": "[ES] Build",
+      "environment": "[ES] Environment",
+      "legal": "[ES] Legal",
+      "privacyPolicy": "[ES] Privacy Policy",
+      "termsOfService": "[ES] Terms of Service",
+      "cookiePolicy": "[ES] Cookie Policy",
+      "licenses": "[ES] Open Source Licenses",
+      "deviceInfo": "[ES] Device Info",
+      "model": "[ES] Model",
+      "osVersion": "[ES] OS Version",
+      "locale": "[ES] Locale"
+    },
     "appLanguage": "Idioma de la Aplicación",
     "pushNotifications": "Notificaciones Push",
     "appearance": "Apariencia",
     "darkMode": "Modo Oscuro",
-    "privacy": "Privacidad",
+    "privacy": {
+      "clearWatchHistoryTitle": "[ES] Clear Watch History",
+      "clear": "[ES] Clear",
+      "clearWatchHistoryMessage": "[ES] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[ES] Clear Search History",
+      "clearSearchHistoryMessage": "[ES] This will permanently delete your search history.",
+      "title": "[ES] Privacy",
+      "description": "[ES] Control your data collection and privacy preferences",
+      "dataCollection": "[ES] Data Collection",
+      "analytics": "[ES] Usage Analytics",
+      "analyticsDesc": "[ES] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[ES] Crash Reports",
+      "crashReportsDesc": "[ES] Automatically send crash reports to help fix issues",
+      "personalization": "[ES] Personalization",
+      "personalizationDesc": "[ES] Allow Bayit+ to personalize your experience",
+      "history": "[ES] History",
+      "watchHistory": "[ES] Watch History",
+      "clearWatchHistory": "[ES] Clear Watch History",
+      "searchHistory": "[ES] Search History",
+      "clearSearchHistory": "[ES] Clear Search History"
+    },
     "privacyPolicy": "Política de Privacidad",
     "termsOfService": "Términos de Servicio",
     "display": "Pantalla",
@@ -7633,11 +7735,7 @@
       "title": "Título",
       "videos": "Videos"
     },
-    "accessibility": {
-      "small": "Pequeño",
-      "medium": "Mediano",
-      "large": "Grande"
-    },
+    "accessibility": "[ES] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "Cuenta",
@@ -7690,13 +7788,7 @@
     "unlinkConfirm": "Desvincular",
     "connected": "Conectado",
     "notConnected": "No Conectado",
-    "help": {
-      "title": "Centro de Ayuda",
-      "subtitle": "Encuentra respuestas a preguntas frecuentes",
-      "loading": "Cargando Ayuda...",
-      "noFaqs": "No hay preguntas frecuentes disponibles",
-      "contactSupport": "Contactar Soporte"
-    },
+    "help": "[ES] Help & Support",
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7722,7 +7814,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[ES] Audio",
+    "mediaSection": "[ES] Media",
+    "privacyData": "[ES] Privacy & Data",
+    "general": "[ES] General",
+    "children": "[ES] Children",
+    "loading": "[ES] Loading settings...",
+    "not_connected": "[ES] Not connected",
+    "privacySecurity": "[ES] Privacy & Security"
   },
   "shabbat": {
     "activate": "Activar",
@@ -8316,14 +8416,15 @@
     "quiz": {
       "title": "Cuestionario de Trivia"
     },
-    "question": {
-      "counter": "Pregunta {{current}} de {{total}}"
-    },
+    "question": "[ES] Question",
     "results": {
       "title": "Cuestionario Completado!",
       "playAgain": "Jugar de Nuevo",
       "shekelsEarned": "{{amount}} Shekels Ganados"
-    }
+    },
+    "explanation": "[ES] Explanation",
+    "submit": "[ES] Submit",
+    "tryAgain": "[ES] Try Again"
   },
   "tvLogin": {
     "invalidQR": "Código QR inválido. Escanea de nuevo desde tu TV.",
@@ -8773,7 +8874,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[ES] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[ES] Microphone Permission",
+      "speechRecognition": "[ES] Speech Recognition",
+      "currentState": "[ES] Current State",
+      "transcript": "[ES] Transcript",
+      "title": "[ES] Voice Diagnostics",
+      "audioSession": "[ES] Audio Session",
+      "runDiagnostics": "[ES] Run Diagnostics",
+      "copyReport": "[ES] Copy Report"
+    },
+    "stopListening": "[ES] Stop Listening",
+    "startListening": "[ES] Start Listening",
+    "searchPrompt": "[ES] What are you looking for?"
   },
   "voiceMode": {
     "title": "Modo de Voz",
@@ -9233,7 +9350,11 @@
       "questionsSection": "Preguntas",
       "empty": "No hay peliculas interactivas disponibles aun",
       "characterCount": "{{count}} personajes",
-      "selectCharacter": "Selecciona un personaje para interactuar"
+      "selectCharacter": "Selecciona un personaje para interactuar",
+      "quotaLabel": "[ES] Interactions remaining",
+      "generationTitle": "[ES] Generating interaction...",
+      "selectedCount": "[ES] {{count}} selected",
+      "confirmButton": "[ES] Confirm"
     },
     "dialogue": {
       "specificQuestions": "Preguntas del personaje",
@@ -9253,7 +9374,110 @@
       "contacts": "Contactos",
       "contactsDesc": "Gestiona contactos familiares para compartir",
       "feedback": "Comentarios",
-      "feedbackDesc": "Mensajes de familia y amigos"
+      "feedbackDesc": "Mensajes de familia y amigos",
+      "title": "[ES] Me in the Story",
+      "consent": "[ES] Consent Required",
+      "consentDesc": "[ES] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[ES] Processing..."
+    },
+    "preview": {
+      "title": "[ES] 3D Preview",
+      "loading": "[ES] Loading your avatar...",
+      "error": "[ES] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[ES] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[ES] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[ES] PIN",
+        "pinPlaceholder": "[ES] Enter your PIN",
+        "consentTypes": "[ES] I consent to the following",
+        "meshGeneration": "[ES] 3D Mesh Generation",
+        "voiceV2V": "[ES] Voice-to-Voice Practice",
+        "latentFeatures": "[ES] AI Feature Personalization",
+        "currentStatus": "[ES] Current Consent Status",
+        "submit": "[ES] Grant Consent",
+        "title": "[ES] Biometric Consent",
+        "familyControlsRequired": "[ES] Family Controls Required",
+        "familyControlsExplain": "[ES] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[ES] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[ES] My Contacts",
+      "add": "[ES] Add Contact",
+      "empty": "[ES] No contacts yet",
+      "delete": "[ES] Delete Contact",
+      "name": "[ES] Display Name",
+      "phone": "[ES] Phone Number",
+      "pin": "[ES] PIN"
+    },
+    "feedback": {
+      "title": "[ES] Feedback",
+      "empty": "[ES] No feedback yet",
+      "from": "[ES] From",
+      "voiceMessage": "[ES] Voice Message",
+      "textMessage": "[ES] Text Message"
+    },
+    "highlights": {
+      "title": "[ES] Highlights",
+      "generate": "[ES] Generate Highlight Reel",
+      "empty": "[ES] No highlights yet",
+      "share": "[ES] Share",
+      "sendToFamily": "[ES] Send to Family",
+      "generating": "[ES] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[ES] Word of the Day",
+      "noAvatar": "[ES] No Avatar",
+      "noAvatarDesc": "[ES] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[ES] Create Avatar",
+      "noCreditsTitle": "[ES] Out of Credits",
+      "noCreditsDesc": "[ES] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[ES] Play Greeting",
+      "refresh": "[ES] Refresh",
+      "meshUnavailable": "[ES] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[ES] Generate 3D Mesh",
+      "viewPreview": "[ES] View Preview",
+      "statusIdle": "[ES] Ready",
+      "statusGenerating": "[ES] Generating...",
+      "statusReady": "[ES] Complete",
+      "statusFailed": "[ES] Failed"
+    },
+    "movieCharacters": {
+      "title": "[ES] Characters",
+      "empty": "[ES] No characters available"
+    },
+    "trigger": {
+      "prompt": "[ES] Say the phrase",
+      "dismiss": "[ES] Dismiss",
+      "success": "[ES] Excellent!",
+      "continue": "[ES] Continue",
+      "incorrect": "[ES] Not quite",
+      "correct": "[ES] Correct answer",
+      "tryAgain": "[ES] Try Again",
+      "skip": "[ES] Skip",
+      "errors": {
+        "microphoneFailed": "[ES] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[ES] Transforming voice...",
+      "latency": "[ES] Latency",
+      "retry": "[ES] Retry",
+      "nextPhrase": "[ES] Next Phrase",
+      "beforeAfter": "[ES] Before / After",
+      "before": "[ES] Before",
+      "after": "[ES] After",
+      "improvement": "[ES] Improvement"
+    },
+    "avatar3d": {
+      "title": "[ES] 3D Avatar",
+      "errorTitle": "[ES] Avatar Error"
     }
   },
   "starStory": {
@@ -10197,5 +10421,20 @@
     "success_title": "¡Contraseña Restablecida!",
     "success_message": "Tu contraseña se ha restablecido exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
     "back_to_login": "Volver al Inicio de Sesión"
+  },
+  "voiceFallback": {
+    "title": "[ES] Voice Unavailable",
+    "subtitle": "[ES] Type your message instead",
+    "micUnavailable": "[ES] Microphone unavailable",
+    "inputPlaceholder": "[ES] Type a message...",
+    "send": "[ES] Send",
+    "suggestions": "[ES] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[ES] Voice Search Settings",
+      "language": "[ES] Recognition Language",
+      "sensitivity": "[ES] Sensitivity"
+    }
   }
 }

@@ -35,6 +35,8 @@
         @State var characterEndObserver: NSObjectProtocol?
         @State var userStatusObserver: NSKeyValueObservation?
         @State var characterStatusObserver: NSKeyValueObservation?
+        @State var polishingStageIndex = 0
+        @State var polishingTimer: Timer?
 
         let circleSize: CGFloat = 120
         let transitionDelay: TimeInterval = 0.5
@@ -64,7 +66,7 @@
             case .input:
                 inputPanel
             case .polishing:
-                progressView(localization.t("player.pauseAsk.processing"))
+                polishingProgressView
             case .userSpeaking:
                 videoPlaybackView(isUserPhase: true)
             case .transition:

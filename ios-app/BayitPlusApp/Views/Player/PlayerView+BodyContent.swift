@@ -163,6 +163,7 @@ extension PlayerView {
         playbackUpdateTask?.cancel()
         subtitleLoadTask?.cancel()
         recordingTimer?.cancel()
+        triviaVM?.cleanup()
         triviaVM?.disconnectLiveTrivia()
         liveSubtitlesVM?.cleanup()
         catchUpVM?.reset()

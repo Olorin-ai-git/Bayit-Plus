@@ -254,6 +254,50 @@ def format_time(seconds: float) -> str:
     return f"{minutes}:{secs:02d}"
 
 
+@dataclass
+class AdjustedCue:
+    """A subtitle cue with time-shifted values for multi-part movie offset."""
+
+    original: Any  # SubtitleCue or SubtitleCueModel (both have start_time/end_time)
+    start_time: float
+    end_time: float
+    index: int
+
+
+def apply_subtitle_time_offset(
+    cues: list, offset: float
+) -> List[AdjustedCue]:
+    """
+    Apply a time offset to subtitle cues for multi-part movies.
+
+    When a full-movie subtitle file is used with a split video file
+    (e.g. LOTR Extended PT.2), this shifts cue times so they align
+    with the video starting at 0:00.
+
+    Args:
+        cues: Original subtitle cues from the full-movie track
+        offset: Seconds to subtract (duration of preceding parts)
+
+    Returns:
+        List of AdjustedCue with shifted times, re-indexed from 1
+    """
+    adjusted = []
+    new_index = 0
+    for cue in cues:
+        if cue.end_time <= offset:
+            continue
+        new_index += 1
+        adjusted.append(
+            AdjustedCue(
+                original=cue,
+                start_time=max(0.0, cue.start_time - offset),
+                end_time=cue.end_time - offset,
+                index=new_index,
+            )
+        )
+    return adjusted
+
+
 def cues_to_dict(cues: List[SubtitleCue]) -> List[Dict[str, Any]]:
     """Convert cues to dictionary format for API response"""
     return [

@@ -3470,7 +3470,9 @@
       "close": "বন্ধ করুন",
       "cached": "ক্যাশড",
       "remaining": "বাকি",
-      "window": "উইন্ডো"
+      "window": "উইন্ডো",
+      "loading": "[BN] Loading summary...",
+      "noContent": "[BN] No summary available"
     },
     "error": {
       "failed": "সারসংক্ষেপ তৈরি করা যায়নি",
@@ -4064,7 +4066,8 @@
     "new_password": "নতুন পাসওয়ার্ড",
     "confirm_password": "পাসওয়ার্ড নিশ্চিত করুন",
     "confirm_password_placeholder": "আপনার পাসওয়ার্ড পুনরায় লিখুন",
-    "tryAgain": "আবার চেষ্টা করুন"
+    "tryAgain": "আবার চেষ্টা করুন",
+    "queued": "[BN] Queued"
   },
   "components": {
     "select": {
@@ -4118,7 +4121,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[BN] Untitled"
   },
   "cultureCities": {
     "connectionTo": "{{city}} সংযোগ",
@@ -4270,7 +4274,8 @@
     "play": "অফলাইনে চালান",
     "deleteConfirm": "ডাউনলোড সরান",
     "size": "{{size}} MB",
-    "clearAll": "সব মুছুন"
+    "clearAll": "সব মুছুন",
+    "active": "[BN] Active Downloads"
   },
   "dubbing": {
     "title": "লাইভ ডাবিং",
@@ -5492,7 +5497,8 @@
     "unknown": "অজানা",
     "userIdPlaceholder": "ব্যবহারকারীর ইমেল বা ID লিখুন",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[BN] Create Household"
   },
   "jerusalem": {
     "title": "জেরুজালেম সংযোগ",
@@ -5542,7 +5548,11 @@
       "shabbatSongs": "শাব্বাত গান",
       "parashaStudy": "পরশা",
       "shabbatRecipes": "রেসিপি",
-      "prayers": "প্রার্থনা"
+      "prayers": "প্রার্থনা",
+      "candlesIn": "[BN] Candles in {{minutes}} minutes",
+      "songs": "[BN] Songs",
+      "parasha": "[BN] Parasha",
+      "recipes": "[BN] Recipes"
     },
     "calendar": "ইহুদি ক্যালেন্ডার",
     "community": {
@@ -5766,7 +5776,8 @@
       "kids": "শিশু",
       "documentary": "ডকুমেন্টারি"
     },
-    "loadingChannels": "চ্যানেল লোড হচ্ছে..."
+    "loadingChannels": "চ্যানেল লোড হচ্ছে...",
+    "channel": "[BN] Channel"
   },
   "location": {
     "consentModal": {
@@ -5865,7 +5876,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[BN] New to Bayit+?"
   },
   "nav": {
     "home": "হোম",
@@ -6097,11 +6109,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6113,10 +6121,7 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": [
-        "অফলাইন দেখা",
-        "পরিবার প্রোফাইল"
-      ]
+      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -6297,7 +6302,39 @@
       "processing": "প্রক্রিয়াকরণ...",
       "askAnother": "আরো জিজ্ঞেস করুন",
       "resumeMovie": "চালিয়ে যান",
-      "selectCharacter": "চরিত্র নির্বাচন করুন"
+      "selectCharacter": "চরিত্র নির্বাচন করুন",
+      "stages": {
+        "polishing": "আপনার প্রশ্ন পালিশ করা হচ্ছে...",
+        "thinking": "আপনার প্রশ্ন নিয়ে ভাবছে...",
+        "biff1": "বিফের আপনার প্রশ্নটা পছন্দ হয়নি...",
+        "biff2": "বিফ আয়নায় মাসল দেখাচ্ছে...",
+        "biff3": "বিফ উত্তর বানান করার চেষ্টা করছে...",
+        "biff4": "বিফ কাউকে বোকা বলে দিল...",
+        "doc1": "ডক ফ্লাক্স ক্যাপাসিটর দেখছে...",
+        "doc2": "গ্রেট স্কট! এখনও হিসাব হচ্ছে...",
+        "doc3": "ডক 1.21 গিগাওয়াট অ্যাডজাস্ট করছে...",
+        "doc4": "ডক স্পেস-টাইম কন্টিনিউয়াম চেক করছে...",
+        "marty1": "মার্টি আগে গিটার টিউন করছে...",
+        "marty2": "এটা ভারী...",
+        "marty3": "মার্টি দেখছে সে এখনও আছে কিনা...",
+        "marty4": "মার্টি বলে কেউ তাকে ভীতু বলতে পারে না...",
+        "george1": "জর্জ উত্তর দেওয়ার সাহস জোগাড় করছে...",
+        "george2": "জর্জ নোটবুকে উত্তর লিখছে...",
+        "george3": "জর্জ বলে তার ঘনত্ব তাকে এখানে এনেছে...",
+        "george4": "জর্জ অবশেষে আত্মবিশ্বাস পেয়েছে...",
+        "lorraine1": "লরেন আগে চুল ঠিক করছে...",
+        "lorraine2": "লরেন সমুদ্রের নিচে মায়াজালের কথা ভাবছে...",
+        "lorraine3": "লরেন বলে এটা হওয়ার কথা ছিল...",
+        "lorraine4": "লরেন নাচের জন্য তৈরি হচ্ছে...",
+        "jennifer1": "জেনিফার গাড়িতে অপেক্ষা করছে...",
+        "jennifer2": "জেনিফার ভবিষ্যৎ নিয়ে ভাবছে...",
+        "jennifer3": "জেনিফার বলে সে সামলাতে পারবে...",
+        "jennifer4": "জেনিফার ধৈর্য ধরছে...",
+        "generic1": "{{name}} ভাবছে...",
+        "generic2": "{{name}} উত্তর তৈরি করছে...",
+        "generic3": "প্রায় হয়ে গেছে...",
+        "generic4": "আর একটু..."
+      }
     },
     "sleepTimer": {
       "title": "স্লিপ টাইমার",
@@ -6311,7 +6348,21 @@
       "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
       "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
     },
-    "startOver": "নতুন করে শুরু করুন"
+    "startOver": "নতুন করে শুরু করুন",
+    "dialogue": {
+      "voiceMode": "[BN] Voice Mode",
+      "holdToSpeak": "[BN] Hold to Speak"
+    },
+    "multiCharacter": {
+      "selectCharacter": "[BN] Select Character",
+      "talkingTo": "[BN] Talking to"
+    },
+    "shared": {
+      "participants": "[BN] Participants",
+      "yourTurn": "[BN] Your Turn",
+      "waitingForTurn": "[BN] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[BN] Failed to load stream"
   },
   "playlist": {
     "title": "আমার তালিকা",
@@ -7336,18 +7387,7 @@
       "infoTitle": "AI-Powered Search",
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "kids": "Kids",
-      "liveTV": "Live TV",
-      "movies": "Movies",
-      "news": "News",
-      "series": "Series",
-      "sports": "Sports"
-    },
+    "suggestions": "[BN] Suggestions",
     "empty": {
       "clearSearch": "Clear search",
       "checkSpelling": "বানান পরীক্ষা করুন",
@@ -7427,7 +7467,22 @@
       "titleAsc": "শিরোনাম A-Z",
       "titleDesc": "শিরোনাম Z-A",
       "popularity": "সর্বাধিক জনপ্রিয়"
-    }
+    },
+    "filter": {
+      "title": "[BN] Filter",
+      "reset": "[BN] Reset",
+      "language": "[BN] Language",
+      "accessibility": "[BN] Accessibility",
+      "subtitles": "[BN] Subtitles",
+      "dubbing": "[BN] Dubbing",
+      "yearRange": "[BN] Year Range",
+      "yearFrom": "[BN] From year",
+      "yearTo": "[BN] To year",
+      "duration": "[BN] Duration",
+      "apply": "[BN] Apply Filters"
+    },
+    "previousPage": "[BN] Previous Page",
+    "nextPage": "[BN] Next Page"
   },
   "security": {
     "changePassword": "পাসওয়ার্ড পরিবর্তন",
@@ -7466,16 +7521,65 @@
       "ja": "日本語"
     },
     "notifications": "বিজ্ঞপ্তি",
-    "playback": "প্লেব্যাক",
+    "playback": {
+      "title": "[BN] Playback",
+      "videoQuality": "[BN] Video Quality",
+      "autoplaySection": "[BN] Autoplay",
+      "autoplay": "[BN] Autoplay",
+      "autoplayNext": "[BN] Autoplay Next Episode",
+      "countdown": "[BN] Countdown before next episode",
+      "controls": "[BN] Controls",
+      "skipIntro": "[BN] Skip Intro",
+      "skipCredits": "[BN] Skip Credits",
+      "continueWatching": "[BN] Continue Watching",
+      "speed": "[BN] Playback Speed",
+      "liveTV": "[BN] Live TV",
+      "bufferSize": "[BN] Buffer Size"
+    },
     "quality": "মান",
     "subtitles": "সাবটাইটেল",
     "autoplay": "অটোপ্লে",
     "appearance": "চেহারা",
     "darkMode": "ডার্ক মোড",
-    "privacy": "গোপনীয়তা",
+    "privacy": {
+      "clearWatchHistoryTitle": "[BN] Clear Watch History",
+      "clear": "[BN] Clear",
+      "clearWatchHistoryMessage": "[BN] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[BN] Clear Search History",
+      "clearSearchHistoryMessage": "[BN] This will permanently delete your search history.",
+      "title": "[BN] Privacy",
+      "description": "[BN] Control your data collection and privacy preferences",
+      "dataCollection": "[BN] Data Collection",
+      "analytics": "[BN] Usage Analytics",
+      "analyticsDesc": "[BN] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[BN] Crash Reports",
+      "crashReportsDesc": "[BN] Automatically send crash reports to help fix issues",
+      "personalization": "[BN] Personalization",
+      "personalizationDesc": "[BN] Allow Bayit+ to personalize your experience",
+      "history": "[BN] History",
+      "watchHistory": "[BN] Watch History",
+      "clearWatchHistory": "[BN] Clear Watch History",
+      "searchHistory": "[BN] Search History",
+      "clearSearchHistory": "[BN] Clear Search History"
+    },
     "privacyPolicy": "গোপনীয়তা নীতি",
     "termsOfService": "সেবার শর্তাবলী",
-    "about": "সম্পর্কে",
+    "about": {
+      "title": "[BN] About",
+      "appInfo": "[BN] App Info",
+      "version": "[BN] Version",
+      "build": "[BN] Build",
+      "environment": "[BN] Environment",
+      "legal": "[BN] Legal",
+      "privacyPolicy": "[BN] Privacy Policy",
+      "termsOfService": "[BN] Terms of Service",
+      "cookiePolicy": "[BN] Cookie Policy",
+      "licenses": "[BN] Open Source Licenses",
+      "deviceInfo": "[BN] Device Info",
+      "model": "[BN] Model",
+      "osVersion": "[BN] OS Version",
+      "locale": "[BN] Locale"
+    },
     "chatTranslation": "চ্যাট অনুবাদ",
     "autoTranslate": "স্বয়ংক্রিয় বার্তা অনুবাদ",
     "autoTranslateDescription": "চ্যাট বার্তা স্বয়ংক্রিয়ভাবে আপনার পছন্দের ভাষায় অনুবাদ করুন",
@@ -7507,11 +7611,7 @@
       "title": "শিরোনাম",
       "videos": "ভিডিও"
     },
-    "accessibility": {
-      "small": "ছোট",
-      "medium": "মাঝারি",
-      "large": "বড়"
-    },
+    "accessibility": "[BN] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "অ্যাকাউন্ট",
@@ -7559,13 +7659,7 @@
     "unlinkConfirm": "আনলিঙ্ক করুন",
     "connected": "সংযুক্ত",
     "notConnected": "সংযুক্ত নয়",
-    "help": {
-      "title": "সাহায্য কেন্দ্র",
-      "subtitle": "সাধারণ প্রশ্নের উত্তর খুঁজুন",
-      "loading": "সাহায্য লোড হচ্ছে...",
-      "noFaqs": "কোনো সাধারণ প্রশ্ন উপলব্ধ নেই",
-      "contactSupport": "সহায়তায় যোগাযোগ করুন"
-    },
+    "help": "[BN] Help & Support",
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7596,7 +7690,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[BN] Audio",
+    "mediaSection": "[BN] Media",
+    "privacyData": "[BN] Privacy & Data",
+    "general": "[BN] General",
+    "children": "[BN] Children",
+    "loading": "[BN] Loading settings...",
+    "not_connected": "[BN] Not connected",
+    "privacySecurity": "[BN] Privacy & Security"
   },
   "shabbat": {
     "activate": "সক্রিয় করুন",
@@ -8184,14 +8286,15 @@
     "quiz": {
       "title": "ট্রিভিয়া কুইজ"
     },
-    "question": {
-      "counter": "প্রশ্ন {{current}} / {{total}}"
-    },
+    "question": "[BN] Question",
     "results": {
       "title": "কুইজ সম্পন্ন!",
       "playAgain": "আবার খেলুন",
       "shekelsEarned": "{{amount}} শেকেল অর্জিত"
-    }
+    },
+    "explanation": "[BN] Explanation",
+    "submit": "[BN] Submit",
+    "tryAgain": "[BN] Try Again"
   },
   "tvLogin": {
     "invalidQR": "অবৈধ QR কোড। আপনার TV থেকে আবার স্ক্যান করুন।",
@@ -8637,7 +8740,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[BN] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[BN] Microphone Permission",
+      "speechRecognition": "[BN] Speech Recognition",
+      "currentState": "[BN] Current State",
+      "transcript": "[BN] Transcript",
+      "title": "[BN] Voice Diagnostics",
+      "audioSession": "[BN] Audio Session",
+      "runDiagnostics": "[BN] Run Diagnostics",
+      "copyReport": "[BN] Copy Report"
+    },
+    "stopListening": "[BN] Stop Listening",
+    "startListening": "[BN] Start Listening",
+    "searchPrompt": "[BN] What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "শুধুমাত্র ভয়েস",
@@ -9092,7 +9211,11 @@
       "questionsSection": "প্রশ্ন",
       "empty": "এখনও কোনো ইন্টার‍্যাক্টিভ চলচ্চিত্র নেই",
       "characterCount": "{{count}} চরিত্র",
-      "selectCharacter": "ইন্টারেক্ট করার জন্য একটি চরিত্র নির্বাচন করুন"
+      "selectCharacter": "ইন্টারেক্ট করার জন্য একটি চরিত্র নির্বাচন করুন",
+      "quotaLabel": "[BN] Interactions remaining",
+      "generationTitle": "[BN] Generating interaction...",
+      "selectedCount": "[BN] {{count}} selected",
+      "confirmButton": "[BN] Confirm"
     },
     "dialogue": {
       "specificQuestions": "চরিত্রের প্রশ্ন",
@@ -9112,7 +9235,110 @@
       "contacts": "যোগাযোগ",
       "contactsDesc": "শেয়ার করার জন্য পারিবারিক যোগাযোগ পরিচালনা করুন",
       "feedback": "মতামত",
-      "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা"
+      "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা",
+      "title": "[BN] Me in the Story",
+      "consent": "[BN] Consent Required",
+      "consentDesc": "[BN] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[BN] Processing..."
+    },
+    "preview": {
+      "title": "[BN] 3D Preview",
+      "loading": "[BN] Loading your avatar...",
+      "error": "[BN] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[BN] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[BN] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[BN] PIN",
+        "pinPlaceholder": "[BN] Enter your PIN",
+        "consentTypes": "[BN] I consent to the following",
+        "meshGeneration": "[BN] 3D Mesh Generation",
+        "voiceV2V": "[BN] Voice-to-Voice Practice",
+        "latentFeatures": "[BN] AI Feature Personalization",
+        "currentStatus": "[BN] Current Consent Status",
+        "submit": "[BN] Grant Consent",
+        "title": "[BN] Biometric Consent",
+        "familyControlsRequired": "[BN] Family Controls Required",
+        "familyControlsExplain": "[BN] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[BN] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[BN] My Contacts",
+      "add": "[BN] Add Contact",
+      "empty": "[BN] No contacts yet",
+      "delete": "[BN] Delete Contact",
+      "name": "[BN] Display Name",
+      "phone": "[BN] Phone Number",
+      "pin": "[BN] PIN"
+    },
+    "feedback": {
+      "title": "[BN] Feedback",
+      "empty": "[BN] No feedback yet",
+      "from": "[BN] From",
+      "voiceMessage": "[BN] Voice Message",
+      "textMessage": "[BN] Text Message"
+    },
+    "highlights": {
+      "title": "[BN] Highlights",
+      "generate": "[BN] Generate Highlight Reel",
+      "empty": "[BN] No highlights yet",
+      "share": "[BN] Share",
+      "sendToFamily": "[BN] Send to Family",
+      "generating": "[BN] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[BN] Word of the Day",
+      "noAvatar": "[BN] No Avatar",
+      "noAvatarDesc": "[BN] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[BN] Create Avatar",
+      "noCreditsTitle": "[BN] Out of Credits",
+      "noCreditsDesc": "[BN] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[BN] Play Greeting",
+      "refresh": "[BN] Refresh",
+      "meshUnavailable": "[BN] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[BN] Generate 3D Mesh",
+      "viewPreview": "[BN] View Preview",
+      "statusIdle": "[BN] Ready",
+      "statusGenerating": "[BN] Generating...",
+      "statusReady": "[BN] Complete",
+      "statusFailed": "[BN] Failed"
+    },
+    "movieCharacters": {
+      "title": "[BN] Characters",
+      "empty": "[BN] No characters available"
+    },
+    "trigger": {
+      "prompt": "[BN] Say the phrase",
+      "dismiss": "[BN] Dismiss",
+      "success": "[BN] Excellent!",
+      "continue": "[BN] Continue",
+      "incorrect": "[BN] Not quite",
+      "correct": "[BN] Correct answer",
+      "tryAgain": "[BN] Try Again",
+      "skip": "[BN] Skip",
+      "errors": {
+        "microphoneFailed": "[BN] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[BN] Transforming voice...",
+      "latency": "[BN] Latency",
+      "retry": "[BN] Retry",
+      "nextPhrase": "[BN] Next Phrase",
+      "beforeAfter": "[BN] Before / After",
+      "before": "[BN] Before",
+      "after": "[BN] After",
+      "improvement": "[BN] Improvement"
+    },
+    "avatar3d": {
+      "title": "[BN] 3D Avatar",
+      "errorTitle": "[BN] Avatar Error"
     }
   },
   "starStory": {
@@ -10075,5 +10301,20 @@
     "success_title": "পাসওয়ার্ড রিসেট হয়েছে!",
     "success_message": "আপনার পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে। এখন আপনি আপনার নতুন পাসওয়ার্ড দিয়ে সাইন ইন করতে পারবেন।",
     "back_to_login": "লগইনে ফিরে যান"
+  },
+  "voiceFallback": {
+    "title": "[BN] Voice Unavailable",
+    "subtitle": "[BN] Type your message instead",
+    "micUnavailable": "[BN] Microphone unavailable",
+    "inputPlaceholder": "[BN] Type a message...",
+    "send": "[BN] Send",
+    "suggestions": "[BN] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[BN] Voice Search Settings",
+      "language": "[BN] Recognition Language",
+      "sensitivity": "[BN] Sensitivity"
+    }
   }
 }

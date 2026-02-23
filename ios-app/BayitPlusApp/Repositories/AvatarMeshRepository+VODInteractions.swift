@@ -104,6 +104,26 @@ extension APIAvatarRepository {
 
     // MARK: - Pause & Ask
 
+    func transcribeAudio(
+        sessionId: String,
+        audioData: Data
+    ) async throws -> TranscriptionResponse {
+        let boundary = UUID().uuidString
+        var body = Data()
+        body.appendMultipartFile(
+            name: "audio", filename: "recording.wav",
+            mimeType: "audio/wav", data: audioData, boundary: boundary
+        )
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        return try await client.postRaw(
+            "/api/v1/vod-interactions/sessions/\(sessionId)/transcribe",
+            body: body,
+            contentType: "multipart/form-data; boundary=\(boundary)",
+            as: TranscriptionResponse.self
+        )
+    }
+
     func sendPauseAskMessage(
         sessionId: String,
         message: String,

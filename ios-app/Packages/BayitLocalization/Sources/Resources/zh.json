@@ -3476,7 +3476,9 @@
       "close": "关闭",
       "cached": "已缓存",
       "remaining": "剩余",
-      "window": "时间窗口"
+      "window": "时间窗口",
+      "loading": "[ZH] Loading summary...",
+      "noContent": "[ZH] No summary available"
     },
     "error": {
       "failed": "无法生成摘要",
@@ -4068,7 +4070,8 @@
     "new_password": "新密码",
     "confirm_password": "确认密码",
     "confirm_password_placeholder": "重新输入您的密码",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "queued": "[ZH] Queued"
   },
   "components": {
     "select": {
@@ -4122,7 +4125,8 @@
       "related": "Related",
       "seasons": "{{count}} Seasons"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "[ZH] Untitled"
   },
   "cultureCities": {
     "connectionTo": "{{city}}连接",
@@ -4285,7 +4289,8 @@
     "play": "离线播放",
     "deleteConfirm": "删除下载",
     "size": "{{size}} MB",
-    "clearAll": "清除全部"
+    "clearAll": "清除全部",
+    "active": "[ZH] Active Downloads"
   },
   "dubbing": {
     "title": "实时配音",
@@ -5501,7 +5506,8 @@
     "unknown": "未知",
     "userIdPlaceholder": "输入用户邮箱或ID",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "[ZH] Create Household"
   },
   "jerusalem": {
     "title": "耶路撒冷连接",
@@ -5551,7 +5557,11 @@
       "shabbatSongs": "安息日歌曲",
       "parashaStudy": "每周圣经",
       "shabbatRecipes": "食谱",
-      "prayers": "祈祷"
+      "prayers": "祈祷",
+      "candlesIn": "[ZH] Candles in {{minutes}} minutes",
+      "songs": "[ZH] Songs",
+      "parasha": "[ZH] Parasha",
+      "recipes": "[ZH] Recipes"
     },
     "calendar": "犹太日历",
     "community": {
@@ -5775,7 +5785,8 @@
       "kids": "儿童",
       "documentary": "纪录片"
     },
-    "loadingChannels": "加载频道..."
+    "loadingChannels": "加载频道...",
+    "channel": "[ZH] Channel"
   },
   "location": {
     "consentModal": {
@@ -5874,7 +5885,8 @@
     },
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
-    "signInWithTouchId": "Sign in with Touch ID"
+    "signInWithTouchId": "Sign in with Touch ID",
+    "newToBayitPlus": "[ZH] New to Bayit+?"
   },
   "nav": {
     "home": "首页",
@@ -6100,17 +6112,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6122,10 +6125,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -6309,7 +6309,39 @@
       "processing": "处理中...",
       "askAnother": "再问一个",
       "resumeMovie": "继续",
-      "selectCharacter": "选择角色"
+      "selectCharacter": "选择角色",
+      "stages": {
+        "polishing": "正在润色你的问题...",
+        "thinking": "正在思考你的问题...",
+        "biff1": "比夫不太喜欢你的问题...",
+        "biff2": "比夫正在照镜子秀肌肉...",
+        "biff3": "比夫正在努力拼写答案...",
+        "biff4": "比夫刚骂了某人笨蛋...",
+        "doc1": "博士正在查看磁通电容器...",
+        "doc2": "我的天! 还在计算...",
+        "doc3": "博士正在调整1.21千兆瓦...",
+        "doc4": "博士正在检查时空连续体...",
+        "marty1": "马蒂先调一下吉他...",
+        "marty2": "这太沉重了...",
+        "marty3": "马蒂正在确认自己是否还存在...",
+        "marty4": "马蒂说没人能叫他胆小鬼...",
+        "george1": "乔治正在鼓起勇气回答...",
+        "george2": "乔治正在笔记本上写回复...",
+        "george3": "乔治说是他的密度把他带到这里...",
+        "george4": "乔治终于有了自信...",
+        "lorraine1": "洛林先整理一下头发...",
+        "lorraine2": "洛林在回忆海底魅力舞会...",
+        "lorraine3": "洛林说这是命中注定...",
+        "lorraine4": "洛林正在准备去舞会...",
+        "jennifer1": "詹妮弗在车里等着...",
+        "jennifer2": "詹妮弗在想未来的事...",
+        "jennifer3": "詹妮弗说她能应付...",
+        "jennifer4": "詹妮弗正在耐心等待...",
+        "generic1": "{{name}}正在思考...",
+        "generic2": "{{name}}正在组织回答...",
+        "generic3": "快好了...",
+        "generic4": "再等一会儿..."
+      }
     },
     "sleepTimer": {
       "title": "睡眠定时器",
@@ -6323,7 +6355,21 @@
       "timerExtended": "定时器延长{{minutes}}分钟",
       "timerCancelled": "睡眠定时器已取消"
     },
-    "startOver": "重新开始"
+    "startOver": "重新开始",
+    "dialogue": {
+      "voiceMode": "[ZH] Voice Mode",
+      "holdToSpeak": "[ZH] Hold to Speak"
+    },
+    "multiCharacter": {
+      "selectCharacter": "[ZH] Select Character",
+      "talkingTo": "[ZH] Talking to"
+    },
+    "shared": {
+      "participants": "[ZH] Participants",
+      "yourTurn": "[ZH] Your Turn",
+      "waitingForTurn": "[ZH] Waiting for your turn..."
+    },
+    "streamLoadFailed": "[ZH] Failed to load stream"
   },
   "playlist": {
     "title": "我的播放列表",
@@ -7335,18 +7381,7 @@
       "excludeKids": "排除儿童内容",
       "allContent": "所有内容"
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "movies": "电影",
-      "series": "剧集",
-      "liveTV": "直播电视",
-      "news": "新闻",
-      "sports": "体育",
-      "kids": "儿童"
-    },
+    "suggestions": "[ZH] Suggestions",
     "controls": {
       "placeholder": "Search for content...",
       "hints": {
@@ -7439,7 +7474,22 @@
       "titleAsc": "标题 A-Z",
       "titleDesc": "标题 Z-A",
       "popularity": "最受欢迎"
-    }
+    },
+    "filter": {
+      "title": "[ZH] Filter",
+      "reset": "[ZH] Reset",
+      "language": "[ZH] Language",
+      "accessibility": "[ZH] Accessibility",
+      "subtitles": "[ZH] Subtitles",
+      "dubbing": "[ZH] Dubbing",
+      "yearRange": "[ZH] Year Range",
+      "yearFrom": "[ZH] From year",
+      "yearTo": "[ZH] To year",
+      "duration": "[ZH] Duration",
+      "apply": "[ZH] Apply Filters"
+    },
+    "previousPage": "[ZH] Previous Page",
+    "nextPage": "[ZH] Next Page"
   },
   "security": {
     "changePassword": "更改密码",
@@ -7482,16 +7532,65 @@
     "autoTranslateDescription": "自动将聊天消息翻译成您的首选语言",
     "notifications": "通知",
     "pushNotifications": "推送通知",
-    "playback": "播放",
+    "playback": {
+      "title": "[ZH] Playback",
+      "videoQuality": "[ZH] Video Quality",
+      "autoplaySection": "[ZH] Autoplay",
+      "autoplay": "[ZH] Autoplay",
+      "autoplayNext": "[ZH] Autoplay Next Episode",
+      "countdown": "[ZH] Countdown before next episode",
+      "controls": "[ZH] Controls",
+      "skipIntro": "[ZH] Skip Intro",
+      "skipCredits": "[ZH] Skip Credits",
+      "continueWatching": "[ZH] Continue Watching",
+      "speed": "[ZH] Playback Speed",
+      "liveTV": "[ZH] Live TV",
+      "bufferSize": "[ZH] Buffer Size"
+    },
     "quality": "画质",
     "subtitles": "字幕",
     "autoplay": "自动播放",
     "appearance": "外观",
     "darkMode": "深色模式",
-    "privacy": "隐私",
+    "privacy": {
+      "clearWatchHistoryTitle": "[ZH] Clear Watch History",
+      "clear": "[ZH] Clear",
+      "clearWatchHistoryMessage": "[ZH] This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "[ZH] Clear Search History",
+      "clearSearchHistoryMessage": "[ZH] This will permanently delete your search history.",
+      "title": "[ZH] Privacy",
+      "description": "[ZH] Control your data collection and privacy preferences",
+      "dataCollection": "[ZH] Data Collection",
+      "analytics": "[ZH] Usage Analytics",
+      "analyticsDesc": "[ZH] Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "[ZH] Crash Reports",
+      "crashReportsDesc": "[ZH] Automatically send crash reports to help fix issues",
+      "personalization": "[ZH] Personalization",
+      "personalizationDesc": "[ZH] Allow Bayit+ to personalize your experience",
+      "history": "[ZH] History",
+      "watchHistory": "[ZH] Watch History",
+      "clearWatchHistory": "[ZH] Clear Watch History",
+      "searchHistory": "[ZH] Search History",
+      "clearSearchHistory": "[ZH] Clear Search History"
+    },
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款",
-    "about": "关于",
+    "about": {
+      "title": "[ZH] About",
+      "appInfo": "[ZH] App Info",
+      "version": "[ZH] Version",
+      "build": "[ZH] Build",
+      "environment": "[ZH] Environment",
+      "legal": "[ZH] Legal",
+      "privacyPolicy": "[ZH] Privacy Policy",
+      "termsOfService": "[ZH] Terms of Service",
+      "cookiePolicy": "[ZH] Cookie Policy",
+      "licenses": "[ZH] Open Source Licenses",
+      "deviceInfo": "[ZH] Device Info",
+      "model": "[ZH] Model",
+      "osVersion": "[ZH] OS Version",
+      "locale": "[ZH] Locale"
+    },
     "display": "显示",
     "homePageSections": "首页版块",
     "configureSections": "配置首页显示的版块",
@@ -7519,11 +7618,7 @@
       "title": "晨间仪式",
       "videos": "视频"
     },
-    "accessibility": {
-      "small": "小",
-      "medium": "中",
-      "large": "大"
-    },
+    "accessibility": "[ZH] Accessibility",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "账户",
@@ -7571,13 +7666,7 @@
     "unlinkConfirm": "取消关联",
     "connected": "已连接",
     "notConnected": "未连接",
-    "help": {
-      "title": "帮助中心",
-      "subtitle": "查找常见问题的答案",
-      "loading": "正在加载帮助...",
-      "noFaqs": "没有可用的常见问题",
-      "contactSupport": "联系支持"
-    },
+    "help": "[ZH] Help & Support",
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7608,7 +7697,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "[ZH] Audio",
+    "mediaSection": "[ZH] Media",
+    "privacyData": "[ZH] Privacy & Data",
+    "general": "[ZH] General",
+    "children": "[ZH] Children",
+    "loading": "[ZH] Loading settings...",
+    "not_connected": "[ZH] Not connected",
+    "privacySecurity": "[ZH] Privacy & Security"
   },
   "shabbat": {
     "activate": "激活",
@@ -8196,14 +8293,15 @@
     "quiz": {
       "title": "知识问答"
     },
-    "question": {
-      "counter": "问题 {{current}} / {{total}}"
-    },
+    "question": "[ZH] Question",
     "results": {
       "title": "问答完成!",
       "playAgain": "再玩一次",
       "shekelsEarned": "获得 {{amount}} 谢克尔"
-    }
+    },
+    "explanation": "[ZH] Explanation",
+    "submit": "[ZH] Submit",
+    "tryAgain": "[ZH] Try Again"
   },
   "tvLogin": {
     "invalidQR": "无效的二维码。请从电视重新扫描。",
@@ -8649,7 +8747,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "[ZH] Level"
+    },
+    "diagnostics": {
+      "micPermission": "[ZH] Microphone Permission",
+      "speechRecognition": "[ZH] Speech Recognition",
+      "currentState": "[ZH] Current State",
+      "transcript": "[ZH] Transcript",
+      "title": "[ZH] Voice Diagnostics",
+      "audioSession": "[ZH] Audio Session",
+      "runDiagnostics": "[ZH] Run Diagnostics",
+      "copyReport": "[ZH] Copy Report"
+    },
+    "stopListening": "[ZH] Stop Listening",
+    "startListening": "[ZH] Start Listening",
+    "searchPrompt": "[ZH] What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "仅语音",
@@ -9107,7 +9221,11 @@
       "questionsSection": "问题",
       "empty": "暂无可互动电影",
       "characterCount": "{{count}}个角色",
-      "selectCharacter": "选择要互动的角色"
+      "selectCharacter": "选择要互动的角色",
+      "quotaLabel": "[ZH] Interactions remaining",
+      "generationTitle": "[ZH] Generating interaction...",
+      "selectedCount": "[ZH] {{count}} selected",
+      "confirmButton": "[ZH] Confirm"
     },
     "dialogue": {
       "specificQuestions": "角色问题",
@@ -9127,7 +9245,110 @@
       "contacts": "联系人",
       "contactsDesc": "管理家庭联系人以便分享",
       "feedback": "反馈",
-      "feedbackDesc": "来自家人和朋友的消息"
+      "feedbackDesc": "来自家人和朋友的消息",
+      "title": "[ZH] Me in the Story",
+      "consent": "[ZH] Consent Required",
+      "consentDesc": "[ZH] Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "[ZH] Processing..."
+    },
+    "preview": {
+      "title": "[ZH] 3D Preview",
+      "loading": "[ZH] Loading your avatar...",
+      "error": "[ZH] Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "[ZH] Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "[ZH] Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "[ZH] PIN",
+        "pinPlaceholder": "[ZH] Enter your PIN",
+        "consentTypes": "[ZH] I consent to the following",
+        "meshGeneration": "[ZH] 3D Mesh Generation",
+        "voiceV2V": "[ZH] Voice-to-Voice Practice",
+        "latentFeatures": "[ZH] AI Feature Personalization",
+        "currentStatus": "[ZH] Current Consent Status",
+        "submit": "[ZH] Grant Consent",
+        "title": "[ZH] Biometric Consent",
+        "familyControlsRequired": "[ZH] Family Controls Required",
+        "familyControlsExplain": "[ZH] A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "[ZH] Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "[ZH] My Contacts",
+      "add": "[ZH] Add Contact",
+      "empty": "[ZH] No contacts yet",
+      "delete": "[ZH] Delete Contact",
+      "name": "[ZH] Display Name",
+      "phone": "[ZH] Phone Number",
+      "pin": "[ZH] PIN"
+    },
+    "feedback": {
+      "title": "[ZH] Feedback",
+      "empty": "[ZH] No feedback yet",
+      "from": "[ZH] From",
+      "voiceMessage": "[ZH] Voice Message",
+      "textMessage": "[ZH] Text Message"
+    },
+    "highlights": {
+      "title": "[ZH] Highlights",
+      "generate": "[ZH] Generate Highlight Reel",
+      "empty": "[ZH] No highlights yet",
+      "share": "[ZH] Share",
+      "sendToFamily": "[ZH] Send to Family",
+      "generating": "[ZH] Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "[ZH] Word of the Day",
+      "noAvatar": "[ZH] No Avatar",
+      "noAvatarDesc": "[ZH] Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "[ZH] Create Avatar",
+      "noCreditsTitle": "[ZH] Out of Credits",
+      "noCreditsDesc": "[ZH] You need Beta credits to use Magic Mirror",
+      "playGreeting": "[ZH] Play Greeting",
+      "refresh": "[ZH] Refresh",
+      "meshUnavailable": "[ZH] 3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "[ZH] Generate 3D Mesh",
+      "viewPreview": "[ZH] View Preview",
+      "statusIdle": "[ZH] Ready",
+      "statusGenerating": "[ZH] Generating...",
+      "statusReady": "[ZH] Complete",
+      "statusFailed": "[ZH] Failed"
+    },
+    "movieCharacters": {
+      "title": "[ZH] Characters",
+      "empty": "[ZH] No characters available"
+    },
+    "trigger": {
+      "prompt": "[ZH] Say the phrase",
+      "dismiss": "[ZH] Dismiss",
+      "success": "[ZH] Excellent!",
+      "continue": "[ZH] Continue",
+      "incorrect": "[ZH] Not quite",
+      "correct": "[ZH] Correct answer",
+      "tryAgain": "[ZH] Try Again",
+      "skip": "[ZH] Skip",
+      "errors": {
+        "microphoneFailed": "[ZH] Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "[ZH] Transforming voice...",
+      "latency": "[ZH] Latency",
+      "retry": "[ZH] Retry",
+      "nextPhrase": "[ZH] Next Phrase",
+      "beforeAfter": "[ZH] Before / After",
+      "before": "[ZH] Before",
+      "after": "[ZH] After",
+      "improvement": "[ZH] Improvement"
+    },
+    "avatar3d": {
+      "title": "[ZH] 3D Avatar",
+      "errorTitle": "[ZH] Avatar Error"
     }
   },
   "starStory": {
@@ -10090,5 +10311,20 @@
     "success_title": "密码已重置！",
     "success_message": "您的密码已成功重置。现在您可以使用新密码登录了。",
     "back_to_login": "返回登录"
+  },
+  "voiceFallback": {
+    "title": "[ZH] Voice Unavailable",
+    "subtitle": "[ZH] Type your message instead",
+    "micUnavailable": "[ZH] Microphone unavailable",
+    "inputPlaceholder": "[ZH] Type a message...",
+    "send": "[ZH] Send",
+    "suggestions": "[ZH] Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "[ZH] Voice Search Settings",
+      "language": "[ZH] Recognition Language",
+      "sensitivity": "[ZH] Sensitivity"
+    }
   }
 }

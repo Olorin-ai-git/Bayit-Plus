@@ -66,6 +66,7 @@ struct PlayerView: View {
     // Pause & Ask state
     @State var showPauseAskOverlay = false
     @State var hasVoiceClone = false
+    @State var hasInteractiveCharacters = false
 
     // Shared interaction state (Phase 3 WS4)
     @State var sharedVM: SharedInteractionViewModel?

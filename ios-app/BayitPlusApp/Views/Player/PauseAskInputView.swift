@@ -23,7 +23,10 @@
                             onToggleMode: {
                                 inputMode = inputMode == .text ? .voice : .text
                             },
-                            onSend: { sendQuestion() }
+                            onSend: { sendQuestion() },
+                            onVoiceRecorded: { audioData in
+                                transcribeAndSend(audioData: audioData)
+                            }
                         )
                     }
                 }

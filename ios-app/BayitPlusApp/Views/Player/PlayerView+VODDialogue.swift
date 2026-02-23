@@ -35,8 +35,7 @@
         var pauseAskOverlayView: some View {
             if showPauseAskOverlay,
                let vm = dialogueVM,
-               let imgUrl = avatarImageUrl,
-               hasVoiceClone
+               let imgUrl = avatarImageUrl
             {
                 PauseAskDialogueOverlayView(
                     avatarImageUrl: imgUrl,

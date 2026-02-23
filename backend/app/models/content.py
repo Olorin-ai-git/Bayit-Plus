@@ -116,6 +116,7 @@ class Content(Document):
     embedded_subtitle_count: int = 0  # Number of subtitle tracks in MKV file
     subtitle_extraction_status: Optional[str] = None  # "pending", "completed", "failed"
     subtitle_last_checked: Optional[datetime] = None
+    subtitle_time_offset: Optional[float] = None  # Seconds to subtract from cue times (multi-part movies)
 
     # Video metadata (from FFmpeg analysis)
     video_metadata: Optional[Dict[str, Any]] = None

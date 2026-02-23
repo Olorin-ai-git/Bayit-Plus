@@ -87,7 +87,16 @@ async def get_interactive_characters(
                 detail="Content not found"
             )
         characters = content.interactive_characters or []
-        proxy_base = str(request.base_url).rstrip("/") + "/api/proxy/media"
+        raw_base = str(request.base_url).rstrip("/")
+        # Cloud Run terminates TLS at the load balancer, so the ASGI
+        # scope sees http:// even though clients connect over https://.
+        # iOS App Transport Security blocks plain-HTTP URLs, so we must
+        # ensure the proxy base always uses the same scheme as the
+        # original client request.
+        forwarded_proto = request.headers.get("x-forwarded-proto", "")
+        if forwarded_proto == "https" and raw_base.startswith("http://"):
+            raw_base = "https://" + raw_base[len("http://"):]
+        proxy_base = raw_base + "/api/proxy/media"
         return [
             char.model_copy(update={
                 "frame_url": convert_to_proxy_url(char.frame_url, base_url=proxy_base)

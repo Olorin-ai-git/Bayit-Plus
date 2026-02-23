@@ -60,19 +60,20 @@ class PauseAskOrchestrator:
         avatar = await ChildAvatar.get(session.avatar_id)
         if not avatar:
             raise ValueError(f"Avatar not found: {session.avatar_id}")
-        if not avatar.has_voice_clone:
-            raise ValueError("Avatar voice clone not ready")
-
         # 2. Polish user text
         polished_text = await text_polisher.polish(
             user_message, language_hint=language_hint,
         )
 
         # 3. PARALLEL: user avatar animation + character AI response
+        #    User animation is skipped when voice clone is unavailable.
         scene_context = session.scene_context or ""
         char_desc = session.character_description or ""
 
-        user_anim_coro = self._animate_user_safe(polished_text, avatar)
+        if avatar.has_voice_clone:
+            user_anim_coro = self._animate_user_safe(polished_text, avatar)
+        else:
+            user_anim_coro = self._no_animation()
         char_response_coro = character_ai_service.generate_response(
             character_name=session.character_name,
             scene_context=scene_context,
@@ -166,6 +167,10 @@ class PauseAskOrchestrator:
             character_animated_video_url=char_animated.video_url,
             character_video_duration=char_animated.duration,
         )
+
+    async def _no_animation(self) -> Optional[AnimatedResponse]:
+        """Return None immediately when voice clone is unavailable."""
+        return None
 
     async def _animate_user_safe(
         self, polished_text: str, avatar: ChildAvatar,

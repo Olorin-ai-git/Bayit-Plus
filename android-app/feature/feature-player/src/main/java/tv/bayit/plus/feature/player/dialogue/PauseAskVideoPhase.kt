@@ -59,12 +59,12 @@ internal fun PauseAskVideoPhase(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             VideoCircleWithState(
-                videoUrl = response.userLipsyncVideoUrl,
+                videoUrl = response.userAnimatedVideoUrl.ifEmpty { null },
                 isActivePhase = phase == PauseAskPhase.USER_SPEAKING,
                 onVideoEnded = { onPhaseAdvance(PauseAskPhase.TRANSITION) },
             )
             VideoCircleWithState(
-                videoUrl = response.characterResponseVideoUrl,
+                videoUrl = response.characterAnimatedVideoUrl.ifEmpty { null },
                 isActivePhase = phase == PauseAskPhase.CHARACTER_SPEAKING,
                 onVideoEnded = { onPhaseAdvance(PauseAskPhase.IDLE) },
             )
@@ -80,7 +80,7 @@ internal fun PauseAskVideoPhase(
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = response.responseText,
+            text = response.characterResponseText,
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.sm,
             textAlign = TextAlign.Center,

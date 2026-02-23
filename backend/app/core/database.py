@@ -157,6 +157,7 @@ from app.models.highlight_reel import HighlightReel
 from app.models.whatsapp_contact import WhatsAppContact
 # Character data model (voice IDs, face URLs, franchise grouping)
 from app.models.character import Character
+from app.models.vod_interaction import VODInteractionSession
 
 
 class Database:
@@ -464,6 +465,8 @@ async def connect_to_mongo():
         WhatsAppContact,
         # Character data model (VOD interaction voice/face data)
         Character,
+        # VOD interaction session model (Pause & Ask dialogue)
+        VODInteractionSession,
     ]
 
     # Conditionally add Olorin models based on database separation setting

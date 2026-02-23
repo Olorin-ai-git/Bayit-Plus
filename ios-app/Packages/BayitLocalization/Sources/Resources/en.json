@@ -3497,7 +3497,9 @@
       "close": "Close",
       "cached": "Cached",
       "remaining": "Remaining",
-      "window": "Window"
+      "window": "Window",
+      "loading": "Loading summary...",
+      "noContent": "No summary available"
     },
     "error": {
       "failed": "Could not generate summary",
@@ -4094,7 +4096,8 @@
     "new_password": "New Password",
     "confirm_password": "Confirm Password",
     "confirm_password_placeholder": "Re-enter your password",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "queued": "Queued"
   },
   "components": {
     "select": {
@@ -4176,7 +4179,8 @@
       "seasons": "{{count}} Seasons",
       "episodes": "{{count}} Episodes"
     },
-    "related": "Related"
+    "related": "Related",
+    "untitled": "Untitled"
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -4328,7 +4332,8 @@
     "play": "Play Offline",
     "deleteConfirm": "Remove Download",
     "size": "{{size}} MB",
-    "clearAll": "Clear All"
+    "clearAll": "Clear All",
+    "active": "Active Downloads"
   },
   "dubbing": {
     "title": "Live Dubbing",
@@ -5489,7 +5494,8 @@
     "unknown": "Unknown",
     "userIdPlaceholder": "Enter user email or ID",
     "loadingHousehold": "Loading Household...",
-    "loading": "Loading Household..."
+    "loading": "Loading Household...",
+    "createTitle": "Create Household"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -5539,7 +5545,11 @@
       "shabbatSongs": "Shabbat Songs",
       "parashaStudy": "Parasha",
       "shabbatRecipes": "Recipes",
-      "prayers": "Prayers"
+      "prayers": "Prayers",
+      "candlesIn": "Candles in {{minutes}} minutes",
+      "songs": "Songs",
+      "parasha": "Parasha",
+      "recipes": "Recipes"
     },
     "calendar": "Jewish Calendar",
     "community": {
@@ -5766,7 +5776,8 @@
       "kids": "Kids",
       "documentary": "Documentary"
     },
-    "loadingChannels": "Loading channels..."
+    "loadingChannels": "Loading channels...",
+    "channel": "Channel"
   },
   "location": {
     "consentModal": {
@@ -5865,7 +5876,8 @@
       "signingIn": "Signing you in...",
       "signedIn": "Signed in successfully",
       "expired": "QR code expired"
-    }
+    },
+    "newToBayitPlus": "New to Bayit+?"
   },
   "nav": {
     "home": "Home",
@@ -6105,11 +6117,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -6121,10 +6129,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -6312,7 +6317,9 @@
       "sending": "Sending...",
       "characterSpeaking": "Character is speaking...",
       "endDialogue": "End Dialogue",
-      "noCharactersAvailable": "No characters available for dialogue"
+      "noCharactersAvailable": "No characters available for dialogue",
+      "voiceMode": "Voice Mode",
+      "holdToSpeak": "Hold to Speak"
     },
     "interaction": {
       "previous": "Previous Interaction",
@@ -6323,7 +6330,39 @@
       "processing": "Processing...",
       "askAnother": "Ask Another",
       "resumeMovie": "Resume",
-      "selectCharacter": "Select Character"
+      "selectCharacter": "Select Character",
+      "stages": {
+        "polishing": "Polishing your question...",
+        "thinking": "Thinking about your question...",
+        "biff1": "Biff didn't like your question very much...",
+        "biff2": "Biff is flexing in the mirror...",
+        "biff3": "Biff is trying to spell his answer...",
+        "biff4": "Biff just called someone a butthead...",
+        "doc1": "Doc is consulting the flux capacitor...",
+        "doc2": "Great Scott! Still calculating...",
+        "doc3": "Doc is adjusting 1.21 gigawatts...",
+        "doc4": "Doc is checking the space-time continuum...",
+        "marty1": "Marty is tuning his guitar first...",
+        "marty2": "This is heavy...",
+        "marty3": "Marty is checking if he still exists...",
+        "marty4": "Marty says nobody calls him chicken...",
+        "george1": "George is working up the courage to answer...",
+        "george2": "George is writing his response in his notebook...",
+        "george3": "George says his density brought him here...",
+        "george4": "George finally has confidence...",
+        "lorraine1": "Lorraine is fixing her hair first...",
+        "lorraine2": "Lorraine is thinking about the Enchantment Under the Sea...",
+        "lorraine3": "Lorraine says it was meant to be...",
+        "lorraine4": "Lorraine is getting ready for the dance...",
+        "jennifer1": "Jennifer is waiting in the car...",
+        "jennifer2": "Jennifer is wondering about the future...",
+        "jennifer3": "Jennifer says she can handle it...",
+        "jennifer4": "Jennifer is being patient...",
+        "generic1": "{{name}} is thinking...",
+        "generic2": "{{name}} is crafting a response...",
+        "generic3": "Almost there...",
+        "generic4": "Just a moment longer..."
+      }
     },
     "premiumRequiredRecording": "Premium subscription required",
     "sleepTimer": {
@@ -6338,7 +6377,17 @@
       "timerExtended": "Timer extended by {{minutes}} minutes",
       "timerCancelled": "Sleep timer cancelled"
     },
-    "startOver": "Start Over"
+    "startOver": "Start Over",
+    "multiCharacter": {
+      "selectCharacter": "Select Character",
+      "talkingTo": "Talking to"
+    },
+    "shared": {
+      "participants": "Participants",
+      "yourTurn": "Your Turn",
+      "waitingForTurn": "Waiting for your turn..."
+    },
+    "streamLoadFailed": "Failed to load stream"
   },
   "playlist": {
     "title": "My Playlist",
@@ -7381,18 +7430,7 @@
       "excludeKids": "Exclude kids content",
       "allContent": "All content"
     },
-    "suggestions": {
-      "trendingTitle": "Trending Searches",
-      "categoriesTitle": "Browse Categories",
-      "recentTitle": "Recent Searches",
-      "clearRecent": "Clear",
-      "movies": "Movies",
-      "series": "Series",
-      "liveTV": "Live TV",
-      "news": "News",
-      "sports": "Sports",
-      "kids": "Kids"
-    },
+    "suggestions": "Suggestions",
     "controls": {
       "placeholder": "Search for content...",
       "hints": {
@@ -7485,7 +7523,22 @@
       "titleAsc": "Title A-Z",
       "titleDesc": "Title Z-A",
       "popularity": "Most Popular"
-    }
+    },
+    "filter": {
+      "title": "Filter",
+      "reset": "Reset",
+      "language": "Language",
+      "accessibility": "Accessibility",
+      "subtitles": "Subtitles",
+      "dubbing": "Dubbing",
+      "yearRange": "Year Range",
+      "yearFrom": "From year",
+      "yearTo": "To year",
+      "duration": "Duration",
+      "apply": "Apply Filters"
+    },
+    "previousPage": "Previous Page",
+    "nextPage": "Next Page"
   },
   "security": {
     "changePassword": "Change Password",
@@ -7528,7 +7581,21 @@
     "autoTranslateDescription": "Automatically translate chat messages to your preferred language",
     "notifications": "Notifications",
     "pushNotifications": "Push Notifications",
-    "playback": "Playback",
+    "playback": {
+      "title": "Playback",
+      "videoQuality": "Video Quality",
+      "autoplaySection": "Autoplay",
+      "autoplay": "Autoplay",
+      "autoplayNext": "Autoplay Next Episode",
+      "countdown": "Countdown before next episode",
+      "controls": "Controls",
+      "skipIntro": "Skip Intro",
+      "skipCredits": "Skip Credits",
+      "continueWatching": "Continue Watching",
+      "speed": "Playback Speed",
+      "liveTV": "Live TV",
+      "bufferSize": "Buffer Size"
+    },
     "quality": "Quality",
     "subtitles": "Subtitles",
     "autoplay": "Autoplay",
@@ -7537,12 +7604,47 @@
     "interactiveMomentsNoAvatar": "Interactive mode is unavailable because no avatar persona was found. The movie will play without interactive moments.",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
-    "privacy": "Privacy",
+    "privacy": {
+      "clearWatchHistoryTitle": "Clear Watch History",
+      "clear": "Clear",
+      "clearWatchHistoryMessage": "This will permanently delete your watch history.",
+      "clearSearchHistoryTitle": "Clear Search History",
+      "clearSearchHistoryMessage": "This will permanently delete your search history.",
+      "title": "Privacy",
+      "description": "Control your data collection and privacy preferences",
+      "dataCollection": "Data Collection",
+      "analytics": "Usage Analytics",
+      "analyticsDesc": "Help improve Bayit+ by sharing anonymous usage data",
+      "crashReports": "Crash Reports",
+      "crashReportsDesc": "Automatically send crash reports to help fix issues",
+      "personalization": "Personalization",
+      "personalizationDesc": "Allow Bayit+ to personalize your experience",
+      "history": "History",
+      "watchHistory": "Watch History",
+      "clearWatchHistory": "Clear Watch History",
+      "searchHistory": "Search History",
+      "clearSearchHistory": "Clear Search History"
+    },
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
-    "about": "About",
+    "about": {
+      "title": "About",
+      "appInfo": "App Info",
+      "version": "Version",
+      "build": "Build",
+      "environment": "Environment",
+      "legal": "Legal",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "licenses": "Open Source Licenses",
+      "deviceInfo": "Device Info",
+      "model": "Model",
+      "osVersion": "OS Version",
+      "locale": "Locale"
+    },
     "display": "Display",
     "homePageSections": "Home Page Sections",
     "configureSections": "Configure which sections appear on your home page",
@@ -7570,11 +7672,7 @@
       "title": "Title",
       "videos": "Videos"
     },
-    "accessibility": {
-      "small": "Small",
-      "medium": "Medium",
-      "large": "Large"
-    },
+    "accessibility": "Accessibility",
     "account": "Account",
     "appUpdates": "App Updates",
     "appUpdatesDescription": "Get notified about new features and improvements",
@@ -7625,13 +7723,7 @@
     "unlinkConfirm": "Unlink",
     "connected": "Connected",
     "notConnected": "Not Connected",
-    "help": {
-      "title": "Help Center",
-      "subtitle": "Find answers to common questions",
-      "loading": "Loading Help...",
-      "noFaqs": "No frequently asked questions available",
-      "contactSupport": "Contact Support"
-    },
+    "help": "Help & Support",
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7657,7 +7749,15 @@
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "audio": "Audio",
+    "mediaSection": "Media",
+    "privacyData": "Privacy & Data",
+    "general": "General",
+    "children": "Children",
+    "loading": "Loading settings...",
+    "not_connected": "Not connected",
+    "privacySecurity": "Privacy & Security"
   },
   "shabbat": {
     "activate": "Activate",
@@ -8219,14 +8319,15 @@
     "quiz": {
       "title": "Trivia Quiz"
     },
-    "question": {
-      "counter": "Question {{current}} of {{total}}"
-    },
+    "question": "Question",
     "results": {
       "title": "Quiz Complete!",
       "playAgain": "Play Again",
       "shekelsEarned": "{{amount}} Shekels Earned"
-    }
+    },
+    "explanation": "Explanation",
+    "submit": "Submit",
+    "tryAgain": "Try Again"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -8400,7 +8501,23 @@
     "voiceControl": "Voice Control",
     "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
     "voicesAvailable": "voices available",
-    "wakeWordDescription": "Activate voice control by saying the wake word."
+    "wakeWordDescription": "Activate voice control by saying the wake word.",
+    "calibration": {
+      "levelLabel": "Level"
+    },
+    "diagnostics": {
+      "micPermission": "Microphone Permission",
+      "speechRecognition": "Speech Recognition",
+      "currentState": "Current State",
+      "transcript": "Transcript",
+      "title": "Voice Diagnostics",
+      "audioSession": "Audio Session",
+      "runDiagnostics": "Run Diagnostics",
+      "copyReport": "Copy Report"
+    },
+    "stopListening": "Stop Listening",
+    "startListening": "Start Listening",
+    "searchPrompt": "What are you looking for?"
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -8848,7 +8965,11 @@
       "questionsSection": "Questions",
       "empty": "No interactive movies available yet",
       "characterCount": "{{count}} characters",
-      "selectCharacter": "Select a character to interact with"
+      "selectCharacter": "Select a character to interact with",
+      "quotaLabel": "Interactions remaining",
+      "generationTitle": "Generating interaction...",
+      "selectedCount": "{{count}} selected",
+      "confirmButton": "Confirm"
     },
     "dialogue": {
       "specificQuestions": "Character Questions",
@@ -8868,7 +8989,110 @@
       "contacts": "Contacts",
       "contactsDesc": "Manage family contacts for sharing",
       "feedback": "Feedback",
-      "feedbackDesc": "Messages from family and friends"
+      "feedbackDesc": "Messages from family and friends",
+      "title": "Me in the Story",
+      "consent": "Consent Required",
+      "consentDesc": "Enable biometric features to personalize your experience"
+    },
+    "arCapture": {
+      "processing": "Processing..."
+    },
+    "preview": {
+      "title": "3D Preview",
+      "loading": "Loading your avatar...",
+      "error": "Could not load 3D preview"
+    },
+    "consent": {
+      "biometric": {
+        "explanation": "Bayit+ uses biometric data to power personalized avatar and voice features.",
+        "privacy": "Your biometric data is encrypted and never shared with third parties.",
+        "pinLabel": "PIN",
+        "pinPlaceholder": "Enter your PIN",
+        "consentTypes": "I consent to the following",
+        "meshGeneration": "3D Mesh Generation",
+        "voiceV2V": "Voice-to-Voice Practice",
+        "latentFeatures": "AI Feature Personalization",
+        "currentStatus": "Current Consent Status",
+        "submit": "Grant Consent",
+        "title": "Biometric Consent",
+        "familyControlsRequired": "Family Controls Required",
+        "familyControlsExplain": "A parent or guardian must approve biometric features for this profile.",
+        "goToFamilyControls": "Go to Family Controls"
+      }
+    },
+    "contacts": {
+      "title": "My Contacts",
+      "add": "Add Contact",
+      "empty": "No contacts yet",
+      "delete": "Delete Contact",
+      "name": "Display Name",
+      "phone": "Phone Number",
+      "pin": "PIN"
+    },
+    "feedback": {
+      "title": "Feedback",
+      "empty": "No feedback yet",
+      "from": "From",
+      "voiceMessage": "Voice Message",
+      "textMessage": "Text Message"
+    },
+    "highlights": {
+      "title": "Highlights",
+      "generate": "Generate Highlight Reel",
+      "empty": "No highlights yet",
+      "share": "Share",
+      "sendToFamily": "Send to Family",
+      "generating": "Generating highlights..."
+    },
+    "magicMirror": {
+      "vocabOfDay": "Word of the Day",
+      "noAvatar": "No Avatar",
+      "noAvatarDesc": "Create your 3D avatar to unlock Magic Mirror",
+      "createAvatar": "Create Avatar",
+      "noCreditsTitle": "Out of Credits",
+      "noCreditsDesc": "You need Beta credits to use Magic Mirror",
+      "playGreeting": "Play Greeting",
+      "refresh": "Refresh",
+      "meshUnavailable": "3D mesh unavailable"
+    },
+    "mesh": {
+      "title": "Generate 3D Mesh",
+      "viewPreview": "View Preview",
+      "statusIdle": "Ready",
+      "statusGenerating": "Generating...",
+      "statusReady": "Complete",
+      "statusFailed": "Failed"
+    },
+    "movieCharacters": {
+      "title": "Characters",
+      "empty": "No characters available"
+    },
+    "trigger": {
+      "prompt": "Say the phrase",
+      "dismiss": "Dismiss",
+      "success": "Excellent!",
+      "continue": "Continue",
+      "incorrect": "Not quite",
+      "correct": "Correct answer",
+      "tryAgain": "Try Again",
+      "skip": "Skip",
+      "errors": {
+        "microphoneFailed": "Microphone access failed"
+      }
+    },
+    "v2v": {
+      "transforming": "Transforming voice...",
+      "latency": "Latency",
+      "retry": "Retry",
+      "nextPhrase": "Next Phrase",
+      "beforeAfter": "Before / After",
+      "before": "Before",
+      "after": "After",
+      "improvement": "Improvement"
+    },
+    "avatar3d": {
+      "title": "3D Avatar",
+      "errorTitle": "Avatar Error"
     }
   },
   "starStory": {
@@ -9737,5 +9961,20 @@
     "success_title": "Password Reset!",
     "success_message": "Your password has been successfully reset. You can now sign in with your new password.",
     "back_to_login": "Back to Login"
+  },
+  "voiceFallback": {
+    "title": "Voice Unavailable",
+    "subtitle": "Type your message instead",
+    "micUnavailable": "Microphone unavailable",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "suggestions": "Suggestions"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "Voice Search Settings",
+      "language": "Recognition Language",
+      "sensitivity": "Sensitivity"
+    }
   }
 }
