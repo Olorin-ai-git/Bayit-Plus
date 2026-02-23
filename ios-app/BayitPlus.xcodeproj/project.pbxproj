@@ -1320,6 +1320,8 @@
 		DBFE468618D53677623C9FC1 /* UserSettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDCB223BE30E8EA4C9EADF4 /* UserSettingsRepository.swift */; };
 		DC6A26DE2F5D06815A3F20EE /* EPGView+DateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B2706EABFFBB32B7607497 /* EPGView+DateHelpers.swift */; };
 		DC774306387B0CB38C097DA0 /* TVPlayerView+ControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */; };
+		DC774307387B0CB38C097DA1 /* TVPlayerView+ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DCD2A03D2C44664D0653F5 /* TVPlayerView+ProgressBar.swift */; };
+		DC774308387B0CB38C097DA2 /* TVSiriRemoteSeekBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DCD2A13D2C44664D0653F6 /* TVSiriRemoteSeekBar.swift */; };
 		DC789E66711CB945475F8E94 /* DownloadManager+Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23AFFF27283BC1B76882B7D /* DownloadManager+Tasks.swift */; };
 		DCD12C2AA98B4F2D3781C2D8 /* QuizResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58323A392397D26C233BCD1 /* QuizResultsView.swift */; };
 		DCF349C42F100AB520355348 /* ChameleonAvatarProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFF1E680CE0FC82AAF196DC /* ChameleonAvatarProvider.swift */; };
@@ -2323,6 +2325,8 @@
 		A65EDDCB9F1952E65847EC54 /* TVContentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVContentSection.swift; sourceTree = "<group>"; };
 		A6A410A67792C3E3E39D902D /* PlayerView+RecordingOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PlayerView+RecordingOverlay.swift"; sourceTree = "<group>"; };
 		A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+ControlBar.swift"; sourceTree = "<group>"; };
+		A6DCD2A03D2C44664D0653F5 /* TVPlayerView+ProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+ProgressBar.swift"; sourceTree = "<group>"; };
+		A6DCD2A13D2C44664D0653F6 /* TVSiriRemoteSeekBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVSiriRemoteSeekBar.swift"; sourceTree = "<group>"; };
 		A7121F89DFA7940A64430E16 /* GlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTabBar.swift; sourceTree = "<group>"; };
 		A71BEF9C82986463084E05A6 /* LiveDubbingControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveDubbingControlsView.swift; sourceTree = "<group>"; };
 		A721E9D256C4DA21DB4CE04D /* PodcastsBrowseSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PodcastsBrowseSection.swift; sourceTree = "<group>"; };
@@ -3527,6 +3531,7 @@
 				88B66D41936D079D1B5FF05B /* TVPlayerView+ProgressTracking.swift */,
 				AE39E9CC9497D7A8C95C23E2 /* TVPlayerView+Sheets.swift */,
 				A6DCD29F3D2C44664D0653F4 /* TVPlayerView+ControlBar.swift */,
+				A6DCD2A03D2C44664D0653F5 /* TVPlayerView+ProgressBar.swift */,
 				BF49B52CC1BF1AA93D14C3DE /* TVQualitySelectorView.swift */,
 				5E9F0FB32F632CE9884F9F0C /* TVQuizAnswerButton.swift */,
 				42F36B12C39543EE87D4FB33 /* TVQuizOverlayView.swift */,
@@ -3536,6 +3541,7 @@
 				4143788A0C198796A7BEC26A /* TVSceneSearchView.swift */,
 				3DBC70BD712C7F25DC0888AA /* TVSharedInteractionView.swift */,
 				7F9D314994203D7D1E47EC31 /* TVShoreshHighlightView.swift */,
+				A6DCD2A13D2C44664D0653F6 /* TVSiriRemoteSeekBar.swift */,
 				B52D9AA31E6A929DD191FA2E /* TVSleepTimerBanner.swift */,
 				3737E848A2FDD89D105D2952 /* TVSleepTimerPicker.swift */,
 				158E70F832734A8D4D4151B5 /* TVSplitLanguagePickerView.swift */,
@@ -5737,6 +5743,7 @@
 				086057CEBE52975655CCEDFF /* TVPlayerControlButtonStyle.swift in Sources */,
 				C1D7FD8C014438FCC3CEF534 /* TVPlayerStateContainer.swift in Sources */,
 				DC774306387B0CB38C097DA0 /* TVPlayerView+ControlBar.swift in Sources */,
+				DC774307387B0CB38C097DA1 /* TVPlayerView+ProgressBar.swift in Sources */,
 				4DD1961FBE27837621550EE4 /* TVPlayerView+FocusManagement.swift in Sources */,
 				6356853A5331E24F37F02022 /* TVPlayerView+InteractionOverlays.swift in Sources */,
 				5D0AD90F2E636F8D4D75E76B /* TVPlayerView+Lifecycle.swift in Sources */,
@@ -5744,6 +5751,7 @@
 				D2D19C5499C10B9EF230AAAB /* TVPlayerView+ProgressTracking.swift in Sources */,
 				D7ABE40AE14519D62B229D1B /* TVPlayerView+Sheets.swift in Sources */,
 				0AEFFEBA1288C2F7FF45E04A /* TVPlayerView+TransportControls.swift in Sources */,
+				DC774308387B0CB38C097DA2 /* TVSiriRemoteSeekBar.swift in Sources */,
 				2DF8A72266E04BF87882670F /* TVSharedInteractionView+Conversation.swift in Sources */,
 				C7B6C9CBB9E3A6F203A2D33A /* TVSplitSubtitleOverlayView+Helpers.swift in Sources */,
 				9DCB6B0ECC28194F8C8FE78F /* TVSplitSubtitleOverlayView+Layouts.swift in Sources */,
@@ -6713,7 +6721,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 31;
+				CURRENT_PROJECT_VERSION = 35;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6736,7 +6744,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 31;
+				CURRENT_PROJECT_VERSION = 35;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6848,7 +6856,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 31;
+				CURRENT_PROJECT_VERSION = 35;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -6930,7 +6938,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 31;
+				CURRENT_PROJECT_VERSION = 35;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;

@@ -29,7 +29,7 @@
 
         // MARK: - Progress Tracking
 
-        private(set) var progressTracker: ProgressTracker?
+        var progressTracker: ProgressTracker?
 
         // MARK: - Sleep Timer
 
