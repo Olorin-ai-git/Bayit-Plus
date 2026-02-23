@@ -39,7 +39,7 @@ final class AudioPlaybackManager {
 
     // MARK: - Progress Tracking
 
-    private(set) var progressTracker: ProgressTracker?
+    internal(set) var progressTracker: ProgressTracker?
 
     // MARK: - Dependencies (internal for extension access)
 

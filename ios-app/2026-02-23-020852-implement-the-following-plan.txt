@@ -1,0 +1,2414 @@
+
+    ✻
+    |
+   ▟█▙     Claude Code v2.1.50
+ ▐▛███▜▌   Opus 4.6 · Claude Max
+▝▜█████▛▘  ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+  ▘▘ ▝▝  
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Plan to implement                                                            │
+│                                                                              │
+│ Claudette Android - Comprehensive Fix Plan                                   │
+│                                                                              │
+│ Context                                                                      │
+│                                                                              │
+│ The kotlin-specialist analysis found 22 issues across the Claudette Android  │
+│ app (SSH terminal client for Claude Code). This plan addresses all critical, │
+│  high, and medium issues, plus selected low-priority ones. Fixes are ordered │
+│  by dependency.                                                              │
+│                                                                              │
+│ Project root:                                                                │
+│ /Users/olorin/Documents/Projects/olorin/Claudette/claudette-android/         │
+│ Source root: app/src/main/java/com/olorin/claudette/                         │
+│ Test root: app/src/test/java/com/olorin/claudette/                           │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 1: Foundation Utilities (no impact on existing logic)                  │
+│                                                                              │
+│ 1.1 Remove unused TOML entry                                                 │
+│                                                                              │
+│ File: gradle/libs.versions.toml                                              │
+│                                                                              │
+│ - Delete line: compose-compiler = "1.5.15" (unused; K2 compiler plugin       │
+│ handles it)                                                                  │
+│                                                                              │
+│ 1.2 Fix Gradle signing config NPE                                            │
+│                                                                              │
+│ File: app/build.gradle.kts lines 33-37                                       │
+│                                                                              │
+│ - Wrap local.properties reads in null-safe .getProperty() calls              │
+│ - Add signingConfigs { debug { /* use default keystore */ } } fallback so    │
+│ any dev can sync without local.properties                                    │
+│ - Apply release signing config only when KEYSTORE_PATH is non-null           │
+│                                                                              │
+│ 1.3 Create AnsiUtils.kt — shared stripANSI                                   │
+│                                                                              │
+│ New file: services/impl/AnsiUtils.kt                                         │
+│                                                                              │
+│ internal object AnsiUtils {                                                  │
+│     private val ANSI_PATTERN =                                               │
+│ Regex("""\u001B\[[0-9;?]*[A-Za-z]|\u001B\][^\u0007]*\u0007""")               │
+│     fun stripANSI(text: String): String = ANSI_PATTERN.replace(text, "")     │
+│ }                                                                            │
+│                                                                              │
+│ Then update to remove duplicate implementations:                             │
+│                                                                              │
+│ - AgentActivityParser.kt — remove private stripANSI(), call                  │
+│ AnsiUtils.stripANSI()                                                        │
+│ - AuthUrlInterceptor.kt — same                                               │
+│ - PermissionNotificationService.kt — same                                    │
+│ - TerminalBlockDetector.kt — delegate its stripANSI() to                     │
+│ AnsiUtils.stripANSI() (keep public method for existing tests)                │
+│                                                                              │
+│ 1.4 Create SshKeyUtils.kt — shared Ed25519 key pair builder                  │
+│                                                                              │
+│ New file: services/impl/SshKeyUtils.kt                                       │
+│                                                                              │
+│ - Extract buildEd25519KeyPair(privateKeyData: ByteArray): KeyPair from       │
+│ SshConnectionManager.kt (lines 345-368)                                      │
+│ - Update SshConnectionManager.kt to call SshKeyUtils.buildEd25519KeyPair()   │
+│ - Update RemoteFileBrowserService.kt to call                                 │
+│ SshKeyUtils.buildEd25519KeyPair()                                            │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 2: DI Architecture — Factory Pattern for SessionViewModel              │
+│                                                                              │
+│ The SessionViewModel manually news up SshConnectionManager,                  │
+│ TerminalController, NetworkProbeService, RemoteFileBrowserService, and       │
+│ ClaudeResourceDiscoveryService — bypassing Hilt and making the VM            │
+│ untestable.                                                                  │
+│                                                                              │
+│ 2.1 Create factory interfaces                                                │
+│                                                                              │
+│ New file: services/interfaces/SshConnectionManagerFactory.kt                 │
+│                                                                              │
+│ fun interface SshConnectionManagerFactory {                                  │
+│     fun create(serverKeyVerifier: ServerKeyVerifier): SshConnectionManager   │
+│ }                                                                            │
+│                                                                              │
+│ New file: services/interfaces/NetworkProbeServiceFactory.kt                  │
+│                                                                              │
+│ fun interface NetworkProbeServiceFactory {                                   │
+│     fun create(host: String, port: Int): NetworkProbeService                 │
+│ }                                                                            │
+│                                                                              │
+│ New file: services/interfaces/IWakeOnLanService.kt                           │
+│                                                                              │
+│ interface IWakeOnLanService {                                                │
+│     suspend fun wake(macAddress: String, broadcastAddress: String)           │
+│ }                                                                            │
+│                                                                              │
+│ Have WakeOnLanService implement IWakeOnLanService.                           │
+│                                                                              │
+│ 2.2 Update AppModule.kt                                                      │
+│                                                                              │
+│ Add providers:                                                               │
+│                                                                              │
+│ @Provides                                                                    │
+│ fun provideSshConnectionManagerFactory(                                      │
+│     config: AppConfiguration,                                                │
+│     keychainService: KeychainServiceInterface,                               │
+│     tmuxService: TmuxSessionServiceInterface                                 │
+│ ): SshConnectionManagerFactory = SshConnectionManagerFactory {               │
+│ serverKeyVerifier ->                                                         │
+│     SshConnectionManager(config, keychainService, tmuxService,               │
+│ serverKeyVerifier)                                                           │
+│ }                                                                            │
+│                                                                              │
+│ @Provides                                                                    │
+│ fun provideNetworkProbeServiceFactory(config: AppConfiguration):             │
+│ NetworkProbeServiceFactory =                                                 │
+│     NetworkProbeServiceFactory { host, port ->                               │
+│         NetworkProbeService(                                                 │
+│             host = host, port = port,                                        │
+│             intervalSeconds = config.networkProbeIntervalSeconds,            │
+│             timeoutSeconds = config.networkProbeTimeoutSeconds,              │
+│             degradedThresholdMs = config.networkProbeDegradedThresholdMs     │
+│         )                                                                    │
+│     }                                                                        │
+│                                                                              │
+│ @Provides @Singleton                                                         │
+│ fun provideWakeOnLanService(): IWakeOnLanService = WakeOnLanService()        │
+│                                                                              │
+│ Also update provideRemoteFileBrowserService() to inject AppConfiguration for │
+│  timeout:                                                                    │
+│                                                                              │
+│ @Provides                                                                    │
+│ fun provideRemoteFileBrowserService(config: AppConfiguration):               │
+│ RemoteFileBrowserServiceInterface =                                          │
+│     RemoteFileBrowserService(config.sshConnectTimeoutSeconds)                │
+│                                                                              │
+│ 2.3 Update SessionViewModel.kt                                               │
+│                                                                              │
+│ - Add private val connectionManagerFactory: SshConnectionManagerFactory and  │
+│ private val networkProbeFactory: NetworkProbeServiceFactory to constructor   │
+│ - Change createConnectionManager() to use                                    │
+│ connectionManagerFactory.create(hostKeyValidator)                            │
+│ - Change startNetworkProbe() to use networkProbeFactory.create(host, port)   │
+│ - For initializeRemoteServices() and getClaudeSettingsService(): inject      │
+│ RemoteFileBrowserServiceFactory (fun interface that just calls               │
+│ RemoteFileBrowserService()) and ClaudeResourceDiscoveryServiceFactory        │
+│   - Note: these instances are per-connection and still need to be created    │
+│ fresh; the factory just removes the direct new call                          │
+│ - Remove all impl imports, use only interfaces                               │
+│ - Fix duplicate val tabId on line 124 (Kotlin compile error)                 │
+│                                                                              │
+│ 2.4 Update ProfileListViewModel.kt                                           │
+│                                                                              │
+│ - Inject IWakeOnLanService via @Inject constructor                           │
+│ - Delete lines 58-80 (inline WoL magic packet construction)                  │
+│ - Delegate to wakeOnLanService.wake(macAddress, broadcastAddress)            │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 3: Models & Data Fixes                                                 │
+│                                                                              │
+│ 3.1 Fix KnownHost.lastSeenAt mutability                                      │
+│                                                                              │
+│ File: models/KnownHost.kt                                                    │
+│                                                                              │
+│ - Change var lastSeenAt: Long → val lastSeenAt: Long                         │
+│ - Update services/impl/TofuHostKeyValidator.kt to use                        │
+│ existingHost.copy(lastSeenAt = System.currentTimeMillis())                   │
+│                                                                              │
+│ 3.2 Fix AgentTreeNode immutability                                           │
+│                                                                              │
+│ File: models/AgentTreeNode.kt                                                │
+│                                                                              │
+│ - Change var isCompleted: Boolean → val isCompleted: Boolean                 │
+│ - Change val children: MutableList<AgentTreeNode> → val children:            │
+│ List<AgentTreeNode>                                                          │
+│ - Update services/impl/AgentActivityParser.kt:                               │
+│   - Replace node.isCompleted = true with node = node.copy(isCompleted =      │
+│ true)                                                                        │
+│   - Replace node.children.add(child) with node = node.copy(children =        │
+│ node.children + child)                                                       │
+│   - Update internal map to store updated nodes                               │
+│                                                                              │
+│ 3.3 Fix HostKeyStore — synchronized → Mutex                                  │
+│                                                                              │
+│ File: services/impl/HostKeyStore.kt                                          │
+│                                                                              │
+│ - Replace private val lock = Any() with private val mutex = Mutex()          │
+│ - Change synchronized(lock) { ... } → runBlocking { mutex.withLock { ... } } │
+│  for the non-suspend interface methods (since HostKeyStoreInterface methods  │
+│ are non-suspend by design)                                                   │
+│   - Alt: If interface can be made suspend, prefer mutex.withLock in suspend  │
+│ context                                                                      │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 4: Performance & Service Fixes                                         │
+│                                                                              │
+│ 4.1 ArrayDeque for ScreenBuffer scrollback                                   │
+│                                                                              │
+│ File: terminal/ScreenBuffer.kt line 17                                       │
+│                                                                              │
+│ - Change private val scrollback = mutableListOf<String>() → private val      │
+│ scrollback = ArrayDeque<String>()                                            │
+│ - Change scrollback.removeAt(0) → scrollback.removeFirst()                   │
+│                                                                              │
+│ 4.2 ArrayDeque for SshConnectionManager output buffer                        │
+│                                                                              │
+│ File: services/impl/SshConnectionManager.kt (output line buffer ~line 66)    │
+│                                                                              │
+│ - Change mutableListOf<String>() → ArrayDeque<String>()                      │
+│ - Change removeAt(0) → removeFirst()                                         │
+│                                                                              │
+│ 4.3 Fix ClaudeSettingsService tilde path                                     │
+│                                                                              │
+│ File: services/impl/ClaudeSettingsService.kt                                 │
+│                                                                              │
+│ - Remove const val SETTINGS_PATH = "~/.claude/settings.json"                 │
+│ - After fileBrowserService.connect(...), call                                │
+│ fileBrowserService.getHomeDirectory() and construct path:                    │
+│ val homeDir = fileBrowserService.getHomeDirectory()                          │
+│ val settingsPath = "$homeDir/.claude/settings.json"                          │
+│                                                                              │
+│ 4.4 Fix RemoteFileBrowserService hardcoded timeout                           │
+│                                                                              │
+│ File: services/impl/RemoteFileBrowserService.kt                              │
+│                                                                              │
+│ - Add private val connectTimeoutSeconds: Double constructor param (default   │
+│ from config)                                                                 │
+│ - Replace verify(30, TimeUnit.SECONDS) with                                  │
+│ verify(connectTimeoutSeconds.toLong(), TimeUnit.SECONDS)                     │
+│                                                                              │
+│ 4.5 Fix SplashScreen double-callback                                         │
+│                                                                              │
+│ File: ui/screens/splash/SplashScreen.kt                                      │
+│                                                                              │
+│ - Add var splashFinished by remember { mutableStateOf(false) } at top of     │
+│ composable                                                                   │
+│ - Wrap onSplashComplete() in if (!splashFinished) { splashFinished = true;   │
+│ onSplashComplete() } at every call site                                      │
+│                                                                              │
+│ 4.6 Delete dead code: SessionLifecycleObserver                               │
+│                                                                              │
+│ Delete file: ui/screens/session/SessionLifecycleObserver.kt                  │
+│                                                                              │
+│ - The class is defined but never registered anywhere (confirmed by analysis) │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 5: Logging Standardization                                             │
+│                                                                              │
+│ Files to update (all using direct Timber.* calls):                           │
+│ SshConnectionManager, NetworkProbeService, ProfileStore, HostKeyStore,       │
+│ RemoteFileBrowserService, ClaudeSettingsService, MdnsDiscoveryService,       │
+│ TerminalController, AgentActivityParser, AuthUrlInterceptor,                 │
+│ PermissionNotificationService, WakeOnLanService,                             │
+│ ClaudeResourceDiscoveryService, TofuHostKeyValidator, SshKeyService,         │
+│ SnippetStore, KeychainService, TmuxSessionService, SessionViewModel,         │
+│ ProfileEditorViewModel, ProfileListViewModel, RemoteFileBrowserViewModel,    │
+│ SnippetDrawerViewModel                                                       │
+│                                                                              │
+│ Pattern: Replace Timber.i("msg %s", arg) → LoggerFactory.i("ClassName", "msg │
+│  $arg")                                                                      │
+│                                                                              │
+│ - LoggerFactory.d(tag, msg) for debug                                        │
+│ - LoggerFactory.i(tag, msg) for info                                         │
+│ - LoggerFactory.w(tag, msg) for warning                                      │
+│ - LoggerFactory.e(tag, msg, throwable) for errors with exception             │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 6: Bonjour Discovery Wiring                                            │
+│                                                                              │
+│ 6.1 Add MdnsDiscoveryService to Hilt                                         │
+│                                                                              │
+│ File: di/AppModule.kt                                                        │
+│                                                                              │
+│ @Provides @Singleton                                                         │
+│ fun provideMdnsDiscoveryService(@ApplicationContext context: Context):       │
+│ MdnsDiscoveryService =                                                       │
+│     MdnsDiscoveryService(context)                                            │
+│                                                                              │
+│ 6.2 Update ProfileEditorViewModel                                            │
+│                                                                              │
+│ File: ui/screens/profileeditor/ProfileEditorViewModel.kt                     │
+│                                                                              │
+│ - Add private val mdnsDiscovery: MdnsDiscoveryService to @Inject constructor │
+│ - Expose val discoveredHosts: StateFlow<List<BonjourHost>> =                 │
+│ mdnsDiscovery.discoveredHosts                                                │
+│ - Call mdnsDiscovery.start() in init {} block                                │
+│ - Call mdnsDiscovery.stop() in onCleared()                                   │
+│                                                                              │
+│ 6.3 Update ProfileEditorScreen                                               │
+│                                                                              │
+│ File: ui/screens/profileeditor/ProfileEditorScreen.kt                        │
+│                                                                              │
+│ - In BonjourDiscoverySection, replace local remember with val bonjourHosts   │
+│ by viewModel.discoveredHosts.collectAsStateWithLifecycle()                   │
+│ - Remove the local static mutableStateOf<List<BonjourHost>>(emptyList())     │
+│ - Display actual hosts when non-empty, "Searching..." only when empty        │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 7: Toast → Snackbar                                                    │
+│                                                                              │
+│ Files: SessionScreen.kt, ProfileEditorScreen.kt, ProfileListScreen.kt        │
+│                                                                              │
+│ For each screen:                                                             │
+│                                                                              │
+│ 1. Add val snackbarHostState = remember { SnackbarHostState() } inside the   │
+│ composable                                                                   │
+│ 2. Wrap existing Scaffold (or add one) with snackbarHost = {                 │
+│ SnackbarHost(snackbarHostState) }                                            │
+│ 3. Replace every Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()     │
+│ with:                                                                        │
+│ LaunchedEffect(key) { snackbarHostState.showSnackbar(msg) }                  │
+│ 3. or via a SnackbarEvent StateFlow in the ViewModel                         │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 8: File Size Fixes (200-line limit)                                    │
+│                                                                              │
+│ Files exceeding 200 lines:                                                   │
+│                                                                              │
+│ - ScreenBuffer.kt (686): Extract CSI handler methods into a CsiHandler inner │
+│  object and OSC/DCS handling into separate private extension functions       │
+│ - SessionScreen.kt (597): Extract HostKeyAlertDialog, ConnectionStatusBar,   │
+│ TabBar, TerminalTabContent, ClaudeResourcesBottomSheet into separate files   │
+│ in ui/screens/session/components/                                            │
+│ - ProfileEditorScreen.kt (677): Extract AuthMethodSection,                   │
+│ BonjourDiscoverySection, PortSection, SshKeySection into                     │
+│ ui/screens/profileeditor/components/                                         │
+│ - ProfileListScreen.kt (538): Extract ProfileCard, WolButton,                │
+│ EmptyProfilesState into ui/screens/profilelist/components/                   │
+│                                                                              │
+│ ---                                                                          │
+│ Phase 9: Tests                                                               │
+│                                                                              │
+│ 9.1 ScreenBufferTest.kt                                                      │
+│                                                                              │
+│ New file: test/java/com/olorin/claudette/terminal/ScreenBufferTest.kt        │
+│ Cover:                                                                       │
+│                                                                              │
+│ - writeLine() and renderToString() round-trip                                │
+│ - CSI cursor up/down/forward/back (CUU/CUD/CUF/CUB)                          │
+│ - CSI erase in line (EL 0/1/2)                                               │
+│ - CSI erase in display (ED 0/1/2)                                            │
+│ - Scroll region set + line scroll                                            │
+│ - Alternate screen buffer enter/exit                                         │
+│ - Scrollback accumulation and max limit                                      │
+│ - UTF-8 multibyte sequences                                                  │
+│ - ANSI sequence passthrough/stripping                                        │
+│ - Screen resize (width/height change preserves content)                      │
+│                                                                              │
+│ 9.2 SessionViewModelTest.kt                                                  │
+│                                                                              │
+│ New file: test/java/com/olorin/claudette/ui/SessionViewModelTest.kt          │
+│ Use MockK to mock all injected interfaces + factories:                       │
+│                                                                              │
+│ - initialize() calls profileStore.loadProfiles() and creates first tab       │
+│ - addTab() increments tab count                                              │
+│ - closeTab() prevents closing last tab                                       │
+│ - acceptHostKey() / rejectHostKey() complete the deferred                    │
+│                                                                              │
+│ ---                                                                          │
+│ Files Changed Summary                                                        │
+│                                                                              │
+│ File: gradle/libs.versions.toml                                              │
+│ Action: Remove compose-compiler entry                                        │
+│ ────────────────────────────────────────                                     │
+│ File: app/build.gradle.kts                                                   │
+│ Action: Fix signing config null safety                                       │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/AnsiUtils.kt                                             │
+│ Action: NEW — shared stripANSI                                               │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/SshKeyUtils.kt                                           │
+│ Action: NEW — shared buildEd25519KeyPair                                     │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/AgentActivityParser.kt                                   │
+│ Action: Use AnsiUtils.stripANSI                                              │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/AuthUrlInterceptor.kt                                    │
+│ Action: Use AnsiUtils.stripANSI                                              │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/PermissionNotificationService.kt                         │
+│ Action: Use AnsiUtils.stripANSI                                              │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/TerminalBlockDetector.kt                                 │
+│ Action: Delegate stripANSI to AnsiUtils                                      │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/SshConnectionManager.kt                                  │
+│ Action: Use SshKeyUtils; ArrayDeque; LoggerFactory; use factory              │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/RemoteFileBrowserService.kt                              │
+│ Action: Use SshKeyUtils; fix timeout; LoggerFactory                          │
+│ ────────────────────────────────────────                                     │
+│ File: services/interfaces/SshConnectionManagerFactory.kt                     │
+│ Action: NEW                                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: services/interfaces/NetworkProbeServiceFactory.kt                      │
+│ Action: NEW                                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: services/interfaces/IWakeOnLanService.kt                               │
+│ Action: NEW                                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/WakeOnLanService.kt                                      │
+│ Action: Implement IWakeOnLanService; LoggerFactory                           │
+│ ────────────────────────────────────────                                     │
+│ File: di/AppModule.kt                                                        │
+│ Action: Add factories + WoL + MdnsDiscovery providers; inject config into    │
+│   RemoteFileBrowserService                                                   │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/session/SessionViewModel.kt                                 │
+│ Action: Inject factories; fix duplicate val; use LoggerFactory               │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/profilelist/ProfileListViewModel.kt                         │
+│ Action: Inject IWakeOnLanService; remove dupe WoL; LoggerFactory             │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/profileeditor/ProfileEditorViewModel.kt                     │
+│ Action: Inject MdnsDiscoveryService; expose hosts                            │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/profileeditor/ProfileEditorScreen.kt                        │
+│ Action: Wire Bonjour; Toast→Snackbar; extract components                     │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/session/SessionScreen.kt                                    │
+│ Action: Toast→Snackbar; extract components                                   │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/profilelist/ProfileListScreen.kt                            │
+│ Action: Toast→Snackbar; extract components                                   │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/splash/SplashScreen.kt                                      │
+│ Action: Fix double-callback                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: ui/screens/session/SessionLifecycleObserver.kt                         │
+│ Action: DELETE                                                               │
+│ ────────────────────────────────────────                                     │
+│ File: models/KnownHost.kt                                                    │
+│ Action: var → val lastSeenAt                                                 │
+│ ────────────────────────────────────────                                     │
+│ File: models/AgentTreeNode.kt                                                │
+│ Action: Immutable data class                                                 │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/TofuHostKeyValidator.kt                                  │
+│ Action: Use .copy() for KnownHost                                            │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/AgentActivityParser.kt                                   │
+│ Action: Use .copy() for AgentTreeNode                                        │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/HostKeyStore.kt                                          │
+│ Action: synchronized → Mutex                                                 │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/ClaudeSettingsService.kt                                 │
+│ Action: Fix ~ path                                                           │
+│ ────────────────────────────────────────                                     │
+│ File: services/impl/NetworkProbeService.kt                                   │
+│ Action: LoggerFactory; SupervisorJob scope                                   │
+│ ────────────────────────────────────────                                     │
+│ File: terminal/ScreenBuffer.kt                                               │
+│ Action: ArrayDeque; extract large sections                                   │
+│ ────────────────────────────────────────                                     │
+│ File: terminal/TerminalController.kt                                         │
+│ Action: LoggerFactory; SupervisorJob scope                                   │
+│ ────────────────────────────────────────                                     │
+│ File: ~15 more service files                                                 │
+│ Action: LoggerFactory standardization                                        │
+│ ────────────────────────────────────────                                     │
+│ File: test/.../terminal/ScreenBufferTest.kt                                  │
+│ Action: NEW                                                                  │
+│ ────────────────────────────────────────                                     │
+│ File: test/.../ui/SessionViewModelTest.kt                                    │
+│ Action: NEW                                                                  │
+│                                                                              │
+│ ---                                                                          │
+│ Verification                                                                 │
+│                                                                              │
+│ After all changes:                                                           │
+│                                                                              │
+│ 1. ./gradlew assembleDebug must succeed with no warnings                     │
+│ 2. ./gradlew test must pass all unit tests                                   │
+│ 3. New ScreenBufferTest must show 15+ passing tests                          │
+│ 4. New SessionViewModelTest must show 5+ passing tests                       │
+│ 5. Android Studio: no unresolved references, no red underlines               │
+│ 6. Lint: ./gradlew lint — verify no new issues introduced                    │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Agent "Explore services, duplication, logging patterns" completed
+
+⏺ Explore(Explore services, duplication, logging patterns) Haiku 4.5
+  ⎿  Backgrounded agent (↓ to manage · ctrl+o to expand)
+
+⏺ Agent "Explore build, DI, SessionViewModel architecture" completed
+
+⏺ I now have the key files. Let me read the remaining files needed before
+  implementing.
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Agent "Explore screens, models, tests, interfaces" completed
+
+❯ 2 
+
+⏺ I have enough context to start implementing. The user's "2" response confirms
+  proceeding. Let me create a task list and begin.
+
+⏺ Read 4 files (ctrl+o to expand)
+
+⏺ Agent "Explore screens, models, tests, interfaces" completed
+
+⏺ Now I have everything I need. Let me implement the plan systematically. I'll
+  start with all Phase 1 changes in parallel:
+
+⏺ Read 5 files (ctrl+o to expand)
+
+⏺ Agent "Explore services, duplication, logging patterns" completed
+
+❯ continue 
+
+⏺ Now I have all the files I need. Let me implement all the changes. I'll work
+  through them systematically:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/gradle/libs.ver
+        sions.toml)
+  ⎿  File must be read first
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now I have everything. Let me implement all changes in parallel batches:
+
+  Batch 1: Gradle, TOML, new interface files
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/gradle/libs.ver
+        sions.toml)
+  ⎿  Removed 1 line
+      3  kotlin = "2.0.21"
+      4  ksp = "2.0.21-1.0.28"
+      5  compose-bom = "2025.01.01"
+      6 -compose-compiler = "1.5.15"                                     
+      6  hilt = "2.52"
+      7  hilt-navigation-compose = "1.2.0"
+      8  mina-sshd = "2.14.0"
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/build.gradl
+        e.kts)
+  ⎿  Added 10 lines, removed 6 lines
+      29      }
+      30  
+      31      signingConfigs {
+      32 -        create("release") {                                    
+      33 -            storeFile     = file(localProps["KEYSTORE_PATH"] as
+         - String)                                                       
+      34 -            storePassword = localProps["KEYSTORE_PASSWORD"] as 
+         -String                                                         
+      35 -            keyAlias      = localProps["KEY_ALIAS"] as String  
+      36 -            keyPassword   = localProps["KEY_PASSWORD"] as Strin
+         -g                                                              
+      32 +        val keystorePath = localProps.getProperty("KEYSTORE_PAT
+         +H")                                                            
+      33 +        if (keystorePath != null) {                            
+      34 +            create("release") {                                
+      35 +                storeFile     = file(keystorePath)             
+      36 +                storePassword = localProps.getProperty("KEYSTOR
+         +E_PASSWORD")                                                   
+      37 +                keyAlias      = localProps.getProperty("KEY_ALI
+         +AS")                                                           
+      38 +                keyPassword   = localProps.getProperty("KEY_PAS
+         +SWORD")                                                        
+      39 +            }                                                  
+      40          }
+      41      }
+      42  
+     ...
+      44          release {
+      45              isMinifyEnabled = true
+      46              isShrinkResources = true
+      44 -            signingConfig = signingConfigs.getByName("release")
+      47 +            val releaseConfig = signingConfigs.findByName("rele
+         +ase")                                                          
+      48 +            if (releaseConfig != null) signingConfig = releaseC
+         +onfig                                                          
+      49  proguardFiles(
+      50                  getDefaultProguardFile("proguard-android-optimi
+          ze.txt"),
+      51                  "proguard-rules.pro"
+
+⏺ Now create the new interface and utility files in parallel:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/interfaces/IWakeOnLanService.kt)
+  ⎿  Wrote 5 lines to ../../../Claudette/claudette-android/app/src/main/jav
+     a/com/olorin/claudette/services/interfaces/IWakeOnLanService.kt
+      1 package com.olorin.claudette.services.interfaces
+      2 
+      3 interface IWakeOnLanService {
+      4     suspend fun wake(macAddress: String, broadcastAddress: String
+        )
+      5 }
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/interfaces/SshConnectionManagerFactory.kt
+       )
+  ⎿  Wrote 8 lines to
+     ../../../Claudette/claudette-android/app/src/main/java/com/olorin/clau
+     dette/services/interfaces/SshConnectionManagerFactory.kt
+      1 package com.olorin.claudette.services.interfaces
+      2 
+      3 import com.olorin.claudette.services.impl.SshConnectionManager
+      4 import org.apache.sshd.client.keyverifier.ServerKeyVerifier
+      5 
+      6 fun interface SshConnectionManagerFactory {
+      7     fun create(serverKeyVerifier: ServerKeyVerifier): SshConnecti
+        onManager
+      8 }
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/interfaces/NetworkProbeServiceFactory.kt)
+  ⎿  Wrote 7 lines to
+     ../../../Claudette/claudette-android/app/src/main/java/com/olorin/clau
+     dette/services/interfaces/NetworkProbeServiceFactory.kt
+      1 package com.olorin.claudette.services.interfaces
+      2 
+      3 import com.olorin.claudette.services.impl.NetworkProbeService
+      4 
+      5 fun interface NetworkProbeServiceFactory {
+      6     fun create(host: String, port: Int): NetworkProbeService
+      7 }
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/SshKeyUtils.kt)
+  ⎿  Wrote 33 lines to ../../../Claudette/claudette-android/app/src/main/ja
+     va/com/olorin/claudette/services/impl/SshKeyUtils.kt
+      1 package com.olorin.claudette.services.impl
+      2 
+      3 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
+      4 import java.security.KeyFactory
+      5 import java.security.KeyPair
+      6 import java.security.spec.PKCS8EncodedKeySpec
+      7 import java.security.spec.X509EncodedKeySpec
+      8 
+      9 internal object SshKeyUtils {
+     … +23 lines (ctrl+o to expand)
+
+⏺ Batch 2: Update service files to use shared utilities
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 5 lines
+      27  import org.apache.sshd.client.session.ClientSession
+      28  import org.apache.sshd.common.channel.PtyChannelConfiguration
+      29  import org.apache.sshd.sftp.client.SftpClientFactory
+      30 -import org.bouncycastle.crypto.params.Ed25519PrivateKeyParamete
+         -rs                                                             
+      31 -import timber.log.Timber                                       
+      30 +import com.olorin.claudette.config.LoggerFactory               
+      31  import java.io.OutputStream
+      32  import java.io.PipedInputStream
+      33  import java.io.PipedOutputStream
+      35 -import java.security.KeyFactory                                
+      36 -import java.security.KeyPair                                   
+      37 -import java.security.spec.PKCS8EncodedKeySpec                  
+      34  import java.util.EnumSet
+      35  import java.util.concurrent.TimeUnit
+      36  
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      89          lastProfileId = profileId
+      90  
+      91          _connectionState.value = ConnectionState.Connecting
+      92 -        Timber.i("Connecting to %s:%d", settings.host, settings
+         -.port)                                                         
+      92 +        LoggerFactory.i(TAG, "Connecting to ${settings.host}:${
+         +settings.port}")                                               
+      93  
+      94          val sessionName: String? = if (config.tmuxEnabled && pr
+          ofileId != null) {
+      95              tmuxService.sessionName(profileId, config.tmuxSessi
+          onPrefix)
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      131                  session = sess
+      132  
+      133                  _connectionState.value = ConnectionState.Conne
+           cted
+      134 -                Timber.i("SSH connected, opening PTY")        
+      134 +                LoggerFactory.i(TAG, "SSH connected, opening P
+          +TY")                                                          
+      135  
+      136                  // Open PTY shell
+      137                  val ptyConfig = PtyChannelConfiguration().appl
+           y {
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me make all the remaining edits to SshConnectionManager.kt in
+  parallel:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      162                      "cd ${settings.projectPath} && ${config.ss
+           hCommand}\n"
+      163                  }
+      164  
+      165 -                Timber.i("Sending command: %s", command.take(1
+          -20))                                                          
+      165 +                LoggerFactory.i(TAG, "Sending command: ${comma
+          +nd.take(120)}")                                               
+      166                  pipedOutput.write(command.toByteArray())
+      167                  pipedOutput.flush()
+      168  
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 3 lines, removed 3 lines
+      201  
+      202                  stderrJob.cancel()
+      203  
+      204 -                Timber.i("PTY session ended")                 
+      204 +                LoggerFactory.i(TAG, "PTY session ended")     
+      205                  _connectionState.value = ConnectionState.Disco
+           nnected
+      206                  cleanup()
+      207  
+      208              } catch (e: CancellationException) {
+      209 -                Timber.i("Connection cancelled")              
+      209 +                LoggerFactory.i(TAG, "Connection cancelled")  
+      210                  _connectionState.value = ConnectionState.Disco
+           nnected
+      211                  cleanup()
+      212              } catch (e: Exception) {
+      213                  val message = humanReadableError(e)
+      214 -                Timber.e(e, "Connection failed: %s", message) 
+      214 +                LoggerFactory.e(TAG, "Connection failed: $mess
+          +age", e)                                                      
+      215                  _connectionState.value = ConnectionState.Faile
+           d(message)
+      216                  cleanup()
+      217              }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      220  
+      221      fun reconnect() {
+      222          val settings = lastSettings ?: run {
+      223 -            Timber.w("Cannot reconnect — no previous connectio
+          -n parameters")                                                
+      223 +            LoggerFactory.w(TAG, "Cannot reconnect — no previo
+          +us connection parameters")                                    
+      224              return
+      225          }
+      226          val credential = when (settings.authMethod) {
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      239                  if (!isActive) return@launch
+      240  
+      241                  _connectionState.value = ConnectionState.Recon
+           necting(attempt, maxAttempts)
+      242 -                Timber.i("Reconnect attempt %d/%d", attempt, m
+          -axAttempts)                                                   
+      242 +                LoggerFactory.i(TAG, "Reconnect attempt $attem
+          +pt/$maxAttempts")                                             
+      243  
+      244                  delay(delayMs)
+      245                  if (!isActive) return@launch
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      250                  delay(delayMs)
+      251  
+      252                  if (_connectionState.value is ConnectionState.
+           Connected) {
+      253 -                    Timber.i("Reconnected successfully on atte
+          -mpt %d", attempt)                                             
+      253 +                    LoggerFactory.i(TAG, "Reconnected successf
+          +ully on attempt $attempt")                                    
+      254                      return@launch
+      255                  }
+      256              }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      270                      stream.flush()
+      271                  }
+      272              } catch (e: Exception) {
+      273 -                Timber.e(e, "Failed to write to remote")      
+      273 +                LoggerFactory.e(TAG, "Failed to write to remot
+          +e", e)                                                        
+      274              }
+      275          }
+      276      }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 2 lines, removed 2 lines
+      277  
+      278      fun resizeTerminal(cols: Int, rows: Int) {
+      279          val channel = shellChannel ?: return
+      280 -        Timber.d("Resizing terminal to %dx%d", cols, rows)    
+      280 +        LoggerFactory.d(TAG, "Resizing terminal to ${cols}x$ro
+          +ws")                                                          
+      281          scope.launch {
+      282              try {
+      283                  channel.sendWindowChange(cols, rows, 0, 0)
+      284              } catch (e: Exception) {
+      285 -                Timber.e(e, "Failed to resize terminal")      
+      285 +                LoggerFactory.e(TAG, "Failed to resize termina
+          +l", e)                                                        
+      286              }
+      287          }
+      288      }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      301                  ).use { outputStream ->
+      302                      outputStream.write(data)
+      303                  }
+      304 -                Timber.i("Uploaded %d bytes via SFTP to %s", d
+          -ata.size, remotePath)                                         
+      304 +                LoggerFactory.i(TAG, "Uploaded ${data.size} by
+          +tes via SFTP to $remotePath")                                 
+      305              }
+      306          }
+      307      }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      307      }
+      308  
+      309      fun disconnect() {
+      310 -        Timber.i("Disconnecting SSH session")                 
+      310 +        LoggerFactory.i(TAG, "Disconnecting SSH session")     
+      311          connectionJob?.cancel()
+      312          connectionJob = null
+      313          cleanup()
+
+⏺ Now replace buildEd25519KeyPair and add the TAG + companion:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 2 lines, removed 24 lines
+      344          }
+      345      }
+      346  
+      347 -    private fun buildEd25519KeyPair(rawPrivateKey: ByteArray):
+          - KeyPair {                                                    
+      348 -        val privateKeyParams = Ed25519PrivateKeyParameters(raw
+          -PrivateKey, 0)                                                
+      349 -        val publicKeyParams = privateKeyParams.generatePublicK
+          -ey()                                                          
+      350 -                                                              
+      351 -        // Build PKCS#8 encoded private key for Java KeyPair  
+      352 -        val pkcs8Prefix = byteArrayOf(                        
+      353 -            0x30, 0x2E, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,   
+      354 -            0x03, 0x2B, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20    
+      355 -        )                                                     
+      356 -        val pkcs8Bytes = pkcs8Prefix + rawPrivateKey          
+      357 -                                                              
+      358 -        val keyFactory = KeyFactory.getInstance("Ed25519")    
+      359 -        val privateKey = keyFactory.generatePrivate(PKCS8Encod
+          -edKeySpec(pkcs8Bytes))                                        
+      360 -                                                              
+      361 -        // Build X.509 encoded public key                     
+      362 -        val x509Prefix = byteArrayOf(                         
+      363 -            0x30, 0x2A, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65,   
+      364 -            0x70, 0x03, 0x21, 0x00                            
+      365 -        )                                                     
+      366 -        val x509Bytes = x509Prefix + publicKeyParams.encoded  
+      367 -                                                              
+      368 -        val publicKey = keyFactory.generatePublic(java.securit
+          -y.spec.X509EncodedKeySpec(x509Bytes))                         
+      369 -                                                              
+      370 -        return KeyPair(publicKey, privateKey)                 
+      347 +    private companion object {                                
+      348 +        private const val TAG = "SshConnectionManager"        
+      349      }
+      350  
+      351      private fun humanReadableError(error: Throwable): String {
+
+⏺ Now update the call site to use SshKeyUtils:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/SshConnectionManager.kt)
+  ⎿  Added 1 line, removed 1 line
+      121                          val keyData = keychainService.retrieve
+           PrivateKeyData(keyTag)
+      122                              ?: error("SSH key not found in key
+           chain — try regenerating")
+      123  
+      124 -                        val keyPair = buildEd25519KeyPair(keyD
+          -ata)                                                          
+      124 +                        val keyPair = SshKeyUtils.buildEd25519
+          +KeyPair(keyData)                                              
+      125                          keyData.fill(0) // Zero key material a
+           fter use
+      126                          sess.addPublicKeyIdentity(keyPair)
+      127                      }
+
+⏺ Now update RemoteFileBrowserService.kt — add connectTimeoutSeconds, use
+  SshKeyUtils, use LoggerFactory:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/RemoteFileBrowserService.kt)
+  ⎿  Added 14 lines, removed 35 lines
+      1  package com.olorin.claudette.services.impl
+      2  
+      3 +import com.olorin.claudette.config.LoggerFactory                
+      4  import com.olorin.claudette.models.RemoteFileEntry
+      5  import com.olorin.claudette.services.interfaces.RemoteFileBrowse
+         rServiceInterface
+      6  import kotlinx.coroutines.Dispatchers
+     ...
+      12  import org.apache.sshd.client.session.ClientSession
+      13  import org.apache.sshd.sftp.client.SftpClient
+      14  import org.apache.sshd.sftp.client.SftpClientFactory
+      14 -import org.bouncycastle.crypto.params.Ed25519PrivateKeyParamete
+         -rs                                                             
+      15 -import timber.log.Timber                                       
+      16 -import java.security.KeyFactory                                
+      17 -import java.security.KeyPair                                   
+      18 -import java.security.spec.PKCS8EncodedKeySpec                  
+      15  import java.util.concurrent.TimeUnit
+      16  
+      21 -class RemoteFileBrowserService : RemoteFileBrowserServiceInterf
+         -ace {                                                          
+      17 +class RemoteFileBrowserService(                                
+      18 +    private val connectTimeoutSeconds: Long = DEFAULT_CONNECT_T
+         +IMEOUT_SECONDS                                                 
+      19 +) : RemoteFileBrowserServiceInterface {                        
+      20  
+      21      private val _isConnected = MutableStateFlow(false)
+      22      override val isConnected: StateFlow<Boolean> = _isConnected
+          .asStateFlow()
+     ...
+      37          sshClient = client
+      38  
+      39          val sess = client.connect(username, host, port)
+      42 -            .verify(30, TimeUnit.SECONDS).session              
+      40 +            .verify(connectTimeoutSeconds, TimeUnit.SECONDS).se
+         +ssion                                                          
+      41  
+      42          if (password != null) {
+      43              sess.addPasswordIdentity(password)
+      44          } else if (privateKeyData != null) {
+      47 -            val keyPair = buildEd25519KeyPair(privateKeyData)  
+      45 +            val keyPair = SshKeyUtils.buildEd25519KeyPair(priva
+         +teKeyData)                                                     
+      46              sess.addPublicKeyIdentity(keyPair)
+      47          }
+      48  
+      51 -        sess.auth().verify(30, TimeUnit.SECONDS)               
+      49 +        sess.auth().verify(connectTimeoutSeconds, TimeUnit.SECO
+         +NDS)                                                           
+      50          session = sess
+      51  
+      52          sftpClient = SftpClientFactory.instance().createSftpCli
+          ent(sess)
+      53          _isConnected.value = true
+      56 -        Timber.i("SFTP connected to %s:%d", host, port)        
+      54 +        LoggerFactory.i(TAG, "SFTP connected to $host:$port")  
+      55      }
+      56  
+      57      override suspend fun listDirectory(atPath: String): List<Re
+          moteFileEntry> =
+     ...
+      83                  )
+      84              }
+      85  
+      88 -            // Sort: directories first, then alphabetical      
+      86              entries.sortWith(compareByDescending<RemoteFileEntr
+          y> { it.isDirectory }
+      87                  .thenBy { it.name.lowercase() })
+      88  
+     ...
+      120              }
+      121  
+      122              val data = baos.toByteArray()
+      126 -            Timber.i("Read file: %s (%d bytes)", atPath, data.
+          -size)                                                         
+      123 +            LoggerFactory.i(TAG, "Read file: $atPath (${data.s
+          +ize} bytes)")                                                 
+      124              data
+      125          }
+      126  
+     ...
+      137              ).use { outputStream ->
+      138                  outputStream.write(data)
+      139              }
+      143 -            Timber.i("Wrote file: %s (%d bytes)", atPath, data
+          -.size)                                                        
+      140 +            LoggerFactory.i(TAG, "Wrote file: $atPath (${data.
+          +size} bytes)")                                                
+      141          }
+      142  
+      143      override suspend fun fileExists(atPath: String): Boolean =
+     ...
+      159          session = null
+      160          sshClient = null
+      161          _isConnected.value = false
+      165 -        Timber.i("SFTP disconnected")                         
+      162 +        LoggerFactory.i(TAG, "SFTP disconnected")             
+      163      }
+      164  
+      165      private fun requireSftp(): SftpClient {
+      166          return sftpClient ?: error("Not connected to remote se
+           rver")
+      167      }
+      168  
+      172 -    private fun buildEd25519KeyPair(rawPrivateKey: ByteArray):
+          - KeyPair {                                                    
+      173 -        val privateKeyParams = Ed25519PrivateKeyParameters(raw
+          -PrivateKey, 0)                                                
+      174 -        val publicKeyParams = privateKeyParams.generatePublicK
+          -ey()                                                          
+      175 -                                                              
+      176 -        val pkcs8Prefix = byteArrayOf(                        
+      177 -            0x30, 0x2E, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06,   
+      178 -            0x03, 0x2B, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20    
+      179 -        )                                                     
+      180 -        val pkcs8Bytes = pkcs8Prefix + rawPrivateKey          
+      181 -                                                              
+      182 -        val keyFactory = KeyFactory.getInstance("Ed25519")    
+      183 -        val privateKey = keyFactory.generatePrivate(PKCS8Encod
+          -edKeySpec(pkcs8Bytes))                                        
+      184 -                                                              
+      185 -        val x509Prefix = byteArrayOf(                         
+      186 -            0x30, 0x2A, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65,   
+      187 -            0x70, 0x03, 0x21, 0x00                            
+      188 -        )                                                     
+      189 -        val x509Bytes = x509Prefix + publicKeyParams.encoded  
+      190 -        val publicKey = keyFactory.generatePublic(java.securit
+          -y.spec.X509EncodedKeySpec(x509Bytes))                         
+      191 -                                                              
+      192 -        return KeyPair(publicKey, privateKey)                 
+      169 +    private companion object {                                
+      170 +        private const val TAG = "RemoteFileBrowserService"    
+      171 +        private const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30
+          +L                                                             
+      172      }
+      173  }
+
+⏺ Now update PermissionNotificationService.kt to use AnsiUtils and
+  LoggerFactory:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/PermissionNotificationService.kt)
+  ⎿  Error writing file
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good — the file was already partially updated. Just fix the remaining Timber
+  usage and magic literal:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/PermissionNotificationService.kt)
+  ⎿  Added 1 line, removed 1 line
+       5  import android.content.Context
+       6  import android.os.Build
+       7  import androidx.core.app.NotificationCompat
+       8 +import com.olorin.claudette.config.LoggerFactory               
+       9  import com.olorin.claudette.terminal.AnsiUtils
+       9 -import timber.log.Timber                                       
+      10  import java.util.UUID
+      11  
+      12  class PermissionNotificationService(
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/PermissionNotificationService.kt)
+  ⎿  Added 1 line, removed 1 line
+      35          }
+      36  
+      37          // Check partial buffer for permission patterns that ar
+          rive without trailing newline
+      38 -        if (buffer.length > 200) {                             
+      38 +        if (buffer.length > MAX_NOTIFICATION_BODY_LENGTH) {    
+      39              checkForPermissionPrompt(buffer.toString())
+      40              buffer.clear()
+      41          }
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/PermissionNotificationService.kt)
+  ⎿  Added 1 line, removed 1 line
+      69  
+      70          val notificationId = UUID.randomUUID().hashCode()
+      71          notificationManager.notify(notificationId, notification
+          )
+      72 -        Timber.i("Sent permission notification")               
+      72 +        LoggerFactory.i(TAG, "Sent permission notification")   
+      73      }
+      74  
+      75      private fun createNotificationChannel() {
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/PermissionNotificationService.kt)
+  ⎿  Added 2 lines, removed 1 line
+      85          }
+      86      }
+      87  
+      88 -    companion object {                                         
+      88 +    private companion object {                                 
+      89 +        private const val TAG = "PermissionNotificationService"
+      90          private const val CHANNEL_ID = "claude_permissions"
+      91          private const val CHANNEL_NAME = "Claude Permissions"
+      92          private const val CHANNEL_DESCRIPTION = "Notifications 
+          for Claude Code permission prompts"
+
+⏺ Now update TerminalBlockDetector.kt to delegate to AnsiUtils:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/TerminalBlockDetector.kt)
+  ⎿  Error editing file
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/TerminalBlockDetector.kt)
+  ⎿  Added 3 lines, removed 5 lines
+       1  package com.olorin.claudette.services.impl
+       2  
+       3  import com.olorin.claudette.models.TerminalBlock
+       4 +import com.olorin.claudette.terminal.AnsiUtils                 
+       5  
+       6  object TerminalBlockDetector {
+       7  
+       8      private val promptSuffixes = listOf("$ ", "% ", "# ", "> ")
+       9  
+       9 -    private val ansiPattern = Regex("\u001B\\[[0-9;]*[a-zA-Z]")
+      10 -                                                               
+      10      fun isPromptLine(line: String): Boolean {
+      11          val stripped = stripANSI(line).trimEnd('\r')
+      12          if (stripped.isBlank()) return false
+     ...
+      46          )
+      47      }
+      48  
+      50 -    fun stripANSI(text: String): String {                      
+      51 -        return ansiPattern.replace(text, "")                   
+      52 -    }                                                          
+      49 +    // Kept public for existing tests; delegates to shared Ansi
+         +Utils                                                          
+      50 +    fun stripANSI(text: String): String = AnsiUtils.stripAnsi(t
+         +ext)                                                           
+      51  }
+
+⏺ Batch 3: Model fixes (KnownHost, AgentTreeNode)
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/models/KnownHost.kt)
+  ⎿  File must be read first
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/models/KnownHost.kt)
+  ⎿  Added 1 line, removed 1 line
+      10      val publicKeyData: ByteArray,
+      11      val keyType: String,
+      12      val firstSeenAt: Long = System.currentTimeMillis(),
+      13 -    var lastSeenAt: Long = System.currentTimeMillis()          
+      13 +    val lastSeenAt: Long = System.currentTimeMillis()          
+      14  ) {
+      15      val id: String get() = hostIdentifier
+      16  
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/models/AgentTreeNode.kt)
+  ⎿  Added 2 lines, removed 2 lines
+       5      val agentType: String,
+       6      val description: String,
+       7      val startTime: Long = System.currentTimeMillis(),
+       8 -    var isCompleted: Boolean = false,                          
+       9 -    val children: MutableList<AgentTreeNode> = mutableListOf() 
+       8 +    val isCompleted: Boolean = false,                          
+       9 +    val children: List<AgentTreeNode> = emptyList()            
+      10  ) {
+      11      val durationSeconds: Int
+      12          get() = ((System.currentTimeMillis() - startTime) / 100
+          0).toInt()
+
+⏺ Now fix TofuHostKeyValidator.kt (use .copy() for KnownHost) and
+  AgentActivityParser.kt (use .copy() for AgentTreeNode):
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/TofuHostKeyValidator.kt)
+  ⎿  Added 2 lines, removed 3 lines
+      48          if (existingHost != null) {
+      49              if (existingHost.publicKeyData.contentEquals(keyDat
+          a)) {
+      50                  // Key matches — trusted
+      51 -                Timber.i("Host key matches known key for %s", h
+         -ostIdentifier)                                                 
+      52 -                existingHost.lastSeenAt = System.currentTimeMil
+         -lis()                                                          
+      53 -                hostKeyStore.storeHost(existingHost)           
+      51 +                LoggerFactory.i(TAG, "Host key matches known ke
+         +y for $hostIdentifier")                                        
+      52 +                hostKeyStore.storeHost(existingHost.copy(lastSe
+         +enAt = System.currentTimeMillis()))                            
+      53                  return true
+      54              } else {
+      55                  // Key changed — dangerous
+
+⏺ Now update all remaining Timber calls in TofuHostKeyValidator and replace the
+  import:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/TofuHostKeyValidator.kt)
+  ⎿  Added 24 lines, removed 25 lines
+       1  package com.olorin.claudette.services.impl
+       2  
+       3 +import com.olorin.claudette.config.LoggerFactory               
+       4  import com.olorin.claudette.models.HostKeyVerificationResult
+       5  import com.olorin.claudette.models.KnownHost
+       6  import com.olorin.claudette.services.interfaces.HostKeyStoreInt
+          erface
+       6 -import kotlinx.coroutines.CompletableDeferred                  
+       7  import kotlinx.coroutines.Dispatchers
+       8  import org.apache.sshd.client.keyverifier.ServerKeyVerifier
+       9  import org.apache.sshd.client.session.ClientSession
+      10 -import timber.log.Timber                                       
+      10  import java.net.SocketAddress
+      11  import java.security.MessageDigest
+      12  import java.security.PublicKey
+     ...
+      40          val digest = MessageDigest.getInstance("SHA-256").diges
+          t(keyData)
+      41          val fingerprint = "SHA256:${Base64.getEncoder().encodeT
+          oString(digest)}"
+      42  
+      44 -        Timber.i("Validating host key for %s: %s", hostIdentifi
+         -er, fingerprint)                                               
+      43 +        LoggerFactory.i(TAG, "Validating host key for $hostIden
+         +tifier: $fingerprint")                                         
+      44  
+      45          val existingHost = hostKeyStore.knownHost(hostIdentifie
+          r)
+      46  
+      47          if (existingHost != null) {
+      48              if (existingHost.publicKeyData.contentEquals(keyDat
+          a)) {
+      50 -                // Key matches — trusted                       
+      49                  LoggerFactory.i(TAG, "Host key matches known ke
+          y for $hostIdentifier")
+      50                  hostKeyStore.storeHost(existingHost.copy(lastSe
+          enAt = System.currentTimeMillis()))
+      51                  return true
+      52              } else {
+      53                  // Key changed — dangerous
+      54                  val previousFingerprint = existingHost.fingerpr
+          intSHA256
+      57 -                Timber.w("HOST KEY CHANGED for %s", hostIdentif
+         -ier)                                                           
+      55 +                LoggerFactory.w(TAG, "HOST KEY CHANGED for $hos
+         +tIdentifier")                                                  
+      56  
+      57                  val currentDelegate = delegate ?: run {
+      60 -                    Timber.e("No delegate to handle key change 
+         -verification")                                                 
+      58 +                    LoggerFactory.e(TAG, "No delegate to handle
+         + key change verification")                                     
+      59                      return false
+      60                  }
+      61  
+     ...
+      67                  val accepted = runBlockingVerification(currentD
+          elegate, result, fingerprint, hostIdentifier)
+      68  
+      69                  if (accepted) {
+      72 -                    val newHost = KnownHost(                   
+      73 -                        hostIdentifier = hostIdentifier,       
+      74 -                        publicKeyData = keyData,               
+      75 -                        keyType = keyType                      
+      70 +                    hostKeyStore.storeHost(                    
+      71 +                        KnownHost(                             
+      72 +                            hostIdentifier = hostIdentifier,   
+      73 +                            publicKeyData = keyData,           
+      74 +                            keyType = keyType                  
+      75 +                        )                                      
+      76                      )
+      77 -                    hostKeyStore.storeHost(newHost)            
+      78 -                    Timber.i("User accepted new key for %s", ho
+         -stIdentifier)                                                  
+      77 +                    LoggerFactory.i(TAG, "User accepted new key
+         + for $hostIdentifier")                                         
+      78                  }
+      79  
+      80                  return accepted
+      81              }
+      82          } else {
+      83              // New host — ask user
+      85 -            Timber.i("New host encountered: %s", hostIdentifier
+         -)                                                              
+      84 +            LoggerFactory.i(TAG, "New host encountered: $hostId
+         +entifier")                                                     
+      85  
+      86              val currentDelegate = delegate ?: run {
+      88 -                Timber.e("No delegate to handle new host verifi
+         -cation")                                                       
+      87 +                LoggerFactory.e(TAG, "No delegate to handle new
+         + host verification")                                           
+      88                  return false
+      89              }
+      90  
+     ...
+       96              )
+       97  
+       98              if (accepted) {
+      100 -                val newHost = KnownHost(                      
+      101 -                    hostIdentifier = hostIdentifier,          
+      102 -                    publicKeyData = keyData,                  
+      103 -                    keyType = keyType                         
+       99 +                hostKeyStore.storeHost(                       
+      100 +                    KnownHost(                                
+      101 +                        hostIdentifier = hostIdentifier,      
+      102 +                        publicKeyData = keyData,              
+      103 +                        keyType = keyType                     
+      104 +                    )                                         
+      105                  )
+      105 -                hostKeyStore.storeHost(newHost)               
+      106 -                Timber.i("User trusted new host: %s", hostIden
+          -tifier)                                                       
+      106 +                LoggerFactory.i(TAG, "User trusted new host: $
+          +hostIdentifier")                                              
+      107              }
+      108  
+      109              return accepted
+     ...
+      116          return this
+      117      }
+      118  
+      119 -    /**                                                       
+      120 -     * Bridge from the synchronous ServerKeyVerifier callback 
+          -to the                                                        
+      121 -     * async HostKeyVerificationDelegate. Uses a CompletableDe
+          -ferred                                                        
+      122 -     * that blocks the SSH thread until the UI responds.      
+      123 -     */                                                       
+      119      private fun runBlockingVerification(
+      120          delegate: HostKeyVerificationDelegate,
+      121          result: HostKeyVerificationResult,
+     ...
+      126              delegate.verifyHostKey(result, fingerprint, hostId
+           entifier)
+      127          }
+      128      }
+      129 +                                                              
+      130 +    private companion object {                                
+      131 +        private const val TAG = "TofuHostKeyValidator"        
+      132 +    }                                                         
+      133  }
+
+⏺ Now fix AgentActivityParser.kt — use .copy() for AgentTreeNode mutations:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/AgentActivityParser.kt)
+  ⎿  Added 15 lines, removed 7 lines
+      1  package com.olorin.claudette.services.impl
+      2  
+      3 +import com.olorin.claudette.config.LoggerFactory                
+      4  import com.olorin.claudette.models.AgentTreeNode
+      5  import com.olorin.claudette.terminal.AnsiUtils
+      5 -import timber.log.Timber                                        
+      6  import java.util.UUID
+      7  
+      8  class AgentActivityParser {
+     ...
+       82              description = description.trim()
+       83          )
+       84  
+       85 -        val parent = nodeStack.lastOrNull()                   
+       86 -        if (parent != null) {                                 
+       87 -            parent.children.add(node)                         
+       85 +        val parentIndex = nodeStack.indices.lastOrNull()      
+       86 +        if (parentIndex != null) {                            
+       87 +            val parent = nodeStack[parentIndex]               
+       88 +            nodeStack[parentIndex] = parent.copy(children = pa
+          +rent.children + node)                                         
+       89 +            // Update rootNodes if parent is a root           
+       90 +            val rootIndex = rootNodes.indexOfFirst { it.id == 
+          +parent.id }                                                   
+       91 +            if (rootIndex >= 0) rootNodes[rootIndex] = nodeSta
+          +ck[parentIndex]                                               
+       92          } else {
+       93              rootNodes.add(node)
+       94          }
+       95  
+       96          nodeStack.add(node)
+       97          activeAgentCount++
+       94 -        Timber.d("Agent spawned: %s", type)                   
+       98 +        LoggerFactory.d(TAG, "Agent spawned: $type")          
+       99      }
+      100  
+      101      private fun completeAgent(type: String) {
+     ...
+      103  
+      104          for (i in nodeStack.indices.reversed()) {
+      105              if (nodeStack[i].agentType.equals(trimmedType, ign
+           oreCase = true)) {
+      102 -                nodeStack[i].isCompleted = true               
+      106 +                nodeStack[i] = nodeStack[i].copy(isCompleted =
+          + true)                                                        
+      107                  nodeStack.removeAt(i)
+      108                  activeAgentCount = maxOf(0, activeAgentCount -
+            1)
+      105 -                Timber.d("Agent completed: %s", type)         
+      109 +                LoggerFactory.d(TAG, "Agent completed: $type")
+      110                  return
+      111              }
+      112          }
+      113      }
+      114 +                                                              
+      115 +    private companion object {                                
+      116 +        private const val TAG = "AgentActivityParser"         
+      117 +    }                                                         
+      118  }
+
+⏺ Batch 4: HostKeyStore (synchronized → Mutex), WakeOnLanService (implement 
+  interface), ClaudeSettingsService (fix ~ path)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/HostKeyStore.kt)
+  ⎿  Error writing file
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/HostKeyStore.kt)
+  ⎿  Added 30 lines, removed 23 lines
+       1  package com.olorin.claudette.services.impl
+       2  
+       3  import android.content.Context
+       4 +import com.olorin.claudette.config.LoggerFactory               
+       5  import com.olorin.claudette.models.KnownHost
+       6  import com.olorin.claudette.services.interfaces.HostKeyStoreInt
+          erface
+       7 +import kotlinx.coroutines.runBlocking                          
+       8 +import kotlinx.coroutines.sync.Mutex                           
+       9 +import kotlinx.coroutines.sync.withLock                        
+      10  import kotlinx.serialization.Serializable
+      11  import kotlinx.serialization.encodeToString
+      12  import kotlinx.serialization.json.Json
+       9 -import timber.log.Timber                                       
+      13  import java.io.File
+      14  import java.util.Base64
+      15  
+      13 -/**                                                            
+      14 - * Serializable wrapper for KnownHost since ByteArray needs spe
+         -cial handling                                                  
+      15 - * in kotlinx.serialization JSON.                              
+      16 - */                                                            
+      16  @Serializable
+      17  private data class KnownHostJson(
+      18      val hostIdentifier: String,
+     ...
+      43  class HostKeyStore(context: Context) : HostKeyStoreInterface {
+      44  
+      45      private val file: File
+      47 -    private val lock = Any()                                   
+      46 +    private val mutex = Mutex()                                
+      47      private val json = Json { prettyPrint = true; encodeDefault
+          s = true }
+      48  
+      49      init {
+      50          val appDir = File(context.filesDir, "com.olorin.claudet
+          te")
+      51          if (!appDir.exists()) appDir.mkdirs()
+      52          file = File(appDir, "known_hosts.json")
+      54 -        Timber.i("Known hosts store path: %s", file.absolutePat
+         -h)                                                             
+      53 +        LoggerFactory.i(TAG, "Known hosts store path: ${file.ab
+         +solutePath}")                                                  
+      54      }
+      55  
+      57 -    override fun knownHost(forIdentifier: String): KnownHost? =
+         - synchronized(lock) {                                          
+      58 -        return loadHostsUnsafe().firstOrNull { it.hostIdentifie
+         -r == forIdentifier }                                           
+      56 +    override fun knownHost(forIdentifier: String): KnownHost? =
+         + runBlocking {                                                 
+      57 +        mutex.withLock { loadHostsUnsafe().firstOrNull { it.hos
+         +tIdentifier == forIdentifier } }                               
+      58      }
+      59  
+      61 -    override fun storeHost(host: KnownHost) = synchronized(lock
+         -) {                                                            
+      62 -        val hosts = loadHostsUnsafe().toMutableList()          
+      63 -        hosts.removeAll { it.hostIdentifier == host.hostIdentif
+         -ier }                                                          
+      64 -        hosts.add(host)                                        
+      65 -        writeHosts(hosts)                                      
+      66 -        Timber.i("Stored host key for: %s", host.hostIdentifier
+         -)                                                              
+      60 +    override fun storeHost(host: KnownHost) = runBlocking {    
+      61 +        mutex.withLock {                                       
+      62 +            val hosts = loadHostsUnsafe().toMutableList()      
+      63 +            hosts.removeAll { it.hostIdentifier == host.hostIde
+         +ntifier }                                                      
+      64 +            hosts.add(host)                                    
+      65 +            writeHosts(hosts)                                  
+      66 +            LoggerFactory.i(TAG, "Stored host key for: ${host.h
+         +ostIdentifier}")                                               
+      67 +        }                                                      
+      68      }
+      69  
+      69 -    override fun removeHost(forIdentifier: String) = synchroniz
+         -ed(lock) {                                                     
+      70 -        val hosts = loadHostsUnsafe().toMutableList()          
+      71 -        hosts.removeAll { it.hostIdentifier == forIdentifier } 
+      72 -        writeHosts(hosts)                                      
+      73 -        Timber.i("Removed host key for: %s", forIdentifier)    
+      70 +    override fun removeHost(forIdentifier: String) = runBlockin
+         +g {                                                            
+      71 +        mutex.withLock {                                       
+      72 +            val hosts = loadHostsUnsafe().toMutableList()      
+      73 +            hosts.removeAll { it.hostIdentifier == forIdentifie
+         +r }                                                            
+      74 +            writeHosts(hosts)                                  
+      75 +            LoggerFactory.i(TAG, "Removed host key for: $forIde
+         +ntifier")                                                      
+      76 +        }                                                      
+      77      }
+      78  
+      76 -    override fun allKnownHosts(): List<KnownHost> = synchronize
+         -d(lock) {                                                      
+      77 -        return loadHostsUnsafe()                               
+      79 +    override fun allKnownHosts(): List<KnownHost> = runBlocking
+         + {                                                             
+      80 +        mutex.withLock { loadHostsUnsafe() }                   
+      81      }
+      82  
+      83      private fun loadHostsUnsafe(): List<KnownHost> {
+     ...
+      86              val data = file.readText()
+      87              json.decodeFromString<List<KnownHostJson>>(data).ma
+          p { it.toKnownHost() }
+      88          } catch (e: Exception) {
+      86 -            Timber.e(e, "Failed to load known hosts")          
+      89 +            LoggerFactory.e(TAG, "Failed to load known hosts", 
+         +e)                                                             
+      90              emptyList()
+      91          }
+      92      }
+     ...
+       95          val jsonHosts = hosts.map { KnownHostJson.from(it) }
+       96          file.writeText(json.encodeToString(jsonHosts))
+       97      }
+       98 +                                                              
+       99 +    private companion object {                                
+      100 +        private const val TAG = "HostKeyStore"                
+      101 +    }                                                         
+      102  }
+
+⏺ Now update WakeOnLanService.kt to implement IWakeOnLanService:
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/WakeOnLanService.kt)
+  ⎿  Added 3 lines, removed 2 lines
+       1  package com.olorin.claudette.services.impl
+       2  
+       3 +import com.olorin.claudette.config.LoggerFactory               
+       4 +import com.olorin.claudette.services.interfaces.IWakeOnLanServi
+         +ce                                                             
+       5  import kotlinx.coroutines.Dispatchers
+       6  import kotlinx.coroutines.withContext
+       5 -import timber.log.Timber                                       
+       7  import java.net.DatagramPacket
+       8  import java.net.DatagramSocket
+       9  import java.net.InetAddress
+      10  
+      10 -class WakeOnLanService {                                       
+      11 +class WakeOnLanService : IWakeOnLanService {                   
+      12  
+      13      suspend fun wake(
+      14          macAddress: String,
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/WakeOnLanService.kt)
+  ⎿  Added 1 line, removed 1 line
+      10  
+      11  class WakeOnLanService : IWakeOnLanService {
+      12  
+      13 -    suspend fun wake(                                          
+      13 +    override suspend fun wake(                                 
+      14          macAddress: String,
+      15          broadcastAddress: String = DEFAULT_BROADCAST_ADDRESS
+      16      ) = withContext(Dispatchers.IO) {
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/WakeOnLanService.kt)
+  ⎿  Added 1 line, removed 1 line
+      25              socket.send(packet)
+      26          }
+      27  
+      28 -        Timber.i("Sent Wake-on-LAN packet to %s via %s", macAdd
+         -ress, broadcastAddress)                                        
+      28 +        LoggerFactory.i(TAG, "Sent Wake-on-LAN packet to $macAd
+         +dress via $broadcastAddress")                                  
+      29      }
+      30  
+      31      private fun parseMacAddress(address: String): ByteArray {
+
+⏺ Update(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/ja
+        va/com/olorin/claudette/services/impl/WakeOnLanService.kt)
+  ⎿  Added 2 lines, removed 1 line
+      63          return packet
+      64      }
+      65  
+      66 -    companion object {                                         
+      66 +    private companion object {                                 
+      67 +        private const val TAG = "WakeOnLanService"             
+      68          private const val WOL_PORT = 9
+      69          private const val DEFAULT_BROADCAST_ADDRESS = "255.255.
+          255.255"
+      70          private const val MAC_HEX_LENGTH = 12
+
+⏺ Now fix ClaudeSettingsService.kt — replace hardcoded ~/.claude/settings.json
+  with dynamic path:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/ClaudeSettingsService.kt)
+  ⎿  Added 17 lines, removed 9 lines
+      1  package com.olorin.claudette.services.impl
+      2  
+      3 +import com.olorin.claudette.config.LoggerFactory                
+      4  import com.olorin.claudette.models.ClaudeSettings
+      5  import com.olorin.claudette.services.interfaces.ClaudeSettingsSe
+         rviceInterface
+      6  import com.olorin.claudette.services.interfaces.RemoteFileBrowse
+         rServiceInterface
+     ...
+       8  import kotlinx.coroutines.flow.StateFlow
+       9  import kotlinx.coroutines.flow.asStateFlow
+      10  import kotlinx.serialization.json.Json
+      10 -import timber.log.Timber                                       
+      11  
+      12  class ClaudeSettingsService(
+      13      private val fileBrowserService: RemoteFileBrowserServiceInt
+          erface
+     ...
+      33          _error.value = null
+      34  
+      35          try {
+      36 -            val data = fileBrowserService.readFile(SETTINGS_PAT
+         -H)                                                             
+      36 +            val settingsPath = resolveSettingsPath()           
+      37 +            val data = fileBrowserService.readFile(settingsPath
+         +)                                                              
+      38              val content = data.toString(Charsets.UTF_8)
+      39              _settings.value = json.decodeFromString<ClaudeSetti
+          ngs>(content)
+      39 -            Timber.i("Loaded Claude settings")                 
+      40 +            LoggerFactory.i(TAG, "Loaded Claude settings from $
+         +settingsPath")                                                 
+      41          } catch (e: Exception) {
+      42              // File might not exist yet, which is expected
+      43              _settings.value = ClaudeSettings()
+      43 -            Timber.d("No existing Claude settings found, starti
+         -ng fresh: %s", e.message)                                      
+      44 +            LoggerFactory.d(TAG, "No existing Claude settings f
+         +ound, starting fresh: ${e.message}")                           
+      45          } finally {
+      46              _isLoading.value = false
+      47          }
+     ...
+      51          val currentSettings = _settings.value ?: return
+      52  
+      53          try {
+      54 +            val settingsPath = resolveSettingsPath()           
+      55              val content = json.encodeToString(ClaudeSettings.se
+          rializer(), currentSettings)
+      54 -            fileBrowserService.writeFile(content.toByteArray(Ch
+         -arsets.UTF_8), SETTINGS_PATH)                                  
+      55 -            Timber.i("Saved Claude settings")                  
+      56 +            fileBrowserService.writeFile(content.toByteArray(Ch
+         +arsets.UTF_8), settingsPath)                                   
+      57 +            LoggerFactory.i(TAG, "Saved Claude settings")      
+      58          } catch (e: Exception) {
+      59              _error.value = e.message ?: "Failed to save setting
+          s"
+      58 -            Timber.e(e, "Failed to save Claude settings")      
+      60 +            LoggerFactory.e(TAG, "Failed to save Claude setting
+         +s", e)                                                         
+      61          }
+      62      }
+      63  
+     ...
+      65          _settings.value = settings
+      66      }
+      67  
+      66 -    companion object {                                         
+      67 -        private const val SETTINGS_PATH = "~/.claude/settings.j
+         -son"                                                           
+      68 +    private suspend fun resolveSettingsPath(): String {        
+      69 +        val homeDir = fileBrowserService.getHomeDirectory("")  
+      70 +        return "$homeDir/$SETTINGS_RELATIVE_PATH"              
+      71      }
+      72 +                                                               
+      73 +    private companion object {                                 
+      74 +        private const val TAG = "ClaudeSettingsService"        
+      75 +        private const val SETTINGS_RELATIVE_PATH = ".claude/set
+         +tings.json"                                                    
+      76 +    }                                                          
+      77  }
+
+⏺ Batch 5: AppModule, SessionViewModel, ProfileListViewModel, 
+  ProfileEditorViewModel
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/di/AppModule.kt)
+  ⎿  Error writing file
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/di/AppModule.kt)
+  ⎿  Added 47 lines, removed 2 lines
+       6  import com.olorin.claudette.services.impl.ClaudeSettingsService
+       7  import com.olorin.claudette.services.impl.HostKeyStore
+       8  import com.olorin.claudette.services.impl.KeychainService
+       9 +import com.olorin.claudette.services.impl.MdnsDiscoveryService 
+      10 +import com.olorin.claudette.services.impl.NetworkProbeService  
+      11  import com.olorin.claudette.services.impl.ProfileStore
+      12  import com.olorin.claudette.services.impl.RemoteFileBrowserServ
+          ice
+      13  import com.olorin.claudette.services.impl.SnippetStore
+      14 +import com.olorin.claudette.services.impl.SshConnectionManager 
+      15  import com.olorin.claudette.services.impl.SshKeyService
+      16  import com.olorin.claudette.services.impl.TmuxSessionService
+      17 +import com.olorin.claudette.services.impl.WakeOnLanService     
+      18  import com.olorin.claudette.services.interfaces.ClaudeResourceD
+          iscoveryServiceInterface
+      19  import com.olorin.claudette.services.interfaces.ClaudeSettingsS
+          erviceInterface
+      20  import com.olorin.claudette.services.interfaces.HostKeyStoreInt
+          erface
+      21 +import com.olorin.claudette.services.interfaces.IWakeOnLanServi
+         +ce                                                             
+      22  import com.olorin.claudette.services.interfaces.KeychainService
+          Interface
+      23 +import com.olorin.claudette.services.interfaces.NetworkProbeSer
+         +viceFactory                                                    
+      24  import com.olorin.claudette.services.interfaces.ProfileStoreInt
+          erface
+      25  import com.olorin.claudette.services.interfaces.RemoteFileBrows
+          erServiceInterface
+      26  import com.olorin.claudette.services.interfaces.SnippetStoreInt
+          erface
+      27 +import com.olorin.claudette.services.interfaces.SshConnectionMa
+         +nagerFactory                                                   
+      28  import com.olorin.claudette.services.interfaces.SshKeyServiceIn
+          terface
+      29  import com.olorin.claudette.services.interfaces.TmuxSessionServ
+          iceInterface
+      30  import dagger.Module
+     ...
+      87      }
+      88  
+      89      @Provides
+      83 -    fun provideRemoteFileBrowserService(): RemoteFileBrowserSer
+         -viceInterface {                                                
+      84 -        return RemoteFileBrowserService()                      
+      90 +    fun provideRemoteFileBrowserService(config: AppConfiguratio
+         +n): RemoteFileBrowserServiceInterface {                        
+      91 +        return RemoteFileBrowserService(config.sshConnectTimeou
+         +tSeconds.toLong())                                             
+      92      }
+      93  
+      94      @Provides
+     ...
+      104      ): ClaudeSettingsServiceInterface {
+      105          return ClaudeSettingsService(fileBrowserService)
+      106      }
+      107 +                                                              
+      108 +    @Provides                                                 
+      109 +    @Singleton                                                
+      110 +    fun provideSshConnectionManagerFactory(                   
+      111 +        config: AppConfiguration,                             
+      112 +        keychainService: KeychainServiceInterface,            
+      113 +        tmuxService: TmuxSessionServiceInterface              
+      114 +    ): SshConnectionManagerFactory = SshConnectionManagerFacto
+          +ry { serverKeyVerifier ->                                     
+      115 +        SshConnectionManager(                                 
+      116 +            config = config,                                  
+      117 +            keychainService = keychainService,                
+      118 +            tmuxService = tmuxService,                        
+      119 +            serverKeyVerifier = serverKeyVerifier             
+      120 +        )                                                     
+      121 +    }                                                         
+      122 +                                                              
+      123 +    @Provides                                                 
+      124 +    @Singleton                                                
+      125 +    fun provideNetworkProbeServiceFactory(config: AppConfigura
+          +tion): NetworkProbeServiceFactory =                           
+      126 +        NetworkProbeServiceFactory { host, port ->            
+      127 +            NetworkProbeService(                              
+      128 +                host = host,                                  
+      129 +                port = port,                                  
+      130 +                intervalSeconds = config.networkProbeIntervalS
+          +econds,                                                       
+      131 +                timeoutSeconds = config.networkProbeTimeoutSec
+          +onds,                                                         
+      132 +                degradedThresholdMs = config.networkProbeDegra
+          +dedThresholdMs                                                
+      133 +            )                                                 
+      134 +        }                                                     
+      135 +                                                              
+      136 +    @Provides                                                 
+      137 +    @Singleton                                                
+      138 +    fun provideWakeOnLanService(): IWakeOnLanService = WakeOnL
+          +anService()                                                   
+      139 +                                                              
+      140 +    @Provides                                                 
+      141 +    @Singleton                                                
+      142 +    fun provideMdnsDiscoveryService(                          
+      143 +        @ApplicationContext context: Context                  
+      144 +    ): MdnsDiscoveryService = MdnsDiscoveryService(context)   
+      145  }
+
+⏺ Now fix SessionViewModel.kt — the compile errors (duplicate vals) and use
+  factories:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/ui/screens/session/SessionViewModel.kt)
+  ⎿  Added 25 lines, removed 48 lines
+       1  package com.olorin.claudette.ui.screens.session
+       2  
+       3 +import android.content.Context                                 
+       4  import androidx.lifecycle.SavedStateHandle
+       5  import androidx.lifecycle.ViewModel
+       6  import androidx.lifecycle.viewModelScope
+       7  import com.olorin.claudette.config.AppConfiguration
+       8 +import com.olorin.claudette.config.LoggerFactory               
+       9  import com.olorin.claudette.models.AuthMethod
+      10  import com.olorin.claudette.models.ClaudeResource
+      11  import com.olorin.claudette.models.ConnectionSettings
+     ...
+      14  import com.olorin.claudette.models.NetworkStatus
+      15  import com.olorin.claudette.models.ServerProfile
+      16  import com.olorin.claudette.models.TerminalTab
+      15 -import android.content.Context                                 
+      17  import com.olorin.claudette.services.impl.AgentActivityParser
+      18  import com.olorin.claudette.services.impl.AuthUrlInterceptor
+      19  import com.olorin.claudette.services.impl.ClaudeResourceDiscove
+          ryService
+      20 +import com.olorin.claudette.services.impl.ClaudeSettingsService
+      21 +import com.olorin.claudette.services.impl.HostKeyVerificationDe
+         +legate                                                         
+      22  import com.olorin.claudette.services.impl.NetworkProbeService
+      23  import com.olorin.claudette.services.impl.PermissionNotificatio
+          nService
+      21 -import com.olorin.claudette.services.impl.ClaudeSettingsService
+      24  import com.olorin.claudette.services.impl.RemoteFileBrowserServ
+          ice
+      25  import com.olorin.claudette.services.impl.SshConnectionManager
+      26  import com.olorin.claudette.services.impl.TofuHostKeyValidator
+      25 -import com.olorin.claudette.services.impl.HostKeyVerificationDe
+         -legate                                                         
+      27 +import com.olorin.claudette.services.interfaces.ClaudeSettingsS
+         +erviceInterface                                                
+      28  import com.olorin.claudette.services.interfaces.HostKeyStoreInt
+          erface
+      29  import com.olorin.claudette.services.interfaces.KeychainService
+          Interface
+      30 +import com.olorin.claudette.services.interfaces.NetworkProbeSer
+         +viceFactory                                                    
+      31  import com.olorin.claudette.services.interfaces.OutputIntercept
+          or
+      32  import com.olorin.claudette.services.interfaces.ProfileStoreInt
+          erface
+      30 -import com.olorin.claudette.services.interfaces.ClaudeSettingsS
+         -erviceInterface                                                
+      33 +import com.olorin.claudette.services.interfaces.SshConnectionMa
+         +nagerFactory                                                   
+      34  import com.olorin.claudette.services.interfaces.TmuxSessionServ
+          iceInterface
+      35  import com.olorin.claudette.terminal.TerminalController
+      36  import dagger.hilt.android.lifecycle.HiltViewModel
+     ...
+      40  import kotlinx.coroutines.flow.StateFlow
+      41  import kotlinx.coroutines.flow.asStateFlow
+      42  import kotlinx.coroutines.launch
+      40 -import timber.log.Timber                                       
+      43  import java.util.UUID
+      44  import javax.inject.Inject
+      45  
+     ...
+      57      private val profileStore: ProfileStoreInterface,
+      58      private val keychainService: KeychainServiceInterface,
+      59      private val hostKeyStore: HostKeyStoreInterface,
+      58 -    private val tmuxService: TmuxSessionServiceInterface,      
+      60      private val claudeSettingsService: ClaudeSettingsServiceInt
+          erface,
+      61      private val config: AppConfiguration,
+      62 +    private val connectionManagerFactory: SshConnectionManagerF
+         +actory,                                                        
+      63 +    private val networkProbeFactory: NetworkProbeServiceFactory
+         +,                                                              
+      64      savedStateHandle: SavedStateHandle
+      65  ) : ViewModel(), HostKeyVerificationDelegate {
+      66  
+     ...
+      114  
+      115              settings = foundProfile.toConnectionSettings(proje
+           ctPath)
+      116  
+      114 -            // Update last connected                          
+      117              val updated = foundProfile.copy(
+      118                  lastConnectedAt = System.currentTimeMillis(),
+      119                  lastProjectPath = projectPath
+      120              )
+      121              profileStore.updateProfile(updated)
+      122  
+      121 -            // Create first tab and connect                   
+      123              val manager = createConnectionManager()
+      124              val tabId = UUID.randomUUID().toString()
+      125              connectionManagers[tabId] = manager
+     ...
+      132              _tabs.value = listOf(tab)
+      133              _activeTabId.value = tabId
+      134  
+      134 -            // Observe connection state                       
+      135              observeConnectionState(tabId)
+      136 -                                                              
+      137 -            // Start network probe                            
+      136              startNetworkProbe(foundProfile.host, foundProfile.
+           port)
+      139 -                                                              
+      140 -            // Connect                                        
+      137              connect(manager, foundProfile)
+      138          }
+      139      }
+      140  
+      141      fun addTab() {
+      146 -        val currentSettings = settings ?: return              
+      142          val currentProfile = _profile.value ?: return
+      143  
+      144          tabCounter++
+     ...
+      180          observeConnectionState(tabId)
+      181      }
+      182  
+      188 -    fun getTerminalController(tabId: String): TerminalControll
+          -er? {                                                         
+      189 -        return terminalControllers[tabId]                     
+      190 -    }                                                         
+      183 +    fun getTerminalController(tabId: String): TerminalControll
+          +er? = terminalControllers[tabId]                              
+      184  
+      192 -    fun getActiveTerminalController(): TerminalController? {  
+      193 -        return terminalControllers[_activeTabId.value]        
+      194 -    }                                                         
+      185 +    fun getActiveTerminalController(): TerminalController? = t
+          +erminalControllers[_activeTabId.value]                        
+      186  
+      196 -    fun getActiveConnectionManager(): SshConnectionManager? { 
+      197 -        return connectionManagers[_activeTabId.value]         
+      198 -    }                                                         
+      187 +    fun getActiveConnectionManager(): SshConnectionManager? = 
+          +connectionManagers[_activeTabId.value]                        
+      188  
+      189      fun sendSnippet(command: String) {
+      190          val controller = getActiveTerminalController() ?: retu
+           rn
+     ...
+      197      }
+      198  
+      199      fun reconnect() {
+      211 -        val currentProfile = _profile.value ?: return         
+      212 -        for ((tabId, manager) in connectionManagers) {        
+      200 +        for ((_, manager) in connectionManagers) {            
+      201              val state = manager.connectionState.value
+      202              if (state is ConnectionState.Disconnected || state
+            is ConnectionState.Failed) {
+      203                  manager.reconnect()
+     ...
+      215          }
+      216      }
+      217  
+      230 -    fun copySessionToClipboard(): String? {                   
+      231 -        return getActiveTerminalController()?.getTerminalConte
+          -nt()                                                          
+      232 -    }                                                         
+      218 +    fun copySessionToClipboard(): String? = getActiveTerminalC
+          +ontroller()?.getTerminalContent()                             
+      219  
+      220      fun getFileBrowser(): RemoteFileBrowserService? = sharedFi
+           leBrowser
+      221      fun getProjectPath(): String? = settings?.projectPath
+     ...
+      228          val currentProfile = _profile.value ?: return claudeSe
+           ttingsService
+      229          val currentSettings = settings ?: return claudeSetting
+           sService
+      230  
+      245 -        val fileBrowser = RemoteFileBrowserService()          
+      231 +        val fileBrowser = RemoteFileBrowserService(config.sshC
+          +onnectTimeoutSeconds.toLong())                                
+      232          val service = ClaudeSettingsService(fileBrowser)
+      233          connectedSettingsService = service
+      234  
+     ...
+      253                  )
+      254                  service.loadSettings()
+      255              } catch (e: Exception) {
+      270 -                Timber.e(e, "Failed to connect settings SFTP")
+      256 +                LoggerFactory.e(TAG, "Failed to connect settin
+          +gs SFTP", e)                                                  
+      257              }
+      258          }
+      259  
+     ...
+      278                      else -> null
+      279                  }
+      280  
+      295 -                val fb = RemoteFileBrowserService()           
+      281 +                val fb = RemoteFileBrowserService(config.sshCo
+          +nnectTimeoutSeconds.toLong())                                 
+      282                  fb.connect(
+      283                      host = currentSettings.host,
+      284                      port = currentSettings.port,
+     ...
+      291                  val discovery = ClaudeResourceDiscoveryService
+           (fb)
+      292                  val resources = discovery.discover(currentSett
+           ings.projectPath, currentSettings.username)
+      293                  _claudeResources.value = resources
+      308 -                Timber.i("Remote services initialized: %d reso
+          -urces found", resources.size)                                 
+      294 +                LoggerFactory.i(TAG, "Remote services initiali
+          +zed: ${resources.size} resources found")                      
+      295              } catch (e: Exception) {
+      310 -                Timber.e(e, "Failed to initialize remote servi
+          -ces")                                                         
+      296 +                LoggerFactory.e(TAG, "Failed to initialize rem
+          +ote services", e)                                             
+      297              }
+      298          }
+      299      }
+     ...
+      309          _detectedAuthUrl.value = null
+      310      }
+      311  
+      326 -    // Host key verification                                  
+      312      fun acceptHostKey() {
+      313          val alert = _hostKeyAlert.value ?: return
+      314          _hostKeyAlert.value = null
+     ...
+      337      }
+      338  
+      339      private fun createConnectionManager(): SshConnectionManage
+           r {
+      355 -        val manager = SshConnectionManager(                   
+      356 -            config = config,                                  
+      357 -            keychainService = keychainService,                
+      358 -            tmuxService = tmuxService,                        
+      359 -            serverKeyVerifier = hostKeyValidator              
+      360 -        )                                                     
+      340 +        val manager = connectionManagerFactory.create(hostKeyV
+          +alidator)                                                     
+      341  
+      362 -        // Wire output interceptor                            
+      342          manager.outputInterceptor = OutputInterceptor { bytes 
+           ->
+      343              agentParser.processOutput(bytes)
+      344              permissionService.processOutput(bytes)
+     ...
+      381      }
+      382  
+      383      private fun startNetworkProbe(host: String, port: Int) {
+      405 -        val probe = NetworkProbeService(                      
+      406 -            host = host,                                      
+      407 -            port = port,                                      
+      408 -            intervalSeconds = config.networkProbeIntervalSecon
+          -ds,                                                           
+      409 -            timeoutSeconds = config.networkProbeTimeoutSeconds
+          -,                                                             
+      410 -            degradedThresholdMs = config.networkProbeDegradedT
+          -hresholdMs                                                    
+      411 -        )                                                     
+      384 +        val probe = networkProbeFactory.create(host, port)    
+      385          networkProbeService = probe
+      386          viewModelScope.launch {
+      387              probe.start()
+     ...
+      398          sharedFileBrowser?.disconnect()
+      399          sharedFileBrowser = null
+      400      }
+      401 +                                                              
+      402 +    private companion object {                                
+      403 +        private const val TAG = "SessionViewModel"            
+      404 +    }                                                         
+      405  }
+
+⏺ Now update ProfileListViewModel.kt to inject IWakeOnLanService:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/ui/screens/profiles/ProfileListViewModel.kt)
+  ⎿  Error writing file
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/ui/screens/profiles/ProfileListViewModel.kt)
+  ⎿  Added 5 lines, removed 47 lines
+       4  import androidx.lifecycle.viewModelScope
+       5  import com.olorin.claudette.config.LoggerFactory
+       6  import com.olorin.claudette.models.ServerProfile
+       7 +import com.olorin.claudette.services.interfaces.IWakeOnLanServi
+         +ce                                                             
+       8  import com.olorin.claudette.services.interfaces.KeychainService
+          Interface
+       9  import com.olorin.claudette.services.interfaces.ProfileStoreInt
+          erface
+      10  import dagger.hilt.android.lifecycle.HiltViewModel
+     ...
+      13  import kotlinx.coroutines.flow.StateFlow
+      14  import kotlinx.coroutines.flow.asStateFlow
+      15  import kotlinx.coroutines.launch
+      15 -import java.net.DatagramPacket                                 
+      16 -import java.net.DatagramSocket                                 
+      17 -import java.net.InetAddress                                    
+      16  import javax.inject.Inject
+      17  
+      18  @HiltViewModel
+      19  class ProfileListViewModel @Inject constructor(
+      20      private val profileStore: ProfileStoreInterface,
+      23 -    private val keychainService: KeychainServiceInterface      
+      21 +    private val keychainService: KeychainServiceInterface,     
+      22 +    private val wakeOnLanService: IWakeOnLanService            
+      23  ) : ViewModel() {
+      24  
+      25      private val _profiles = MutableStateFlow<List<ServerProfile
+          >>(emptyList())
+     ...
+      43              val profile = _profiles.value.find { it.id == profi
+          leId } ?: return@launch
+      44              profileStore.deleteProfile(profileId)
+      45  
+      47 -            // Clean up associated keychain entries            
+      46              keychainService.deletePassword(profileId)
+      47              profile.authMethod.keyTag?.let { tag ->
+      48                  keychainService.deletePrivateKeyData(tag)
+     ...
+      56      fun sendWakeOnLan(macAddress: String) {
+      57          viewModelScope.launch(Dispatchers.IO) {
+      58              try {
+      61 -                val macBytes = parseMacAddress(macAddress)     
+      62 -                val magicPacket = buildWolMagicPacket(macBytes)
+      63 -                                                               
+      64 -                DatagramSocket().use { socket ->               
+      65 -                    socket.broadcast = true                    
+      66 -                    val broadcastAddress = InetAddress.getByNam
+         -e(WOL_BROADCAST_ADDRESS)                                       
+      67 -                    val packet = DatagramPacket(               
+      68 -                        magicPacket,                           
+      69 -                        magicPacket.size,                      
+      70 -                        broadcastAddress,                      
+      71 -                        WOL_PORT                               
+      72 -                    )                                          
+      73 -                    socket.send(packet)                        
+      74 -                }                                              
+      59 +                wakeOnLanService.wake(macAddress, WOL_BROADCAST
+         +_ADDRESS)                                                      
+      60                  LoggerFactory.i(LOG_TAG, "Wake-on-LAN sent to $
+          macAddress")
+      61              } catch (e: Exception) {
+      62                  LoggerFactory.e(LOG_TAG, "Wake-on-LAN failed fo
+          r $macAddress", e)
+     ...
+       64          }
+       65      }
+       66  
+       82 -    private fun parseMacAddress(mac: String): ByteArray {     
+       83 -        val parts = mac.split(":", "-")                       
+       84 -        require(parts.size == MAC_BYTE_COUNT) { "Invalid MAC a
+          -ddress format: $mac" }                                        
+       85 -        return parts.map { it.toInt(HEX_RADIX).toByte() }.toBy
+          -teArray()                                                     
+       86 -    }                                                         
+       87 -                                                              
+       88 -    private fun buildWolMagicPacket(macBytes: ByteArray): Byte
+          -Array {                                                       
+       89 -        val packet = ByteArray(WOL_HEADER_SIZE + MAC_BYTE_COUN
+          -T * WOL_MAC_REPETITIONS)                                      
+       90 -                                                              
+       91 -        // 6 bytes of 0xFF header                             
+       92 -        for (i in 0 until WOL_HEADER_SIZE) {                  
+       93 -            packet[i] = 0xFF.toByte()                         
+       94 -        }                                                     
+       95 -                                                              
+       96 -        // MAC address repeated 16 times                      
+       97 -        for (i in 0 until WOL_MAC_REPETITIONS) {              
+       98 -            System.arraycopy(macBytes, 0, packet, WOL_HEADER_S
+          -IZE + i * MAC_BYTE_COUNT, MAC_BYTE_COUNT)                     
+       99 -        }                                                     
+      100 -                                                              
+      101 -        return packet                                         
+      102 -    }                                                         
+      103 -                                                              
+      104 -    companion object {                                        
+       67 +    private companion object {                                
+       68          private const val LOG_TAG = "ProfileListVM"
+       69          private const val WOL_BROADCAST_ADDRESS = "255.255.255
+           .255"
+      107 -        private const val WOL_PORT = 9                        
+      108 -        private const val WOL_HEADER_SIZE = 6                 
+      109 -        private const val WOL_MAC_REPETITIONS = 16            
+      110 -        private const val MAC_BYTE_COUNT = 6                  
+      111 -        private const val HEX_RADIX = 16                      
+       70      }
+       71  }
+
+⏺ Batch 6: Bonjour wiring in ProfileEditorViewModel, SplashScreen fix, 
+  SessionLifecycleObserver delete, remaining logging fixes
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ The MdnsDiscoveryService needs to be refactored to accept Context in
+  constructor for the plan's DI model. Let me update it:
+
+⏺ Write(~/Documents/Projects/olorin/Claudette/claudette-android/app/src/main/jav
+       a/com/olorin/claudette/services/impl/MdnsDiscoveryService.kt)
+  ⎿  Added 24 lines, removed 27 lines
+       4  import android.net.nsd.NsdManager
+       5  import android.net.nsd.NsdServiceInfo
+       6  import android.net.wifi.WifiManager
+       7 +import com.olorin.claudette.config.LoggerFactory               
+       8  import com.olorin.claudette.models.BonjourHost
+       9  import kotlinx.coroutines.flow.MutableStateFlow
+      10  import kotlinx.coroutines.flow.StateFlow
+      11  import kotlinx.coroutines.flow.asStateFlow
+      11 -import timber.log.Timber                                       
+      12  
+      13  class MdnsDiscoveryService(
+      14 -    private val serviceType: String                            
+      14 +    private val context: Context,                              
+      15 +    private val serviceType: String = SSH_SERVICE_TYPE         
+      16  ) {
+      17  
+      18      private val _discoveredHosts = MutableStateFlow<List<Bonjou
+          rHost>>(emptyList())
+     ...
+      25      private var multicastLock: WifiManager.MulticastLock? = nul
+          l
+      26      private var discoveryListener: NsdManager.DiscoveryListener
+          ? = null
+      27  
+      27 -    fun startDiscovery(context: Context) {                     
+      28 -        stopDiscovery(context)                                 
+      28 +    fun start() {                                              
+      29 +        stop()                                                 
+      30  
+      31          val wifiManager = context.applicationContext
+      32              .getSystemService(Context.WIFI_SERVICE) as? WifiMan
+          ager
+     ...
+      43  
+      44          manager.discoverServices(serviceType, NsdManager.PROTOC
+          OL_DNS_SD, listener)
+      45          _isSearching.value = true
+      45 -        Timber.i("Started mDNS discovery for %s", serviceType) 
+      46 +        LoggerFactory.i(TAG, "Started mDNS discovery for $servi
+         +ceType")                                                       
+      47      }
+      48  
+      48 -    fun stopDiscovery(context: Context) {                      
+      49 +    fun stop() {                                               
+      50          val manager = nsdManager
+      51          val listener = discoveryListener
+      52  
+     ...
+       54              try {
+       55                  manager.stopServiceDiscovery(listener)
+       56              } catch (e: IllegalArgumentException) {
+       56 -                Timber.d("Discovery listener was not registere
+          -d: %s", e.message)                                            
+       57 +                LoggerFactory.d(TAG, "Discovery listener was n
+          +ot registered: ${e.message}")                                 
+       58              }
+       59          }
+       60  
+       61          multicastLock?.let { lock ->
+       61 -            if (lock.isHeld) {                                
+       62 -                lock.release()                                
+       63 -            }                                                 
+       62 +            if (lock.isHeld) lock.release()                   
+       63          }
+       64  
+       65          nsdManager = null
+       66          discoveryListener = null
+       67          multicastLock = null
+       68          _isSearching.value = false
+       70 -        Timber.i("Stopped mDNS discovery")                    
+       69 +        LoggerFactory.i(TAG, "Stopped mDNS discovery")        
+       70      }
+       71  
+       72      private fun createDiscoveryListener(manager: NsdManager): 
+           NsdManager.DiscoveryListener {
+       73          return object : NsdManager.DiscoveryListener {
+       74  
+       75              override fun onDiscoveryStarted(regType: String) {
+       77 -                Timber.d("mDNS discovery started for: %s", reg
+          -Type)                                                         
+       76 +                LoggerFactory.d(TAG, "mDNS discovery started f
+          +or: $regType")                                                
+       77              }
+       78  
+       79              override fun onServiceFound(serviceInfo: NsdServic
+           eInfo) {
+       81 -                Timber.i("Found mDNS service: %s", serviceInfo
+          -.serviceName)                                                 
+       80 +                LoggerFactory.i(TAG, "Found mDNS service: ${se
+          +rviceInfo.serviceName}")                                      
+       81                  manager.resolveService(serviceInfo, createReso
+           lveListener())
+       82              }
+       83  
+       84              override fun onServiceLost(serviceInfo: NsdService
+           Info) {
+       85                  val name = serviceInfo.serviceName
+       87 -                Timber.i("Lost mDNS service: %s", name)       
+       86 +                LoggerFactory.i(TAG, "Lost mDNS service: $name
+          +")                                                            
+       87                  _discoveredHosts.value = _discoveredHosts.valu
+           e.filter { it.serviceName != name }
+       88              }
+       89  
+       91 -            override fun onDiscoveryStopped(serviceType: Strin
+          -g) {                                                          
+       90 +            override fun onDiscoveryStopped(sType: String) {  
+       91                  _isSearching.value = false
+       93 -                Timber.d("mDNS discovery stopped for: %s", ser
+          -viceType)                                                     
+       92 +                LoggerFactory.d(TAG, "mDNS discovery stopped f
+          +or: $sType")                                                  
+       93              }
+       94  
+       96 -            override fun onStartDiscoveryFailed(serviceType: S
+          -tring, errorCode: Int) {                                      
+       95 +            override fun onStartDiscoveryFailed(sType: String,
+          + errorCode: Int) {                                            
+       96                  _isSearching.value = false
+       98 -                Timber.e("mDNS discovery start failed for %s, 
+          -error: %d", serviceType, errorCode)                           
+       97 +                LoggerFactory.e(TAG, "mDNS discovery start fai
+          +led for $sType, error: $errorCode")                           
+       98              }
+       99  
+      101 -            override fun onStopDiscoveryFailed(serviceType: St
+          -ring, errorCode: Int) {                                       
+      102 -                Timber.e("mDNS discovery stop failed for %s, e
+          -rror: %d", serviceType, errorCode)                            
+      100 +            override fun onStopDiscoveryFailed(sType: String, 
+          +errorCode: Int) {                                             
+      101 +                LoggerFactory.e(TAG, "mDNS discovery stop fail
+          +ed for $sType, error: $errorCode")                            
+      102              }
+      103          }
+      104      }
+     ...
+      107          return object : NsdManager.ResolveListener {
+      108  
+      109              override fun onResolveFailed(serviceInfo: NsdServi
+           ceInfo, errorCode: Int) {
+      111 -                Timber.w(                                     
+      112 -                    "Failed to resolve mDNS service: %s, error
+          -: %d",                                                        
+      113 -                    serviceInfo.serviceName,                  
+      114 -                    errorCode                                 
+      115 -                )                                             
+      110 +                LoggerFactory.w(TAG, "Failed to resolve mDNS s
+          +ervice: ${serviceInfo.serviceName}, error: $errorCode")       
+      111              }
+      112  
+      113              override fun onServiceResolved(serviceInfo: NsdSer
+           viceInfo) {
+     ...
+      126                  currentHosts.add(host)
+      127                  _discoveredHosts.value = currentHosts
+      128  
+      134 -                Timber.i("Resolved mDNS host: %s:%d", hostname
+          -, port)                                                       
+      129 +                LoggerFactory.i(TAG, "Resolved mDNS host: $hos
+          +tname:$port")                                                 
+      130              }
+      131          }
+      132      }
+      133  
+      139 -    companion object {                                        
+      134 +    private companion object {                                
+      135 +        private const val TAG = "MdnsDiscoveryService"        
+      136          private const val MULTICAST_LOCK_TAG = "claudette:mdns
+           "
+      137 +        private const val SSH_SERVICE_TYPE = "_ssh._tcp."     
+      138      }
+      139  }
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Sautéed for 10m 19s
