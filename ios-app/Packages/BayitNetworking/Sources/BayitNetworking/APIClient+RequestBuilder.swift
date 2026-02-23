@@ -3,7 +3,6 @@ import Foundation
 // MARK: - Request Building, Header Injection, Response Decoding
 
 extension APIClient {
-
     func buildURLRequest<Body: Encodable & Sendable>(
         from apiRequest: APIRequest<Body>,
         correlationID: String
@@ -15,7 +14,8 @@ extension APIClient {
         }
 
         guard let relativeURL = components.url(relativeTo: configuration.baseURL),
-              let fullURL = URL(string: relativeURL.absoluteString) else {
+              let fullURL = URL(string: relativeURL.absoluteString)
+        else {
             throw APIError.networkError(
                 underlying: "Failed to construct URL for path: \(apiRequest.path)"
             )
@@ -61,13 +61,19 @@ extension APIClient {
                 metadata: ["correlationId": correlationID, "hasToken": "true"]
             )
         } else {
-            // Token provider returned nil - token expired or user not authenticated
-            // Let request proceed without auth header - backend will return 401
-            // which will trigger the unauthorized notification
+            // Token provider returned nil: refresh failed or no session exists.
+            // Throw locally so no unauthenticated request reaches the backend.
+            // This prevents background/non-critical callers (e.g. progress tracking)
+            // from inadvertently triggering the global unauthorizedNotification and
+            // signing the user out on a transient refresh failure.
+            // Genuine server-side revocation is still caught correctly: requests that
+            // carry a valid token but are rejected by the server still return HTTP 401,
+            // which posts the notification through the normal execution path.
             logger.warning(
-                "No auth token available, request will proceed without authorization",
-                metadata: ["correlationId": correlationID]
+                "No auth token available, aborting request",
+                metadata: ["correlationId": correlationID, "path": request.url?.path ?? ""]
             )
+            throw APIError.unauthorized(message: "No token available; refresh failed or session not established")
         }
     }
 
@@ -110,7 +116,7 @@ extension APIClient {
                 "correlationId": correlationID,
                 "type": String(describing: responseType),
                 "error": error.localizedDescription,
-                "bodyPreview": String(data: data.prefix(512), encoding: .utf8) ?? "<non-utf8>"
+                "bodyPreview": String(data: data.prefix(512), encoding: .utf8) ?? "<non-utf8>",
             ])
             throw APIError.decodingError(underlying: error.localizedDescription)
         }
@@ -118,7 +124,8 @@ extension APIClient {
 
     func logRateLimitWarningIfNeeded(_ response: HTTPURLResponse) {
         if let remaining = response.value(forHTTPHeaderField: "X-RateLimit-Remaining")
-            .flatMap(Int.init), remaining < 10 {
+            .flatMap(Int.init), remaining < 10
+        {
             let reset = response.value(forHTTPHeaderField: "X-RateLimit-Reset") ?? "unknown"
             logger.warning(
                 "API rate limit approaching",
