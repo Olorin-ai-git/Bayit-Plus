@@ -1,6 +1,7 @@
 package tv.bayit.plus.feature.player.dialogue
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -14,9 +15,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import kotlinx.coroutines.delay
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
@@ -81,7 +89,9 @@ fun PauseAskDialogueOverlay(
                         }
                     }
 
-                    PauseAskPhase.POLISHING -> PolishingContent()
+                    PauseAskPhase.POLISHING -> PolishingContent(
+                        characterName = selectedCharacter?.name,
+                    )
 
                     PauseAskPhase.USER_SPEAKING,
                     PauseAskPhase.TRANSITION,
@@ -109,7 +119,24 @@ fun PauseAskDialogueOverlay(
 }
 
 @Composable
-private fun PolishingContent() {
+private fun PolishingContent(characterName: String?) {
+    var stageIndex by remember { mutableIntStateOf(0) }
+    val stageKeys = remember(characterName) { polishingStageKeys(characterName) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(STAGE_CYCLE_INTERVAL_MS)
+            stageIndex = (stageIndex + 1) % stageKeys.size
+        }
+    }
+
+    val key = stageKeys[stageIndex % stageKeys.size]
+    val text = if (key.contains("generic")) {
+        bayitString(key, mapOf("name" to (characterName ?: "")))
+    } else {
+        bayitString(key)
+    }
+
     Column(
         modifier = Modifier.padding(DesignTokens.Spacing.xl),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,9 +146,11 @@ private fun PolishingContent() {
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
         Text(
-            text = bayitString("player.pauseAsk.processing"),
+            text = text,
             color = DesignTokens.Colors.Text.secondary,
             fontSize = DesignTokens.FontSize.md,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.animateContentSize(),
         )
     }
 }
@@ -157,3 +186,24 @@ private fun IdleContent(onAskAgain: () -> Unit, onResume: () -> Unit) {
 }
 
 private const val SCRIM_ALPHA = 0.7f
+private const val STAGE_CYCLE_INTERVAL_MS = 5_000L
+
+private fun polishingStageKeys(characterName: String?): List<String> {
+    val base = "player.pauseAsk.stages"
+    val generic = listOf("$base.polishing", "$base.thinking")
+    return generic + characterSpecificKeys(base, characterName)
+}
+
+private fun characterSpecificKeys(base: String, characterName: String?): List<String> {
+    val name = characterName?.lowercase() ?: ""
+    val prefix = when {
+        name.contains("biff") -> "biff"
+        name.contains("doc") -> "doc"
+        name.contains("marty") -> "marty"
+        name.contains("george") -> "george"
+        name.contains("lorraine") -> "lorraine"
+        name.contains("jennifer") -> "jennifer"
+        else -> "generic"
+    }
+    return (1..4).map { "$base.$prefix$it" }
+}
