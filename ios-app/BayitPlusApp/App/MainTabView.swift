@@ -123,7 +123,7 @@ struct MainTabView: View {
         case .zehAni:
             ZehAniHubView()
         case .podcasts:
-            PodcastsView()
+            ListenView()
         case .search:
             SearchView()
         case .downloads:
@@ -134,7 +134,10 @@ struct MainTabView: View {
     private func binding(for tab: AppTab) -> Binding<NavigationPath> {
         Binding(
             get: { coordinator.paths[tab, default: NavigationPath()] },
-            set: { coordinator.paths[tab] = $0 }
+            set: {
+                coordinator.paths[tab] = $0
+                coordinator.syncBreadcrumbs(for: tab, pathCount: $0.count)
+            }
         )
     }
 }

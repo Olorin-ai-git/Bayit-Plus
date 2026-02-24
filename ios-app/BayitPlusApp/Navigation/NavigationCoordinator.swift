@@ -127,6 +127,7 @@ public final class NavigationCoordinator {
              .flows, .morningRitual, .voiceOnboarding, .support,
              .trivia, .llmSearch, .familyControls, .shabbatMode,
              .jerusalemContent, .telAvivContent, .audiobooks,
+             .audiobookCollections, .audiobookAuthorDetail,
              .audiobookDetail, .trending, .interactiveSubtitles,
              .chapters, .chatbot, .avatarMode, .betaCredits,
              .subscriptionGate, .household, .devicePairing,
@@ -182,6 +183,14 @@ public final class NavigationCoordinator {
     func popToRoot() {
         paths[selectedTab] = NavigationPath()
         breadcrumbTrails[selectedTab] = []
+    }
+
+    /// Sync breadcrumbs when SwiftUI's back button shrinks the navigation path
+    func syncBreadcrumbs(for tab: AppTab, pathCount: Int) {
+        let trailCount = breadcrumbTrails[tab, default: []].count
+        if trailCount > pathCount {
+            breadcrumbTrails[tab]?.removeLast(trailCount - pathCount)
+        }
     }
 
     /// Present a route as a fullscreen modal (player)

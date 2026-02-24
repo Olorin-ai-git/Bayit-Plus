@@ -164,29 +164,44 @@ def extract_audiobook_metadata(path: str, source_dir: str) -> Dict:
 
 def _looks_like_author_name(text: str) -> bool:
     """Heuristic to determine if text looks like an author name."""
-    # Author names typically:
-    # - Start with capital letter
-    # - Contain at most 4-5 words
-    # - May have periods (J.K. Rowling)
     words = text.strip().split()
-    if len(words) > 5:
+    if not words or len(words) > 5:
         return False
     if not text[0].isupper():
         return False
-    # Check for common title words that indicate it's NOT an author
-    title_words = {'the', 'a', 'an', 'of', 'and', 'in', 'to', 'for'}
+    # Common title words that indicate it's NOT an author
+    title_words = {'the', 'a', 'an', 'of', 'and', 'in', 'to', 'for',
+                   'how', 'what', 'why', 'tales', 'story', 'guide'}
     first_word = words[0].lower()
     if first_word in title_words:
         return False
-    return True
+    # "Last, First" format is a strong author signal
+    if ',' in text and text.count(',') == 1:
+        parts = [p.strip() for p in text.split(',')]
+        if all(1 <= len(p.split()) <= 2 for p in parts):
+            return True
+    # Initials pattern (e.g. J.K. Rowling, C.S. Lewis)
+    if re.match(r'^[A-Z]\.\s*[A-Z]\.', text):
+        return True
+    # 2-3 capitalized words with no articles is likely a name
+    if 2 <= len(words) <= 3:
+        capitalized = sum(1 for w in words if w[0].isupper())
+        if capitalized == len(words):
+            return True
+    return False
 
 
 def _clean_title(title: str) -> str:
     """Clean audiobook title."""
+    # Strip leading/trailing quotes
+    title = title.strip().strip('"\'').strip('\u201c\u201d\u2018\u2019')
+    # Normalize Unicode dashes to ASCII hyphen
+    title = title.replace('\u2013', '-').replace('\u2014', '-')
     # Remove common suffixes
-    title = re.sub(r'\s*\(?(Unabridged|Abridged)\)?$', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'\s*\[?(Audiobook)\]?$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s*\(?\s*(Unabridged|Abridged)\s*\)?\s*$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s*\[?\s*Audiobook\s*\]?\s*$', '', title, flags=re.IGNORECASE)
     title = re.sub(r'\s*-\s*Audiobook$', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s*\(?\s*Audio\s*Edition\s*\)?\s*$', '', title, flags=re.IGNORECASE)
     # Clean up whitespace
     title = ' '.join(title.split())
     return title.strip()
@@ -194,8 +209,20 @@ def _clean_title(title: str) -> str:
 
 def _clean_author(author: str) -> str:
     """Clean author name."""
-    # Remove common prefixes/suffixes
-    author = re.sub(r'^(by|written by|narrated by)\s+', '', author, flags=re.IGNORECASE)
+    # Remove common prefixes
+    author = re.sub(
+        r'^(by|written\s+by|narrated\s+by|read\s+by|author:\s*)\s+',
+        '', author, flags=re.IGNORECASE
+    )
+    # Handle "Last, First" -> "First Last" (only single-word parts to avoid mangling co-authors)
+    author = author.strip()
+    if ',' in author and author.count(',') == 1:
+        parts = [p.strip() for p in author.split(',', 1)]
+        if len(parts) == 2 and len(parts[0].split()) == 1 and len(parts[1].split()) == 1:
+            author = f"{parts[1]} {parts[0]}"
+    # Title-case if ALL CAPS or all lowercase
+    if author == author.upper() or author == author.lower():
+        author = author.title()
     # Clean up whitespace
     author = ' '.join(author.split())
     return author.strip()
@@ -505,37 +532,45 @@ async def upload_audiobooks(
 
     client = AsyncIOMotorClient(mongodb_url)
     db = client['bayit_plus']
-    await init_beanie(
-        database=db,
-        document_models=[Content, ContentSection]
-    )
+    try:
+        await init_beanie(
+            database=db,
+            document_models=[Content, ContentSection]
+        )
+    except Exception as e:
+        logger.warning(f"Beanie init had index issues (non-fatal): {e}")
+        logger.info("Continuing with raw MongoDB operations")
     logger.info("Connected to MongoDB Atlas")
 
     # Get or create Audiobooks section
-    audiobooks_section = await ContentSection.find_one({"slug": "audiobooks"})
+    audiobooks_section = await db.content_taxonomy.find_one({"slug": "audiobooks"})
     if not audiobooks_section:
         if dry_run:
             logger.info("[DRY RUN] Would create 'Audiobooks' section")
             section_id = "dry-run-section-id"
         else:
-            audiobooks_section = ContentSection(
-                slug="audiobooks",
-                name_key="taxonomy.sections.audiobooks",
-                description_key="taxonomy.sections.audiobooks.description",
-                icon="book-audio",
-                color="#8B7355",
-                order=5,
-                is_active=True,
-                show_on_homepage=True,
-                show_on_nav=True,
-                supports_subcategories=False,
-                default_content_format="audiobook",
-            )
-            await audiobooks_section.insert()
-            section_id = str(audiobooks_section.id)
+            from bson import ObjectId as BsonObjectId
+            section_doc = {
+                '_id': BsonObjectId(),
+                'slug': 'audiobooks',
+                'name_key': 'taxonomy.sections.audiobooks',
+                'description_key': 'taxonomy.sections.audiobooks.description',
+                'icon': 'book-audio',
+                'color': '#8B7355',
+                'order': 5,
+                'is_active': True,
+                'show_on_homepage': True,
+                'show_on_nav': True,
+                'supports_subcategories': False,
+                'default_content_format': 'audiobook',
+                'created_at': datetime.now(UTC),
+                'updated_at': datetime.now(UTC),
+            }
+            result = await db.content_taxonomy.insert_one(section_doc)
+            section_id = str(result.inserted_id)
             logger.info(f"Created 'Audiobooks' section: {section_id}")
     else:
-        section_id = str(audiobooks_section.id)
+        section_id = str(audiobooks_section['_id'])
         logger.info(f"Using existing 'Audiobooks' section: {section_id}")
 
     # Scan for audio files
@@ -581,41 +616,14 @@ async def upload_audiobooks(
 
         author = metadata.get('author', 'Unknown')
         title = metadata.get('title', 'Unknown')
+        is_multi_chapter = len(files) > 1
 
         logger.info(f"\n{'='*80}")
         logger.info(f"Processing: {title} by {author} ({len(files)} file(s))")
         logger.info(f"{'='*80}")
 
         try:
-            # Use primary file (first file, or single file)
-            primary_file = files[0]
-            file_size = os.path.getsize(primary_file)
-            file_size_gb = file_size / (1024 ** 3)
-
-            if file_size_gb > 5:
-                logger.info(f"    Skipped: File too large ({file_size_gb:.1f}GB)")
-                stats['audiobooks_skipped'] += 1
-                continue
-
-            # Get or calculate hash
-            file_hash = await get_cached_hash(db, primary_file, file_size)
-            if file_hash:
-                logger.info(f"    Using cached hash: {file_hash[:16]}...")
-            else:
-                file_hash = calculate_file_hash(primary_file)
-                logger.info(f"    File hash: {file_hash[:16]}...")
-                if save_hash:
-                    await save_hash_to_cache(db, primary_file, file_hash, file_size)
-                    logger.info(f"    Saved hash to cache")
-
-            # Check for duplicates
-            existing = await db.content.find_one({'file_hash': file_hash})
-            if existing:
-                logger.info(f"    Skipped: Duplicate file")
-                stats['audiobooks_skipped'] += 1
-                continue
-
-            # Get book metadata from APIs
+            # Get book metadata from APIs (once per book, not per chapter)
             api_metadata = await get_google_books_metadata(title, author)
             if not api_metadata:
                 api_metadata = await get_open_library_metadata(title, author)
@@ -625,80 +633,110 @@ async def upload_audiobooks(
             else:
                 logger.info(f"    No API metadata found, using extracted metadata")
 
-            # Get audio duration
-            duration = get_audio_duration(primary_file)
-            if duration:
-                logger.info(f"    Duration: {duration}")
-
-            # Upload to GCS
-            if dry_run:
-                safe_author = re.sub(r'[^\w\s-]', '', author).replace(' ', '_')
-                safe_title = re.sub(r'[^\w\s-]', '', title).replace(' ', '_')
-                filename = Path(primary_file).name
-                stream_url = f"gs://{settings.GCS_BUCKET_NAME}/audiobooks/{safe_author}/{safe_title}/{filename}"
-                logger.info(f"    [DRY RUN] Would upload to: {stream_url}")
-            else:
-                safe_author = re.sub(r'[^\w\s-]', '', author).replace(' ', '_')
-                safe_title = re.sub(r'[^\w\s-]', '', title).replace(' ', '_')
-                filename = Path(primary_file).name
-                blob_name = f"audiobooks/{safe_author}/{safe_title}/{filename}"
-
-                stream_url = await upload_to_gcs(primary_file, blob_name)
-                if not stream_url:
-                    logger.error(f"    Failed to upload to GCS")
-                    stats['audiobooks_failed'] += 1
-                    continue
-
-            # Create audiobook document
             from bson import ObjectId
-            now = datetime.now(UTC)
-
             final_title = api_metadata.get('title') if api_metadata else title
             final_author = api_metadata.get('author') if api_metadata else author
+            safe_author = re.sub(r'[^\w\s-]', '', author).replace(' ', '_')
+            safe_title = re.sub(r'[^\w\s-]', '', title).replace(' ', '_')
 
-            audiobook_doc = {
-                '_id': ObjectId(),
-                'title': final_title,
-                'author': final_author,
-                'description': api_metadata.get('description', '') if api_metadata else '',
-                'stream_url': stream_url,
-                'stream_type': 'audio',
-                'section_ids': [section_id],
-                'primary_section_id': section_id,
-                'content_format': 'audiobook',
-                'is_published': True,
-                'is_featured': False,
-                'file_hash': file_hash,
-                'file_size': file_size,
-                'requires_subscription': 'basic',
-                'visibility_mode': 'public',
-                'created_at': now,
-                'updated_at': now,
-            }
+            # Upload each chapter file
+            chapter_count = 0
+            for chapter_idx, chapter_file in enumerate(files, start=1):
+                file_size = os.path.getsize(chapter_file)
+                file_size_gb = file_size / (1024 ** 3)
 
-            # Add optional metadata
-            if duration:
-                audiobook_doc['duration'] = duration
-            if api_metadata:
-                if api_metadata.get('thumbnail'):
-                    audiobook_doc['thumbnail'] = api_metadata['thumbnail']
-                if api_metadata.get('year'):
-                    audiobook_doc['year'] = api_metadata['year']
-                if api_metadata.get('rating'):
-                    audiobook_doc['rating'] = api_metadata['rating']
-                if api_metadata.get('isbn'):
-                    audiobook_doc['isbn'] = api_metadata['isbn']
-                if api_metadata.get('publisher_name'):
-                    audiobook_doc['publisher_name'] = api_metadata['publisher_name']
-                if api_metadata.get('categories'):
-                    audiobook_doc['topic_tags'] = api_metadata['categories'][:5]
+                if file_size_gb > 5:
+                    logger.info(f"    Skipped chapter {chapter_idx}: File too large ({file_size_gb:.1f}GB)")
+                    continue
 
-            if dry_run:
-                logger.info(f"    [DRY RUN] Would add audiobook to database")
-            else:
-                result = await db.content.insert_one(audiobook_doc)
-                logger.info(f"    Added to database: {result.inserted_id}")
+                # Get or calculate hash
+                file_hash = await get_cached_hash(db, chapter_file, file_size)
+                if file_hash:
+                    logger.debug(f"    Ch.{chapter_idx} Using cached hash: {file_hash[:16]}...")
+                else:
+                    file_hash = calculate_file_hash(chapter_file)
+                    if save_hash:
+                        await save_hash_to_cache(db, chapter_file, file_hash, file_size)
 
+                # Check for duplicates
+                existing = await db.content.find_one({'file_hash': file_hash})
+                if existing:
+                    logger.info(f"    Ch.{chapter_idx} Skipped: Duplicate")
+                    stats['audiobooks_skipped'] += 1
+                    continue
+
+                # Get audio duration
+                duration = get_audio_duration(chapter_file)
+
+                # Upload to GCS
+                filename = Path(chapter_file).name
+                blob_name = f"audiobooks/{safe_author}/{safe_title}/{filename}"
+
+                if dry_run:
+                    stream_url = f"gs://{settings.GCS_BUCKET_NAME}/{blob_name}"
+                    logger.info(f"    Ch.{chapter_idx} [DRY RUN] Would upload: {filename}")
+                else:
+                    stream_url = await upload_to_gcs(chapter_file, blob_name)
+                    if not stream_url:
+                        logger.error(f"    Ch.{chapter_idx} Failed to upload to GCS")
+                        stats['audiobooks_failed'] += 1
+                        continue
+
+                # Create chapter document
+                now = datetime.now(UTC)
+                chapter_title = f"{final_title} - Chapter {chapter_idx}" if is_multi_chapter else final_title
+
+                audiobook_doc = {
+                    '_id': ObjectId(),
+                    'title': chapter_title,
+                    'author': final_author,
+                    'description': api_metadata.get('description', '') if api_metadata else '',
+                    'stream_url': stream_url,
+                    'stream_type': 'audio',
+                    'section_ids': [section_id],
+                    'primary_section_id': section_id,
+                    'content_format': 'audiobook',
+                    'is_published': True,
+                    'is_featured': False,
+                    'file_hash': file_hash,
+                    'file_size': file_size,
+                    'requires_subscription': 'basic',
+                    'visibility_mode': 'public',
+                    'created_at': now,
+                    'updated_at': now,
+                }
+
+                # Add episode info for multi-chapter books
+                if is_multi_chapter:
+                    audiobook_doc['episode'] = chapter_idx
+                    audiobook_doc['total_episodes'] = len(files)
+
+                # Add optional metadata
+                if duration:
+                    audiobook_doc['duration'] = duration
+                if api_metadata:
+                    if api_metadata.get('thumbnail'):
+                        audiobook_doc['thumbnail'] = api_metadata['thumbnail']
+                    if api_metadata.get('year'):
+                        audiobook_doc['year'] = api_metadata['year']
+                    if api_metadata.get('rating'):
+                        audiobook_doc['rating'] = api_metadata['rating']
+                    if api_metadata.get('isbn'):
+                        audiobook_doc['isbn'] = api_metadata['isbn']
+                    if api_metadata.get('publisher_name'):
+                        audiobook_doc['publisher_name'] = api_metadata['publisher_name']
+                    if api_metadata.get('categories'):
+                        audiobook_doc['topic_tags'] = api_metadata['categories'][:5]
+
+                if dry_run:
+                    logger.info(f"    Ch.{chapter_idx} [DRY RUN] Would add to database")
+                else:
+                    result = await db.content.insert_one(audiobook_doc)
+                    logger.info(f"    Ch.{chapter_idx} Added: {result.inserted_id}")
+
+                chapter_count += 1
+
+            logger.info(f"  Book complete: {chapter_count}/{len(files)} chapters processed")
             stats['audiobooks_processed'] += 1
 
         except Exception as e:
