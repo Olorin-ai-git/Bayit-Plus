@@ -32,7 +32,7 @@ final class AudiobooksViewModel {
         do {
             let response = try await repository.fetchAll(
                 page: 1,
-                limit: pageSize,
+                pageSize: pageSize,
                 genre: selectedGenre,
                 author: selectedAuthor
             )
@@ -58,7 +58,7 @@ final class AudiobooksViewModel {
         do {
             let response = try await repository.fetchAll(
                 page: nextPage,
-                limit: pageSize,
+                pageSize: pageSize,
                 genre: selectedGenre,
                 author: selectedAuthor
             )

@@ -3,14 +3,13 @@ import Foundation
 
 /// Repository protocol for audiobook listing and detail API operations.
 protocol AudiobookRepository: Sendable {
-    func fetchAll(page: Int?, limit: Int?, genre: String?, author: String?) async throws -> AudiobookListResponse
+    func fetchAll(page: Int?, pageSize: Int?, genre: String?, author: String?) async throws -> AudiobookListResponse
     func fetchDetail(id: String) async throws -> Audiobook
     func fetchWithChapters(id: String) async throws -> Audiobook
 }
 
 /// Production implementation of `AudiobookRepository` using `APIClient`.
 final class APIAudiobookRepository: AudiobookRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -19,7 +18,7 @@ final class APIAudiobookRepository: AudiobookRepository, @unchecked Sendable {
 
     func fetchAll(
         page: Int?,
-        limit: Int?,
+        pageSize: Int?,
         genre: String?,
         author: String?
     ) async throws -> AudiobookListResponse {
@@ -27,8 +26,8 @@ final class APIAudiobookRepository: AudiobookRepository, @unchecked Sendable {
         if let page {
             queryItems.append(URLQueryItem(name: "page", value: String(page)))
         }
-        if let limit {
-            queryItems.append(URLQueryItem(name: "limit", value: String(limit)))
+        if let pageSize {
+            queryItems.append(URLQueryItem(name: "page_size", value: String(pageSize)))
         }
         if let genre {
             queryItems.append(URLQueryItem(name: "genre", value: genre))

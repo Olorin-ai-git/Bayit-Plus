@@ -7,7 +7,6 @@ import Observation
 @MainActor
 @Observable
 final class ContentPickerViewModel {
-
     private(set) var channelItems: [ContentPickerItem] = []
     private(set) var podcastItems: [ContentPickerItem] = []
     private(set) var radioItems: [ContentPickerItem] = []
@@ -50,10 +49,10 @@ final class ContentPickerViewModel {
         radio: any RadioRepository,
         audiobook: any AudiobookRepository
     ) {
-        self.liveTVRepo = liveTV
-        self.podcastRepo = podcasts
-        self.radioRepo = radio
-        self.audiobookRepo = audiobook
+        liveTVRepo = liveTV
+        podcastRepo = podcasts
+        radioRepo = radio
+        audiobookRepo = audiobook
     }
 
     /// Load all content concurrently from the 4 repositories.
@@ -112,7 +111,7 @@ final class ContentPickerViewModel {
 
     private func loadAudiobooks() async {
         do {
-            let response = try await audiobookRepo.fetchAll(page: 1, limit: 100, genre: nil, author: nil)
+            let response = try await audiobookRepo.fetchAll(page: 1, pageSize: 100, genre: nil, author: nil)
             audiobookItems = (response.items ?? []).map { ContentPickerItem(audiobook: $0) }
         } catch {
             logger.error("Failed to load audiobooks", error: error)
