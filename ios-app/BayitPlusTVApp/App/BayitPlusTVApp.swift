@@ -12,7 +12,9 @@ import SwiftUI
 
 @main
 struct BayitPlusTVApp: App {
-    @State var coordinator = TVNavigationCoordinator()
+    @State var coordinator = TVNavigationCoordinator(
+        isAutoLoginInProgress: BayitPlusTVApp.hasAutoLoginConfig
+    )
     @State var appConfig: AppConfiguration
     @State var authManager: AuthManager
     @State private var localizationManager: LocalizationManager
@@ -87,6 +89,7 @@ struct BayitPlusTVApp: App {
                     await downloadManager.initialize()
                 }
                 .task {
+                    defer { coordinator.isAutoLoginInProgress = false }
                     let useAutoLogin = ProcessInfo.processInfo.arguments.contains("-autoLogin")
                         || BayitPlusTVApp.hasAutoLoginConfig
                     if useAutoLogin {

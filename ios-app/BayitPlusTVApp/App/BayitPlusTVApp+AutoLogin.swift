@@ -1,6 +1,5 @@
 import BayitAuth
 import BayitCore
-import BayitNetworking
 import Foundation
 
 // MARK: - Auto Login via Environment Credentials
@@ -11,7 +10,8 @@ extension BayitPlusTVApp {
         Bundle.main.url(forResource: "AutoLoginConfig", withExtension: "plist") != nil
     }
 
-    /// Authenticate via backend /auth/login.
+    /// Authenticate via backend /auth/v2/login using a plain URLSession POST.
+    /// Must NOT use APIClient — its auth layer throws before sending if no token exists.
     /// Credential sources (first non-empty wins):
     ///   1. LOGIN_EMAIL / LOGIN_PASSWORD environment variables (Xcode scheme, simulator)
     ///   2. AutoLoginConfig.plist bundled in the app (TestFlight builds)
@@ -22,11 +22,18 @@ extension BayitPlusTVApp {
         }
 
         do {
-            let response = try await apiClient.post(
-                "auth/login",
-                body: AutoLoginBody(email: email, password: password),
-                as: AutoLoginResponse.self
-            )
+            let loginURL = appConfig.apiBaseURL.appendingPathComponent("auth/v2/login")
+            var request = URLRequest(url: loginURL)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("tvos", forHTTPHeaderField: "X-Client-Platform")
+            request.httpBody = try JSONEncoder().encode(AutoLoginBody(email: email, password: password))
+
+            let (data, _) = try await URLSession.shared.data(for: request)
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let response = try decoder.decode(AutoLoginResponse.self, from: data)
 
             let role: UserRole = {
                 switch response.user?.role {
@@ -38,7 +45,7 @@ extension BayitPlusTVApp {
             let user = BayitUser(
                 id: response.user?.id ?? "",
                 email: response.user?.email ?? email,
-                displayName: response.user?.displayName ?? "",
+                displayName: response.user?.name ?? "",
                 photoURL: nil,
                 role: role,
                 isActive: true,
@@ -96,7 +103,7 @@ struct AutoLoginResponse: Decodable, Sendable {
 struct AutoLoginUserPayload: Decodable, Sendable {
     let id: String?
     let email: String?
-    let displayName: String?
+    let name: String?
     let role: String?
     let isBetaUser: Bool?
 }

@@ -64,6 +64,9 @@ final class TVNavigationCoordinator {
     var selectedTab: TVTab = .home
     var showingAuth: Bool = false
     var showingSplash: Bool = true
+    /// True while an auto-login attempt is in-flight.
+    /// Suppresses the sign-in screen so it never flashes during auto-login.
+    var isAutoLoginInProgress: Bool
     var paths: [TVTab: NavigationPath] = [:]
 
     /// Route for the fullscreen player modal. Set to non-nil to present.
@@ -102,7 +105,8 @@ final class TVNavigationCoordinator {
 
     private let logger = BayitLogger(category: "TVNavigation")
 
-    init() {
+    init(isAutoLoginInProgress: Bool = false) {
+        self.isAutoLoginInProgress = isAutoLoginInProgress
         for tab in TVTab.allCases {
             paths[tab] = NavigationPath()
             breadcrumbTrails[tab] = []

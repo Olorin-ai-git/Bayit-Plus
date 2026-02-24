@@ -31,7 +31,7 @@
                         }
                     )
                     .transition(.opacity)
-                } else if coordinator.showingAuth || !authManager.isAuthenticated {
+                } else if (coordinator.showingAuth || !authManager.isAuthenticated) && !coordinator.isAutoLoginInProgress {
                     TVSignInView(
                         onAuthSuccess: {
                             withAnimation {

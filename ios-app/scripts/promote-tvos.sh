@@ -52,6 +52,16 @@ fi
 
 echo -e "${GREEN}Release.xcconfig validation passed - production values confirmed${NC}"
 
+# Validate AutoLoginConfig.plist exists for auto-login (TestFlight testers)
+AUTO_LOGIN_PLIST="$PROJECT_DIR/BayitPlusTVApp/AutoLoginConfig.plist"
+if [ ! -f "$AUTO_LOGIN_PLIST" ]; then
+  echo -e "${RED}ERROR: BayitPlusTVApp/AutoLoginConfig.plist not found${NC}"
+  echo -e "${RED}   Copy BayitPlusTVApp/AutoLoginConfig.plist.template to AutoLoginConfig.plist${NC}"
+  echo -e "${RED}   and fill in the test credentials before promoting.${NC}"
+  exit 1
+fi
+echo -e "${GREEN}AutoLoginConfig.plist present${NC}"
+
 # Get current build number from tvOS Info.plist
 CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusTVApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))
@@ -67,20 +77,30 @@ echo -e "${GREEN}Updated BayitPlusTVApp/Info.plist${NC}"
 # (tvOS uses GENERATE_INFOPLIST_FILE = YES, so this is the authoritative build number)
 sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
 
-echo -e "${BLUE}Archiving tvOS app...${NC}"
+echo -e "${BLUE}Archiving tvOS app (clean build)...${NC}"
 
-# Archive (temporarily relax strict concurrency for archiving)
+# Clean + archive to ensure newly added resources (e.g. AutoLoginConfig.plist) are included.
+# Stale derived data silently omits files added since the last build.
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusTVApp \
   -configuration Release \
   -destination 'generic/platform=tvOS' \
   -archivePath /tmp/BayitPlusTVApp.xcarchive \
-  archive \
+  -derivedDataPath /tmp/BayitPlusTVDerivedData \
+  clean archive \
   -allowProvisioningUpdates \
   SWIFT_STRICT_CONCURRENCY=minimal \
   -quiet
 
-echo -e "${GREEN}✅ Archive succeeded${NC}"
+# Verify AutoLoginConfig.plist made it into the archive bundle
+ARCHIVE_PLIST=$(find /tmp/BayitPlusTVApp.xcarchive -name "AutoLoginConfig.plist" 2>/dev/null)
+if [ -z "$ARCHIVE_PLIST" ]; then
+  echo -e "${RED}ERROR: AutoLoginConfig.plist is missing from the archive${NC}"
+  echo -e "${RED}   The auto-login feature will not work in this build.${NC}"
+  rm -rf /tmp/BayitPlusTVApp.xcarchive /tmp/BayitPlusTVDerivedData
+  exit 1
+fi
+echo -e "${GREEN}✅ Archive succeeded — AutoLoginConfig.plist confirmed in bundle${NC}"
 
 # Create ExportOptions.plist
 # Note: uploadSymbols=false because Firebase handles its own symbolication via Crashlytics SDK
@@ -112,6 +132,6 @@ echo -e "${GREEN}✅ Upload succeeded - Build $NEW_BUILD${NC}"
 echo -e "${BLUE}📺 tvOS Build $NEW_BUILD is now processing in App Store Connect${NC}"
 
 # Cleanup
-rm -rf /tmp/BayitPlusTVApp.xcarchive /tmp/BayitPlusTVExport /tmp/tvOSExportOptions.plist
+rm -rf /tmp/BayitPlusTVApp.xcarchive /tmp/BayitPlusTVExport /tmp/tvOSExportOptions.plist /tmp/BayitPlusTVDerivedData
 
 echo -e "${GREEN}🎉 tvOS promotion complete!${NC}"
