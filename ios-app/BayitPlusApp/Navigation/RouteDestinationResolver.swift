@@ -10,13 +10,13 @@ struct RouteDestinationResolver {
     @ViewBuilder
     func view(for route: Route) -> some View {
         switch route {
-        case .movieDetail(let movieId):
+        case let .movieDetail(movieId):
             MovieDetailView(movieId: movieId)
-        case .seriesDetail(let seriesId):
+        case let .seriesDetail(seriesId):
             SeriesDetailView(seriesId: seriesId)
-        case .collectionDetail(let collectionId):
+        case let .collectionDetail(collectionId):
             CollectionDetailView(collectionId: collectionId)
-        case .podcastDetail(let showId):
+        case let .podcastDetail(showId):
             PodcastDetailView(showId: showId)
         case .epg:
             EPGView()
@@ -66,7 +66,7 @@ struct RouteDestinationResolver {
             VoiceOnboardingView(speechService: SpeechRecognitionService())
         case .support:
             SupportView()
-        case .trivia(let contentId):
+        case let .trivia(contentId):
             QuizOverlayView(contentId: contentId, profileId: nil, onDismiss: { coordinator.pop() })
         case .llmSearch:
             LLMSearchView()
@@ -80,13 +80,17 @@ struct RouteDestinationResolver {
             CultureContentView()
         case .audiobooks:
             AudiobooksView()
-        case .audiobookDetail(let audiobookId):
+        case .audiobookCollections:
+            AudiobookCollectionsView()
+        case let .audiobookAuthorDetail(author):
+            AudiobookAuthorDetailView(author: author)
+        case let .audiobookDetail(audiobookId):
             AudiobookDetailView(audiobookId: audiobookId)
         case .trending:
             TrendingView()
-        case .interactiveSubtitles(let contentId):
+        case let .interactiveSubtitles(contentId):
             InteractiveSubtitlesView(contentId: contentId)
-        case .chapters(let contentId):
+        case let .chapters(contentId):
             ChapterNavigationView(contentId: contentId)
         case .chatbot:
             ChatbotView(repository: repos.chat)
@@ -94,7 +98,7 @@ struct RouteDestinationResolver {
             AvatarModeView(stateMachine: AvatarStateMachine(), repository: repos.chat)
         case .betaCredits:
             CreditBalanceWidgetView()
-        case .subscriptionGate(let contentId, let requiredTier):
+        case let .subscriptionGate(contentId, requiredTier):
             SubscriptionGateView(contentId: contentId, requiredTier: requiredTier)
         case .household:
             HouseholdView()
@@ -116,11 +120,11 @@ struct RouteDestinationResolver {
             WatchPartyView(repository: repos.watchParty)
         case .watchPartyDetail:
             WatchPartyView(repository: repos.watchParty)
-        case .chess(let gameId):
+        case let .chess(gameId):
             ChessView(gameId: gameId)
         case .directMessages:
             DirectMessagesView()
-        case .conversation(let friendId):
+        case let .conversation(friendId):
             ConversationView(friendId: friendId)
         case .mfaSetup:
             MFASetupView()
@@ -128,27 +132,27 @@ struct RouteDestinationResolver {
             PhoneVerificationView()
         case .zehAni:
             ZehAniHubView()
-        case .zehAniMagicMirror(let profileId):
+        case let .zehAniMagicMirror(profileId):
             MagicMirrorView(profileId: profileId)
-        case .zehAniV2V(let avatarId, let profileId):
+        case let .zehAniV2V(avatarId, profileId):
             V2VPracticeView(avatarId: avatarId, profileId: profileId)
-        case .zehAniAvatar3D(let avatarId):
+        case let .zehAniAvatar3D(avatarId):
             Avatar3DPreviewView(avatarImageUrl: avatarId)
-        case .zehAniHighlights(let profileId):
+        case let .zehAniHighlights(profileId):
             HighlightReelView(profileId: profileId)
-        case .zehAniContacts(let profileId):
+        case let .zehAniContacts(profileId):
             ContactsManagementView(profileId: profileId)
-        case .zehAniFeedback(let profileId):
+        case let .zehAniFeedback(profileId):
             FeedbackInboxView(profileId: profileId)
-        case .zehAniAvatarSettings(let profileId, let avatarId):
+        case let .zehAniAvatarSettings(profileId, avatarId):
             AvatarSettingsView(profileId: profileId, avatarId: avatarId)
-        case .zehAniMovieInteractions(let profileId):
+        case let .zehAniMovieInteractions(profileId):
             MovieInteractionsView(profileId: profileId)
-        case .zehAniMovieCharacters(let profileId, let contentId):
+        case let .zehAniMovieCharacters(profileId, contentId):
             MovieCharactersView(profileId: profileId, contentId: contentId)
-        case .zehAniCharacterDialogue(let profileId, let contentId, let characterName):
+        case let .zehAniCharacterDialogue(profileId, contentId, characterName):
             CharacterDialogueView(profileId: profileId, contentId: contentId, characterName: characterName)
-        case .tvLogin(let sessionId, let token, let expires):
+        case let .tvLogin(sessionId, token, expires):
             TVLoginView(sessionId: sessionId, token: token, expires: expires)
         default:
             ErrorStateView(

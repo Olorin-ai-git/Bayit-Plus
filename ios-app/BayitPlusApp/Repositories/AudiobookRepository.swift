@@ -6,6 +6,7 @@ protocol AudiobookRepository: Sendable {
     func fetchAll(page: Int?, pageSize: Int?, genre: String?, author: String?) async throws -> AudiobookListResponse
     func fetchDetail(id: String) async throws -> Audiobook
     func fetchWithChapters(id: String) async throws -> Audiobook
+    func fetchAuthors() async throws -> AudiobookAuthorsResponse
 }
 
 /// Production implementation of `AudiobookRepository` using `APIClient`.
@@ -53,6 +54,13 @@ final class APIAudiobookRepository: AudiobookRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/audiobooks/\(id)/chapters",
             as: Audiobook.self
+        )
+    }
+
+    func fetchAuthors() async throws -> AudiobookAuthorsResponse {
+        return try await client.get(
+            "/api/v1/audiobooks/authors",
+            as: AudiobookAuthorsResponse.self
         )
     }
 }

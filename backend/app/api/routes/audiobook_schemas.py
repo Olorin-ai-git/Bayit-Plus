@@ -220,6 +220,20 @@ class AudiobookChapterResponse(BaseModel):
     thumbnail: Optional[str] = None
     stream_url: Optional[str] = None
     stream_type: Optional[str] = None
+    start_time: Optional[float] = None
+    end_time: Optional[float] = None
+
+
+class AudiobookAuthorResponse(BaseModel):
+    """Author summary with audiobook count and representative thumbnail."""
+    name: str
+    audiobook_count: int
+    thumbnail: Optional[str] = None
+
+
+class AudiobookAuthorsListResponse(BaseModel):
+    """List of distinct audiobook authors."""
+    authors: List[AudiobookAuthorResponse]
 
 
 class AudiobookWithChaptersResponse(BaseModel):

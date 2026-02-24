@@ -161,8 +161,11 @@ struct AudiobooksListenTab: View {
             coordinator.navigate(to: .audiobookAuthorDetail(author: author.name))
         } label: {
             VStack(spacing: DesignTokens.Spacing.sm) {
-                authorThumbnail(author.thumbnail)
+                Color.clear
                     .aspectRatio(2 / 3, contentMode: .fit)
+                    .overlay {
+                        authorThumbnail(author.thumbnail)
+                    }
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                     .overlay(alignment: .bottomTrailing) {
                         countBadge(author.audiobookCount)
@@ -174,7 +177,7 @@ struct AudiobooksListenTab: View {
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, minHeight: 36, alignment: .top)
             }
         }
         .buttonStyle(.plain)

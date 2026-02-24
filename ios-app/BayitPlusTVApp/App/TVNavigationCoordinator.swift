@@ -73,7 +73,7 @@ final class TVNavigationCoordinator {
     var categoryBrowseActive: Bool = false
     var categoryBrowseTitle: String = ""
     var categoryBrowseIcon: String = ""
-    var categoryBrowseItems: [ContentItem] = []
+    var categoryBrowseCategoryName: String = ""
 
     /// Set to `true` from any view (e.g. Profile) to surface the widget dock.
     /// TVMainTabView observes this and resets it after showing the dock.
@@ -149,10 +149,10 @@ final class TVNavigationCoordinator {
     }
 
     /// Present the category browse grid within the Home tab (preserves tab bar).
-    func presentCategoryBrowse(title: String, icon: String, items: [ContentItem]) {
+    func presentCategoryBrowse(title: String, icon: String, categoryName: String) {
         categoryBrowseTitle = title
         categoryBrowseIcon = icon
-        categoryBrowseItems = items
+        categoryBrowseCategoryName = categoryName
         categoryBrowseActive = true
     }
 

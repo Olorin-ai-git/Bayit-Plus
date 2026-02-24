@@ -6,38 +6,111 @@ import UIKit
 // MARK: - Playback Controls & Chapters
 
 extension AudiobookDetailView {
-    func playbackControls(_ audiobook: Audiobook) -> some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
-            GlassButton(
-                isAudiobookPlaying(audiobook) ? "Pause" : "Play",
-                variant: .primary,
-                size: .large
-            ) {
-                let generator = UIImpactFeedbackGenerator(style: .light)
-                generator.impactOccurred()
-                playAudiobook(audiobook)
-            }
+    func playbackControls(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
+        VStack(spacing: DesignTokens.Spacing.lg) {
+            transportBar(audiobook, vm: vm)
+            speedPicker(vm: vm)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    func chapterList(_ audiobook: Audiobook) -> some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            if let chapters = audiobook.chapters, !chapters.isEmpty {
+    // MARK: - Transport Bar
+
+    private func transportBar(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
+        let playing = isAudiobookPlaying(audiobook)
+        let canPrev = vm.canGoPreviousChapter(audioManager: audioManager, audiobook: audiobook)
+        let canNext = vm.canGoNextChapter(audioManager: audioManager, audiobook: audiobook)
+
+        return HStack(spacing: DesignTokens.Spacing.lg) {
+            transportButton(
+                icon: "backward.end.fill",
+                size: 22,
+                disabled: !canPrev
+            ) {
+                skipToPreviousChapter(audiobook, vm: vm)
+            }
+
+            transportButton(icon: "gobackward.15", size: 28) {
+                skipBackward(audiobook)
+            }
+
+            transportButton(
+                icon: playing ? "pause.circle.fill" : "play.circle.fill",
+                size: 48
+            ) {
+                playAudiobook(audiobook)
+            }
+
+            transportButton(icon: "goforward.30", size: 28) {
+                skipForward(audiobook)
+            }
+
+            transportButton(
+                icon: "forward.end.fill",
+                size: 22,
+                disabled: !canNext
+            ) {
+                skipToNextChapter(audiobook, vm: vm)
+            }
+        }
+    }
+
+    private func transportButton(
+        icon: String,
+        size: CGFloat,
+        disabled: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
+            action()
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: size))
+                .foregroundColor(
+                    disabled ? DesignTokens.Text.muted : DesignTokens.Primary.default
+                )
+        }
+        .disabled(disabled)
+    }
+
+    // MARK: - Speed Picker
+
+    private func speedPicker(vm: AudiobookDetailViewModel) -> some View {
+        PlaybackSpeedControlView(currentSpeed: vm.playbackSpeed) { speed in
+            audioManager.mediaPlayer.setRate(speed)
+            vm.setSpeed(speed)
+        }
+    }
+
+    func chapterList(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
+        let chapters = vm.effectiveChapters
+        let isEmbedded = vm.hasEmbeddedChapters
+
+        return VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            if !chapters.isEmpty {
                 Text(localization.t("audiobooks.chapters"))
                     .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .padding(.horizontal, DesignTokens.Spacing.lg)
 
                 ForEach(chapters, id: \.stableId) { chapter in
-                    chapterRow(chapter, audiobook: audiobook)
+                    chapterRow(chapter, audiobook: audiobook, isEmbedded: isEmbedded)
                 }
             }
         }
     }
 
-    func chapterRow(_ chapter: AudiobookChapter, audiobook: Audiobook) -> some View {
-        let isActive = isChapterPlaying(chapter)
+    func chapterRow(
+        _ chapter: AudiobookChapter,
+        audiobook: Audiobook,
+        isEmbedded: Bool = false
+    ) -> some View {
+        let isActive = isEmbedded
+            ? isEmbeddedChapterPlaying(chapter, audiobook: audiobook)
+            : isChapterPlaying(chapter)
+        let canPlay = chapter.streamUrl != nil || isEmbedded
 
         return GlassCard {
             HStack(spacing: DesignTokens.Spacing.md) {
@@ -65,11 +138,15 @@ extension AudiobookDetailView {
 
                 Spacer()
 
-                if chapter.streamUrl != nil {
+                if canPlay {
                     Button {
                         let generator = UIImpactFeedbackGenerator(style: .light)
                         generator.impactOccurred()
-                        playChapter(chapter, audiobook: audiobook)
+                        if isEmbedded {
+                            playEmbeddedChapter(chapter, audiobook: audiobook)
+                        } else {
+                            playChapter(chapter, audiobook: audiobook)
+                        }
                     } label: {
                         Image(systemName: isActive && audioManager.isPlaying
                             ? "pause.circle.fill"
@@ -142,5 +219,116 @@ extension AudiobookDetailView {
             contentId: chapter.id ?? audiobook.id,
             contentType: .audiobook
         )
+    }
+
+    // MARK: - Skip Controls
+
+    func skipForward(_ audiobook: Audiobook) {
+        guard isAudiobookPlaying(audiobook) else { return }
+        Task {
+            await audioManager.mediaPlayer.skipForward(seconds: 30)
+            audioManager.updateNowPlayingPosition()
+        }
+    }
+
+    func skipBackward(_ audiobook: Audiobook) {
+        guard isAudiobookPlaying(audiobook) else { return }
+        Task {
+            await audioManager.mediaPlayer.skipBackward(seconds: 15)
+            audioManager.updateNowPlayingPosition()
+        }
+    }
+
+    // MARK: - Chapter Navigation
+
+    func skipToNextChapter(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) {
+        let chapters = vm.effectiveChapters
+        guard let index = vm.currentChapterIndex(audioManager: audioManager, audiobook: audiobook),
+              index < chapters.count - 1
+        else { return }
+
+        let next = chapters[index + 1]
+        vm.selectChapter(next)
+
+        if vm.hasEmbeddedChapters {
+            playEmbeddedChapter(next, audiobook: audiobook)
+        } else {
+            playChapter(next, audiobook: audiobook)
+        }
+    }
+
+    func skipToPreviousChapter(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) {
+        let chapters = vm.effectiveChapters
+        guard let index = vm.currentChapterIndex(audioManager: audioManager, audiobook: audiobook),
+              index > 0
+        else { return }
+
+        let prev = chapters[index - 1]
+        vm.selectChapter(prev)
+
+        if vm.hasEmbeddedChapters {
+            playEmbeddedChapter(prev, audiobook: audiobook)
+        } else {
+            playChapter(prev, audiobook: audiobook)
+        }
+    }
+
+    // MARK: - Embedded Chapter Playback (m4b)
+
+    /// Check if an embedded chapter is currently playing by matching audiobook ID
+    /// and comparing the current playback position against the chapter time range.
+    func isEmbeddedChapterPlaying(_ chapter: AudiobookChapter, audiobook: Audiobook) -> Bool {
+        guard audioManager.activeContentId == audiobook.id, audioManager.isActive else {
+            return false
+        }
+        guard let start = chapter.startTime, let end = chapter.endTime else { return false }
+        let current = audioManager.currentTime
+        return current >= start && current < end
+    }
+
+    /// Play an embedded chapter by loading the parent audiobook's stream URL
+    /// and seeking to the chapter's start time.
+    func playEmbeddedChapter(_ chapter: AudiobookChapter, audiobook: Audiobook) {
+        guard let start = chapter.startTime else { return }
+
+        // If this audiobook is already loaded, just seek to the chapter
+        if audioManager.activeContentId == audiobook.id, audioManager.isActive {
+            if isEmbeddedChapterPlaying(chapter, audiobook: audiobook),
+               audioManager.isPlaying
+            {
+                audioManager.togglePlayPause()
+                return
+            }
+            Task {
+                await audioManager.mediaPlayer.seek(to: start)
+                if !audioManager.isPlaying {
+                    audioManager.mediaPlayer.play()
+                }
+                audioManager.updateNowPlayingPosition()
+            }
+            return
+        }
+
+        // Load the parent audiobook's stream URL and seek after playback starts
+        guard let urlStr = audiobook.streamUrl,
+              let url = URL(string: urlStr) else { return }
+
+        let coverURL = audiobook.thumbnail.flatMap { URL(string: $0) }
+        audioManager.playDirectURL(
+            url: url,
+            title: chapter.title ?? audiobook.title ?? "",
+            subtitle: audiobook.author,
+            artworkURL: coverURL,
+            contentId: audiobook.id,
+            contentType: .audiobook
+        )
+
+        // Seek to chapter start once playback begins
+        Task {
+            // Wait for the player to be ready
+            try? await Task.sleep(for: .milliseconds(500))
+            await audioManager.mediaPlayer.seek(to: start)
+            audioManager.updateNowPlayingPosition()
+        }
     }
 }

@@ -48,6 +48,8 @@ extension Route {
         case .jerusalemContent: return "Jerusalem"
         case .telAvivContent: return "Tel Aviv"
         case .audiobooks: return "Audiobooks"
+        case .audiobookCollections: return "Authors"
+        case let .audiobookAuthorDetail(author): return author
         case .audiobookDetail: return "Audiobook"
         case .trending: return "Trending"
         case .interactiveSubtitles: return "Subtitles"

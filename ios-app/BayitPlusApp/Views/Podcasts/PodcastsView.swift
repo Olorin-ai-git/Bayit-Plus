@@ -8,7 +8,6 @@ struct PodcastsView: View {
     @Environment(NavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: PodcastsViewModel?
-    @State private var audiobooksViewModel: AudiobooksViewModel?
     @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
 
@@ -48,7 +47,6 @@ struct PodcastsView: View {
         .background(DesignTokens.Background.primary)
         .refreshable {
             await viewModel?.refresh()
-            await audiobooksViewModel?.refresh()
         }
         .sheet(isPresented: $showAddSheet) {
             AddPodcastView(
@@ -64,11 +62,7 @@ struct PodcastsView: View {
             if viewModel == nil {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
             }
-            if audiobooksViewModel == nil {
-                audiobooksViewModel = AudiobooksViewModel(repository: repos.audiobook)
-            }
             await viewModel?.loadInitial()
-            await audiobooksViewModel?.loadInitial()
             await loadRadioStations()
         }
     }
@@ -90,10 +84,6 @@ struct PodcastsView: View {
             }
 
             showGrid(vm)
-
-            if let audiobookVM = audiobooksViewModel, !audiobookVM.items.isEmpty {
-                audiobooksSection(audiobookVM)
-            }
         }
     }
 

@@ -131,8 +131,8 @@ async def run(dry_run: bool = False):
             logger.info("=" * 60)
             logger.info("Processing: %s", title)
 
-            # Find in DB (case-insensitive title search across all movies)
-            query = {"content_format": "movie", "title": {"$regex": f"^{title}$", "$options": "i"}}
+            # Find in DB — search by title only (content_format may be None for legacy docs)
+            query = {"title": {"$regex": f"^{title}$", "$options": "i"}}
             docs: List[Dict] = await db.content.find(query).to_list(length=None)
 
             if not docs:

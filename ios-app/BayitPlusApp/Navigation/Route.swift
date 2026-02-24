@@ -71,6 +71,8 @@ public enum Route: Hashable {
 
     // Audiobooks
     case audiobooks
+    case audiobookCollections
+    case audiobookAuthorDetail(author: String)
     case audiobookDetail(audiobookId: String)
 
     /// Trending

@@ -2,7 +2,7 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Browse section containing category filters, show grid, and audiobooks
+/// Browse section containing category filters and show grid
 /// for the Podcasts/Listen screen.
 extension PodcastsView {
     func categoryFilters(_ vm: PodcastsViewModel) -> some View {
@@ -54,36 +54,5 @@ extension PodcastsView {
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    func audiobooksSection(_ audiobookVM: AudiobooksViewModel) -> some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
-            HStack {
-                Text(localization.t("audiobooks.title"))
-                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                    .foregroundColor(DesignTokens.Text.primary)
-                Spacer()
-                Button {
-                    coordinator.navigate(to: .audiobooks)
-                } label: {
-                    Text(localization.t("common.seeAll"))
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                        .foregroundColor(DesignTokens.Primary.default)
-                }
-            }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: DesignTokens.Spacing.md) {
-                    ForEach(Array(audiobookVM.items.prefix(10))) { audiobook in
-                        AudiobookCardView(audiobook: audiobook) {
-                            coordinator.navigate(to: .audiobookDetail(audiobookId: audiobook.id))
-                        }
-                        .frame(width: 150)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-            }
-        }
     }
 }

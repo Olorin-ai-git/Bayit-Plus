@@ -9,9 +9,12 @@ struct AudiobookCardView: View {
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                coverImage
-                    .aspectRatio(2 / 3, contentMode: .fill)
-                    .clipped()
+                Color.clear
+                    .aspectRatio(2 / 3, contentMode: .fit)
+                    .overlay {
+                        coverImage
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                     .overlay(alignment: .bottomTrailing) {
                         durationBadge
                     }
@@ -22,13 +25,12 @@ struct AudiobookCardView: View {
                         .foregroundColor(DesignTokens.Text.primary)
                         .lineLimit(2)
 
-                    if let author = audiobook.author {
-                        Text(author)
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
-                            .lineLimit(1)
-                    }
+                    Text(audiobook.author ?? " ")
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundColor(DesignTokens.Text.muted)
+                        .lineLimit(1)
                 }
+                .frame(minHeight: 44, alignment: .top)
                 .padding(.horizontal, DesignTokens.Spacing.sm)
                 .padding(.bottom, DesignTokens.Spacing.sm)
             }

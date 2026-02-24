@@ -73,7 +73,11 @@ def _extract_clip_sync(hls_url: str, start: int, duration: int, output_path: str
         "-y",
         output_path,
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    except subprocess.TimeoutExpired:
+        logger.error("ffmpeg timed out after 600s", extra={"url": hls_url})
+        return False
     if result.returncode != 0:
         logger.error("ffmpeg failed", extra={"stderr": result.stderr[-500:]})
         return False

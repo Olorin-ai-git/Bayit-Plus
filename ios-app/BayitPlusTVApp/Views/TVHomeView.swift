@@ -19,7 +19,8 @@ struct TVHomeView: View {
                 TVCategoryBrowseView(
                     title: coordinator.categoryBrowseTitle,
                     icon: coordinator.categoryBrowseIcon,
-                    items: coordinator.categoryBrowseItems
+                    categoryName: coordinator.categoryBrowseCategoryName,
+                    repository: repos.content
                 )
             } else {
                 homeScrollView

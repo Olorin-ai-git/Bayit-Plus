@@ -40,7 +40,9 @@ struct AudiobookChapter: Decodable, Sendable, Identifiable {
     let startTime: Double?
     let endTime: Double?
 
-    var stableId: String { id ?? "\(chapterNumber ?? 0)" }
+    var stableId: String {
+        id ?? "\(chapterNumber ?? 0)"
+    }
 }
 
 /// Paginated response from GET /api/v1/audiobooks
@@ -50,4 +52,20 @@ struct AudiobookListResponse: Decodable, Sendable {
     let page: Int?
     let pageSize: Int?
     let totalPages: Int?
+}
+
+/// Author summary with audiobook count and representative thumbnail.
+struct AudiobookAuthor: Decodable, Sendable, Identifiable {
+    let name: String
+    let audiobookCount: Int
+    let thumbnail: String?
+
+    var id: String {
+        name
+    }
+}
+
+/// Response from GET /api/v1/audiobooks/authors
+struct AudiobookAuthorsResponse: Decodable, Sendable {
+    let authors: [AudiobookAuthor]
 }

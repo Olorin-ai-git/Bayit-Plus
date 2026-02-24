@@ -44,12 +44,12 @@ struct AudiobookDetailView: View {
         }
     }
 
-    private func detailContent(_ audiobook: Audiobook, vm _: AudiobookDetailViewModel) -> some View {
+    private func detailContent(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             coverSection(audiobook)
             metadataSection(audiobook)
-            playbackControls(audiobook)
-            chapterList(audiobook)
+            playbackControls(audiobook, vm: vm)
+            chapterList(audiobook, vm: vm)
         }
         .padding(.vertical, DesignTokens.Spacing.lg)
     }

@@ -19,6 +19,8 @@ from app.models.content import Content
 from app.models.user import User
 from app.api.routes.admin_content_utils import log_audit
 from app.api.routes.audiobook_schemas import (
+    AudiobookAuthorResponse,
+    AudiobookAuthorsListResponse,
     AudiobookChapterResponse,
     AudiobookListResponse,
     AudiobookResponse,
@@ -37,6 +39,7 @@ router = APIRouter()
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
+    author: Optional[str] = Query(default=None),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get featured and trending audiobooks with pagination.
@@ -44,8 +47,10 @@ async def get_audiobooks(
     Only returns parent audiobooks (those without series_id) to avoid
     showing individual chapters as separate cards. Filters out audiobooks
     with empty or missing titles (data quality check).
+
+    Optionally filter by author name using the `author` query parameter.
     """
-    query = Content.find({
+    filters: dict = {
         "content_format": "audiobook",
         "is_published": True,
         "title": {"$exists": True, "$nin": ["", None]},
@@ -53,7 +58,12 @@ async def get_audiobooks(
             {"series_id": None},
             {"series_id": {"$exists": False}},
         ],
-    })
+    }
+
+    if author:
+        filters["author"] = author
+
+    query = Content.find(filters)
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -68,6 +78,54 @@ async def get_audiobooks(
         page_size=page_size,
         total_pages=(total + page_size - 1) // page_size,
     )
+
+
+@router.get("/authors", response_model=AudiobookAuthorsListResponse)
+async def get_audiobook_authors(
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Get distinct audiobook authors with counts and representative thumbnails.
+
+    Returns only authors from parent audiobooks (no chapters), sorted by
+    audiobook count descending then alphabetically.
+    """
+    pipeline = [
+        {
+            "$match": {
+                "content_format": "audiobook",
+                "is_published": True,
+                "title": {"$exists": True, "$nin": ["", None]},
+                "author": {"$exists": True, "$nin": ["", None]},
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                ],
+                "$expr": {"$ne": ["$author", "$title"]},
+            }
+        },
+        {
+            "$group": {
+                "_id": "$author",
+                "audiobook_count": {"$sum": 1},
+                "thumbnail": {"$first": "$thumbnail"},
+            }
+        },
+        {"$sort": {"audiobook_count": -1, "_id": 1}},
+    ]
+
+    collection = Content.get_pymongo_collection()
+    results = await collection.aggregate(pipeline).to_list(length=500)
+
+    authors = [
+        AudiobookAuthorResponse(
+            name=doc["_id"],
+            audiobook_count=doc["audiobook_count"],
+            thumbnail=doc.get("thumbnail"),
+        )
+        for doc in results
+    ]
+
+    return AudiobookAuthorsListResponse(authors=authors)
 
 
 @router.get("/{audiobook_id}", response_model=AudiobookResponse)

@@ -143,7 +143,7 @@ extension TVHomeView {
                 coordinator.presentCategoryBrowse(
                     title: section.localizedTitle(localization),
                     icon: section.icon,
-                    items: category.items
+                    categoryName: category.name
                 )
             }
         ) { item in

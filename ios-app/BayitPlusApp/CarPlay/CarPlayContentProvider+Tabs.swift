@@ -99,7 +99,7 @@ extension CarPlayContentProvider {
         do {
             let response = try await repositories.audiobook.fetchAll(
                 page: 1,
-                limit: contentPageSize,
+                pageSize: contentPageSize,
                 genre: nil,
                 author: nil
             )

@@ -1,11 +1,13 @@
 import BayitDesignSystem
 import SwiftUI
 
-/// Audiobooks listing screen with grid of audiobook cards and genre filter bar
-struct AudiobooksView: View {
+/// Detail screen showing all audiobooks by a specific author
+struct AudiobookAuthorDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: AudiobooksViewModel?
+
+    let author: String
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -29,44 +31,36 @@ struct AudiobooksView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .navigationTitle(author)
+        .navigationBarTitleDisplayMode(.large)
         .refreshable {
             await viewModel?.refresh()
         }
         .task {
             if viewModel == nil {
-                viewModel = AudiobooksViewModel(repository: repos.audiobook)
+                let vm = AudiobooksViewModel(repository: repos.audiobook)
+                vm.selectedAuthor = author
+                viewModel = vm
             }
             await viewModel?.loadInitial()
         }
     }
 
     private func contentView(_ vm: AudiobooksViewModel) -> some View {
-        LazyVStack(spacing: DesignTokens.Spacing.lg) {
-            browseByAuthorButton
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
+            authorHeader(itemCount: vm.items.count)
             audiobookGrid(vm)
         }
     }
 
-    private var browseByAuthorButton: some View {
-        Button {
-            coordinator.navigate(to: .audiobookCollections)
-        } label: {
-            HStack {
-                Image(systemName: "person.2.fill")
-                    .font(.system(size: DesignTokens.FontSize.md))
-                Text("Browse by Author")
-                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: DesignTokens.FontSize.sm))
-            }
-            .foregroundColor(DesignTokens.Text.primary)
-            .padding(DesignTokens.Spacing.md)
-            .background(DesignTokens.Glass.bgMedium)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+    private func authorHeader(itemCount: Int) -> some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            Text("\(itemCount) audiobooks")
+                .font(.system(size: DesignTokens.FontSize.md))
+                .foregroundColor(DesignTokens.Text.muted)
         }
-        .buttonStyle(.plain)
         .padding(.horizontal, DesignTokens.Spacing.lg)
+        .padding(.top, DesignTokens.Spacing.sm)
     }
 
     private func audiobookGrid(_ vm: AudiobooksViewModel) -> some View {

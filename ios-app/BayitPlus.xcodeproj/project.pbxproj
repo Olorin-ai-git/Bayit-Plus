@@ -169,6 +169,12 @@
 		1870732AE598933624C3E3F8 /* ProfileAccountSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F59B8AE485AAE74E04E1EA9 /* ProfileAccountSections.swift */; };
 		1873DF93B2F24C18E84CFF7F /* ProactiveVoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B168FA7FA4412B8262216 /* ProactiveVoiceViewModel.swift */; };
 		187C163B3B12A7C3336A130C /* AudiobookFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72988A1C80D61AB24089877 /* AudiobookFilterView.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* AudiobookCollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* AudiobookCollectionsView.swift */; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* AudiobookAuthorDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F2A3B4C5 /* AudiobookAuthorDetailView.swift */; };
+		E5F6A7B8C9D0E1F2A3B4C5D6 /* ListenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1F2A3B4C5D6E7 /* ListenView.swift */; };
+		A7B8C9D0E1F2A3B4C5D6E7F8 /* PodcastsListenTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C9D0E1F2A3B4C5D6E7F8A9 /* PodcastsListenTab.swift */; };
+		C9D0E1F2A3B4C5D6E7F8A9B0 /* AudiobooksListenTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0E1F2A3B4C5D6E7F8A9B0C1 /* AudiobooksListenTab.swift */; };
+		F1E2D3C4B5A6978899AABBCC /* RadioListenTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A3B4C5D6E7F8A9B0C1D2E3 /* RadioListenTab.swift */; };
 		1893EDEC63B89DCA1A8D8B4A /* TVChessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B235691EFECCA22BEBA060B /* TVChessView.swift */; };
 		18BDB7F932B66233B0785BF4 /* BetaCreditsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE4404A3A8FC60FC97A539F /* BetaCreditsModels.swift */; };
 		18EF912D869DFF710CBEE9E6 /* TVSeriesEpisodeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76AE943BD00B88EB74C1FEA /* TVSeriesEpisodeListView.swift */; };
@@ -2663,6 +2669,12 @@
 		E8AF0F48C323732A1582B90F /* ActivePartySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivePartySection.swift; sourceTree = "<group>"; };
 		E8D5E570A8B35FAC2428E402 /* ProactiveSuggestionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveSuggestionBannerView.swift; sourceTree = "<group>"; };
 		E8F10BD0A071092B6A3BA584 /* PlayerView+TopBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "PlayerView+TopBar.swift"; sourceTree = "<group>"; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* AudiobookCollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookCollectionsView.swift; sourceTree = "<group>"; };
+		F6A7B8C9D0E1F2A3B4C5D6E7 /* ListenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenView.swift; sourceTree = "<group>"; };
+		B8C9D0E1F2A3B4C5D6E7F8A9 /* PodcastsListenTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsListenTab.swift; sourceTree = "<group>"; };
+		D0E1F2A3B4C5D6E7F8A9B0C1 /* AudiobooksListenTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobooksListenTab.swift; sourceTree = "<group>"; };
+		F2A3B4C5D6E7F8A9B0C1D2E3 /* RadioListenTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioListenTab.swift; sourceTree = "<group>"; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* AudiobookAuthorDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookAuthorDetailView.swift; sourceTree = "<group>"; };
 		E9AAEDC62A6EBA4352852E49 /* AudiobookDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookDetailView.swift; sourceTree = "<group>"; };
 		E9C2E60F333A901D54F1BC25 /* InteractiveMissionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveMissionRepository.swift; sourceTree = "<group>"; };
 		E9C5938F97B324C29B5FE78E /* TVAppAPILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAppAPILogger.swift; sourceTree = "<group>"; };
@@ -4402,6 +4414,7 @@
 				35C2FD95FA92ACDB9EE315AD /* InteractiveMission */,
 				C22730AE4E0747CEABD80A5F /* Judaism */,
 				61E660501674912F5B49ACFF /* Kids */,
+				E1F2A3B4C5D6E7F8A9B0C1D2 /* Listen */,
 				51F9450379787371D119C52D /* LiveTV */,
 				9BC97BF784D19ADB45DAE911 /* Messages */,
 				054B343F41F14A6A2804DC3D /* Missions */,
@@ -4753,17 +4766,30 @@
 			path = Search;
 			sourceTree = "<group>";
 		};
+		E1F2A3B4C5D6E7F8A9B0C1D2 /* Listen */ = {
+			isa = PBXGroup;
+			children = (
+				D0E1F2A3B4C5D6E7F8A9B0C1 /* AudiobooksListenTab.swift */,
+				F6A7B8C9D0E1F2A3B4C5D6E7 /* ListenView.swift */,
+				B8C9D0E1F2A3B4C5D6E7F8A9 /* PodcastsListenTab.swift */,
+				F2A3B4C5D6E7F8A9B0C1D2E3 /* RadioListenTab.swift */,
+			);
+			path = Listen;
+			sourceTree = "<group>";
+		};
 		E4545511809BDA5A296CD91E /* Audiobooks */ = {
 			isa = PBXGroup;
 			children = (
+				D4E5F6A7B8C9D0E1F2A3B4C5 /* AudiobookAuthorDetailView.swift */,
 				FD6C147EBA97DD4572A3EC92 /* AudiobookCardView.swift */,
-				E9AAEDC62A6EBA4352852E49 /* AudiobookDetailView.swift */,
-				F72988A1C80D61AB24089877 /* AudiobookFilterView.swift */,
-				51B8C704E2F464F3151C9E8E /* AudiobooksView.swift */,
 				4D2F1DC688429E913F8F032E /* AudiobookChapterList.swift */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* AudiobookCollectionsView.swift */,
+				E9AAEDC62A6EBA4352852E49 /* AudiobookDetailView.swift */,
 				639EEE500B67CBBFE6005CB3 /* AudiobookDetailSections.swift */,
 				3F20D9FFC3D6324538863148 /* AudiobookDetailView+Metadata.swift */,
 				AEC06166B9699C195678F29A /* AudiobookDetailView+Playback.swift */,
+				F72988A1C80D61AB24089877 /* AudiobookFilterView.swift */,
+				51B8C704E2F464F3151C9E8E /* AudiobooksView.swift */,
 			);
 			path = Audiobooks;
 			sourceTree = "<group>";
@@ -5942,7 +5968,9 @@
 				95E7FCD5AE94F70DF06EACB0 /* AudioSettingsViewModel.swift in Sources */,
 				CE4C123CE98DA5C198E0C1EE /* AudioTrack.swift in Sources */,
 				DE101CB4487288064806470E /* AudioTrackSelectorView.swift in Sources */,
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* AudiobookAuthorDetailView.swift in Sources */,
 				764F4925B9D90D155ECBE003 /* AudiobookCardView.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* AudiobookCollectionsView.swift in Sources */,
 				1ED0BE9509E60CE6940D920E /* AudiobookDetailView.swift in Sources */,
 				D2443C670A71E30DBD1DA8B5 /* AudiobookDetailViewModel.swift in Sources */,
 				187C163B3B12A7C3336A130C /* AudiobookFilterView.swift in Sources */,
@@ -6192,6 +6220,10 @@
 				3B610D3F507F6EC7C3330F1F /* LiveSubtitlesViewModel.swift in Sources */,
 				F3D5A6FA9BE5DF83B2626A02 /* LiveSubtitlesWebSocketService.swift in Sources */,
 				9162258BF6F8710B4CBD234D /* LiveTVModels.swift in Sources */,
+				E5F6A7B8C9D0E1F2A3B4C5D6 /* ListenView.swift in Sources */,
+				A7B8C9D0E1F2A3B4C5D6E7F8 /* PodcastsListenTab.swift in Sources */,
+				C9D0E1F2A3B4C5D6E7F8A9B0 /* AudiobooksListenTab.swift in Sources */,
+				F1E2D3C4B5A6978899AABBCC /* RadioListenTab.swift in Sources */,
 				658D3A48295E3B8EDCBFD9FE /* LiveTVRepository.swift in Sources */,
 				F381B6776E36F2BA4778B0F7 /* LiveTVRow.swift in Sources */,
 				718AC7F7D7F3AAA2E3512053 /* LiveTVView.swift in Sources */,
@@ -6721,7 +6753,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6744,7 +6776,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6856,7 +6888,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -6938,7 +6970,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 35;
+				CURRENT_PROJECT_VERSION = 36;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
