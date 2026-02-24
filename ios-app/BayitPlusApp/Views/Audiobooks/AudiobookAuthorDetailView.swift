@@ -69,17 +69,6 @@ struct AudiobookAuthorDetailView: View {
                 AudiobookCardView(audiobook: audiobook) {
                     coordinator.navigate(to: .audiobookDetail(audiobookId: audiobook.id))
                 }
-                .onAppear {
-                    if audiobook.id == vm.items.last?.id {
-                        Task { await vm.loadMore() }
-                    }
-                }
-            }
-
-            if vm.isLoadingMore {
-                ProgressView()
-                    .tint(DesignTokens.Primary.default)
-                    .frame(maxWidth: .infinity)
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)

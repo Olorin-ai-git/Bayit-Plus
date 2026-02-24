@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  TestFlight auto-login config template.
+
+  To enable auto-login in a TestFlight build:
+  1. Copy this file to AutoLoginConfig.plist (sibling of this file)
+  2. Fill in the credentials below
+  3. In Xcode: File > Add Files to "BayitPlus" > select AutoLoginConfig.plist
+     - Target membership: BayitPlusTVApp only
+  4. Archive and upload to TestFlight as normal
+  5. AutoLoginConfig.plist is git-ignored and must never be committed
+
+  The app reads LOGIN_EMAIL / LOGIN_PASSWORD from this plist only when no
+  Xcode-scheme environment variables are set (i.e. on real TestFlight installs).
+  The file's mere presence in the bundle triggers the auto-login path at launch.
+-->
+<plist version="1.0">
+<dict>
+    <key>LOGIN_EMAIL</key>
+    <string>REPLACE_WITH_EMAIL</string>
+    <key>LOGIN_PASSWORD</key>
+    <string>REPLACE_WITH_PASSWORD</string>
+</dict>
+</plist>

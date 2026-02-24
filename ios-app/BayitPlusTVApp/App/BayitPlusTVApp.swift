@@ -87,7 +87,9 @@ struct BayitPlusTVApp: App {
                     await downloadManager.initialize()
                 }
                 .task {
-                    if ProcessInfo.processInfo.arguments.contains("-autoLogin") {
+                    let useAutoLogin = ProcessInfo.processInfo.arguments.contains("-autoLogin")
+                        || BayitPlusTVApp.hasAutoLoginConfig
+                    if useAutoLogin {
                         await loginWithCredentials()
                         return
                     }

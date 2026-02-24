@@ -6,12 +6,17 @@ import Foundation
 // MARK: - Auto Login via Environment Credentials
 
 extension BayitPlusTVApp {
-    /// Authenticate via backend /auth/login using credentials from launch environment.
-    /// Pass -autoLogin flag and set LOGIN_EMAIL / LOGIN_PASSWORD environment variables.
+    /// Whether an AutoLoginConfig.plist is bundled (TestFlight builds only — never ship to App Store).
+    static var hasAutoLoginConfig: Bool {
+        Bundle.main.url(forResource: "AutoLoginConfig", withExtension: "plist") != nil
+    }
+
+    /// Authenticate via backend /auth/login.
+    /// Credential sources (first non-empty wins):
+    ///   1. LOGIN_EMAIL / LOGIN_PASSWORD environment variables (Xcode scheme, simulator)
+    ///   2. AutoLoginConfig.plist bundled in the app (TestFlight builds)
     func loginWithCredentials() async {
-        let email = ProcessInfo.processInfo.environment["LOGIN_EMAIL"] ?? ""
-        let password = ProcessInfo.processInfo.environment["LOGIN_PASSWORD"] ?? ""
-        guard !email.isEmpty, !password.isEmpty else {
+        guard let (email, password) = resolvedAutoLoginCredentials() else {
             coordinator.showingAuth = true
             return
         }
@@ -53,6 +58,25 @@ extension BayitPlusTVApp {
         } catch {
             coordinator.showingAuth = true
         }
+    }
+
+    // MARK: - Private
+
+    private func resolvedAutoLoginCredentials() -> (email: String, password: String)? {
+        let envEmail = ProcessInfo.processInfo.environment["LOGIN_EMAIL"] ?? ""
+        let envPassword = ProcessInfo.processInfo.environment["LOGIN_PASSWORD"] ?? ""
+        if !envEmail.isEmpty, !envPassword.isEmpty {
+            return (envEmail, envPassword)
+        }
+
+        guard let url = Bundle.main.url(forResource: "AutoLoginConfig", withExtension: "plist"),
+              let dict = NSDictionary(contentsOf: url),
+              let email = dict["LOGIN_EMAIL"] as? String,
+              let password = dict["LOGIN_PASSWORD"] as? String,
+              !email.isEmpty, !password.isEmpty
+        else { return nil }
+
+        return (email, password)
     }
 }
 
