@@ -99,37 +99,61 @@ final class AudiobookDetailViewModel {
 
     // MARK: - Chapter Navigation
 
-    /// Index of the currently playing chapter in `effectiveChapters`.
-    ///
-    /// For embedded chapters, matches by comparing the current playback position
-    /// against each chapter's time range. For backend chapters, matches by content ID.
-    func currentChapterIndex(audioManager: AudioPlaybackManager, audiobook _: Audiobook) -> Int? {
-        let chapters = effectiveChapters
-        guard !chapters.isEmpty else { return nil }
+    // Index of the currently playing chapter in `effectiveChapters`.
+    //
+    // For embedded chapters, matches by comparing the current playback position
+    // against each chapter's time range. For backend chapters, matches by content ID.
+    #if os(tvOS)
+        func currentChapterIndex(audioManager: TVAudioPlaybackManager, audiobook _: Audiobook) -> Int? {
+            let chapters = effectiveChapters
+            guard !chapters.isEmpty else { return nil }
 
-        if hasEmbeddedChapters {
-            let current = audioManager.currentTime
-            return chapters.firstIndex { chapter in
-                guard let start = chapter.startTime, let end = chapter.endTime else { return false }
-                return current >= start && current < end
+            guard let activeId = audioManager.activeContentId else { return nil }
+            return chapters.firstIndex { $0.id == activeId }
+        }
+
+        func canGoNextChapter(audioManager: TVAudioPlaybackManager, audiobook: Audiobook) -> Bool {
+            guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
+                return false
             }
+            return index < effectiveChapters.count - 1
         }
 
-        guard let activeId = audioManager.activeContentId else { return nil }
-        return chapters.firstIndex { $0.id == activeId }
-    }
-
-    func canGoNextChapter(audioManager: AudioPlaybackManager, audiobook: Audiobook) -> Bool {
-        guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
-            return false
+        func canGoPreviousChapter(audioManager: TVAudioPlaybackManager, audiobook: Audiobook) -> Bool {
+            guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
+                return false
+            }
+            return index > 0
         }
-        return index < effectiveChapters.count - 1
-    }
+    #else
+        func currentChapterIndex(audioManager: AudioPlaybackManager, audiobook _: Audiobook) -> Int? {
+            let chapters = effectiveChapters
+            guard !chapters.isEmpty else { return nil }
 
-    func canGoPreviousChapter(audioManager: AudioPlaybackManager, audiobook: Audiobook) -> Bool {
-        guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
-            return false
+            if hasEmbeddedChapters {
+                let current = audioManager.currentTime
+                return chapters.firstIndex { chapter in
+                    guard let start = chapter.startTime, let end = chapter.endTime else { return false }
+                    return current >= start && current < end
+                }
+            }
+
+            guard let activeId = audioManager.activeContentId else { return nil }
+            return chapters.firstIndex { $0.id == activeId }
         }
-        return index > 0
-    }
+
+        func canGoNextChapter(audioManager: AudioPlaybackManager, audiobook: Audiobook) -> Bool {
+            guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
+                return false
+            }
+            return index < effectiveChapters.count - 1
+        }
+
+        func canGoPreviousChapter(audioManager: AudioPlaybackManager, audiobook: Audiobook) -> Bool {
+            guard let index = currentChapterIndex(audioManager: audioManager, audiobook: audiobook) else {
+                return false
+            }
+            return index > 0
+        }
+    #endif
 }

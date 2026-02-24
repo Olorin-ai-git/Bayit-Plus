@@ -46,6 +46,7 @@ enum AudiobookSortOption: String, CaseIterable, Sendable {
 final class AudiobooksViewModel {
     private(set) var items: [Audiobook] = []
     private(set) var isLoading = false
+    private(set) var isLoadingMore = false
     private(set) var error: String?
 
     var searchQuery: String = ""
@@ -56,6 +57,8 @@ final class AudiobooksViewModel {
 
     private let repository: any AudiobookRepository
     private let pageSize = 500
+    private var currentPage = 1
+    private var hasMorePages = true
 
     init(repository: any AudiobookRepository) {
         self.repository = repository
@@ -112,6 +115,8 @@ final class AudiobooksViewModel {
         guard !isLoading else { return }
         isLoading = true
         error = nil
+        currentPage = 1
+        hasMorePages = true
 
         do {
             let response = try await repository.fetchAll(
@@ -121,6 +126,7 @@ final class AudiobooksViewModel {
                 author: selectedAuthor
             )
             items = response.items ?? []
+            hasMorePages = (response.page ?? 1) < (response.totalPages ?? 1)
         } catch {
             if let message = error.userFriendlyMessage {
                 self.error = message
@@ -128,6 +134,31 @@ final class AudiobooksViewModel {
         }
 
         isLoading = false
+    }
+
+    @MainActor
+    func loadMore() async {
+        guard !isLoading, !isLoadingMore, hasMorePages else { return }
+        isLoadingMore = true
+
+        let nextPage = currentPage + 1
+        do {
+            let response = try await repository.fetchAll(
+                page: nextPage,
+                pageSize: pageSize,
+                genre: selectedGenre,
+                author: selectedAuthor
+            )
+            items.append(contentsOf: response.items ?? [])
+            currentPage = nextPage
+            hasMorePages = (response.page ?? nextPage) < (response.totalPages ?? nextPage)
+        } catch {
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
+        }
+
+        isLoadingMore = false
     }
 
     @MainActor
