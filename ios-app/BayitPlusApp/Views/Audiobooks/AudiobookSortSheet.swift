@@ -4,7 +4,14 @@ import SwiftUI
 /// Bottom sheet presenting sort options for the audiobooks grid
 struct AudiobookSortSheet: View {
     @Binding var selectedSort: AudiobookSortOption
+    let options: [AudiobookSortOption]
     let onDismiss: () -> Void
+
+    private var sheetHeight: CGFloat {
+        let headerHeight: CGFloat = 70
+        let rowHeight: CGFloat = 48
+        return headerHeight + (rowHeight * CGFloat(options.count)) + 16
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,7 +31,7 @@ struct AudiobookSortSheet: View {
             Divider()
                 .background(DesignTokens.Text.muted.opacity(0.3))
             VStack(spacing: 0) {
-                ForEach(AudiobookSortOption.allCases, id: \.self) { option in
+                ForEach(options, id: \.self) { option in
                     optionRow(option)
                 }
             }
@@ -32,7 +39,7 @@ struct AudiobookSortSheet: View {
         }
         .background(DesignTokens.Background.primary)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Spacing.lg))
-        .presentationDetents([.height(400)])
+        .presentationDetents([.height(sheetHeight)])
         .presentationDragIndicator(.hidden)
     }
 

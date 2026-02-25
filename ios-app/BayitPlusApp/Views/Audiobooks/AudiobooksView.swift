@@ -46,6 +46,7 @@ struct AudiobooksView: View {
                         get: { vm.sortOption },
                         set: { vm.sortOption = $0 }
                     ),
+                    options: AudiobookSortOption.titleOptions,
                     onDismiss: { showSortSheet = false }
                 )
             }
@@ -165,6 +166,7 @@ struct AudiobooksView: View {
                 }
             }
         }
+        .id(vm.sortOption)
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 

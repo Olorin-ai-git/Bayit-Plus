@@ -9,9 +9,11 @@ enum AudiobookSortOption: String, CaseIterable, Sendable {
     case titleAZ
     case titleZA
     case authorAZ
+    case authorZA
     case newest
     case oldest
     case highestRated
+    case mostBooks
 
     var label: String {
         switch self {
@@ -19,9 +21,11 @@ enum AudiobookSortOption: String, CaseIterable, Sendable {
         case .titleAZ: return "Title A-Z"
         case .titleZA: return "Title Z-A"
         case .authorAZ: return "Author A-Z"
+        case .authorZA: return "Author Z-A"
         case .newest: return "Newest First"
         case .oldest: return "Oldest First"
         case .highestRated: return "Highest Rated"
+        case .mostBooks: return "Most Books"
         }
     }
 
@@ -31,11 +35,21 @@ enum AudiobookSortOption: String, CaseIterable, Sendable {
         case .titleAZ: return "textformat.abc"
         case .titleZA: return "textformat.abc"
         case .authorAZ: return "person"
+        case .authorZA: return "person"
         case .newest: return "calendar.badge.clock"
         case .oldest: return "calendar"
         case .highestRated: return "hand.thumbsup"
+        case .mostBooks: return "books.vertical"
         }
     }
+
+    static let titleOptions: [AudiobookSortOption] = [
+        .featured, .titleAZ, .titleZA, .authorAZ, .newest, .oldest, .highestRated,
+    ]
+
+    static let authorOptions: [AudiobookSortOption] = [
+        .authorAZ, .authorZA, .mostBooks,
+    ]
 }
 
 // MARK: - ViewModel
@@ -190,12 +204,16 @@ final class AudiobooksViewModel {
             return audiobooks.sorted { ($0.title ?? "") > ($1.title ?? "") }
         case .authorAZ:
             return audiobooks.sorted { ($0.author ?? "") < ($1.author ?? "") }
+        case .authorZA:
+            return audiobooks.sorted { ($0.author ?? "") > ($1.author ?? "") }
         case .newest:
             return audiobooks.sorted { ($0.createdAt ?? "") > ($1.createdAt ?? "") }
         case .oldest:
             return audiobooks.sorted { ($0.createdAt ?? "") < ($1.createdAt ?? "") }
         case .highestRated:
             return audiobooks.sorted { ($0.avgRating ?? 0) > ($1.avgRating ?? 0) }
+        case .mostBooks:
+            return audiobooks
         }
     }
 }

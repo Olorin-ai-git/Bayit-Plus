@@ -66,6 +66,9 @@ struct AudiobooksListenTab: View {
                         get: { vm.sortOption },
                         set: { vm.sortOption = $0 }
                     ),
+                    options: browseMode == .byTitle
+                        ? AudiobookSortOption.titleOptions
+                        : AudiobookSortOption.authorOptions,
                     onDismiss: { showSortSheet = false }
                 )
             }
@@ -83,6 +86,8 @@ struct AudiobooksListenTab: View {
                 ) {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         browseMode = mode
+                        viewModel?.sortOption = mode == .byTitle
+                            ? .featured : .authorAZ
                     }
                     if mode == .byAuthor && authors.isEmpty {
                         Task { await loadAuthors() }
@@ -202,6 +207,7 @@ struct AudiobooksListenTab: View {
                 }
             }
         }
+        .id(vm.sortOption)
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
@@ -220,12 +226,25 @@ struct AudiobooksListenTab: View {
         }
     }
 
+    private var sortedAuthors: [AudiobookAuthor] {
+        guard let vm = viewModel else { return authors }
+        switch vm.sortOption {
+        case .authorZA:
+            return authors.sorted { $0.name > $1.name }
+        case .mostBooks:
+            return authors.sorted { $0.audiobookCount > $1.audiobookCount }
+        default:
+            return authors.sorted { $0.name < $1.name }
+        }
+    }
+
     private var authorGrid: some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(authors) { author in
+            ForEach(sortedAuthors) { author in
                 authorCard(author)
             }
         }
+        .id(viewModel?.sortOption)
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.top, DesignTokens.Spacing.md)
     }
