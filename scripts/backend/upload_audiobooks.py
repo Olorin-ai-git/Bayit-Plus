@@ -420,7 +420,7 @@ def calculate_file_hash(file_path: str) -> str:
 
 
 async def upload_to_gcs(file_path: str, destination_blob_name: str) -> Optional[str]:
-    """Upload file to Google Cloud Storage and return public URL."""
+    """Upload file to Google Cloud Storage using resumable upload and return public URL."""
     try:
         storage_client = storage.Client()
         bucket = storage_client.bucket(settings.GCS_BUCKET_NAME)
@@ -431,7 +431,12 @@ async def upload_to_gcs(file_path: str, destination_blob_name: str) -> Optional[
             logger.info(f"    File already exists in GCS: {public_url}")
             return public_url
 
-        logger.info(f"    Uploading to GCS: gs://{settings.GCS_BUCKET_NAME}/{destination_blob_name}")
+        file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
+        logger.info(
+            f"    Uploading to GCS: "
+            f"gs://{settings.GCS_BUCKET_NAME}/{destination_blob_name} "
+            f"({file_size_mb:.0f} MB)"
+        )
 
         # Determine content type
         ext = Path(file_path).suffix.lower()
@@ -446,7 +451,13 @@ async def upload_to_gcs(file_path: str, destination_blob_name: str) -> Optional[
         }
         content_type = content_types.get(ext, 'audio/mpeg')
 
-        blob.upload_from_filename(file_path, content_type=content_type)
+        # Use 10MB chunks for resumable upload; 30 min timeout for large files
+        blob.chunk_size = 10 * 1024 * 1024
+        blob.upload_from_filename(
+            file_path,
+            content_type=content_type,
+            timeout=1800,
+        )
 
         public_url = f"https://storage.googleapis.com/{settings.GCS_BUCKET_NAME}/{destination_blob_name}"
         logger.info(f"    Uploaded successfully")
