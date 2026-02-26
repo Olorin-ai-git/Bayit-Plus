@@ -9,7 +9,7 @@ public struct GlassModal<Content: View>: View {
         isPresented: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) {
-        self._isPresented = isPresented
+        _isPresented = isPresented
         self.content = content
     }
 
@@ -108,5 +108,6 @@ public struct GlassAlert: View {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                 .stroke(type.color.opacity(0.3), lineWidth: 1)
         )
+        .environment(\.layoutDirection, .leftToRight)
     }
 }

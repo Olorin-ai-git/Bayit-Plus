@@ -28,7 +28,7 @@ extension APIClient {
         // Headers applied in same order as api.js interceptor
         applyDefaultHeaders(to: &urlRequest)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        try await applyAuthHeader(to: &urlRequest, correlationID: correlationID)
+        try await applyAuthHeader(to: &urlRequest, correlationID: correlationID, requiresAuth: apiRequest.requiresAuth)
         applyLocaleHeader(to: &urlRequest)
         urlRequest.setValue(correlationID, forHTTPHeaderField: "X-Correlation-ID")
         await applyLocationHeaders(to: &urlRequest)
@@ -52,7 +52,7 @@ extension APIClient {
     }
 
     private func applyAuthHeader(
-        to request: inout URLRequest, correlationID: String
+        to request: inout URLRequest, correlationID: String, requiresAuth: Bool
     ) async throws {
         if let token = try await authTokenProvider.currentToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -60,8 +60,8 @@ extension APIClient {
                 "Auth token attached",
                 metadata: ["correlationId": correlationID, "hasToken": "true"]
             )
-        } else {
-            // Token provider returned nil: refresh failed or no session exists.
+        } else if requiresAuth {
+            // Token provider returned nil for an authenticated endpoint.
             // Throw locally so no unauthenticated request reaches the backend.
             // This prevents background/non-critical callers (e.g. progress tracking)
             // from inadvertently triggering the global unauthorizedNotification and
@@ -75,6 +75,7 @@ extension APIClient {
             )
             throw APIError.unauthorized(message: "No token available; refresh failed or session not established")
         }
+        // requiresAuth == false: proceed without Authorization header (public endpoint)
     }
 
     private func applyLocaleHeader(to request: inout URLRequest) {

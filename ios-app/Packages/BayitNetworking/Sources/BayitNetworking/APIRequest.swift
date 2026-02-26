@@ -5,7 +5,6 @@ import Foundation
 /// Encapsulates path, method, query parameters, body, and per-request headers.
 /// The `APIClient` resolves the full URL from its configuration's `baseURL` + this path.
 public struct APIRequest<Body: Encodable & Sendable>: Sendable {
-
     /// The path component appended to `baseURL` (e.g. `/content/featured`).
     public let path: String
 
@@ -21,18 +20,24 @@ public struct APIRequest<Body: Encodable & Sendable>: Sendable {
     /// Per-request headers that override or supplement the defaults.
     public let headers: [String: String]
 
+    /// When false the request proceeds without an Authorization header even
+    /// if no token is available. Use for public endpoints (login, register).
+    public let requiresAuth: Bool
+
     public init(
         path: String,
         method: HTTPMethod = .get,
         queryItems: [URLQueryItem] = [],
         body: Body? = nil,
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        requiresAuth: Bool = true
     ) {
         self.path = path
         self.method = method
         self.queryItems = queryItems
         self.body = body
         self.headers = headers
+        self.requiresAuth = requiresAuth
     }
 }
 
@@ -47,18 +52,19 @@ public struct EmptyBody: Encodable, Sendable {
 }
 
 public extension APIRequest where Body == EmptyBody {
-
     /// Creates a request with no body.
     init(
         path: String,
         method: HTTPMethod = .get,
         queryItems: [URLQueryItem] = [],
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        requiresAuth: Bool = true
     ) {
         self.path = path
         self.method = method
         self.queryItems = queryItems
-        self.body = nil
+        body = nil
         self.headers = headers
+        self.requiresAuth = requiresAuth
     }
 }
