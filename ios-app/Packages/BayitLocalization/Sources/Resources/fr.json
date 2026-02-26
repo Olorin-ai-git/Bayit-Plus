@@ -6527,7 +6527,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -11215,6 +11218,58 @@
       "title": "[FR] Voice Search Settings",
       "language": "[FR] Recognition Language",
       "sensitivity": "[FR] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "Télécharger CV",
+      "subtitle": "PDF, DOCX ou TXT"
+    },
+    "analysis": {
+      "atsScore": "Score ATS",
+      "completeness": "Complétude",
+      "skills": "Compétences",
+      "recommendations": "Recommandations",
+      "missingSections": "Sections manquantes"
+    },
+    "profile": {
+      "createProfile": "Créer un profil public",
+      "shareLink": "Partager le lien",
+      "qrCode": "Code QR",
+      "download": "Télécharger"
+    },
+    "auth": {
+      "signIn": "Se connecter",
+      "createAccount": "Créer un compte",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "fullName": "Nom complet",
+      "confirmPassword": "Confirmer le mot de passe"
+    },
+    "account": {
+      "title": "Compte",
+      "signOut": "Se déconnecter",
+      "appLanguage": "Langue de l'application",
+      "quota": "Quota d'utilisation"
+    },
+    "cv": {
+      "uploadTitle": "Téléchargez votre CV",
+      "generate": "Générer un CV",
+      "myCV": "Mes CVs",
+      "analysis": "Analyse",
+      "customize": "Personnaliser",
+      "preview": "Aperçu"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "recentActivity": "Activité récente",
+      "totalViews": "Vues totales",
+      "downloads": "Téléchargements",
+      "uniqueVisitors": "Visiteurs uniques"
+    },
+    "contactRequests": {
+      "title": "Demandes de contact",
+      "noRequests": "Aucune demande de contact pour l'instant"
     }
   }
 }

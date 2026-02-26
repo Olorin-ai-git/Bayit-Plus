@@ -6198,7 +6198,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6210,7 +6214,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",
@@ -10435,6 +10442,58 @@
       "title": "[ES] Voice Search Settings",
       "language": "[ES] Recognition Language",
       "sensitivity": "[ES] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "Subir CV",
+      "subtitle": "PDF, DOCX o TXT"
+    },
+    "analysis": {
+      "atsScore": "Puntuación ATS",
+      "completeness": "Completitud",
+      "skills": "Habilidades",
+      "recommendations": "Recomendaciones",
+      "missingSections": "Secciones faltantes"
+    },
+    "profile": {
+      "createProfile": "Crear perfil público",
+      "shareLink": "Compartir enlace",
+      "qrCode": "Código QR",
+      "download": "Descargar"
+    },
+    "auth": {
+      "signIn": "Iniciar sesión",
+      "createAccount": "Crear cuenta",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "fullName": "Nombre completo",
+      "confirmPassword": "Confirmar contraseña"
+    },
+    "account": {
+      "title": "Cuenta",
+      "signOut": "Cerrar sesión",
+      "appLanguage": "Idioma de la app",
+      "quota": "Cuota de uso"
+    },
+    "cv": {
+      "uploadTitle": "Sube tu CV",
+      "generate": "Generar CV",
+      "myCV": "Mis CVs",
+      "analysis": "Análisis",
+      "customize": "Personalizar",
+      "preview": "Vista previa"
+    },
+    "dashboard": {
+      "title": "Panel",
+      "recentActivity": "Actividad reciente",
+      "totalViews": "Vistas totales",
+      "downloads": "Descargas",
+      "uniqueVisitors": "Visitantes únicos"
+    },
+    "contactRequests": {
+      "title": "Solicitudes de contacto",
+      "noRequests": "No hay solicitudes de contacto aún"
     }
   }
 }

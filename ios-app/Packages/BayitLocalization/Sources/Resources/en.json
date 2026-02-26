@@ -6117,7 +6117,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6129,7 +6133,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -9975,6 +9982,58 @@
       "title": "Voice Search Settings",
       "language": "Recognition Language",
       "sensitivity": "Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "Upload CV",
+      "subtitle": "PDF, DOCX or TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS Score",
+      "completeness": "Completeness",
+      "skills": "Skills",
+      "recommendations": "Recommendations",
+      "missingSections": "Missing Sections"
+    },
+    "profile": {
+      "createProfile": "Create Public Profile",
+      "shareLink": "Share Link",
+      "qrCode": "QR Code",
+      "download": "Download"
+    },
+    "auth": {
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "email": "Email",
+      "password": "Password",
+      "fullName": "Full Name",
+      "confirmPassword": "Confirm Password"
+    },
+    "account": {
+      "title": "Account",
+      "signOut": "Sign Out",
+      "appLanguage": "App Language",
+      "quota": "Usage Quota"
+    },
+    "cv": {
+      "uploadTitle": "Upload Your CV",
+      "generate": "Generate CV",
+      "myCV": "My CVs",
+      "analysis": "Analysis",
+      "customize": "Customize",
+      "preview": "Preview"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "recentActivity": "Recent Activity",
+      "totalViews": "Total Views",
+      "downloads": "Downloads",
+      "uniqueVisitors": "Unique Visitors"
+    },
+    "contactRequests": {
+      "title": "Contact Requests",
+      "noRequests": "No contact requests yet"
     }
   }
 }

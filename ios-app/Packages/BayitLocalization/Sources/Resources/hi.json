@@ -6119,7 +6119,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6131,7 +6135,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -10339,6 +10346,58 @@
       "title": "[HI] Voice Search Settings",
       "language": "[HI] Recognition Language",
       "sensitivity": "[HI] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CV अपलोड करें",
+      "subtitle": "PDF, DOCX या TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS स्कोर",
+      "completeness": "पूर्णता",
+      "skills": "कौशल",
+      "recommendations": "सिफारिशें",
+      "missingSections": "अनुपस्थित अनुभाग"
+    },
+    "profile": {
+      "createProfile": "सार्वजनिक प्रोफ़ाइल बनाएं",
+      "shareLink": "लिंक साझा करें",
+      "qrCode": "QR कोड",
+      "download": "डाउनलोड"
+    },
+    "auth": {
+      "signIn": "साइन इन",
+      "createAccount": "खाता बनाएं",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "fullName": "पूरा नाम",
+      "confirmPassword": "पासवर्ड की पुष्टि करें"
+    },
+    "account": {
+      "title": "खाता",
+      "signOut": "साइन आउट",
+      "appLanguage": "ऐप भाषा",
+      "quota": "उपयोग कोटा"
+    },
+    "cv": {
+      "uploadTitle": "अपना CV अपलोड करें",
+      "generate": "CV बनाएं",
+      "myCV": "मेरे CV",
+      "analysis": "विश्लेषण",
+      "customize": "अनुकूलित करें",
+      "preview": "पूर्वावलोकन"
+    },
+    "dashboard": {
+      "title": "डैशबोर्ड",
+      "recentActivity": "हालिया गतिविधि",
+      "totalViews": "कुल दृश्य",
+      "downloads": "डाउनलोड",
+      "uniqueVisitors": "अद्वितीय आगंतुक"
+    },
+    "contactRequests": {
+      "title": "संपर्क अनुरोध",
+      "noRequests": "अभी तक कोई संपर्क अनुरोध नहीं"
     }
   }
 }

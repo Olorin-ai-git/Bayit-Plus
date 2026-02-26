@@ -6109,7 +6109,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6121,7 +6125,10 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
+      "notIncluded": [
+        "অফলাইন দেখা",
+        "পরিবার প্রোফাইল"
+      ]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -10315,6 +10322,58 @@
       "title": "[BN] Voice Search Settings",
       "language": "[BN] Recognition Language",
       "sensitivity": "[BN] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CV আপলোড করুন",
+      "subtitle": "PDF, DOCX বা TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS স্কোর",
+      "completeness": "সম্পূর্ণতা",
+      "skills": "দক্ষতা",
+      "recommendations": "সুপারিশ",
+      "missingSections": "অনুপস্থিত বিভাগ"
+    },
+    "profile": {
+      "createProfile": "পাবলিক প্রোফাইল তৈরি করুন",
+      "shareLink": "লিঙ্ক শেয়ার করুন",
+      "qrCode": "QR কোড",
+      "download": "ডাউনলোড"
+    },
+    "auth": {
+      "signIn": "সাইন ইন",
+      "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+      "email": "ইমেল",
+      "password": "পাসওয়ার্ড",
+      "fullName": "পূর্ণ নাম",
+      "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন"
+    },
+    "account": {
+      "title": "অ্যাকাউন্ট",
+      "signOut": "সাইন আউট",
+      "appLanguage": "অ্যাপ ভাষা",
+      "quota": "ব্যবহারের কোটা"
+    },
+    "cv": {
+      "uploadTitle": "আপনার CV আপলোড করুন",
+      "generate": "CV তৈরি করুন",
+      "myCV": "আমার CVগুলো",
+      "analysis": "বিশ্লেষণ",
+      "customize": "কাস্টমাইজ করুন",
+      "preview": "প্রিভিউ"
+    },
+    "dashboard": {
+      "title": "ড্যাশবোর্ড",
+      "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+      "totalViews": "মোট ভিউ",
+      "downloads": "ডাউনলোড",
+      "uniqueVisitors": "অনন্য দর্শক"
+    },
+    "contactRequests": {
+      "title": "যোগাযোগের অনুরোধ",
+      "noRequests": "এখনো কোনো যোগাযোগের অনুরোধ নেই"
     }
   }
 }

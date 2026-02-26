@@ -6112,8 +6112,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6125,7 +6134,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -10325,6 +10337,58 @@
       "title": "[ZH] Voice Search Settings",
       "language": "[ZH] Recognition Language",
       "sensitivity": "[ZH] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "上传简历",
+      "subtitle": "PDF、DOCX 或 TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS 分数",
+      "completeness": "完整度",
+      "skills": "技能",
+      "recommendations": "建议",
+      "missingSections": "缺失部分"
+    },
+    "profile": {
+      "createProfile": "创建公开档案",
+      "shareLink": "分享链接",
+      "qrCode": "二维码",
+      "download": "下载"
+    },
+    "auth": {
+      "signIn": "登录",
+      "createAccount": "创建账户",
+      "email": "电子邮件",
+      "password": "密码",
+      "fullName": "全名",
+      "confirmPassword": "确认密码"
+    },
+    "account": {
+      "title": "账户",
+      "signOut": "退出登录",
+      "appLanguage": "应用语言",
+      "quota": "使用配额"
+    },
+    "cv": {
+      "uploadTitle": "上传您的简历",
+      "generate": "生成简历",
+      "myCV": "我的简历",
+      "analysis": "分析",
+      "customize": "自定义",
+      "preview": "预览"
+    },
+    "dashboard": {
+      "title": "仪表板",
+      "recentActivity": "最近活动",
+      "totalViews": "总浏览量",
+      "downloads": "下载次数",
+      "uniqueVisitors": "独立访客"
+    },
+    "contactRequests": {
+      "title": "联系请求",
+      "noRequests": "暂无联系请求"
     }
   }
 }

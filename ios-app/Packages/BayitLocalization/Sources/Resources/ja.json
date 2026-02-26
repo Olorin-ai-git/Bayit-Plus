@@ -11266,5 +11266,57 @@
       "language": "[JA] Recognition Language",
       "sensitivity": "[JA] Sensitivity"
     }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CVをアップロード",
+      "subtitle": "PDF、DOCXまたはTXT"
+    },
+    "analysis": {
+      "atsScore": "ATSスコア",
+      "completeness": "完成度",
+      "skills": "スキル",
+      "recommendations": "推奨事項",
+      "missingSections": "不足セクション"
+    },
+    "profile": {
+      "createProfile": "公開プロフィールを作成",
+      "shareLink": "リンクを共有",
+      "qrCode": "QRコード",
+      "download": "ダウンロード"
+    },
+    "auth": {
+      "signIn": "サインイン",
+      "createAccount": "アカウント作成",
+      "email": "メール",
+      "password": "パスワード",
+      "fullName": "フルネーム",
+      "confirmPassword": "パスワードを確認"
+    },
+    "account": {
+      "title": "アカウント",
+      "signOut": "サインアウト",
+      "appLanguage": "アプリの言語",
+      "quota": "使用量クォータ"
+    },
+    "cv": {
+      "uploadTitle": "CVをアップロード",
+      "generate": "CVを生成",
+      "myCV": "マイCV",
+      "analysis": "分析",
+      "customize": "カスタマイズ",
+      "preview": "プレビュー"
+    },
+    "dashboard": {
+      "title": "ダッシュボード",
+      "recentActivity": "最近のアクティビティ",
+      "totalViews": "総閲覧数",
+      "downloads": "ダウンロード",
+      "uniqueVisitors": "ユニーク訪問者"
+    },
+    "contactRequests": {
+      "title": "お問い合わせリクエスト",
+      "noRequests": "まだお問い合わせリクエストはありません"
+    }
   }
 }

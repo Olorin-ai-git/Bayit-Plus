@@ -6196,7 +6196,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6208,7 +6212,10 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
+      "notIncluded": [
+        "ஆஃப்லைன் பார்வை",
+        "குடும்ப சுயவிவரங்கள்"
+      ]
     },
     "family": {
       "name": "குடும்பம்",
@@ -10413,6 +10420,58 @@
       "title": "[TA] Voice Search Settings",
       "language": "[TA] Recognition Language",
       "sensitivity": "[TA] Sensitivity"
+    }
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CV பதிவேற்றவும்",
+      "subtitle": "PDF, DOCX அல்லது TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS மதிப்பெண்",
+      "completeness": "முழுமை",
+      "skills": "திறன்கள்",
+      "recommendations": "பரிந்துரைகள்",
+      "missingSections": "இல்லாத பகுதிகள்"
+    },
+    "profile": {
+      "createProfile": "பொது சுயவிவரம் உருவாக்கு",
+      "shareLink": "இணைப்பு பகிர்",
+      "qrCode": "QR குறியீடு",
+      "download": "பதிவிறக்கு"
+    },
+    "auth": {
+      "signIn": "உள்நுழை",
+      "createAccount": "கணக்கு உருவாக்கு",
+      "email": "மின்னஞ்சல்",
+      "password": "கடவுச்சொல்",
+      "fullName": "முழு பெயர்",
+      "confirmPassword": "கடவுச்சொல் உறுதிசெய்"
+    },
+    "account": {
+      "title": "கணக்கு",
+      "signOut": "வெளியேறு",
+      "appLanguage": "ஆப் மொழி",
+      "quota": "பயன்பாட்டு ஒதுக்கீடு"
+    },
+    "cv": {
+      "uploadTitle": "உங்கள் CV பதிவேற்றவும்",
+      "generate": "CV உருவாக்கு",
+      "myCV": "என் CVகள்",
+      "analysis": "பகுப்பாய்வு",
+      "customize": "தனிப்பயனாக்கு",
+      "preview": "முன்னோட்டம்"
+    },
+    "dashboard": {
+      "title": "டாஷ்போர்டு",
+      "recentActivity": "சமீபத்திய செயல்பாடு",
+      "totalViews": "மொத்த பார்வைகள்",
+      "downloads": "பதிவிறக்கங்கள்",
+      "uniqueVisitors": "தனிப்பட்ட பார்வையாளர்கள்"
+    },
+    "contactRequests": {
+      "title": "தொடர்பு கோரிக்கைகள்",
+      "noRequests": "இன்னும் தொடர்பு கோரிக்கைகள் இல்லை"
     }
   }
 }
