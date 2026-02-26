@@ -36,6 +36,7 @@ public final class MediaPlayer {
     private var durationObservation: NSKeyValueObservation?
     private var loadedRangesObservation: NSKeyValueObservation?
     private var seekableRangesObservation: NSKeyValueObservation?
+    private var stallRecoveryTask: Task<Void, Never>?
 
     /// Set once the asset reports a finite duration via its own property
     /// or via AVPlayerItem.duration. Prevents seekableTimeRanges (which
@@ -76,10 +77,11 @@ public final class MediaPlayer {
         )
 
         // Live streams cap forward buffer at 30s to stay near the live edge.
-        // VOD caps at 60s so stall recovery only needs to refill a bounded
-        // window instead of the unbounded default, which on high-bitrate
-        // tvOS streams (4K) can take minutes to fill after a network dip.
-        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 60.0
+        // VOD uses 300s (5 min): long-form content (films, series) drains a
+        // shorter window during high-bitrate action sequences faster than ABR
+        // can recover. 300s gives the CDN ample time to deliver large 4K/1080p
+        // segments without exhausting the pre-roll during sustained bitrate spikes.
+        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 300.0
         item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
         // Start playback from the lowest eligible variant and ramp up.
@@ -257,6 +259,8 @@ extension MediaPlayer {
         loadedRangesObservation = nil
         seekableRangesObservation?.invalidate()
         seekableRangesObservation = nil
+        stallRecoveryTask?.cancel()
+        stallRecoveryTask = nil
     }
 
     private func tearDownObservers() {
@@ -302,9 +306,13 @@ extension MediaPlayer {
             isBuffering = false
             state = .playing
             rate = avPlayer.rate
+            stallRecoveryTask?.cancel()
+            stallRecoveryTask = nil
         case .paused:
             isBuffering = false
             rate = 0
+            stallRecoveryTask?.cancel()
+            stallRecoveryTask = nil
             if state == .playing {
                 state = .paused
             }
@@ -313,8 +321,39 @@ extension MediaPlayer {
             if state == .playing {
                 state = .buffering
             }
+            scheduleStallRecovery()
         @unknown default:
             break
+        }
+    }
+
+    /// Schedule a stall-recovery seek when buffering persists for over 6 seconds.
+    ///
+    /// Seeks 1 second behind the current position so AVFoundation abandons
+    /// the in-flight HLS segment request (which may be stalled on a slow CDN
+    /// edge) and issues a fresh request, typically landing on a different edge
+    /// node or selecting a lower ABR variant for the next segment window.
+    @MainActor
+    private func scheduleStallRecovery() {
+        stallRecoveryTask?.cancel()
+        stallRecoveryTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: 6_000_000_000)
+            } catch {
+                return
+            }
+            guard let self, self.isBuffering else { return }
+            let target = max(self.currentTime - 1.0, 0)
+            self.logger.warning(
+                "Stall recovery: restarting from keyframe",
+                context: ["seekTarget": String(format: "%.1f", target)]
+            )
+            let cmTime = CMTime(seconds: target, preferredTimescale: 600)
+            let tolerance = CMTime(seconds: 2, preferredTimescale: 600)
+            await self.avPlayer.seek(
+                to: cmTime, toleranceBefore: tolerance, toleranceAfter: tolerance
+            )
+            self.avPlayer.play()
         }
     }
 
