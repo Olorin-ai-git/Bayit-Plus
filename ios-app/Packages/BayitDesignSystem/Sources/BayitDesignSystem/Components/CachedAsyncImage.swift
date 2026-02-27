@@ -1,24 +1,38 @@
 import SwiftUI
-import UIKit
+
+#if canImport(UIKit)
+    import UIKit
+
+    private typealias PlatformImage = UIImage
+#elseif canImport(AppKit)
+    import AppKit
+
+    private typealias PlatformImage = NSImage
+#endif
 
 /// In-memory image cache shared across all ``CachedAsyncImage`` instances.
 /// Uses ``NSCache`` for automatic memory-pressure eviction.
 private actor ImageCacheStore {
     static let shared = ImageCacheStore()
 
-    private let cache: NSCache<NSString, UIImage> = {
-        let c = NSCache<NSString, UIImage>()
+    private let cache: NSCache<NSString, AnyObject> = {
+        let c = NSCache<NSString, AnyObject>()
         c.totalCostLimit = 100 * 1024 * 1024 // 100 MB
         c.countLimit = 200
         return c
     }()
 
-    func image(for key: String) -> UIImage? {
-        cache.object(forKey: key as NSString)
+    func image(for key: String) -> PlatformImage? {
+        cache.object(forKey: key as NSString) as? PlatformImage
     }
 
-    func store(_ image: UIImage, for key: String) {
-        let cost = image.cgImage.map { $0.bytesPerRow * $0.height } ?? 0
+    func store(_ image: PlatformImage, for key: String) {
+        #if canImport(UIKit)
+            let cost = image.cgImage.map { $0.bytesPerRow * $0.height } ?? 0
+        #elseif canImport(AppKit)
+            let rep = image.representations.first
+            let cost = rep.map { $0.pixelsWide * $0.pixelsHigh * 4 } ?? 0
+        #endif
         cache.setObject(image, forKey: key as NSString, cost: cost)
     }
 }
@@ -40,7 +54,7 @@ public struct CachedAsyncImage<Placeholder: View>: View {
     private let placeholder: () -> Placeholder
     private let phaseContent: ((CachedAsyncImagePhase) -> AnyView)?
 
-    @State private var loadedImage: UIImage?
+    @State private var loadedImage: PlatformImage?
     @State private var loadFailed = false
     @State private var loadTask: Task<Void, Never>?
 
@@ -60,16 +74,16 @@ public struct CachedAsyncImage<Placeholder: View>: View {
     public var body: some View {
         Group {
             if let phaseContent {
-                if let uiImage = loadedImage {
-                    phaseContent(.success(Image(uiImage: uiImage)))
+                if let image = loadedImage {
+                    phaseContent(.success(Self.swiftUIImage(from: image)))
                 } else if loadFailed {
                     phaseContent(.failure(URLError(.badServerResponse)))
                 } else {
                     phaseContent(.empty)
                 }
             } else {
-                if let uiImage = loadedImage {
-                    Image(uiImage: uiImage)
+                if let image = loadedImage {
+                    Self.swiftUIImage(from: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } else {
@@ -81,6 +95,14 @@ public struct CachedAsyncImage<Placeholder: View>: View {
         .onDisappear { cancelLoad() }
     }
 
+    private static func swiftUIImage(from image: PlatformImage) -> Image {
+        #if canImport(UIKit)
+            return Image(uiImage: image)
+        #elseif canImport(AppKit)
+            return Image(nsImage: image)
+        #endif
+    }
+
     // MARK: - Loading
 
     private func startLoad() {
@@ -88,20 +110,17 @@ public struct CachedAsyncImage<Placeholder: View>: View {
         let key = url.absoluteString
 
         loadTask = Task {
-            // Check cache first
             if let cached = await ImageCacheStore.shared.image(for: key) {
                 await MainActor.run { loadedImage = cached }
                 return
             }
 
-            // Download
             if let image = await download(url: url) {
                 await ImageCacheStore.shared.store(image, for: key)
                 await MainActor.run { loadedImage = image }
                 return
             }
 
-            // First attempt failed - retry once after a short delay
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled else { return }
 
@@ -119,7 +138,7 @@ public struct CachedAsyncImage<Placeholder: View>: View {
         loadTask = nil
     }
 
-    private func download(url: URL) async -> UIImage? {
+    private func download(url: URL) async -> PlatformImage? {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse,
@@ -127,7 +146,7 @@ public struct CachedAsyncImage<Placeholder: View>: View {
             else {
                 return nil
             }
-            return UIImage(data: data)
+            return PlatformImage(data: data)
         } catch {
             return nil
         }

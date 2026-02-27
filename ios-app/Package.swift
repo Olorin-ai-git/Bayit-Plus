@@ -6,6 +6,7 @@ let package = Package(
     platforms: [
         .iOS(.v17),
         .tvOS(.v17),
+        .macOS(.v14),
     ],
     products: [
         .library(name: "BayitCore", targets: ["BayitCore"]),
@@ -52,7 +53,7 @@ let package = Package(
                 .product(
                     name: "GoogleSignIn",
                     package: "GoogleSignIn-iOS",
-                    condition: .when(platforms: [.iOS])
+                    condition: .when(platforms: [.iOS, .macOS])
                 ),
             ],
             path: "Packages/BayitAuth/Sources/BayitAuth"
@@ -108,8 +109,16 @@ let package = Package(
             name: "BayitAnalytics",
             dependencies: [
                 "BayitCore",
-                .product(name: "FirebaseAnalytics", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
+                .product(
+                    name: "FirebaseAnalytics",
+                    package: "firebase-ios-sdk",
+                    condition: .when(platforms: [.iOS, .tvOS])
+                ),
+                .product(
+                    name: "FirebaseCrashlytics",
+                    package: "firebase-ios-sdk",
+                    condition: .when(platforms: [.iOS, .tvOS])
+                ),
             ],
             path: "Packages/BayitAnalytics/Sources/BayitAnalytics"
         ),
@@ -129,7 +138,11 @@ let package = Package(
             dependencies: [
                 "BayitCore",
                 "BayitNetworking",
-                .product(name: "FirebaseMessaging", package: "firebase-ios-sdk"),
+                .product(
+                    name: "FirebaseMessaging",
+                    package: "firebase-ios-sdk",
+                    condition: .when(platforms: [.iOS])
+                ),
             ],
             path: "Packages/BayitNotifications/Sources/BayitNotifications"
         ),
