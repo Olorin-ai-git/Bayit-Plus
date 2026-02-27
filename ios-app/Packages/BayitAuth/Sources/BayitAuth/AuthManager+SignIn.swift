@@ -1,150 +1,151 @@
 import Foundation
-import UIKit
+#if os(iOS) || os(tvOS)
+    import UIKit
+#endif
 import FirebaseAuth
 #if canImport(GoogleSignIn)
-import GoogleSignIn
+    import GoogleSignIn
 #endif
 import AuthenticationServices
 
 // MARK: - Sign-In Methods
 
-extension AuthManager {
-
-    /// Initiates Google Sign-In via the Google SDK and Firebase Auth.
-    /// After Firebase auth, exchanges the Google ID token with the backend
-    /// for a backend-issued JWT.
-    ///
-    /// Available on iOS only. tvOS does not support the Google Sign-In
-    /// presenting flow that requires a UIViewController.
+public extension AuthManager {
+    // Initiates Google Sign-In via the Google SDK and Firebase Auth.
+    // After Firebase auth, exchanges the Google ID token with the backend
+    // for a backend-issued JWT.
+    //
+    // Available on iOS only. tvOS does not support the Google Sign-In
+    // presenting flow that requires a UIViewController.
     #if os(iOS)
-    public func signInWithGoogle() async throws {
-        isLoading = true
-        error = nil
+        func signInWithGoogle() async throws {
+            isLoading = true
+            error = nil
 
-        do {
-            try Task.checkCancellation()
-
-            let rootVC: UIViewController
             do {
-                rootVC = try await resolveRootViewController()
+                try Task.checkCancellation()
+
+                let rootVC: UIViewController
+                do {
+                    rootVC = try await resolveRootViewController()
+                } catch {
+                    isLoading = false
+                    let err = AuthError.googleSignInFailed(
+                        underlying: "Could not find root view controller"
+                    )
+                    self.error = err
+                    logger.error("Google Sign In: No root view controller", metadata: [:])
+                    throw err
+                }
+
+                let googleConfig = GIDConfiguration(
+                    clientID: configuration.googleClientID,
+                    serverClientID: configuration.googleServerClientID
+                )
+                GIDSignIn.sharedInstance.configuration = googleConfig
+
+                try Task.checkCancellation()
+
+                let result: GIDSignInResult
+                do {
+                    result = try await GIDSignIn.sharedInstance.signIn(
+                        withPresenting: rootVC
+                    )
+                } catch let gidError {
+                    isLoading = false
+                    let err = AuthError.googleSignInFailed(
+                        underlying: "Google SDK error: \(gidError.localizedDescription)"
+                    )
+                    error = err
+                    logger.error(
+                        "Google Sign In: SDK error",
+                        metadata: ["error": gidError.localizedDescription]
+                    )
+                    throw err
+                }
+
+                guard let idToken = result.user.idToken?.tokenString else {
+                    isLoading = false
+                    let err = AuthError.missingIDToken
+                    error = err
+                    logger.error("Google Sign In: Missing ID token", metadata: [:])
+                    throw err
+                }
+
+                try Task.checkCancellation()
+
+                let credential = GoogleAuthProvider.credential(
+                    withIDToken: idToken,
+                    accessToken: result.user.accessToken.tokenString
+                )
+
+                let authResult: AuthDataResult
+                do {
+                    authResult = try await Auth.auth().signIn(with: credential)
+                } catch let firebaseError {
+                    isLoading = false
+                    let err = AuthError.googleSignInFailed(
+                        underlying: "Firebase auth failed: \(firebaseError.localizedDescription)"
+                    )
+                    error = err
+                    logger.error(
+                        "Google Sign In: Firebase authentication failed",
+                        metadata: ["error": firebaseError.localizedDescription]
+                    )
+                    throw err
+                }
+
+                try Task.checkCancellation()
+
+                do {
+                    try await handleFirebaseAuthResult(
+                        authResult,
+                        providerToken: .google(idToken: idToken)
+                    )
+                } catch let backendError {
+                    isLoading = false
+                    let err = AuthError.googleSignInFailed(
+                        underlying: "Backend exchange failed: \(backendError.localizedDescription)"
+                    )
+                    error = err
+                    logger.error(
+                        "Google Sign In: Backend token exchange failed",
+                        metadata: ["error": backendError.localizedDescription]
+                    )
+                    throw err
+                }
+
+                logger.info(
+                    "Google sign-in succeeded",
+                    metadata: ["user_id": authResult.user.uid]
+                )
+            } catch is CancellationError {
+                isLoading = false
+                error = AuthError.cancelled
+                throw AuthError.cancelled
+            } catch let authError as AuthError {
+                isLoading = false
+                error = authError
+                throw authError
             } catch {
+                let wrapped = AuthError.googleSignInFailed(
+                    underlying: error.localizedDescription
+                )
                 isLoading = false
-                let err = AuthError.googleSignInFailed(
-                    underlying: "Could not find root view controller"
-                )
-                self.error = err
-                logger.error("Google Sign In: No root view controller", metadata: [:])
-                throw err
-            }
-
-            let googleConfig = GIDConfiguration(
-                clientID: configuration.googleClientID,
-                serverClientID: configuration.googleServerClientID
-            )
-            GIDSignIn.sharedInstance.configuration = googleConfig
-
-            try Task.checkCancellation()
-
-            let result: GIDSignInResult
-            do {
-                result = try await GIDSignIn.sharedInstance.signIn(
-                    withPresenting: rootVC
-                )
-            } catch let gidError {
-                isLoading = false
-                let err = AuthError.googleSignInFailed(
-                    underlying: "Google SDK error: \(gidError.localizedDescription)"
-                )
-                error = err
+                self.error = wrapped
                 logger.error(
-                    "Google Sign In: SDK error",
-                    metadata: ["error": gidError.localizedDescription]
+                    "Google Sign In: Unexpected error",
+                    metadata: ["error": error.localizedDescription]
                 )
-                throw err
+                throw wrapped
             }
-
-            guard let idToken = result.user.idToken?.tokenString else {
-                isLoading = false
-                let err = AuthError.missingIDToken
-                error = err
-                logger.error("Google Sign In: Missing ID token", metadata: [:])
-                throw err
-            }
-
-            try Task.checkCancellation()
-
-            let credential = GoogleAuthProvider.credential(
-                withIDToken: idToken,
-                accessToken: result.user.accessToken.tokenString
-            )
-
-            let authResult: AuthDataResult
-            do {
-                authResult = try await Auth.auth().signIn(with: credential)
-            } catch let firebaseError {
-                isLoading = false
-                let err = AuthError.googleSignInFailed(
-                    underlying: "Firebase auth failed: \(firebaseError.localizedDescription)"
-                )
-                error = err
-                logger.error(
-                    "Google Sign In: Firebase authentication failed",
-                    metadata: ["error": firebaseError.localizedDescription]
-                )
-                throw err
-            }
-
-            try Task.checkCancellation()
-
-            do {
-                try await handleFirebaseAuthResult(
-                    authResult,
-                    providerToken: .google(idToken: idToken)
-                )
-            } catch let backendError {
-                isLoading = false
-                let err = AuthError.googleSignInFailed(
-                    underlying: "Backend exchange failed: \(backendError.localizedDescription)"
-                )
-                error = err
-                logger.error(
-                    "Google Sign In: Backend token exchange failed",
-                    metadata: ["error": backendError.localizedDescription]
-                )
-                throw err
-            }
-
-            logger.info(
-                "Google sign-in succeeded",
-                metadata: ["user_id": authResult.user.uid]
-            )
-        } catch is CancellationError {
-            isLoading = false
-            error = AuthError.cancelled
-            throw AuthError.cancelled
-        } catch let authError as AuthError {
-            isLoading = false
-            error = authError
-            throw authError
-        } catch {
-            let wrapped = AuthError.googleSignInFailed(
-                underlying: error.localizedDescription
-            )
-            isLoading = false
-            self.error = wrapped
-            logger.error(
-                "Google Sign In: Unexpected error",
-                metadata: ["error": error.localizedDescription]
-            )
-            throw wrapped
         }
-    }
     #endif
 
     /// Initiates Apple Sign-In via ASAuthorizationController and Firebase Auth.
     /// After Firebase auth, exchanges the Apple identity token with the backend
     /// for a backend-issued JWT.
-    public func signInWithApple() async throws {
+    func signInWithApple() async throws {
         isLoading = true
         error = nil
 
@@ -154,7 +155,8 @@ extension AuthManager {
             let appleResult = try await performAppleSignIn()
 
             guard let appleIDCredential = appleResult.credential
-                    as? ASAuthorizationAppleIDCredential else {
+                as? ASAuthorizationAppleIDCredential
+            else {
                 isLoading = false
                 let err = AuthError.appleSignInFailed(underlying: "Invalid credential type")
                 error = err
@@ -259,7 +261,7 @@ extension AuthManager {
     ///
     /// Calls the backend `/auth/v2/register` endpoint which delegates to auth.olorin.ai
     /// while maintaining Bayit+ specific features (payment flow, beta users, etc).
-    public func signUpWithEmail(email: String, password: String, name: String) async throws {
+    func signUpWithEmail(email: String, password: String, name: String) async throws {
         isLoading = true
         error = nil
 
@@ -340,7 +342,7 @@ extension AuthManager {
     ///
     /// Calls the backend `/auth/v2/login` endpoint which delegates to auth.olorin.ai
     /// while syncing with Bayit+ database for app-specific features.
-    public func signInWithEmail(email: String, password: String) async throws {
+    func signInWithEmail(email: String, password: String) async throws {
         isLoading = true
         error = nil
 
@@ -422,7 +424,7 @@ extension AuthManager {
     /// Called during biometric (Face ID / Touch ID) login to exchange a stored
     /// refresh token for a fresh access token without requiring the user to
     /// re-authenticate with Google, Apple, or email/password.
-    public func restoreWithRefreshToken(_ refreshToken: String) async throws {
+    func restoreWithRefreshToken(_ refreshToken: String) async throws {
         isLoading = true
         error = nil
 
@@ -478,24 +480,24 @@ extension AuthManager {
     // MARK: - Helpers
 
     #if os(iOS)
-    /// Resolves the current key window's root view controller for presenting sign-in UI.
-    /// Available on iOS only. tvOS uses a different presentation model.
-    func resolveRootViewController() async throws -> UIViewController {
-        guard let windowScene = await MainActor.run(body: {
-            UIApplication.shared.connectedScenes
-                .compactMap { $0 as? UIWindowScene }
-                .first
-        }) else {
-            throw AuthError.googleSignInFailed(underlying: "No active window scene")
-        }
+        /// Resolves the current key window's root view controller for presenting sign-in UI.
+        /// Available on iOS only. tvOS uses a different presentation model.
+        func resolveRootViewController() async throws -> UIViewController {
+            guard let windowScene = await MainActor.run(body: {
+                UIApplication.shared.connectedScenes
+                    .compactMap { $0 as? UIWindowScene }
+                    .first
+            }) else {
+                throw AuthError.googleSignInFailed(underlying: "No active window scene")
+            }
 
-        guard let rootVC = await MainActor.run(body: {
-            windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
-        }) else {
-            throw AuthError.googleSignInFailed(underlying: "No root view controller")
-        }
+            guard let rootVC = await MainActor.run(body: {
+                windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+            }) else {
+                throw AuthError.googleSignInFailed(underlying: "No root view controller")
+            }
 
-        return rootVC
-    }
+            return rootVC
+        }
     #endif
 }

@@ -1,9 +1,11 @@
 import Foundation
-import UIKit
+#if os(iOS) || os(tvOS)
+    import UIKit
+#endif
 import FirebaseAuth
 import FirebaseCore
 #if canImport(GoogleSignIn)
-import GoogleSignIn
+    import GoogleSignIn
 #endif
 import BayitCore
 import BayitNetworking
@@ -18,7 +20,6 @@ import BayitNetworking
 /// user, token, isAuthenticated, isLoading, profiles, activeProfile, betaCredits.
 @Observable
 public final class AuthManager {
-
     // MARK: - Published State
 
     public internal(set) var user: BayitUser?
@@ -30,7 +31,9 @@ public final class AuthManager {
     public internal(set) var error: AuthError?
 
     /// Computed authentication status -- true when both user and token exist.
-    public var isAuthenticated: Bool { user != nil && token != nil }
+    public var isAuthenticated: Bool {
+        user != nil && token != nil
+    }
 
     /// Returns the current backend refresh token from Keychain, if available.
     /// Used by biometric sign-in to persist a refresh token for session restore.
@@ -66,9 +69,9 @@ public final class AuthManager {
         logger: APILogger
     ) {
         self.configuration = configuration
-        self.keychainService = KeychainService(configuration: configuration)
+        keychainService = KeychainService(configuration: configuration)
         self.logger = logger
-        self.tokenProvider = AuthTokenProviderImpl(
+        tokenProvider = AuthTokenProviderImpl(
             keychainService: keychainService,
             logger: logger,
             tokenKeychainKey: backendTokenKeychainKey,
@@ -78,7 +81,7 @@ public final class AuthManager {
         let info = Bundle.main.infoDictionary ?? [:]
         let configuredDays = info["SESSION_MAX_AGE_DAYS"] as? String
             ?? ProcessInfo.processInfo.environment["SESSION_MAX_AGE_DAYS"]
-        self.sessionMaxAgeDays = Int(configuredDays ?? "") ?? 30
+        sessionMaxAgeDays = Int(configuredDays ?? "") ?? 30
 
         restoreCachedSession()
         listenForAuthStateChanges()
@@ -104,7 +107,8 @@ public final class AuthManager {
         guard let timestampString = try? keychainService.load(
             for: sessionTimestampKeychainKey
         ),
-              let timestamp = TimeInterval(timestampString) else {
+            let timestamp = TimeInterval(timestampString)
+        else {
             return true
         }
         let sessionDate = Date(timeIntervalSince1970: timestamp)
@@ -166,7 +170,7 @@ public final class AuthManager {
             do {
                 try Auth.auth().signOut()
                 #if canImport(GoogleSignIn)
-                GIDSignIn.sharedInstance.signOut()
+                    GIDSignIn.sharedInstance.signOut()
                 #endif
             } catch {
                 logger.error(

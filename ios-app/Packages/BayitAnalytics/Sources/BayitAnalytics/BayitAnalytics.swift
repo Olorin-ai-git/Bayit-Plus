@@ -1,6 +1,8 @@
 import BayitCore
-import FirebaseAnalytics
 import Foundation
+#if os(iOS) || os(tvOS)
+    import FirebaseAnalytics
+#endif
 
 /// Analytics service for tracking user events and screen views via Firebase Analytics.
 ///
@@ -13,32 +15,42 @@ public final class AnalyticsService: @unchecked Sendable {
 
     /// Log a custom event with optional parameters.
     public func logEvent(_ name: String, parameters: [String: Any] = [:]) {
-        Analytics.logEvent(name, parameters: parameters.isEmpty ? nil : parameters)
+        #if os(iOS) || os(tvOS)
+            Analytics.logEvent(name, parameters: parameters.isEmpty ? nil : parameters)
+        #endif
         logger.debug("Event logged", context: ["event": name])
     }
 
     /// Log a screen view.
     public func logScreen(_ screenName: String, screenClass: String) {
-        Analytics.logEvent(AnalyticsEventScreenView, parameters: [
-            AnalyticsParameterScreenName: screenName,
-            AnalyticsParameterScreenClass: screenClass,
-        ])
+        #if os(iOS) || os(tvOS)
+            Analytics.logEvent(AnalyticsEventScreenView, parameters: [
+                AnalyticsParameterScreenName: screenName,
+                AnalyticsParameterScreenClass: screenClass,
+            ])
+        #endif
         logger.debug("Screen view logged", context: ["screen": screenName])
     }
 
     /// Set a user property (e.g. subscription tier, language preference).
     public func setUserProperty(_ value: String?, forName name: String) {
-        Analytics.setUserProperty(value, forName: name)
+        #if os(iOS) || os(tvOS)
+            Analytics.setUserProperty(value, forName: name)
+        #endif
     }
 
     /// Associate subsequent events with a user identifier.
     public func setUserID(_ userID: String?) {
-        Analytics.setUserID(userID)
+        #if os(iOS) || os(tvOS)
+            Analytics.setUserID(userID)
+        #endif
     }
 
     /// Reset analytics data (called on logout).
     public func resetAnalyticsData() {
-        Analytics.resetAnalyticsData()
+        #if os(iOS) || os(tvOS)
+            Analytics.resetAnalyticsData()
+        #endif
         logger.info("Analytics data reset")
     }
 }
@@ -52,12 +64,21 @@ public enum BayitAnalyticsEvent {
     public static let playbackStart = "playback_start"
     public static let playbackComplete = "playback_complete"
     public static let playbackError = "playback_error"
-    public static let searchPerformed = AnalyticsEventSearch
-    public static let subscriptionStart = AnalyticsEventBeginCheckout
-    public static let subscriptionPurchase = AnalyticsEventPurchase
-    public static let loginSuccess = AnalyticsEventLogin
-    public static let signupSuccess = AnalyticsEventSignUp
-    public static let shareContent = AnalyticsEventShare
+    #if os(iOS) || os(tvOS)
+        public static let searchPerformed = AnalyticsEventSearch
+        public static let subscriptionStart = AnalyticsEventBeginCheckout
+        public static let subscriptionPurchase = AnalyticsEventPurchase
+        public static let loginSuccess = AnalyticsEventLogin
+        public static let signupSuccess = AnalyticsEventSignUp
+        public static let shareContent = AnalyticsEventShare
+    #else
+        public static let searchPerformed = "search"
+        public static let subscriptionStart = "begin_checkout"
+        public static let subscriptionPurchase = "purchase"
+        public static let loginSuccess = "login"
+        public static let signupSuccess = "sign_up"
+        public static let shareContent = "share"
+    #endif
     public static let liveChannelTuned = "live_channel_tuned"
     public static let subtitleEnabled = "subtitle_enabled"
     public static let dubbingEnabled = "dubbing_enabled"
@@ -67,8 +88,13 @@ public enum BayitAnalyticsEvent {
 
 /// Standard parameter name constants.
 public enum BayitAnalyticsParam {
-    public static let contentId = AnalyticsParameterItemID
-    public static let contentType = AnalyticsParameterContentType
+    #if os(iOS) || os(tvOS)
+        public static let contentId = AnalyticsParameterItemID
+        public static let contentType = AnalyticsParameterContentType
+    #else
+        public static let contentId = "item_id"
+        public static let contentType = "content_type"
+    #endif
     public static let language = "language"
     public static let channelId = "channel_id"
     public static let quality = "quality"

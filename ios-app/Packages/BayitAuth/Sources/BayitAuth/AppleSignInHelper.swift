@@ -12,7 +12,6 @@ struct AppleSignInResult {
 ///
 /// Generates a cryptographic nonce for Firebase Auth replay protection.
 extension AuthManager {
-
     func performAppleSignIn() async throws -> AppleSignInResult {
         let nonce = generateNonce()
         let hashedNonce = sha256(nonce)
@@ -73,7 +72,6 @@ private enum AssociatedKeys {
 /// Bridges the delegate callback pattern to a Swift concurrency continuation.
 /// Also provides presentation context for the Sign in with Apple UI.
 private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, @unchecked Sendable {
-
     private let continuation: CheckedContinuation<AppleSignInResult, Error>
     private let nonce: String
 
@@ -86,7 +84,7 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
     }
 
     func authorizationController(
-        controller: ASAuthorizationController,
+        controller _: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization
     ) {
         let result = AppleSignInResult(credential: authorization.credential, nonce: nonce)
@@ -94,7 +92,7 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
     }
 
     func authorizationController(
-        controller: ASAuthorizationController,
+        controller _: ASAuthorizationController,
         didCompleteWithError error: Error
     ) {
         if let asError = error as? ASAuthorizationError, asError.code == .canceled {
@@ -106,26 +104,30 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
 
     // MARK: - ASAuthorizationControllerPresentationContextProviding
 
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    func presentationAnchor(for _: ASAuthorizationController) -> ASPresentationAnchor {
         #if os(iOS)
-        // Get the active window scene and return its key window
-        if let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
-            return window
-        }
-        // Fallback: any foreground scene's first window
-        if let windowScene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first,
-           let window = windowScene.windows.first {
-            return window
-        }
-        return UIWindow()
+            // Get the active window scene and return its key window
+            if let windowScene = UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+                let window = windowScene.windows.first(where: { $0.isKeyWindow })
+            {
+                return window
+            }
+            // Fallback: any foreground scene's first window
+            if let windowScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first,
+                let window = windowScene.windows.first
+            {
+                return window
+            }
+            return UIWindow()
+        #elseif os(macOS)
+            // Return the key window for the Sign in with Apple sheet presentation
+            return NSApp.keyWindow ?? NSWindow()
         #else
-        // tvOS uses focus-based Apple Sign-In; presentation anchor is unused
-        return UIWindow()
+            // tvOS: focus-based Apple Sign-In; presentation anchor is unused
+            return UIWindow()
         #endif
     }
 }
-

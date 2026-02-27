@@ -16,7 +16,7 @@ public struct GlassSearchBar: View {
         showVoiceButton: Bool = false,
         onVoiceTap: (() -> Void)? = nil
     ) {
-        self._text = text
+        _text = text
         self.placeholder = placeholder
         self.showVoiceButton = showVoiceButton
         self.onVoiceTap = onVoiceTap
@@ -34,7 +34,9 @@ public struct GlassSearchBar: View {
                 .foregroundColor(DesignTokens.Text.primary)
                 .tint(DesignTokens.Primary.default)
                 .autocorrectionDisabled()
+            #if os(iOS)
                 .textInputAutocapitalization(.never)
+            #endif
 
             if !text.isEmpty {
                 Button(action: { text = "" }) {
@@ -72,7 +74,7 @@ public struct GlassSearchBar: View {
         .animation(.easeInOut(duration: 0.2), value: isFocused)
         .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
         #if os(tvOS)
-        .tvFocusStyle(scale: 1.02, shadowRadius: 6)
+            .tvFocusStyle(scale: 1.02, shadowRadius: 6)
         #endif
     }
 }

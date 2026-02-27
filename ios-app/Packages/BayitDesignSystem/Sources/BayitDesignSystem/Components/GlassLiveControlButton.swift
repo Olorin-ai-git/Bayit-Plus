@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+    import AppKit
+#endif
 
 /// Reusable glass-styled button for live AI feature controls.
 ///
@@ -6,7 +9,6 @@ import SwiftUI
 /// connecting spinner, and premium gate styling. Supports split-button actions
 /// and tvOS focus navigation.
 public struct GlassLiveControlButton: View {
-
     public enum ControlState {
         case idle, enabled, connecting, premiumLocked, disabled
     }
@@ -35,7 +37,9 @@ public struct GlassLiveControlButton: View {
 
     @State private var pulseOpacity: Double = 1.0
 
-    private var isActive: Bool { state == .enabled || state == .connecting }
+    private var isActive: Bool {
+        state == .enabled || state == .connecting
+    }
 
     public var body: some View {
         buttonRow
@@ -47,10 +51,10 @@ public struct GlassLiveControlButton: View {
             .accessibilityLabel(label)
             .accessibilityValue(accessibilityValue)
             .accessibilityHint(accessibilityHint)
-            #if os(tvOS)
+        #if os(tvOS)
             .focusable()
             .tvFocusStyle()
-            #endif
+        #endif
     }
 
     private var buttonRow: some View {
@@ -112,15 +116,25 @@ public struct GlassLiveControlButton: View {
         }
     }
 
+    // MARK: - Accessibility
+
+    private var isReduceMotionEnabled: Bool {
+        #if os(iOS) || os(tvOS)
+            UIAccessibility.isReduceMotionEnabled
+        #else
+            NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        #endif
+    }
+
     // MARK: - Pulsing Indicator
 
     private var pulsingDot: some View {
         Circle()
             .fill(DesignTokens.Success.default)
             .frame(width: 8, height: 8)
-            .opacity(UIAccessibility.isReduceMotionEnabled ? 1.0 : pulseOpacity)
+            .opacity(isReduceMotionEnabled ? 1.0 : pulseOpacity)
             .onAppear {
-                guard !UIAccessibility.isReduceMotionEnabled else { return }
+                guard !isReduceMotionEnabled else { return }
                 withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
                     pulseOpacity = 0.2
                 }
@@ -130,10 +144,9 @@ public struct GlassLiveControlButton: View {
 
     // MARK: - Background & Border
 
-    @ViewBuilder
     private var backgroundView: some View {
         ZStack {
-            (isActive ? DesignTokens.Primary.p900.opacity(0.6) : Color.black.opacity(0.85))
+            isActive ? DesignTokens.Primary.p900.opacity(0.6) : Color.black.opacity(0.85)
             VisualEffectBlur().opacity(isActive ? 0.3 : 1.0)
         }
     }
@@ -175,12 +188,12 @@ public struct GlassLiveControlButton: View {
     // MARK: - Haptics
 
     #if os(iOS)
-    private func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
-        UIImpactFeedbackGenerator(style: style).impactOccurred()
-    }
+        private func haptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+            UIImpactFeedbackGenerator(style: style).impactOccurred()
+        }
     #else
-    private enum HapticStyle { case light, medium, heavy }
-    private func haptic(_ style: HapticStyle) {}
+        private enum HapticStyle { case light, medium, heavy }
+        private func haptic(_: HapticStyle) {}
     #endif
 }
 
