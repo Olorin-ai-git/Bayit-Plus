@@ -1,0 +1,709 @@
+
+ ▐▛███▜▌   Claude Code v2.1.59
+▝▜█████▛▘  Sonnet 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact 
+  ⎿  Compacted (ctrl+o to see full summary)
+
+❯ ❯ we need merged credentials for  sign in with email, google, password    
+  and apple                                                                 
+
+⏺ Let me explore the current auth implementation before planning.
+
+⏺ Explore(Explore CVPlus auth codebase)
+  ⎿  Done (27 tool uses · 48.2k tokens · 1m 33s)
+  (ctrl+o to expand)
+
+⏺ Let me read the key source files before planning.
+
+⏺ Read 9 files (ctrl+o to expand)
+
+⏺ Let me check the tests for social auth.
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+❯ continue 
+
+⏺ Entered plan mode
+  Claude is now exploring and designing an implementation approach.
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ continue 
+
+⏺ Exited plan mode
+
+⏺ Now implementing. Starting with all backend files in parallel.
+
+⏺ Write(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/app/models/u
+       ser_auth_provider.py)
+  ⎿  Wrote 37 lines to
+     ../../olorin-cv/cvplus/python-backend/app/models/user_auth_provider.py
+       1 """
+       2 UserAuthProvider Document Model
+       3 Tracks individual auth provider linkages per user account.
+       4 Enables multiple providers (Google, Apple) on one account.
+       5 """
+       6 
+       7 from datetime import datetime
+       8 from beanie import Document
+       9 from pydantic import Field
+      10 from pymongo import IndexModel, ASCENDING
+     … +27 lines (ctrl+o to expand)
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Update(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/app/models/
+        __init__.py)
+  ⎿  Added 2 lines
+       8  from app.models.analytics import AnalyticsEvent
+       9  from app.models.user import User
+      10  from app.models.login_attempt import LoginAttempt
+      11 +from app.models.user_auth_provider import UserAuthProvider     
+      12  
+      13  __all__ = [
+      14      "CV",
+     ...
+      18      "AnalyticsEvent",
+      19      "User",
+      20      "LoginAttempt",
+      21 +    "UserAuthProvider",                                        
+      22  ]
+
+⏺ Update(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/app/core/da
+        tabase.py)
+  ⎿  Added 2 lines
+      54              AnalyticsEvent,
+      55              User,
+      56              LoginAttempt,
+      57 +            UserAuthProvider,                                  
+      58          )
+      59  
+      60          await init_beanie(
+     ...
+      67                  AnalyticsEvent,
+      68                  User,
+      69                  LoginAttempt,
+      70 +                UserAuthProvider,                              
+      71              ],
+      72          )
+      73  
+
+⏺ Now rewrite social_auth_service.py with the 4-step provider lookup:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/app/services
+       /social_auth_service.py)
+  ⎿  Added 59 lines, removed 2 lines
+      1  """
+      2  Social Authentication Service
+      3  Verifies Google and Apple identity tokens and manages social use
+         r accounts.
+      4 +Supports merging multiple providers onto the same account by ema
+        +il.                                                             
+      5  """
+      6  
+      7  import asyncio
+     ...
+      17  
+      18  from app.core.config import get_settings
+      19  from app.models import User
+      20 +from app.models.user_auth_provider import UserAuthProvider     
+      21  
+      22  logger = logging.getLogger(__name__)
+      23  settings = get_settings()
+     ...
+      103      return payload
+      104  
+      105  
+      106 +async def _link_provider(user: User, provider: str, provider_u
+          +id: str) -> None:                                             
+      107 +    """Upsert a UserAuthProvider entry linking the provider to
+          + the user."""                                                 
+      108 +    existing = await UserAuthProvider.find_one(               
+      109 +        UserAuthProvider.provider_uid == provider_uid         
+      110 +    )                                                         
+      111 +    if existing is None:                                      
+      112 +        entry = UserAuthProvider(                             
+      113 +            user_id=str(user.id),                             
+      114 +            provider=provider,                                
+      115 +            provider_uid=provider_uid,                        
+      116 +        )                                                     
+      117 +        await entry.save()                                    
+      118 +        logger.info(                                          
+      119 +            "Linked provider to account",                     
+      120 +            extra={"provider": provider, "user_id": str(user.i
+          +d)},                                                          
+      121 +        )                                                     
+      122 +                                                              
+      123 +                                                              
+      124  async def find_or_create_social_user(
+      125      email: str,
+      126      full_name: Optional[str],
+      127      provider_uid: str,
+      128      provider: str,
+      129  ) -> User:
+      110 -    """Look up a user by email; create a new social account if
+          - not found."""                                                
+      130 +    """                                                       
+      131 +    Resolve a social identity to a User account using a 4-step
+          + lookup:                                                      
+      132 +                                                              
+      133 +    1. Direct provider lookup via UserAuthProvider (normal ret
+          +urning user)                                                  
+      134 +    2. Legacy firebase_uid field match (migration path for pre
+          +-provider-table users)                                        
+      135 +    3. Same-email merge (links new provider to existing accoun
+          +t)                                                            
+      136 +    4. Create new account                                     
+      137 +    """                                                       
+      138 +    # Step 1: provider table — fast path for returning users  
+      139 +    auth_entry = await UserAuthProvider.find_one(             
+      140 +        UserAuthProvider.provider_uid == provider_uid         
+      141 +    )                                                         
+      142 +    if auth_entry:                                            
+      143 +        user = await User.get(auth_entry.user_id)             
+      144 +        if user and user.is_active:                           
+      145 +            return user                                       
+      146 +        logger.warning(                                       
+      147 +            "Provider entry references missing/inactive user",
+      148 +            extra={"user_id": auth_entry.user_id, "provider": 
+          +provider},                                                    
+      149 +        )                                                     
+      150 +                                                              
+      151 +    # Step 2: legacy firebase_uid field (one-time migration fo
+          +r existing users)                                             
+      152 +    user = await User.find_one(User.firebase_uid == provider_u
+          +id)                                                           
+      153 +    if user:                                                  
+      154 +        await _link_provider(user, provider, provider_uid)    
+      155 +        return user                                           
+      156 +                                                              
+      157 +    # Step 3: same-email merge — link provider to existing acc
+          +ount                                                          
+      158      user = await User.find_one(User.email == email)
+      159      if user:
+      160          if not user.firebase_uid:
+      161              user.firebase_uid = provider_uid
+      162              user.updatedAt = datetime.utcnow()
+      163              await user.save()
+      164 +        await _link_provider(user, provider, provider_uid)    
+      165 +        logger.info(                                          
+      166 +            "Merged social provider with existing account",   
+      167 +            extra={"provider": provider, "email": email},     
+      168 +        )                                                     
+      169          return user
+      170  
+      171 +    # Step 4: new account                                     
+      172      user = User(
+      173          email=email,
+      174          password_hash="",
+     ...
+      180          is_verified=True,
+      181      )
+      182      await user.save()
+      130 -    logger.info("Created social user account", extra={"provide
+          -r": provider, "email": email})                                
+      183 +    await _link_provider(user, provider, provider_uid)        
+      184 +    logger.info(                                              
+      185 +        "Created social user account",                        
+      186 +        extra={"provider": provider, "email": email},         
+      187 +    )                                                         
+      188      return user
+
+⏺ Fix the login endpoint to detect social-only accounts:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/app/api/aut
+        h_endpoints.py)
+  ⎿  Added 6 lines
+      112              detail="Invalid email or password",
+      113          )
+      114  
+      115 +    if not user.password_hash:                                
+      116 +        raise HTTPException(                                  
+      117 +            status_code=status.HTTP_401_UNAUTHORIZED,         
+      118 +            detail="This account was created with social sign-
+          +in. Please sign in with Google or Apple.",                    
+      119 +        )                                                     
+      120 +                                                              
+      121      if not verify_password(credentials.password, user.password
+           _hash):
+      122          await AccountLockoutService.record_login_attempt(
+      123              credentials.email, client_ip, success=False
+
+⏺ Add social sign-in to RegisterView:
+
+⏺ Update(~/Documents/Projects/olorin/olorin-cv/cvplus/ios-app/CVPlusApp/Views/Au
+        th/RegisterView.swift)
+  ⎿  Added 22 lines
+      50                      }
+      51                      .padding(.horizontal, DesignTokens.Spacing.
+          base)
+      52  
+      53 +                    // Divider                                 
+      54 +                    HStack {                                   
+      55 +                        Rectangle().frame(height: 1).foreground
+         +Style(DesignTokens.Text.muted.opacity(0.3))                    
+      56 +                        Text("or continue with")               
+      57 +                            .font(.system(size: DesignTokens.Fo
+         +ntSize.sm))                                                    
+      58 +                            .foregroundStyle(DesignTokens.Text.
+         +muted)                                                         
+      59 +                            .fixedSize()                       
+      60 +                        Rectangle().frame(height: 1).foreground
+         +Style(DesignTokens.Text.muted.opacity(0.3))                    
+      61 +                    }                                          
+      62 +                    .padding(.horizontal, DesignTokens.Spacing.
+         +base)                                                          
+      63 +                                                               
+      64 +                    // Social sign-up buttons                  
+      65 +                    VStack(spacing: DesignTokens.Spacing.sm) { 
+      66 +                        GlassButton("Continue with Apple", icon
+         +: Image(systemName: "apple.logo")) {                           
+      67 +                            Task { await viewModel.submitAppleS
+         +ignIn() }                                                      
+      68 +                        }                                      
+      69 +                        GlassButton("Continue with Google", ico
+         +n: Image(systemName: "g.circle.fill")) {                       
+      70 +                            Task { await viewModel.submitGoogle
+         +SignIn() }                                                     
+      71 +                        }                                      
+      72 +                    }                                          
+      73 +                    .padding(.horizontal, DesignTokens.Spacing.
+         +base)                                                          
+      74 +                                                               
+      75                      GlassButton("Already have an account? Sign 
+          in", variant: .ghost) {
+      76                          dismiss()
+      77                      }
+
+⏺ Now write the unit tests for the social auth service:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/tests/unit/t
+       est_social_auth_service.py)
+  ⎿  Wrote 215 lines to ../../olorin-cv/cvplus/python-backend/tests/unit/te
+     st_social_auth_service.py
+      1 """
+      2 Unit tests for social_auth_service.find_or_create_social_user
+      3 Covers: provider lookup, legacy migration, email merge, new accou
+        nt creation.
+      4 """
+      5 
+      6 import pytest
+      7 from datetime import datetime
+      8 from unittest.mock import AsyncMock, MagicMock, patch
+      9 
+     … +205 lines (ctrl+o to expand)
+
+⏺ Let me rewrite the tests more cleanly — the reload pattern is fragile:
+
+⏺ Write(~/Documents/Projects/olorin/olorin-cv/cvplus/python-backend/tests/unit/t
+       est_social_auth_service.py)
+  ⎿  Added 149 lines, removed 152 lines
+        7  from datetime import datetime
+        8  from unittest.mock import AsyncMock, MagicMock, patch
+        9  
+       10 +_SVC = "app.services.social_auth_service"                     
+       11  
+       11 -def _make_user(                                               
+       12 -    user_id: str = "user-123",                                
+       13 -    email: str = "alice@example.com",                         
+       14 -    firebase_uid: str = None,                                 
+       15 -    password_hash: str = "",                                  
+       16 -    is_active: bool = True,                                   
+       17 -) -> MagicMock:                                               
+       18 -    user = MagicMock()                                        
+       19 -    user.id = user_id                                         
+       20 -    user.email = email                                        
+       21 -    user.firebase_uid = firebase_uid                          
+       22 -    user.password_hash = password_hash                        
+       23 -    user.is_active = is_active                                
+       24 -    user.updatedAt = datetime.utcnow()                        
+       25 -    user.save = AsyncMock()                                   
+       26 -    return user                                               
+       12  
+       13 +def _user(                                                    
+       14 +    user_id="uid-1",                                          
+       15 +    email="alice@example.com",                                
+       16 +    firebase_uid=None,                                        
+       17 +    is_active=True,                                           
+       18 +):                                                            
+       19 +    u = MagicMock()                                           
+       20 +    u.id = user_id                                            
+       21 +    u.email = email                                           
+       22 +    u.firebase_uid = firebase_uid                             
+       23 +    u.is_active = is_active                                   
+       24 +    u.updatedAt = datetime.utcnow()                           
+       25 +    u.save = AsyncMock()                                      
+       26 +    return u                                                  
+       27  
+       29 -def _make_provider_entry(user_id: str, provider: str, provider
+          -_uid: str) -> MagicMock:                                      
+       30 -    entry = MagicMock()                                       
+       31 -    entry.user_id = user_id                                   
+       32 -    entry.provider = provider                                 
+       33 -    entry.provider_uid = provider_uid                         
+       34 -    return entry                                              
+       28  
+       29 +def _provider_entry(user_id="uid-1", provider="google", provid
+          +er_uid="google:sub1"):                                        
+       30 +    e = MagicMock()                                           
+       31 +    e.user_id = user_id                                       
+       32 +    e.provider = provider                                     
+       33 +    e.provider_uid = provider_uid                             
+       34 +    return e                                                  
+       35  
+       37 -@pytest.fixture(autouse=True)                                 
+       38 -def patch_models():                                           
+       39 -    """Patch Beanie model class methods used by find_or_create
+          -_social_user."""                                              
+       36 +                                                              
+       37 +@pytest.mark.asyncio                                          
+       38 +async def test_step1_provider_table_returns_user():           
+       39 +    """Returning user with a UserAuthProvider entry is resolve
+          +d directly."""                                                
+       40 +    user = _user(user_id="uid-1")                             
+       41 +    entry = _provider_entry(user_id="uid-1")                  
+       42 +                                                              
+       43      with (
+       41 -        patch("app.services.social_auth_service.User") as Mock
+          -User,                                                         
+       42 -        patch("app.services.social_auth_service.UserAuthProvid
+          -er") as MockProvider,                                         
+       44 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+       45 +        patch(f"{_SVC}.User") as MU,                          
+       46      ):
+       44 -        yield MockUser, MockProvider                          
+       47 +        MP.find_one = AsyncMock(return_value=entry)           
+       48 +        MP.provider_uid = "google:sub1"                       
+       49 +        MU.get = AsyncMock(return_value=user)                 
+       50  
+       51 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+       52  
+       53 +        result = await find_or_create_social_user("alice@examp
+          +le.com", "Alice", "google:sub1", "google")                    
+       54 +                                                              
+       55 +    assert result is user                                     
+       56 +    MU.get.assert_awaited_once_with("uid-1")                  
+       57 +                                                              
+       58 +                                                              
+       59  @pytest.mark.asyncio
+       48 -async def test_step1_returns_existing_user_via_provider_table(
+          -patch_models):                                                
+       49 -    """Step 1: provider_uid found in UserAuthProvider → return
+          - linked user."""                                              
+       50 -    MockUser, MockProvider = patch_models                     
+       51 -    user = _make_user(user_id="user-abc")                     
+       52 -    entry = _make_provider_entry("user-abc", "google", "google
+          -:sub123")                                                     
+       60 +async def test_step1_skips_inactive_user_continues_lookup():  
+       61 +    """If provider entry references an inactive user, lookup c
+          +ontinues to step 2."""                                        
+       62 +    inactive = _user(is_active=False)                         
+       63 +    entry = _provider_entry()                                 
+       64 +    active_user = _user(user_id="uid-2", firebase_uid="google:
+          +sub1")                                                        
+       65  
+       54 -    MockProvider.find_one = AsyncMock(return_value=entry)     
+       55 -    MockProvider.provider_uid = MagicMock()                   
+       56 -    MockUser.get = AsyncMock(return_value=user)               
+       66 +    with (                                                    
+       67 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+       68 +        patch(f"{_SVC}.User") as MU,                          
+       69 +    ):                                                        
+       70 +        # Step 1: entry found, but user inactive              
+       71 +        MP.find_one = AsyncMock(side_effect=[entry, None])    
+       72 +        MU.get = AsyncMock(return_value=inactive)             
+       73 +        # Step 2: firebase_uid match                          
+       74 +        MU.find_one = AsyncMock(return_value=active_user)     
+       75 +        MP.return_value = MagicMock(save=AsyncMock())         
+       76  
+       58 -    from app.services.social_auth_service import find_or_creat
+          -e_social_user                                                 
+       77 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+       78  
+       60 -    result = await find_or_create_social_user(                
+       61 -        email="alice@example.com",                            
+       62 -        full_name="Alice",                                    
+       63 -        provider_uid="google:sub123",                         
+       64 -        provider="google",                                    
+       65 -    )                                                         
+       79 +        result = await find_or_create_social_user("alice@examp
+          +le.com", "Alice", "google:sub1", "google")                    
+       80  
+       67 -    assert result is user                                     
+       68 -    MockUser.get.assert_awaited_once_with("user-abc")         
+       81 +    assert result is active_user                              
+       82  
+       83  
+       84  @pytest.mark.asyncio
+       72 -async def test_step2_migrates_legacy_firebase_uid(patch_models
+          -):                                                            
+       73 -    """Step 2: no provider entry, but firebase_uid matches → m
+          -igrate + link."""                                             
+       74 -    MockUser, MockProvider = patch_models                     
+       75 -    user = _make_user(firebase_uid="google:sub456")           
+       85 +async def test_step2_migrates_legacy_firebase_uid():          
+       86 +    """No provider entry, but firebase_uid on User matches → m
+          +igrate and return."""                                         
+       87 +    user = _user(firebase_uid="apple:sub2")                   
+       88 +    new_entry = MagicMock(save=AsyncMock())                   
+       89  
+       77 -    MockProvider.find_one = AsyncMock(return_value=None)      
+       78 -    MockProvider.provider_uid = MagicMock()                   
+       79 -    MockProvider.firebase_uid = MagicMock()                   
+       80 -    MockUser.get = AsyncMock(return_value=None)               
+       90 +    with (                                                    
+       91 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+       92 +        patch(f"{_SVC}.User") as MU,                          
+       93 +    ):                                                        
+       94 +        # Step 1: no provider entry; _link_provider find_one a
+          +lso returns None                                              
+       95 +        MP.find_one = AsyncMock(side_effect=[None, None])     
+       96 +        MP.return_value = new_entry                           
+       97 +        # Step 2: firebase_uid match                          
+       98 +        MU.find_one = AsyncMock(return_value=user)            
+       99 +        MU.get = AsyncMock(return_value=None)                 
+      100  
+       82 -    # Second find_one call (firebase_uid lookup)              
+       83 -    MockUser.find_one = AsyncMock(return_value=user)          
+      101 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+      102  
+       85 -    # _link_provider calls UserAuthProvider.find_one again → N
+          -one to trigger insert                                         
+       86 -    new_entry = MagicMock()                                   
+       87 -    new_entry.save = AsyncMock()                              
+       88 -    MockProvider.find_one = AsyncMock(side_effect=[None, None]
+          -)                                                             
+      103 +        result = await find_or_create_social_user("alice@examp
+          +le.com", "Alice", "apple:sub2", "apple")                      
+      104  
+       90 -    with patch("app.services.social_auth_service.UserAuthProvi
+          -der") as MP:                                                  
+      105 +    assert result is user                                     
+      106 +    new_entry.save.assert_awaited_once()                      
+      107 +                                                              
+      108 +                                                              
+      109 +@pytest.mark.asyncio                                          
+      110 +async def test_step3_merges_by_email():                       
+      111 +    """No provider entry, no firebase_uid match, but email exi
+          +sts → link provider."""                                       
+      112 +    user = _user(firebase_uid=None)                           
+      113 +    new_entry = MagicMock(save=AsyncMock())                   
+      114 +                                                              
+      115 +    with (                                                    
+      116 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+      117 +        patch(f"{_SVC}.User") as MU,                          
+      118 +    ):                                                        
+      119 +        # Step 1 find_one → no entry; _link_provider find_one 
+          +→ no existing entry                                           
+      120          MP.find_one = AsyncMock(side_effect=[None, None])
+       92 -        MP.firebase_uid = MagicMock()                         
+       93 -        MP.provider_uid = MagicMock()                         
+       94 -        instance = MagicMock()                                
+       95 -        instance.save = AsyncMock()                           
+       96 -        MP.return_value = instance                            
+      121 +        MP.return_value = new_entry                           
+      122 +        # Step 2: no firebase_uid match; Step 3: email match  
+      123 +        MU.find_one = AsyncMock(side_effect=[None, user])     
+      124 +        MU.get = AsyncMock(return_value=None)                 
+      125  
+       98 -        with patch("app.services.social_auth_service.User") as
+          - MU:                                                          
+       99 -            MU.find_one = AsyncMock(side_effect=[user, None]) 
+      100 -            MU.firebase_uid = MagicMock()                     
+      126 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+      127  
+      102 -            from importlib import reload                      
+      103 -            import app.services.social_auth_service as svc    
+      104 -            reload(svc)                                       
+      128 +        result = await find_or_create_social_user("alice@examp
+          +le.com", None, "google:sub3", "google")                       
+      129  
+      106 -            result = await svc.find_or_create_social_user(    
+      107 -                email="alice@example.com",                    
+      108 -                full_name="Alice",                            
+      109 -                provider_uid="google:sub456",                 
+      110 -                provider="google",                            
+      111 -            )                                                 
+      112 -            assert result is user                             
+      130 +    assert result is user                                     
+      131 +    # firebase_uid set because it was empty                   
+      132 +    assert user.firebase_uid == "google:sub3"                 
+      133 +    user.save.assert_awaited()                                
+      134 +    new_entry.save.assert_awaited_once()                      
+      135  
+      136  
+      137  @pytest.mark.asyncio
+      116 -async def test_step3_merges_by_email(patch_models):           
+      117 -    """Step 3: no provider entry or firebase_uid match, but em
+          -ail exists → merge."""                                        
+      118 -    MockUser, MockProvider = patch_models                     
+      119 -    user = _make_user(firebase_uid=None)                      
+      138 +async def test_step3_does_not_overwrite_existing_firebase_uid(
+          +):                                                            
+      139 +    """Email-matched user with an existing firebase_uid keeps 
+          +it unchanged."""                                              
+      140 +    user = _user(firebase_uid="google:existing")              
+      141 +    new_entry = MagicMock(save=AsyncMock())                   
+      142  
+      143      with (
+      122 -        patch("app.services.social_auth_service.User") as MU, 
+      123 -        patch("app.services.social_auth_service.UserAuthProvid
+          -er") as MP,                                                   
+      144 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+      145 +        patch(f"{_SVC}.User") as MU,                          
+      146      ):
+      125 -        # Step 1: no provider entry                           
+      126 -        MP.find_one = AsyncMock(return_value=None)            
+      127 -        MP.provider_uid = MagicMock()                         
+      128 -        # Step 2: no firebase_uid match                       
+      129 -        # Step 3: email match                                 
+      147 +        MP.find_one = AsyncMock(side_effect=[None, None])     
+      148 +        MP.return_value = new_entry                           
+      149          MU.find_one = AsyncMock(side_effect=[None, user])
+      131 -        MU.firebase_uid = MagicMock()                         
+      150 +        MU.get = AsyncMock(return_value=None)                 
+      151  
+      133 -        instance = MagicMock()                                
+      134 -        instance.save = AsyncMock()                           
+      135 -        MP.return_value = instance                            
+      152 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+      153  
+      137 -        from importlib import reload                          
+      138 -        import app.services.social_auth_service as svc        
+      139 -        reload(svc)                                           
+      154 +        await find_or_create_social_user("alice@example.com", 
+          +None, "apple:new", "apple")                                   
+      155  
+      141 -        result = await svc.find_or_create_social_user(        
+      142 -            email="alice@example.com",                        
+      143 -            full_name=None,                                   
+      144 -            provider_uid="apple:sub789",                      
+      145 -            provider="apple",                                 
+      146 -        )                                                     
+      147 -        assert result is user                                 
+      148 -        user.save.assert_awaited()                            
+      156 +    assert user.firebase_uid == "google:existing"             
+      157 +    user.save.assert_not_awaited()                            
+      158  
+      159  
+      160  @pytest.mark.asyncio
+      152 -async def test_step4_creates_new_user(patch_models):          
+      153 -    """Step 4: no existing match → create new User + provider 
+          -entry."""                                                     
+      161 +async def test_step4_creates_new_user():                      
+      162 +    """No match at any step → new User and provider entry are 
+          +created."""                                                   
+      163 +    new_user = _user(user_id="uid-new")                       
+      164 +    new_entry = MagicMock(save=AsyncMock())                   
+      165 +                                                              
+      166      with (
+      155 -        patch("app.services.social_auth_service.User") as MU, 
+      156 -        patch("app.services.social_auth_service.UserAuthProvid
+          -er") as MP,                                                   
+      167 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+      168 +        patch(f"{_SVC}.User") as MU,                          
+      169      ):
+      158 -        MP.find_one = AsyncMock(return_value=None)            
+      159 -        MP.provider_uid = MagicMock()                         
+      170 +        MP.find_one = AsyncMock(side_effect=[None, None])     
+      171 +        MP.return_value = new_entry                           
+      172          MU.find_one = AsyncMock(return_value=None)
+      161 -        MU.firebase_uid = MagicMock()                         
+      162 -                                                              
+      163 -        new_user = _make_user()                               
+      173 +        MU.get = AsyncMock(return_value=None)                 
+      174          MU.return_value = new_user
+      175  
+      166 -        provider_entry = MagicMock()                          
+      167 -        provider_entry.save = AsyncMock()                     
+      168 -        MP.return_value = provider_entry                      
+      176 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+      177  
+      170 -        from importlib import reload                          
+      171 -        import app.services.social_auth_service as svc        
+      172 -        reload(svc)                                           
+      178 +        result = await find_or_create_social_user("new@example
+          +.com", "New", "google:subnew", "google")                      
+      179  
+      174 -        result = await svc.find_or_create_social_user(        
+      175 -            email="new@example.com",                          
+      176 -            full_name="New User",                             
+      177 -            provider_uid="google:subnew",                     
+      178 -            provider="google",                                
+      179 -        )                                                     
+      180 -        assert result is new_user                             
+      181 -        new_user.save.assert_awaited()                        
+      182 -        provider_entry.save.assert_awaited()                  
+      180 +    assert result is new_user                                 
+      181 +    new_user.save.assert_awaited_once()                       
+      182 +    new_entry.save.assert_awaited_once()                      
+      183  
+      184  
+      185  @pytest.mark.asyncio
+      186 -async def test_step3_does_not_overwrite_existing_firebase_uid(
+          -patch_models):                                                
+      187 -    """When email-matched user already has firebase_uid set, i
+          -t is not overwritten."""                                      
+      188 -    user = _make_user(firebase_uid="google:existing")         
+      186 +async def test_step4_uses_email_prefix_when_name_absent():    
+      187 +    """When full_name is None, username defaults to the email 
+          +local-part."""                                                
+      188 +    new_user = _user(user_id="uid-new")                       
+      189 +    new_entry = MagicMock(save=AsyncMock())                   
+      190  
+      191      with (
+      191 -        patch("app.services.social_auth_service.User") as MU, 
+      192 -        patch("app.services.social_auth_service.UserAuthProvid
+          -er") as MP,                                                   
+      192 +        patch(f"{_SVC}.UserAuthProvider") as MP,              
+      193 +        patch(f"{_SVC}.User") as MU,                          
+      194      ):
+      194 -        MP.find_one = AsyncMock(return_value=None)            
+      195 -        MP.provider_uid = MagicMock()                         
+      196 -        MU.find_one = AsyncMock(side_effect=[None, user])     
+      197 -        MU.firebase_uid = MagicMock()                         
+      195 +        MP.find_one = AsyncMock(side_effect=[None, None])     
+      196 +        MP.return_value = new_entry                           
+      197 +        MU.find_one = AsyncMock(return_value=None)            
+      198 +        MU.get = AsyncMock(return_value=None)                 
+      199  
+      199 -        instance = MagicMock()                                
+      200 -        instance.save = AsyncMock()                           
+      201 -        MP.return_value = instance                            
+      200 +        created_kwargs = {}                                   
+      201  
+      203 -        from importlib import reload                          
+      204 -        import app.services.social_auth_service as svc        
+      205 -        reload(svc)                                           
+      202 +        def capture(**kwargs):                                
+      203 +            created_kwargs.update(kwargs)                     
+      204 +            return new_user                                   
+      205  
+      207 -        await svc.find_or_create_social_user(                 
+      208 -            email="alice@example.com",                        
+      209 -            full_name=None,                                   
+      210 -            provider_uid="apple:newprovider",                 
+      211 -            provider="apple",                                 
+      212 -        )                                                     
+      213 -        # firebase_uid must remain unchanged                  
+      214 -        assert user.firebase_uid == "google:existing"         
+      215 -        user.save.assert_not_awaited()                        
+      206 +        MU.side_effect = lambda **kw: capture(**kw)           
+      207 +                                                              
+      208 +        from app.services.social_auth_service import find_or_c
+          +reate_social_user                                             
+      209 +                                                              
+      210 +        await find_or_create_social_user("bob@example.com", No
+          +ne, "apple:subbob", "apple")                                  
+      211 +                                                              
+      212 +    assert created_kwargs.get("full_name") == "bob"           
