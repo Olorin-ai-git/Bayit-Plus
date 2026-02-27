@@ -12,8 +12,22 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🚀 Promoting iOS Build${NC}"
 
 # Set correct GCP project for Bayit+
-echo -e "${BLUE}📋 Setting GCP project to bayit-plus${NC}"
+echo -e "${BLUE}Setting GCP project to bayit-plus${NC}"
 gcloud config set project bayit-plus
+
+# Fetch App Store Connect API credentials from GCloud
+ASC_KEY_ID=$(gcloud secrets versions access latest --secret="omen-asc-key-id" --project=bayit-plus)
+ASC_ISSUER_ID=$(gcloud secrets versions access latest --secret="omen-asc-issuer-id" --project=bayit-plus)
+ASC_KEY_PATH="$HOME/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+
+if [ ! -f "$ASC_KEY_PATH" ]; then
+  echo -e "${BLUE}API key not found at $ASC_KEY_PATH, fetching from GCloud...${NC}"
+  mkdir -p "$HOME/private_keys"
+  gcloud secrets versions access latest --secret="omen-asc-key-content" --project=bayit-plus > "$ASC_KEY_PATH"
+  chmod 600 "$ASC_KEY_PATH"
+fi
+
+echo -e "${GREEN}App Store Connect credentials resolved (key: $ASC_KEY_ID)${NC}"
 
 # Get current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -82,7 +96,8 @@ echo -e "${GREEN}✅ Archive succeeded${NC}"
 
 # Create ExportOptions.plist
 # Note: uploadSymbols=false because Firebase handles its own symbolication via Crashlytics SDK
-cat > /tmp/iOSExportOptions.plist << 'EOF'
+# Note: heredoc uses unquoted EOF so variables are expanded
+cat > /tmp/iOSExportOptions.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -93,6 +108,9 @@ cat > /tmp/iOSExportOptions.plist << 'EOF'
   <key>signingStyle</key><string>automatic</string>
   <key>uploadSymbols</key><false/>
   <key>uploadBitcode</key><false/>
+  <key>authenticationKeyPath</key><string>${ASC_KEY_PATH}</string>
+  <key>authenticationKeyID</key><string>${ASC_KEY_ID}</string>
+  <key>authenticationKeyIssuerID</key><string>${ASC_ISSUER_ID}</string>
 </dict>
 </plist>
 EOF
@@ -100,11 +118,15 @@ EOF
 echo -e "${BLUE}📤 Uploading to App Store Connect...${NC}"
 
 # Export and upload
+# Note: API key must be passed as CLI args (ExportOptions.plist fields are ignored by xcodebuild)
 xcodebuild -exportArchive \
   -archivePath /tmp/BayitPlusApp.xcarchive \
   -exportOptionsPlist /tmp/iOSExportOptions.plist \
   -exportPath /tmp/BayitPlusExport \
-  -allowProvisioningUpdates
+  -allowProvisioningUpdates \
+  -authenticationKeyPath "$ASC_KEY_PATH" \
+  -authenticationKeyID "$ASC_KEY_ID" \
+  -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
 echo -e "${GREEN}✅ Upload succeeded - Build $NEW_BUILD${NC}"
 echo -e "${BLUE}📱 iOS Build $NEW_BUILD is now processing in App Store Connect${NC}"
