@@ -38,7 +38,7 @@ extension AudiobookDetailView {
                 icon: playing ? "pause.circle.fill" : "play.circle.fill",
                 size: 48
             ) {
-                playAudiobook(audiobook)
+                playAudiobook(audiobook, vm: vm)
             }
 
             transportButton(icon: "goforward.30", size: 28) {
@@ -96,7 +96,7 @@ extension AudiobookDetailView {
                     .padding(.horizontal, DesignTokens.Spacing.lg)
 
                 ForEach(chapters, id: \.stableId) { chapter in
-                    chapterRow(chapter, audiobook: audiobook, isEmbedded: isEmbedded)
+                    chapterRow(chapter, audiobook: audiobook, isEmbedded: isEmbedded, vm: vm)
                 }
             }
         }
@@ -105,7 +105,8 @@ extension AudiobookDetailView {
     func chapterRow(
         _ chapter: AudiobookChapter,
         audiobook: Audiobook,
-        isEmbedded: Bool = false
+        isEmbedded: Bool = false,
+        vm: AudiobookDetailViewModel
     ) -> some View {
         let isActive = isEmbedded
             ? isEmbeddedChapterPlaying(chapter, audiobook: audiobook)
@@ -143,9 +144,9 @@ extension AudiobookDetailView {
                         let generator = UIImpactFeedbackGenerator(style: .light)
                         generator.impactOccurred()
                         if isEmbedded {
-                            playEmbeddedChapter(chapter, audiobook: audiobook)
+                            playEmbeddedChapter(chapter, audiobook: audiobook, vm: vm)
                         } else {
-                            playChapter(chapter, audiobook: audiobook)
+                            playChapter(chapter, audiobook: audiobook, vm: vm)
                         }
                     } label: {
                         Image(systemName: isActive && audioManager.isPlaying
@@ -176,7 +177,7 @@ extension AudiobookDetailView {
         return audioManager.activeContentId == chapterId && audioManager.isActive
     }
 
-    func playAudiobook(_ audiobook: Audiobook) {
+    func playAudiobook(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) {
         if isAudiobookPlaying(audiobook) {
             audioManager.togglePlayPause()
             return
@@ -199,9 +200,10 @@ extension AudiobookDetailView {
         } else {
             audioManager.play(contentId: audiobook.id, contentType: .audiobook)
         }
+        audioManager.setChapters(vm.effectiveChapters, audiobook: audiobook, isEmbedded: vm.hasEmbeddedChapters)
     }
 
-    func playChapter(_ chapter: AudiobookChapter, audiobook: Audiobook) {
+    func playChapter(_ chapter: AudiobookChapter, audiobook: Audiobook, vm: AudiobookDetailViewModel) {
         if isChapterPlaying(chapter) {
             audioManager.togglePlayPause()
             return
@@ -219,6 +221,7 @@ extension AudiobookDetailView {
             contentId: chapter.id ?? audiobook.id,
             contentType: .audiobook
         )
+        audioManager.setChapters(vm.effectiveChapters, audiobook: audiobook, isEmbedded: false)
     }
 
     // MARK: - Skip Controls
@@ -251,9 +254,9 @@ extension AudiobookDetailView {
         vm.selectChapter(next)
 
         if vm.hasEmbeddedChapters {
-            playEmbeddedChapter(next, audiobook: audiobook)
+            playEmbeddedChapter(next, audiobook: audiobook, vm: vm)
         } else {
-            playChapter(next, audiobook: audiobook)
+            playChapter(next, audiobook: audiobook, vm: vm)
         }
     }
 
@@ -267,9 +270,9 @@ extension AudiobookDetailView {
         vm.selectChapter(prev)
 
         if vm.hasEmbeddedChapters {
-            playEmbeddedChapter(prev, audiobook: audiobook)
+            playEmbeddedChapter(prev, audiobook: audiobook, vm: vm)
         } else {
-            playChapter(prev, audiobook: audiobook)
+            playChapter(prev, audiobook: audiobook, vm: vm)
         }
     }
 
@@ -288,8 +291,9 @@ extension AudiobookDetailView {
 
     /// Play an embedded chapter by loading the parent audiobook's stream URL
     /// and seeking to the chapter's start time.
-    func playEmbeddedChapter(_ chapter: AudiobookChapter, audiobook: Audiobook) {
+    func playEmbeddedChapter(_ chapter: AudiobookChapter, audiobook: Audiobook, vm: AudiobookDetailViewModel) {
         guard let start = chapter.startTime else { return }
+        audioManager.setChapters(vm.effectiveChapters, audiobook: audiobook, isEmbedded: true)
 
         // If this audiobook is already loaded, just seek to the chapter
         if audioManager.activeContentId == audiobook.id, audioManager.isActive {

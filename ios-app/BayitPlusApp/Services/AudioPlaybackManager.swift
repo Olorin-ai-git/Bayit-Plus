@@ -20,6 +20,9 @@ final class AudioPlaybackManager {
     var artworkURL: URL?
     var activeContentId: String?
     var activeContentType: ContentType?
+    var activeChapters: [AudiobookChapter] = []
+    var activeAudiobook: Audiobook?
+    var isEmbeddedChapters: Bool = false
 
     var isPlaying: Bool {
         mediaPlayer.state == .playing || mediaPlayer.state == .buffering

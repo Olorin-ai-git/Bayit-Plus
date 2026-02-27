@@ -136,6 +136,7 @@ extension AudioPlaybackManager {
         artworkURL = nil
         activeContentId = nil
         activeContentType = nil
+        clearChapters()
     }
 }
 

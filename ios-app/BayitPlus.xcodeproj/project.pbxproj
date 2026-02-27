@@ -1466,6 +1466,7 @@
 		F44035331DE740DD0F50741A /* TrendingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517FD69843BC2FD763B48804 /* TrendingModels.swift */; };
 		F451AE04CC4F5B8E49CB8BEB /* TelAvivRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F38B2DB3CC85234249A723 /* TelAvivRowView.swift */; };
 		F46AF138770BD19CAC2546A1 /* AudioPlaybackManager+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1BC8BA916E6393A743692 /* AudioPlaybackManager+Controls.swift */; };
+		C41C00400F6542BBA756294B /* AudioPlaybackManager+Chapters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4678A56455964E5AB01C1C0C /* AudioPlaybackManager+Chapters.swift */; };
 		F46E81FDF5D4A9DA5119438E /* TVAboutView+DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EB26C090DC18A0AEED42BE /* TVAboutView+DeviceInfo.swift */; };
 		F4C7782B1A021E28AE5FFFE4 /* BayitDesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 5D75587D39B99FB62A4B9DFB /* BayitDesignSystem */; };
 		F595A4D04185210091BC8B6E /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460CDFBC77E18B9BDBF6F11C /* SettingsRepository.swift */; };
@@ -1862,6 +1863,7 @@
 		42955C7E0E9253DE797EDF03 /* TVVoiceWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVoiceWaveformView.swift; sourceTree = "<group>"; };
 		4299F819816A7236D87A9025 /* PlaylistSmallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistSmallView.swift; sourceTree = "<group>"; };
 		429F74F9EE8A0CD4DA525C57 /* AudioPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlaybackManager.swift; sourceTree = "<group>"; };
+		4678A56455964E5AB01C1C0C /* AudioPlaybackManager+Chapters.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "AudioPlaybackManager+Chapters.swift"; sourceTree = "<group>"; };
 		42D796A4A915B405D624CDFA /* TVQRCodePanel+StatusViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "TVQRCodePanel+StatusViews.swift"; sourceTree = "<group>"; };
 		42DE0F6A1CE79D1FE56AAAF2 /* NotificationSettingsSections.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationSettingsSections.swift; sourceTree = "<group>"; };
 		42F36B12C39543EE87D4FB33 /* TVQuizOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVQuizOverlayView.swift; sourceTree = "<group>"; };
@@ -4687,6 +4689,7 @@
 			children = (
 				FA1BF57C3D64AF9135AED229 /* ARFaceCaptureSession.swift */,
 				429F74F9EE8A0CD4DA525C57 /* AudioPlaybackManager.swift */,
+				4678A56455964E5AB01C1C0C /* AudioPlaybackManager+Chapters.swift */,
 				DD46EF1945697C016F3A692B /* AvatarStateMachine.swift */,
 				249DF2A99EE82078338543D2 /* BiometricAuthService.swift */,
 				75C5A538F971FFC6A49D8CB9 /* CatchUpPreferencesService.swift */,
@@ -6557,6 +6560,7 @@
 				CF44825CA559450F8B5C1915 /* ARFaceCaptureSession+PromptStateMachine.swift in Sources */,
 				13C73F70761B100B64A4E711 /* ARFaceCaptureSession+Simulator.swift in Sources */,
 				F46AF138770BD19CAC2546A1 /* AudioPlaybackManager+Controls.swift in Sources */,
+				C41C00400F6542BBA756294B /* AudioPlaybackManager+Chapters.swift in Sources */,
 				8C1F6BC01C81333D40244465 /* DownloadManager+Delegate.swift in Sources */,
 				9D3D5BB71F40BAC71EF9E4F7 /* DownloadManager+Delegates.swift in Sources */,
 				DC789E66711CB945475F8E94 /* DownloadManager+Tasks.swift in Sources */,

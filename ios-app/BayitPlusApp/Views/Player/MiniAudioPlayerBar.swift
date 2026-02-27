@@ -9,6 +9,7 @@ struct MiniAudioPlayerBar: View {
     @Environment(AudioPlaybackManager.self) var audioManager
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var showSleepTimerPicker = false
+    @State private var showChapterPicker = false
 
     var body: some View {
         if audioManager.isActive, coordinator.fullscreenRoute == nil {
@@ -74,6 +75,18 @@ struct MiniAudioPlayerBar: View {
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $showChapterPicker) {
+            ChapterPickerSheet(
+                chapters: audioManager.activeChapters,
+                currentIndex: audioManager.currentChapterIndex,
+                onSelect: { chapter in
+                    audioManager.playChapter(chapter)
+                    showChapterPicker = false
+                }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
         .background(
             ZStack {
                 Color.black.opacity(0.3)
@@ -112,6 +125,18 @@ struct MiniAudioPlayerBar: View {
             .accessibilityLabel("Close player")
 
             Spacer()
+
+            if audioManager.activeContentType == .audiobook && !audioManager.activeChapters.isEmpty {
+                Button {
+                    showChapterPicker = true
+                } label: {
+                    Image(systemName: "list.bullet")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(DesignTokens.Text.muted)
+                        .frame(width: 30, height: 30)
+                }
+                .accessibilityLabel("Chapters")
+            }
 
             if !isLiveContent {
                 Button {

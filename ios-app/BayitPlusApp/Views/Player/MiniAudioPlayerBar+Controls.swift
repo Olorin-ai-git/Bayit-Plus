@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Extension on MiniAudioPlayerBar providing playback controls,
@@ -51,6 +52,23 @@ extension MiniAudioPlayerBar {
                     .tint(DesignTokens.Primary.default)
                     .frame(width: 44, height: 44)
             } else {
+                if audioManager.activeContentType == .audiobook && !audioManager.activeChapters.isEmpty {
+                    Button {
+                        audioManager.skipToPreviousChapter()
+                    } label: {
+                        Image(systemName: "backward.end.fill")
+                            .font(.system(size: 22, weight: .light))
+                            .foregroundColor(
+                                audioManager.canGoPreviousChapter
+                                    ? DesignTokens.Text.primary
+                                    : DesignTokens.Text.muted
+                            )
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(!audioManager.canGoPreviousChapter)
+                    .accessibilityLabel("Previous chapter")
+                }
+
                 Button {
                     audioManager.skipBackward(seconds: 15)
                 } label: {
@@ -80,6 +98,23 @@ extension MiniAudioPlayerBar {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Skip forward 30 seconds")
+
+                if audioManager.activeContentType == .audiobook && !audioManager.activeChapters.isEmpty {
+                    Button {
+                        audioManager.skipToNextChapter()
+                    } label: {
+                        Image(systemName: "forward.end.fill")
+                            .font(.system(size: 22, weight: .light))
+                            .foregroundColor(
+                                audioManager.canGoNextChapter
+                                    ? DesignTokens.Text.primary
+                                    : DesignTokens.Text.muted
+                            )
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(!audioManager.canGoNextChapter)
+                    .accessibilityLabel("Next chapter")
+                }
             }
         }
         .frame(maxWidth: .infinity)
@@ -111,6 +146,48 @@ extension MiniAudioPlayerBar {
             Image(systemName: audioManager.activeContentType == .radio ? "radio" : "headphones")
                 .font(.system(size: 16))
                 .foregroundColor(DesignTokens.Text.muted)
+        }
+    }
+}
+
+// MARK: - Chapter Picker Sheet
+
+struct ChapterPickerSheet: View {
+    @Environment(LocalizationManager.self) private var localization
+    let chapters: [AudiobookChapter]
+    let currentIndex: Int?
+    let onSelect: (AudiobookChapter) -> Void
+
+    var body: some View {
+        NavigationStack {
+            List(chapters, id: \.stableId) { chapter in
+                let index = chapters.firstIndex { $0.stableId == chapter.stableId }
+                let isActive = index == currentIndex
+                Button {
+                    onSelect(chapter)
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(chapter.title ?? "Chapter \(chapter.chapterNumber ?? 0)")
+                                .font(.system(size: 15, weight: isActive ? .semibold : .regular))
+                                .foregroundColor(isActive ? DesignTokens.Primary.default : DesignTokens.Text.primary)
+                            if let dur = chapter.duration {
+                                Text(dur)
+                                    .font(.system(size: 12))
+                                    .foregroundColor(DesignTokens.Text.muted)
+                            }
+                        }
+                        Spacer()
+                        if isActive {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(DesignTokens.Primary.default)
+                        }
+                    }
+                }
+            }
+            .navigationTitle(localization.t("audiobooks.chapters"))
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
