@@ -23,4 +23,5 @@ enum PauseAskPhase: String {
     case transition
     case characterSpeaking
     case idle
+    case error
 }

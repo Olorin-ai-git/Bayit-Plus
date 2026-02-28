@@ -7,6 +7,21 @@ Data models for the Dynamic Pause & Ask pipeline results.
 from pydantic import BaseModel, Field
 
 
+class PauseAskServiceError(Exception):
+    """Raised when an external service fails during the Pause & Ask pipeline.
+
+    Attributes:
+        failed_service: Identifier of the service that failed
+                        ("anthropic", "fal_ai", "elevenlabs").
+        detail: Human-readable error description.
+    """
+
+    def __init__(self, failed_service: str, detail: str) -> None:
+        self.failed_service = failed_service
+        self.detail = detail
+        super().__init__(f"{failed_service}: {detail}")
+
+
 class PauseAskResult(BaseModel):
     """Complete result of a Pause & Ask exchange."""
 

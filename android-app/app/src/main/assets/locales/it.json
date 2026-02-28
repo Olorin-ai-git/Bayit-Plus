@@ -55,7 +55,8 @@
     "expand": "Espandi",
     "collapse": "Comprimi",
     "upgrade": "Passa a Premium",
-    "skip": "Salta"
+    "skip": "Salta",
+    "tryAgain": "Riprova per favore"
   },
   "auth": {
     "loginRequired": "Accesso richiesto",
@@ -562,6 +563,7 @@
       "processing": "Elaborazione della tua domanda...",
       "askAgain": "Fai un'altra domanda",
       "resume": "Riprendi",
+      "watchAgain": "Guarda di nuovo",
       "placeholder": "Fai la tua domanda...",
       "stages": {
         "polishing": "Sto perfezionando la tua domanda...",
@@ -594,6 +596,13 @@
         "generic2": "{{name}} sta preparando una risposta...",
         "generic3": "Quasi pronto...",
         "generic4": "Solo un momento ancora..."
+      },
+      "error": {
+        "generic": "Qualcosa e andato storto",
+        "anthropic": "Servizio AI non disponibile",
+        "falAi": "Servizio video non disponibile",
+        "elevenlabs": "Servizio vocale non disponibile",
+        "credits": "Crediti insufficienti"
       }
     },
     "interaction": {

@@ -5,7 +5,6 @@ import Foundation
 /// Maps to HTTP semantics while providing Swift-friendly cases
 /// for pattern matching in the UI layer.
 public enum APIError: Error, Sendable, Equatable {
-
     /// 401 Unauthorized -- token missing, expired, or invalid.
     case unauthorized(message: String)
 
@@ -43,28 +42,28 @@ public enum APIError: Error, Sendable, Equatable {
 extension APIError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .unauthorized(let message):
+        case let .unauthorized(message):
             return "Unauthorized: \(message)"
-        case .paymentRequired(let message):
+        case let .paymentRequired(message):
             return "Payment Required: \(message)"
-        case .forbidden(let message):
+        case let .forbidden(message):
             return "Forbidden: \(message)"
-        case .notFound(let message):
+        case let .notFound(message):
             return "Not Found: \(message)"
-        case .rateLimited(let retryAfter):
+        case let .rateLimited(retryAfter):
             if let retryAfter {
                 return "Rate limited. Retry after \(Int(retryAfter))s."
             }
             return "Rate limited."
-        case .serverError(let statusCode, let message):
+        case let .serverError(statusCode, message):
             return "Server error (\(statusCode)): \(message)"
-        case .networkError(let underlying):
+        case let .networkError(underlying):
             return "Network error: \(underlying)"
-        case .decodingError(let underlying):
+        case let .decodingError(underlying):
             return "Decoding error: \(underlying)"
         case .cancelled:
             return "Request cancelled."
-        case .unknown(let statusCode, let message):
+        case let .unknown(statusCode, message):
             if let statusCode {
                 return "Error (\(statusCode)): \(message)"
             }
@@ -76,7 +75,6 @@ extension APIError: LocalizedError {
 // MARK: - Factory
 
 extension APIError {
-
     /// Creates the appropriate `APIError` from an HTTP status code and response body.
     ///
     /// Parses JSON response bodies to extract the `detail` field for user-friendly
@@ -95,7 +93,7 @@ extension APIError {
             return .notFound(message: message)
         case 429:
             return .rateLimited(retryAfter: nil)
-        case 500...599:
+        case 500 ... 599:
             return .serverError(statusCode: statusCode, message: message)
         default:
             return .unknown(statusCode: statusCode, message: message)
@@ -108,9 +106,20 @@ extension APIError {
         guard let body, !body.isEmpty else { return "No response body" }
 
         // Try to parse JSON and extract "detail" field
-        if let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
-           let detail = json["detail"] as? String {
-            return detail
+        if let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] {
+            if let detail = json["detail"] as? String {
+                return detail
+            }
+            // detail may be a dict (e.g. service errors with failed_service);
+            // serialize it back so callers can re-parse structured info.
+            if let detailObj = json["detail"],
+               let detailData = try? JSONSerialization.data(
+                   withJSONObject: detailObj
+               ),
+               let detailStr = String(data: detailData, encoding: .utf8)
+            {
+                return detailStr
+            }
         }
 
         // Fall back to raw string but truncate if too long

@@ -4855,11 +4855,7 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4872,10 +4868,7 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "features": [
@@ -5120,7 +5113,15 @@
       "characterSpeaking": "回答中...",
       "resumeMovie": "映画を再開",
       "askAnother": "もう一つ質問する",
-      "requiresVoiceClone": "この機能を使うにはアバターの声を作成してください"
+      "watchAgain": "もう一度見る",
+      "requiresVoiceClone": "この機能を使うにはアバターの声を作成してください",
+      "error": {
+        "generic": "エラーが発生しました",
+        "anthropic": "AIサービスが利用できません",
+        "falAi": "動画生成サービスが利用できません",
+        "elevenlabs": "音声サービスが利用できません",
+        "credits": "クレジットが不足しています"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "話しかけるキャラクターを選択",

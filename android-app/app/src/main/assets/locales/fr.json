@@ -55,7 +55,8 @@
     "expand": "Développer",
     "collapse": "Réduire",
     "upgrade": "Passer à Premium",
-    "skip": "Passer"
+    "skip": "Passer",
+    "tryAgain": "Veuillez reessayer"
   },
   "auth": {
     "loginRequired": "Connexion requise",
@@ -646,6 +647,7 @@
       "processing": "Traitement de votre question...",
       "askAgain": "Poser une autre question",
       "resume": "Reprendre",
+      "watchAgain": "Revoir",
       "placeholder": "Posez votre question...",
       "stages": {
         "polishing": "Peaufinage de votre question...",
@@ -678,6 +680,13 @@
         "generic2": "{{name}} prepare une reponse...",
         "generic3": "Presque pret...",
         "generic4": "Encore un instant..."
+      },
+      "error": {
+        "generic": "Un probleme est survenu",
+        "anthropic": "Service IA indisponible",
+        "falAi": "Service video indisponible",
+        "elevenlabs": "Service vocal indisponible",
+        "credits": "Credits insuffisants"
       }
     },
     "interaction": {

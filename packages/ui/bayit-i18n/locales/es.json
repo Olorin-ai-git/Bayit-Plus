@@ -3517,7 +3517,8 @@
     "more": "más",
     "minutesShort": "min",
     "notAvailable": "N/D",
-    "showAll": "Show All"
+    "showAll": "Show All",
+    "tryAgain": "Intenta de nuevo"
   },
   "badges": {
     "aiEnhanced": "Mejorado con IA",
@@ -5124,11 +5125,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -5140,10 +5137,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -5323,7 +5317,15 @@
       "characterSpeaking": "Respondiendo...",
       "resumeMovie": "Reanudar pelicula",
       "askAnother": "Hacer otra pregunta",
-      "requiresVoiceClone": "Crea la voz de tu avatar para usar esta funcion"
+      "watchAgain": "Ver de nuevo",
+      "requiresVoiceClone": "Crea la voz de tu avatar para usar esta funcion",
+      "error": {
+        "generic": "Algo salio mal",
+        "anthropic": "Servicio de IA no disponible",
+        "falAi": "Servicio de video no disponible",
+        "elevenlabs": "Servicio de voz no disponible",
+        "credits": "Creditos insuficientes"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "Seleccionar personaje para dirigirse",

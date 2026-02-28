@@ -3702,7 +3702,8 @@
     "yesterday": "Yesterday",
     "more": "more",
     "minutesShort": "min",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "tryAgain": "Please try again"
   },
   "badges": {
     "aiEnhanced": "AI Enhanced",
@@ -5294,11 +5295,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -5310,10 +5307,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -5485,7 +5479,15 @@
       "characterSpeaking": "Answering...",
       "resumeMovie": "Resume Movie",
       "askAnother": "Ask Another Question",
-      "requiresVoiceClone": "Create your avatar voice to use this feature"
+      "watchAgain": "Watch Again",
+      "requiresVoiceClone": "Create your avatar voice to use this feature",
+      "error": {
+        "generic": "Something went wrong",
+        "anthropic": "AI service unavailable",
+        "falAi": "Video generation service unavailable",
+        "elevenlabs": "Voice service unavailable",
+        "credits": "Insufficient credits"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "Select Character to Address",

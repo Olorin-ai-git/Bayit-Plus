@@ -195,6 +195,7 @@ class VODInteractionSession(Document):
     character_description: Optional[str] = Field(None, description="Denormalized character desc")
     character_voice_id: Optional[str] = Field(None, description="Denormalized voice ID")
     character_frame_url: Optional[str] = Field(None, description="Denormalized frame URL")
+    child_first_name: Optional[str] = Field(None, description="Child avatar first name for AI personalization")
     dialogue_exchanges: List[DialogueExchange] = Field(default_factory=list)
     status: str = Field(default="active", description="active, recording, completed")
     created_at: datetime = Field(default_factory=datetime.utcnow)

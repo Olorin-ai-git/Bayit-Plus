@@ -3699,7 +3699,8 @@
     "more": "עוד",
     "minutesShort": "דק'",
     "notAvailable": "לא זמין",
-    "showAll": "Show All"
+    "showAll": "Show All",
+    "tryAgain": "אנא נסה שוב"
   },
   "badges": {
     "aiEnhanced": "משופר בינה מלאכותית",
@@ -5303,11 +5304,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -5319,10 +5316,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",
@@ -5500,7 +5494,15 @@
       "characterSpeaking": "עונה...",
       "resumeMovie": "חזרה לסרט",
       "askAnother": "שאל שאלה נוספת",
-      "requiresVoiceClone": "צור קול לאווטר שלך כדי להשתמש בתכונה זו"
+      "watchAgain": "צפה שוב",
+      "requiresVoiceClone": "צור קול לאווטר שלך כדי להשתמש בתכונה זו",
+      "error": {
+        "generic": "משהו השתבש",
+        "anthropic": "שירות הבינה המלאכותית לא זמין",
+        "falAi": "שירות יצירת הווידאו לא זמין",
+        "elevenlabs": "שירות הקול לא זמין",
+        "credits": "אין מספיק קרדיטים"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "בחר דמות לפנות אליה",

@@ -6309,6 +6309,7 @@
       "processing": "处理中...",
       "askAnother": "再问一个",
       "resumeMovie": "继续",
+      "watchAgain": "再看一次",
       "selectCharacter": "选择角色",
       "noCharacters": "此影片的角色尚未开放",
       "stages": {
@@ -6342,6 +6343,13 @@
         "generic2": "{{name}}正在组织回答...",
         "generic3": "快好了...",
         "generic4": "再等一会儿..."
+      },
+      "error": {
+        "generic": "出了点问题",
+        "anthropic": "AI服务不可用",
+        "falAi": "视频生成服务不可用",
+        "elevenlabs": "语音服务不可用",
+        "credits": "积分不足"
       }
     },
     "sleepTimer": {

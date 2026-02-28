@@ -57,7 +57,8 @@
     "upgrade": "Upgrade to Premium",
     "skip": "Skip",
     "thisContent": "this content",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "tryAgain": "Please try again"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -1096,6 +1097,7 @@
       "processing": "Processing your question...",
       "askAgain": "Ask Another Question",
       "resume": "Resume",
+      "watchAgain": "Watch Again",
       "placeholder": "Ask your question...",
       "stages": {
         "polishing": "Polishing your question...",
@@ -1128,6 +1130,13 @@
         "generic2": "{{name}} is crafting a response...",
         "generic3": "Almost there...",
         "generic4": "Just a moment longer..."
+      },
+      "error": {
+        "generic": "Something went wrong",
+        "anthropic": "AI service unavailable",
+        "falAi": "Video generation service unavailable",
+        "elevenlabs": "Voice service unavailable",
+        "credits": "Insufficient credits"
       }
     },
     "interaction": {

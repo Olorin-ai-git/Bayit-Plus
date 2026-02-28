@@ -3260,7 +3260,8 @@
     "load": "Load",
     "mute": "Mute",
     "showAll": "Show All",
-    "unmute": "Unmute"
+    "unmute": "Unmute",
+    "tryAgain": "请重试"
   },
   "components": {
     "select": {
@@ -4369,17 +4370,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -4391,10 +4383,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -4571,7 +4560,15 @@
       "characterSpeaking": "正在回答...",
       "resumeMovie": "继续播放",
       "askAnother": "再问一个问题",
-      "requiresVoiceClone": "创建你的头像语音以使用此功能"
+      "watchAgain": "再看一次",
+      "requiresVoiceClone": "创建你的头像语音以使用此功能",
+      "error": {
+        "generic": "出了点问题",
+        "anthropic": "AI服务不可用",
+        "falAi": "视频生成服务不可用",
+        "elevenlabs": "语音服务不可用",
+        "credits": "积分不足"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "选择要对话的角色",

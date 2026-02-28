@@ -3178,7 +3178,8 @@
     "load": "Load",
     "mute": "Mute",
     "showAll": "Show All",
-    "unmute": "Unmute"
+    "unmute": "Unmute",
+    "tryAgain": "Veuillez reessayer"
   },
   "content": {
     "play": "Lire",
@@ -4002,10 +4003,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -4198,7 +4196,15 @@
       "characterSpeaking": "En train de repondre...",
       "resumeMovie": "Reprendre le film",
       "askAnother": "Poser une autre question",
-      "requiresVoiceClone": "Creez la voix de votre avatar pour utiliser cette fonctionnalite"
+      "watchAgain": "Revoir",
+      "requiresVoiceClone": "Creez la voix de votre avatar pour utiliser cette fonctionnalite",
+      "error": {
+        "generic": "Un probleme est survenu",
+        "anthropic": "Service IA indisponible",
+        "falAi": "Service video indisponible",
+        "elevenlabs": "Service vocal indisponible",
+        "credits": "Credits insuffisants"
+      }
     },
     "multiCharacter": {
       "selectCharacter": "Selectionner un personnage a interpeller",

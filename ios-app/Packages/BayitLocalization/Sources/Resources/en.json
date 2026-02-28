@@ -6330,6 +6330,7 @@
       "processing": "Processing...",
       "askAnother": "Ask Another",
       "resumeMovie": "Resume",
+      "watchAgain": "Watch Again",
       "selectCharacter": "Select Character",
       "noCharacters": "Characters are not yet available for this movie",
       "stages": {
@@ -6363,6 +6364,13 @@
         "generic2": "{{name}} is crafting a response...",
         "generic3": "Almost there...",
         "generic4": "Just a moment longer..."
+      },
+      "error": {
+        "generic": "Something went wrong",
+        "anthropic": "AI service unavailable",
+        "falAi": "Video generation service unavailable",
+        "elevenlabs": "Voice service unavailable",
+        "credits": "Insufficient credits"
       }
     },
     "premiumRequiredRecording": "Premium subscription required",

@@ -6893,6 +6893,7 @@
       "processing": "処理中...",
       "askAnother": "別の質問",
       "resumeMovie": "再開",
+      "watchAgain": "もう一度見る",
       "selectCharacter": "キャラクターを選択",
       "noCharacters": "この映画のキャラクターはまだご利用いただけません",
       "stages": {
@@ -6926,6 +6927,13 @@
         "generic2": "{{name}}が返答を準備中...",
         "generic3": "もう少しです...",
         "generic4": "あと少しお待ちください..."
+      },
+      "error": {
+        "generic": "エラーが発生しました",
+        "anthropic": "AIサービスが利用できません",
+        "falAi": "動画生成サービスが利用できません",
+        "elevenlabs": "音声サービスが利用できません",
+        "credits": "クレジットが不足しています"
       }
     },
     "sleepTimer": {

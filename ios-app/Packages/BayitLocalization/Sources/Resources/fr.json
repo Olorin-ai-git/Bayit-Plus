@@ -6726,6 +6726,7 @@
       "processing": "Traitement...",
       "askAnother": "Poser une autre question",
       "resumeMovie": "Reprendre",
+      "watchAgain": "Revoir",
       "selectCharacter": "Selectionner un personnage",
       "noCharacters": "Les personnages ne sont pas encore disponibles pour ce film",
       "stages": {
@@ -6759,6 +6760,13 @@
         "generic2": "{{name}} prepare une reponse...",
         "generic3": "Presque pret...",
         "generic4": "Encore un instant..."
+      },
+      "error": {
+        "generic": "Un probleme est survenu",
+        "anthropic": "Service IA indisponible",
+        "falAi": "Service video indisponible",
+        "elevenlabs": "Service vocal indisponible",
+        "credits": "Credits insuffisants"
       }
     },
     "sleepTimer": {

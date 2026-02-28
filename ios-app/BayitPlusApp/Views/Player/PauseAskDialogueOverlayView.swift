@@ -75,6 +75,8 @@
                 videoPlaybackView(isUserPhase: false)
             case .idle:
                 idlePanel
+            case .error:
+                idlePanel
             }
         }
     }

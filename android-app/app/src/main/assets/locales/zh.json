@@ -55,7 +55,8 @@
     "expand": "展开",
     "collapse": "收起",
     "upgrade": "升级到高级版",
-    "skip": "跳过"
+    "skip": "跳过",
+    "tryAgain": "请重试"
   },
   "auth": {
     "loginRequired": "需要登录",
@@ -1044,6 +1045,7 @@
       "processing": "\u6b63\u5728\u5904\u7406\u4f60\u7684\u95ee\u9898...",
       "askAgain": "\u518d\u95ee\u4e00\u4e2a\u95ee\u9898",
       "resume": "\u7ee7\u7eed",
+      "watchAgain": "\u518d\u770b\u4e00\u6b21",
       "placeholder": "\u63d0\u51fa\u4f60\u7684\u95ee\u9898...",
       "stages": {
         "polishing": "正在润色你的问题...",
@@ -1076,6 +1078,13 @@
         "generic2": "{{name}}正在组织回答...",
         "generic3": "快好了...",
         "generic4": "再等一会儿..."
+      },
+      "error": {
+        "generic": "出了点问题",
+        "anthropic": "AI服务不可用",
+        "falAi": "视频生成服务不可用",
+        "elevenlabs": "语音服务不可用",
+        "credits": "积分不足"
       }
     },
     "interaction": {

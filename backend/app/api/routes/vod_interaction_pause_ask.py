@@ -18,7 +18,10 @@ from app.models.child_avatar import ChildAvatar
 from app.models.user import User
 from app.models.vod_interaction import VODInteractionSession
 from app.services.beta.credit_service import credit_service
-from app.services.vod_interaction.pause_ask_models import PauseAskResult
+from app.services.vod_interaction.pause_ask_models import (
+    PauseAskResult,
+    PauseAskServiceError,
+)
 from app.services.vod_interaction.pause_ask_orchestrator import (
     pause_ask_orchestrator,
 )
@@ -141,6 +144,22 @@ async def pause_ask_exchange(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(ve),
+        )
+    except PauseAskServiceError as svc_err:
+        logger.error(
+            "Pause & Ask service failure",
+            extra={
+                "session_id": session_id,
+                "failed_service": svc_err.failed_service,
+                "detail": svc_err.detail,
+            },
+        )
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail={
+                "message": svc_err.detail,
+                "failed_service": svc_err.failed_service,
+            },
         )
     except Exception as exc:
         logger.error(

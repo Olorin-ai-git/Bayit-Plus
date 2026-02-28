@@ -55,7 +55,8 @@
     "collapse": "Contraer",
     "skip": "Omitir",
     "thisContent": "este contenido",
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "tryAgain": "Intenta de nuevo"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -1015,6 +1016,7 @@
       "processing": "Procesando tu pregunta...",
       "askAgain": "Hacer otra pregunta",
       "resume": "Reanudar",
+      "watchAgain": "Ver de nuevo",
       "placeholder": "Haz tu pregunta...",
       "stages": {
         "polishing": "Puliendo tu pregunta...",
@@ -1047,6 +1049,13 @@
         "generic2": "{{name}} esta elaborando una respuesta...",
         "generic3": "Casi listo...",
         "generic4": "Solo un momento mas..."
+      },
+      "error": {
+        "generic": "Algo salio mal",
+        "anthropic": "Servicio de IA no disponible",
+        "falAi": "Servicio de video no disponible",
+        "elevenlabs": "Servicio de voz no disponible",
+        "credits": "Creditos insuficientes"
       }
     },
     "interaction": {

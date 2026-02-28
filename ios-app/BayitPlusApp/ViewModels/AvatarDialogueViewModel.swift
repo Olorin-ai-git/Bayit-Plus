@@ -18,6 +18,8 @@ final class AvatarDialogueViewModel {
     var isActive = false
     var sendingStatus = ""
     var sendingProgressTask: Task<Void, Never>?
+    var lastError: String?
+    var lastFailedService: String?
 
     // MARK: - Multi-Character State (Phase 3)
 

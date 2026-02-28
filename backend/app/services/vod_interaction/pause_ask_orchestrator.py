@@ -28,7 +28,10 @@ from app.services.vod_interaction.interaction_service import (
     BLOCKED_RESPONSE_PATTERNS,
     SAFE_FALLBACK_RESPONSE,
 )
-from app.services.vod_interaction.pause_ask_models import PauseAskResult
+from app.services.vod_interaction.pause_ask_models import (
+    PauseAskResult,
+    PauseAskServiceError,
+)
 from app.services.vod_interaction.text_polisher import text_polisher
 from app.services.vod_interaction.user_avatar_animator import (
     user_avatar_animator,
@@ -66,12 +69,16 @@ class PauseAskOrchestrator:
         )
 
         # 3. PARALLEL: user avatar animation + character AI response
-        #    User animation is skipped when voice clone is unavailable.
+        #    Uses personal voice clone if ready, otherwise falls back to the
+        #    configured default kid voice (MOVIE_INTERACTION_DEFAULT_VOICE_MALE).
         scene_context = session.scene_context or ""
         char_desc = session.character_description or ""
 
-        if avatar.has_voice_clone:
-            user_anim_coro = self._animate_user_safe(polished_text, avatar)
+        fallback_voice = settings.MOVIE_INTERACTION_DEFAULT_VOICE_MALE
+        has_face = bool(avatar.creatify_avatar_image_url or avatar.primary_avatar_gcs_path)
+        if avatar.has_voice_clone or (has_face and fallback_voice):
+            fb = "" if avatar.has_voice_clone else fallback_voice
+            user_anim_coro = self._animate_user_safe(polished_text, avatar, fb)
         else:
             user_anim_coro = self._no_animation()
         char_response_coro = character_ai_service.generate_response(
@@ -81,11 +88,17 @@ class PauseAskOrchestrator:
             conversation_history=session.dialogue_exchanges,
             character_description=char_desc,
             movie_context=scene_context,
+            child_name=session.child_first_name or "",
         )
 
-        user_animated, character_response = await asyncio.gather(
-            user_anim_coro, char_response_coro,
-        )
+        try:
+            user_animated, character_response = await asyncio.gather(
+                user_anim_coro, char_response_coro,
+            )
+        except PauseAskServiceError:
+            raise
+        except Exception as exc:
+            raise self._classify_error(exc, "anthropic", session_id) from exc
 
         # 4. Content moderation
         response_text = character_response.text
@@ -104,12 +117,15 @@ class PauseAskOrchestrator:
             session.character_voice_id
             or settings.CHARACTER_VOICE_DEFAULT
         )
-        char_animated = await character_animator_service.animate_character_response(
-            character_name=session.character_name,
-            dialogue_text=response_text,
-            character_frame_url=session.character_frame_url,
-            voice_id=voice_id,
-        )
+        try:
+            char_animated = await character_animator_service.animate_character_response(
+                character_name=session.character_name,
+                dialogue_text=response_text,
+                character_frame_url=session.character_frame_url,
+                voice_id=voice_id,
+            )
+        except Exception as exc:
+            raise self._classify_error(exc, "fal_ai", session_id) from exc
 
         # 6. Save exchanges to session
         user_exchange = DialogueExchange(
@@ -173,12 +189,12 @@ class PauseAskOrchestrator:
         return None
 
     async def _animate_user_safe(
-        self, polished_text: str, avatar: ChildAvatar,
+        self, polished_text: str, avatar: ChildAvatar, fallback_voice_id: str = "",
     ) -> Optional[AnimatedResponse]:
         """Animate user avatar with graceful fallback on failure."""
         try:
             return await user_avatar_animator.animate_user_avatar(
-                polished_text, avatar,
+                polished_text, avatar, fallback_voice_id,
             )
         except Exception as exc:
             logger.warning(
@@ -189,6 +205,94 @@ class PauseAskOrchestrator:
                 },
             )
             return None
+
+    def _classify_error(
+        self, exc: Exception, default_service: str, session_id: str,
+    ) -> PauseAskServiceError:
+        """Classify an exception to identify which external service failed."""
+        import anthropic
+        import httpx
+
+        error_str = str(exc)
+        error_lower = error_str.lower()
+
+        # Anthropic SDK errors
+        if isinstance(exc, anthropic.APIError):
+            status = getattr(exc, "status_code", 0)
+            if status == 401 or "authentication" in error_lower:
+                detail = "Anthropic API authentication failed"
+            elif status == 429 or "rate" in error_lower:
+                detail = "Anthropic API rate limit exceeded"
+            elif status == 402 or "insufficient" in error_lower or "billing" in error_lower:
+                detail = "Anthropic API insufficient funds"
+            else:
+                detail = f"Anthropic API error ({status})"
+            logger.error(
+                "Pause & Ask Anthropic failure",
+                extra={"session_id": session_id, "status": status, "error": error_str},
+            )
+            return PauseAskServiceError(failed_service="anthropic", detail=detail)
+
+        # httpx errors (fal.ai / ElevenLabs)
+        if isinstance(exc, httpx.HTTPStatusError):
+            status = exc.response.status_code
+            service = self._identify_http_service(str(exc.request.url))
+            if status == 401 or status == 403:
+                detail = f"{service} authentication failed"
+            elif status == 402 or status == 429:
+                detail = f"{service} quota or rate limit exceeded"
+            else:
+                detail = f"{service} error ({status})"
+            logger.error(
+                "Pause & Ask HTTP service failure",
+                extra={
+                    "session_id": session_id,
+                    "service": service,
+                    "status": status,
+                    "error": error_str,
+                },
+            )
+            return PauseAskServiceError(failed_service=service, detail=detail)
+
+        # Timeout / connection errors
+        if isinstance(exc, (httpx.TimeoutException, TimeoutError)):
+            service = default_service
+            logger.error(
+                "Pause & Ask timeout",
+                extra={"session_id": session_id, "service": service, "error": error_str},
+            )
+            return PauseAskServiceError(
+                failed_service=service, detail=f"{service} request timed out",
+            )
+
+        # RuntimeError from fal_aurora_client (job failed/cancelled)
+        if isinstance(exc, RuntimeError) and "aurora" in error_lower:
+            logger.error(
+                "Pause & Ask fal.ai Aurora job failure",
+                extra={"session_id": session_id, "error": error_str},
+            )
+            return PauseAskServiceError(
+                failed_service="fal_ai", detail=f"fal.ai lip-sync failed: {error_str}",
+            )
+
+        logger.error(
+            "Pause & Ask unclassified failure",
+            extra={"session_id": session_id, "service": default_service, "error": error_str},
+        )
+        return PauseAskServiceError(
+            failed_service=default_service, detail=error_str[:200],
+        )
+
+    @staticmethod
+    def _identify_http_service(url: str) -> str:
+        """Identify which service an HTTP URL belongs to."""
+        if "fal.run" in url or "fal.ai" in url or "queue.fal" in url:
+            return "fal_ai"
+        if "elevenlabs" in url:
+            return "elevenlabs"
+        if "anthropic" in url:
+            return "anthropic"
+        return "external_service"
 
 
 pause_ask_orchestrator = PauseAskOrchestrator()

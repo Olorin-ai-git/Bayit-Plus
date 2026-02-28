@@ -1231,6 +1231,7 @@
       "processing": "質問を処理中...",
       "askAgain": "もう一度質問",
       "resume": "再開",
+      "watchAgain": "もう一度見る",
       "placeholder": "質問を入力してください...",
       "stages": {
         "polishing": "質問を磨いています...",
@@ -1263,6 +1264,13 @@
         "generic2": "{{name}}が返答を準備中...",
         "generic3": "もう少しです...",
         "generic4": "あと少しお待ちください..."
+      },
+      "error": {
+        "generic": "エラーが発生しました",
+        "anthropic": "AIサービスが利用できません",
+        "falAi": "動画生成サービスが利用できません",
+        "elevenlabs": "音声サービスが利用できません",
+        "credits": "クレジットが不足しています"
       }
     },
     "interaction": {

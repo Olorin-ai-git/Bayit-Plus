@@ -1,6 +1,5 @@
 #if os(tvOS)
     import AVFoundation
-    import AVKit
     import BayitDesignSystem
     import BayitLocalization
     import BayitMedia
@@ -45,7 +44,7 @@
                     }
                 }
                 if isCharacterVideoReady, let player = characterPlayer {
-                    VideoPlayer(player: player).scaledToFill()
+                    FillVideoLayer(player: player)
                 }
             }
             .frame(width: circleSize, height: circleSize)

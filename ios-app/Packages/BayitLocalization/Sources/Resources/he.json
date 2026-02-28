@@ -6394,6 +6394,7 @@
       "processing": "מעבד...",
       "askAnother": "שאל שוב",
       "resumeMovie": "חזור לסרט",
+      "watchAgain": "צפה שוב",
       "selectCharacter": "בחר דמות",
       "noCharacters": "הדמויות לסרט זה טרם זמינות",
       "stages": {
@@ -6427,6 +6428,13 @@
         "generic2": "{{name}} מנסח תשובה...",
         "generic3": "כמעט שם...",
         "generic4": "רק עוד רגע..."
+      },
+      "error": {
+        "generic": "משהו השתבש",
+        "anthropic": "שירות הבינה המלאכותית לא זמין",
+        "falAi": "שירות יצירת הווידאו לא זמין",
+        "elevenlabs": "שירות הקול לא זמין",
+        "credits": "אין מספיק קרדיטים"
       }
     },
     "premiumRequiredRecording": "נדרש מנוי פרימיום",

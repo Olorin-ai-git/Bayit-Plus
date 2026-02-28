@@ -88,6 +88,7 @@ class VODInteractionService:
                 scene_context=moment.scene_context,
                 character_voice_id=moment.voice_id,
                 character_frame_url=moment.character_frame_url,
+                child_first_name=avatar.child_first_name,
                 status="active"
             )
             await session.save()
@@ -175,6 +176,7 @@ class VODInteractionService:
                 character_description=char_desc,
                 character_voice_id=voice_id,
                 character_frame_url=frame_url,
+                child_first_name=avatar.child_first_name,
                 status="active"
             )
             await session.save()
@@ -251,7 +253,8 @@ class VODInteractionService:
                 user_message=user_message,
                 conversation_history=session.dialogue_exchanges,
                 character_description=character_description,
-                movie_context=scene_context
+                movie_context=scene_context,
+                child_name=session.child_first_name or "",
             )
 
             if BLOCKED_RESPONSE_PATTERNS.search(character_response.text):

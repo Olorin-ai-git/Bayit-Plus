@@ -6567,6 +6567,7 @@
       "processing": "Elaborazione...",
       "askAnother": "Chiedi ancora",
       "resumeMovie": "Riprendi",
+      "watchAgain": "Guarda di nuovo",
       "selectCharacter": "Seleziona personaggio",
       "noCharacters": "I personaggi non sono ancora disponibili per questo film",
       "stages": {
@@ -6600,6 +6601,13 @@
         "generic2": "{{name}} sta preparando una risposta...",
         "generic3": "Quasi pronto...",
         "generic4": "Solo un momento ancora..."
+      },
+      "error": {
+        "generic": "Qualcosa e andato storto",
+        "anthropic": "Servizio AI non disponibile",
+        "falAi": "Servizio video non disponibile",
+        "elevenlabs": "Servizio vocale non disponibile",
+        "credits": "Crediti insufficienti"
       }
     },
     "sleepTimer": {

@@ -6316,6 +6316,7 @@
       "processing": "प्रसंस्करण...",
       "askAnother": "और पूछें",
       "resumeMovie": "जारी रखें",
+      "watchAgain": "फिर से देखें",
       "selectCharacter": "पात्र चुनें",
       "noCharacters": "इस फिल्म के पात्र अभी उपलब्ध नहीं हैं",
       "stages": {
@@ -6349,6 +6350,13 @@
         "generic2": "{{name}} जवाब तैयार कर रहा है...",
         "generic3": "लगभग हो गया...",
         "generic4": "बस एक पल और..."
+      },
+      "error": {
+        "generic": "कुछ गलत हो गया",
+        "anthropic": "AI सेवा उपलब्ध नहीं है",
+        "falAi": "वीडियो सेवा उपलब्ध नहीं है",
+        "elevenlabs": "आवाज़ सेवा उपलब्ध नहीं है",
+        "credits": "अपर्याप्त क्रेडिट"
       }
     },
     "sleepTimer": {

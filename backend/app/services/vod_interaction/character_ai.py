@@ -24,7 +24,8 @@ class CharacterAIService:
         user_message: str,
         conversation_history: List[DialogueExchange],
         character_description: str = "",
-        movie_context: str = ""
+        movie_context: str = "",
+        child_name: str = ""
     ) -> CharacterResponse:
         """
         Generate in-character response to user message
@@ -46,7 +47,8 @@ class CharacterAIService:
                 scene_context,
                 conversation_history,
                 character_description=character_description,
-                movie_context=movie_context
+                movie_context=movie_context,
+                child_name=child_name,
             )
 
             logger.info(
@@ -95,7 +97,8 @@ class CharacterAIService:
         scene_context: str,
         history: List[DialogueExchange],
         character_description: str = "",
-        movie_context: str = ""
+        movie_context: str = "",
+        child_name: str = ""
     ) -> str:
         """Build system prompt for character dialogue generation.
 
@@ -103,7 +106,7 @@ class CharacterAIService:
         to prevent prompt injection.
         """
 
-        history_text = self._format_history(history)
+        history_text = self._format_history(history, child_name=child_name)
 
         description_block = ""
         if character_description:
@@ -113,14 +116,21 @@ class CharacterAIService:
         if movie_context:
             context_block = f"\nMovie Context: {movie_context}"
 
+        child_intro = (
+            f"A child named {child_name} is talking to you."
+            if child_name
+            else "A child's avatar is talking to you."
+        )
+
         return f"""You are {character_name} from this scene:
 
 Scene Context: {scene_context}{description_block}{context_block}
 
-A child's avatar is talking to you. Respond in character as {character_name} would, staying true to:
+{child_intro} Respond in character as {character_name} would, staying true to:
 - Your personality, values, and speech patterns
 - The current scene's situation and context
 - Speaking naturally and warmly to a child (simple Hebrew or English)
+- Address the child by their name when it feels natural
 - Being educational and encouraging when appropriate
 - Keeping responses under 2 sentences for natural speech
 - Never breaking character or acknowledging you are an AI
@@ -131,14 +141,17 @@ Previous conversation:
 
 Respond as {character_name}:"""
 
-    def _format_history(self, history: List[DialogueExchange]) -> str:
+    def _format_history(
+        self, history: List[DialogueExchange], child_name: str = ""
+    ) -> str:
         """Format conversation history for prompt context"""
         if not history:
             return "(This is the first exchange)"
 
+        child_label = child_name if child_name else "Child"
         formatted = []
         for exchange in history[-4:]:
-            speaker = "Child" if exchange.speaker == "user" else exchange.speaker
+            speaker = child_label if exchange.speaker == "user" else exchange.speaker
             formatted.append(f"{speaker}: {exchange.message_text}")
 
         return "\n".join(formatted)

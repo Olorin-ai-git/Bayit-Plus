@@ -6414,6 +6414,7 @@
       "processing": "Procesando...",
       "askAnother": "Preguntar otra vez",
       "resumeMovie": "Continuar",
+      "watchAgain": "Ver de nuevo",
       "selectCharacter": "Seleccionar personaje",
       "noCharacters": "Los personajes aún no están disponibles para esta película",
       "stages": {
@@ -6447,6 +6448,13 @@
         "generic2": "{{name}} esta elaborando una respuesta...",
         "generic3": "Casi listo...",
         "generic4": "Solo un momento mas..."
+      },
+      "error": {
+        "generic": "Algo salio mal",
+        "anthropic": "Servicio de IA no disponible",
+        "falAi": "Servicio de video no disponible",
+        "elevenlabs": "Servicio de voz no disponible",
+        "credits": "Creditos insuficientes"
       }
     },
     "premiumRequiredRecording": "Se requiere suscripcion premium",
