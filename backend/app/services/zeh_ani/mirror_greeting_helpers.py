@@ -110,7 +110,7 @@ async def generate_greeting_lipsync(
     if not audio_path:
         return None
 
-    if not avatar.creatify_avatar_image_url:
+    if not avatar.primary_avatar_gcs_path:
         return None
 
     from app.core.creatify_client import creatify_client
