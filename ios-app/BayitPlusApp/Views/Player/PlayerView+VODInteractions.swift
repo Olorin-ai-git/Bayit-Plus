@@ -21,9 +21,9 @@
                     avatarImageUrl: imgUrl,
                     characterVideoUrl: moment.characterResponseVideoUrl,
                     characterImageUrl: moment.characterFrameUrl,
-                    onDismiss: { restoreVolume(); vm.dismiss() }
+                    onDismiss: { viewModel.player.avPlayer.play(); vm.dismiss() }
                 )
-                .onAppear { duckVolume() }
+                .onAppear { viewModel.player.avPlayer.pause() }
             }
 
             if showNoAvatarWarning {

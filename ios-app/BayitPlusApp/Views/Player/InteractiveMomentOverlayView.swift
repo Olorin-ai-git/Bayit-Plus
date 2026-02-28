@@ -6,8 +6,8 @@
     import SwiftUI
 
     /// Dual-circle overlay for interactive moments: child avatar (left) and
-    /// movie character (right). The movie never pauses -- volume ducks while
-    /// the conversation plays, then restores on dismiss.
+    /// movie character (right). The movie pauses while the conversation plays
+    /// and resumes automatically on dismiss.
     ///
     /// Circle display views are in `InteractiveMomentDisplay.swift`.
     /// Player setup and lifecycle logic are in `InteractiveMomentActions.swift`.

@@ -79,9 +79,9 @@ extension TVPlayerView {
                 avatarImageUrl: imgUrl,
                 characterVideoUrl: moment.characterResponseVideoUrl,
                 characterImageUrl: moment.characterFrameUrl,
-                onDismiss: { mediaPlayer.avPlayer.play(); restoreVolume(); vm.dismiss() }
+                onDismiss: { mediaPlayer.avPlayer.play(); vm.dismiss() }
             )
-            .onAppear { mediaPlayer.avPlayer.pause(); duckVolume() }
+            .onAppear { mediaPlayer.avPlayer.pause() }
         }
 
         if state.showNoAvatarWarning {
