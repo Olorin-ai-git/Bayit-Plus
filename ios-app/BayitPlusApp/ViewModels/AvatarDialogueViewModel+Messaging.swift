@@ -7,7 +7,12 @@ extension AvatarDialogueViewModel {
     func sendMessage(_ text: String) async -> CharacterResponsePayload? {
         guard let sessionId, isActive else { return nil }
         isSending = true
-        defer { isSending = false }
+        startSendingProgress()
+        defer {
+            isSending = false
+            sendingProgressTask?.cancel()
+            sendingStatus = ""
+        }
 
         do {
             let response = try await repository.sendInteractionMessage(
@@ -55,7 +60,12 @@ extension AvatarDialogueViewModel {
     ) async -> PauseAskResponse? {
         guard let sessionId, isActive else { return nil }
         isSending = true
-        defer { isSending = false }
+        startSendingProgress()
+        defer {
+            isSending = false
+            sendingProgressTask?.cancel()
+            sendingStatus = ""
+        }
 
         do {
             let response = try await repository.sendPauseAskMessage(

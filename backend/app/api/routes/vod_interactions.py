@@ -4,7 +4,7 @@ VOD Interaction API Routes
 User-facing endpoints for VOD avatar interactions with movie characters.
 """
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/vod-interactions", tags=["VOD Interactions"])
 
 class StartInteractionRequest(BaseModel):
     """Request to start an interaction session at a curated moment"""
-    profile_id: str = Field(..., description="Child profile ID")
+    profile_id: Optional[str] = Field(None, description="Child profile ID (auto-resolved from auth user if omitted)")
     avatar_id: str = Field(..., description="Avatar mesh ID")
     content_id: str = Field(..., description="Content ID")
     timestamp: float = Field(..., description="Timestamp of interactive moment")
@@ -34,11 +34,18 @@ class StartInteractionRequest(BaseModel):
 
 class StartFreeInteractionRequest(BaseModel):
     """Request to start a free-form dialogue session with a character"""
-    profile_id: str = Field(..., description="Child profile ID")
+    profile_id: Optional[str] = Field(None, description="Child profile ID (auto-resolved from auth user if omitted)")
     avatar_id: str = Field(..., description="Avatar mesh ID")
     content_id: str = Field(..., description="Content ID")
     character_name: str = Field(..., description="Character to talk to")
     current_timestamp: float = Field(..., description="Current playback position")
+
+
+class SessionCreatedResponse(BaseModel):
+    """Thin response for session creation — avoids _id serialization issues."""
+    id: str
+    character_name: str
+    status: str
 
 
 class UserMessageRequest(BaseModel):
@@ -117,7 +124,7 @@ async def get_interactive_characters(
         )
 
 
-@router.post("/sessions/start-free", response_model=VODInteractionSession)
+@router.post("/sessions/start-free", response_model=SessionCreatedResponse)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_free_interaction_session(
     request: Request,
@@ -136,16 +143,21 @@ async def start_free_interaction_session(
         Created interaction session
     """
     try:
-        profile = await Profile.get(body.profile_id)
-        if not profile or profile.user_id != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Profile not owned by current user"
-            )
+        if body.profile_id:
+            profile = await Profile.get(body.profile_id)
+            if not profile or profile.user_id != str(current_user.id):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Profile not owned by current user"
+                )
+            resolved_profile_id = body.profile_id
+        else:
+            profile = await Profile.get_or_create_active_profile(current_user, logger)
+            resolved_profile_id = str(profile.id)
 
         session = await vod_interaction_service.start_free_interaction_session(
             user_id=str(current_user.id),
-            profile_id=body.profile_id,
+            profile_id=resolved_profile_id,
             avatar_id=body.avatar_id,
             content_id=body.content_id,
             character_name=body.character_name,
@@ -161,7 +173,11 @@ async def start_free_interaction_session(
             }
         )
 
-        return session
+        return SessionCreatedResponse(
+            id=str(session.id),
+            character_name=session.character_name,
+            status=session.status,
+        )
 
     except HTTPException:
         raise
@@ -185,7 +201,7 @@ async def start_free_interaction_session(
         )
 
 
-@router.post("/sessions/start", response_model=VODInteractionSession)
+@router.post("/sessions/start", response_model=SessionCreatedResponse)
 @limiter.limit(RATE_LIMITS.get("vod_interaction_session_start", "10/minute"))
 async def start_interaction_session(
     request: Request,
@@ -203,16 +219,21 @@ async def start_interaction_session(
         Created interaction session
     """
     try:
-        profile = await Profile.get(body.profile_id)
-        if not profile or profile.user_id != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Profile not owned by current user"
-            )
+        if body.profile_id:
+            profile = await Profile.get(body.profile_id)
+            if not profile or profile.user_id != str(current_user.id):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Profile not owned by current user"
+                )
+            resolved_profile_id = body.profile_id
+        else:
+            profile = await Profile.get_or_create_active_profile(current_user, logger)
+            resolved_profile_id = str(profile.id)
 
         session = await vod_interaction_service.start_interaction_session(
             user_id=str(current_user.id),
-            profile_id=body.profile_id,
+            profile_id=resolved_profile_id,
             avatar_id=body.avatar_id,
             content_id=body.content_id,
             moment_timestamp=body.timestamp
@@ -227,7 +248,11 @@ async def start_interaction_session(
             }
         )
 
-        return session
+        return SessionCreatedResponse(
+            id=str(session.id),
+            character_name=session.character_name,
+            status=session.status,
+        )
 
     except HTTPException:
         raise

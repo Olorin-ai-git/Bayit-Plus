@@ -26,7 +26,6 @@ final class TVPlayerStateContainer {
     var dialogueVM: AvatarDialogueViewModel?
     var voiceService: TVVoiceInteractionService?
     var showCharacterSelection = false
-    var showDialogueOverlay = false
 
     // MARK: - Pause & Ask
 

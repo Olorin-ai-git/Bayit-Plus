@@ -95,12 +95,10 @@
         }
 
         func startDialogueFlow(with character: ContentCharacter) async {
-            guard let profileId = authManager.activeProfile?.id,
-                  let avatarId = resolvedAvatarId else { return }
+            guard let avatarId = resolvedAvatarId else { return }
 
             await dialogueVM?.startSession(
                 contentId: contentId,
-                profileId: profileId,
                 avatarId: avatarId,
                 character: character,
                 currentTimestamp: viewModel.player.currentTime

@@ -3,30 +3,12 @@ import BayitCore
 import BayitMedia
 import SwiftUI
 
-/// Interactive feature overlays: dialogue, pause-and-ask, interactive moments,
+/// Interactive feature overlays: pause-and-ask, interactive moments,
 /// shared interactions, and volume ducking helpers.
+/// Free-form dialogue is handled inline by TVCharacterDialogueFlowView
+/// within the showCharacterSelection fullScreenCover.
 extension TVPlayerView {
-    // MARK: - Free-Form Dialogue Overlay
-
-    @ViewBuilder
-    var dialogueOverlay: some View {
-        if state.showDialogueOverlay,
-           let vm = state.dialogueVM,
-           let character = vm.selectedCharacter,
-           let imgUrl = state.avatarImageUrl
-        {
-            TVAvatarDialogueOverlayView(
-                avatarImageUrl: imgUrl,
-                character: character,
-                viewModel: vm,
-                voiceService: state.voiceService,
-                avatarPlacement: state.interactionVM?.activeMoment?.avatarPlacement,
-                onDismiss: {
-                    Task { await dismissDialogue() }
-                }
-            )
-        }
-    }
+    // MARK: - Free-Form Dialogue Entry
 
     func openCharacterSelection() async {
         if state.dialogueVM == nil {
@@ -35,28 +17,10 @@ extension TVPlayerView {
             )
         }
         await state.dialogueVM?.loadCharacters(contentId: contentId)
-        state.showCharacterSelection = true
-    }
-
-    func startDialogue(with character: ContentCharacter) async {
-        guard let profileId = authManager.activeProfile?.id,
-              let avatarId = state.resolvedAvatarId else { return }
-
-        await state.dialogueVM?.startSession(
-            contentId: contentId,
-            profileId: profileId,
-            avatarId: avatarId,
-            character: character,
-            currentTimestamp: mediaPlayer.currentTime
-        )
+        mediaPlayer.avPlayer.pause()
         duckVolume()
-        state.showDialogueOverlay = true
-    }
-
-    func dismissDialogue() async {
-        restoreVolume()
-        state.showDialogueOverlay = false
-        await state.dialogueVM?.endSession()
+        state.showControlButtons = false
+        state.showCharacterSelection = true
     }
 
     // MARK: - Pause & Ask Overlay
@@ -91,12 +55,13 @@ extension TVPlayerView {
         }
         await state.dialogueVM?.loadCharacters(contentId: contentId)
         mediaPlayer.avPlayer.pause()
+        state.showControlButtons = false
         state.showPauseAskOverlay = true
     }
 
     func dismissPauseAsk() async {
-        mediaPlayer.avPlayer.play()
         state.showPauseAskOverlay = false
+        mediaPlayer.avPlayer.play()
         await state.dialogueVM?.endSession()
     }
 
@@ -114,9 +79,9 @@ extension TVPlayerView {
                 avatarImageUrl: imgUrl,
                 characterVideoUrl: moment.characterResponseVideoUrl,
                 characterImageUrl: moment.characterFrameUrl,
-                onDismiss: { restoreVolume(); vm.dismiss() }
+                onDismiss: { mediaPlayer.avPlayer.play(); restoreVolume(); vm.dismiss() }
             )
-            .onAppear { duckVolume() }
+            .onAppear { mediaPlayer.avPlayer.pause(); duckVolume() }
         }
 
         if state.showNoAvatarWarning {

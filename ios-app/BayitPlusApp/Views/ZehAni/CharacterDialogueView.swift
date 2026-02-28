@@ -128,7 +128,8 @@ struct CharacterDialogueView: View {
             TextField(localization.t("zehAni.dialogue.placeholder"), text: $customQuestion)
                 .textFieldStyle(.roundedBorder)
             GlassButton(localization.t("zehAni.dialogue.send"), variant: .primary, size: .small,
-                         icon: Image(systemName: "paperplane.fill")) {
+                        icon: Image(systemName: "paperplane.fill"))
+            {
                 let msg = customQuestion; customQuestion = ""
                 Task { await sendMessage(msg) }
             }.disabled(customQuestion.trimmingCharacters(in: .whitespaces).isEmpty || isSending)
@@ -155,7 +156,8 @@ struct CharacterDialogueView: View {
         do {
             if sessionId == nil {
                 let session = try await repos.avatarMeshRepository.startFreeInteractionSession(
-                    profileId: profileId, avatarId: profileId,
+                    profileId: nil,
+                    avatarId: profileId,
                     contentId: contentId, characterName: characterName,
                     currentTimestamp: 0
                 )

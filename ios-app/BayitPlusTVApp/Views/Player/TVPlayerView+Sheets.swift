@@ -150,16 +150,49 @@ extension TVPlayerView {
         }
     }
 
-    // MARK: - Character Selection
+    // MARK: - Pause & Ask Overlay (fullScreenCover)
 
-    var characterSelectionSheet: some View {
-        TVCharacterSelectionView(
-            characters: state.dialogueVM?.availableCharacters ?? [],
-            onSelect: { character in
-                state.showCharacterSelection = false
-                Task { await startDialogue(with: character) }
-            },
-            onDismiss: { state.showCharacterSelection = false }
-        )
+    @ViewBuilder
+    var pauseAskSheet: some View {
+        if let vm = state.dialogueVM,
+           let imgUrl = state.avatarImageUrl
+        {
+            TVPauseAskDialogueOverlayView(
+                avatarImageUrl: imgUrl,
+                avatarId: state.resolvedAvatarId,
+                contentId: contentId,
+                currentTimestamp: mediaPlayer.currentTime,
+                characters: vm.availableCharacters,
+                viewModel: vm,
+                voiceService: state.voiceService,
+                onDismiss: { Task { await dismissPauseAsk() } }
+            )
+        }
+    }
+
+    // MARK: - Character → Dialogue Flow (single fullScreenCover, avoids sequential-cover tvOS bug)
+
+    @ViewBuilder
+    var characterDialogueFlowSheet: some View {
+        if let vm = state.dialogueVM,
+           let imgUrl = state.avatarImageUrl
+        {
+            TVCharacterDialogueFlowView(
+                characters: vm.availableCharacters,
+                viewModel: vm,
+                avatarImageUrl: imgUrl,
+                avatarId: state.resolvedAvatarId,
+                contentId: contentId,
+                currentTimestamp: mediaPlayer.currentTime,
+                voiceService: state.voiceService,
+                avatarPlacement: state.interactionVM?.activeMoment?.avatarPlacement,
+                onDismiss: {
+                    state.showCharacterSelection = false
+                    await state.dialogueVM?.endSession()
+                    restoreVolume()
+                    mediaPlayer.avPlayer.play()
+                }
+            )
+        }
     }
 }

@@ -23,7 +23,7 @@ extension APIClient {
 
         var urlRequest = URLRequest(url: fullURL)
         urlRequest.httpMethod = apiRequest.method.rawValue
-        urlRequest.timeoutInterval = configuration.timeout
+        urlRequest.timeoutInterval = apiRequest.timeoutInterval ?? configuration.timeout
 
         // Headers applied in same order as api.js interceptor
         applyDefaultHeaders(to: &urlRequest)

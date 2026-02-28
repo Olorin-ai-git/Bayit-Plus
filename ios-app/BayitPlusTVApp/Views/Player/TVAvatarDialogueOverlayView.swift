@@ -19,6 +19,7 @@
         let voiceService: TVVoiceInteractionService?
         let avatarPlacement: AvatarPlacement?
         let onDismiss: () -> Void
+        var isFullScreen: Bool = false
 
         @State var messageText = ""
         @State var characterPlayer: AVPlayer?
@@ -30,9 +31,17 @@
         let circleSize: CGFloat = 160
 
         var body: some View {
-            VStack {
-                if positionIsTop { overlayPanel; Spacer() }
-                else { Spacer(); overlayPanel }
+            if isFullScreen {
+                overlayContent
+                    .frame(maxWidth: 700)
+                    .padding(TVDesignTokens.Spacing.xxl)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .onAppear { isInputFocused = true }
+            } else {
+                VStack {
+                    if positionIsTop { overlayPanel; Spacer() }
+                    else { Spacer(); overlayPanel }
+                }
             }
         }
 
@@ -64,9 +73,15 @@
                         onSelectCharacter: { viewModel.addressedCharacterName = $0 }
                     )
                 }
-                circlesRow
-                conversationList
-                inputRow
+                if isFullScreen {
+                    characterCircle
+                    conversationList.frame(maxHeight: 240)
+                    fullScreenInputRow
+                } else {
+                    circlesRow
+                    conversationList
+                    inputRow
+                }
             }
             .padding(TVDesignTokens.Spacing.xl)
             .background(DesignTokens.Glass.bgStrong)

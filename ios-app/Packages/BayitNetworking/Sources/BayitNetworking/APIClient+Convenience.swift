@@ -49,14 +49,25 @@ private struct DynamicArray: Encodable {
 
 private struct DynamicKey: CodingKey {
     var stringValue: String
-    var intValue: Int? { nil }
-    init?(stringValue: String) { self.stringValue = stringValue }
-    init?(intValue: Int) { nil }
+    var intValue: Int? {
+        nil
+    }
+
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+
+    init?(intValue _: Int) {
+        nil
+    }
 }
 
 struct RawDataBody: Encodable, Sendable, RawBodyProvider {
     let data: Data
-    var rawData: Data { data }
+    var rawData: Data {
+        data
+    }
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(data)
@@ -69,10 +80,9 @@ protocol RawBodyProvider {
 
 // MARK: - Convenience HTTP Methods
 
-extension APIClient {
-
+public extension APIClient {
     /// GET request returning decoded model.
-    public func get<Response: Decodable & Sendable>(
+    func get<Response: Decodable & Sendable>(
         _ path: String,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
@@ -84,15 +94,16 @@ extension APIClient {
             queryItems: queryItems,
             headers: headers
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// POST request with body, returning decoded model.
-    public func post<Body: Encodable & Sendable, Response: Decodable & Sendable>(
+    func post<Body: Encodable & Sendable, Response: Decodable & Sendable>(
         _ path: String,
         body: Body,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
+        timeout: TimeInterval? = nil,
         as responseType: Response.Type
     ) async throws -> Response {
         let apiRequest = APIRequest(
@@ -100,13 +111,14 @@ extension APIClient {
             method: .post,
             queryItems: queryItems,
             body: body,
-            headers: headers
+            headers: headers,
+            timeoutInterval: timeout
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// PUT request with body, returning decoded model.
-    public func put<Body: Encodable & Sendable, Response: Decodable & Sendable>(
+    func put<Body: Encodable & Sendable, Response: Decodable & Sendable>(
         _ path: String,
         body: Body,
         queryItems: [URLQueryItem] = [],
@@ -120,11 +132,11 @@ extension APIClient {
             body: body,
             headers: headers
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// DELETE request returning decoded model.
-    public func delete<Response: Decodable & Sendable>(
+    func delete<Response: Decodable & Sendable>(
         _ path: String,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
@@ -136,11 +148,11 @@ extension APIClient {
             queryItems: queryItems,
             headers: headers
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// PATCH request with body, returning decoded model.
-    public func patch<Body: Encodable & Sendable, Response: Decodable & Sendable>(
+    func patch<Body: Encodable & Sendable, Response: Decodable & Sendable>(
         _ path: String,
         body: Body,
         queryItems: [URLQueryItem] = [],
@@ -154,12 +166,12 @@ extension APIClient {
             body: body,
             headers: headers
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// POST request with raw JSON dictionary body, returning decoded model.
     /// Use this for dynamic payloads that can't be represented as Codable structs.
-    public func postJSON<Response: Decodable & Sendable>(
+    func postJSON<Response: Decodable & Sendable>(
         _ path: String,
         body: [String: Any],
         queryItems: [URLQueryItem] = [],
@@ -173,12 +185,12 @@ extension APIClient {
             body: DynamicJSON(dict: body),
             headers: headers
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 
     /// POST request with raw Data body and custom content type.
     /// Use this for multipart/form-data or other binary uploads.
-    public func postRaw<Response: Decodable & Sendable>(
+    func postRaw<Response: Decodable & Sendable>(
         _ path: String,
         body: Data,
         contentType: String,
@@ -195,6 +207,6 @@ extension APIClient {
             body: RawDataBody(data: body),
             headers: finalHeaders
         )
-        return try await self.request(apiRequest, as: responseType)
+        return try await request(apiRequest, as: responseType)
     }
 }

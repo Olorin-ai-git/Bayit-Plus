@@ -41,14 +41,14 @@ protocol AvatarRepository: Sendable {
     ) async throws -> [ContentCharacter]
 
     func startInteractionSession(
-        profileId: String,
+        profileId: String?,
         avatarId: String,
         contentId: String,
         timestamp: Double
     ) async throws -> VODSessionResponse
 
     func startFreeInteractionSession(
-        profileId: String,
+        profileId: String?,
         avatarId: String,
         contentId: String,
         characterName: String,

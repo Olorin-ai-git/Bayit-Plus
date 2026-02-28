@@ -16,6 +16,8 @@ final class AvatarDialogueViewModel {
     var exchanges: [DialogueExchange] = []
     var isSending = false
     var isActive = false
+    var sendingStatus = ""
+    var sendingProgressTask: Task<Void, Never>?
 
     // MARK: - Multi-Character State (Phase 3)
 
@@ -52,7 +54,6 @@ final class AvatarDialogueViewModel {
 
     func startSession(
         contentId: String,
-        profileId: String,
         avatarId: String,
         character: ContentCharacter,
         currentTimestamp: Double
@@ -60,7 +61,7 @@ final class AvatarDialogueViewModel {
         selectedCharacter = character
         do {
             let response = try await repository.startFreeInteractionSession(
-                profileId: profileId,
+                profileId: nil,
                 avatarId: avatarId,
                 contentId: contentId,
                 characterName: character.name,
@@ -73,6 +74,24 @@ final class AvatarDialogueViewModel {
         } catch {
             logger.error("Failed to start session: \(error)")
             selectedCharacter = nil
+        }
+    }
+
+    // MARK: - Sending Progress (simulated stages for user feedback)
+
+    func startSendingProgress() {
+        sendingProgressTask?.cancel()
+        sendingStatus = "Thinking..."
+        sendingProgressTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            await MainActor.run { self?.sendingStatus = "Generating voice..." }
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            await MainActor.run { self?.sendingStatus = "Animating response..." }
+            try? await Task.sleep(for: .seconds(10))
+            guard !Task.isCancelled else { return }
+            await MainActor.run { self?.sendingStatus = "Almost there..." }
         }
     }
 

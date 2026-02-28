@@ -116,5 +116,48 @@
                     .disabled(messageText.isEmpty || viewModel.isSending)
             }
         }
+
+        // MARK: - Full-Screen Input (wider text field, properly sized button)
+
+        var fullScreenInputRow: some View {
+            VStack(spacing: TVDesignTokens.Spacing.md) {
+                if viewModel.isSending {
+                    HStack(spacing: TVDesignTokens.Spacing.md) {
+                        ProgressView()
+                            .tint(DesignTokens.Primary.default)
+                        Text(viewModel.sendingStatus)
+                            .font(.system(
+                                size: TVDesignTokens.FontSize.lg, weight: .medium
+                            ))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                            .animation(.easeInOut, value: viewModel.sendingStatus)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(TVDesignTokens.Spacing.lg)
+                } else {
+                    TextField(
+                        localization.t("player.dialogue.typeQuestion"),
+                        text: $messageText
+                    )
+                    .focused($isInputFocused)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .padding(TVDesignTokens.Spacing.lg)
+                    .frame(maxWidth: .infinity)
+                    .background(DesignTokens.Glass.bgLight)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+
+                    GlassButton(
+                        localization.t("common.send"),
+                        variant: .primary,
+                        size: .large,
+                        icon: Image(systemName: "paperplane.fill")
+                    ) { sendMessage() }
+                        .disabled(messageText.isEmpty)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
     }
 #endif

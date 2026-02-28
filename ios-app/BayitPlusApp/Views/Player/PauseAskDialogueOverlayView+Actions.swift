@@ -15,15 +15,12 @@
                 phase = .input
                 return
             }
-            guard let profileId = authManager.activeProfile?.id,
-                  let avatarId = avatarId
-            else {
-                logger.error("Missing profileId or avatarId for session start")
+            guard let avatarId = avatarId else {
+                logger.error("Missing avatarId for session start")
                 return
             }
             await viewModel.startSession(
                 contentId: contentId,
-                profileId: profileId,
                 avatarId: avatarId,
                 character: character,
                 currentTimestamp: currentTimestamp

@@ -24,13 +24,17 @@ public struct APIRequest<Body: Encodable & Sendable>: Sendable {
     /// if no token is available. Use for public endpoints (login, register).
     public let requiresAuth: Bool
 
+    /// Per-request timeout override. When nil, uses the global configuration timeout.
+    public let timeoutInterval: TimeInterval?
+
     public init(
         path: String,
         method: HTTPMethod = .get,
         queryItems: [URLQueryItem] = [],
         body: Body? = nil,
         headers: [String: String] = [:],
-        requiresAuth: Bool = true
+        requiresAuth: Bool = true,
+        timeoutInterval: TimeInterval? = nil
     ) {
         self.path = path
         self.method = method
@@ -38,6 +42,7 @@ public struct APIRequest<Body: Encodable & Sendable>: Sendable {
         self.body = body
         self.headers = headers
         self.requiresAuth = requiresAuth
+        self.timeoutInterval = timeoutInterval
     }
 }
 
@@ -58,7 +63,8 @@ public extension APIRequest where Body == EmptyBody {
         method: HTTPMethod = .get,
         queryItems: [URLQueryItem] = [],
         headers: [String: String] = [:],
-        requiresAuth: Bool = true
+        requiresAuth: Bool = true,
+        timeoutInterval: TimeInterval? = nil
     ) {
         self.path = path
         self.method = method
@@ -66,5 +72,6 @@ public extension APIRequest where Body == EmptyBody {
         body = nil
         self.headers = headers
         self.requiresAuth = requiresAuth
+        self.timeoutInterval = timeoutInterval
     }
 }

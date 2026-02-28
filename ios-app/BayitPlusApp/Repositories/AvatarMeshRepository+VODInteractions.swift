@@ -23,17 +23,17 @@ extension APIAvatarRepository {
     }
 
     func startInteractionSession(
-        profileId: String,
+        profileId: String? = nil,
         avatarId: String,
         contentId: String,
         timestamp: Double
     ) async throws -> VODSessionResponse {
-        let body: [String: Any] = [
-            "profile_id": profileId,
+        var body: [String: Any] = [
             "avatar_id": avatarId,
             "content_id": contentId,
             "timestamp": timestamp,
         ]
+        if let profileId { body["profile_id"] = profileId }
         return try await client.postJSON(
             "/api/v1/vod-interactions/sessions/start",
             body: body,
@@ -42,19 +42,19 @@ extension APIAvatarRepository {
     }
 
     func startFreeInteractionSession(
-        profileId: String,
+        profileId: String? = nil,
         avatarId: String,
         contentId: String,
         characterName: String,
         currentTimestamp: Double
     ) async throws -> VODSessionResponse {
-        let body: [String: Any] = [
-            "profile_id": profileId,
+        var body: [String: Any] = [
             "avatar_id": avatarId,
             "content_id": contentId,
             "character_name": characterName,
             "current_timestamp": currentTimestamp,
         ]
+        if let profileId { body["profile_id"] = profileId }
         return try await client.postJSON(
             "/api/v1/vod-interactions/sessions/start-free",
             body: body,
@@ -70,6 +70,7 @@ extension APIAvatarRepository {
         return try await client.post(
             "/api/v1/vod-interactions/sessions/\(sessionId)/message",
             body: body,
+            timeout: 120,
             as: CharacterResponsePayload.self
         )
     }
@@ -136,6 +137,7 @@ extension APIAvatarRepository {
         return try await client.post(
             "/api/v1/vod-interactions/sessions/\(sessionId)/pause-ask",
             body: body,
+            timeout: 120,
             as: PauseAskResponse.self
         )
     }
