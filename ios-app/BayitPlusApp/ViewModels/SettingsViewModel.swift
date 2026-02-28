@@ -21,19 +21,24 @@ final class SettingsViewModel {
     var autoplay = false
     var notifications = false
     var interactiveMoments = false
+    var showWidgetsDock = false
+    var showVoiceControlFAB = false
 
     let settingsRepository: any SettingsRepository
     let userRepository: any UserRepository
     let avatarRepository: (any AvatarRepository)?
+    private let uiPreferences: UserUIPreferencesStore?
 
     init(
         settingsRepository: any SettingsRepository,
         userRepository: any UserRepository,
-        avatarRepository: (any AvatarRepository)? = nil
+        avatarRepository: (any AvatarRepository)? = nil,
+        uiPreferences: UserUIPreferencesStore? = nil
     ) {
         self.settingsRepository = settingsRepository
         self.userRepository = userRepository
         self.avatarRepository = avatarRepository
+        self.uiPreferences = uiPreferences
     }
 
     @MainActor
@@ -61,7 +66,8 @@ final class SettingsViewModel {
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: enabled,
             showIsraelTime: nil, shabbatModeEnabled: nil,
-            subtitlesEnabled: nil, interactiveMomentsEnabled: nil
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
+            showWidgetsDock: nil, showVoiceControlFAB: nil
         ))
     }
 
@@ -71,7 +77,8 @@ final class SettingsViewModel {
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil,
             showIsraelTime: nil, shabbatModeEnabled: nil,
-            subtitlesEnabled: enabled, interactiveMomentsEnabled: nil
+            subtitlesEnabled: enabled, interactiveMomentsEnabled: nil,
+            showWidgetsDock: nil, showVoiceControlFAB: nil
         ))
     }
 
@@ -84,7 +91,8 @@ final class SettingsViewModel {
             await savePreference(UserPreferencesUpdate(
                 autoTranslateEnabled: nil,
                 showIsraelTime: nil, shabbatModeEnabled: nil,
-                subtitlesEnabled: nil, interactiveMomentsEnabled: false
+                subtitlesEnabled: nil, interactiveMomentsEnabled: false,
+                showWidgetsDock: nil, showVoiceControlFAB: nil
             ))
             return
         }
@@ -104,7 +112,30 @@ final class SettingsViewModel {
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil,
             showIsraelTime: nil, shabbatModeEnabled: nil,
-            subtitlesEnabled: nil, interactiveMomentsEnabled: true
+            subtitlesEnabled: nil, interactiveMomentsEnabled: true,
+            showWidgetsDock: nil, showVoiceControlFAB: nil
+        ))
+    }
+
+    @MainActor
+    func updateShowWidgetsDock(_ enabled: Bool) async {
+        showWidgetsDock = enabled
+        uiPreferences?.showWidgetsDock = enabled
+        await savePreference(UserPreferencesUpdate(
+            autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
+            showWidgetsDock: enabled, showVoiceControlFAB: nil
+        ))
+    }
+
+    @MainActor
+    func updateShowVoiceControlFAB(_ enabled: Bool) async {
+        showVoiceControlFAB = enabled
+        uiPreferences?.showVoiceControlFAB = enabled
+        await savePreference(UserPreferencesUpdate(
+            autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
+            showWidgetsDock: nil, showVoiceControlFAB: enabled
         ))
     }
 
@@ -130,6 +161,7 @@ final class SettingsViewModel {
                 request: update
             )
             preferences = response.preferences
+            uiPreferences?.apply(response.preferences)
         } catch {
             if let message = error.userFriendlyMessage {
                 self.error = message
@@ -144,5 +176,7 @@ final class SettingsViewModel {
         shabbatMode = prefs?.shabbatModeEnabled ?? false
         subtitles = prefs?.subtitlesEnabled ?? false
         interactiveMoments = prefs?.interactiveMomentsEnabled ?? false
+        showWidgetsDock = prefs?.showWidgetsDock ?? false
+        showVoiceControlFAB = prefs?.showVoiceControlFAB ?? false
     }
 }

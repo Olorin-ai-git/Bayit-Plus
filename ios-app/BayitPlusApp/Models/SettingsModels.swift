@@ -146,6 +146,8 @@ struct UserPreferencesUpdate: Encodable, Sendable {
     let shabbatModeEnabled: Bool?
     let subtitlesEnabled: Bool?
     let interactiveMomentsEnabled: Bool?
+    let showWidgetsDock: Bool?
+    let showVoiceControlFAB: Bool?
 }
 
 /// Response from PATCH /api/v1/users/me/preferences
@@ -161,4 +163,6 @@ struct UserPreferencesDetail: Decodable, Sendable {
     let shabbatModeEnabled: Bool?
     let subtitlesEnabled: Bool?
     let interactiveMomentsEnabled: Bool?
+    let showWidgetsDock: Bool?
+    let showVoiceControlFAB: Bool?
 }

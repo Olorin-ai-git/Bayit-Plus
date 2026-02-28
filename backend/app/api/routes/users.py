@@ -127,6 +127,8 @@ class UpdatePreferencesRequest(BaseModel):
     shabbat_mode_enabled: Optional[bool] = None
     subtitles_enabled: Optional[bool] = None
     interactive_moments_enabled: Optional[bool] = None
+    show_widgets_dock: Optional[bool] = None
+    show_voice_control_fab: Optional[bool] = None
 
 
 @router.get("/me/preferences")
@@ -169,6 +171,12 @@ async def update_my_preferences(
     if request.interactive_moments_enabled is not None:
         current_user.preferences["interactive_moments_enabled"] = (
             request.interactive_moments_enabled
+        )
+    if request.show_widgets_dock is not None:
+        current_user.preferences["show_widgets_dock"] = request.show_widgets_dock
+    if request.show_voice_control_fab is not None:
+        current_user.preferences["show_voice_control_fab"] = (
+            request.show_voice_control_fab
         )
 
     await current_user.save()

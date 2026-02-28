@@ -10,6 +10,7 @@ struct SettingsView: View {
     @Environment(NavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
     @Environment(AuthManager.self) private var authManager
+    @Environment(UserUIPreferencesStore.self) private var uiPreferences
     @State private var viewModel: SettingsViewModel?
     @State private var showDeleteAccountConfirmation = false
 
@@ -35,7 +36,9 @@ struct SettingsView: View {
         .task {
             if viewModel == nil {
                 viewModel = SettingsViewModel(
-                    settingsRepository: repos.settings, userRepository: repos.user
+                    settingsRepository: repos.settings,
+                    userRepository: repos.user,
+                    uiPreferences: uiPreferences
                 )
             }
             await viewModel?.load()
@@ -55,6 +58,10 @@ struct SettingsView: View {
                       isOn: vm.autoplay) { v in Task { await vm.updateAutoplay(v) } }
             toggleRow(icon: "bell", title: localization.t("settings.notifications"),
                       isOn: vm.notifications) { v in Task { await vm.updateNotifications(v) } }
+            toggleRow(icon: "rectangle.stack", title: localization.t("settings.showWidgetsDock"),
+                      isOn: vm.showWidgetsDock) { v in Task { await vm.updateShowWidgetsDock(v) } }
+            toggleRow(icon: "waveform.circle", title: localization.t("settings.showVoiceControlFAB"),
+                      isOn: vm.showVoiceControlFAB) { v in Task { await vm.updateShowVoiceControlFAB(v) } }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
@@ -94,7 +101,8 @@ struct SettingsView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .alert(localization.t("settings.deleteAccountConfirmTitle"),
-               isPresented: $showDeleteAccountConfirmation) {
+               isPresented: $showDeleteAccountConfirmation)
+        {
             Button(localization.t("common.cancel"), role: .cancel) {}
             Button(localization.t("settings.deleteAccountConfirm"), role: .destructive) {
                 Task { do { try await vm.deleteAccount(); await authManager.signOut() } catch {} }
@@ -129,7 +137,8 @@ struct SettingsView: View {
     }
 
     func toggleRow(icon: String, title: String, isOn: Bool,
-                   onChange: @escaping (Bool) -> Void) -> some View {
+                   onChange: @escaping (Bool) -> Void) -> some View
+    {
         GlassCard {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Image(systemName: icon)
@@ -164,5 +173,7 @@ struct SettingsView: View {
 }
 
 private extension Bundle {
-    var shortVersion: String { infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0" }
+    var shortVersion: String {
+        infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }
 }

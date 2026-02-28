@@ -28,6 +28,7 @@ struct BayitPlusApp: App {
     @State var pendingIntentHandler: PendingIntentHandler?
     @State var locationProvider: AppLocationProvider
     @State var featureFlags = FeatureFlags()
+    @State var uiPreferences = UserUIPreferencesStore()
     @State var crashlyticsService = CrashlyticsService()
     @State var pushNotificationService: PushNotificationService?
     @State var castSessionManager = CastSessionManager()
@@ -119,6 +120,7 @@ struct BayitPlusApp: App {
                 .environment(liveActivityManager)
                 .environment(locationProvider)
                 .environment(featureFlags)
+                .environment(uiPreferences)
                 .environment(castSessionManager)
                 .environment(audioPlaybackManager)
                 .environment(downloadManager)

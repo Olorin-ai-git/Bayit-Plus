@@ -6198,11 +6198,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -6214,10 +6210,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -6422,6 +6415,7 @@
       "askAnother": "Preguntar otra vez",
       "resumeMovie": "Continuar",
       "selectCharacter": "Seleccionar personaje",
+      "noCharacters": "Los personajes aún no están disponibles para esta película",
       "stages": {
         "polishing": "Puliendo tu pregunta...",
         "thinking": "Pensando en tu pregunta...",
@@ -7666,6 +7660,8 @@
     "quality": "Calidad",
     "subtitles": "Subtítulos",
     "autoplay": "Reproducción Automática",
+    "showWidgetsDock": "Barra de widgets",
+    "showVoiceControlFAB": "Botón de control de voz",
     "about": {
       "title": "[ES] About",
       "appInfo": "[ES] App Info",

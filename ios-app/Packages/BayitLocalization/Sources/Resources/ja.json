@@ -6894,6 +6894,7 @@
       "askAnother": "別の質問",
       "resumeMovie": "再開",
       "selectCharacter": "キャラクターを選択",
+      "noCharacters": "この映画のキャラクターはまだご利用いただけません",
       "stages": {
         "polishing": "質問を磨いています...",
         "thinking": "質問について考えています...",
@@ -8394,6 +8395,8 @@
     "autoTranslateDescription": "チャットメッセージを自動的に希望の言語に翻訳",
     "quality": "品質",
     "autoplay": "自動再生",
+    "showWidgetsDock": "ウィジェットドック",
+    "showVoiceControlFAB": "音声コントロールボタン",
     "display": "ディスプレイ",
     "homePageSections": "ホームページセクション",
     "configureSections": "ホームページに表示するセクションを設定",

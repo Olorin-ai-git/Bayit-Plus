@@ -6112,17 +6112,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6134,10 +6125,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -6322,6 +6310,7 @@
       "askAnother": "再问一个",
       "resumeMovie": "继续",
       "selectCharacter": "选择角色",
+      "noCharacters": "此影片的角色尚未开放",
       "stages": {
         "polishing": "正在润色你的问题...",
         "thinking": "正在思考你的问题...",
@@ -7562,6 +7551,8 @@
     "quality": "画质",
     "subtitles": "字幕",
     "autoplay": "自动播放",
+    "showWidgetsDock": "小组件栏",
+    "showVoiceControlFAB": "语音控制按钮",
     "appearance": "外观",
     "darkMode": "深色模式",
     "privacy": {

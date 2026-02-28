@@ -8,6 +8,7 @@ struct MainTabView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(FeatureFlags.self) private var featureFlags
     @Environment(AudioPlaybackManager.self) private var audioPlaybackManager
+    @Environment(UserUIPreferencesStore.self) private var uiPreferences
     @State private var isVoiceModalPresented = false
     @State private var dockViewModel: WidgetDockViewModel?
 
@@ -48,7 +49,7 @@ struct MainTabView: View {
             }
 
             // Floating widget dock (left edge, vertically centered) - shown on all tabs
-            if let vm = dockViewModel {
+            if let vm = dockViewModel, uiPreferences.showWidgetsDock {
                 PiPWidgetManagerView(
                     widgets: vm.minimizedWidgets,
                     isDockVisible: vm.isDockVisible,
@@ -62,8 +63,8 @@ struct MainTabView: View {
                 .allowsHitTesting(true)
             }
 
-            // Voice Avatar FAB (legacy feature - controlled by feature flag)
-            if featureFlags.isLegacyFeaturesEnabled {
+            // Voice Avatar FAB (legacy feature - gated by feature flag and user preference)
+            if featureFlags.isLegacyFeaturesEnabled && uiPreferences.showVoiceControlFAB {
                 VStack {
                     Spacer()
                     HStack {
@@ -81,6 +82,9 @@ struct MainTabView: View {
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)
+            }
+            if let response = try? await repos.settings.fetchPreferences() {
+                uiPreferences.apply(response.preferences)
             }
             await dockViewModel?.loadWidgets()
         }

@@ -6527,10 +6527,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -6730,6 +6727,7 @@
       "askAnother": "Poser une autre question",
       "resumeMovie": "Reprendre",
       "selectCharacter": "Selectionner un personnage",
+      "noCharacters": "Les personnages ne sont pas encore disponibles pour ce film",
       "stages": {
         "polishing": "Peaufinage de votre question...",
         "thinking": "Reflexion sur votre question...",
@@ -8100,6 +8098,8 @@
     "quality": "Qualité",
     "subtitles": "Sous-titres",
     "autoplay": "Lecture automatique",
+    "showWidgetsDock": "Barre de widgets",
+    "showVoiceControlFAB": "Bouton de commande vocale",
     "appearance": "Apparence",
     "darkMode": "Mode sombre",
     "privacy": {
