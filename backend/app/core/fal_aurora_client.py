@@ -158,7 +158,8 @@ class FalAuroraClient:
             response = await client.get(video_url)
             response.raise_for_status()
 
-        url_hash = hashlib.md5(image_url.encode()).hexdigest()[:12]
+        # Hash the fal.ai video URL (unique per render) for a unique GCS path
+        url_hash = hashlib.md5(video_url.encode()).hexdigest()[:12]
         gcs_path = f"vod-interactions/aurora-lipsync/{url_hash}.mp4"
         storage_url = await storage_service.upload_bytes(
             response.content, gcs_path, content_type="video/mp4",

@@ -36,6 +36,7 @@ class UserAvatarAnimator:
         self,
         polished_text: str,
         avatar: ChildAvatar,
+        fallback_voice_id: str = "",
     ) -> AnimatedResponse:
         """
         Generate animated user avatar video speaking the polished text.
@@ -43,15 +44,19 @@ class UserAvatarAnimator:
         Args:
             polished_text: Grammar-polished question text
             avatar: ChildAvatar with elevenlabs_voice_id and face image
+            fallback_voice_id: ElevenLabs voice ID to use when avatar has no
+                               personal voice clone (e.g. default kid voice)
 
         Returns:
             AnimatedResponse with audio_url, video_url, duration
 
         Raises:
-            ValueError: If avatar lacks voice clone or face image
+            ValueError: If avatar lacks both a voice clone and a fallback, or
+                        has no face image for lip-sync
         """
-        if not avatar.elevenlabs_voice_id:
-            raise ValueError("Avatar has no cloned voice ID")
+        effective_voice_id = avatar.elevenlabs_voice_id or fallback_voice_id
+        if not effective_voice_id:
+            raise ValueError("Avatar has no voice ID and no fallback voice configured")
 
         face_image_url = self._get_face_image_url(avatar)
         if not face_image_url:
@@ -66,7 +71,7 @@ class UserAvatarAnimator:
         )
 
         audio_url = await self._generate_user_tts(
-            polished_text, avatar.elevenlabs_voice_id, str(avatar.id),
+            polished_text, effective_voice_id, str(avatar.id),
         )
         duration = await character_animator_service._get_audio_duration(
             audio_url,

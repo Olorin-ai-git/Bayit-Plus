@@ -332,6 +332,80 @@ async def generate_character_responses(
         )
 
 
+class GenerateKidVideosRequest(BaseModel):
+    """Optional overrides for kid video generation."""
+    kid_voice_id: str = Field(
+        default="",
+        description="ElevenLabs voice ID for kid (defaults to MOVIE_INTERACTION_KID_VOICE_ID config)",
+    )
+    kid_image_url: str = Field(
+        default="",
+        description="Kid avatar image URL (defaults to MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL config)",
+    )
+
+
+@router.post("/content/{content_id}/generate-kid-videos")
+async def generate_kid_videos(
+    content_id: str,
+    request: GenerateKidVideosRequest = GenerateKidVideosRequest(),
+    current_user: User = Depends(require_admin),
+):
+    """
+    (Re)generate kid avatar question videos for all interactive moments.
+
+    Uses dialogue_options[0] as the question text (the real kid question),
+    Etai's cloned voice ID (MOVIE_INTERACTION_KID_VOICE_ID), and
+    MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL. Safe to re-run: overwrites
+    any existing lipsync_video_url.
+    """
+    kid_image = request.kid_image_url or settings.MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL
+    kid_voice = request.kid_voice_id or settings.MOVIE_INTERACTION_KID_VOICE_ID
+    if not kid_image or not kid_voice:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="kid_image_url and kid_voice_id must be provided or configured via "
+                   "MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL / MOVIE_INTERACTION_KID_VOICE_ID",
+        )
+    content = await Content.get(content_id)
+    if not content:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Content not found")
+    if not content.interactive_moments:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No interactive moments")
+
+    generated_count = 0
+    errors = []
+    for moment in content.interactive_moments:
+        # Use dialogue_options[0] — the actual kid question text.
+        # interaction_prompt is a generic placeholder ("Ask Daniel a question!").
+        question_text = (moment.dialogue_options[0] if moment.dialogue_options else "")
+        if not question_text:
+            continue
+        try:
+            kid_animated = await character_animator_service.animate_character_response(
+                character_name="kid",
+                dialogue_text=question_text,
+                character_frame_url=kid_image,
+                voice_id=kid_voice,
+            )
+            moment.lipsync_video_url = kid_animated.video_url
+            generated_count += 1
+        except Exception as exc:
+            errors.append(f"Moment at {moment.timestamp}s: {exc}")
+            logger.error(
+                "Failed to generate kid video for moment",
+                extra={"content_id": content_id, "timestamp": moment.timestamp, "error": str(exc)},
+            )
+
+    if generated_count > 0:
+        await content.save()
+
+    logger.info(
+        "Kid video generation complete",
+        extra={"content_id": content_id, "generated": generated_count, "errors": len(errors)},
+    )
+    return {"content_id": content_id, "generated": generated_count, "errors": errors}
+
+
 async def _extract_frame_ffmpeg(video_url: str, timestamp: float) -> str:
     """
     Extract single frame from video using FFmpeg

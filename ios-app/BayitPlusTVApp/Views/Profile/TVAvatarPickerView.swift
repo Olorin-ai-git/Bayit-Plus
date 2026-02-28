@@ -55,33 +55,36 @@ struct TVAvatarPickerView: View {
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .frame(width: 220, height: 70)
+                        .background(DesignTokens.Glass.bgLight)
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.plain)
-                .background(DesignTokens.Glass.bgLight)
-                .cornerRadius(TVDesignTokens.Radius.md)
+                .buttonStyle(.card)
+                .tvFocusStyle()
 
                 Button {
                     Task { await save() }
                 } label: {
-                    if isSaving {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Text(localization.t("avatar.save"))
-                            .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
-                            .foregroundStyle(.white)
+                    Group {
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text(localization.t("avatar.save"))
+                                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
                     }
-                }
-                .frame(width: 220, height: 70)
-                .buttonStyle(.plain)
-                .background(
-                    LinearGradient(
-                        colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
-                        startPoint: .leading,
-                        endPoint: .trailing
+                    .frame(width: 220, height: 70)
+                    .background(
+                        LinearGradient(
+                            colors: [DesignTokens.Primary.p400, DesignTokens.Secondary.s400],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
                     )
-                )
-                .cornerRadius(TVDesignTokens.Radius.md)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
                 .disabled(isSaving)
             }
         }
@@ -95,7 +98,7 @@ struct TVAvatarPickerView: View {
             columns: [
                 GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
                 GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
-                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap)
+                GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
             ],
             spacing: TVDesignTokens.Spacing.focusGap
         ) {
@@ -107,31 +110,12 @@ struct TVAvatarPickerView: View {
     }
 
     private func gradientOption(_ option: GradientOption) -> some View {
-        Button {
+        TVGradientOptionButton(
+            option: option,
+            isSelected: selectedGradient?.id == option.id
+        ) {
             selectedGradient = option
-        } label: {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: option.colors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 180, height: 180)
-                .overlay(
-                    Circle()
-                        .strokeBorder(
-                            selectedGradient?.id == option.id
-                                ? DesignTokens.Glass.borderFocus
-                                : Color.clear,
-                            lineWidth: 6
-                        )
-                )
         }
-        .buttonStyle(.plain)
-        .scaleEffect(selectedGradient?.id == option.id ? 1.1 : 1.0)
-        .animation(.spring(duration: 0.3, bounce: 0.3), value: selectedGradient?.id)
     }
 
     private var photoPlaceholder: some View {
@@ -167,6 +151,39 @@ struct TVAvatarPickerView: View {
         if viewModel.error == nil {
             onDismiss()
         }
+    }
+}
+
+private struct TVGradientOptionButton: View {
+    let option: GradientOption
+    let isSelected: Bool
+    let onSelect: () -> Void
+    @Environment(\.isFocused) private var isFocused
+
+    var body: some View {
+        Button { onSelect() } label: {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: option.colors,
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 180, height: 180)
+                .overlay(
+                    Circle().strokeBorder(
+                        isSelected
+                            ? DesignTokens.Glass.borderFocus
+                            : isFocused ? DesignTokens.Glass.border : Color.clear,
+                        lineWidth: isFocused ? 8 : 6
+                    )
+                )
+                .scaleEffect(isFocused ? 1.12 : isSelected ? 1.05 : 1.0)
+                .animation(.spring(duration: 0.3, bounce: 0.3), value: isFocused)
+        }
+        .buttonStyle(.card)
+        .tvFocusStyle()
     }
 }
 

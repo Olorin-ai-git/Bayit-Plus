@@ -27,11 +27,19 @@
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    HStack(spacing: TVDesignTokens.Spacing.xl) {
-                        ForEach(
-                            Array(characters.enumerated()), id: \.element.id
-                        ) { index, character in
-                            characterItem(character, index: index)
+                    if characters.isEmpty {
+                        Text(localization.t("player.pauseAsk.noCharacters"))
+                            .font(.system(size: TVDesignTokens.FontSize.md))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                    } else {
+                        HStack(spacing: TVDesignTokens.Spacing.xl) {
+                            ForEach(
+                                Array(characters.enumerated()), id: \.element.id
+                            ) { index, character in
+                                characterItem(character, index: index)
+                            }
                         }
                     }
 
@@ -43,25 +51,25 @@
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
 
-        // MARK: - Character Item (no Button — avoids system card effect)
+        // MARK: - Character Item (.plain style avoids card effect; Button responds to Siri Remote select)
 
         private func characterItem(
             _ character: ContentCharacter, index: Int
         ) -> some View {
-            CharacterCircleLabel(character: character, circleSize: circleSize)
-                .focusable(true)
-                .focused($focusedIndex, equals: index)
-                .onTapGesture { onSelectCharacter(character) }
+            Button { onSelectCharacter(character) } label: {
+                CharacterCircleLabel(character: character, circleSize: circleSize)
+            }
+            .buttonStyle(.plain)
+            .focused($focusedIndex, equals: index)
         }
 
         // MARK: - Dismiss Item
 
         private var dismissItem: some View {
-            DismissLabel(
-                title: localization.t("player.pauseAsk.resumeMovie"),
-                onTap: onDismiss
-            )
-            .focusable(true)
+            Button { onDismiss() } label: {
+                DismissLabel(title: localization.t("player.pauseAsk.resumeMovie"))
+            }
+            .buttonStyle(.plain)
             .focused($focusedIndex, equals: characters.count)
         }
     }
@@ -121,7 +129,6 @@
 
     private struct DismissLabel: View {
         let title: String
-        let onTap: () -> Void
         @Environment(\.isFocused) private var isFocused
 
         var body: some View {
@@ -139,7 +146,6 @@
                 )
                 .scaleEffect(isFocused ? 1.05 : 1.0)
                 .animation(.spring(duration: 0.25, bounce: 0.2), value: isFocused)
-                .onTapGesture { onTap() }
         }
     }
 #endif

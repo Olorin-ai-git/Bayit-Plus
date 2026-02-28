@@ -510,6 +510,21 @@ async def _run_moment_generation(
                 )
                 moment.character_response_audio_url = animated.audio_url
                 moment.character_response_video_url = animated.video_url
+
+                # Generate kid avatar question video using dialogue_options[0] as the
+                # real question text. interaction_prompt is only a generic placeholder.
+                kid_image = settings.MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL
+                kid_voice = settings.MOVIE_INTERACTION_KID_VOICE_ID
+                question_text = (moment.dialogue_options[0] if moment.dialogue_options else "")
+                if kid_image and kid_voice and question_text:
+                    kid_animated = await character_animator_service.animate_character_response(
+                        character_name="kid",
+                        dialogue_text=question_text,
+                        character_frame_url=kid_image,
+                        voice_id=kid_voice,
+                    )
+                    moment.lipsync_video_url = kid_animated.video_url
+
                 await content.save()
 
                 logger.info(

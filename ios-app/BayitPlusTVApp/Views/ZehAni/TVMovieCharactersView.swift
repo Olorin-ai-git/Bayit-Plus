@@ -100,8 +100,13 @@
         private var avatarImage: some View {
             Group {
                 if let url = URL(string: character.frameUrl) {
-                    CachedAsyncImage(url: url) {
-                        avatarPlaceholder
+                    CachedAsyncImage(url: url) { phase in
+                        switch phase {
+                        case let .success(image):
+                            image.resizable().scaledToFill()
+                        default:
+                            avatarPlaceholder
+                        }
                     }
                 } else {
                     avatarPlaceholder

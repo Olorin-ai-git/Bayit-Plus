@@ -15,7 +15,7 @@ public struct GlassTextField: View {
         icon: Image? = nil
     ) {
         self.placeholder = placeholder
-        self._text = text
+        _text = text
         self.isSecure = isSecure
         self.icon = icon
     }
@@ -31,9 +31,15 @@ public struct GlassTextField: View {
             if isSecure {
                 SecureField(placeholder, text: $text)
                     .focused($isFocused)
+                #if os(macOS)
+                    .textFieldStyle(.plain)
+                #endif
             } else {
                 TextField(placeholder, text: $text)
                     .focused($isFocused)
+                #if os(macOS)
+                    .textFieldStyle(.plain)
+                #endif
             }
         }
         .font(.system(size: fontSize))
@@ -62,49 +68,49 @@ public struct GlassTextField: View {
 
     private var fontSize: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.FontSize.base
+            return TVDesignTokens.FontSize.base
         #else
-        return DesignTokens.FontSize.base
+            return DesignTokens.FontSize.base
         #endif
     }
 
     private var iconSize: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.FontSize.lg
+            return TVDesignTokens.FontSize.lg
         #else
-        return DesignTokens.FontSize.md
+            return DesignTokens.FontSize.md
         #endif
     }
 
     private var spacing: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.Spacing.md
+            return TVDesignTokens.Spacing.md
         #else
-        return DesignTokens.Spacing.sm
+            return DesignTokens.Spacing.sm
         #endif
     }
 
     private var verticalPadding: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.Spacing.lg
+            return TVDesignTokens.Spacing.lg
         #else
-        return DesignTokens.Spacing.md
+            return DesignTokens.Spacing.md
         #endif
     }
 
     private var horizontalPadding: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.Spacing.xl
+            return TVDesignTokens.Spacing.xl
         #else
-        return DesignTokens.Spacing.base
+            return DesignTokens.Spacing.base
         #endif
     }
 
     private var cornerRadius: CGFloat {
         #if os(tvOS)
-        return TVDesignTokens.Radius.md
+            return TVDesignTokens.Radius.md
         #else
-        return DesignTokens.Radius.md
+            return DesignTokens.Radius.md
         #endif
     }
 }

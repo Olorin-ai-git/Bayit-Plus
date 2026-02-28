@@ -88,7 +88,14 @@
         func characterAvatar(url: String) -> some View {
             Group {
                 if let imgUrl = URL(string: url) {
-                    CachedAsyncImage(url: imgUrl) { avatarPlaceholder }
+                    CachedAsyncImage(url: imgUrl) { phase in
+                        switch phase {
+                        case let .success(image):
+                            image.resizable().scaledToFill()
+                        default:
+                            avatarPlaceholder
+                        }
+                    }
                 } else {
                     avatarPlaceholder
                 }

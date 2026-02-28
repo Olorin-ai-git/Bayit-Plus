@@ -127,6 +127,7 @@ struct TVHeroItem: View {
         }
         .buttonStyle(.plain)
         .focused($watchNowFocused)
+        .focusEffectDisabled()
         .scaleEffect(watchNowFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: watchNowFocused)
         .accessibilityLabel(localization.t("hero.watchNow"))
@@ -159,6 +160,7 @@ struct TVHeroItem: View {
         }
         .buttonStyle(.plain)
         .focused($moreInfoFocused)
+        .focusEffectDisabled()
         .scaleEffect(moreInfoFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: moreInfoFocused)
         .accessibilityLabel(localization.t("common.moreInfo"))

@@ -36,7 +36,7 @@ struct TVLiveAvatarOverlayView: View {
         .onAppear { loadAvatarImage() }
     }
 
-    private var avatarOverlay: some View {
+    private var avatarOverlayContent: some View {
         ZStack {
             if isPlayingVideo, let player = player {
                 VideoPlayer(player: player)
@@ -66,9 +66,12 @@ struct TVLiveAvatarOverlayView: View {
                 .stroke(.white.opacity(0.15), lineWidth: 2)
         )
         .shadow(color: .black.opacity(0.5), radius: 12, x: 0, y: 6)
-        .onTapGesture {
-            playLipsyncVideo()
-        }
+    }
+
+    private var avatarOverlay: some View {
+        Button { playLipsyncVideo() } label: { avatarOverlayContent }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
     }
 
     private func loadAvatarImage() {

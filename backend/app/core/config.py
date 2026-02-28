@@ -2994,6 +2994,16 @@ class Settings(BaseSettings):
         env="MOVIE_INTERACTION_DEFAULT_VOICE_FEMALE",
         description="ElevenLabs voice ID for female characters",
     )
+    MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL: str = Field(
+        default="",
+        env="MOVIE_INTERACTION_DEFAULT_KID_IMAGE_URL",
+        description="Default kid avatar image URL for interactive moment lip-sync (Creatify st.png)",
+    )
+    MOVIE_INTERACTION_KID_VOICE_ID: str = Field(
+        default="",
+        env="MOVIE_INTERACTION_KID_VOICE_ID",
+        description="ElevenLabs voice ID for kid avatar question videos (Etai's cloned voice)",
+    )
     MOVIE_INTERACTION_AI_MODEL: str = Field(
         default="claude-sonnet-4-20250514",
         env="MOVIE_INTERACTION_AI_MODEL",
