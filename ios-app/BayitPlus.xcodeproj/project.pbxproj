@@ -104,6 +104,7 @@
 		0E6C1F8218DFB257902E7281 /* TVRegisterView+Form.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AB9B59303EF08216A9FA80 /* TVRegisterView+Form.swift */; };
 		0E77A6C88B3E1EE2C30D1F80 /* GlossaryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5053255390FDF2E192878810 /* GlossaryDetailView.swift */; };
 		0E7F2CF77FABC87FE1E20054 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8722522734C87445257D2DA /* FeatureFlags.swift */; };
+		55FE0D011E2A4395830CE0B7 /* UserUIPreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EB75180ADF4D2E963A748C /* UserUIPreferencesStore.swift */; };
 		0E874FBD748C475699900F07 /* PlayerPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF8F8852884F66410B3CD376 /* PlayerPreferencesService.swift */; };
 		0E9E8E020BBCDD9E6ED79572 /* SelectPlaylistIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF8AF17F7E209777EA6272B /* SelectPlaylistIntent.swift */; };
 		0F329DEBA6EB77B53CD0022D /* AICompanionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D6C93148F459D34915E285 /* AICompanionViewModel.swift */; };
@@ -112,6 +113,7 @@
 		0F9B1CC5147F6D1AB51D4554 /* PlayerView+MetadataOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46B1ADDAF5669553B3D66042 /* PlayerView+MetadataOverlay.swift */; };
 		0FB8186818FD1E3AC6E90842 /* BayitWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162EFEBCB58EF93A8BCB55E1 /* BayitWidgetsBundle.swift */; };
 		0FCFE4CD2D3F878AE93AC27B /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8722522734C87445257D2DA /* FeatureFlags.swift */; };
+		0C3CA716D70E466F94202CE1 /* UserUIPreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EB75180ADF4D2E963A748C /* UserUIPreferencesStore.swift */; };
 		100B0C5B324DBCD20BD0AFF4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78957B6E08D2E054CDC8473B /* SwiftUI.framework */; };
 		101FB50A97B4E12537284811 /* ConnectedAccountRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F8037F90BA5D317311545B /* ConnectedAccountRow.swift */; };
 		106FC55ADF142CDF6D8BD4F6 /* AudiobooksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B8C704E2F464F3151C9E8E /* AudiobooksView.swift */; };
@@ -2675,6 +2677,7 @@
 		E7D68F2454CF9038D6CF6F85 /* ChatbotView+InputBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ChatbotView+InputBar.swift"; sourceTree = "<group>"; };
 		E7E757FBB9545A7E83B478D1 /* SeriesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesModels.swift; sourceTree = "<group>"; };
 		E8722522734C87445257D2DA /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
+		08EB75180ADF4D2E963A748C /* UserUIPreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUIPreferencesStore.swift; sourceTree = "<group>"; };
 		E87B979EACEC2CF2A2511D8D /* RepositoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryProvider.swift; sourceTree = "<group>"; };
 		E8AF0F48C323732A1582B90F /* ActivePartySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivePartySection.swift; sourceTree = "<group>"; };
 		E8D5E570A8B35FAC2428E402 /* ProactiveSuggestionBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveSuggestionBannerView.swift; sourceTree = "<group>"; };
@@ -4876,6 +4879,7 @@
 				069A9B84C1A1325316BBD6B8 /* BayitPlusApp.swift */,
 				902A8416DEB83934EFC25555 /* ContentView.swift */,
 				E8722522734C87445257D2DA /* FeatureFlags.swift */,
+				08EB75180ADF4D2E963A748C /* UserUIPreferencesStore.swift */,
 				B99C16EA3F6263BEBFEBE481 /* GoogleService-Info.plist */,
 				2469D5BE89F242024867244D /* MainTabView.swift */,
 				E87B979EACEC2CF2A2511D8D /* RepositoryProvider.swift */,
@@ -5339,6 +5343,7 @@
 				1B0D4834EBA9610FE79D4C2C /* FamilySnapRepository.swift in Sources */,
 				CCF1578760D9F01640CD9593 /* FavoritesViewModel.swift in Sources */,
 				0E7F2CF77FABC87FE1E20054 /* FeatureFlags.swift in Sources */,
+				55FE0D011E2A4395830CE0B7 /* UserUIPreferencesStore.swift in Sources */,
 				552C066B625450098A58444D /* FeatureValidationService.swift in Sources */,
 				23643ACF059901C2BF51469F /* FlowsViewModel.swift in Sources */,
 				AB72B858DE01A3C60A8C00E0 /* Friend.swift in Sources */,
@@ -6142,6 +6147,7 @@
 				6F8192330410CC2520D3CB71 /* FavoritesView.swift in Sources */,
 				04DACAEB0F2BAE5E806EE520 /* FavoritesViewModel.swift in Sources */,
 				0FCFE4CD2D3F878AE93AC27B /* FeatureFlags.swift in Sources */,
+				0C3CA716D70E466F94202CE1 /* UserUIPreferencesStore.swift in Sources */,
 				EBF09AB6C2702B56D4565242 /* FeatureValidationService.swift in Sources */,
 				7EAC3C25D6554CC1587682DA /* FeedbackInboxView.swift in Sources */,
 				453EF98F4D4B6744D28FFAB7 /* FlowLayout.swift in Sources */,
