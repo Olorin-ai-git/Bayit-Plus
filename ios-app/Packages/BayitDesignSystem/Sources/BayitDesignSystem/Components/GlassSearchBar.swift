@@ -44,7 +44,11 @@ public struct GlassSearchBar: View {
                         .foregroundColor(DesignTokens.Text.muted)
                         .font(.system(size: DesignTokens.FontSize.md))
                 }
-                .transition(.scale.combined(with: .opacity))
+                .buttonStyle(.plain)
+                #if os(tvOS)
+                    .focusEffectDisabled()
+                #endif
+                    .transition(.scale.combined(with: .opacity))
             }
 
             if showVoiceButton {
@@ -53,6 +57,10 @@ public struct GlassSearchBar: View {
                         .foregroundColor(DesignTokens.Primary.default)
                         .font(.system(size: DesignTokens.FontSize.md))
                 }
+                .buttonStyle(.plain)
+                #if os(tvOS)
+                    .focusEffectDisabled()
+                #endif
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.base)

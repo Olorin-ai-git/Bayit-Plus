@@ -140,6 +140,10 @@ public struct GlassPlayerControls: View {
                 .frame(width: size + 16, height: size + 16)
                 .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        #if os(tvOS)
+            .focusEffectDisabled()
+        #endif
     }
 
     // MARK: - Helpers

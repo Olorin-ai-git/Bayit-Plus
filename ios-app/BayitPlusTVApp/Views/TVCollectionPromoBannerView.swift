@@ -140,7 +140,7 @@ struct TVFeaturedCollectionsCarousel: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: 360)
+                .frame(height: 420)
 
                 if collections.count > 1 {
                     HStack(spacing: 8) {

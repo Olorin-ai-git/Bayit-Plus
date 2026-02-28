@@ -8,7 +8,7 @@ public struct GlassChip: View {
     let onTap: () -> Void
 
     #if os(tvOS)
-    @Environment(\.isFocused) private var isFocused
+        @Environment(\.isFocused) private var isFocused
     #endif
 
     public init(
@@ -24,19 +24,19 @@ public struct GlassChip: View {
     public var body: some View {
         Button(action: onTap) {
             Text(title)
-                #if os(tvOS)
+            #if os(tvOS)
                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
-                #else
+            #else
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                #endif
+            #endif
                 .foregroundColor(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.secondary)
-                #if os(tvOS)
+            #if os(tvOS)
                 .padding(.horizontal, TVDesignTokens.Spacing.base)
                 .padding(.vertical, TVDesignTokens.Spacing.sm)
-                #else
+            #else
                 .padding(.horizontal, DesignTokens.Spacing.base)
                 .padding(.vertical, DesignTokens.Spacing.sm)
-                #endif
+            #endif
                 .background {
                     if isSelected {
                         ZStack {
@@ -61,22 +61,25 @@ public struct GlassChip: View {
                 )
         }
         .buttonStyle(ChipButtonStyle())
+        #if os(tvOS)
+            .focusEffectDisabled()
+        #endif
     }
 
     private var chipBorderColor: Color {
         #if os(tvOS)
-        if isFocused {
-            return DesignTokens.Glass.borderFocus
-        }
+            if isFocused {
+                return DesignTokens.Glass.borderFocus
+            }
         #endif
         return isSelected ? DesignTokens.Primary.default : DesignTokens.Glass.border
     }
 
     private var chipBorderWidth: CGFloat {
         #if os(tvOS)
-        if isFocused {
-            return TVDesignTokens.Focus.ringWidth
-        }
+            if isFocused {
+                return TVDesignTokens.Focus.ringWidth
+            }
         #endif
         return isSelected ? 1.5 : 1
     }
@@ -84,12 +87,12 @@ public struct GlassChip: View {
 
 private struct ChipButtonStyle: ButtonStyle {
     #if os(tvOS)
-    @Environment(\.isFocused) private var isFocused
+        @Environment(\.isFocused) private var isFocused
     #endif
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            #if os(tvOS)
+        #if os(tvOS)
             .scaleEffect(
                 isFocused
                     ? TVDesignTokens.Focus.scaleAmount
@@ -111,9 +114,9 @@ private struct ChipButtonStyle: ButtonStyle {
                 value: isFocused
             )
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-            #else
+        #else
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
-            #endif
+        #endif
     }
 }

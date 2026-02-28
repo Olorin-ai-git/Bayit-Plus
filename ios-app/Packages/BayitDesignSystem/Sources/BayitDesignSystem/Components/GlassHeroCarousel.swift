@@ -52,24 +52,22 @@
         private var pageIndicator: some View {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 ForEach(items.indices, id: \.self) { index in
-                    Button {
-                        selectPage(index)
-                    } label: {
-                        Circle()
-                            .fill(
-                                index == currentIndex
-                                    ? DesignTokens.Colors.Primary.light
-                                    : DesignTokens.Text.muted
-                            )
-                            .frame(
-                                width: dotSize(for: index),
-                                height: dotSize(for: index)
-                            )
-                            .animation(.easeInOut(duration: 0.2), value: currentIndex)
-                            .animation(.easeInOut(duration: 0.15), value: focusedDotIndex)
-                    }
-                    .buttonStyle(.plain)
-                    .focused($focusedDotIndex, equals: index)
+                    Circle()
+                        .fill(
+                            index == currentIndex
+                                ? DesignTokens.Colors.Primary.light
+                                : DesignTokens.Text.muted
+                        )
+                        .frame(
+                            width: dotSize(for: index),
+                            height: dotSize(for: index)
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                        .animation(.easeInOut(duration: 0.15), value: focusedDotIndex)
+                        .focusable(true)
+                        .focused($focusedDotIndex, equals: index)
+                        .focusEffectDisabled()
+                        .onLongPressGesture(minimumDuration: 0) { selectPage(index) }
                 }
             }
             .onChange(of: focusedDotIndex) { _, newIndex in

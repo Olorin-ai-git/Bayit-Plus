@@ -103,67 +103,67 @@ struct TVHeroItem: View {
     // MARK: - Watch Now Button
 
     private var watchNowButton: some View {
-        Button(action: onWatchNow) {
-            HStack(spacing: TVDesignTokens.Spacing.sm) {
-                Image(systemName: "play.fill")
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
-                Text(localization.t("hero.watchNow"))
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
-            }
-            .foregroundStyle(.white)
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-            .padding(.vertical, TVDesignTokens.Spacing.md)
-            .background(
-                Capsule()
-                    .fill(DesignTokens.Primary.default)
-                    .brightness(watchNowFocused ? 0.22 : 0)
-            )
-            .shadow(
-                color: watchNowFocused ? DesignTokens.Primary.p500.opacity(0.75) : .clear,
-                radius: TVDesignTokens.Focus.shadowRadius,
-                x: 0,
-                y: 6
-            )
+        HStack(spacing: TVDesignTokens.Spacing.sm) {
+            Image(systemName: "play.fill")
+                .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+            Text(localization.t("hero.watchNow"))
+                .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
         }
-        .buttonStyle(.plain)
-        .focused($watchNowFocused)
-        .focusEffectDisabled()
+        .foregroundStyle(.white)
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.vertical, TVDesignTokens.Spacing.md)
+        .background(
+            Capsule()
+                .fill(DesignTokens.Primary.default)
+                .brightness(watchNowFocused ? 0.22 : 0)
+        )
+        .shadow(
+            color: watchNowFocused ? DesignTokens.Primary.p500.opacity(0.75) : .clear,
+            radius: TVDesignTokens.Focus.shadowRadius,
+            x: 0,
+            y: 6
+        )
         .scaleEffect(watchNowFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: watchNowFocused)
+        .focusable(true)
+        .focused($watchNowFocused)
+        .focusEffectDisabled()
+        .onLongPressGesture(minimumDuration: 0, perform: onWatchNow)
         .accessibilityLabel(localization.t("hero.watchNow"))
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - More Info Button
 
     private var moreInfoButton: some View {
-        Button(action: onMoreInfo) {
-            HStack(spacing: TVDesignTokens.Spacing.sm) {
-                Image(systemName: "info.circle")
-                    .font(.system(size: TVDesignTokens.FontSize.md))
-                Text(localization.t("common.moreInfo"))
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-            }
-            .foregroundStyle(.white)
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-            .padding(.vertical, TVDesignTokens.Spacing.md)
-            .background(
-                Capsule()
-                    .fill(Color.white.opacity(moreInfoFocused ? 0.18 : 0.08))
-            )
-            .overlay(
-                Capsule()
-                    .stroke(
-                        Color.white.opacity(moreInfoFocused ? 0.75 : 0.32),
-                        lineWidth: moreInfoFocused ? 2.5 : 1.5
-                    )
-            )
+        HStack(spacing: TVDesignTokens.Spacing.sm) {
+            Image(systemName: "info.circle")
+                .font(.system(size: TVDesignTokens.FontSize.md))
+            Text(localization.t("common.moreInfo"))
+                .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
         }
-        .buttonStyle(.plain)
-        .focused($moreInfoFocused)
-        .focusEffectDisabled()
+        .foregroundStyle(.white)
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.vertical, TVDesignTokens.Spacing.md)
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(moreInfoFocused ? 0.18 : 0.08))
+        )
+        .overlay(
+            Capsule()
+                .stroke(
+                    Color.white.opacity(moreInfoFocused ? 0.75 : 0.32),
+                    lineWidth: moreInfoFocused ? 2.5 : 1.5
+                )
+        )
         .scaleEffect(moreInfoFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: moreInfoFocused)
+        .focusable(true)
+        .focused($moreInfoFocused)
+        .focusEffectDisabled()
+        .onLongPressGesture(minimumDuration: 0, perform: onMoreInfo)
         .accessibilityLabel(localization.t("common.moreInfo"))
+        .accessibilityAddTraits(.isButton)
     }
 
     private func metadataText(_ text: String) -> some View {

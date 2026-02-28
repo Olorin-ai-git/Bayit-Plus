@@ -53,6 +53,7 @@ public struct GlassLiveControlButton: View {
             .accessibilityHint(accessibilityHint)
         #if os(tvOS)
             .focusable()
+            .focusEffectDisabled()
             .tvFocusStyle()
         #endif
     }
@@ -71,6 +72,9 @@ public struct GlassLiveControlButton: View {
                         .frame(width: 28, height: 36)
                 }
                 .buttonStyle(LiveControlButtonStyle())
+                #if os(tvOS)
+                    .focusEffectDisabled()
+                #endif
             }
         }
     }
@@ -102,7 +106,10 @@ public struct GlassLiveControlButton: View {
             .padding(.vertical, DesignTokens.Spacing.sm)
         }
         .buttonStyle(LiveControlButtonStyle())
-        .disabled(state == .disabled)
+        #if os(tvOS)
+            .focusEffectDisabled()
+        #endif
+            .disabled(state == .disabled)
     }
 
     @ViewBuilder

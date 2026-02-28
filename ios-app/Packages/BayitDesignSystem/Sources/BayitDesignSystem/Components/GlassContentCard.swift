@@ -6,7 +6,7 @@ public enum ContentPlaceholderIcon: String, Sendable {
     case series = "tv"
     case podcast = "mic.fill"
     case audiobook = "headphones"
-    case radio = "radio"
+    case radio
     case live = "antenna.radiowaves.left.and.right"
     case general = "photo"
 }
@@ -36,7 +36,9 @@ public struct GlassContentCard: View {
     private let maxVisibleFlags = 5
 
     /// Fixed height derived from width and aspect ratio for consistent card sizing
-    private var cardHeight: CGFloat { width / aspectRatio }
+    private var cardHeight: CGFloat {
+        width / aspectRatio
+    }
 
     public init(
         thumbnailURL: String?,
@@ -44,7 +46,7 @@ public struct GlassContentCard: View {
         subtitle: String? = nil,
         badge: String? = nil,
         subtitleFlags: [String]? = nil,
-        aspectRatio: CGFloat = 16/9,
+        aspectRatio: CGFloat = 16 / 9,
         width: CGFloat = 280,
         placeholderIcon: ContentPlaceholderIcon = .general,
         isInPlaylist: Bool = false,
@@ -120,7 +122,6 @@ public struct GlassContentCard: View {
 
     // MARK: - Action Buttons
 
-    @ViewBuilder
     private var actionButtons: some View {
         HStack(spacing: DesignTokens.Spacing.xs) {
             if let onPlaylistToggle {
@@ -166,8 +167,11 @@ public struct GlassContentCard: View {
                 )
         }
         .buttonStyle(.plain)
-        .disabled(isActionsLoading)
-        .accessibilityLabel(label)
+        #if os(tvOS)
+            .focusEffectDisabled()
+        #endif
+            .disabled(isActionsLoading)
+            .accessibilityLabel(label)
     }
 
     private func subtitleFlagsOverlay(_ flags: [String]) -> some View {
@@ -225,7 +229,7 @@ public struct GlassContentCard: View {
             LinearGradient(
                 colors: [
                     DesignTokens.Glass.purpleLight,
-                    DesignTokens.Glass.purpleStrong
+                    DesignTokens.Glass.purpleStrong,
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -236,7 +240,7 @@ public struct GlassContentCard: View {
                     .linearGradient(
                         colors: [
                             Color.white.opacity(0.25),
-                            Color.white.opacity(0.08)
+                            Color.white.opacity(0.08),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
