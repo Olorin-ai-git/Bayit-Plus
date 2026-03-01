@@ -3,30 +3,39 @@ import SwiftUI
 
 /// 8x8 chess board using the glass board image as background,
 /// with glass piece images overlaid via a transparent tap grid.
+/// The grid is inset to align with the board image's square area.
 struct ChessBoardView: View {
     let board: [[Character?]]
     let selectedSquare: (row: Int, col: Int)?
     let currentTurn: PlayerColor
     let onSquareTap: (Int, Int) -> Void
 
+    /// Percentage of the board image occupied by decorative border on each side.
+    private let boardInsetRatio: CGFloat = 0.10
+
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 8)
 
     var body: some View {
-        ZStack {
-            Image("chess-board")
-                .resizable()
-                .scaledToFit()
+        GeometryReader { geo in
+            let inset = geo.size.width * boardInsetRatio
 
-            LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(0 ..< 64, id: \.self) { index in
-                    let row = index / 8
-                    let col = index % 8
-                    squareView(row: row, col: col)
+            ZStack {
+                Image("chess-board")
+                    .resizable()
+                    .scaledToFit()
+
+                LazyVGrid(columns: columns, spacing: 0) {
+                    ForEach(0 ..< 64, id: \.self) { index in
+                        let row = index / 8
+                        let col = index % 8
+                        squareView(row: row, col: col)
+                    }
                 }
+                .padding(inset)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         .aspectRatio(1, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Chess board")
     }

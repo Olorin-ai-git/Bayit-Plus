@@ -7,6 +7,8 @@ public struct GlassButton: View {
         case secondary
         case ghost
         case destructive
+        case gradient
+        case light
     }
 
     public enum Size {
@@ -106,7 +108,7 @@ public struct GlassButton: View {
             }
             .padding(.vertical, size.verticalPadding)
             .padding(.horizontal, size.horizontalPadding)
-            .frame(maxWidth: variant == .ghost ? nil : .infinity)
+            .frame(maxWidth: (variant == .ghost) ? nil : .infinity)
             .foregroundStyle(foregroundColor)
             .background(background)
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
@@ -138,17 +140,23 @@ public struct GlassButton: View {
             Color.clear
         case .destructive:
             DesignTokens.ErrorColor.default
+        case .gradient:
+            DesignTokens.Gradient.ctaLinear
+        case .light:
+            Color.white.opacity(0.12)
         }
     }
 
     private var foregroundColor: Color {
         switch variant {
-        case .primary, .destructive:
+        case .primary, .destructive, .gradient:
             return .white
         case .secondary:
             return DesignTokens.Text.primary
         case .ghost:
             return DesignTokens.Primary.p400
+        case .light:
+            return .white
         }
     }
 
@@ -158,8 +166,10 @@ public struct GlassButton: View {
             return DesignTokens.Primary.p600
         case .secondary:
             return DesignTokens.Glass.border
-        case .ghost:
+        case .ghost, .gradient:
             return .clear
+        case .light:
+            return Color.white.opacity(0.2)
         case .destructive:
             return DesignTokens.ErrorColor.e600
         }
@@ -167,7 +177,8 @@ public struct GlassButton: View {
 
     private var borderLineWidth: CGFloat {
         switch variant {
-        case .primary, .destructive: return 0
+        case .primary, .destructive, .gradient: return 0
+        case .light: return 1
         case .secondary, .ghost: return 1
         }
     }

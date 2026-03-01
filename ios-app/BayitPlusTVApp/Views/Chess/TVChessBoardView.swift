@@ -9,24 +9,30 @@ struct TVChessBoardView: View {
     let currentTurn: PlayerColor
     let onSquareTap: (Int, Int) -> Void
 
+    private let boardInsetRatio: CGFloat = 0.10
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 8)
 
     var body: some View {
-        ZStack {
-            Image("chess-board")
-                .resizable()
-                .scaledToFit()
+        GeometryReader { geo in
+            let inset = geo.size.width * boardInsetRatio
 
-            LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(0 ..< 64, id: \.self) { index in
-                    let row = index / 8
-                    let col = index % 8
-                    squareView(row: row, col: col)
+            ZStack {
+                Image("chess-board")
+                    .resizable()
+                    .scaledToFit()
+
+                LazyVGrid(columns: columns, spacing: 0) {
+                    ForEach(0 ..< 64, id: \.self) { index in
+                        let row = index / 8
+                        let col = index % 8
+                        squareView(row: row, col: col)
+                    }
                 }
+                .padding(inset)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         .aspectRatio(1, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Chess board")
     }

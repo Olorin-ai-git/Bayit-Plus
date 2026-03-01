@@ -6,29 +6,41 @@ public struct GlassTextField: View {
     @Binding var text: String
     let isSecure: Bool
     let icon: Image?
+    let errorMessage: String?
     @FocusState private var isFocused: Bool
+    @State private var isPasswordVisible: Bool = false
 
     public init(
         _ placeholder: String,
         text: Binding<String>,
         isSecure: Bool = false,
-        icon: Image? = nil
+        icon: Image? = nil,
+        errorMessage: String? = nil
     ) {
         self.placeholder = placeholder
         _text = text
         self.isSecure = isSecure
         self.icon = icon
+        self.errorMessage = errorMessage
     }
 
     public var body: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            if let errorMessage {
+                errorTooltip(errorMessage)
+            }
+            fieldContent
+        }
+    }
+
+    private var fieldContent: some View {
         HStack(spacing: spacing) {
             if let icon {
                 icon
                     .font(.system(size: iconSize))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
-
-            if isSecure {
+            if isSecure && !isPasswordVisible {
                 SecureField(placeholder, text: $text)
                     .focused($isFocused)
                 #if os(macOS)
@@ -40,6 +52,14 @@ public struct GlassTextField: View {
                 #if os(macOS)
                     .textFieldStyle(.plain)
                 #endif
+            }
+            if isSecure {
+                Button { isPasswordVisible.toggle() } label: {
+                    Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                        .font(.system(size: iconSize))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                .buttonStyle(.plain)
             }
         }
         .font(.system(size: fontSize))
@@ -55,13 +75,25 @@ public struct GlassTextField: View {
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(
-                    isFocused
-                        ? DesignTokens.Glass.borderFocus
-                        : DesignTokens.Glass.borderLight,
-                    lineWidth: isFocused ? 2 : 1
+                    errorMessage != nil
+                        ? DesignTokens.ErrorColor.default
+                        : (isFocused
+                            ? DesignTokens.Glass.borderFocus
+                            : DesignTokens.Glass.borderLight),
+                    lineWidth: (isFocused || errorMessage != nil) ? 2 : 1
                 )
         )
         .animation(.easeInOut(duration: 0.2), value: isFocused)
+    }
+
+    private func errorTooltip(_ message: String) -> some View {
+        Text(message)
+            .font(.system(size: DesignTokens.FontSize.xs))
+            .foregroundStyle(.white)
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .padding(.vertical, DesignTokens.Spacing.xs)
+            .background(DesignTokens.ErrorColor.default)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
     }
 
     // MARK: - Platform-Adaptive Sizing

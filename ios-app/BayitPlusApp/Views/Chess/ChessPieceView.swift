@@ -11,7 +11,7 @@ struct ChessPieceView: View {
         Image(imageName)
             .resizable()
             .scaledToFit()
-            .padding(2)
+            .padding(0)
             .accessibilityLabel(accessibilityDescription)
     }
 
