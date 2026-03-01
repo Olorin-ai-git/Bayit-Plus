@@ -115,9 +115,45 @@ final class ChessViewModel {
     func sendMove(from: (Int, Int), to: (Int, Int)) async {
         let fromNotation = squareNotation(row: from.0, col: from.1)
         let toNotation = squareNotation(row: to.0, col: to.1)
-        let payload = "{\"type\":\"move\",\"from\":\"\(fromNotation)\",\"to\":\"\(toNotation)\"}"
-        await sendWSPayload(payload)
+
+        // Try WebSocket first, fall back to REST API
+        if let conn = connection, await conn.state == .connected {
+            let payload = "{\"type\":\"move\",\"from\":\"\(fromNotation)\",\"to\":\"\(toNotation)\"}"
+            await sendWSPayload(payload)
+        } else if let gameCode = game?.gameCode {
+            await sendMoveViaREST(gameCode: gameCode, from: fromNotation, to: toNotation)
+        }
         selectedSquare = nil
+    }
+
+    @MainActor
+    private func sendMoveViaREST(gameCode: String, from: String, to: String) async {
+        do {
+            let updated = try await repository.makeMove(gameCode: gameCode, from: from, to: to)
+            applyGameState(updated)
+            logger.info("Move via REST", context: ["from": from, "to": to])
+
+            // Poll for bot response after a delay
+            if updated.gameMode == .bot, updated.status == .active {
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_500_000_000)
+                    await pollGameState(gameCode: gameCode)
+                }
+            }
+        } catch {
+            logger.error("REST move failed", error: error)
+            self.error = "Move failed"
+        }
+    }
+
+    @MainActor
+    private func pollGameState(gameCode: String) async {
+        do {
+            let refreshed = try await repository.getGameState(gameId: gameCode)
+            applyGameState(refreshed)
+        } catch {
+            logger.error("Poll game state failed", error: error)
+        }
     }
 
     @MainActor func resign() async {

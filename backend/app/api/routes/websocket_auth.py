@@ -52,7 +52,7 @@ async def authenticate_websocket(
         )
         return None, True
 
-    payload = decode_token(raw["token"])
+    payload = await decode_token(raw["token"])
     if payload is None:
         await _close_with_error(websocket, "Invalid or expired token", 4001)
         return None, True

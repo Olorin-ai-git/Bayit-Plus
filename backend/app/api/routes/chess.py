@@ -142,6 +142,89 @@ async def get_chat_history(
     return {"messages": [msg.model_dump(mode="json") for msg in messages]}
 
 
+class MoveRequest(BaseModel):
+    """Request model for making a chess move."""
+
+    from_square: str
+    to_square: str
+    promotion: Optional[str] = None
+
+
+@router.post("/{game_code}/move")
+async def make_move(
+    game_code: str,
+    request: MoveRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Make a chess move via REST (used as WS fallback, especially for bot games)."""
+    game = await ChessGame.find_one({"game_code": game_code})
+    if not game:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
+        )
+
+    try:
+        updated_game, move_rec = await chess_service.make_move(
+            game_id=str(game.id),
+            user_id=str(current_user.id),
+            from_square=request.from_square,
+            to_square=request.to_square,
+            promotion=request.promotion,
+        )
+
+        response = {
+            "game": updated_game.model_dump(mode="json"),
+            "move": move_rec.model_dump(mode="json"),
+        }
+
+        # For bot games, trigger bot response
+        if updated_game.game_mode == GameMode.BOT and updated_game.status.value == "active":
+            from app.api.routes.websocket_chess import execute_bot_move
+
+            import asyncio
+
+            asyncio.create_task(
+                _execute_bot_move_rest(updated_game, game_code)
+            )
+
+        return response
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+    except Exception as e:
+        logger.error("Move failed", extra={"error": str(e), "game_code": game_code})
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Move failed: {str(e)}",
+        )
+
+
+async def _execute_bot_move_rest(game: ChessGame, game_code: str) -> None:
+    """Execute bot move for REST-based games."""
+    import asyncio
+
+    from app.services.bot_chess_service import get_bot_move
+
+    await asyncio.sleep(0.8)
+    try:
+        from_sq, to_sq, promo = await get_bot_move(
+            game.board_fen, game.bot_difficulty
+        )
+        await chess_service.make_move(
+            game_id=str(game.id),
+            user_id="BOT",
+            from_square=from_sq,
+            to_square=to_sq,
+            promotion=promo,
+        )
+    except Exception as exc:
+        logger.error(
+            "Bot REST move failed",
+            extra={"error": str(exc), "game_code": game_code},
+        )
+
+
 @router.post("/{game_code}/resign")
 async def resign_game(
     game_code: str, current_user: User = Depends(get_current_active_user)

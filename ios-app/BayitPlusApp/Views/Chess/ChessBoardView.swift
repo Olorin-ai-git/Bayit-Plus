@@ -1,3 +1,4 @@
+import BayitCore
 import BayitDesignSystem
 import SwiftUI
 
@@ -37,13 +38,26 @@ struct ChessBoardView: View {
             }
             .frame(width: size, height: size)
             .contentShape(Rectangle())
-            .gesture(
+            .simultaneousGesture(
                 SpatialTapGesture()
                     .onEnded { value in
                         let x = value.location.x - inset
                         let y = value.location.y - inset
                         let col = Int(x / cellSize)
                         let row = Int(y / cellSize)
+                        let file = col >= 0 && col < 8 ? String(UnicodeScalar(97 + col)!) : "?"
+                        let rank = row >= 0 && row < 8 ? String(8 - row) : "?"
+                        BayitLogger(category: "ChessBoard").info(
+                            "Tap",
+                            context: [
+                                "raw": "\(value.location.x),\(value.location.y)",
+                                "adj": "\(x),\(y)",
+                                "cell": "\(cellSize)",
+                                "square": "\(file)\(rank)",
+                                "row": "\(row)",
+                                "col": "\(col)",
+                            ]
+                        )
                         guard row >= 0, row < 8, col >= 0, col < 8 else { return }
                         onSquareTap(row, col)
                     }
