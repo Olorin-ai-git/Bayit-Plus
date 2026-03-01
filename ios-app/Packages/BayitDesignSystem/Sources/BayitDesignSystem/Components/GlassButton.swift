@@ -143,7 +143,7 @@ public struct GlassButton: View {
         case .gradient:
             DesignTokens.Gradient.ctaLinear
         case .light:
-            Color.white.opacity(0.12)
+            Color.white
         }
     }
 
@@ -156,7 +156,7 @@ public struct GlassButton: View {
         case .ghost:
             return DesignTokens.Primary.p400
         case .light:
-            return .white
+            return Color(red: 0.1, green: 0.1, blue: 0.1)
         }
     }
 

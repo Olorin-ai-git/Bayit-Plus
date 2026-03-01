@@ -56,6 +56,7 @@ struct TVChessBoardView: View {
 
                 if let piece {
                     TVChessPieceView(piece: piece)
+                        .scaleEffect(pieceScale(piece))
                 }
             }
             .frame(maxWidth: .infinity)
@@ -64,6 +65,15 @@ struct TVChessBoardView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(squareAccessibilityLabel(row: row, col: col, piece: piece))
         .accessibilityAddTraits(piece != nil ? .isButton : [])
+    }
+
+    private func pieceScale(_ piece: Character) -> CGFloat {
+        switch piece.lowercased() {
+        case "k", "q": return 1.35
+        case "r": return 1.2
+        case "b", "n": return 1.1
+        default: return 0.85
+        }
     }
 
     private func squareAccessibilityLabel(row: Int, col: Int, piece: Character?) -> String {

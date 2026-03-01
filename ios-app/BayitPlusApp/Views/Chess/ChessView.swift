@@ -170,9 +170,19 @@ struct ChessView: View {
 
     private func handleSquareTap(vm: ChessViewModel, row: Int, col: Int) {
         if let selected = vm.selectedSquare {
-            Task { await vm.sendMove(from: (selected.row, selected.col), to: (row, col)) }
-        } else if vm.board[row][col] != nil {
+            if selected.row == row, selected.col == col {
+                vm.selectedSquare = nil
+            } else if let piece = vm.board[row][col], isOwnPiece(piece, turn: vm.currentTurn) {
+                vm.selectedSquare = (row, col)
+            } else {
+                Task { await vm.sendMove(from: (selected.row, selected.col), to: (row, col)) }
+            }
+        } else if let piece = vm.board[row][col], isOwnPiece(piece, turn: vm.currentTurn) {
             vm.selectedSquare = (row, col)
         }
+    }
+
+    private func isOwnPiece(_ piece: Character, turn: PlayerColor) -> Bool {
+        turn == .white ? piece.isUppercase : piece.isLowercase
     }
 }
