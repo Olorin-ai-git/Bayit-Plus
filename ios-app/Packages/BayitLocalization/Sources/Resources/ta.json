@@ -3734,7 +3734,8 @@
     "opponent": "எதிரி",
     "whiteTurn": "வெள்ளையின் முறை",
     "you": "நீங்கள்",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "குறியீடு நகலெடு"
   },
   "children": {
     "title": "குழந்தைகள்",
@@ -6196,7 +6197,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6208,7 +6213,10 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
+      "notIncluded": [
+        "ஆஃப்லைன் பார்வை",
+        "குடும்ப சுயவிவரங்கள்"
+      ]
     },
     "family": {
       "name": "குடும்பம்",
@@ -9347,7 +9355,9 @@
       "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்",
       "title": "[TA] Me in the Story",
       "consent": "[TA] Consent Required",
-      "consentDesc": "[TA] Enable biometric features to personalize your experience"
+      "consentDesc": "[TA] Enable biometric features to personalize your experience",
+      "chess": "சதுரங்கம்",
+      "chessDesc": "குடும்பம் மற்றும் நண்பர்களுடன் சதுரங்கம் விளையாடுங்கள்"
     },
     "arCapture": {
       "processing": "[TA] Processing..."

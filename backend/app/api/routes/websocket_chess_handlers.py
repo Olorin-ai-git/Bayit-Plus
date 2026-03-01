@@ -51,12 +51,12 @@ async def _handle_move(message, game, game_code, user_id, websocket, broadcast_f
         )
         await broadcast_fn(game_code, {
             "type": "move",
-            "data": {"move": move_rec.dict(), "board_fen": game.board_fen,
-                     "current_turn": game.current_turn, "status": game.status},
+            "data": {"move": move_rec.model_dump(mode="json"), "board_fen": game.board_fen,
+                     "current_turn": game.current_turn.value, "status": game.status.value},
         })
-        if game.status in ["checkmate", "stalemate", "draw"]:
-            winner = ("white" if move_rec.player == "white" else "black") if game.status == "checkmate" else None
-            await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status, "winner": winner}})
+        if game.status.value in ["checkmate", "stalemate", "draw"]:
+            winner = ("white" if move_rec.player.value == "white" else "black") if game.status.value == "checkmate" else None
+            await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status.value, "winner": winner}})
         elif game.game_mode == GameMode.BOT and game.status == "active":
             asyncio.create_task(bot_move_fn(game, game_code))
     except ValueError as exc:
@@ -95,14 +95,14 @@ async def _handle_chat(message, game, game_code, user_id, user, websocket, broad
 
     await chat_msg.insert()
 
-    sender_data = chat_msg.dict()
+    sender_data = chat_msg.model_dump(mode="json")
     sender_data["display_message"] = chat_text
     sender_data["is_translated"] = False
     sender_data["translation_available"] = chat_msg.has_translations
     await websocket.send_json({"type": "chat", "data": sender_data})
 
     if opponent_id and game_code in active_game_connections:
-        opp_data = chat_msg.dict()
+        opp_data = chat_msg.model_dump(mode="json")
         if chat_msg.has_translations and chat_msg.translations:
             opp_data["display_message"] = list(chat_msg.translations.values())[0]
             opp_data["is_translated"] = True
@@ -122,7 +122,7 @@ async def _handle_resign(game, game_code, user_id, websocket, broadcast_fn):
     try:
         game = await chess_service.resign_game(str(game.id), user_id)
         winner = "black" if game.white_player and game.white_player.user_id == user_id else "white"
-        await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status, "winner": winner}})
+        await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status.value, "winner": winner}})
     except ValueError as exc:
         logger.warning("Resign failed", extra={"error": str(exc), "user_id": user_id})
         await websocket.send_json({"type": "error", "message": "Cannot resign at this time"})
@@ -131,7 +131,7 @@ async def _handle_resign(game, game_code, user_id, websocket, broadcast_fn):
 async def _handle_draw(game, game_code, user_id, websocket, broadcast_fn):
     try:
         game = await chess_service.offer_draw(str(game.id), user_id)
-        await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status, "winner": None}})
+        await broadcast_fn(game_code, {"type": "game_end", "data": {"status": game.status.value, "winner": None}})
     except ValueError as exc:
         logger.warning("Draw offer failed", extra={"error": str(exc), "user_id": user_id})
         await websocket.send_json({"type": "error", "message": "Cannot offer draw at this time"})

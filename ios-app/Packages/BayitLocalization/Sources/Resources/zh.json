@@ -3652,7 +3652,8 @@
     "opponent": "对手",
     "whiteTurn": "白方回合",
     "you": "你",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "复制代码"
   },
   "children": {
     "title": "儿童",
@@ -6112,8 +6113,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6125,7 +6135,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -9259,7 +9272,9 @@
       "feedbackDesc": "来自家人和朋友的消息",
       "title": "[ZH] Me in the Story",
       "consent": "[ZH] Consent Required",
-      "consentDesc": "[ZH] Enable biometric features to personalize your experience"
+      "consentDesc": "[ZH] Enable biometric features to personalize your experience",
+      "chess": "国际象棋",
+      "chessDesc": "与家人和朋友下国际象棋"
     },
     "arCapture": {
       "processing": "[ZH] Processing..."

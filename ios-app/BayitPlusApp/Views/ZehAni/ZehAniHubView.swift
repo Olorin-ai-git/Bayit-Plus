@@ -32,7 +32,6 @@ struct ZehAniHubView: View {
         .task { await loadProfile() }
     }
 
-    @ViewBuilder
     private func hubContent(profileId: String) -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
@@ -62,6 +61,13 @@ struct ZehAniHubView: View {
                     titleKey: "zehAni.hub.feedback",
                     descKey: "zehAni.hub.feedbackDesc",
                     destination: .zehAniFeedback(profileId: profileId)
+                )
+
+                featureCard(
+                    icon: "checkerboard.rectangle",
+                    titleKey: "zehAni.hub.chess",
+                    descKey: "zehAni.hub.chessDesc",
+                    destination: .chess(gameId: nil)
                 )
 
                 consentButton(profileId: profileId)
@@ -109,7 +115,7 @@ struct ZehAniHubView: View {
         }
     }
 
-    private func consentButton(profileId: String) -> some View {
+    private func consentButton(profileId _: String) -> some View {
         GlassCard {
             Button { showConsent = true } label: {
                 HStack(spacing: DesignTokens.Spacing.md) {

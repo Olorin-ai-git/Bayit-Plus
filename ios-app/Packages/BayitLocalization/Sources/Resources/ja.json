@@ -3426,7 +3426,8 @@
     "opponent": "対戦相手",
     "whiteTurn": "白の番",
     "you": "あなた",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "コードをコピー"
   },
   "children": {
     "title": "キッズ",
@@ -10199,7 +10200,9 @@
       "feedbackDesc": "家族や友人からのメッセージ",
       "title": "[JA] Me in the Story",
       "consent": "[JA] Consent Required",
-      "consentDesc": "[JA] Enable biometric features to personalize your experience"
+      "consentDesc": "[JA] Enable biometric features to personalize your experience",
+      "chess": "チェス",
+      "chessDesc": "家族や友人とチェスをする"
     },
     "arCapture": {
       "processing": "[JA] Processing..."

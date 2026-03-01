@@ -3677,7 +3677,8 @@
     "opponent": "יריב",
     "whiteTurn": "תור הלבן",
     "you": "אתה",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "העתק קוד"
   },
   "children": {
     "title": "ילדים",
@@ -6175,7 +6176,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -6187,7 +6192,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",
@@ -9345,7 +9353,9 @@
       "feedbackDesc": "הודעות מהמשפחה וחברים",
       "title": "[HE] Me in the Story",
       "consent": "[HE] Consent Required",
-      "consentDesc": "[HE] Enable biometric features to personalize your experience"
+      "consentDesc": "[HE] Enable biometric features to personalize your experience",
+      "chess": "שחמט",
+      "chessDesc": "שחקו שחמט עם משפחה וחברים"
     },
     "arCapture": {
       "processing": "[HE] Processing..."

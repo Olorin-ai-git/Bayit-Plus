@@ -111,6 +111,7 @@ struct MainTabView: View {
                     BreadcrumbBar()
                     resolver.view(for: route)
                 }
+                .toolbar(.hidden, for: .navigationBar)
             }
         }
     }

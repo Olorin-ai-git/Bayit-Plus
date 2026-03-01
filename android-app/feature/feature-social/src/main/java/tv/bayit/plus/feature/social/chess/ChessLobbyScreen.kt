@@ -54,13 +54,13 @@ internal fun ChessLobbyScreen(
             modifier = Modifier.fillMaxWidth(),
         ) {
             GlassButton(
-                text = "Play vs Player",
+                text = bayitString("chess.playVsFriend"),
                 onClick = { selectedMode = "pvp" },
                 isPrimary = selectedMode == "pvp",
                 modifier = Modifier.weight(1f),
             )
             GlassButton(
-                text = "Play vs Bot",
+                text = bayitString("chess.playVsBot"),
                 onClick = { selectedMode = "bot" },
                 isPrimary = selectedMode == "bot",
                 modifier = Modifier.weight(1f),
@@ -73,7 +73,7 @@ internal fun ChessLobbyScreen(
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
                 ) {
                     Text(
-                        text = "Choose your color",
+                        text = bayitString("chess.chooseColor"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.secondary,
                     )
@@ -81,13 +81,13 @@ internal fun ChessLobbyScreen(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                     ) {
                         GlassButton(
-                            text = "White",
+                            text = bayitString("chess.white"),
                             onClick = { selectedColor = "white" },
                             isPrimary = selectedColor == "white",
                             modifier = Modifier.weight(1f),
                         )
                         GlassButton(
-                            text = "Black",
+                            text = bayitString("chess.black"),
                             onClick = { selectedColor = "black" },
                             isPrimary = selectedColor == "black",
                             modifier = Modifier.weight(1f),
@@ -96,14 +96,14 @@ internal fun ChessLobbyScreen(
 
                     if (selectedMode == "bot") {
                         Text(
-                            text = "Difficulty",
+                            text = bayitString("chess.difficulty"),
                             style = MaterialTheme.typography.bodyMedium,
                             color = DesignTokens.Colors.Text.secondary,
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                             listOf("easy", "medium", "hard").forEach { diff ->
                                 GlassButton(
-                                    text = diff.replaceFirstChar { it.uppercase() },
+                                    text = bayitString("chess.$diff"),
                                     onClick = { selectedDifficulty = diff },
                                     isPrimary = selectedDifficulty == diff,
                                     modifier = Modifier.weight(1f),
@@ -113,7 +113,7 @@ internal fun ChessLobbyScreen(
                     }
 
                     GlassButton(
-                        text = if (selectedMode == "bot") "Play vs Bot" else "Create Game",
+                        text = if (selectedMode == "bot") bayitString("chess.playVsBot") else bayitString("chess.createGame"),
                         onClick = {
                             onCreateGame(
                                 selectedColor,
@@ -130,7 +130,7 @@ internal fun ChessLobbyScreen(
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                 Text(
-                    text = "Join by game code",
+                    text = bayitString("chess.joinByGameCode"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                 )
@@ -141,11 +141,11 @@ internal fun ChessLobbyScreen(
                     GlassTextField(
                         value = joinCode,
                         onValueChange = { if (it.length <= 6) joinCode = it.uppercase() },
-                        placeholder = "Enter game code",
+                        placeholder = bayitString("chess.enterGameCode"),
                         modifier = Modifier.weight(1f),
                     )
                     GlassButton(
-                        text = "Join",
+                        text = bayitString("chess.join"),
                         onClick = { if (joinCode.length == 6) onJoinGame(joinCode) },
                         enabled = joinCode.length == 6,
                     )

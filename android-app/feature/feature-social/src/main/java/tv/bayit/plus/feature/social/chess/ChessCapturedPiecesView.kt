@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private val PIECE_VALUE = mapOf(
@@ -32,11 +33,11 @@ internal fun ChessCapturedPiecesView(
         ) {
             CapturedRow(
                 pieces = capturedByBlack.sortedBy { PIECE_VALUE[it] ?: 0 },
-                label = "White captured",
+                label = bayitString("chess.whiteCaptured"),
             )
             CapturedRow(
                 pieces = capturedByWhite.sortedBy { PIECE_VALUE[it] ?: 0 },
-                label = "Black captured",
+                label = bayitString("chess.blackCaptured"),
             )
         }
     }

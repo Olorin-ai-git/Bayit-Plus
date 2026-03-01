@@ -3713,7 +3713,8 @@
     "opponent": "Adversaire",
     "whiteTurn": "Tour des blancs",
     "you": "Vous",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "Copier le Code"
   },
   "children": {
     "title": "Enfants",
@@ -6527,7 +6528,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -10149,7 +10153,9 @@
       "feedbackDesc": "Messages de la famille et des amis",
       "title": "[FR] Me in the Story",
       "consent": "[FR] Consent Required",
-      "consentDesc": "[FR] Enable biometric features to personalize your experience"
+      "consentDesc": "[FR] Enable biometric features to personalize your experience",
+      "chess": "Échecs",
+      "chessDesc": "Jouez aux échecs avec famille et amis"
     },
     "arCapture": {
       "processing": "[FR] Processing..."

@@ -3727,7 +3727,8 @@
     "opponent": "Oponente",
     "whiteTurn": "Turno de blancas",
     "you": "Tú",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "Copiar Código"
   },
   "children": {
     "title": "Niños",
@@ -6198,7 +6199,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6210,7 +6215,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",
@@ -9388,7 +9396,9 @@
       "feedbackDesc": "Mensajes de familia y amigos",
       "title": "[ES] Me in the Story",
       "consent": "[ES] Consent Required",
-      "consentDesc": "[ES] Enable biometric features to personalize your experience"
+      "consentDesc": "[ES] Enable biometric features to personalize your experience",
+      "chess": "Ajedrez",
+      "chessDesc": "Juega ajedrez con familia y amigos"
     },
     "arCapture": {
       "processing": "[ES] Processing..."

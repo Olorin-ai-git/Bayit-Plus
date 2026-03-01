@@ -32,8 +32,13 @@ enum ChessGameStatus: String, Codable, Sendable {
 
 /// Player information within a chess game.
 /// Maps to backend `ChessPlayer` pydantic model.
+/// Note: No CodingKeys needed — APIClient's `.convertFromSnakeCase` handles
+/// the snake_case -> camelCase mapping automatically.
 struct ChessPlayer: Codable, Sendable, Identifiable {
-    var id: String { userId }
+    var id: String {
+        userId
+    }
+
     let userId: String
     let userName: String
     let color: PlayerColor
@@ -41,20 +46,12 @@ struct ChessPlayer: Codable, Sendable, Identifiable {
     let isBot: Bool
     let timeRemainingMs: Int?
     let joinedAt: Date
-
-    enum CodingKeys: String, CodingKey {
-        case userId = "user_id"
-        case userName = "user_name"
-        case color
-        case isConnected = "is_connected"
-        case isBot = "is_bot"
-        case timeRemainingMs = "time_remaining_ms"
-        case joinedAt = "joined_at"
-    }
 }
 
 /// A chess game session.
 /// Maps to backend `ChessGame` document model response shape.
+/// Note: No CodingKeys needed — APIClient's `.convertFromSnakeCase` handles
+/// the snake_case -> camelCase mapping automatically.
 struct ChessGame: Codable, Identifiable, Sendable {
     let id: String
     let gameCode: String
@@ -70,21 +67,4 @@ struct ChessGame: Codable, Identifiable, Sendable {
     let botDifficulty: BotDifficulty?
     let createdAt: Date
     let updatedAt: Date
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case gameCode = "game_code"
-        case whitePlayer = "white_player"
-        case blackPlayer = "black_player"
-        case currentTurn = "current_turn"
-        case status
-        case boardFen = "board_fen"
-        case chatEnabled = "chat_enabled"
-        case voiceEnabled = "voice_enabled"
-        case timeControl = "time_control"
-        case gameMode = "game_mode"
-        case botDifficulty = "bot_difficulty"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-    }
 }

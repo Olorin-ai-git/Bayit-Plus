@@ -20,6 +20,7 @@ struct ChessView: View {
                     .tint(DesignTokens.Text.primary)
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
         .task { await setupAndLoad() }
         .onDisappear { Task { await viewModel?.disconnect() } }
     }

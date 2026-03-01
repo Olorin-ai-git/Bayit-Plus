@@ -45,6 +45,11 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
     private let client: APIClient
     private let webSocketManager: WebSocketManager
 
+    /// Backend wraps create/join/invite responses in {"game": {...}}.
+    private struct GameEnvelope: Decodable, Sendable {
+        let game: ChessGame
+    }
+
     init(client: APIClient, webSocketManager: WebSocketManager) {
         self.client = client
         self.webSocketManager = webSocketManager
@@ -53,22 +58,17 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
     // MARK: - ChessRepository
 
     func createGame(color: String, gameMode: String, botDifficulty: String?) async throws -> ChessGame {
-        struct CreateRequest: Encodable, Sendable {
+        struct Body: Encodable, Sendable {
             let color: String
             let gameMode: String
             let botDifficulty: String?
-            enum CodingKeys: String, CodingKey {
-                case color
-                case gameMode = "game_mode"
-                case botDifficulty = "bot_difficulty"
-            }
         }
-
-        return try await client.post(
+        let envelope = try await client.post(
             "/api/v1/chess/create",
-            body: CreateRequest(color: color, gameMode: gameMode, botDifficulty: botDifficulty),
-            as: ChessGame.self
+            body: Body(color: color, gameMode: gameMode, botDifficulty: botDifficulty),
+            as: GameEnvelope.self
         )
+        return envelope.game
     }
 
     func getGameState(gameId: String) async throws -> ChessGame {
@@ -79,35 +79,29 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
     }
 
     func joinGame(gameCode: String) async throws -> ChessGame {
-        struct JoinRequest: Encodable, Sendable {
+        struct Body: Encodable, Sendable {
             let gameCode: String
-            enum CodingKeys: String, CodingKey {
-                case gameCode = "game_code"
-            }
         }
-        return try await client.post(
+        let envelope = try await client.post(
             "/api/v1/chess/join",
-            body: JoinRequest(gameCode: gameCode),
-            as: ChessGame.self
+            body: Body(gameCode: gameCode),
+            as: GameEnvelope.self
         )
+        return envelope.game
     }
 
     func invitePlayer(friendName: String, color: String, timeControl: String?) async throws -> ChessGame {
-        struct InviteRequest: Encodable, Sendable {
+        struct Body: Encodable, Sendable {
             let friendName: String
             let color: String
             let timeControl: String?
-            enum CodingKeys: String, CodingKey {
-                case friendName = "friend_name"
-                case color
-                case timeControl = "time_control"
-            }
         }
-        return try await client.post(
+        let envelope = try await client.post(
             "/api/v1/chess/invite",
-            body: InviteRequest(friendName: friendName, color: color, timeControl: timeControl),
-            as: ChessGame.self
+            body: Body(friendName: friendName, color: color, timeControl: timeControl),
+            as: GameEnvelope.self
         )
+        return envelope.game
     }
 
     func connectWebSocket(

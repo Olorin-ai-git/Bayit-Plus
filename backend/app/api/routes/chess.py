@@ -73,7 +73,7 @@ async def create_game(
             game_mode=request.game_mode,
             bot_difficulty=request.bot_difficulty,
         )
-        return {"game_code": game.game_code, "game": game.dict()}
+        return {"game_code": game.game_code, "game": game.model_dump(mode="json")}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -92,7 +92,7 @@ async def join_game(
             user_id=str(current_user.id),
             user_name=current_user.name,
         )
-        return {"game": game.dict()}
+        return {"game": game.model_dump(mode="json")}
     except ValueError as e:
         raise HTTPException(
             status_code=(
@@ -119,7 +119,7 @@ async def get_game(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
         )
-    return game.dict()
+    return game.model_dump(mode="json")
 
 
 @router.get("/{game_code}/chat")
@@ -139,7 +139,7 @@ async def get_chat_history(
         .to_list()
     )
 
-    return {"messages": [msg.dict() for msg in messages]}
+    return {"messages": [msg.model_dump(mode="json") for msg in messages]}
 
 
 @router.post("/{game_code}/resign")
@@ -157,7 +157,7 @@ async def resign_game(
         game = await chess_service.resign_game(
             game_id=str(game.id), user_id=str(current_user.id)
         )
-        return {"game": game.dict()}
+        return {"game": game.model_dump(mode="json")}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -177,7 +177,7 @@ async def offer_draw(
         game = await chess_service.offer_draw(
             game_id=str(game.id), user_id=str(current_user.id)
         )
-        return {"game": game.dict()}
+        return {"game": game.model_dump(mode="json")}
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -259,8 +259,8 @@ async def invite_player(
         return {
             "success": True,
             "game_code": game.game_code,
-            "game": game.dict(),
-            "invite": invite.dict(),
+            "game": game.model_dump(mode="json"),
+            "invite": invite.model_dump(mode="json"),
             "friend": {
                 "id": str(friend.id),
                 "name": friend.name,

@@ -4855,11 +4855,7 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4872,10 +4868,7 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "features": [
@@ -10972,7 +10965,9 @@
       "contacts": "連絡先",
       "contactsDesc": "共有用の家族連絡先を管理",
       "feedback": "フィードバック",
-      "feedbackDesc": "家族や友人からのメッセージ"
+      "feedbackDesc": "家族や友人からのメッセージ",
+      "chess": "チェス",
+      "chessDesc": "家族や友人とチェスを楽しもう"
     }
   }
 }

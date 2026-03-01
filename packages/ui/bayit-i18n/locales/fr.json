@@ -10455,7 +10455,9 @@
       "contacts": "Contacts",
       "contactsDesc": "Gerez les contacts familiaux pour le partage",
       "feedback": "Retours",
-      "feedbackDesc": "Messages de la famille et des amis"
+      "feedbackDesc": "Messages de la famille et des amis",
+      "chess": "Échecs",
+      "chessDesc": "Jouez aux échecs avec famille et amis"
     }
   }
 }

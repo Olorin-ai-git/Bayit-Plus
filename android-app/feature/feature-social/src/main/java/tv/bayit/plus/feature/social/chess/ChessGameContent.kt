@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -32,7 +33,7 @@ internal fun ChessGameContent(
     ) {
         ChessPlayerInfoView(
             player = state.game.blackPlayer,
-            label = "Opponent",
+            label = bayitString("chess.opponent"),
             isYou = false,
         )
 
@@ -46,7 +47,7 @@ internal fun ChessGameContent(
 
         ChessPlayerInfoView(
             player = state.game.whitePlayer,
-            label = "You",
+            label = bayitString("chess.you"),
             isYou = true,
         )
 

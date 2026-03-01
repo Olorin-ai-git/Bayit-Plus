@@ -3646,7 +3646,8 @@
     "opponent": "প্রতিপক্ষ",
     "whiteTurn": "সাদার পালা",
     "you": "আপনি",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "কোড কপি করুন"
   },
   "children": {
     "title": "শিশু",
@@ -6109,7 +6110,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6121,7 +6126,10 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
+      "notIncluded": [
+        "অফলাইন দেখা",
+        "পরিবার প্রোফাইল"
+      ]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -9249,7 +9257,9 @@
       "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা",
       "title": "[BN] Me in the Story",
       "consent": "[BN] Consent Required",
-      "consentDesc": "[BN] Enable biometric features to personalize your experience"
+      "consentDesc": "[BN] Enable biometric features to personalize your experience",
+      "chess": "দাবা",
+      "chessDesc": "পরিবার ও বন্ধুদের সাথে দাবা খেলুন"
     },
     "arCapture": {
       "processing": "[BN] Processing..."

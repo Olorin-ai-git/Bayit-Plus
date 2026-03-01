@@ -3658,7 +3658,8 @@
     "opponent": "प्रतिद्वंद्वी",
     "whiteTurn": "सफ़ेद की बारी",
     "you": "आप",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "कोड कॉपी करें"
   },
   "children": {
     "title": "बच्चे",
@@ -6119,7 +6120,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6131,7 +6136,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -9273,7 +9281,9 @@
       "feedbackDesc": "परिवार और दोस्तों के संदेश",
       "title": "[HI] Me in the Story",
       "consent": "[HI] Consent Required",
-      "consentDesc": "[HI] Enable biometric features to personalize your experience"
+      "consentDesc": "[HI] Enable biometric features to personalize your experience",
+      "chess": "शतरंज",
+      "chessDesc": "परिवार और दोस्तों के साथ शतरंज खेलें"
     },
     "arCapture": {
       "processing": "[HI] Processing..."

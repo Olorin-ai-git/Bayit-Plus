@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.ChessPlayer
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -36,7 +37,7 @@ internal fun ChessPlayerInfoView(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = player?.userName ?: if (isYou) "You" else label,
+                text = player?.userName ?: if (isYou) bayitString("chess.you") else label,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = DesignTokens.FontSize.base,
@@ -58,6 +59,7 @@ internal fun ChessPlayerInfoView(
                 }
 
                 val isConnected = player?.isConnected ?: false
+                val statusDesc = if (isConnected) bayitString("chess.online") else bayitString("chess.offline")
                 Box(
                     modifier = Modifier
                         .size(10.dp)
@@ -66,9 +68,7 @@ internal fun ChessPlayerInfoView(
                             else DesignTokens.Colors.Text.disabled,
                             shape = CircleShape,
                         )
-                        .semantics {
-                            contentDescription = if (isConnected) "Online" else "Offline"
-                        },
+                        .semantics { contentDescription = statusDesc },
                 )
             }
         }

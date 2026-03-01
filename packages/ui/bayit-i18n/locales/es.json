@@ -5132,11 +5132,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -5148,10 +5144,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -9630,7 +9623,9 @@
       "contacts": "Contactos",
       "contactsDesc": "Gestiona contactos familiares para compartir",
       "feedback": "Comentarios",
-      "feedbackDesc": "Mensajes de familia y amigos"
+      "feedbackDesc": "Mensajes de familia y amigos",
+      "chess": "Ajedrez",
+      "chessDesc": "Juega al ajedrez con familia y amigos"
     }
   }
 }

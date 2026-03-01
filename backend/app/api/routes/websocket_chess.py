@@ -65,12 +65,12 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
         )
         await broadcast_to_game(game_code, {
             "type": "move",
-            "data": {"move": move_rec.dict(), "board_fen": game.board_fen,
-                     "current_turn": game.current_turn, "status": game.status},
+            "data": {"move": move_rec.model_dump(mode="json"), "board_fen": game.board_fen,
+                     "current_turn": game.current_turn.value, "status": game.status.value},
         })
-        if game.status in ["checkmate", "stalemate", "draw"]:
-            winner = ("white" if move_rec.player == "white" else "black") if game.status == "checkmate" else None
-            await broadcast_to_game(game_code, {"type": "game_end", "data": {"status": game.status, "winner": winner}})
+        if game.status.value in ["checkmate", "stalemate", "draw"]:
+            winner = ("white" if move_rec.player.value == "white" else "black") if game.status.value == "checkmate" else None
+            await broadcast_to_game(game_code, {"type": "game_end", "data": {"status": game.status.value, "winner": winner}})
     except Exception as exc:
         logger.error("Bot move failed", extra={"error": str(exc), "game_code": game_code})
         await broadcast_to_game(game_code, {"type": "error", "message": "An unexpected error occurred"})
@@ -155,13 +155,13 @@ def _build_game_state(game: ChessGame) -> dict:
         "type": "game_state",
         "data": {
             "id": str(game.id), "game_code": game.game_code,
-            "white_player": game.white_player.dict() if game.white_player else None,
-            "black_player": game.black_player.dict() if game.black_player else None,
-            "current_turn": game.current_turn, "status": game.status,
+            "white_player": game.white_player.model_dump(mode="json") if game.white_player else None,
+            "black_player": game.black_player.model_dump(mode="json") if game.black_player else None,
+            "current_turn": game.current_turn.value, "status": game.status.value,
             "board_fen": game.board_fen,
-            "move_history": [m.dict() for m in game.move_history],
+            "move_history": [m.model_dump(mode="json") for m in game.move_history],
             "chat_enabled": game.chat_enabled, "voice_enabled": game.voice_enabled,
-            "game_mode": game.game_mode, "bot_difficulty": game.bot_difficulty,
+            "game_mode": game.game_mode.value, "bot_difficulty": game.bot_difficulty.value if game.bot_difficulty else None,
         },
     }
 

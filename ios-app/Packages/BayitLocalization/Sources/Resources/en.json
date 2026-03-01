@@ -3678,7 +3678,8 @@
     "opponent": "Opponent",
     "whiteTurn": "White's Turn",
     "you": "You",
-    "code": "Code: {{code}}"
+    "code": "Code: {{code}}",
+    "copyCode": "Copy Code"
   },
   "children": {
     "title": "Kids",
@@ -6117,7 +6118,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6129,7 +6134,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -9003,7 +9011,9 @@
       "feedbackDesc": "Messages from family and friends",
       "title": "Me in the Story",
       "consent": "Consent Required",
-      "consentDesc": "Enable biometric features to personalize your experience"
+      "consentDesc": "Enable biometric features to personalize your experience",
+      "chess": "Chess",
+      "chessDesc": "Play chess with family and friends"
     },
     "arCapture": {
       "processing": "Processing..."

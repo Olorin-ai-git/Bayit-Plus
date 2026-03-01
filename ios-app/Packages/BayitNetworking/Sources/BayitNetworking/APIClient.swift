@@ -59,8 +59,49 @@ public actor APIClient {
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom(Self.decodeISO8601Date)
         jsonDecoder = decoder
+    }
+
+    // MARK: - Date Decoding
+
+    /// Decodes ISO 8601 dates from the backend, handling all formats emitted by
+    /// Python's `datetime`:
+    ///
+    /// - `"2024-01-15T10:30:45.123456Z"` — aware datetime with microseconds
+    /// - `"2024-01-15T10:30:45Z"` — aware datetime, whole seconds
+    /// - `"2024-01-15T10:30:45.123456"` — naive datetime (UTC, no Z) with microseconds
+    /// - `"2024-01-15T10:30:45"` — naive datetime (UTC, no Z), whole seconds
+    ///
+    /// Swift's built-in `.iso8601` strategy fails on both naive datetimes and
+    /// microsecond precision, causing a typeMismatch decode error.
+    private static func decodeISO8601Date(from decoder: Decoder) throws -> Date {
+        let container = try decoder.singleValueContainer()
+        let raw = try container.decode(String.self)
+
+        let withFractional = ISO8601DateFormatter()
+        withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = withFractional.date(from: raw) { return date }
+
+        let standard = ISO8601DateFormatter()
+        standard.formatOptions = [.withInternetDateTime]
+        if let date = standard.date(from: raw) { return date }
+
+        // Python's datetime.utcnow().isoformat() produces naive datetimes with no
+        // timezone suffix. Strip fractional seconds and append Z to normalize.
+        var normalized = raw
+        if let dotIndex = normalized.firstIndex(of: ".") {
+            normalized = String(normalized[..<dotIndex])
+        }
+        if !normalized.hasSuffix("Z") && !normalized.contains("+") {
+            normalized += "Z"
+        }
+        if let date = standard.date(from: normalized) { return date }
+
+        throw DecodingError.dataCorruptedError(
+            in: container,
+            debugDescription: "Cannot decode date string: \(raw)"
+        )
     }
 
     // MARK: - Public API
