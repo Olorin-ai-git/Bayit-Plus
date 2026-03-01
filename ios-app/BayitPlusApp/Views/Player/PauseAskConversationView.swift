@@ -1,6 +1,5 @@
 #if os(iOS)
     import AVFoundation
-    import AVKit
     import BayitDesignSystem
     import BayitLocalization
     import SwiftUI
@@ -114,8 +113,7 @@
             ZStack {
                 stillImage(url: avatarImageUrl)
                 if isUserVideoReady, let player = userPlayer {
-                    VideoPlayer(player: player)
-                        .scaleEffect(2)
+                    FillVideoLayer(player: player)
                 }
             }
             .frame(width: circleSize, height: circleSize)
@@ -133,8 +131,7 @@
                     stillImage(url: frameUrl)
                 }
                 if isCharacterVideoReady, let player = characterPlayer {
-                    VideoPlayer(player: player)
-                        .scaleEffect(2)
+                    FillVideoLayer(player: player)
                 }
             }
             .frame(width: circleSize, height: circleSize)

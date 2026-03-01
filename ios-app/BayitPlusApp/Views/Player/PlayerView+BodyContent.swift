@@ -126,22 +126,23 @@ extension PlayerView {
             catchUpAutoPromptOverlay
             catchUpSummaryOverlay
 
+            // Controls overlay — below full-screen interaction overlays so they appear on top
+            if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
+                controlsOverlay
+            }
+
+            // Full-screen interaction overlays (above controls)
             interactiveMomentOverlay
             dialogueOverlay
             pauseAskOverlay
             sharedInteractionOverlay
 
-            // Controls overlay
-            if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
-                controlsOverlay
-            }
-
-            // Recording indicator overlay
+            // Recording indicator overlay (always on top)
             if isRecording {
                 recordingIndicatorOverlay
             }
 
-            // Subtitle picker overlay
+            // Subtitle picker overlay (always on top)
             if showSubtitlePicker {
                 subtitlePickerOverlay
             }

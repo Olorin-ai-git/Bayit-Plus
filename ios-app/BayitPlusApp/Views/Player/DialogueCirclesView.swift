@@ -1,6 +1,5 @@
 #if os(iOS)
     import AVFoundation
-    import AVKit
     import BayitDesignSystem
     import SwiftUI
 
@@ -52,8 +51,7 @@
                 }
 
                 if isCharacterVideoReady, let player = characterPlayer {
-                    VideoPlayer(player: player)
-                        .scaledToFill()
+                    FillVideoLayer(player: player)
                 }
             }
             .frame(width: circleSize, height: circleSize)
