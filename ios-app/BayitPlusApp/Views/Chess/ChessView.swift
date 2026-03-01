@@ -35,49 +35,128 @@ struct ChessView: View {
             ErrorStateView(message: error, onRetry: {
                 Task { await retryLoad(vm) }
             })
+        } else if vm.game != nil {
+            activeGameContent(vm)
         } else {
-            ScrollView {
+            lobbyContent(vm)
+        }
+    }
+
+    // MARK: - Lobby
+
+    private func lobbyContent(_ vm: ChessViewModel) -> some View {
+        ScrollView {
+            VStack(spacing: DesignTokens.Spacing.lg) {
                 VStack(spacing: DesignTokens.Spacing.md) {
-                    playerInfoBar(
-                        player: vm.game?.blackPlayer,
-                        label: localization.t("chess.opponent")
-                    )
+                    GlassButton(
+                        localization.t("chess.createGame"),
+                        variant: .primary
+                    ) {
+                        Task { await vm.createGame(color: "white", gameMode: "pvp", botDifficulty: nil) }
+                    }
 
-                    ChessBoardView(
-                        board: vm.board,
-                        selectedSquare: vm.selectedSquare,
-                        currentTurn: vm.currentTurn,
-                        onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
-                    )
-                    .padding(.horizontal, DesignTokens.Spacing.sm)
-
-                    playerInfoBar(
-                        player: vm.game?.whitePlayer,
-                        label: localization.t("chess.you")
-                    )
-
-                    turnIndicator(vm)
-
-                    ChessControlsView(
-                        gameStatus: vm.gameStatus,
-                        drawOffered: vm.drawOffered,
-                        onResign: { Task { await vm.resign() } },
-                        onOfferDraw: { Task { await vm.offerDraw() } },
-                        onAcceptDraw: { Task { await vm.respondToDraw(accept: true) } },
-                        onDeclineDraw: { Task { await vm.respondToDraw(accept: false) } }
-                    )
-
-                    if !vm.moveHistory.isEmpty {
-                        ChessMoveHistoryView(moves: vm.moveHistory)
-                            .padding(.horizontal, DesignTokens.Spacing.sm)
+                    GlassButton(
+                        localization.t("chess.joinGame"),
+                        variant: .secondary
+                    ) {
+                        vm.showingJoinSheet = true
                     }
                 }
-                .padding(.vertical, DesignTokens.Spacing.md)
+
+                if vm.showingJoinSheet {
+                    joinGameSection(vm)
+                }
+            }
+            .padding(DesignTokens.Spacing.base)
+        }
+    }
+
+    private func joinGameSection(_ vm: ChessViewModel) -> some View {
+        GlassCard {
+            VStack(spacing: DesignTokens.Spacing.md) {
+                Text(localization.t("chess.enterGameCode"))
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+
+                HStack(spacing: DesignTokens.Spacing.sm) {
+                    GlassTextField(
+                        "XXXXXX",
+                        text: Binding(
+                            get: { vm.joinCode },
+                            set: { vm.joinCode = $0.uppercased() }
+                        )
+                    )
+
+                    GlassButton(localization.t("chess.joinGame"), variant: .primary) {
+                        Task { await vm.joinGame(code: vm.joinCode) }
+                    }
+                    .disabled(vm.joinCode.count != 6)
+                }
             }
         }
     }
 
+    // MARK: - Active Game
+
+    private func activeGameContent(_ vm: ChessViewModel) -> some View {
+        ScrollView {
+            VStack(spacing: DesignTokens.Spacing.md) {
+                if let game = vm.game, game.gameMode == .pvp, game.status == .waiting {
+                    gameCodeChip(game.gameCode)
+                }
+
+                playerInfoBar(
+                    player: vm.game?.blackPlayer,
+                    label: localization.t("chess.opponent")
+                )
+
+                ChessBoardView(
+                    board: vm.board,
+                    selectedSquare: vm.selectedSquare,
+                    currentTurn: vm.currentTurn,
+                    onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
+                )
+                .padding(.horizontal, DesignTokens.Spacing.sm)
+
+                playerInfoBar(
+                    player: vm.game?.whitePlayer,
+                    label: localization.t("chess.you")
+                )
+
+                turnIndicator(vm)
+
+                ChessControlsView(
+                    gameStatus: vm.gameStatus,
+                    drawOffered: vm.drawOffered,
+                    onResign: { Task { await vm.resign() } },
+                    onOfferDraw: { Task { await vm.offerDraw() } },
+                    onAcceptDraw: { Task { await vm.respondToDraw(accept: true) } },
+                    onDeclineDraw: { Task { await vm.respondToDraw(accept: false) } }
+                )
+
+                if !vm.moveHistory.isEmpty {
+                    ChessMoveHistoryView(moves: vm.moveHistory)
+                        .padding(.horizontal, DesignTokens.Spacing.sm)
+                }
+            }
+            .padding(.vertical, DesignTokens.Spacing.md)
+        }
+    }
+
     // MARK: - Subviews
+
+    private func gameCodeChip(_ code: String) -> some View {
+        HStack(spacing: DesignTokens.Spacing.sm) {
+            Text(localization.t("chess.gameCode") + ": \(code)")
+                .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+
+            GlassButton(localization.t("chess.copyCode"), variant: .ghost) {
+                UIPasteboard.general.string = code
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.base)
+    }
 
     private func playerInfoBar(player: ChessPlayer?, label: String) -> some View {
         HStack(spacing: DesignTokens.Spacing.sm) {

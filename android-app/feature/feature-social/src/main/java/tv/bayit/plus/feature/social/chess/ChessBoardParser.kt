@@ -1,6 +1,27 @@
 package tv.bayit.plus.feature.social.chess
 
 /**
+ * Parses a full FEN string into an 8×8 board of nullable chars.
+ * Uppercase = white pieces, lowercase = black pieces, null = empty square.
+ */
+fun parseFen(fen: String): List<List<Char?>> {
+    val ranks = fen.split(" ").firstOrNull()?.split("/").orEmpty()
+    val board = Array(8) { arrayOfNulls<Char>(8) }
+    for ((rowIndex, rank) in ranks.withIndex().take(8)) {
+        var col = 0
+        for (ch in rank) {
+            if (ch.isDigit()) {
+                col += ch.digitToInt()
+            } else {
+                if (col < 8) board[rowIndex][col] = ch
+                col++
+            }
+        }
+    }
+    return board.map { it.toList() }
+}
+
+/**
  * Extracts the Unicode chess piece at the given board position from a FEN rank string list.
  *
  * @param ranks the slash-separated rank strings from a FEN position (e.g. "rnbqkbnr/pppppppp/...")

@@ -2935,7 +2935,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -2947,7 +2951,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -3430,7 +3437,21 @@
     "easy": "Easy",
     "medium": "Medium",
     "hard": "Hard",
-    "chessBot": "Chess Bot"
+    "chessBot": "Chess Bot",
+    "disconnected": "Disconnected",
+    "theirTurn": "Their turn",
+    "copyCode": "Copy Code",
+    "whiteTurn": "White's Turn",
+    "blackTurn": "Black's Turn",
+    "you": "You",
+    "opponent": "Opponent",
+    "acceptDraw": "Accept Draw",
+    "declineDraw": "Decline Draw",
+    "whiteCaptured": "White captured",
+    "blackCaptured": "Black captured",
+    "online": "Online",
+    "offline": "Offline",
+    "joinByGameCode": "Join by game code"
   },
   "friends": {
     "title": "Friends & Opponents",

@@ -3125,7 +3125,14 @@
     "medium": "Medio",
     "hard": "Difícil",
     "chessBot": "Bot de Ajedrez",
-    "theirTurn": "Su turno"
+    "theirTurn": "Su turno",
+    "copyCode": "Copiar Código",
+    "whiteTurn": "Turno Blancas",
+    "blackTurn": "Turno Negras",
+    "you": "Tú",
+    "opponent": "Oponente",
+    "acceptDraw": "Aceptar Tablas",
+    "declineDraw": "Rechazar Tablas"
   },
   "children": {
     "title": "Niños",
@@ -5125,7 +5132,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -5137,7 +5148,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",

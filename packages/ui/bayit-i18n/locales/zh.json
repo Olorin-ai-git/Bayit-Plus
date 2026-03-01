@@ -3086,7 +3086,14 @@
     "hard": "困难",
     "chessBot": "国际象棋机器人",
     "disconnected": "已断开连接",
-    "theirTurn": "对方回合"
+    "theirTurn": "对方回合",
+    "copyCode": "复制代码",
+    "whiteTurn": "白方回合",
+    "blackTurn": "黑方回合",
+    "you": "你",
+    "opponent": "对手",
+    "acceptDraw": "接受平局",
+    "declineDraw": "拒绝平局"
   },
   "children": {
     "title": "儿童",
@@ -4370,8 +4377,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -4383,7 +4399,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",

@@ -1,90 +1,38 @@
 package tv.bayit.plus.feature.social.chess
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ChessRepository
 import tv.bayit.plus.core.model.ChessGame
-import tv.bayit.plus.core.network.NetworkConfig
-import tv.bayit.plus.core.network.websocket.ChannelType
-import tv.bayit.plus.core.network.websocket.WebSocketConnection
-import tv.bayit.plus.core.network.websocket.WebSocketManager
+import tv.bayit.plus.core.model.ChessMoveEntry
 import javax.inject.Inject
 
 @HiltViewModel
 class ChessViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val chessRepository: ChessRepository,
-    private val webSocketManager: WebSocketManager,
-    private val networkConfig: NetworkConfig,
+    private val chessWebSocketHandler: ChessWebSocketHandler,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
-    private val gameId: String? = savedStateHandle["gameId"]
-
-    private val _uiState = MutableStateFlow<ChessUiState>(ChessUiState.Loading)
+    private val _uiState = MutableStateFlow<ChessUiState>(ChessUiState.Lobby)
     val uiState: StateFlow<ChessUiState> = _uiState.asStateFlow()
 
-    private val _moveInput = MutableStateFlow("")
-    val moveInput: StateFlow<String> = _moveInput.asStateFlow()
+    private var wsJob: Job? = null
 
-    private var wsConnection: WebSocketConnection? = null
-
-    init {
-        if (gameId != null) {
-            loadGame(gameId)
-            connectWebSocket(gameId)
-        } else {
-            loadActiveGames()
-        }
-    }
-
-    fun updateMoveInput(move: String) { _moveInput.value = move }
-
-    fun submitMove() {
-        val currentState = _uiState.value as? ChessUiState.GameActive ?: return
-        val move = _moveInput.value.trim()
-        if (move.isBlank()) return
-        _moveInput.value = ""
-        viewModelScope.launch {
-            logger.info("Submitting chess move", mapOf("gameId" to currentState.game.id, "move" to move))
-            when (val result = chessRepository.makeMove(currentState.game.id, move)) {
-                is BayitResult.Success -> {
-                    val game = result.data as? ChessGame
-                    if (game != null) _uiState.value = ChessUiState.GameActive(game)
-                }
-                is BayitResult.Error -> {
-                    logger.error("Move failed", result.exception)
-                    _uiState.value = currentState.copy(
-                        errorMessage = result.message ?: result.exception.message.orEmpty(),
-                    )
-                }
-                is BayitResult.Loading -> Unit
-            }
-        }
-    }
-
-    fun createGame(timeControl: String) {
+    fun createGame(color: String, gameMode: String, botDifficulty: String?) {
         viewModelScope.launch {
             _uiState.value = ChessUiState.Loading
-            logger.info("Creating chess game", mapOf("timeControl" to timeControl))
-            when (val result = chessRepository.createGame(null, timeControl)) {
-                is BayitResult.Success -> {
-                    val game = result.data as? ChessGame
-                    if (game != null) { connectWebSocket(game.id); _uiState.value = ChessUiState.GameActive(game) }
-                }
+            logger.info("Creating chess game", mapOf("color" to color, "mode" to gameMode))
+            when (val result = chessRepository.createGame(color, gameMode, botDifficulty)) {
+                is BayitResult.Success -> transitionToGame(result.data)
                 is BayitResult.Error -> {
                     logger.error("Create game failed", result.exception)
                     _uiState.value = ChessUiState.Error(result.message ?: result.exception.message.orEmpty())
@@ -94,27 +42,14 @@ class ChessViewModel @Inject constructor(
         }
     }
 
-    fun resign() {
-        val currentState = _uiState.value as? ChessUiState.GameActive ?: return
+    fun joinGame(gameCode: String) {
         viewModelScope.launch {
-            logger.info("Resigning game", mapOf("gameId" to currentState.game.id))
-            when (val result = chessRepository.resignGame(currentState.game.id)) {
-                is BayitResult.Success -> loadGame(currentState.game.id)
-                is BayitResult.Error -> logger.error("Resign failed", result.exception)
-                is BayitResult.Loading -> Unit
-            }
-        }
-    }
-
-    private fun loadGame(id: String) {
-        viewModelScope.launch {
-            when (val result = chessRepository.getGame(id)) {
-                is BayitResult.Success -> {
-                    val game = result.data as? ChessGame
-                    if (game != null) _uiState.value = ChessUiState.GameActive(game)
-                }
+            _uiState.value = ChessUiState.Loading
+            logger.info("Joining chess game", mapOf("gameCode" to gameCode))
+            when (val result = chessRepository.joinGame(gameCode)) {
+                is BayitResult.Success -> transitionToGame(result.data)
                 is BayitResult.Error -> {
-                    logger.error("Game load failed", result.exception)
+                    logger.error("Join game failed", result.exception)
                     _uiState.value = ChessUiState.Error(result.message ?: result.exception.message.orEmpty())
                 }
                 is BayitResult.Loading -> Unit
@@ -122,50 +57,144 @@ class ChessViewModel @Inject constructor(
         }
     }
 
-    private fun loadActiveGames() {
+    fun tapSquare(row: Int, col: Int) {
+        val current = _uiState.value as? ChessUiState.GameActive ?: return
+        if (current.selectedSquare != null) {
+            val from = squareNotation(current.selectedSquare.first, current.selectedSquare.second)
+            val to = squareNotation(row, col)
+            val moveMsg = """{"type":"move","from":"$from","to":"$to"}"""
+            chessWebSocketHandler.send(moveMsg)
+            _uiState.value = current.copy(selectedSquare = null)
+            logger.info("Move sent", mapOf("from" to from, "to" to to))
+        } else if (current.board.getOrNull(row)?.getOrNull(col) != null) {
+            _uiState.value = current.copy(selectedSquare = Pair(row, col))
+        }
+    }
+
+    fun offerDraw(gameCode: String) {
+        chessWebSocketHandler.send("""{"type":"offer_draw"}""")
+        logger.info("Draw offered", mapOf("gameCode" to gameCode))
+    }
+
+    fun respondToDraw(accept: Boolean, gameCode: String) {
+        chessWebSocketHandler.send("""{"type":"draw_response","accept":$accept}""")
+        logger.info("Draw response sent", mapOf("accept" to accept.toString()))
+    }
+
+    fun resign(gameCode: String) {
         viewModelScope.launch {
-            when (val result = chessRepository.getActiveGames()) {
-                is BayitResult.Success -> _uiState.value = ChessUiState.GameList(result.data.filterIsInstance<ChessGame>())
-                is BayitResult.Error -> {
-                    logger.error("Active games load failed", result.exception)
-                    _uiState.value = ChessUiState.Error(result.message ?: result.exception.message.orEmpty())
-                }
+            chessWebSocketHandler.send("""{"type":"resign"}""")
+            logger.info("Resigned game", mapOf("gameCode" to gameCode))
+            when (val result = chessRepository.resignGame(gameCode)) {
+                is BayitResult.Success -> applyGameUpdate(result.data)
+                is BayitResult.Error -> logger.error("Resign REST call failed", result.exception)
                 is BayitResult.Loading -> Unit
             }
         }
     }
 
-    private fun connectWebSocket(id: String) {
-        viewModelScope.launch {
-            val wsUrl = "${networkConfig.webSocketBaseUrl}/ws/chess/$id"
-            try {
-                val connection = webSocketManager.connect(wsUrl, ChannelType.CHESS)
-                wsConnection = connection
-                connection.messages.onEach { raw -> handleIncomingMove(raw) }.launchIn(viewModelScope)
-            } catch (e: Exception) { logger.error("Chess WebSocket connection failed", e) }
+    private fun transitionToGame(game: ChessGame) {
+        val board = parseFen(game.boardFen)
+        _uiState.value = ChessUiState.GameActive(
+            game = game,
+            board = board,
+            moveHistory = game.moveHistory,
+            capturedByWhite = emptyList(),
+            capturedByBlack = emptyList(),
+        )
+        startWebSocket(game.gameCode)
+    }
+
+    private fun startWebSocket(gameCode: String) {
+        wsJob?.cancel()
+        wsJob = viewModelScope.launch {
+            chessWebSocketHandler.connect(gameCode).collect { event ->
+                handleWsEvent(event)
+            }
         }
     }
 
-    private fun handleIncomingMove(raw: String) {
-        try {
-            val json = Json.parseToJsonElement(raw).jsonObject
-            val type = json["type"]?.jsonPrimitive?.content
-            if (type == "move" || type == "game_update") {
-                val currentState = _uiState.value as? ChessUiState.GameActive
-                if (currentState != null) loadGame(currentState.game.id)
+    private fun handleWsEvent(event: ChessWsEvent) {
+        when (event) {
+            is ChessWsEvent.GameState -> applyGameUpdate(event.game)
+            is ChessWsEvent.Move -> {
+                val current = _uiState.value as? ChessUiState.GameActive ?: return
+                val newBoard = parseFen(event.fen)
+                val newEntry = ChessMoveEntry(
+                    moveNumber = current.moveHistory.size + 1,
+                    san = event.san,
+                    piece = "",
+                    captured = event.captured,
+                )
+                val (capturedByWhite, capturedByBlack) = updateCaptured(
+                    current.capturedByWhite, current.capturedByBlack, event.captured
+                )
+                _uiState.value = current.copy(
+                    board = newBoard,
+                    moveHistory = current.moveHistory + newEntry,
+                    capturedByWhite = capturedByWhite,
+                    capturedByBlack = capturedByBlack,
+                    selectedSquare = null,
+                )
             }
-        } catch (e: Exception) { logger.error("Failed to parse chess WebSocket message", e) }
+            is ChessWsEvent.DrawOffer -> {
+                val current = _uiState.value as? ChessUiState.GameActive ?: return
+                _uiState.value = current.copy(drawOffered = true)
+            }
+            is ChessWsEvent.DrawResponse -> {
+                val current = _uiState.value as? ChessUiState.GameActive ?: return
+                _uiState.value = if (event.accepted) {
+                    current.copy(drawOffered = false, game = current.game.copy(status = "draw"))
+                } else {
+                    current.copy(drawOffered = false)
+                }
+            }
+            is ChessWsEvent.GameEnd -> {
+                val current = _uiState.value as? ChessUiState.GameActive ?: return
+                _uiState.value = current.copy(game = current.game.copy(status = event.status))
+            }
+            is ChessWsEvent.Resign -> {
+                val current = _uiState.value as? ChessUiState.GameActive ?: return
+                _uiState.value = current.copy(game = current.game.copy(status = event.status))
+            }
+            is ChessWsEvent.ParseError -> Unit
+        }
+    }
+
+    private fun applyGameUpdate(game: ChessGame) {
+        val current = _uiState.value as? ChessUiState.GameActive
+        _uiState.value = ChessUiState.GameActive(
+            game = game,
+            board = parseFen(game.boardFen),
+            moveHistory = game.moveHistory,
+            capturedByWhite = current?.capturedByWhite ?: emptyList(),
+            capturedByBlack = current?.capturedByBlack ?: emptyList(),
+        )
+    }
+
+    private fun updateCaptured(
+        byWhite: List<Char>,
+        byBlack: List<Char>,
+        captured: String?,
+    ): Pair<List<Char>, List<Char>> {
+        if (captured.isNullOrBlank()) return Pair(byWhite, byBlack)
+        val ch = captured.firstOrNull() ?: return Pair(byWhite, byBlack)
+        return if (ch.isUpperCase()) {
+            Pair(byWhite, byBlack + ch)
+        } else {
+            Pair(byWhite + ch, byBlack)
+        }
+    }
+
+    fun squareNotation(row: Int, col: Int): String {
+        val file = ('a' + col).toString()
+        val rank = (8 - row).toString()
+        return "$file$rank"
     }
 
     override fun onCleared() {
         super.onCleared()
-        wsConnection?.let { webSocketManager.disconnect(it.id) }
+        chessWebSocketHandler.disconnect()
     }
 }
 
-sealed interface ChessUiState {
-    data object Loading : ChessUiState
-    data class GameList(val games: List<ChessGame>) : ChessUiState
-    data class GameActive(val game: ChessGame, val errorMessage: String? = null) : ChessUiState
-    data class Error(val message: String) : ChessUiState
-}

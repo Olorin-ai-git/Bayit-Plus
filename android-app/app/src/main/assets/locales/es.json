@@ -2772,7 +2772,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -2784,7 +2788,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",
@@ -3330,7 +3337,35 @@
     "gameOver": "Juego Terminado",
     "challenge": "Desafiar",
     "playedAsWhite": "Jugó con blancas",
-    "playedAsBlack": "Jugó con negras"
+    "playedAsBlack": "Jugó con negras",
+    "disconnected": "Desconectado",
+    "theirTurn": "Su turno",
+    "copyCode": "Copiar Código",
+    "whiteTurn": "Turno Blancas",
+    "blackTurn": "Turno Negras",
+    "you": "Tú",
+    "opponent": "Oponente",
+    "acceptDraw": "Aceptar Tablas",
+    "declineDraw": "Rechazar Tablas",
+    "whiteCaptured": "Capturadas por Blancas",
+    "blackCaptured": "Capturadas por Negras",
+    "online": "En línea",
+    "offline": "Desconectado",
+    "joinByGameCode": "Unirse con código de juego",
+    "showHints": "Mostrar Sugerencias Guía",
+    "sendingInvite": "Enviando invitación de juego a {{name}}...",
+    "inviteSent": "¡Invitación enviada a {{name}}! Código: {{code}}",
+    "inviteFailed": "No se encontró al usuario. Verifica el nombre e intenta de nuevo.",
+    "inviteReceived": "¡{{name}} te invitó a una partida de ajedrez!",
+    "joinInvite": "Unirse al Juego",
+    "gameMode": "Modo de Juego",
+    "playVsFriend": "Jugar contra Amigo",
+    "playVsBot": "Jugar contra Bot",
+    "difficulty": "Dificultad",
+    "easy": "Fácil",
+    "medium": "Medio",
+    "hard": "Difícil",
+    "chessBot": "Bot de Ajedrez"
   },
   "friends": {
     "title": "Amigos y Oponentes",

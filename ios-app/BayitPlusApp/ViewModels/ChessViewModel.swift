@@ -38,6 +38,8 @@ final class ChessViewModel {
     var drawOffered = false
 
     var selectedSquare: (row: Int, col: Int)?
+    var showingJoinSheet: Bool = false
+    var joinCode: String = ""
 
     let repository: any ChessRepository
     let authTokenProvider: AuthTokenProvider
@@ -90,6 +92,26 @@ final class ChessViewModel {
     }
 
     @MainActor
+    func joinGame(code: String) async {
+        isLoading = true
+        error = nil
+        do {
+            let joined = try await repository.joinGame(gameCode: code)
+            applyGameState(joined)
+            await connectWebSocket(gameCode: joined.gameCode)
+            showingJoinSheet = false
+            joinCode = ""
+            logger.info("Game joined", context: ["gameCode": joined.gameCode])
+        } catch {
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
+            logger.error("Failed to join game", error: error)
+        }
+        isLoading = false
+    }
+
+    @MainActor
     func sendMove(from: (Int, Int), to: (Int, Int)) async {
         let fromNotation = squareNotation(row: from.0, col: from.1)
         let toNotation = squareNotation(row: to.0, col: to.1)
@@ -125,8 +147,8 @@ final class ChessViewModel {
     @MainActor
     func applyGameState(_ game: ChessGame) {
         self.game = game
-        self.currentTurn = game.currentTurn
-        self.gameStatus = game.status
+        currentTurn = game.currentTurn
+        gameStatus = game.status
         parseFEN(game.boardFen)
     }
 

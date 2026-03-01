@@ -10,6 +10,7 @@ struct TVChessView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: ChessViewModel?
     @State private var showBotDifficulty = false
+    @State private var showJoinEntry = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -77,14 +78,45 @@ struct TVChessView: View {
 
                 GlassButton("New Game vs Bot", variant: .secondary, size: .medium) {
                     showBotDifficulty.toggle()
+                    showJoinEntry = false
                 }
                 .tvFocusStyle()
                 .accessibilityLabel("Start a new game against the computer")
+
+                GlassButton(localization.t("chess.joinGame"), variant: .ghost, size: .medium) {
+                    showJoinEntry.toggle()
+                    showBotDifficulty = false
+                }
+                .tvFocusStyle()
+                .accessibilityLabel("Join an existing game by code")
             }
 
             if showBotDifficulty {
                 botDifficultyButtons(vm)
             }
+
+            if showJoinEntry {
+                joinByCodeSection(vm)
+            }
+        }
+    }
+
+    private func joinByCodeSection(_ vm: ChessViewModel) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            TextField(localization.t("chess.enterGameCode"), text: Binding(
+                get: { vm.joinCode },
+                set: { vm.joinCode = $0.uppercased() }
+            ))
+            .textFieldStyle(.plain)
+            .font(.system(size: TVDesignTokens.FontSize.base))
+            .foregroundStyle(DesignTokens.Text.primary)
+            .frame(width: 300)
+
+            GlassButton(localization.t("chess.joinGame"), variant: .primary, size: .medium) {
+                Task { await vm.joinGame(code: vm.joinCode) }
+            }
+            .tvFocusStyle()
+            .disabled(vm.joinCode.count != 6)
         }
     }
 
