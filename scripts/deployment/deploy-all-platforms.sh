@@ -34,30 +34,45 @@ log_error() {
 
 # Platform deployment functions
 deploy_backend() {
-  log "📦 Deploying Backend Services (Python/FastAPI)..."
+  log "Deploying Backend Monolith (Python/FastAPI)..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_server.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Backend monolith deployment complete"
+}
 
-  cd "$PROJECT_ROOT"
+deploy_admin_service() {
+  log "Deploying Admin Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_admin.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Admin service deployment complete"
+}
 
-  # Install dependencies
-  log "Installing backend dependencies..."
-  cd backend
-  poetry install --no-dev
-  cd ..
+deploy_b2b_api() {
+  log "Deploying Olorin B2B API..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_b2b_api.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "B2B API deployment complete"
+}
 
-  # Deploy to Cloud Run
-  log "Deploying to Cloud Run..."
-  gcloud run deploy bayit-backend-production \
-    --region=us-east1 \
-    --source=. \
-    --set-env-vars="ENV=production" \
-    --allow-unauthenticated \
-    --memory=2Gi \
-    --cpu=2 \
-    --timeout=300 \
-    --min-instances=1 \
-    --max-instances=10
+deploy_search_service() {
+  log "Deploying Search Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_search.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Search service deployment complete"
+}
 
-  log "✅ Backend deployment complete"
+deploy_ai_service() {
+  log "Deploying AI Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_ai.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "AI service deployment complete"
+}
+
+deploy_workers() {
+  log "Deploying Workers + Cron Jobs..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_workers.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Workers deployment complete"
+}
+
+deploy_ws_gateway() {
+  log "Deploying WebSocket Gateway..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_ws_gateway.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "WebSocket Gateway deployment complete"
 }
 
 deploy_shared_packages() {
@@ -245,13 +260,27 @@ main() {
   log "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
   echo ""
 
-  # Platform deployment order (as specified in plan)
+  # Platform deployment order
 
-  # 1. Backend Services
+  # 1. Backend Monolith
   deploy_backend
   echo ""
 
-  # 2. Shared Packages
+  # 2. Extracted Services (Cloud Run)
+  deploy_admin_service
+  echo ""
+  deploy_b2b_api
+  echo ""
+  deploy_search_service
+  echo ""
+  deploy_ai_service
+  echo ""
+  deploy_workers
+  echo ""
+  deploy_ws_gateway
+  echo ""
+
+  # 3. Shared Packages
   deploy_shared_packages
   echo ""
 
@@ -296,13 +325,19 @@ Environment: $ENVIRONMENT
 Timestamp: $(date '+%Y-%m-%d %H:%M:%S')
 
 Platforms Deployed:
-  ✅ Backend Services (Cloud Run)
-  ✅ Shared Packages (npm)
-  ✅ Web Application - Desktop (Firebase Hosting)
-  ✅ Web Application - Mobile (Firebase Hosting)
-  ✅ Documentation Portal (Firebase Hosting)
-  ✅ Mobile Apps (iOS/Android bundles)
-  ✅ tvOS Application (tvOS bundle)
+  Backend Monolith (Cloud Run)
+  Admin Service (Cloud Run)
+  B2B API (Cloud Run)
+  Search Service (Cloud Run)
+  AI Service (Cloud Run)
+  Workers + Cron Jobs (Cloud Run)
+  WebSocket Gateway (Cloud Run)
+  Shared Packages (npm)
+  Web Application - Desktop (Firebase Hosting)
+  Web Application - Mobile (Firebase Hosting)
+  Documentation Portal (Firebase Hosting)
+  Mobile Apps (iOS/Android bundles)
+  tvOS Application (tvOS bundle)
 
 Next Steps:
 SUMMARYEOF

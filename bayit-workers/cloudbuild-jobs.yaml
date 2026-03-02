@@ -1,0 +1,28 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: '.'
+    args:
+      - 'build'
+      - '--no-cache'
+      - '-f'
+      - './bayit-workers/Dockerfile.jobs'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bayit-jobs:${_BUILD_ID}'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/bayit-jobs:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/bayit-jobs:${_BUILD_ID}']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/bayit-jobs:latest']
+
+images:
+  - 'gcr.io/$PROJECT_ID/bayit-jobs:${_BUILD_ID}'
+  - 'gcr.io/$PROJECT_ID/bayit-jobs:latest'
+
+substitutions:
+  _BUILD_ID: 'latest'
+
+timeout: '1200s'

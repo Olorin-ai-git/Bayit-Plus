@@ -1,0 +1,100 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: '.'
+    args:
+      - 'build'
+      - '--no-cache'
+      - '-f'
+      - './olorin-b2b-api/Dockerfile'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/olorin-b2b-api:${_BUILD_ID}'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/olorin-b2b-api:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/olorin-b2b-api:${_BUILD_ID}']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/olorin-b2b-api:latest']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'olorin-b2b-api'
+      - '--image=gcr.io/$PROJECT_ID/olorin-b2b-api:${_BUILD_ID}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=${_MEMORY}'
+      - '--cpu=${_CPU}'
+      - '--timeout=${_TIMEOUT}'
+      - '--min-instances=${_MIN_INSTANCES}'
+      - '--max-instances=${_MAX_INSTANCES}'
+
+      # CPU boost for faster cold start
+      - '--cpu-boost'
+
+      # Environment Variables (mirrors monolith - required by shared Settings class)
+      - '--set-env-vars=ENVIRONMENT=production'
+      - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+      - '--set-env-vars=LOG_LEVEL=INFO'
+      - '--set-env-vars=DEBUG=false'
+      - '--set-env-vars=MONGODB_DB_NAME=bayit_plus'
+      - '--set-env-vars=SERVICE_NAME=olorin-b2b-api'
+      - '--set-env-vars=I18N_LOCALES_PATH=/app/shared/i18n/locales'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_CRON=0 2 * * *'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_TIME=2:00 AM Israel Time'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_MODE=Rule-based'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_COST=~$0.01/day'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_STATUS=ENABLED'
+      - '--set-env-vars=LIBRARIAN_DAILY_AUDIT_DESCRIPTION=Scans recent content and random 10% sample. Auto-fixes safe issues.'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_CRON=0 3 * * 0'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_TIME=Sundays 3:00 AM Israel Time'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_MODE=AI Agent'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_COST=~$0.50/week'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_STATUS=ENABLED'
+      - '--set-env-vars=LIBRARIAN_WEEKLY_AUDIT_DESCRIPTION=Claude decides what to check and fix. Sends email only for major issues.'
+      - '--set-env-vars=LIBRARIAN_MAX_ITERATIONS=50'
+      - '--set-env-vars=LIBRARIAN_DEFAULT_BUDGET_USD=10.0'
+      - '--set-env-vars=LIBRARIAN_MIN_BUDGET_USD=0.1'
+      - '--set-env-vars=LIBRARIAN_MAX_BUDGET_USD=20.0'
+      - '--set-env-vars=LIBRARIAN_BUDGET_STEP_USD=0.5'
+      - '--set-env-vars=LIBRARIAN_REPORTS_LIMIT=10'
+      - '--set-env-vars=LIBRARIAN_ACTIONS_LIMIT=50'
+      - '--set-env-vars=LIBRARIAN_ACTIVITY_PAGE_SIZE=10'
+      - '--set-env-vars=LIBRARIAN_ID_TRUNCATE_LENGTH=8'
+      - '--set-env-vars=LIBRARIAN_MODAL_MAX_HEIGHT=600'
+      - '--set-env-vars=WEBAUTHN_RP_ID=bayit.tv'
+      - '--set-env-vars=WEBAUTHN_RP_NAME=Bayit Plus'
+      - '--set-env-vars=AUDIBLE_INTEGRATION_ENABLED=true'
+      - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'
+      - '--set-env-vars=CAST_ENABLE_CHROMECAST=true'
+
+      # Secrets (full monolith set - required by shared Settings class)
+      - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest,CSRF_ENABLED=csrf-enabled:latest,ADMIN_PASSWORD=bayit-admin-password:latest,ADMIN_EMAIL=bayit-admin-email:latest,WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest,REDIS_URL=bayit-redis-url:latest,MONGODB_URI=bayit-mongodb-uri:latest,OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest,CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest,STATION_AI_MONGODB_URI=station-ai-mongodb-uri:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest'
+      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,ELEVENLABS_WEBHOOK_SECRET=bayit-elevenlabs-webhook-secret:latest,TMDB_API_KEY=bayit-tmdb-api-key:latest,TMDB_API_TOKEN=bayit-tmdb-api-token:latest,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,PICOVOICE_ACCESS_KEY=picovoice-access-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest,EXA_API_KEY=bayit-exa-api-key:latest'
+      - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-backend-cors-origins:latest,FRONTEND_URL=bayit-frontend-url:latest,FRONTEND_WEB_URL=bayit-frontend-web-url:latest,SENTRY_DSN=bayit-sentry-dsn:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest,FEATURE_SCENE_SEARCH_ENABLED=bayit-feature-scene-search-enabled:latest'
+      - '--update-secrets=ELEVENLABS_DEFAULT_VOICE_ID=bayit-elevenlabs-default-voice-id:latest,ELEVENLABS_HEBREW_VOICE_ID=bayit-elevenlabs-hebrew-voice-id:latest,ELEVENLABS_ENGLISH_VOICE_ID=bayit-elevenlabs-english-voice-id:latest,ELEVENLABS_ASSISTANT_VOICE_ID=bayit-elevenlabs-assistant-voice-id:latest,ELEVENLABS_SUPPORT_VOICE_ID=bayit-elevenlabs-support-voice-id:latest,ELEVENLABS_HEBREW_MALE_VOICE_ID=bayit-elevenlabs-hebrew-male-voice-id:latest,ELEVENLABS_ENGLISH_MALE_VOICE_ID=bayit-elevenlabs-english-male-voice-id:latest'
+      - '--update-secrets=APPLE_KEY_ID=bayit-apple-key-id:latest,APPLE_TEAM_ID=bayit-apple-team-id:latest,APPLE_BUNDLE_ID_IOS=bayit-apple-bundle-id-ios:latest,APPLE_BUNDLE_ID_TVOS=bayit-apple-bundle-id-tvos:latest,GEONAMES_USERNAME=bayit-geonames-username:latest,GEONAMES_API_BASE_URL=bayit-geonames-api-base-url:latest,GEONAMES_TIMEOUT_SECONDS=bayit-geonames-timeout-seconds:latest,LOCATION_CACHE_TTL_HOURS=bayit-location-cache-ttl-hours:latest,LOCATION_REVERSE_GEOCODE_RATE_LIMIT=bayit-location-reverse-geocode-rate-limit:latest,LOCATION_CONTENT_RATE_LIMIT=bayit-location-content-rate-limit:latest,LOCATION_ENCRYPTION_KEY=bayit-location-encryption-key:latest'
+      - '--update-secrets=SERIES_LINKER_TITLE_SIMILARITY_THRESHOLD=bayit-series-linker-title-similarity:latest,SERIES_LINKER_AUTO_LINK_CONFIDENCE_THRESHOLD=bayit-series-linker-auto-link-confidence:latest,SERIES_LINKER_AUTO_LINK_BATCH_SIZE=bayit-series-linker-batch-size:latest,SERIES_LINKER_DUPLICATE_RESOLUTION_STRATEGY=bayit-series-linker-duplicate-strategy:latest,SERIES_LINKER_CREATE_MISSING_SERIES=bayit-series-linker-create-missing:latest'
+      - '--update-secrets=JEWISH_NEWS_CACHE_TTL_MINUTES=bayit-jewish-news-cache-ttl:latest,JEWISH_NEWS_SYNC_INTERVAL_MINUTES=bayit-jewish-news-sync-interval:latest,JEWISH_NEWS_REQUEST_TIMEOUT_SECONDS=bayit-jewish-news-timeout:latest,HEBCAL_API_BASE_URL=bayit-hebcal-api-url:latest,SEFARIA_API_BASE_URL=bayit-sefaria-api-url:latest,JEWISH_CALENDAR_CACHE_TTL_HOURS=bayit-jewish-calendar-cache-ttl:latest,COMMUNITY_SEARCH_RADIUS_MILES=bayit-community-search-radius:latest,COMMUNITY_DEFAULT_REGION=bayit-community-default-region:latest,US_JEWISH_REGIONS=bayit-us-jewish-regions:latest,COMMUNITY_SCRAPE_INTERVAL_HOURS=bayit-community-scrape-interval:latest,YUTORAH_RSS_URL=bayit-yutorah-rss-url:latest,CHABAD_MULTIMEDIA_RSS_URL=bayit-chabad-multimedia-rss-url:latest,TORAHANYTIME_RSS_URL=bayit-torahanytime-rss-url:latest'
+      - '--update-secrets=TURBO_TOKEN=turbo-token:latest,TURBO_TEAM=turbo-team:latest'
+      - '--update-secrets=VOICE_PROACTIVE_SUGGESTIONS_ENABLED=VOICE_PROACTIVE_SUGGESTIONS_ENABLED:latest,VOICE_MULTI_LANGUAGE_ENABLED=VOICE_MULTI_LANGUAGE_ENABLED:latest,VOICE_SHORTCUTS_ENABLED=VOICE_SHORTCUTS_ENABLED:latest,AVATAR_ANIMATIONS_ENABLED=AVATAR_ANIMATIONS_ENABLED:latest,VOICE_ANALYTICS_ENABLED=VOICE_ANALYTICS_ENABLED:latest,VOICE_ANALYTICS_SAMPLE_RATE=VOICE_ANALYTICS_SAMPLE_RATE:latest,AVATAR_CACHE_TTL=AVATAR_CACHE_TTL:latest,VOICE_WEB_MICROPHONE_REQUIRED=VOICE_WEB_MICROPHONE_REQUIRED:latest,VOICE_MOBILE_BACKGROUND_LISTENING=VOICE_MOBILE_BACKGROUND_LISTENING:latest,VOICE_TVOS_SIRI_REMOTE_INTEGRATION=VOICE_TVOS_SIRI_REMOTE_INTEGRATION:latest,FERNET_ENCRYPTION_KEY=FERNET_ENCRYPTION_KEY:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/olorin-b2b-api:${_BUILD_ID}'
+  - 'gcr.io/$PROJECT_ID/olorin-b2b-api:latest'
+
+substitutions:
+  _BUILD_ID: 'latest'
+  _REGION: 'us-east1'
+  _MEMORY: '1Gi'
+  _CPU: '1'
+  _TIMEOUT: '300'
+  _MIN_INSTANCES: '1'
+  _MAX_INSTANCES: '5'
+
+timeout: '2400s'

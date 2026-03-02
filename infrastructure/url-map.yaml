@@ -1,0 +1,138 @@
+# GCP Cloud Load Balancer URL Map for Bayit+ Service Mesh
+#
+# Routes requests from api.bayit.tv to the correct Cloud Run service.
+# The monolith (bayit-backend-production) is the default backend.
+# As services are extracted, path rules are activated to route traffic.
+#
+# Apply via: ./infrastructure/deploy-lb.sh
+
+# Serverless NEG (Network Endpoint Group) definitions.
+# Each Cloud Run service gets a NEG that the load balancer can route to.
+serverless_negs:
+  - name: bayit-backend-neg
+    service: bayit-backend-production
+    region: us-east1
+
+  - name: bayit-ws-gateway-neg
+    service: bayit-ws-gateway
+    region: us-east1
+
+  - name: bayit-admin-neg
+    service: bayit-admin
+    region: us-east1
+
+  - name: olorin-b2b-api-neg
+    service: olorin-b2b-api
+    region: us-east1
+
+  - name: bayit-search-neg
+    service: bayit-search
+    region: us-east1
+
+  - name: bayit-ai-neg
+    service: bayit-ai
+    region: us-east1
+
+  - name: bayit-workers-neg
+    service: bayit-workers
+    region: us-east1
+
+# Backend services (one per Cloud Run service).
+# Each backend service references its NEG.
+# Note: serverless NEGs do not support timeout on backend services.
+backend_services:
+  - name: bayit-backend-bs
+    neg: bayit-backend-neg
+
+  - name: bayit-ws-gateway-bs
+    neg: bayit-ws-gateway-neg
+
+  - name: bayit-admin-bs
+    neg: bayit-admin-neg
+
+  - name: olorin-b2b-api-bs
+    neg: olorin-b2b-api-neg
+
+  - name: bayit-search-bs
+    neg: bayit-search-neg
+
+  - name: bayit-ai-bs
+    neg: bayit-ai-neg
+
+  - name: bayit-workers-bs
+    neg: bayit-workers-neg
+
+# URL Map: path-based routing.
+# default_service handles any path not matched by a rule.
+# Path matcher name: bayit-services
+url_map:
+  name: bayit-api-url-map
+  default_service: bayit-backend-bs
+
+  path_rules:
+    # ACTIVE - Phase 1a: Admin service (deployed 2026-03-02)
+    - paths: ["/api/v1/admin/*"]
+      service: bayit-admin-bs
+
+    # ACTIVE - Phase 1b: Olorin B2B API (deployed 2026-03-02)
+    - paths: ["/api/v1/olorin/*"]
+      service: olorin-b2b-api-bs
+
+    # ACTIVE - Phase 2b: Search service (deployed 2026-03-02)
+    - paths: ["/api/v1/search/*"]
+      service: bayit-search-bs
+
+    # ACTIVE - Phase 2a: AI service (deployed 2026-03-02)
+    - paths:
+        - "/api/v1/avatar-outfits/*"
+        - "/api/v1/avatar/*"
+        - "/api/v1/beta/*"
+        - "/api/v1/bilingual-dubbing/*"
+        - "/api/v1/chameleon/*"
+        - "/api/v1/chat/*"
+        - "/api/v1/comprehension/*"
+        - "/api/v1/coupons/*"
+        - "/api/v1/cultural/*"
+        - "/api/v1/dubbing/*"
+        - "/api/v1/family-snaps/*"
+        - "/api/v1/gamification/*"
+        - "/api/v1/grandparent-bridge/*"
+        - "/api/v1/interactive-missions/*"
+        - "/api/v1/leaderboard/*"
+        - "/api/v1/live-dubbing/*"
+        - "/api/v1/missions/*"
+        - "/api/v1/movie-interactions/*"
+        - "/api/v1/nlp/*"
+        - "/api/v1/parties/*"
+        - "/api/v1/phonetic-mirror/*"
+        - "/api/v1/quiz/*"
+        - "/api/v1/rewards/*"
+        - "/api/v1/shekels/*"
+        - "/api/v1/star-story/*"
+        - "/api/v1/talk-back/*"
+        - "/api/v1/vod-interactions/*"
+        - "/api/v1/voice/*"
+        - "/api/v1/zeh-ani/*"
+        - "/api/v1/zine/*"
+      service: bayit-ai-bs
+
+# HTTPS proxy and forwarding rules (created 2026-03-02)
+https_proxy:
+  name: bayit-api-https-proxy
+  url_map: bayit-api-url-map
+  ssl_cert: bayit-api-ssl-cert
+  domain: api.bayit.tv
+
+forwarding_rules:
+  - name: bayit-api-forwarding-rule
+    ip: 34.49.1.183
+    port: 443
+    target: bayit-api-https-proxy
+  - name: bayit-api-http-redirect-rule
+    ip: 34.49.1.183
+    port: 80
+    target: bayit-api-http-proxy
+    note: HTTP-to-HTTPS 301 redirect
+
+# DNS: Point api.bayit.tv A record to 34.49.1.183
+# SSL cert will auto-provision once DNS resolves to the IP.
