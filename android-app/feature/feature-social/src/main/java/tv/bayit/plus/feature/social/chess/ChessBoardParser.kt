@@ -1,7 +1,29 @@
 package tv.bayit.plus.feature.social.chess
 
+import tv.bayit.plus.feature.social.R
+
 /**
- * Parses a full FEN string into an 8×8 board of nullable chars.
+ * Returns the drawable resource for a FEN piece character.
+ * Upper-case = white, lower-case = black.
+ */
+fun fenCharToDrawableRes(piece: Char): Int = when (piece) {
+    'K' -> R.drawable.chess_piece_king_white
+    'Q' -> R.drawable.chess_piece_queen_white
+    'R' -> R.drawable.chess_piece_rook_white
+    'B' -> R.drawable.chess_piece_bishop_white
+    'N' -> R.drawable.chess_piece_knight_white
+    'P' -> R.drawable.chess_piece_pawn_white
+    'k' -> R.drawable.chess_piece_king_black
+    'q' -> R.drawable.chess_piece_queen_black
+    'r' -> R.drawable.chess_piece_rook_black
+    'b' -> R.drawable.chess_piece_bishop_black
+    'n' -> R.drawable.chess_piece_knight_black
+    'p' -> R.drawable.chess_piece_pawn_black
+    else -> R.drawable.chess_piece_pawn_white
+}
+
+/**
+ * Parses a full FEN string into an 8x8 board of nullable chars.
  * Uppercase = white pieces, lowercase = black pieces, null = empty square.
  */
 fun parseFen(fen: String): List<List<Char?>> {

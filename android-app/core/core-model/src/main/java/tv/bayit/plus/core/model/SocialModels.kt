@@ -72,7 +72,7 @@ data class ChessPlayer(
 
 @Serializable
 data class ChessMoveEntry(
-    @SerialName("move_number") val moveNumber: Int,
+    @SerialName("move_number") val moveNumber: Int = 0,
     val san: String,
     val piece: String,
     val captured: String? = null,
