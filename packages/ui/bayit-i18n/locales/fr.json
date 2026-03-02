@@ -4003,10 +4003,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -4820,7 +4817,8 @@
       "contentRating": "Classification du Contenu",
       "kidsOnly": "Contenu enfants uniquement",
       "excludeKids": "Exclure le contenu enfants",
-      "allContent": "Tout le contenu"
+      "allContent": "Tout le contenu",
+      "actors": "Acteurs"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -5723,6 +5721,16 @@
       "detail": "Détails de la collection",
       "aiRecommendation": "Recommandation IA",
       "watchNow": "Regarder maintenant"
+    },
+    "actors": "Acteurs",
+    "actor": {
+      "collection": "Collection d'Acteur",
+      "explore": "Explorer les Films",
+      "films": "films",
+      "biography": "Biographie",
+      "filmography": "Filmographie",
+      "bornIn": "Ne(e) a",
+      "featuredActors": "Acteurs en Vedette"
     }
   },
   "voiceOnboarding": {

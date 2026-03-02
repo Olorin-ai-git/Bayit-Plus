@@ -73,6 +73,8 @@ extension TVSearchView {
     func handleResultSelection(_ result: UnifiedSearchResult) {
         let contentType = result.contentType?.lowercased() ?? ""
         switch contentType {
+        case "actor":
+            selectedActorName = result.id
         case "live":
             coordinator.presentPlayer(contentId: result.id, contentType: .liveTV)
         case "radio":

@@ -6542,10 +6542,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -9470,7 +9467,18 @@
       "detail": "Détails de la collection",
       "aiRecommendation": "Recommandation IA",
       "watchNow": "Regarder maintenant"
-    }
+    },
+    "actors": "Acteurs",
+    "actor": {
+      "collection": "Collection d'Acteur",
+      "explore": "Explorer les Films",
+      "films": "films",
+      "biography": "Biographie",
+      "filmography": "Filmographie",
+      "bornIn": "Ne a",
+      "featuredActors": "Acteurs en Vedette"
+    },
+    "trending": "Tendances"
   },
   "voice": {
     "title": "Commande vocale",

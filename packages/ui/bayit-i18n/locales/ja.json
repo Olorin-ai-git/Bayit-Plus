@@ -4855,11 +4855,7 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4872,10 +4868,7 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "features": [
@@ -5913,7 +5906,8 @@
       "contentRating": "コンテンツレーティング",
       "kidsOnly": "キッズコンテンツのみ",
       "excludeKids": "キッズコンテンツを除外",
-      "allContent": "すべてのコンテンツ"
+      "allContent": "すべてのコンテンツ",
+      "actors": "俳優"
     },
     "loadingMore": "さらに読み込み中...",
     "viewMode": {
@@ -6831,6 +6825,16 @@
       "detail": "コレクションの詳細",
       "aiRecommendation": "AI推奨",
       "watchNow": "今すぐ見る"
+    },
+    "actors": "俳優",
+    "actor": {
+      "collection": "俳優コレクション",
+      "explore": "映画を探す",
+      "films": "本の映画",
+      "biography": "略歴",
+      "filmography": "フィルモグラフィー",
+      "bornIn": "出身地",
+      "featuredActors": "注目の俳優"
     }
   },
   "voice": {

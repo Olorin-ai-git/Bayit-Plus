@@ -79,6 +79,8 @@ struct SearchResultsGridView: View {
 
     private func routeForResult(_ result: UnifiedSearchResult) -> Route {
         switch result.contentType {
+        case "actor":
+            return .actorDetail(actorName: result.id)
         case "live":
             return .player(contentId: result.id, contentType: .live)
         case "radio":

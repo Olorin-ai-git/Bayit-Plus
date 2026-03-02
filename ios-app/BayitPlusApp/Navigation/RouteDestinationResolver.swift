@@ -14,6 +14,8 @@ struct RouteDestinationResolver {
             MovieDetailView(movieId: movieId)
         case let .seriesDetail(seriesId):
             SeriesDetailView(seriesId: seriesId)
+        case let .actorDetail(actorName):
+            ActorDetailView(actorName: actorName)
         case let .collectionDetail(collectionId):
             CollectionDetailView(collectionId: collectionId)
         case let .podcastDetail(showId):

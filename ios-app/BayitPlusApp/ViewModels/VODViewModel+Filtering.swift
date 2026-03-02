@@ -13,7 +13,16 @@ extension VODViewModel {
         let nextPage = currentPage + 1
 
         do {
-            if selectedType == .collections {
+            if selectedType == .actors {
+                let actors = try await actorRepository.fetchActors(
+                    skip: items.count,
+                    limit: pageSize
+                )
+                let mapped = actors.map { $0.toContentItem() }
+                items.append(contentsOf: mapped)
+                currentPage = nextPage
+                hasMore = actors.count >= pageSize
+            } else if selectedType == .collections {
                 let collections = try await repository.fetchCollections(
                     skip: items.count,
                     limit: pageSize
@@ -60,7 +69,15 @@ extension VODViewModel {
         isLoading = true
 
         do {
-            if selectedType == .collections {
+            if selectedType == .actors {
+                let actors = try await actorRepository.fetchActors(
+                    skip: 0,
+                    limit: pageSize
+                )
+                let mapped = actors.map { $0.toContentItem() }
+                items = mapped
+                hasMore = actors.count >= pageSize
+            } else if selectedType == .collections {
                 let collections = try await repository.fetchCollections(
                     skip: 0,
                     limit: pageSize
@@ -109,6 +126,8 @@ extension VODViewModel {
             filtered = filtered.filter { $0.type?.lowercased() == "series" }
         case .collections:
             filtered = filtered.filter { $0.isCollectionParent == true }
+        case .actors:
+            filtered = filtered.filter { $0.type == "actor" }
         }
 
         if let categoryId = selectedCategory,
@@ -137,6 +156,8 @@ extension VODViewModel {
             return items.filter { $0.type?.lowercased() == "series" }
         case .collections:
             return items.filter { $0.isCollectionParent == true }
+        case .actors:
+            return items.filter { $0.type == "actor" }
         }
     }
 }

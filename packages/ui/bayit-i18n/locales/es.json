@@ -5146,11 +5146,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -5162,10 +5158,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -5985,7 +5978,8 @@
       "contentRating": "Clasificación de Contenido",
       "kidsOnly": "Solo contenido infantil",
       "excludeKids": "Excluir contenido infantil",
-      "allContent": "Todo el contenido"
+      "allContent": "Todo el contenido",
+      "actors": "Actores"
     },
     "suggestions": {
       "trendingTitle": "Búsquedas Populares",
@@ -6884,6 +6878,16 @@
       "detail": "Detalles de colección",
       "aiRecommendation": "Recomendación IA",
       "watchNow": "Ver ahora"
+    },
+    "actors": "Actores",
+    "actor": {
+      "collection": "Coleccion del Actor",
+      "explore": "Explorar Peliculas",
+      "films": "peliculas",
+      "biography": "Biografia",
+      "filmography": "Filmografia",
+      "bornIn": "Nacido/a en",
+      "featuredActors": "Actores Destacados"
     }
   },
   "voice": {

@@ -10,6 +10,7 @@ from app.core.logging_config import get_logger
 from app.core.security import get_current_admin_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.services.actor_search import actor_search_helper
 from app.services.search import (
     SearchFilters,
     SearchResults,
@@ -30,7 +31,7 @@ _pipeline = create_search_pipeline()
 async def unified_search_endpoint(
     query: str = Query("", description="Search query text"),
     content_types: List[str] = Query(
-        ["vod"], description="Content types: vod, live, radio, podcast, audiobook, series, movie, collection"
+        ["vod"], description="Content types: vod, live, radio, podcast, audiobook, series, movie, collection, actor"
     ),
     genres: Optional[List[str]] = Query(None, description="Filter by genres"),
     year_min: Optional[int] = Query(None, ge=1900, le=2100, description="Minimum year"),
@@ -84,19 +85,45 @@ async def unified_search_endpoint(
             else None
         )
 
-        results = await _pipeline.search(
-            query=query,
-            filters=filters,
-            page=page,
-            limit=limit,
-            sort_by=sort_by,
-            sort_order=sort_order,
-            user_subscription_tier=(
-                current_user.subscription_tier if current_user else None
-            ),
-            is_beta_user=is_beta_user,
-            no_cache=no_cache,
-        )
+        # Separate actor content type -- actors are aggregated, not in the pipeline
+        include_actors = "actor" in content_types
+        pipeline_types = [ct for ct in content_types if ct != "actor"]
+
+        # Only run the standard pipeline when non-actor types are requested
+        if pipeline_types:
+            filters.content_types = pipeline_types
+            results = await _pipeline.search(
+                query=query,
+                filters=filters,
+                page=page,
+                limit=limit,
+                sort_by=sort_by,
+                sort_order=sort_order,
+                user_subscription_tier=(
+                    current_user.subscription_tier if current_user else None
+                ),
+                is_beta_user=is_beta_user,
+                no_cache=no_cache,
+            )
+        else:
+            results = SearchResults(
+                results=[], total=0, page=page, page_size=limit,
+                has_more=False, execution_time_ms=0,
+            )
+
+        # Merge actor results when requested
+        if include_actors and query.strip():
+            actor_results = await actor_search_helper(query, limit=limit)
+            if actor_results:
+                merged = actor_results + results.results
+                results = SearchResults(
+                    results=merged[:limit],
+                    total=results.total + len(actor_results),
+                    page=results.page,
+                    page_size=results.page_size,
+                    has_more=results.has_more,
+                    execution_time_ms=results.execution_time_ms,
+                )
 
         await SearchQuery.log_search(
             query=query,

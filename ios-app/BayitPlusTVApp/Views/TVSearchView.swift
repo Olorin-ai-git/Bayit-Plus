@@ -15,6 +15,7 @@ struct TVSearchView: View {
     @State var showAISearch = false
     @State private var showSortSheet = false
     @State private var showFilterSheet = false
+    @State var selectedActorName: String?
 
     var body: some View {
         NavigationStack {
@@ -51,6 +52,9 @@ struct TVSearchView: View {
                 guard viewModel?.query != newValue else { return }
                 viewModel?.query = newValue
                 viewModel?.onQueryChanged()
+            }
+            .navigationDestination(item: $selectedActorName) { actorName in
+                TVActorDetailView(actorName: actorName)
             }
             .task {
                 if viewModel == nil {

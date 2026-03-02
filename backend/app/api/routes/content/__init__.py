@@ -17,11 +17,13 @@ The module is split into logical submodules for maintainability:
 - series: Series details, seasons, episodes
 - movies: Movie details and TMDB enrichment
 - collections: Movie collections listing, detail, and promo generation
+- actors: Browse content by actor (aggregated from cast arrays)
 - utils: Shared utility functions
 """
 
 from fastapi import APIRouter
 
+from app.api.routes.content.actors import router as actors_router
 from app.api.routes.content.categories import router as categories_router
 from app.api.routes.content.collections import router as collections_router
 from app.api.routes.content.detail import router as detail_router
@@ -41,6 +43,7 @@ router.include_router(featured_router)
 router.include_router(categories_router)
 router.include_router(discovery_router)
 router.include_router(collections_router)
+router.include_router(actors_router)
 router.include_router(series_router)
 router.include_router(movies_router)
 router.include_router(detail_router)

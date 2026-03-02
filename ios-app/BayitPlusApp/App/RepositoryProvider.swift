@@ -7,6 +7,7 @@ import Foundation
 /// Initialized once in BayitPlusApp with the shared APIClient.
 @Observable
 final class RepositoryProvider {
+    let actor: any ActorRepository
     let content: any ContentRepository
     let liveTV: any LiveTVRepository
     let radio: any RadioRepository
@@ -63,6 +64,7 @@ final class RepositoryProvider {
     let offlineCache: OfflineCacheService
 
     init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration) {
+        actor = APIActorRepository(client: client)
         content = APIContentRepository(client: client)
         liveTV = APILiveTVRepository(client: client)
         radio = APIRadioRepository(client: client)

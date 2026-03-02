@@ -11,6 +11,7 @@ struct TVVODView: View {
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: VODViewModel?
     @State private var featuredCollections: [CollectionDetail] = []
+    @State private var selectedActorName: String?
 
     private let columns = [
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -46,9 +47,15 @@ struct TVVODView: View {
                 }
             }
             .background(DesignTokens.Background.primary)
+            .navigationDestination(item: $selectedActorName) { actorName in
+                TVActorDetailView(actorName: actorName)
+            }
             .task {
                 if viewModel == nil {
-                    viewModel = VODViewModel(repository: repos.content)
+                    viewModel = VODViewModel(
+                        repository: repos.content,
+                        actorRepository: repos.actor
+                    )
                 }
                 await viewModel?.loadContent()
                 await loadFeaturedCollections()
@@ -102,7 +109,9 @@ struct TVVODView: View {
                         aspectRatio: 2 / 3,
                         onSelect: {
                             let ct = item.type?.lowercased() ?? ""
-                            if ct == "collection" || item.isCollectionParent == true {
+                            if ct == "actor" {
+                                selectedActorName = item.id
+                            } else if ct == "collection" || item.isCollectionParent == true {
                                 coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
                             } else if ct == "series" {
                                 coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)

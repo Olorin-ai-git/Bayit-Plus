@@ -6387,11 +6387,7 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": [
-        "Canali in diretta",
-        "Assistente AI",
-        "Visione offline"
-      ]
+      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
     },
     "premium": {
       "name": "Premium",
@@ -6403,10 +6399,7 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": [
-        "Visione offline",
-        "Profili familiari"
-      ]
+      "notIncluded": ["Visione offline", "Profili familiari"]
     },
     "family": {
       "name": "Famiglia",
@@ -8987,7 +8980,18 @@
       "detail": "Dettagli della collezione",
       "aiRecommendation": "Raccomandazione IA",
       "watchNow": "Guarda ora"
-    }
+    },
+    "actors": "Attori",
+    "actor": {
+      "collection": "Collezione Attore",
+      "explore": "Esplora Film",
+      "films": "film",
+      "biography": "Biografia",
+      "filmography": "Filmografia",
+      "bornIn": "Nato a",
+      "featuredActors": "Attori in Primo Piano"
+    },
+    "trending": "Di tendenza"
   },
   "voice": {
     "listening": "In ascolto...",

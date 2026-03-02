@@ -4392,17 +4392,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -4414,10 +4405,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -5227,7 +5215,8 @@
       "contentRating": "内容分级",
       "kidsOnly": "仅儿童内容",
       "excludeKids": "排除儿童内容",
-      "allContent": "所有内容"
+      "allContent": "所有内容",
+      "actors": "演员"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -6117,6 +6106,16 @@
       "detail": "合集详情",
       "aiRecommendation": "AI推荐",
       "watchNow": "立即观看"
+    },
+    "actors": "演员",
+    "actor": {
+      "collection": "演员合集",
+      "explore": "探索电影",
+      "films": "部电影",
+      "biography": "传记",
+      "filmography": "作品列表",
+      "bornIn": "出生于",
+      "featuredActors": "推荐演员"
     }
   },
   "voice": {

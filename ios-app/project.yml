@@ -31,6 +31,10 @@ targets:
     sources:
       - path: BayitPlusApp
         type: group
+        excludes:
+          - "ViewModels/VODViewModel+DataLoading.swift"
+          - "ViewModels/VODViewModel+Pagination.swift"
+          - "Repositories/CategoryRepository+Convenience.swift"
       - path: BayitPlusIPadApp
         type: group
     dependencies:
@@ -77,19 +81,34 @@ targets:
     sources:
       - path: BayitPlusTVApp
         type: group
+        excludes:
+          - "Views/Avatar/TVAvatarModeView+ColorHelpers.swift"
+          - "Views/TVPodcastDetailView+EpisodeRow.swift"
+          - "Views/TVMovieDetailView+Sections.swift"
       - path: BayitPlusApp/Models
         type: group
       - path: BayitPlusApp/Repositories
         type: group
+        excludes:
+          - "CategoryRepository+Convenience.swift"
       - path: BayitPlusApp/ViewModels
         type: group
+        excludes:
+          - "VODViewModel+DataLoading.swift"
+          - "VODViewModel+Pagination.swift"
       - path: BayitPlusApp/Helpers/MultipartFormData.swift
       - path: BayitPlusApp/Helpers/HTMLSanitizer.swift
+      - path: BayitPlusApp/Helpers/WebSocketDecoder.swift
       - path: BayitPlusApp/Services/DownloadManager.swift
+      - path: BayitPlusApp/Services/DownloadManager+Delegate.swift
+      - path: BayitPlusApp/Services/DownloadManager+Delegates.swift
+      - path: BayitPlusApp/Services/DownloadManager+TaskManagement.swift
+      - path: BayitPlusApp/Services/DownloadManager+Tasks.swift
       - path: BayitPlusApp/Services/DownloadStore.swift
       - path: BayitPlusApp/Services/ShabbatModeService.swift
       - path: BayitPlusApp/Services/RecentSearchesService.swift
       - path: BayitPlusApp/Services/OfflineCacheService.swift
+      - path: BayitPlusApp/Services/FeatureValidationModels.swift
       - path: BayitPlusApp/Services/FeatureValidationService.swift
       - path: BayitPlusApp/Services/ShoreshParser.swift
       - path: BayitPlusApp/Services/LiveTriviaWebSocketService.swift
@@ -103,6 +122,7 @@ targets:
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
       - path: BayitPlusApp/Services/PlayerPreferencesService.swift
       - path: BayitPlusApp/App/FeatureFlags.swift
+      - path: BayitPlusApp/App/UserUIPreferencesStore.swift
       - path: BayitPlusApp/Resources/Bayit_Intro_Hebrew.mp4
         buildPhase: resources
       - path: BayitPlusApp/Resources/Bayit_Intro_English.mp4
@@ -141,6 +161,12 @@ targets:
       properties:
         API_BASE_URL: "$(API_BASE_URL)"
         WEBSOCKET_BASE_URL: "$(WEBSOCKET_BASE_URL)"
+        SUPPORT_EMAIL: "$(SUPPORT_EMAIL)"
+        API_RETRYABLE_STATUS_CODES: "$(API_RETRYABLE_STATUS_CODES)"
+        PROGRESS_TRACKING_INTERVAL_SECONDS: "$(PROGRESS_TRACKING_INTERVAL_SECONDS)"
+        HOME_CONTENT_ROW_LIMIT: "$(HOME_CONTENT_ROW_LIMIT)"
+        DEFAULT_CULTURE_ID: "$(DEFAULT_CULTURE_ID)"
+        HIDDEN_CHANNEL_KEYWORDS: "$(HIDDEN_CHANNEL_KEYWORDS)"
         CFBundleDisplayName: "Bayit+"
         CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"

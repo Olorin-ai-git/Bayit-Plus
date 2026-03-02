@@ -6,6 +6,7 @@ enum VODFilterType: String, CaseIterable, Identifiable {
     case movies
     case series
     case collections
+    case actors
 
     var id: String {
         rawValue
@@ -17,6 +18,7 @@ enum VODFilterType: String, CaseIterable, Identifiable {
         case .movies: return "vod.movies"
         case .series: return "vod.series"
         case .collections: return "vod.collectionsOnly"
+        case .actors: return "vod.actors"
         }
     }
 }
@@ -48,10 +50,12 @@ final class VODViewModel {
     }
 
     let repository: any ContentRepository
+    let actorRepository: any ActorRepository
     let pageSize = 20
 
-    init(repository: any ContentRepository) {
+    init(repository: any ContentRepository, actorRepository: any ActorRepository) {
         self.repository = repository
+        self.actorRepository = actorRepository
     }
 
     @MainActor
@@ -65,7 +69,17 @@ final class VODViewModel {
             // Load categories and content in parallel
             async let categoriesTask: Void = loadCategoriesIfNeeded()
 
-            if selectedType == .collections {
+            if selectedType == .actors {
+                let actors = try await actorRepository.fetchActors(
+                    skip: 0,
+                    limit: pageSize
+                )
+                await categoriesTask
+                let mapped = actors.map { $0.toContentItem() }
+                allItems = mapped
+                items = mapped
+                hasMore = actors.count >= pageSize
+            } else if selectedType == .collections {
                 let collections = try await repository.fetchCollections(
                     skip: 0,
                     limit: pageSize

@@ -110,6 +110,8 @@
                 )
             case let .movieDetail(movieId):
                 TVMovieDetailView(movieId: movieId)
+            case let .actorDetail(actorName):
+                TVActorDetailView(actorName: actorName)
             case let .collectionDetail(collectionId):
                 TVCollectionDetailView(collectionId: collectionId)
             case let .seriesDetail(seriesId):

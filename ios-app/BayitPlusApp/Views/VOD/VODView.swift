@@ -11,6 +11,7 @@ struct VODView: View {
     @State private var continueWatchingItems: [WatchHistoryItem] = []
     @State var trendingRecommendations: [TrendingContentRecommendation] = []
     @State var aiCollectionRecommendations: [CollectionDetail] = []
+    @State var actorRecommendations: [ActorListItem] = []
     @State private var hasLoaded = false
 
     private let columns = [
@@ -45,6 +46,12 @@ struct VODView: View {
                         .padding(.vertical, DesignTokens.Spacing.sm)
                 }
 
+                if !actorRecommendations.isEmpty && vm.selectedType == .all {
+                    FeaturedActorsCarousel(actors: actorRecommendations)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.sm)
+                }
+
                 if !trendingRecommendations.isEmpty && vm.selectedType == .all {
                     trendingSection
                 }
@@ -75,13 +82,17 @@ struct VODView: View {
             hasLoaded = true
 
             if viewModel == nil {
-                viewModel = VODViewModel(repository: repos.content)
+                viewModel = VODViewModel(
+                    repository: repos.content,
+                    actorRepository: repos.actor
+                )
             }
             await viewModel?.loadContent()
             async let continueWatchingTask: Void = loadContinueWatching()
             async let trendingTask: Void = loadTrendingRecommendations()
             async let aiCollectionsTask: Void = loadAICollectionRecommendations()
-            _ = await (continueWatchingTask, trendingTask, aiCollectionsTask)
+            async let actorRecsTask: Void = loadActorRecommendations()
+            _ = await (continueWatchingTask, trendingTask, aiCollectionsTask, actorRecsTask)
         }
         .onChange(of: coordinator.fullscreenRoute == nil) { _, isDismissed in
             if isDismissed {
@@ -165,7 +176,9 @@ struct VODView: View {
 
     private func navigateToItem(_ item: ContentItem) {
         let ct = item.type?.lowercased() ?? ""
-        if ct == "collection" || item.isCollectionParent == true {
+        if ct == "actor" {
+            coordinator.navigate(to: .actorDetail(actorName: item.id))
+        } else if ct == "collection" || item.isCollectionParent == true {
             coordinator.navigate(to: .collectionDetail(collectionId: item.id))
         } else if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
@@ -173,6 +186,14 @@ struct VODView: View {
             coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
+        }
+    }
+
+    private func loadActorRecommendations() async {
+        do {
+            actorRecommendations = try await repos.actor.fetchActorRecommendations(limit: 10)
+        } catch {
+            // Silently fail - actor recommendations are optional
         }
     }
 }

@@ -13,6 +13,7 @@ public enum Route: Hashable {
     case player(contentId: String, contentType: ContentType, resume: Bool = false)
     case movieDetail(movieId: String)
     case seriesDetail(seriesId: String)
+    case actorDetail(actorName: String)
     case collectionDetail(collectionId: String)
     case podcastDetail(showId: String)
     case epg

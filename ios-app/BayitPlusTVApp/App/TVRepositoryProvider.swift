@@ -10,6 +10,7 @@ import Observation
 /// Shares all repository protocols and implementations from BayitPlusApp.
 @Observable
 final class TVRepositoryProvider {
+    let actor: any ActorRepository
     let content: any ContentRepository
     let liveTV: any LiveTVRepository
     let radio: any RadioRepository
@@ -64,6 +65,7 @@ final class TVRepositoryProvider {
         authTokenProvider: AuthTokenProvider,
         configuration: any EnvironmentConfiguration
     ) {
+        actor = APIActorRepository(client: client)
         content = APIContentRepository(client: client)
         liveTV = APILiveTVRepository(client: client)
         radio = APIRadioRepository(client: client)

@@ -53,7 +53,10 @@ struct IPadVODView: View {
         .refreshable { await viewModel?.refresh() }
         .task {
             if viewModel == nil {
-                viewModel = VODViewModel(repository: repos.content)
+                viewModel = VODViewModel(
+                    repository: repos.content,
+                    actorRepository: repos.actor
+                )
             }
             await viewModel?.loadContent()
             await loadContinueWatching()
@@ -173,7 +176,9 @@ struct IPadVODView: View {
 
     private func navigateToItem(_ item: ContentItem) {
         let ct = item.type?.lowercased() ?? ""
-        if ct == "collection" || item.isCollectionParent == true {
+        if ct == "actor" {
+            coordinator.navigate(to: .actorDetail(actorName: item.id))
+        } else if ct == "collection" || item.isCollectionParent == true {
             coordinator.navigate(to: .collectionDetail(collectionId: item.id))
         } else if ct == "series" {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))

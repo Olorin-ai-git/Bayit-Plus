@@ -44,6 +44,7 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     case movies
     case series
     case collections
+    case actors
     case live
     case radio
     case podcasts
@@ -56,6 +57,7 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
         case .movies: return "vod.movies"
         case .series: return "vod.series"
         case .collections: return "vod.collectionsOnly"
+        case .actors: return "search.filters.actors"
         case .live: return "search.filters.channels"
         case .radio: return "search.filters.radio"
         case .podcasts: return "search.filters.podcasts"
@@ -67,10 +69,11 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     /// Content type strings sent to the API `content_types` query param
     var apiContentTypes: [String] {
         switch self {
-        case .all: return ["live", "radio", "podcast", "vod", "audiobook"]
+        case .all: return ["live", "radio", "podcast", "vod", "audiobook", "actor"]
         case .movies: return ["movie"]
         case .series: return ["series"]
         case .collections: return ["collection"]
+        case .actors: return ["actor"]
         case .live: return ["live"]
         case .radio: return ["radio"]
         case .podcasts: return ["podcast"]

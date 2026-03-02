@@ -9636,7 +9636,18 @@
       "detail": "コレクションの詳細",
       "aiRecommendation": "AI推奨",
       "watchNow": "今すぐ見る"
-    }
+    },
+    "actors": "俳優",
+    "actor": {
+      "collection": "俳優コレクション",
+      "explore": "映画を探す",
+      "films": "本の映画",
+      "biography": "経歴",
+      "filmography": "フィルモグラフィー",
+      "bornIn": "出身地",
+      "featuredActors": "注目の俳優"
+    },
+    "trending": "トレンド"
   },
   "voice": {
     "title": "音声",

@@ -5317,11 +5317,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -5333,10 +5329,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -6166,7 +6159,8 @@
       "contentRating": "Content Rating",
       "kidsOnly": "Kids content only",
       "excludeKids": "Exclude kids content",
-      "allContent": "All content"
+      "allContent": "All content",
+      "actors": "Actors"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -7197,6 +7191,16 @@
       "detail": "Collection Details",
       "aiRecommendation": "AI Recommendation",
       "watchNow": "Watch Now"
+    },
+    "actors": "Actors",
+    "actor": {
+      "collection": "Actor Collection",
+      "explore": "Explore Films",
+      "films": "films",
+      "biography": "Biography",
+      "filmography": "Filmography",
+      "bornIn": "Born in",
+      "featuredActors": "Featured Actors"
     }
   },
   "voice": {
