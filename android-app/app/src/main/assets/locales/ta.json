@@ -2005,8 +2005,10 @@
     "joinByGameCode": "விளையாட்டு குறியீட்டில் சேரவும்",
     "timeout": "நேரம் முடிந்தது",
     "drawOffered": "சமநிலை முன்மொழிவு",
-    "chat.title": "அரட்டை",
-    "chat.inputPlaceholder": "செய்தி எழுதவும்...",
+    "chat": {
+      "title": "அரட்டை",
+      "inputPlaceholder": "செய்தி எழுதவும்..."
+    },
     "timeControl": "நேர கட்டுப்பாடு",
     "unlimited": "வரம்பற்ற",
     "bullet1": "1 நிமிடம்",

@@ -2935,11 +2935,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -2951,10 +2947,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -3454,8 +3447,10 @@
     "joinByGameCode": "Join by game code",
     "timeout": "Time Out",
     "drawOffered": "Draw Offered",
-    "chat.title": "Chat",
-    "chat.inputPlaceholder": "Type a message...",
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Type a message..."
+    },
     "timeControl": "Time Control",
     "unlimited": "Unlimited",
     "bullet1": "1 min",

@@ -830,10 +830,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -2958,8 +2955,10 @@
     "joinByGameCode": "Rejoindre avec un code de partie",
     "timeout": "Temps ecoule",
     "drawOffered": "Nulle proposee",
-    "chat.title": "Chat",
-    "chat.inputPlaceholder": "Tapez un message...",
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Tapez un message..."
+    },
     "timeControl": "Cadence",
     "unlimited": "Sans limite",
     "bullet1": "1 min",

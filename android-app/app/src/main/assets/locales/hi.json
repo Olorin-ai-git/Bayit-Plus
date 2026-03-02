@@ -2635,8 +2635,10 @@
     "joinByGameCode": "गेम कोड से जुड़ें",
     "timeout": "समय समाप्त",
     "drawOffered": "ड्रॉ का प्रस्ताव",
-    "chat.title": "चैट",
-    "chat.inputPlaceholder": "संदेश लिखें...",
+    "chat": {
+      "title": "चैट",
+      "inputPlaceholder": "संदेश लिखें..."
+    },
     "timeControl": "समय नियंत्रण",
     "unlimited": "असीमित",
     "bullet1": "1 मिनट",

@@ -2772,11 +2772,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -2788,10 +2784,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -3368,8 +3361,10 @@
     "chessBot": "Bot de Ajedrez",
     "timeout": "Tiempo agotado",
     "drawOffered": "Tablas ofrecidas",
-    "chat.title": "Chat",
-    "chat.inputPlaceholder": "Escribe un mensaje...",
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Escribe un mensaje..."
+    },
     "timeControl": "Control de tiempo",
     "unlimited": "Sin limite",
     "bullet1": "1 min",

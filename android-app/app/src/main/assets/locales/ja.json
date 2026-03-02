@@ -3673,8 +3673,10 @@
     "joinByGameCode": "ゲームコードで参加",
     "timeout": "時間切れ",
     "drawOffered": "引き分け提案",
-    "chat.title": "チャット",
-    "chat.inputPlaceholder": "メッセージを入力...",
+    "chat": {
+      "title": "チャット",
+      "inputPlaceholder": "メッセージを入力..."
+    },
     "timeControl": "持ち時間",
     "unlimited": "無制限",
     "bullet1": "1分",

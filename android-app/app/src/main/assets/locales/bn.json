@@ -2273,8 +2273,10 @@
     "joinByGameCode": "গেম কোড দিয়ে যোগ দিন",
     "timeout": "সময় শেষ",
     "drawOffered": "ড্র প্রস্তাব",
-    "chat.title": "চ্যাট",
-    "chat.inputPlaceholder": "বার্তা লিখুন...",
+    "chat": {
+      "title": "চ্যাট",
+      "inputPlaceholder": "বার্তা লিখুন..."
+    },
     "timeControl": "সময় নিয়ন্ত্রণ",
     "unlimited": "সীমাহীন",
     "bullet1": "১ মিনিট",
