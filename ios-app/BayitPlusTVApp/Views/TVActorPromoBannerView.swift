@@ -2,20 +2,18 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Promotional banner for an actor with movie poster backdrop.
-/// Shows a full-bleed movie thumbnail background with gradient overlay,
+/// tvOS promotional banner for an actor with movie poster backdrop.
+/// Uses a full-bleed movie thumbnail background with gradient overlay,
 /// circular actor photo, name, movie count, and explore button.
 /// Falls back to glass background when no movie thumbnail is available.
-struct ActorPromoBannerView: View {
-    @Environment(NavigationCoordinator.self) private var coordinator
+struct TVActorPromoBannerView: View {
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
 
     let actorName: String
     let profileUrl: String?
     let movieCount: Int
     let topMovieThumbnail: String?
-
-    @State private var isVisible = false
 
     var body: some View {
         Button(action: navigateToActor) {
@@ -24,21 +22,10 @@ struct ActorPromoBannerView: View {
                 gradientOverlay
                 contentOverlay
             }
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
-            )
-            .opacity(isVisible ? 1 : 0)
-            .scaleEffect(isVisible ? 1 : 0.95)
-            .animation(.easeOut(duration: 0.6), value: isVisible)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         }
         .buttonStyle(.plain)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isVisible = true
-            }
-        }
+        .tvFocusStyle()
     }
 
     @ViewBuilder
@@ -70,18 +57,18 @@ struct ActorPromoBannerView: View {
     }
 
     private var contentOverlay: some View {
-        HStack(spacing: DesignTokens.Spacing.md) {
+        HStack(spacing: TVDesignTokens.Spacing.lg) {
             actorPhoto
 
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                HStack(spacing: DesignTokens.Spacing.xs) {
+            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+                HStack(spacing: TVDesignTokens.Spacing.sm) {
                     Image(systemName: "person.fill")
                         .foregroundColor(DesignTokens.Primary.default)
-                        .font(.system(size: 16))
+                        .font(.system(size: TVDesignTokens.FontSize.xl))
 
                     Text(localization.t("vod.actor.collection"))
                         .font(.system(
-                            size: DesignTokens.FontSize.xs,
+                            size: TVDesignTokens.FontSize.md,
                             weight: .semibold
                         ))
                         .foregroundColor(DesignTokens.Text.muted)
@@ -90,32 +77,35 @@ struct ActorPromoBannerView: View {
 
                 Text(actorName)
                     .font(.system(
-                        size: DesignTokens.FontSize.lg,
+                        size: TVDesignTokens.FontSize.xxxl,
                         weight: .bold
                     ))
                     .foregroundColor(.white)
                     .lineLimit(2)
 
                 Text("\(movieCount) \(localization.t("vod.actor.films"))")
-                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundColor(DesignTokens.Text.secondary)
 
-                Text(localization.t("vod.actor.explore"))
-                    .font(.system(
-                        size: DesignTokens.FontSize.sm,
-                        weight: .semibold
-                    ))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, DesignTokens.Spacing.md)
-                    .padding(.vertical, DesignTokens.Spacing.sm)
-                    .background(DesignTokens.Primary.default)
-                    .clipShape(Capsule())
-                    .padding(.top, DesignTokens.Spacing.xs)
+                HStack(spacing: TVDesignTokens.Spacing.sm) {
+                    Image(systemName: "film")
+                    Text(localization.t("vod.actor.explore"))
+                        .font(.system(
+                            size: TVDesignTokens.FontSize.lg,
+                            weight: .semibold
+                        ))
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
+                .background(DesignTokens.Primary.default)
+                .clipShape(Capsule())
+                .padding(.top, TVDesignTokens.Spacing.md)
             }
 
             Spacer()
         }
-        .padding(DesignTokens.Spacing.md)
+        .padding(TVDesignTokens.Spacing.lg)
     }
 
     private var actorPhoto: some View {
@@ -135,41 +125,38 @@ struct ActorPromoBannerView: View {
                     .overlay(
                         Image(systemName: "person.fill")
                             .foregroundColor(DesignTokens.Text.muted)
-                            .font(.system(size: 24))
+                            .font(.system(size: 48))
                     )
             }
         }
-        .frame(width: 60, height: 60)
+        .frame(width: 120, height: 120)
         .clipShape(Circle())
-        .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 1))
+        .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 2))
     }
 
     private func navigateToActor() {
-        coordinator.navigate(to: .actorDetail(actorName: actorName))
+        coordinator.fullscreenRoute = .actorDetail(actorName: actorName)
     }
 }
 
-/// Auto-rotating carousel of featured actor banners.
-struct FeaturedActorsCarousel: View {
+/// Auto-rotating carousel of featured actor banners for tvOS.
+/// Advances every 6 seconds. Siri Remote swipe navigates between items.
+/// Shows page indicator dots when there are multiple actors.
+struct TVFeaturedActorsCarousel: View {
     @Environment(LocalizationManager.self) private var localization
 
     let actors: [ActorListItem]
 
     @State private var currentIndex = 0
 
-    private static let autoAdvanceSeconds: TimeInterval = 5
+    private static let autoAdvanceSeconds: TimeInterval = 6
 
     var body: some View {
         if !actors.isEmpty {
-            VStack(spacing: DesignTokens.Spacing.sm) {
-                Text(localization.t("vod.actor.featuredActors"))
-                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
+            VStack(spacing: TVDesignTokens.Spacing.md) {
                 TabView(selection: $currentIndex) {
                     ForEach(Array(actors.enumerated()), id: \.offset) { index, actor in
-                        ActorPromoBannerView(
+                        TVActorPromoBannerView(
                             actorName: actor.name,
                             profileUrl: actor.profileUrl,
                             movieCount: actor.movieCount,
@@ -179,10 +166,10 @@ struct FeaturedActorsCarousel: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: 180)
+                .frame(height: 350)
 
                 if actors.count > 1 {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 8) {
                         ForEach(0 ..< actors.count, id: \.self) { index in
                             Circle()
                                 .fill(
@@ -190,7 +177,7 @@ struct FeaturedActorsCarousel: View {
                                         ? DesignTokens.Primary.default
                                         : DesignTokens.Glass.border
                                 )
-                                .frame(width: 6, height: 6)
+                                .frame(width: 8, height: 8)
                                 .animation(.easeInOut, value: currentIndex)
                         }
                     }

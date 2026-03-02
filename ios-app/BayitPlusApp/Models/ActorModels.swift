@@ -7,6 +7,7 @@ struct ActorListItem: Decodable, Sendable, Identifiable {
     let name: String
     let movieCount: Int
     let profileUrl: String?
+    let topMovieThumbnail: String?
 
     var id: String {
         name

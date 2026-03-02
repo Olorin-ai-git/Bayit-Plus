@@ -26,6 +26,7 @@ class ActorListItem(BaseModel):
     name: str
     movie_count: int
     profile_url: Optional[str] = None
+    top_movie_thumbnail: Optional[str] = None
 
 
 class MovieInActor(BaseModel):
@@ -57,7 +58,11 @@ async def _top_actors_aggregation(min_movies: int = 3) -> List[dict]:
             "content_format": {"$ne": "series"},
         }},
         {"$unwind": "$cast"},
-        {"$group": {"_id": "$cast", "movie_count": {"$sum": 1}}},
+        {"$group": {
+            "_id": "$cast",
+            "movie_count": {"$sum": 1},
+            "sample_thumbnail": {"$first": "$thumbnail"},
+        }},
         {"$match": {"movie_count": {"$gte": min_movies}}},
         {"$sort": {"movie_count": -1}},
     ]
@@ -78,6 +83,7 @@ async def _enrich_actor_list(actors_raw: List[dict]) -> List[ActorListItem]:
             name=name,
             movie_count=actor["movie_count"],
             profile_url=tmdb.get("profile_url"),
+            top_movie_thumbnail=actor.get("sample_thumbnail"),
         ))
     return results
 

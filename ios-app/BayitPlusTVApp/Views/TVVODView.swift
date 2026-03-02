@@ -11,6 +11,7 @@ struct TVVODView: View {
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: VODViewModel?
     @State private var featuredCollections: [CollectionDetail] = []
+    @State private var actorRecommendations: [ActorListItem] = []
     @State private var selectedActorName: String?
 
     private let columns = [
@@ -30,6 +31,12 @@ struct TVVODView: View {
 
                         if !featuredCollections.isEmpty && vm.selectedType == .all {
                             TVFeaturedCollectionsCarousel(collections: featuredCollections)
+                                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                                .padding(.vertical, TVDesignTokens.Spacing.lg)
+                        }
+
+                        if !actorRecommendations.isEmpty && vm.selectedType == .all {
+                            TVFeaturedActorsCarousel(actors: actorRecommendations)
                                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
                                 .padding(.vertical, TVDesignTokens.Spacing.lg)
                         }
@@ -59,6 +66,7 @@ struct TVVODView: View {
                 }
                 await viewModel?.loadContent()
                 await loadFeaturedCollections()
+                await loadActorRecommendations()
             }
         }
     }
@@ -66,6 +74,14 @@ struct TVVODView: View {
     private func loadFeaturedCollections() async {
         do {
             featuredCollections = try await repos.content.fetchCollectionRecommendations()
+        } catch {
+            // Silently fail - banner is optional
+        }
+    }
+
+    private func loadActorRecommendations() async {
+        do {
+            actorRecommendations = try await repos.actor.fetchActorRecommendations(limit: 10)
         } catch {
             // Silently fail - banner is optional
         }
