@@ -31,7 +31,7 @@ class FalAuroraClient:
 
     def _get_headers(self) -> dict:
         return {
-            "Authorization": f"Key {settings.FAL_KEY}",
+            "Authorization": f"Key {settings.FAL_KEY.strip()}",
             "Content-Type": "application/json",
         }
 
