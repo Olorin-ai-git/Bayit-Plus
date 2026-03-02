@@ -12,6 +12,7 @@ class FakeAuthTokenStorage : AuthTokenStorage {
     private var accessTokenExpiresAt: Long = 0L
     private var refreshToken: String? = null
     private var refreshTokenExpiresAt: Long = 0L
+    private var userId: String? = null
 
     var currentTimeMillis: Long = System.currentTimeMillis()
 
@@ -39,11 +40,18 @@ class FakeAuthTokenStorage : AuthTokenStorage {
         return refreshToken
     }
 
+    override fun saveUserId(userId: String) {
+        this.userId = userId
+    }
+
+    override fun getUserId(): String? = userId
+
     override fun clearAuthTokens() {
         accessToken = null
         accessTokenExpiresAt = 0L
         refreshToken = null
         refreshTokenExpiresAt = 0L
+        userId = null
     }
 
     fun hasAccessToken(): Boolean = accessToken != null
