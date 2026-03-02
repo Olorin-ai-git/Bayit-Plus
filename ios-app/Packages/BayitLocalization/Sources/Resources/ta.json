@@ -3746,6 +3746,17 @@
       "rapid10": "10 நிமிடங்கள்",
       "classical30": "30 நிமிடங்கள்"
     },
+    "challengeFriend": "நண்பரை சவால் விடுங்கள்",
+    "noFriendsYet": "சவால் விட நண்பர்களைச் சேருங்கள்",
+    "acceptInvite": "ஏற்கவும்",
+    "declineInvite": "நிராகரிக்கவும்",
+    "whiteCaptured": "வெள்ளை பிடித்தது",
+    "blackCaptured": "கருப்பு பிடித்தது",
+    "online": "ஆன்லைன்",
+    "offline": "ஆஃப்லைன்",
+    "joinByGameCode": "குறியீடு மூலம் சேரவும்",
+    "challengeViaWhatsApp": "WhatsApp வழியாக சவால் விடுங்கள்",
+    "whatsAppMessage": "Bayit+-ல் சதுரங்கத்தில் உங்களுக்கு சவால் விடுகிறேன்! குறியீடு: {{code}} - விளையாட தட்டவும்: {{link}}",
     "chat": {
       "title": "அரட்டை",
       "inputPlaceholder": "செய்தியை எழுதுங்கள்...",

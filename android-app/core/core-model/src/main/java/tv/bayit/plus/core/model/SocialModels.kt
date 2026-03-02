@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Friend(
-    val id: String,
-    val displayName: String,
-    val avatarUrl: String? = null,
-    val isOnline: Boolean = false,
-    val lastSeen: String? = null,
+    @SerialName("user_id") val id: String,
+    @SerialName("name") val displayName: String,
+    @SerialName("avatar") val avatarUrl: String? = null,
+    @SerialName("is_online") val isOnline: Boolean = false,
+    @SerialName("last_seen") val lastSeen: String? = null,
 )
 
 @Serializable
@@ -96,6 +96,8 @@ data class ChessGame(
     @SerialName("move_history") val moveHistory: List<ChessMoveEntry> = emptyList(),
     @SerialName("created_at") val createdAt: String = "",
     @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("invited_user_id") val invitedUserId: String? = null,
+    @SerialName("invite_status") val inviteStatus: String? = null,
 )
 
 @Serializable

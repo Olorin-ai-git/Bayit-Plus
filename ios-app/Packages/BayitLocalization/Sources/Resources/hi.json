@@ -3670,6 +3670,17 @@
       "rapid10": "10 मिनट",
       "classical30": "30 मिनट"
     },
+    "challengeFriend": "दोस्त को चुनौती दें",
+    "noFriendsYet": "चुनौती देने के लिए दोस्त जोड़ें",
+    "acceptInvite": "स्वीकार",
+    "declineInvite": "अस्वीकार",
+    "whiteCaptured": "सफ़ेद ने पकड़ा",
+    "blackCaptured": "काले ने पकड़ा",
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन",
+    "joinByGameCode": "कोड से जुड़ें",
+    "challengeViaWhatsApp": "WhatsApp से चुनौती दें",
+    "whatsAppMessage": "मैं आपको Bayit+ पर शतरंज की चुनौती देता हूँ! कोड: {{code}} - खेलने के लिए टैप करें: {{link}}",
     "chat": {
       "title": "चैट",
       "inputPlaceholder": "संदेश लिखें...",

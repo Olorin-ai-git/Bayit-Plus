@@ -66,7 +66,7 @@ class ChessViewModelTest {
     fun `initial state is Lobby`() = runTest {
         val vm = buildViewModel()
         vm.uiState.test {
-            assertEquals(ChessUiState.Lobby, awaitItem())
+            assertEquals(ChessUiState.Lobby(), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -78,7 +78,7 @@ class ChessViewModelTest {
 
         val vm = buildViewModel()
         vm.uiState.test {
-            assertEquals(ChessUiState.Lobby, awaitItem())
+            assertEquals(ChessUiState.Lobby(), awaitItem())
             vm.createGame("white", "pvp", null, null)
             assertEquals(ChessUiState.Loading, awaitItem())
             val active = awaitItem() as ChessUiState.GameActive

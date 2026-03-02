@@ -3664,6 +3664,17 @@
       "rapid10": "10分钟",
       "classical30": "30分钟"
     },
+    "challengeFriend": "挑战好友",
+    "noFriendsYet": "添加好友来挑战他们",
+    "acceptInvite": "接受",
+    "declineInvite": "拒绝",
+    "whiteCaptured": "白方已吃",
+    "blackCaptured": "黑方已吃",
+    "online": "在线",
+    "offline": "离线",
+    "joinByGameCode": "通过代码加入",
+    "challengeViaWhatsApp": "通过WhatsApp挑战",
+    "whatsAppMessage": "我在Bayit+上挑战你下棋! 代码: {{code}} - 点击开始: {{link}}",
     "chat": {
       "title": "聊天",
       "inputPlaceholder": "输入消息...",

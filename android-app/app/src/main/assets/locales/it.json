@@ -2751,6 +2751,10 @@
     "inviteReceived": "{{name}} ti ha invitato a una partita di scacchi!",
     "joinInvite": "Unisciti alla Partita",
     "challenge": "Sfida",
+    "challengeFriend": "Sfida un amico",
+    "noFriendsYet": "Aggiungi amici per sfidarli",
+    "acceptInvite": "Accetta",
+    "declineInvite": "Rifiuta",
     "playedAsWhite": "Ha giocato con il Bianco",
     "playedAsBlack": "Ha giocato con il Nero",
     "gameMode": "Modalità di Gioco",
@@ -2787,6 +2791,8 @@
     "blitz3": "3 min",
     "blitz5": "5 min",
     "rapid10": "10 min",
-    "classical30": "30 min"
+    "classical30": "30 min",
+    "challengeViaWhatsApp": "Sfida via WhatsApp",
+    "whatsAppMessage": "Ti sfido a scacchi su Bayit+! Codice: {{code}} - Tocca per giocare: {{link}}"
   }
 }

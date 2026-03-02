@@ -18,16 +18,6 @@ import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Production implementation of [FriendsRepository] backed by Retrofit.
- *
- * Delegates HTTP communication to [BayitApiClient], which handles auth headers,
- * correlation IDs, retry, rate limiting, and structured error mapping. Every
- * public method wraps the network call in [runCatchingResult] so callers receive
- * a [BayitResult] instead of raw exceptions.
- *
- * Endpoint paths mirror the iOS APIFriendsRepository and web api.js.
- */
 @Singleton
 class ApiFriendsRepository @Inject constructor(
     private val client: BayitApiClient,
@@ -41,20 +31,19 @@ class ApiFriendsRepository @Inject constructor(
     }
 
     override suspend fun sendRequest(userId: String): BayitResult<Unit> = runCatchingResult {
-        val body = FriendRequestBody(userId = userId)
-        client.safeApiCall { service.sendFriendRequest(body) }
+        client.safeApiCall { service.sendFriendRequest(FriendRequestBody(userId = userId)) }
         Unit
     }
 
     override suspend fun acceptRequest(requestId: String): BayitResult<Unit> =
         runCatchingResult {
-            client.safeApiCall { service.acceptFriendRequest(requestId) }
+            client.safeApiCall { service.acceptFriendRequest(AcceptRejectBody(requestId)) }
             Unit
         }
 
     override suspend fun declineRequest(requestId: String): BayitResult<Unit> =
         runCatchingResult {
-            client.safeApiCall { service.declineFriendRequest(requestId) }
+            client.safeApiCall { service.declineFriendRequest(AcceptRejectBody(requestId)) }
             Unit
         }
 
@@ -66,38 +55,38 @@ class ApiFriendsRepository @Inject constructor(
 
     override suspend fun getPendingRequests(): BayitResult<List<Any>> = runCatchingResult {
         val response = client.safeApiCall { service.getPendingRequests() }
-        response.requests
+        response.incoming
     }
 
     override suspend fun searchUsers(query: String): BayitResult<List<Any>> =
         runCatchingResult {
-            val response = client.safeApiCall { service.searchUsers(query) }
+            val response = client.safeApiCall { service.searchUsers(SearchUsersBody(query)) }
             response.users
         }
 }
 
 private interface FriendsService {
 
-    @GET("api/v1/social/friends")
+    @GET("api/v1/friends/list")
     suspend fun getFriends(): FriendsListResponse
 
-    @POST("api/v1/social/friends/request")
+    @POST("api/v1/friends/request")
     suspend fun sendFriendRequest(@Body request: FriendRequestBody): FriendRequestResponse
 
-    @PUT("api/v1/social/friends/request/{id}/accept")
-    suspend fun acceptFriendRequest(@Path("id") requestId: String): FriendRequestResponse
+    @POST("api/v1/friends/request/accept")
+    suspend fun acceptFriendRequest(@Body request: AcceptRejectBody): FriendRequestResponse
 
-    @DELETE("api/v1/social/friends/request/{id}")
-    suspend fun declineFriendRequest(@Path("id") requestId: String): FriendRequestResponse
+    @POST("api/v1/friends/request/reject")
+    suspend fun declineFriendRequest(@Body request: AcceptRejectBody): FriendRequestResponse
 
-    @DELETE("api/v1/social/friends/{id}")
+    @DELETE("api/v1/friends/{id}")
     suspend fun removeFriend(@Path("id") friendId: String): FriendRequestResponse
 
-    @GET("api/v1/social/friends/requests/pending")
+    @GET("api/v1/friends/requests")
     suspend fun getPendingRequests(): PendingRequestsResponse
 
-    @GET("api/v1/social/users/search")
-    suspend fun searchUsers(@Query("q") query: String): UserSearchResponse
+    @POST("api/v1/friends/search")
+    suspend fun searchUsers(@Body request: SearchUsersBody): UserSearchResponse
 }
 
 /** Response wrapper for the friends list endpoint. */
@@ -106,27 +95,23 @@ private data class FriendsListResponse(
     val friends: List<Friend> = emptyList(),
 )
 
-/** Request body for sending a friend request. */
 @Serializable
-private data class FriendRequestBody(
-    @SerialName("user_id") val userId: String,
-)
+private data class FriendRequestBody(@SerialName("receiver_id") val userId: String)
 
-/** Generic response for friend request mutations. */
 @Serializable
-private data class FriendRequestResponse(
-    val success: Boolean = true,
-    val message: String? = null,
-)
+private data class AcceptRejectBody(@SerialName("request_id") val requestId: String)
 
-/** Response wrapper for pending friend requests. */
+@Serializable
+private data class SearchUsersBody(val query: String, val limit: Int = 20)
+
+@Serializable
+private data class FriendRequestResponse(val success: Boolean = true, val message: String? = null)
+
 @Serializable
 private data class PendingRequestsResponse(
-    val requests: List<FriendRequest> = emptyList(),
+    val incoming: List<FriendRequest> = emptyList(),
+    val outgoing: List<FriendRequest> = emptyList(),
 )
 
-/** Response wrapper for user search results. */
 @Serializable
-private data class UserSearchResponse(
-    val users: List<Friend> = emptyList(),
-)
+private data class UserSearchResponse(val users: List<Friend> = emptyList())

@@ -109,7 +109,7 @@ public final class NavigationCoordinator {
         case .player:
             fullscreenRoute = route
 
-        case .movieDetail, .seriesDetail, .collectionDetail, .podcastDetail, .epg:
+        case .movieDetail, .seriesDetail, .actorDetail, .collectionDetail, .podcastDetail, .epg:
             pushToCurrentTab(route)
 
         case .tvLogin:

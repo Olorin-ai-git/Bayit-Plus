@@ -67,4 +67,6 @@ struct ChessGame: Codable, Identifiable, Sendable {
     let botDifficulty: BotDifficulty?
     let createdAt: Date
     let updatedAt: Date
+    let invitedUserId: String?
+    let inviteStatus: String?
 }

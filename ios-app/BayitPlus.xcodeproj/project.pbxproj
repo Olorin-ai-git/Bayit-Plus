@@ -1021,6 +1021,9 @@
 		AB1EDABD0E45ED1D5B57E0C4 /* AICompanionSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3727A30736ACB8C8F3F40EE3 /* AICompanionSidebarView.swift */; };
 		AB23496E02482319BABC7DCF /* ProactiveVoiceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59B7A2E93FB96C869BDCE8 /* ProactiveVoiceModels.swift */; };
 		AB44F9ABE75474105EC8D814 /* TVContentPickerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D511222326531B8820154261 /* TVContentPickerCard.swift */; };
+		6293280AABB68197DE665E2B /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */; };
+		6FE7BA8DF729753FD282B6B0 /* ChessLobbyFriendPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */; };
+		ACBAE4B6FBE6DF5974BD86A9 /* ChessInviteBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */; };
 		AB4C8060EEC2239B0AFD441D /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */; };
 		AB6E373CE4946B63D1F3008D /* StarStoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD5B1FAC68F021B3FA2F52 /* StarStoryRepository.swift */; };
 		AB72B858DE01A3C60A8C00E0 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD3E1F0B577CB6636E6F091 /* Friend.swift */; };
@@ -1192,6 +1195,7 @@
 		C56B2F21200DE4BFBD1EBA98 /* DownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA9B7F6E0D5F197D75264AD /* DownloadStore.swift */; };
 		C59B78BE672A2D959E46DE32 /* AuthComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B9F1CD8C64CF2B05A989C0 /* AuthComponents.swift */; };
 		C5A6C26E2F671CA51287C31F /* TVWatchlistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82921033A6EB60FDFED39D93 /* TVWatchlistView.swift */; };
+		B7154B4C1CF15A8C74F9E40C /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */; };
 		C5BE9B0E5416B01C53B67932 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */; };
 		C5CA94EE88BC33300E33ACB2 /* AICompanionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A144BA219665417CC50F1F22 /* AICompanionModels.swift */; };
 		C5E3B1EAA7FE4837466535E7 /* TVSplitSubtitleOverlayView+Layouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65A5CDFB7B8D7627E015A6 /* TVSplitSubtitleOverlayView+Layouts.swift */; };
@@ -1415,6 +1419,7 @@
 		E83C173541ED90BD811A820A /* TVZehAniFeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FDE651F32B665D10D62667 /* TVZehAniFeedbackView.swift */; };
 		E84DA3ABD96143D9702C5FC6 /* Bayit_Intro_Hebrew.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AAC318B4D17C0AAEE86175DF /* Bayit_Intro_Hebrew.mp3 */; };
 		E8C70EB4992E12CDD2665F22 /* DownloadManager+Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C6591EF0DEB5DC25BF24F5 /* DownloadManager+Tasks.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* ChessLobbyView+Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */; };
 		E8E6A41CA76ACB0A8B83AB61 /* ChessLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */; };
 		E906E2461EBDC0F9BECE31E1 /* BACKEND_VERIFICATION_COMPLETE.md in Resources */ = {isa = PBXBuildFile; fileRef = A161A2AF53EFCCBED5187AF7 /* BACKEND_VERIFICATION_COMPLETE.md */; };
 		E958423D6DFBD3DEF813BF69 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A8C9CFD91A4B5F0E05DF81 /* VideoPlayerView.swift */; };
@@ -1891,6 +1896,9 @@
 		406555BED728CE3F1E39C9F4 /* SettingsView+AccountSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView+AccountSection.swift"; sourceTree = "<group>"; };
 		4082384E2CF43F4AA8DDA1C0 /* FamilyControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyControlsView.swift; sourceTree = "<group>"; };
 		40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessViewModel+Actions.swift"; sourceTree = "<group>"; };
+		76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteViewModel.swift; sourceTree = "<group>"; };
+		C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyFriendPickerView.swift; sourceTree = "<group>"; };
+		BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteBannerView.swift; sourceTree = "<group>"; };
 		40F5688B6282AEDA547F5390 /* SearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModels.swift; sourceTree = "<group>"; };
 		4109D804B02B9CE4BDC0511F /* IntentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentError.swift; sourceTree = "<group>"; };
 		410FA6D4BC1B011DA720F3CD /* FamilySnapsSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySnapsSubviews.swift; sourceTree = "<group>"; };
@@ -2301,6 +2309,7 @@
 		942154D3EBF8885EE47C26F3 /* TVHomeSectionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVHomeSectionConfig.swift; sourceTree = "<group>"; };
 		9437AC1601C8B32BB8507712 /* AudiobookRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookRepository.swift; sourceTree = "<group>"; };
 		947C5C98003880872D8CD3C9 /* ChessGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessGame.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessLobbyView+Chips.swift"; sourceTree = "<group>"; };
 		9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyView.swift; sourceTree = "<group>"; };
 		949EF00A25F174AD31C0E318 /* PiPWidgetContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPWidgetContainerView.swift; sourceTree = "<group>"; };
 		956E2FEB7E5D266CB41A116A /* AvatarMeshModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshModels.swift; sourceTree = "<group>"; };
@@ -3216,7 +3225,10 @@
 				088CB98B46241D416BB31B33 /* ChessBoardView.swift */,
 				CF2431E1673AAA175ADC6400 /* ChessChatPanel.swift */,
 				C96B15B9ABA7BFAD5A60A8D5 /* ChessControlsView.swift */,
+				BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */,
 				CB3DF626478B426820B85D87 /* ChessLobbyJoinView.swift */,
+				C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */,
 				9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */,
 				9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */,
 				6166FDC4128A5E96808D0562 /* ChessPieceView.swift */,
@@ -5039,6 +5051,7 @@
 				496DCA5CC40AD6D376B50439 /* ChapterNavigationViewModel.swift */,
 				8ADEAACE3CBD806C867EE97C /* ChatbotViewModel.swift */,
 				B19C46FEA5240C2C1DB54A5A /* ChatbotViewModel+VoiceInput.swift */,
+				76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */,
 				C875C4D18727249818456160 /* ChessViewModel.swift */,
 				40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */,
 				276CCEF9B659D6492252B1C6 /* ChessViewModel+WebSocket.swift */,
@@ -5390,6 +5403,7 @@
 				AC8287602641DB106BA7753C /* ChessChatMessage.swift in Sources */,
 				F61F25BE4EFC7E5FDDFAD6B6 /* ChessGame.swift in Sources */,
 				FD4DA5CFAD9C23EFD416A790 /* ChessRepository.swift in Sources */,
+				B7154B4C1CF15A8C74F9E40C /* ChessInviteViewModel.swift in Sources */,
 				C5BE9B0E5416B01C53B67932 /* ChessViewModel+Actions.swift in Sources */,
 				3A89C9E9F3D78373F204CADE /* ChessViewModel+WebSocket.swift in Sources */,
 				9AF1B88741A1CDB7F5815E16 /* ChessViewModel.swift in Sources */,
@@ -6193,6 +6207,7 @@
 				0BC9B172EE880565D85BE7B4 /* ChessControlsView.swift in Sources */,
 				B1902648EE9562E6C1D9FF6A /* ChessGame.swift in Sources */,
 				FD0769B597922682F66FF5B0 /* ChessLobbyJoinView.swift in Sources */,
+				D1E2F3A4B5C6D7E8F9A0B1C2 /* ChessLobbyView+Chips.swift in Sources */,
 				E8E6A41CA76ACB0A8B83AB61 /* ChessLobbyView.swift in Sources */,
 				E2F61B2E7F1D0402D81A2956 /* ChessMoveHistoryView.swift in Sources */,
 				3682FA7A75C11E66D0D95811 /* ChessPieceView.swift in Sources */,
@@ -6200,6 +6215,9 @@
 				B23819F3FB80F8FE9A165FA8 /* ChessRepository.swift in Sources */,
 				FE6CD499F1CA6A35A3F5D9B0 /* ChessView+Subviews.swift in Sources */,
 				E20131D0583F4DD5D9C6BC13 /* ChessView.swift in Sources */,
+				6293280AABB68197DE665E2B /* ChessInviteViewModel.swift in Sources */,
+				6FE7BA8DF729753FD282B6B0 /* ChessLobbyFriendPickerView.swift in Sources */,
+				ACBAE4B6FBE6DF5974BD86A9 /* ChessInviteBannerView.swift in Sources */,
 				AB4C8060EEC2239B0AFD441D /* ChessViewModel+Actions.swift in Sources */,
 				FE3D6FB99057AA336B12DCE9 /* ChessViewModel+WebSocket.swift in Sources */,
 				E41F037A573F7A5EBA72FB31 /* ChessViewModel.swift in Sources */,
@@ -6855,7 +6873,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6878,7 +6896,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6990,7 +7008,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -7072,7 +7090,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;

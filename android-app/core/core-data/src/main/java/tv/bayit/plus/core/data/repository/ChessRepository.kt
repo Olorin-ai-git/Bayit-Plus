@@ -25,4 +25,10 @@ interface ChessRepository {
     suspend fun loadChatHistory(gameCode: String): BayitResult<List<ChessChatMessage>>
 
     suspend fun sendChatMessage(gameCode: String, message: String): BayitResult<ChessChatMessage>
+
+    suspend fun invitePlayer(friendUserId: String, color: String, timeControl: Int?): BayitResult<ChessGame>
+
+    suspend fun getPendingInvites(): BayitResult<List<ChessGame>>
+
+    suspend fun declineInvite(gameCode: String): BayitResult<Unit>
 }

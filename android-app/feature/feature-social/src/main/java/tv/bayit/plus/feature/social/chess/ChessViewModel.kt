@@ -11,8 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ChessRepository
+import tv.bayit.plus.core.data.repository.FriendsRepository
+import tv.bayit.plus.core.model.Friend
 import javax.inject.Inject
 
 private const val TIMER_INTERVAL_MS = 100L
@@ -23,11 +27,22 @@ class ChessViewModel @Inject constructor(
     internal val chessRepository: ChessRepository,
     internal val chessWebSocketHandler: ChessWebSocketHandler,
     internal val logger: BayitLogger,
+    internal val stringProvider: BayitStringProvider,
+    private val friendsRepository: FriendsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    internal val _uiState = MutableStateFlow<ChessUiState>(ChessUiState.Lobby)
+    internal val _uiState = MutableStateFlow<ChessUiState>(ChessUiState.Lobby())
     val uiState: StateFlow<ChessUiState> = _uiState.asStateFlow()
+
+    private val _pendingWhatsAppMessage = MutableStateFlow<String?>(null)
+    val pendingWhatsAppMessage: StateFlow<String?> = _pendingWhatsAppMessage.asStateFlow()
+
+    private val _friends = MutableStateFlow<List<Friend>>(emptyList())
+    val friends: StateFlow<List<Friend>> = _friends.asStateFlow()
+
+    private val _isFriendsLoading = MutableStateFlow(true)
+    val isFriendsLoading: StateFlow<Boolean> = _isFriendsLoading.asStateFlow()
 
     internal var wsJob: Job? = null
     internal var timerJob: Job? = null
@@ -35,6 +50,23 @@ class ChessViewModel @Inject constructor(
     init {
         savedStateHandle.get<String>(ARG_GAME_ID)?.let { gameId ->
             loadGame(gameId)
+        }
+        loadFriends()
+    }
+
+    private fun loadFriends() {
+        viewModelScope.launch {
+            _isFriendsLoading.value = true
+            when (val result = friendsRepository.getFriends()) {
+                is BayitResult.Success -> {
+                    _friends.value = result.data.filterIsInstance<Friend>()
+                }
+                is BayitResult.Error -> {
+                    logger.error("Failed to load friends", result.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+            _isFriendsLoading.value = false
         }
     }
 
@@ -62,6 +94,14 @@ class ChessViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun clearPendingWhatsAppMessage() {
+        _pendingWhatsAppMessage.value = null
+    }
+
+    internal fun setPendingWhatsAppMessage(message: String) {
+        _pendingWhatsAppMessage.value = message
     }
 
     internal fun launchInScope(block: suspend () -> Unit) {

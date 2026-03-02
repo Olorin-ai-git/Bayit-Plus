@@ -2247,6 +2247,10 @@
     "inviteReceived": "{{name}} আপনাকে দাবা খেলায় আমন্ত্রণ জানিয়েছে!",
     "joinInvite": "গেমে যোগ দিন",
     "challenge": "চ্যালেঞ্জ",
+    "challengeFriend": "বন্ধুকে চ্যালেঞ্জ করুন",
+    "noFriendsYet": "চ্যালেঞ্জ করতে বন্ধু যোগ করুন",
+    "acceptInvite": "গ্রহণ করুন",
+    "declineInvite": "প্রত্যাখ্যান করুন",
     "playedAsWhite": "সাদা হিসেবে খেলেছে",
     "playedAsBlack": "কালো হিসেবে খেলেছে",
     "gameMode": "গেম মোড",
@@ -2283,6 +2287,8 @@
     "blitz3": "৩ মিনিট",
     "blitz5": "৫ মিনিট",
     "rapid10": "১০ মিনিট",
-    "classical30": "৩০ মিনিট"
+    "classical30": "৩০ মিনিট",
+    "challengeViaWhatsApp": "WhatsApp-এ চ্যালেঞ্জ করুন",
+    "whatsAppMessage": "আমি আপনাকে Bayit+-এ দাবায় চ্যালেঞ্জ করছি! কোড: {{code}} - খেলতে ট্যাপ করুন: {{link}}"
   }
 }

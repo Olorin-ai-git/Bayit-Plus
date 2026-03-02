@@ -3658,6 +3658,17 @@
       "rapid10": "১০ মিনিট",
       "classical30": "৩০ মিনিট"
     },
+    "challengeFriend": "বন্ধুকে চ্যালেঞ্জ করুন",
+    "noFriendsYet": "চ্যালেঞ্জ দিতে বন্ধু যোগ করুন",
+    "acceptInvite": "গ্রহণ",
+    "declineInvite": "প্রত্যাখ্যান",
+    "whiteCaptured": "সাদা ধরেছে",
+    "blackCaptured": "কালো ধরেছে",
+    "online": "অনলাইন",
+    "offline": "অফলাইন",
+    "joinByGameCode": "কোড দিয়ে যোগ দিন",
+    "challengeViaWhatsApp": "WhatsApp-এ চ্যালেঞ্জ করুন",
+    "whatsAppMessage": "আমি আপনাকে Bayit+-এ দাবায় চ্যালেঞ্জ করছি! কোড: {{code}} - খেলতে ট্যাপ করুন: {{link}}",
     "chat": {
       "title": "চ্যাট",
       "inputPlaceholder": "একটি বার্তা লিখুন...",

@@ -1,7 +1,40 @@
+import BayitLocalization
 import Foundation
+
+private let deepLinkChessBase = "bayitplus://chess"
 
 /// Game action methods extracted from ChessViewModel for the 200-line limit.
 extension ChessViewModel {
+    @MainActor
+    func createGameForWhatsApp(
+        color: String,
+        timeControl: Int?,
+        localization: LocalizationManager
+    ) async {
+        isLoading = true
+        error = nil
+        do {
+            let created = try await repository.createGame(
+                color: color, gameMode: "pvp", botDifficulty: nil, timeControl: timeControl
+            )
+            applyGameState(created)
+            await connectWebSocket(gameCode: created.gameCode)
+            let link = "\(deepLinkChessBase)/\(created.gameCode)"
+            let message = localization.t(
+                "chess.whatsAppMessage",
+                ["code": created.gameCode, "link": link]
+            )
+            pendingWhatsAppMessage = message
+            logger.info("WhatsApp challenge created", context: ["gameCode": created.gameCode])
+        } catch {
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
+            logger.error("Failed to create WhatsApp challenge", error: error)
+        }
+        isLoading = false
+    }
+
     @MainActor
     func loadGame(gameId: String) async {
         isLoading = true
@@ -115,6 +148,26 @@ extension ChessViewModel {
     @MainActor func respondToDraw(accept: Bool) async {
         await sendWSPayload("{\"type\":\"draw_response\",\"accept\":\(accept)}")
         drawOffered = false
+    }
+
+    @MainActor
+    func inviteFriend(friendUserId: String, color: String = "white", timeControl: Int? = nil) async {
+        isLoading = true
+        error = nil
+        do {
+            let invited = try await repository.invitePlayer(
+                friendUserId: friendUserId, color: color, timeControl: timeControl
+            )
+            applyGameState(invited)
+            await connectWebSocket(gameCode: invited.gameCode)
+            logger.info("Friend invited", context: ["friendUserId": friendUserId])
+        } catch {
+            if let message = error.userFriendlyMessage {
+                self.error = message
+            }
+            logger.error("Failed to invite friend", error: error)
+        }
+        isLoading = false
     }
 
     @MainActor

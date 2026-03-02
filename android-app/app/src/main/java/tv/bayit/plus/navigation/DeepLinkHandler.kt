@@ -45,6 +45,12 @@ class DeepLinkHandler @Inject constructor(
             "rewards" -> Route.Rewards
             "trivia" -> segments.firstOrNull()?.let { Route.Trivia(it) }
             "chess" -> Route.Chess(segments.firstOrNull())
+            "tv-login" -> {
+                val sessionId = uri.getQueryParameter("session") ?: return null
+                val token = uri.getQueryParameter("token") ?: return null
+                val expires = uri.getQueryParameter("expires") ?: return null
+                Route.TVLogin(sessionId = sessionId, token = token, expires = expires)
+            }
             "messages" -> Route.DirectMessages
             "watchparty" -> segments.firstOrNull()?.let { Route.WatchPartyDetail(it) } ?: Route.WatchParty
             "zehani" -> Route.ZehAni
@@ -65,6 +71,7 @@ class DeepLinkHandler @Inject constructor(
             "search" -> Route.Search
             "rewards" -> Route.Rewards
             "trivia" -> segments.getOrNull(1)?.let { Route.Trivia(it) }
+            "chess" -> Route.Chess(segments.getOrNull(1))
             else -> null
         }
     }

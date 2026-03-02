@@ -107,6 +107,9 @@ class ChessService:
             if game.time_control:
                 game.last_move_at = datetime.now(timezone.utc)
 
+        if game.invited_user_id == user_id:
+            game.invite_status = "accepted"
+
         game.updated_at = datetime.utcnow()
         await game.save()
         return game

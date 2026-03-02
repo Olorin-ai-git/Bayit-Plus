@@ -2,8 +2,33 @@ package tv.bayit.plus.feature.social.chess
 
 import tv.bayit.plus.core.common.BayitResult
 
-private const val BOT_POLL_DELAY_MS = 800L
-private const val BOT_POLL_MAX_ATTEMPTS = 10
+private const val DEEP_LINK_CHESS_BASE = "bayitplus://chess"
+
+fun ChessViewModel.createGameForWhatsApp(color: String, timeControl: Int?) {
+    launchInScope {
+        _uiState.value = ChessUiState.Loading
+        logger.info("Creating WhatsApp challenge game", mapOf("color" to color))
+        when (val result = chessRepository.createGame(color, "pvp", null, timeControl)) {
+            is BayitResult.Success -> {
+                val game = result.data
+                val link = "$DEEP_LINK_CHESS_BASE/${game.gameCode}"
+                val message = stringProvider.string(
+                    "chess.whatsAppMessage",
+                    mapOf("code" to game.gameCode, "link" to link),
+                )
+                setPendingWhatsAppMessage(message)
+                transitionToGame(game)
+            }
+            is BayitResult.Error -> {
+                logger.error("WhatsApp challenge create failed", result.exception)
+                _uiState.value = ChessUiState.Error(
+                    result.message ?: result.exception.message.orEmpty()
+                )
+            }
+            is BayitResult.Loading -> Unit
+        }
+    }
+}
 
 fun ChessViewModel.createGame(
     color: String,
@@ -101,32 +126,6 @@ fun ChessViewModel.sendMove(gameCode: String, from: String, to: String) {
     }
 }
 
-private fun ChessViewModel.pollBotReply(gameCode: String) {
-    val current = _uiState.value as? ChessUiState.GameActive ?: return
-    if (current.game.gameMode != "bot") return
-    val turnAfterPlayerMove = current.currentTurn
-    launchInScope {
-        repeat(BOT_POLL_MAX_ATTEMPTS) {
-            kotlinx.coroutines.delay(BOT_POLL_DELAY_MS)
-            when (val result = chessRepository.getGame(gameCode)) {
-                is BayitResult.Success -> {
-                    if (result.data.currentTurn != turnAfterPlayerMove ||
-                        result.data.status != "active"
-                    ) {
-                        applyGameUpdate(result.data)
-                        return@launchInScope
-                    }
-                }
-                is BayitResult.Error -> {
-                    logger.error("Bot poll failed", result.exception)
-                    return@launchInScope
-                }
-                is BayitResult.Loading -> Unit
-            }
-        }
-    }
-}
-
 fun ChessViewModel.resign(gameCode: String) {
     launchInScope {
         chessWebSocketHandler.send("""{"type":"resign"}""")
@@ -177,7 +176,7 @@ fun ChessViewModel.navigateToLobby() {
     wsJob?.cancel()
     timerJob?.cancel()
     chessWebSocketHandler.disconnect()
-    _uiState.value = ChessUiState.Lobby
+    _uiState.value = ChessUiState.Lobby()
 }
 
 fun ChessViewModel.squareNotation(row: Int, col: Int): String {

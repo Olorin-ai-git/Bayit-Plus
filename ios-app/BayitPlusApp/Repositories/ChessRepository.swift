@@ -14,8 +14,14 @@ protocol ChessRepository: Sendable {
     /// Join an existing chess game by game code.
     func joinGame(gameCode: String) async throws -> ChessGame
 
-    /// Invite a friend to a chess game.
-    func invitePlayer(friendName: String, color: String, timeControl: String?) async throws -> ChessGame
+    /// Invite a friend to a chess game by their user ID.
+    func invitePlayer(friendUserId: String, color: String, timeControl: Int?) async throws -> ChessGame
+
+    /// Fetch pending chess invites for the current user.
+    func getPendingInvites() async throws -> [ChessGame]
+
+    /// Decline a chess invite by game code.
+    func declineInvite(gameCode: String) async throws
 
     /// Make a chess move via REST API (fallback when WebSocket is unavailable).
     func makeMove(gameCode: String, from: String, to: String) async throws -> ChessGame
@@ -86,18 +92,33 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
         return envelope.game
     }
 
-    func invitePlayer(friendName: String, color: String, timeControl: String?) async throws -> ChessGame {
+    func invitePlayer(friendUserId: String, color: String, timeControl: Int?) async throws -> ChessGame {
         struct Body: Encodable, Sendable {
-            let friendName: String
+            let friendUserId: String
             let color: String
-            let timeControl: String?
+            let timeControl: Int?
         }
         let envelope = try await client.post(
             "/api/v1/chess/invite",
-            body: Body(friendName: friendName, color: color, timeControl: timeControl),
+            body: Body(friendUserId: friendUserId, color: color, timeControl: timeControl),
             as: GameEnvelope.self
         )
         return envelope.game
+    }
+
+    func getPendingInvites() async throws -> [ChessGame] {
+        struct InvitesEnvelope: Decodable, Sendable { let invites: [ChessGame] }
+        let envelope = try await client.get("/api/v1/chess/invites/pending", as: InvitesEnvelope.self)
+        return envelope.invites
+    }
+
+    func declineInvite(gameCode: String) async throws {
+        struct DeclineResponse: Decodable, Sendable { let status: String }
+        _ = try await client.post(
+            "/api/v1/chess/\(gameCode)/decline-invite",
+            body: EmptyBody(),
+            as: DeclineResponse.self
+        )
     }
 
     /// Envelope for the move endpoint response.

@@ -21,7 +21,6 @@ struct FriendRequestsResponse: Decodable, Sendable {
 
 /// Production implementation of `FriendsRepository` using `APIClient`.
 final class APIFriendsRepository: FriendsRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -29,7 +28,9 @@ final class APIFriendsRepository: FriendsRepository, @unchecked Sendable {
     }
 
     func fetchFriends() async throws -> [Friend] {
-        return try await client.get("/api/v1/friends/list", as: [Friend].self)
+        struct FriendsListWrapper: Decodable, Sendable { let friends: [Friend] }
+        let wrapper = try await client.get("/api/v1/friends/list", as: FriendsListWrapper.self)
+        return wrapper.friends
     }
 
     func fetchRequests() async throws -> FriendRequestsResponse {

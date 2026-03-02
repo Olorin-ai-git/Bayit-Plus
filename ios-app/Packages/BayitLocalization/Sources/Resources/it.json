@@ -3911,6 +3911,17 @@
       "rapid10": "10 min",
       "classical30": "30 min"
     },
+    "challengeFriend": "Sfida un Amico",
+    "noFriendsYet": "Aggiungi amici per sfidarli",
+    "acceptInvite": "Accetta",
+    "declineInvite": "Rifiuta",
+    "whiteCaptured": "Bianchi catturati",
+    "blackCaptured": "Neri catturati",
+    "online": "Online",
+    "offline": "Offline",
+    "joinByGameCode": "Unisciti tramite codice",
+    "challengeViaWhatsApp": "Sfida via WhatsApp",
+    "whatsAppMessage": "Ti sfido a scacchi su Bayit+! Codice: {{code}} - Tocca per giocare: {{link}}",
     "chat": {
       "title": "Chat",
       "inputPlaceholder": "Scrivi un messaggio...",

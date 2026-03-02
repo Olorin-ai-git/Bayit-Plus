@@ -2609,6 +2609,10 @@
     "inviteReceived": "{{name}} ने आपको शतरंज के खेल में आमंत्रित किया!",
     "joinInvite": "गेम में शामिल हों",
     "challenge": "चुनौती",
+    "challengeFriend": "दोस्त को चुनौती दें",
+    "noFriendsYet": "चुनौती देने के लिए दोस्त जोड़ें",
+    "acceptInvite": "स्वीकार करें",
+    "declineInvite": "अस्वीकार करें",
     "playedAsWhite": "सफेद से खेला",
     "playedAsBlack": "काले से खेला",
     "gameMode": "गेम मोड",
@@ -2645,6 +2649,8 @@
     "blitz3": "3 मिनट",
     "blitz5": "5 मिनट",
     "rapid10": "10 मिनट",
-    "classical30": "30 मिनट"
+    "classical30": "30 मिनट",
+    "challengeViaWhatsApp": "WhatsApp से चुनौती दें",
+    "whatsAppMessage": "मैं आपको Bayit+ पर शतरंज की चुनौती देता हूँ! कोड: {{code}} - खेलने के लिए टैप करें: {{link}}"
   }
 }

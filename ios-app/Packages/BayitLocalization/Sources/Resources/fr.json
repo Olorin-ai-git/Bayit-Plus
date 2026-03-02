@@ -3724,6 +3724,17 @@
       "rapid10": "10 min",
       "classical30": "30 min"
     },
+    "challengeFriend": "Defier un Ami",
+    "noFriendsYet": "Ajoutez des amis pour les defier",
+    "acceptInvite": "Accepter",
+    "declineInvite": "Refuser",
+    "whiteCaptured": "Blancs captures",
+    "blackCaptured": "Noirs captures",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "joinByGameCode": "Rejoindre par code de jeu",
+    "challengeViaWhatsApp": "Defier via WhatsApp",
+    "whatsAppMessage": "Je te defie aux echecs sur Bayit+! Code: {{code}} - Appuie pour jouer: {{link}}",
     "chat": {
       "title": "Chat",
       "inputPlaceholder": "Tapez un message...",

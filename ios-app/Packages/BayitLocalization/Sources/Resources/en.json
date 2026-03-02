@@ -3690,6 +3690,17 @@
       "rapid10": "10 min",
       "classical30": "30 min"
     },
+    "challengeFriend": "Challenge a Friend",
+    "noFriendsYet": "Add friends to challenge them",
+    "acceptInvite": "Accept",
+    "declineInvite": "Decline",
+    "whiteCaptured": "White captured",
+    "blackCaptured": "Black captured",
+    "online": "Online",
+    "offline": "Offline",
+    "joinByGameCode": "Join by game code",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "whatsAppMessage": "I challenge you to chess on Bayit+! Code: {{code}} - Tap to play: {{link}}",
     "chat": {
       "title": "Chat",
       "inputPlaceholder": "Type a message...",

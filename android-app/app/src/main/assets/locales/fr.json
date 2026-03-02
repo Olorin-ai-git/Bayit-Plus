@@ -2929,6 +2929,10 @@
     "inviteReceived": "{{name}} vous a invité à une partie d'échecs !",
     "joinInvite": "Rejoindre la Partie",
     "challenge": "Défier",
+    "challengeFriend": "Défier un ami",
+    "noFriendsYet": "Ajoutez des amis pour les défier",
+    "acceptInvite": "Accepter",
+    "declineInvite": "Refuser",
     "playedAsWhite": "A joué les Blancs",
     "playedAsBlack": "A joué les Noirs",
     "gameMode": "Mode de Jeu",
@@ -2965,6 +2969,8 @@
     "blitz3": "3 min",
     "blitz5": "5 min",
     "rapid10": "10 min",
-    "classical30": "30 min"
+    "classical30": "30 min",
+    "challengeViaWhatsApp": "Defier via WhatsApp",
+    "whatsAppMessage": "Je te defie aux echecs sur Bayit+! Code: {{code}} - Appuie pour jouer: {{link}}"
   }
 }

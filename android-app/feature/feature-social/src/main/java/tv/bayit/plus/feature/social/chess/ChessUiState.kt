@@ -6,7 +6,7 @@ import tv.bayit.plus.core.model.ChessMoveEntry
 
 sealed interface ChessUiState {
     data object Loading : ChessUiState
-    data object Lobby : ChessUiState
+    data class Lobby(val isWhatsAppSharing: Boolean = false) : ChessUiState
     data class GameActive(
         val game: ChessGame,
         val board: List<List<Char?>>,

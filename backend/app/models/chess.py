@@ -89,6 +89,8 @@ class ChessGame(Document):
     last_move_at: Optional[datetime] = None  # When the current player's clock started
     game_mode: GameMode = GameMode.PVP  # "pvp" or "bot"
     bot_difficulty: Optional[BotDifficulty] = None  # "easy", "medium", "hard"
+    invited_user_id: Optional[str] = None
+    invite_status: Optional[str] = None  # "pending" | "accepted" | "declined"
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -96,7 +98,7 @@ class ChessGame(Document):
         """Beanie document settings."""
 
         name = "chess_games"
-        indexes = ["game_code", "status", "created_at"]
+        indexes = ["game_code", "status", "created_at", "invited_user_id"]
 
 
 class ChessChatMessage(Document):

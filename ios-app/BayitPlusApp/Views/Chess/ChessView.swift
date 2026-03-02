@@ -9,6 +9,9 @@ struct ChessView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: ChessViewModel?
+    @State private var inviteViewModel: ChessInviteViewModel?
+    @State private var friends: [Friend] = []
+    @State private var isFriendsLoading = true
 
     var body: some View {
         Group {
@@ -22,29 +25,53 @@ struct ChessView: View {
         .toolbar(.hidden, for: .navigationBar)
         .task {
             await setupAndLoad()
-            // Keep this task alive until the view is removed from the
-            // navigation stack. When that happens, Swift cancels the task
-            // and we fall through to disconnect -- unlike onDisappear which
-            // fires during internal SwiftUI re-layouts.
             try? await Task.sleep(for: .seconds(365 * 86400))
+            inviteViewModel?.stopPolling()
             await viewModel?.disconnect()
+        }
+        .onChange(of: inviteViewModel?.acceptedGame?.gameCode) { _, newCode in
+            guard let newCode, let game = inviteViewModel?.acceptedGame else { return }
+            viewModel?.applyGameState(game)
+            Task { await viewModel?.connectWebSocket(gameCode: newCode) }
+        }
+        .onChange(of: viewModel?.pendingWhatsAppMessage) { _, message in
+            guard let message else { return }
+            openWhatsApp(message: message)
+            viewModel?.pendingWhatsAppMessage = nil
         }
     }
 
     // MARK: - Content Router
 
-    @ViewBuilder
     private func gameContent(_ vm: ChessViewModel) -> some View {
-        if vm.isLoading {
-            loadingState
-        } else if let error = vm.error {
-            ErrorStateView(message: error, onRetry: {
-                Task { await retryLoad(vm) }
-            })
-        } else if vm.game != nil {
-            activeGameContent(vm)
-        } else {
-            ChessLobbyView(vm: vm)
+        Group {
+            if vm.isLoading {
+                loadingState
+            } else if let error = vm.error {
+                ErrorStateView(message: error, onRetry: {
+                    Task { await retryLoad(vm) }
+                })
+            } else if vm.game != nil {
+                activeGameContent(vm)
+            } else {
+                ChessLobbyView(
+                    vm: vm,
+                    friends: friends,
+                    isFriendsLoading: isFriendsLoading,
+                    onInviteFriend: { friendId, color, timeControl in
+                        handleInviteFriend(vm: vm, friendId: friendId, color: color, timeControl: timeControl)
+                    }
+                )
+            }
+        }
+        .overlay(alignment: .top) {
+            if let inviteVM = inviteViewModel {
+                ChessInviteBannerView(
+                    invite: inviteVM.pendingInvite,
+                    onAccept: { code in Task { await inviteVM.acceptInvite(gameCode: code) } },
+                    onDecline: { code in Task { await inviteVM.declineInvite(gameCode: code) } }
+                )
+            }
         }
     }
 
@@ -127,11 +154,30 @@ struct ChessView: View {
             authTokenProvider: repos.authTokenProvider
         )
         viewModel = vm
+        let inviteVM = ChessInviteViewModel(repository: repos.chess)
+        inviteViewModel = inviteVM
+        inviteVM.startPolling()
         if let gameId {
             await vm.loadGame(gameId: gameId)
             if let code = vm.game?.gameCode {
                 await vm.connectWebSocket(gameCode: code)
             }
+        }
+        await loadFriends()
+    }
+
+    private func loadFriends() async {
+        do {
+            friends = try await repos.friends.fetchFriends()
+        } catch {
+            friends = []
+        }
+        isFriendsLoading = false
+    }
+
+    private func handleInviteFriend(vm: ChessViewModel, friendId: String, color: String, timeControl: Int?) {
+        Task {
+            await vm.inviteFriend(friendUserId: friendId, color: color, timeControl: timeControl)
         }
     }
 
@@ -139,21 +185,9 @@ struct ChessView: View {
         if let gameId { await vm.loadGame(gameId: gameId) }
     }
 
-    private func handleSquareTap(vm: ChessViewModel, row: Int, col: Int) {
-        if let selected = vm.selectedSquare {
-            if selected.row == row, selected.col == col {
-                vm.selectedSquare = nil
-            } else if let piece = vm.board[row][col], isOwnPiece(piece, turn: vm.currentTurn) {
-                vm.selectedSquare = (row, col)
-            } else {
-                Task { await vm.sendMove(from: (selected.row, selected.col), to: (row, col)) }
-            }
-        } else if let piece = vm.board[row][col], isOwnPiece(piece, turn: vm.currentTurn) {
-            vm.selectedSquare = (row, col)
-        }
-    }
-
-    private func isOwnPiece(_ piece: Character, turn: PlayerColor) -> Bool {
-        turn == .white ? piece.isUppercase : piece.isLowercase
+    private func openWhatsApp(message: String) {
+        guard let encoded = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://wa.me/?text=\(encoded)") else { return }
+        UIApplication.shared.open(url)
     }
 }

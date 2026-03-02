@@ -3420,6 +3420,10 @@
     "inviteReceived": "{{name}} הזמין אותך למשחק שחמט!",
     "joinInvite": "הצטרף למשחק",
     "challenge": "אתגר",
+    "challengeFriend": "אתגר חבר",
+    "noFriendsYet": "הוסף חברים כדי לאתגר אותם",
+    "acceptInvite": "קבל",
+    "declineInvite": "דחה",
     "playedAsWhite": "שיחק כלבן",
     "playedAsBlack": "שיחק כשחור",
     "gameMode": "מצב משחק",
@@ -3456,7 +3460,9 @@
     "blitz3": "3 דקות",
     "blitz5": "5 דקות",
     "rapid10": "10 דקות",
-    "classical30": "30 דקות"
+    "classical30": "30 דקות",
+    "challengeViaWhatsApp": "אתגר דרך WhatsApp",
+    "whatsAppMessage": "אני מאתגר אותך לשחמט ב-Bayit+! קוד: {{code}} - לחץ לשחק: {{link}}"
   },
   "friends": {
     "title": "חברים ויריבים",

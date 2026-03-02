@@ -14,6 +14,7 @@ extension Route {
         case .player: return "Player"
         case .movieDetail: return "Movie"
         case .seriesDetail: return "Series"
+        case .actorDetail: return "Actor"
         case .collectionDetail: return "Collection"
         case .podcastDetail: return "Podcast"
         case .epg: return "TV Guide"

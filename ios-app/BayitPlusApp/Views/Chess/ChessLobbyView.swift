@@ -2,9 +2,11 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Glass-themed chess lobby with hero image, mode selection, time control, and join game.
 struct ChessLobbyView: View {
     let vm: ChessViewModel
+    var friends: [Friend] = []
+    var isFriendsLoading: Bool = false
+    var onInviteFriend: ((String, String, Int?) -> Void)?
     @Environment(LocalizationManager.self) private var localization
     @State private var selectedMode: GameMode = .pvp
     @State private var selectedDifficulty: String = "medium"
@@ -12,14 +14,10 @@ struct ChessLobbyView: View {
     @State private var selectedTimeControl: Int?
 
     private enum GameMode { case pvp, bot }
-
     private let timeControls: [(label: String, value: Int?)] = [
-        ("chess.timeControl.unlimited", nil),
-        ("chess.timeControl.bullet1", 60),
-        ("chess.timeControl.blitz3", 180),
-        ("chess.timeControl.blitz5", 300),
-        ("chess.timeControl.rapid10", 600),
-        ("chess.timeControl.classical30", 1800),
+        ("chess.timeControl.unlimited", nil), ("chess.timeControl.bullet1", 60),
+        ("chess.timeControl.blitz3", 180), ("chess.timeControl.blitz5", 300),
+        ("chess.timeControl.rapid10", 600), ("chess.timeControl.classical30", 1800),
     ]
 
     var body: some View {
@@ -27,29 +25,32 @@ struct ChessLobbyView: View {
             VStack(spacing: 0) {
                 heroSection
                 modeSelectionSection.padding(.top, -DesignTokens.Spacing.xxl)
-                actionSection
+                if selectedMode == .pvp {
+                    pvpOptionsSection
+                    ChessLobbyFriendPickerView(
+                        friends: friends, isLoading: isFriendsLoading,
+                        onChallenge: { friendId in
+                            onInviteFriend?(friendId, selectedColor, selectedTimeControl)
+                        }
+                    )
+                    .padding(.horizontal, DesignTokens.Spacing.base)
+                    .padding(.top, DesignTokens.Spacing.md)
+                }
+                if selectedMode == .bot { botActionSection }
                 ChessLobbyJoinView(vm: vm)
             }
             .padding(.bottom, 120)
         }
     }
 
-    // MARK: - Hero
-
     private var heroSection: some View {
         ZStack(alignment: .bottomLeading) {
-            Image("chess-splash")
-                .resizable()
-                .scaledToFill()
-                .frame(height: 200)
-                .clipped()
-                .overlay(
-                    LinearGradient(
-                        colors: [.clear, DesignTokens.Background.primary],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                )
-
+            Image("chess-splash").resizable().scaledToFill()
+                .frame(height: 200).clipped()
+                .overlay(LinearGradient(
+                    colors: [.clear, DesignTokens.Background.primary],
+                    startPoint: .top, endPoint: .bottom
+                ))
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                 Text(localization.t("chess.title"))
                     .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
@@ -62,8 +63,6 @@ struct ChessLobbyView: View {
             .padding(.bottom, DesignTokens.Spacing.xxxl)
         }
     }
-
-    // MARK: - Mode Selection
 
     private var modeSelectionSection: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -106,21 +105,34 @@ struct ChessLobbyView: View {
         .accessibilityLabel(title)
     }
 
-    // MARK: - Action Section
-
-    private var actionSection: some View {
+    private var pvpOptionsSection: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            if selectedMode == .bot { difficultyPicker }
             colorPicker
             timeControlPicker
+            GlassButton(localization.t("chess.challengeViaWhatsApp"), variant: .primary) {
+                Task {
+                    await vm.createGameForWhatsApp(
+                        color: selectedColor, timeControl: selectedTimeControl,
+                        localization: localization
+                    )
+                }
+            }
+            .disabled(vm.isLoading)
+        }
+        .padding(.horizontal, DesignTokens.Spacing.base)
+        .padding(.top, DesignTokens.Spacing.lg)
+    }
 
-            GlassButton(localization.t("chess.createGame"), variant: .primary) {
-                let difficulty = selectedMode == .bot ? selectedDifficulty : nil
-                let mode = selectedMode == .pvp ? "pvp" : "bot"
+    private var botActionSection: some View {
+        VStack(spacing: DesignTokens.Spacing.md) {
+            difficultyPicker
+            colorPicker
+            timeControlPicker
+            GlassButton(localization.t("chess.playVsBot"), variant: .primary) {
                 Task {
                     await vm.createGame(
-                        color: selectedColor, gameMode: mode,
-                        botDifficulty: difficulty, timeControl: selectedTimeControl
+                        color: selectedColor, gameMode: "bot",
+                        botDifficulty: selectedDifficulty, timeControl: selectedTimeControl
                     )
                 }
             }
@@ -176,22 +188,5 @@ struct ChessLobbyView: View {
                 }
             }
         }
-    }
-
-    private func chipButton(
-        label: String, isSelected: Bool, accent: Color = DesignTokens.Gradient.ctaStart,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Text(label)
-                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                .foregroundStyle(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted)
-                .padding(.horizontal, DesignTokens.Spacing.base)
-                .padding(.vertical, DesignTokens.Spacing.sm)
-                .background(isSelected ? accent.opacity(0.3) : DesignTokens.Glass.bgLight)
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(isSelected ? accent.opacity(0.6) : Color.clear, lineWidth: 1))
-        }
-        .buttonStyle(.plain)
     }
 }

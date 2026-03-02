@@ -3329,6 +3329,10 @@
     "waitingForOpponent": "Esperando al oponente...",
     "gameOver": "Juego Terminado",
     "challenge": "Desafiar",
+    "challengeFriend": "Desafiar a un amigo",
+    "noFriendsYet": "Agrega amigos para desafiarlos",
+    "acceptInvite": "Aceptar",
+    "declineInvite": "Rechazar",
     "playedAsWhite": "Jugó con blancas",
     "playedAsBlack": "Jugó con negras",
     "disconnected": "Desconectado",
@@ -3371,7 +3375,9 @@
     "blitz3": "3 min",
     "blitz5": "5 min",
     "rapid10": "10 min",
-    "classical30": "30 min"
+    "classical30": "30 min",
+    "challengeViaWhatsApp": "Retar por WhatsApp",
+    "whatsAppMessage": "Te reto a jugar ajedrez en Bayit+! Codigo: {{code}} - Toca para jugar: {{link}}"
   },
   "friends": {
     "title": "Amigos y Oponentes",

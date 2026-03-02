@@ -3647,6 +3647,10 @@
     "inviteReceived": "{{name}} がチェスの対局に招待しました！",
     "joinInvite": "ゲームに参加",
     "challenge": "挑戦",
+    "challengeFriend": "友達に挑戦",
+    "noFriendsYet": "友達を追加して挑戦しましょう",
+    "acceptInvite": "承諾",
+    "declineInvite": "辞退",
     "playedAsWhite": "白で対局",
     "playedAsBlack": "黒で対局",
     "gameMode": "ゲームモード",
@@ -3683,6 +3687,8 @@
     "blitz3": "3分",
     "blitz5": "5分",
     "rapid10": "10分",
-    "classical30": "30分"
+    "classical30": "30分",
+    "challengeViaWhatsApp": "WhatsAppで対戦を申し込む",
+    "whatsAppMessage": "Bayit+でチェスの対戦を申し込みます! コード: {{code}} - タップでプレイ: {{link}}"
   }
 }

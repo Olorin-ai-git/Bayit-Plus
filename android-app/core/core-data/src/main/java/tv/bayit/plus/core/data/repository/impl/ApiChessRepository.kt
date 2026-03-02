@@ -74,6 +74,24 @@ class ApiChessRepository @Inject constructor(
     ): BayitResult<ChessChatMessage> = runCatchingResult {
         client.safeApiCall { service.sendChatMessage(gameCode, SendChatBody(message = message)) }
     }
+
+    override suspend fun invitePlayer(
+        friendUserId: String,
+        color: String,
+        timeControl: Int?,
+    ): BayitResult<ChessGame> = runCatchingResult {
+        val body = InviteBody(friendUserId = friendUserId, color = color, timeControl = timeControl)
+        client.safeApiCall { service.invitePlayer(body) }.game
+    }
+
+    override suspend fun getPendingInvites(): BayitResult<List<ChessGame>> = runCatchingResult {
+        client.safeApiCall { service.getPendingInvites() }.invites
+    }
+
+    override suspend fun declineInvite(gameCode: String): BayitResult<Unit> = runCatchingResult {
+        client.safeApiCall { service.declineInvite(gameCode) }
+        Unit
+    }
 }
 
 private interface ChessService {
@@ -103,6 +121,15 @@ private interface ChessService {
         @Path("game_code") gameCode: String,
         @Body request: SendChatBody,
     ): ChessChatMessage
+
+    @POST("api/v1/chess/invite")
+    suspend fun invitePlayer(@Body request: InviteBody): GameEnvelope
+
+    @GET("api/v1/chess/invites/pending")
+    suspend fun getPendingInvites(): PendingInvitesEnvelope
+
+    @POST("api/v1/chess/{game_code}/decline-invite")
+    suspend fun declineInvite(@Path("game_code") gameCode: String): DeclineResponse
 }
 
 @Serializable
@@ -130,3 +157,16 @@ private data class MoveBody(
 
 @Serializable
 private data class SendChatBody(val message: String)
+
+@Serializable
+private data class InviteBody(
+    @SerialName("friend_user_id") val friendUserId: String,
+    val color: String,
+    @SerialName("time_control") val timeControl: Int? = null,
+)
+
+@Serializable
+private data class PendingInvitesEnvelope(val invites: List<ChessGame>)
+
+@Serializable
+private data class DeclineResponse(val status: String)

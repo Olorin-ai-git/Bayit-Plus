@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.core.model.Friend
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.social.R
 
@@ -45,6 +46,10 @@ internal fun ChessLobbyScreen(
     onCreateGame: (color: String, gameMode: String, botDifficulty: String?, timeControl: Int?) -> Unit,
     onJoinGame: (gameCode: String) -> Unit,
     modifier: Modifier = Modifier,
+    friends: List<Friend> = emptyList(),
+    isFriendsLoading: Boolean = false,
+    onInviteFriend: (friendId: String, color: String, timeControl: Int?) -> Unit = { _, _, _ -> },
+    onChallengeViaWhatsApp: (color: String, timeControl: Int?) -> Unit = { _, _ -> },
 ) {
     var selectedMode by remember { mutableStateOf<String?>(null) }
     var selectedColor by remember { mutableStateOf("white") }
@@ -88,24 +93,37 @@ internal fun ChessLobbyScreen(
                 )
             }
 
-            if (selectedMode != null) {
+            if (selectedMode == "pvp") {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                         ColorPickerSection(selectedColor) { selectedColor = it }
-                        if (selectedMode == "bot") {
-                            DifficultySection(selectedDifficulty) { selectedDifficulty = it }
-                        }
                         TimeControlSection(TIME_CONTROLS, selectedTimeControl) { selectedTimeControl = it }
                         GlassButton(
-                            text = if (selectedMode == "bot") bayitString("chess.playVsBot")
-                            else bayitString("chess.createGame"),
+                            text = bayitString("chess.challengeViaWhatsApp"),
+                            onClick = { onChallengeViaWhatsApp(selectedColor, selectedTimeControl) },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+                ChessFriendPickerSection(
+                    friends = friends,
+                    isLoading = isFriendsLoading,
+                    onChallenge = { friendId ->
+                        onInviteFriend(friendId, selectedColor, selectedTimeControl)
+                    },
+                )
+            }
+
+            if (selectedMode == "bot") {
+                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+                        ColorPickerSection(selectedColor) { selectedColor = it }
+                        DifficultySection(selectedDifficulty) { selectedDifficulty = it }
+                        TimeControlSection(TIME_CONTROLS, selectedTimeControl) { selectedTimeControl = it }
+                        GlassButton(
+                            text = bayitString("chess.playVsBot"),
                             onClick = {
-                                onCreateGame(
-                                    selectedColor,
-                                    selectedMode!!,
-                                    if (selectedMode == "bot") selectedDifficulty else null,
-                                    selectedTimeControl,
-                                )
+                                onCreateGame(selectedColor, "bot", selectedDifficulty, selectedTimeControl)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )

@@ -26,6 +26,7 @@ import tv.bayit.plus.core.network.SessionEventBus
 import tv.bayit.plus.designsystem.i18n.ProvideBayitStrings
 import tv.bayit.plus.designsystem.theme.BayitTheme
 import tv.bayit.plus.navigation.BayitNavHost
+import tv.bayit.plus.navigation.DeepLinkHandler
 import tv.bayit.plus.navigation.Route
 import tv.bayit.plus.ui.BayitMainScaffold
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var biometricAuthService: BiometricAuthService
     @Inject lateinit var stringProvider: BayitStringProvider
     @Inject lateinit var networkMonitor: NetworkMonitor
+    @Inject lateinit var deepLinkHandler: DeepLinkHandler
 
     private val pendingDeepLink = MutableStateFlow<Route?>(null)
 
@@ -45,7 +47,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setTheme(tv.bayit.plus.R.style.Theme_BayitPlus)
         enableEdgeToEdge()
-        parseTVLoginDeepLink(intent)?.let { pendingDeepLink.value = it }
+        deepLinkHandler.handleIntent(intent)?.let { pendingDeepLink.value = it }
 
         setContent {
             BayitTheme {
@@ -106,16 +108,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        parseTVLoginDeepLink(intent)?.let { pendingDeepLink.value = it }
-    }
-
-    private fun parseTVLoginDeepLink(intent: Intent): Route? {
-        if (intent.action != Intent.ACTION_VIEW) return null
-        val uri = intent.data ?: return null
-        if (uri.scheme != "bayitplus" || uri.host != "tv-login") return null
-        val sessionId = uri.getQueryParameter("session") ?: return null
-        val token = uri.getQueryParameter("token") ?: return null
-        val expires = uri.getQueryParameter("expires") ?: return null
-        return Route.TVLogin(sessionId = sessionId, token = token, expires = expires)
+        deepLinkHandler.handleIntent(intent)?.let { pendingDeepLink.value = it }
     }
 }

@@ -40,6 +40,7 @@ final class ChessViewModel {
     var blackTimeRemainingMs: Int?
     var chatMessages: [ChessChatMessage] = []
     var isChatExpanded = false
+    var pendingWhatsAppMessage: String?
     private var countdownTask: Task<Void, Never>?
 
     var selectedSquare: (row: Int, col: Int)?

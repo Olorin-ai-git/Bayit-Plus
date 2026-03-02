@@ -3421,6 +3421,10 @@
     "inviteReceived": "{{name}} invited you to a chess game!",
     "joinInvite": "Join Game",
     "challenge": "Challenge",
+    "challengeFriend": "Challenge a Friend",
+    "noFriendsYet": "Add friends to challenge them",
+    "acceptInvite": "Accept",
+    "declineInvite": "Decline",
     "playedAsWhite": "Played as White",
     "playedAsBlack": "Played as Black",
     "gameMode": "Game Mode",
@@ -3457,7 +3461,9 @@
     "blitz3": "3 min",
     "blitz5": "5 min",
     "rapid10": "10 min",
-    "classical30": "30 min"
+    "classical30": "30 min",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "whatsAppMessage": "I challenge you to chess on Bayit+! Code: {{code}} - Tap to play: {{link}}"
   },
   "friends": {
     "title": "Friends & Opponents",
