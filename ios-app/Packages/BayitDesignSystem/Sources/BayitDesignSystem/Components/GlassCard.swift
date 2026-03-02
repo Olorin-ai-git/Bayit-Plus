@@ -21,7 +21,7 @@ public struct GlassCard<Content: View>: View {
             .padding(padding)
             .background {
                 ZStack {
-                    Color.black.opacity(0.6)
+                    Color.white.opacity(0.09)
                     VisualEffectBlur()
                 }
             }
@@ -32,12 +32,12 @@ public struct GlassCard<Content: View>: View {
             )
             .shadow(
                 color: DesignTokens.Glass.purpleGlow,
-                radius: 4,
+                radius: 10,
                 x: 0,
-                y: 2
+                y: 4
             )
-            #if os(tvOS)
+        #if os(tvOS)
             .tvFocusStyle()
-            #endif
+        #endif
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
         public func body(content: Content) -> some View {
             content.background {
                 ZStack {
-                    Color.black.opacity(opacity)
+                    Color.white.opacity(opacity * 0.12)
                     VisualEffectBlur(style: blurStyle)
                 }
             }
@@ -23,7 +23,7 @@ import SwiftUI
         public func body(content: Content) -> some View {
             content.background {
                 ZStack {
-                    Color.black.opacity(opacity)
+                    Color.white.opacity(opacity * 0.12)
                     VisualEffectBlur()
                 }
             }
@@ -58,7 +58,7 @@ public struct GlassCardModifier: ViewModifier {
             .padding(padding)
             .background {
                 ZStack {
-                    Color.black.opacity(0.6)
+                    Color.white.opacity(0.09)
                     VisualEffectBlur()
                 }
             }
