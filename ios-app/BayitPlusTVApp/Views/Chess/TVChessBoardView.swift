@@ -7,6 +7,7 @@ struct TVChessBoardView: View {
     let board: [[Character?]]
     let selectedSquare: (row: Int, col: Int)?
     let currentTurn: PlayerColor
+    let isFlipped: Bool
     let onSquareTap: (Int, Int) -> Void
 
     private let boardInsetRatio: CGFloat = 0.10
@@ -23,9 +24,11 @@ struct TVChessBoardView: View {
 
                 LazyVGrid(columns: columns, spacing: 0) {
                     ForEach(0 ..< 64, id: \.self) { index in
-                        let row = index / 8
-                        let col = index % 8
-                        squareView(row: row, col: col)
+                        let visualRow = index / 8
+                        let visualCol = index % 8
+                        let dataRow = isFlipped ? (7 - visualRow) : visualRow
+                        let dataCol = isFlipped ? (7 - visualCol) : visualCol
+                        squareView(row: dataRow, col: dataCol)
                     }
                 }
                 .padding(inset)

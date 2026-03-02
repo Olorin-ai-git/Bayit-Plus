@@ -6797,6 +6797,15 @@
       "title": "चैट",
       "inputPlaceholder": "संदेश लिखें...",
       "botLimitReached": "इस गेम के लिए चैट सीमा पूरी हो गई"
+    },
+    "invite": {
+      "title": "शतरंज खेल का निमंत्रण",
+      "subtitle": "आपको Bayit+ पर शतरंज खेलने के लिए आमंत्रित किया गया है",
+      "codeLabel": "गेम कोड:",
+      "instructions": "इस गेम में शामिल होने के लिए Bayit+ ऐप डाउनलोड करें या खोलें।",
+      "appStore": "App Store से डाउनलोड करें",
+      "googlePlay": "Google Play से प्राप्त करें",
+      "footer": "Bayit+ - प्रीमियम यहूदी स्ट्रीमिंग"
     }
   },
   "friends": {

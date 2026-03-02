@@ -28,7 +28,7 @@
                     Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
                 )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel(localization.t("settings.chooseLanguage"))
         }
 
@@ -67,7 +67,7 @@
                     )
                 )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel(localization.t("nav.widgets"))
         }
 
@@ -107,7 +107,7 @@
                         .font(.system(size: TVDesignTokens.FontSize.xl))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .padding(.top, TVDesignTokens.Spacing.xl)
                 .padding(.trailing, TVDesignTokens.Spacing.xl)
                 .accessibilityLabel(localization.t("common.dismiss"))

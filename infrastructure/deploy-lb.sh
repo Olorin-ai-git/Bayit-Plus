@@ -43,6 +43,13 @@ declare -A SERVICES=(
     ["bayit-search-neg"]="bayit-search"
     ["bayit-ai-neg"]="bayit-ai"
     ["bayit-workers-neg"]="bayit-workers"
+    ["bayit-auth-neg"]="bayit-auth"
+    ["bayit-content-neg"]="bayit-content"
+    ["bayit-user-neg"]="bayit-user"
+    ["bayit-payments-neg"]="bayit-payments"
+    ["bayit-social-neg"]="bayit-social"
+    ["bayit-media-pipeline-neg"]="bayit-media-pipeline"
+    ["bayit-community-neg"]="bayit-community"
 )
 
 # Step 1: Create serverless NEGs
@@ -70,6 +77,13 @@ declare -A BACKEND_TIMEOUTS=(
     ["bayit-search-bs"]="60"
     ["bayit-ai-bs"]="3600"
     ["bayit-workers-bs"]="3600"
+    ["bayit-auth-bs"]="30"
+    ["bayit-content-bs"]="30"
+    ["bayit-user-bs"]="15"
+    ["bayit-payments-bs"]="30"
+    ["bayit-social-bs"]="15"
+    ["bayit-media-pipeline-bs"]="3600"
+    ["bayit-community-bs"]="30"
 )
 
 declare -A BACKEND_NEGS=(
@@ -80,6 +94,13 @@ declare -A BACKEND_NEGS=(
     ["bayit-search-bs"]="bayit-search-neg"
     ["bayit-ai-bs"]="bayit-ai-neg"
     ["bayit-workers-bs"]="bayit-workers-neg"
+    ["bayit-auth-bs"]="bayit-auth-neg"
+    ["bayit-content-bs"]="bayit-content-neg"
+    ["bayit-user-bs"]="bayit-user-neg"
+    ["bayit-payments-bs"]="bayit-payments-neg"
+    ["bayit-social-bs"]="bayit-social-neg"
+    ["bayit-media-pipeline-bs"]="bayit-media-pipeline-neg"
+    ["bayit-community-bs"]="bayit-community-neg"
 )
 
 for bs_name in "${!BACKEND_NEGS[@]}"; do

@@ -22,7 +22,7 @@ struct UnifiedSearchResult: Decodable, Sendable, Identifiable {
     let thumbnail: String?
     let backdrop: String?
     let categoryName: String?
-    let duration: String?
+    let duration: FlexibleDuration?
     let year: Int?
     let rating: FlexibleRating?
     let genres: [String]?

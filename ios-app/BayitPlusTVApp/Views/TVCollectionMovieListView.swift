@@ -93,8 +93,7 @@
                 .background(DesignTokens.Glass.bgMedium)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
 
         private func movieThumbnail(_ urlStr: String?) -> some View {

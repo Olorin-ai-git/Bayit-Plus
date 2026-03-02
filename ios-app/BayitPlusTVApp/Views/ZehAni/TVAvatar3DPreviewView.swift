@@ -44,8 +44,7 @@
                     Button(localization.t("common.close")) {
                         onClose?()
                     }
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                     .focused($closeFocused)
                 }
                 .padding(TVDesignTokens.Spacing.xl)

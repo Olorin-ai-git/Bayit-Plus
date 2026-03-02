@@ -61,7 +61,7 @@
                         .font(.system(size: TVDesignTokens.FontSize.xl))
                         .padding(TVDesignTokens.Spacing.md)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .focused($refreshButtonFocused)
                 .disabled(isLoading)
             }

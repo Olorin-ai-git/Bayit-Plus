@@ -52,7 +52,7 @@ struct TVSplitLanguagePickerView: View {
                     .frame(width: 180)
                     .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
 
                 Button {
                     guard let p = primaryItem, let s = secondaryItem else { return }
@@ -70,7 +70,7 @@ struct TVSplitLanguagePickerView: View {
                     .background(DesignTokens.Primary.p500.opacity(0.6))
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
             }
         }
         .padding(TVDesignTokens.Spacing.xxl)
@@ -140,7 +140,7 @@ struct TVSplitLanguagePickerView: View {
                             .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
                             .padding(.horizontal, TVDesignTokens.Spacing.lg)
                         }
-                        .buttonStyle(.card)
+                        .tvCardStyle()
                     }
                 }
             }

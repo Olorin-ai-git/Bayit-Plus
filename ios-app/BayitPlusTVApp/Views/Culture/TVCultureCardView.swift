@@ -45,8 +45,7 @@
                 .frame(width: TVDesignTokens.MinSize.posterWidth, height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
 
         @ViewBuilder

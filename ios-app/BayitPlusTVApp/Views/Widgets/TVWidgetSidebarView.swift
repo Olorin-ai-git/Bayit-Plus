@@ -146,8 +146,7 @@
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .accessibilityLabel(isExpanded ? "Collapse sidebar" : "Expand sidebar")
         }
 

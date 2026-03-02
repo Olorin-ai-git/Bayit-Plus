@@ -53,13 +53,33 @@ struct TVFilterPill: View {
                     isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg
                 )
                 .clipShape(Capsule())
-                .scaleEffect(isFocused ? 1.05 : 1.0)
+                .overlay(
+                    Capsule().stroke(
+                        isFocused
+                            ? DesignTokens.Glass.borderFocus
+                            : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+                )
                 .shadow(
-                    color: isFocused ? DesignTokens.Primary.default.opacity(0.5) : .clear,
-                    radius: isFocused ? 8 : 0
+                    color: isFocused
+                        ? DesignTokens.Glass.purpleGlow : .clear,
+                    radius: TVDesignTokens.Focus.shadowRadius,
+                    x: 0, y: isFocused ? 4 : 0
+                )
+                .scaleEffect(
+                    isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0
+                )
+                .animation(
+                    .spring(
+                        duration: TVDesignTokens.Focus.animationDuration,
+                        bounce: 0.2
+                    ),
+                    value: isFocused
                 )
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
         .focused($isFocused)
     }
 }

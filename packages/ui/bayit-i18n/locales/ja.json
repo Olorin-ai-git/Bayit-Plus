@@ -8220,6 +8220,15 @@
       "title": "チャット",
       "inputPlaceholder": "メッセージを入力...",
       "botLimitReached": "このゲームのチャット制限に達しました"
+    },
+    "invite": {
+      "title": "チェス対局への招待",
+      "subtitle": "Bayit+でチェスに招待されました",
+      "codeLabel": "ゲームコード：",
+      "instructions": "この対局に参加するにはBayit+アプリをダウンロードまたは開いてください。",
+      "appStore": "App Storeでダウンロード",
+      "googlePlay": "Google Playで入手",
+      "footer": "Bayit+ - プレミアム・ユダヤ・ストリーミング"
     }
   },
   "friends": {

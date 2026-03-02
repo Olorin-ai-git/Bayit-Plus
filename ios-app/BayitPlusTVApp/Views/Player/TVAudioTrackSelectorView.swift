@@ -66,7 +66,7 @@ struct TVAudioTrackSelectorView: View {
                 .padding(TVDesignTokens.Spacing.md)
             }
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
         .accessibilityLabel("\(track.label)\(isSelected ? ", selected" : "")")
     }
 }

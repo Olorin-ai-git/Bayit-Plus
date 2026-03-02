@@ -27,7 +27,7 @@ struct TVSearchAutocompleteSuggestions: View {
                         .background(DesignTokens.Glass.bg)
                         .clipShape(Capsule())
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                 }
             }
             .padding(.vertical, TVDesignTokens.Spacing.sm)

@@ -4,7 +4,7 @@ import BayitLocalization
 import SwiftUI
 
 /// Focus-compatible picker for selecting sleep timer duration on tvOS.
-/// Uses `.buttonStyle(.card)` for Siri Remote focus navigation and
+/// Uses `.tvCardStyle()` for Siri Remote focus navigation and
 /// `TVDesignTokens` for 10-foot UI sizing.
 struct TVSleepTimerPicker: View {
     let activeDuration: Int?
@@ -57,7 +57,7 @@ struct TVSleepTimerPicker: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: TVDesignTokens.MinSize.focusableHeight)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
         .accessibilityLabel(label)
     }
 }

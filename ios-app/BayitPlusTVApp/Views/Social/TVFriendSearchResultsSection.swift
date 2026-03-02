@@ -46,7 +46,6 @@ struct TVFriendSearchResultsSection: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }

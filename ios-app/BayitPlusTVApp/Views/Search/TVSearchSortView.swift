@@ -38,7 +38,7 @@ struct TVSearchSortView: View {
                         )
                         .padding(TVDesignTokens.Spacing.lg)
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                 }
             }
 

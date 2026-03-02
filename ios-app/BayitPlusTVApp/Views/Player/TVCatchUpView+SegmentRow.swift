@@ -75,7 +75,7 @@
                     minHeight: TVDesignTokens.MinSize.focusableHeight
                 )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel(
                 "Seek to \(formatTimestamp(segment.timestamp))"
             )

@@ -27,8 +27,7 @@
                         }
                     )
                     .frame(width: 400)
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
 
                 if resolvedTrailerUrl != nil {
@@ -39,8 +38,7 @@
                         action: { showTrailer = true }
                     )
                     .frame(width: 300)
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)

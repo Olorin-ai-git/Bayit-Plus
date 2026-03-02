@@ -12,4 +12,6 @@ interface AuthTokenStorage {
     fun saveRefreshToken(token: String, expiresAt: Long)
     fun getRefreshToken(): String?
     fun clearAuthTokens()
+    fun saveUserId(userId: String)
+    fun getUserId(): String?
 }

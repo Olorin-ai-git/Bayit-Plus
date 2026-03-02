@@ -171,7 +171,7 @@ struct TVWatchPartyView: View {
                 Spacer()
                 if party.isActive { Circle().fill(DesignTokens.Success.default).frame(width: 16, height: 16) }
             }.padding(TVDesignTokens.Spacing.lg).frame(maxWidth: .infinity).background(DesignTokens.Glass.bg).clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
-        }.buttonStyle(.card).tvFocusStyle()
+        }.tvCardStyle()
     }
 
     private var emptyState: some View {

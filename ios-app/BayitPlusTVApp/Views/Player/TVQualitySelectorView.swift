@@ -36,7 +36,7 @@ struct TVQualitySelectorView: View {
                         .frame(minWidth: TVDesignTokens.MinSize.focusableWidth, minHeight: TVDesignTokens.MinSize.focusableHeight)
                         .padding(TVDesignTokens.Spacing.lg)
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                 }
             }
 

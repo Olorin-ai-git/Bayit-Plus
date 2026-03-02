@@ -40,7 +40,7 @@ struct TVSleepTimerBanner: View {
                         .frame(height: TVDesignTokens.MinSize.focusableHeight)
                         .padding(.horizontal, TVDesignTokens.Spacing.lg)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .accessibilityLabel(localization.t("player.sleepTimer.extend", ["minutes": "\(Self.extendMinutes)"]))
 
                 Button {
@@ -54,7 +54,7 @@ struct TVSleepTimerBanner: View {
                             height: TVDesignTokens.MinSize.focusableHeight
                         )
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .accessibilityLabel(localization.t("player.sleepTimer.cancel"))
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)

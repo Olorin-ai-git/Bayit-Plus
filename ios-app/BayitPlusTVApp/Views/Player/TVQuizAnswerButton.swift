@@ -56,8 +56,7 @@ struct TVQuizAnswerButton: View {
                     }
             }
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .disabled(isRevealed)
     }
 

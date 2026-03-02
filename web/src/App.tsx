@@ -1,212 +1,279 @@
-import { useEffect, lazy, Suspense } from 'react'
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { initBayitI18nWeb } from '@bayit/i18n/web'
-import { useDirection } from '@/hooks/useDirection'
-import { VoiceListeningProvider } from '@bayit/shared-contexts'
-import { NotificationProvider } from '@olorin/glass-ui/contexts'
-import { GlassAlertRoot } from '@bayit/shared/ui'
-import Layout from './components/layout/Layout'
-import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
-import LocationManager from './components/location/LocationManager'
-import MobileRedirect from './components/common/MobileRedirect'
-import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
-import ProtectedRoute from './components/auth/ProtectedRoute'
-import { useAuthStore } from '@/stores/authStore'
-import { logger } from '@/utils/logger'
-import { killStaleHLS } from '@/components/player/hooks/useHLSPlayer'
-import { setupWizardActionHandler, cleanupWizardActionHandler } from '@/services/wizardActionHandler'
-import { useWizardNavigation } from '@/hooks/useWizardNavigation'
-import { sfxService } from '@bayit/shared/services/sfxService'
-import api from '@/services/api'
-import './styles/layout-fix.css'
+import { useEffect, lazy, Suspense } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { initBayitI18nWeb } from "@bayit/i18n/web";
+import { useDirection } from "@/hooks/useDirection";
+import { VoiceListeningProvider } from "@bayit/shared-contexts";
+import { NotificationProvider } from "@olorin/glass-ui/contexts";
+import { GlassAlertRoot } from "@bayit/shared/ui";
+import Layout from "./components/layout/Layout";
+import FullscreenVideoOverlay from "./components/player/FullscreenVideoOverlay";
+import LocationManager from "./components/location/LocationManager";
+import MobileRedirect from "./components/common/MobileRedirect";
+import PaymentPendingGuard from "./components/auth/PaymentPendingGuard";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { useAuthStore } from "@/stores/authStore";
+import { logger } from "@/utils/logger";
+import { killStaleHLS } from "@/components/player/hooks/useHLSPlayer";
+import {
+  setupWizardActionHandler,
+  cleanupWizardActionHandler,
+} from "@/services/wizardActionHandler";
+import { useWizardNavigation } from "@/hooks/useWizardNavigation";
+import { sfxService } from "@bayit/shared/services/sfxService";
+import api from "@/services/api";
+import "./styles/layout-fix.css";
 
 // Clear stale HLS sessions on app startup to prevent 404 errors from previous sessions
-killStaleHLS()
+killStaleHLS();
 
 // Setup wizard action handler for processing wizard backend actions
-setupWizardActionHandler()
+setupWizardActionHandler();
 
 // Wire SFX service to use web api.js (proxied through webpack, handles auth)
-sfxService.setApiClient(api)
+sfxService.setApiClient(api);
 
 // Loading fallback component
 const LoadingFallback = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="flex flex-col items-center gap-4">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <span className="text-white/60 text-sm">{t('common.loading')}</span>
+        <span className="text-white/60 text-sm">{t("common.loading")}</span>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // Admin-only route wrapper
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin, isLoading, user, isAuthenticated, isHydrated } = useAuthStore()
+  const { isAdmin, isLoading, user, isAuthenticated, isHydrated } =
+    useAuthStore();
 
   // Log auth state when component renders
-  logger.debug('AdminRoute auth check', 'AdminRoute', {
+  logger.debug("AdminRoute auth check", "AdminRoute", {
     isLoading,
     isHydrated,
     isAuthenticated,
     userId: user?.id,
     userRole: user?.role,
     isAdminResult: isAdmin(),
-  })
+  });
 
   if (isLoading) {
-    logger.debug('Showing loading fallback', 'AdminRoute')
-    return <LoadingFallback />
+    logger.debug("Showing loading fallback", "AdminRoute");
+    return <LoadingFallback />;
   }
 
   if (!isAdmin()) {
-    logger.info('Access denied - redirecting to home', 'AdminRoute', {
+    logger.info("Access denied - redirecting to home", "AdminRoute", {
       userExists: !!user,
       userRole: user?.role,
-      expectedRoles: ['super_admin', 'admin', 'content_manager', 'billing_admin', 'support'],
-    })
-    return <Navigate to="/" replace />
+      expectedRoles: [
+        "super_admin",
+        "admin",
+        "content_manager",
+        "billing_admin",
+        "support",
+      ],
+    });
+    return <Navigate to="/" replace />;
   }
 
-  logger.debug('Admin check passed', 'AdminRoute')
-  return <>{children}</>
-}
+  logger.debug("Admin check passed", "AdminRoute");
+  return <>{children}</>;
+};
 
 // Core pages (eagerly loaded for better initial experience)
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ResetPasswordPage from './pages/ResetPasswordPage'
-import GoogleCallbackPage from './pages/GoogleCallbackPage'
-import ProfileSelectionPage from './pages/ProfileSelectionPage'
-import NotFoundPage from './pages/NotFoundPage'
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import GoogleCallbackPage from "./pages/GoogleCallbackPage";
+import ProfileSelectionPage from "./pages/ProfileSelectionPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 // Payment pages (eagerly loaded for better payment flow experience)
-import PaymentSuccessPage from './pages/payment/PaymentSuccessPage'
-import PaymentCancelledPage from './pages/payment/PaymentCancelledPage'
+import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
+import PaymentCancelledPage from "./pages/payment/PaymentCancelledPage";
 
 // Lazily loaded pages for code splitting
-const LivePage = lazy(() => import('./pages/LivePage'))
-const VODPage = lazy(() => import('./pages/VODPage'))
-const RadioPage = lazy(() => import('./pages/RadioPage'))
-const PodcastsPage = lazy(() => import('./pages/PodcastsPage'))
-const AudiobooksPage = lazy(() => import('./pages/audiobooks/AudiobooksPage'))
-const AudiobookPlayerPage = lazy(() => import('./pages/audiobooks/AudiobookPlayerPage'))
-const SearchPage = lazy(() => import('./pages/SearchPage'))
-const ProfilePage = lazy(() => import('./pages/ProfilePage'))
-const SubscribePage = lazy(() => import('./pages/SubscribePage'))
-const WatchPage = lazy(() => import('./pages/WatchPage'))
-const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'))
-const MovieDetailPage = lazy(() => import('./pages/MovieDetailPage'))
-const CollectionDetailPage = lazy(() => import('./pages/collection-detail/CollectionDetailPage'))
-const JudaismPage = lazy(() => import('./pages/JudaismPage'))
-const ChildrenPage = lazy(() => import('./pages/ChildrenPage'))
-const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
-const PlaylistPage = lazy(() => import('./pages/PlaylistPage'))
-const DownloadsPage = lazy(() => import('./pages/downloads'))
-const MyRecordingsPage = lazy(() => import('./pages/MyRecordingsPage'))
-const MorningRitualPage = lazy(() => import('./pages/MorningRitualPage'))
-const TVLoginPage = lazy(() => import('./pages/TVLoginPage'))
-const SettingsPage = lazy(() => import('./pages/SettingsPage'))
-const FamilyControlsPage = lazy(() => import('./pages/FamilyControlsPage'))
-const HelpPage = lazy(() => import('./pages/HelpPage'))
-const SupportPage = lazy(() => import('./pages/SupportPage'))
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
-const TermsPage = lazy(() => import('./pages/TermsPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
-const UserWidgetsPage = lazy(() => import('./pages/UserWidgetsPage'))
-const EPGPage = lazy(() => import('./pages/EPGPage'))
-const ChessPage = lazy(() => import('./pages/ChessPage'))
-const FriendsPage = lazy(() => import('./pages/FriendsPage'))
-const PlayerProfilePage = lazy(() => import('./pages/PlayerProfilePage'))
+const LivePage = lazy(() => import("./pages/LivePage"));
+const VODPage = lazy(() => import("./pages/VODPage"));
+const RadioPage = lazy(() => import("./pages/RadioPage"));
+const PodcastsPage = lazy(() => import("./pages/PodcastsPage"));
+const AudiobooksPage = lazy(() => import("./pages/audiobooks/AudiobooksPage"));
+const AudiobookPlayerPage = lazy(
+  () => import("./pages/audiobooks/AudiobookPlayerPage"),
+);
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const SubscribePage = lazy(() => import("./pages/SubscribePage"));
+const WatchPage = lazy(() => import("./pages/WatchPage"));
+const SeriesDetailPage = lazy(() => import("./pages/SeriesDetailPage"));
+const MovieDetailPage = lazy(() => import("./pages/MovieDetailPage"));
+const CollectionDetailPage = lazy(
+  () => import("./pages/collection-detail/CollectionDetailPage"),
+);
+const JudaismPage = lazy(() => import("./pages/JudaismPage"));
+const ChildrenPage = lazy(() => import("./pages/ChildrenPage"));
+const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
+const PlaylistPage = lazy(() => import("./pages/PlaylistPage"));
+const DownloadsPage = lazy(() => import("./pages/downloads"));
+const MyRecordingsPage = lazy(() => import("./pages/MyRecordingsPage"));
+const MorningRitualPage = lazy(() => import("./pages/MorningRitualPage"));
+const TVLoginPage = lazy(() => import("./pages/TVLoginPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const FamilyControlsPage = lazy(() => import("./pages/FamilyControlsPage"));
+const HelpPage = lazy(() => import("./pages/HelpPage"));
+const SupportPage = lazy(() => import("./pages/SupportPage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const UserWidgetsPage = lazy(() => import("./pages/UserWidgetsPage"));
+const EPGPage = lazy(() => import("./pages/EPGPage"));
+const ChessPage = lazy(() => import("./pages/ChessPage"));
+const ChessInvitePage = lazy(() => import("./pages/ChessInvitePage"));
+const FriendsPage = lazy(() => import("./pages/FriendsPage"));
+const PlayerProfilePage = lazy(() => import("./pages/PlayerProfilePage"));
 
 // Admin Pages (lazily loaded as a separate chunk)
-const AdminLayout = lazy(() => import('./components/admin/AdminLayout'))
-const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
-const UsersListPage = lazy(() => import('./pages/admin/UsersListPage'))
-const UserDetailPage = lazy(() => import('./pages/admin/UserDetailPage'))
-const CampaignsListPage = lazy(() => import('./pages/admin/CampaignsListPage'))
-const CampaignEditPage = lazy(() => import('./pages/admin/CampaignEditPage'))
-const SubscriptionsListPage = lazy(() => import('./pages/admin/SubscriptionsListPage'))
-const BillingOverviewPage = lazy(() => import('./pages/admin/BillingOverviewPage'))
-const TransactionsPage = lazy(() => import('./pages/admin/TransactionsPage'))
-const RefundsPage = lazy(() => import('./pages/admin/RefundsPage'))
-const PlanManagementPage = lazy(() => import('./pages/admin/PlanManagementPage'))
-const MarketingDashboardPage = lazy(() => import('./pages/admin/MarketingDashboardPage'))
-const EmailCampaignsPage = lazy(() => import('./pages/admin/EmailCampaignsPage'))
-const EmailTemplatesPage = lazy(() => import('./pages/admin/EmailTemplatesPage'))
-const PushNotificationsPage = lazy(() => import('./pages/admin/PushNotificationsPage'))
-const AuditLogsPage = lazy(() => import('./pages/admin/AuditLogsPage'))
-const AdminSettingsPage = lazy(() => import('./pages/admin/SettingsPage'))
-const ContentLibraryPage = lazy(() => import('./pages/admin/ContentLibraryPage'))
-const ContentEditorPage = lazy(() => import('./pages/admin/ContentEditorPage'))
-const CategoriesPage = lazy(() => import('./pages/admin/CategoriesPage'))
-const LiveChannelsPage = lazy(() => import('./pages/admin/LiveChannelsPage'))
-const RadioStationsPage = lazy(() => import('./pages/admin/RadioStationsPage'))
-const AdminPodcastsPage = lazy(() => import('./pages/admin/PodcastsPage'))
-const PodcastEpisodesPage = lazy(() => import('./pages/admin/PodcastEpisodesPage'))
-const AdminAudiobooksPage = lazy(() => import('./pages/admin/AudiobooksPage'))
-const AvatarMovieStudioPage = lazy(() => import('./pages/admin/AvatarMovieStudio'))
-const WidgetsPage = lazy(() => import('./pages/admin/WidgetsPage'))
-const LibrarianAgentPage = lazy(() => import('./pages/admin/LibrarianAgentPage'))
-const RecordingsManagementPage = lazy(() => import('./pages/admin/RecordingsManagementPage'))
-const UploadsPage = lazy(() => import('./pages/admin/UploadsPage'))
-const FeaturedManagementPage = lazy(() => import('./pages/admin/FeaturedManagementPage'))
-const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
-const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
-const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
-const CostDashboardPage = lazy(() => import('./pages/admin/CostDashboardPage'))
-const AIUsageAnalyticsPage = lazy(() => import('./pages/admin/AIUsageAnalyticsPage'))
-const VoiceManagementPage = lazy(() => import('./pages/admin/VoiceManagementPage'))
-const TriviaAnalyticsPage = lazy(() => import('./pages/admin/TriviaAnalyticsPage'))
-const SystemDiagnosticsPage = lazy(() => import('./pages/admin/SystemDiagnosticsPage'))
-const LiveAIDataFlowPage = lazy(() => import('./pages/admin/LiveAIDataFlowPage'))
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const AdminDashboardPage = lazy(
+  () => import("./pages/admin/AdminDashboardPage"),
+);
+const UsersListPage = lazy(() => import("./pages/admin/UsersListPage"));
+const UserDetailPage = lazy(() => import("./pages/admin/UserDetailPage"));
+const CampaignsListPage = lazy(() => import("./pages/admin/CampaignsListPage"));
+const CampaignEditPage = lazy(() => import("./pages/admin/CampaignEditPage"));
+const SubscriptionsListPage = lazy(
+  () => import("./pages/admin/SubscriptionsListPage"),
+);
+const BillingOverviewPage = lazy(
+  () => import("./pages/admin/BillingOverviewPage"),
+);
+const TransactionsPage = lazy(() => import("./pages/admin/TransactionsPage"));
+const RefundsPage = lazy(() => import("./pages/admin/RefundsPage"));
+const PlanManagementPage = lazy(
+  () => import("./pages/admin/PlanManagementPage"),
+);
+const MarketingDashboardPage = lazy(
+  () => import("./pages/admin/MarketingDashboardPage"),
+);
+const EmailCampaignsPage = lazy(
+  () => import("./pages/admin/EmailCampaignsPage"),
+);
+const EmailTemplatesPage = lazy(
+  () => import("./pages/admin/EmailTemplatesPage"),
+);
+const PushNotificationsPage = lazy(
+  () => import("./pages/admin/PushNotificationsPage"),
+);
+const AuditLogsPage = lazy(() => import("./pages/admin/AuditLogsPage"));
+const AdminSettingsPage = lazy(() => import("./pages/admin/SettingsPage"));
+const ContentLibraryPage = lazy(
+  () => import("./pages/admin/ContentLibraryPage"),
+);
+const ContentEditorPage = lazy(() => import("./pages/admin/ContentEditorPage"));
+const CategoriesPage = lazy(() => import("./pages/admin/CategoriesPage"));
+const LiveChannelsPage = lazy(() => import("./pages/admin/LiveChannelsPage"));
+const RadioStationsPage = lazy(() => import("./pages/admin/RadioStationsPage"));
+const AdminPodcastsPage = lazy(() => import("./pages/admin/PodcastsPage"));
+const PodcastEpisodesPage = lazy(
+  () => import("./pages/admin/PodcastEpisodesPage"),
+);
+const AdminAudiobooksPage = lazy(() => import("./pages/admin/AudiobooksPage"));
+const AvatarMovieStudioPage = lazy(
+  () => import("./pages/admin/AvatarMovieStudio"),
+);
+const WidgetsPage = lazy(() => import("./pages/admin/WidgetsPage"));
+const LibrarianAgentPage = lazy(
+  () => import("./pages/admin/LibrarianAgentPage"),
+);
+const RecordingsManagementPage = lazy(
+  () => import("./pages/admin/RecordingsManagementPage"),
+);
+const UploadsPage = lazy(() => import("./pages/admin/UploadsPage"));
+const FeaturedManagementPage = lazy(
+  () => import("./pages/admin/FeaturedManagementPage"),
+);
+const UserLiveQuotaPage = lazy(() => import("./pages/admin/UserLiveQuotaPage"));
+const LiveUsageAnalyticsPage = lazy(
+  () => import("./pages/admin/LiveUsageAnalyticsPage"),
+);
+const TranslationDashboardPage = lazy(
+  () => import("./pages/admin/TranslationDashboardPage"),
+);
+const CostDashboardPage = lazy(() => import("./pages/admin/CostDashboardPage"));
+const AIUsageAnalyticsPage = lazy(
+  () => import("./pages/admin/AIUsageAnalyticsPage"),
+);
+const VoiceManagementPage = lazy(
+  () => import("./pages/admin/VoiceManagementPage"),
+);
+const TriviaAnalyticsPage = lazy(
+  () => import("./pages/admin/TriviaAnalyticsPage"),
+);
+const SystemDiagnosticsPage = lazy(
+  () => import("./pages/admin/SystemDiagnosticsPage"),
+);
+const LiveAIDataFlowPage = lazy(
+  () => import("./pages/admin/LiveAIDataFlowPage"),
+);
 
 // Zeh Ani pages (Me in the Story - AI avatar features)
-const ZehAniHubPage = lazy(() => import('./pages/ZehAniHubPage'))
-const MagicMirrorPage = lazy(() => import('./pages/MagicMirrorPage'))
-const V2VPracticePage = lazy(() => import('./pages/V2VPracticePage'))
-const HighlightReelsPage = lazy(() => import('./pages/HighlightReelsPage'))
-const ContactsManagementPage = lazy(() => import('./pages/ContactsManagementPage'))
-const FeedbackInboxPage = lazy(() => import('./pages/FeedbackInboxPage'))
-const Avatar3DPage = lazy(() => import('./pages/Avatar3DPage'))
-const BiometricConsentPage = lazy(() => import('./pages/BiometricConsentPage'))
-const MovieInteractionsPage = lazy(() => import('./pages/MovieInteractionsPage'))
-const MovieCharactersPage = lazy(() => import('./pages/MovieCharactersPage'))
-const CharacterDialoguePage = lazy(() => import('./pages/CharacterDialoguePage'))
+const ZehAniHubPage = lazy(() => import("./pages/ZehAniHubPage"));
+const MagicMirrorPage = lazy(() => import("./pages/MagicMirrorPage"));
+const V2VPracticePage = lazy(() => import("./pages/V2VPracticePage"));
+const HighlightReelsPage = lazy(() => import("./pages/HighlightReelsPage"));
+const ContactsManagementPage = lazy(
+  () => import("./pages/ContactsManagementPage"),
+);
+const FeedbackInboxPage = lazy(() => import("./pages/FeedbackInboxPage"));
+const Avatar3DPage = lazy(() => import("./pages/Avatar3DPage"));
+const BiometricConsentPage = lazy(() => import("./pages/BiometricConsentPage"));
+const MovieInteractionsPage = lazy(
+  () => import("./pages/MovieInteractionsPage"),
+);
+const MovieCharactersPage = lazy(() => import("./pages/MovieCharactersPage"));
+const CharacterDialoguePage = lazy(
+  () => import("./pages/CharacterDialoguePage"),
+);
 
 // Auth hydration guard wrapper
 const AppContent = () => {
-  const { isHydrated, isLoading } = useAuthStore()
-  const location = useLocation()
+  const { isHydrated, isLoading } = useAuthStore();
+  const location = useLocation();
 
   // Bridge wizard voice navigation events to React Router
-  useWizardNavigation()
+  useWizardNavigation();
 
   // Remove splash screen when navigating away from home page
   useEffect(() => {
-    const isHomePage = location.pathname === '/' || location.pathname === ''
+    const isHomePage = location.pathname === "/" || location.pathname === "";
     if (!isHomePage) {
-      const splash = document.getElementById('splash-screen')
+      const splash = document.getElementById("splash-screen");
       if (splash) {
-        logger.debug('Route changed from home - removing splash screen', 'AppContent', {
-          pathname: location.pathname
-        })
-        splash.remove()
-        window.splashScreenRemoved = true
-        window.dispatchEvent(new Event('splashRemoved'))
+        logger.debug(
+          "Route changed from home - removing splash screen",
+          "AppContent",
+          {
+            pathname: location.pathname,
+          },
+        );
+        splash.remove();
+        window.splashScreenRemoved = true;
+        window.dispatchEvent(new Event("splashRemoved"));
       }
     }
-  }, [location.pathname])
+  }, [location.pathname]);
 
   // Wait for auth hydration before rendering app
   if (!isHydrated) {
-    logger.debug('Waiting for auth hydration', 'AppContent', { isLoading })
-    return <LoadingFallback />
+    logger.debug("Waiting for auth hydration", "AppContent", { isLoading });
+    return <LoadingFallback />;
   }
 
   return (
@@ -225,9 +292,33 @@ const AppContent = () => {
       <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
 
       {/* Legal Routes (publicly accessible - no auth required) */}
-      <Route path="/privacy" element={<Suspense fallback={<LoadingFallback />}><PrivacyPage /></Suspense>} />
+      <Route
+        path="/privacy"
+        element={
+          <Suspense fallback={<LoadingFallback />}>
+            <PrivacyPage />
+          </Suspense>
+        }
+      />
       <Route path="/policy" element={<Navigate to="/privacy" replace />} />
-      <Route path="/terms" element={<Suspense fallback={<LoadingFallback />}><TermsPage /></Suspense>} />
+      <Route
+        path="/terms"
+        element={
+          <Suspense fallback={<LoadingFallback />}>
+            <TermsPage />
+          </Suspense>
+        }
+      />
+
+      {/* Chess Invite (publicly accessible - universal link fallback) */}
+      <Route
+        path="/chess/:code"
+        element={
+          <Suspense fallback={<LoadingFallback />}>
+            <ChessInvitePage />
+          </Suspense>
+        }
+      />
 
       {/* Admin Routes (lazily loaded, protected by auth + payment guard) */}
       <Route
@@ -264,7 +355,10 @@ const AppContent = () => {
         <Route path="logs" element={<AuditLogsPage />} />
         <Route path="librarian" element={<LibrarianAgentPage />} />
         <Route path="live-quotas" element={<LiveUsageAnalyticsPage />} />
-        <Route path="users/:userId/live-quota" element={<UserLiveQuotaPage />} />
+        <Route
+          path="users/:userId/live-quota"
+          element={<UserLiveQuotaPage />}
+        />
         <Route path="uploads" element={<UploadsPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
         <Route path="content" element={<ContentLibraryPage />} />
@@ -276,7 +370,10 @@ const AppContent = () => {
         <Route path="live-channels" element={<LiveChannelsPage />} />
         <Route path="radio-stations" element={<RadioStationsPage />} />
         <Route path="podcasts" element={<AdminPodcastsPage />} />
-        <Route path="podcasts/:podcastId/episodes" element={<PodcastEpisodesPage />} />
+        <Route
+          path="podcasts/:podcastId/episodes"
+          element={<PodcastEpisodesPage />}
+        />
         <Route path="audiobooks" element={<AdminAudiobooksPage />} />
         <Route path="translations" element={<TranslationDashboardPage />} />
         <Route path="widgets" element={<WidgetsPage />} />
@@ -306,20 +403,36 @@ const AppContent = () => {
         <Route path="/vod" element={<VODPage />} />
         <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
         <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />
-        <Route path="/vod/collection/:collectionId" element={<CollectionDetailPage />} />
+        <Route
+          path="/vod/collection/:collectionId"
+          element={<CollectionDetailPage />}
+        />
         <Route path="/vod/:contentId" element={<WatchPage type="vod" />} />
         <Route path="/radio" element={<RadioPage />} />
         <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />
         <Route path="/podcasts" element={<PodcastsPage />} />
-        <Route path="/podcasts/:showId" element={<WatchPage type="podcast" />} />
+        <Route
+          path="/podcasts/:showId"
+          element={<WatchPage type="podcast" />}
+        />
         <Route path="/audiobooks" element={<AudiobooksPage />} />
-        <Route path="/audiobooks/:audiobookId" element={<AudiobookPlayerPage />} />
+        <Route
+          path="/audiobooks/:audiobookId"
+          element={<AudiobookPlayerPage />}
+        />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/subscribe" element={<SubscribePage />} />
         <Route path="/judaism" element={<JudaismPage />} />
         <Route path="/children" element={<ChildrenPage />} />
-        <Route path="/games" element={<AdminRoute><ChessPage /></AdminRoute>} />
+        <Route
+          path="/games"
+          element={
+            <AdminRoute>
+              <ChessPage />
+            </AdminRoute>
+          }
+        />
         <Route path="/friends" element={<FriendsPage />} />
         <Route path="/player/:userId" element={<PlayerProfilePage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
@@ -330,7 +443,10 @@ const AppContent = () => {
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
         <Route path="/widgets" element={<UserWidgetsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/settings/family-controls" element={<FamilyControlsPage />} />
+        <Route
+          path="/settings/family-controls"
+          element={<FamilyControlsPage />}
+        />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/support" element={<SupportPage />} />
@@ -344,46 +460,68 @@ const AppContent = () => {
         <Route path="/zeh-ani/feedback" element={<FeedbackInboxPage />} />
         <Route path="/zeh-ani/avatar" element={<Avatar3DPage />} />
         <Route path="/zeh-ani/consent" element={<BiometricConsentPage />} />
-        <Route path="/zeh-ani/movie-interactions" element={<MovieInteractionsPage />} />
-        <Route path="/zeh-ani/movie-interactions/:contentId" element={<MovieCharactersPage />} />
-        <Route path="/zeh-ani/movie-interactions/:contentId/:characterName" element={<CharacterDialoguePage />} />
+        <Route
+          path="/zeh-ani/movie-interactions"
+          element={<MovieInteractionsPage />}
+        />
+        <Route
+          path="/zeh-ani/movie-interactions/:contentId"
+          element={<MovieCharactersPage />}
+        />
+        <Route
+          path="/zeh-ani/movie-interactions/:contentId/:characterName"
+          element={<CharacterDialoguePage />}
+        />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
-  )
-}
+  );
+};
 
 function App() {
   // Set document direction based on language (RTL for Hebrew/Arabic, LTR for others)
-  useDirection()
+  useDirection();
 
   useEffect(() => {
     const initI18n = async () => {
       try {
         // Check for language query parameter (?lng=en)
-        const urlParams = new URLSearchParams(window.location.search)
-        const langParam = urlParams.get('lng')
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get("lng");
 
-        const i18n = await initBayitI18nWeb()
+        const i18n = await initBayitI18nWeb();
 
         // If language is specified in URL, switch to it
         if (langParam) {
-          const validLanguages = ['he', 'en', 'es', 'zh', 'fr', 'it', 'hi', 'ta', 'bn', 'ja']
+          const validLanguages = [
+            "he",
+            "en",
+            "es",
+            "zh",
+            "fr",
+            "it",
+            "hi",
+            "ta",
+            "bn",
+            "ja",
+          ];
 
           if (validLanguages.includes(langParam)) {
-            await i18n.changeLanguage(langParam)
-            logger.info('Language switched from URL parameter', 'App', { language: langParam })
+            await i18n.changeLanguage(langParam);
+            logger.info("Language switched from URL parameter", "App", {
+              language: langParam,
+            });
           }
         }
 
-        logger.info('i18n initialized successfully', 'App')
+        logger.info("i18n initialized successfully", "App");
       } catch (error) {
-        logger.error('Failed to initialize i18n', 'App', error)
+        logger.error("Failed to initialize i18n", "App", error);
       }
-    }
-    initI18n()
-  }, [])
+    };
+    initI18n();
+  }, []);
 
   return (
     <GlassAlertRoot>
@@ -402,7 +540,7 @@ function App() {
         <LocationManager />
       </NotificationProvider>
     </GlassAlertRoot>
-  )
+  );
 }
 
-export default App
+export default App;

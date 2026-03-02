@@ -64,8 +64,7 @@
                         .padding(.horizontal, TVDesignTokens.Spacing.xl)
                         .padding(.vertical, TVDesignTokens.Spacing.md)
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
 
@@ -192,8 +191,7 @@
                         .stroke(DesignTokens.Glass.border, lineWidth: 1)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 

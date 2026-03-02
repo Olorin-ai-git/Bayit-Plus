@@ -3146,6 +3146,15 @@
       "title": "Chat",
       "inputPlaceholder": "Escribe un mensaje...",
       "botLimitReached": "Limite de chat alcanzado para este juego"
+    },
+    "invite": {
+      "title": "Invitación a partida de ajedrez",
+      "subtitle": "Has sido invitado a jugar ajedrez en Bayit+",
+      "codeLabel": "Código de juego:",
+      "instructions": "Descarga o abre la app Bayit+ para unirte a esta partida.",
+      "appStore": "Descargar en App Store",
+      "googlePlay": "Obtener en Google Play",
+      "footer": "Bayit+ - Streaming judío premium"
     }
   },
   "children": {

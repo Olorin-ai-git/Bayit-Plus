@@ -32,8 +32,7 @@ struct TVLocationContentRow: View {
                             )
                             .frame(width: 280)
                         }
-                        .buttonStyle(.card)
-                        .tvFocusStyle()
+                        .tvCardStyle()
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

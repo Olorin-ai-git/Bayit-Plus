@@ -78,8 +78,7 @@ struct TVLeaderboardView: View {
                 .background(vm.selectedLeaderboardScope == scope ? DesignTokens.Primary.default : DesignTokens.Glass.bg)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .focused($focusedScope, equals: scope)
     }
 

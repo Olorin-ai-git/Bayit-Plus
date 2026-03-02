@@ -72,7 +72,7 @@
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .focused($generateButtonFocused)
                 .disabled(isGenerating)
                 .opacity(isGenerating ? 0.5 : 1.0)

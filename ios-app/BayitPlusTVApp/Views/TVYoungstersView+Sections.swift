@@ -106,8 +106,7 @@ extension TVYoungstersView {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     // MARK: - Loading

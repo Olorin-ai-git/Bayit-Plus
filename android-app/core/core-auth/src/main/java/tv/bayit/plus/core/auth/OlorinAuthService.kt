@@ -29,14 +29,17 @@ class OlorinAuthService @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
+    var currentUserId: String? = null
+        private set
+
     private val authApi: OlorinAuthApi by lazy {
         apiClient.createService<OlorinAuthApi>()
     }
 
     init {
-        // Restore auth state from secure storage on startup
         if (secureStorage.getAccessToken() != null) {
             _authState.value = AuthState.Authenticated
+            currentUserId = secureStorage.getUserId()
         }
     }
 
@@ -84,11 +87,14 @@ class OlorinAuthService @Inject constructor(
             val refreshExpiresAt = now + ((response.refreshExpiresIn?.toLong() ?: DEFAULT_REFRESH_TOKEN_EXPIRY_SECONDS) * MS_PER_SECOND)
             secureStorage.saveRefreshToken(token, refreshExpiresAt)
         }
+        currentUserId = response.user.id
+        secureStorage.saveUserId(response.user.id)
         _authState.value = AuthState.Authenticated
     }
 
     fun signOut() {
         logger.info("User signed out")
+        currentUserId = null
         secureStorage.clearAuthTokens()
         _authState.value = AuthState.Unauthenticated
     }

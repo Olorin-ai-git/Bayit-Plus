@@ -69,8 +69,7 @@ extension TVAudiobookDetailView {
             }
             .padding(TVDesignTokens.Spacing.lg)
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     var loadingState: some View {

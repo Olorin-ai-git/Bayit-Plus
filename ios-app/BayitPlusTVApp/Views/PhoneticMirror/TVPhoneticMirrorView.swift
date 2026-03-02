@@ -93,8 +93,7 @@ struct TVPhoneticMirrorView: View {
                 .background(speechEngine.isListening ? Color.red.opacity(0.6) : Color.red.opacity(0.3))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 
@@ -119,16 +118,14 @@ struct TVPhoneticMirrorView: View {
                         lastResult = nil
                         phase = .idle
                     }
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
 
                     Button(localization.t("phoneticMirror.nextPhrase")) {
                         currentIdx = (currentIdx + 1) % max(phrases.count, 1)
                         lastResult = nil
                         phase = .idle
                     }
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
             }
         }

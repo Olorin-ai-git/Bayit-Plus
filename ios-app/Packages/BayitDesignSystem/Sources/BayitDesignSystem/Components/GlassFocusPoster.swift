@@ -246,6 +246,7 @@
 
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
+                .focusEffectDisabled()
                 .scaleEffect(
                     isFocused
                         ? TVDesignTokens.Focus.scaleAmount

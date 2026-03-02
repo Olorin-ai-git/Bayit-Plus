@@ -16,6 +16,10 @@
 	</array>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:bayit.tv</string>
+	</array>
 	<key>com.apple.developer.carplay-audio</key>
 	<true/>
 </dict>

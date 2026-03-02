@@ -48,6 +48,7 @@ internal fun ChessBoardComposable(
     selectedSquare: Pair<Int, Int>?,
     lastMove: Pair<String, String>?,
     currentTurn: String,
+    isFlipped: Boolean,
     onSquareTap: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,19 +80,21 @@ internal fun ChessBoardComposable(
             val insetPx = boardPx * BOARD_INSET_RATIO
             val cellPx = (boardPx - 2 * insetPx) / BOARD_SIZE
 
-            for (row in 0 until BOARD_SIZE) {
-                for (col in 0 until BOARD_SIZE) {
-                    val piece = board.getOrNull(row)?.getOrNull(col)
+            for (visualRow in 0 until BOARD_SIZE) {
+                for (visualCol in 0 until BOARD_SIZE) {
+                    val dataRow = if (isFlipped) (7 - visualRow) else visualRow
+                    val dataCol = if (isFlipped) (7 - visualCol) else visualCol
+                    val piece = board.getOrNull(dataRow)?.getOrNull(dataCol)
                     val isSelected =
-                        selectedSquare?.first == row && selectedSquare.second == col
-                    val file = ('a' + col)
-                    val rank = (BOARD_SIZE - row)
+                        selectedSquare?.first == dataRow && selectedSquare.second == dataCol
+                    val file = ('a' + dataCol)
+                    val rank = (BOARD_SIZE - dataRow)
                     val squareLabel = "$file$rank"
                     val isLastMove = squareLabel in lastMoveSquares
                     val pieceDesc = piece?.let { fenCharToUnicode(it) }
 
-                    val xOffset = (insetPx + col * cellPx).toInt()
-                    val yOffset = (insetPx + row * cellPx).toInt()
+                    val xOffset = (insetPx + visualCol * cellPx).toInt()
+                    val yOffset = (insetPx + visualRow * cellPx).toInt()
 
                     Box(
                         modifier = Modifier
@@ -112,7 +115,7 @@ internal fun ChessBoardComposable(
                                     Modifier.background(Color.Transparent)
                                 },
                             )
-                            .clickable { onSquareTap(row, col) }
+                            .clickable { onSquareTap(dataRow, dataCol) }
                             .semantics {
                                 contentDescription =
                                     if (pieceDesc != null) "$pieceDesc at $squareLabel"

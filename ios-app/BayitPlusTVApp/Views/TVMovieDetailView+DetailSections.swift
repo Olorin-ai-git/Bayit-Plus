@@ -97,8 +97,7 @@ extension TVMovieDetailView {
                 }
             )
             .frame(width: 400)
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
 
             if vm.hasTrailer {
                 GlassButton(
@@ -113,8 +112,7 @@ extension TVMovieDetailView {
                     }
                 )
                 .frame(width: 300)
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

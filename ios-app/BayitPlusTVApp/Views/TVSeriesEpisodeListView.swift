@@ -89,8 +89,7 @@
                 .background(DesignTokens.Glass.bgMedium)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
 
         private func episodeLabel(_ episode: EpisodeItem) -> String {

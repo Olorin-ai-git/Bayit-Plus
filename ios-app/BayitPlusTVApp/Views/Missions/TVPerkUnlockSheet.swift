@@ -122,8 +122,7 @@ struct TVPerkUnlockSheet: View {
                     y: 10
                 )
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }
 #endif

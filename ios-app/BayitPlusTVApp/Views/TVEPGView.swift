@@ -53,8 +53,7 @@ struct TVEPGView: View {
                 .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bgMedium)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private var epgContent: some View {
@@ -154,8 +153,7 @@ struct TVEPGView: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private var emptyState: some View {

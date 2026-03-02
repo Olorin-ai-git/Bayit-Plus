@@ -113,8 +113,7 @@ struct TVLiveDubbingOverlayView: View {
             .cornerRadius(TVDesignTokens.Radius.md)
             .foregroundStyle(DesignTokens.Text.primary)
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .accessibilityLabel("Select dubbing voice")
         .accessibilityValue(viewModel.selectedVoice?.name ?? "None")
     }

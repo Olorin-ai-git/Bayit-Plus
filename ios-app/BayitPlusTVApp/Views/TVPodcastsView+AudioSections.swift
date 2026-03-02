@@ -64,8 +64,7 @@ extension TVPodcastsView {
                         .background(DesignTokens.Glass.bg)
                         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
 

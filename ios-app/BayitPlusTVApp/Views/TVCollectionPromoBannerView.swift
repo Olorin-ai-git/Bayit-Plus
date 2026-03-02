@@ -85,8 +85,7 @@ struct TVCollectionPromoBannerView: View {
             .background(DesignTokens.Glass.bgMedium)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     /// Parses markdown bold/italic syntax into an AttributedString for display.
@@ -140,6 +139,7 @@ struct TVFeaturedCollectionsCarousel: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
+                .focusEffectDisabled()
                 .frame(height: 420)
 
                 if collections.count > 1 {

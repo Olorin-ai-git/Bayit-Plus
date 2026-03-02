@@ -96,8 +96,7 @@ struct TVJudaismView: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func categoryShelf(_ vm: JudaismViewModel) -> some View {
@@ -159,8 +158,7 @@ struct TVJudaismView: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private var loadingState: some View {

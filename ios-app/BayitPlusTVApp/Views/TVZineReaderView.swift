@@ -91,7 +91,7 @@ struct TVZineReaderView: View {
                         .background(DesignTokens.Glass.bgStrong)
                         .clipShape(Circle())
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
             }
             .padding(TVDesignTokens.Spacing.xl)
 

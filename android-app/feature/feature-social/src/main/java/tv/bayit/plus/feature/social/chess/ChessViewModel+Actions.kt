@@ -2,8 +2,6 @@ package tv.bayit.plus.feature.social.chess
 
 import tv.bayit.plus.core.common.BayitResult
 
-private const val DEEP_LINK_CHESS_BASE = "bayitplus://chess"
-
 fun ChessViewModel.createGameForWhatsApp(color: String, timeControl: Int?) {
     launchInScope {
         _uiState.value = ChessUiState.Loading
@@ -11,7 +9,7 @@ fun ChessViewModel.createGameForWhatsApp(color: String, timeControl: Int?) {
         when (val result = chessRepository.createGame(color, "pvp", null, timeControl)) {
             is BayitResult.Success -> {
                 val game = result.data
-                val link = "$DEEP_LINK_CHESS_BASE/${game.gameCode}"
+                val link = "https://$webHost/chess/${game.gameCode}"
                 val message = stringProvider.string(
                     "chess.whatsAppMessage",
                     mapOf("code" to game.gameCode, "link" to link),

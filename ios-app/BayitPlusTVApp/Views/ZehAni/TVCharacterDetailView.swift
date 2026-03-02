@@ -245,7 +245,7 @@
                         )
                 )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .disabled(isAlreadyGenerated)
         }
 

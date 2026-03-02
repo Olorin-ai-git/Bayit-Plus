@@ -74,4 +74,10 @@ extension ChessView {
     func isOwnPiece(_ piece: Character, turn: PlayerColor) -> Bool {
         turn == .white ? piece.isUppercase : piece.isLowercase
     }
+
+    func openWhatsApp(message: String) {
+        guard let encoded = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://wa.me/?text=\(encoded)") else { return }
+        UIApplication.shared.open(url)
+    }
 }

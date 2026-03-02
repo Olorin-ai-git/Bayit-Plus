@@ -50,7 +50,7 @@ struct TVOpenSubtitlesDownloadView: View {
             .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
             .padding(.horizontal, TVDesignTokens.Spacing.lg)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
         .accessibilityLabel("Download more subtitles from OpenSubtitles")
     }
 

@@ -16,7 +16,7 @@ from typing import Optional
 from google.cloud import storage as gcs_storage
 
 from app.core.config import settings
-from app.services.ffmpeg.conversion import convert_to_hls
+from app.services.ffmpeg.conversion import convert_to_abr_hls
 from app.services.ffmpeg.hls_subtitle_generator import (
     generate_vtt_files_for_content,
     generate_master_m3u8_with_subtitles,
@@ -83,21 +83,21 @@ class HLSConversionService:
             if on_progress:
                 await on_progress("Converting to HLS...", 10)
 
-            # Convert to HLS using FFmpeg
-            # FFmpeg reads directly from URL (no download needed)
-            # Uses libx264 for video and AAC for audio (browser-compatible)
-            result = await convert_to_hls(
+            # Convert to ABR HLS using FFmpeg (multi-bitrate)
+            result = await convert_to_abr_hls(
                 input_path=source_path,
                 output_dir=temp_dir,
-                segment_duration=10,
-                playlist_name="playlist.m3u8",
-                timeout=14400,  # 4 hours max (streaming from URL can be slower)
+                segment_duration=6,
+                timeout=14400,
             )
 
-            playlist_path = result["playlist_path"]
-            segment_count = result["segment_count"]
+            variants = result["variants"]
+            total_segment_count = result["total_segment_count"]
 
-            logger.info(f"HLS conversion complete: {segment_count} segments")
+            logger.info(
+                f"ABR HLS conversion complete: {total_segment_count} "
+                f"segments across {len(variants)} variants"
+            )
 
             # Generate VTT subtitle files if content_id provided
             subtitle_files = []
@@ -113,17 +113,23 @@ class HLSConversionService:
                 if subtitle_files:
                     logger.info(f"Generated {len(subtitle_files)} subtitle files")
 
-                    # Create master manifest with subtitle references
-                    master_playlist_path = os.path.join(temp_dir, "master.m3u8")
-                    generate_master_m3u8_with_subtitles(
-                        video_playlist_name="playlist.m3u8",
-                        subtitle_files=subtitle_files,
-                        output_path=master_playlist_path,
-                    )
-                    logger.info("Created master manifest with embedded subtitles")
+            # Always generate ABR master manifest
+            master_playlist_path = os.path.join(temp_dir, "master.m3u8")
+            generate_master_m3u8_with_subtitles(
+                video_playlist_name="v0_playlist.m3u8",
+                subtitle_files=subtitle_files,
+                output_path=master_playlist_path,
+                variants=variants,
+            )
+            logger.info(
+                f"Created ABR master manifest with {len(variants)} variants"
+            )
 
             if on_progress:
-                total_files = segment_count + len(subtitle_files) + (1 if subtitle_files else 0)
+                total_files = (
+                    total_segment_count + len(subtitle_files)
+                    + len(variants) + 1
+                )
                 await on_progress(f"Uploading {total_files} files...", 50)
 
             # Upload all HLS files to GCS (including subtitles and master manifest)

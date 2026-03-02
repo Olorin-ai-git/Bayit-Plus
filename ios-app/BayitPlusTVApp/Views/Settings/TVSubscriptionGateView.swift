@@ -65,8 +65,7 @@
                         .background(DesignTokens.Glass.purpleLight)
                         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
             .padding(TVDesignTokens.Spacing.xl)
         }
@@ -106,8 +105,7 @@
                             .font(.system(size: 40))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
 
                 Text(localization.t("subscription.upgradeRequired"))

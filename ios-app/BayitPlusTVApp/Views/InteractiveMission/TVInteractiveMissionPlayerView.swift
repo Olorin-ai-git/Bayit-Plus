@@ -91,7 +91,7 @@ struct TVInteractiveMissionPlayerView: View {
                         .foregroundStyle(DesignTokens.Text.primary).environment(\.layoutDirection, .rightToLeft)
                         .frame(maxWidth: .infinity).padding(TVDesignTokens.Spacing.lg)
                         .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
-                }.buttonStyle(.card).tvFocusStyle().disabled(attempt > maxAttempts)
+                }.tvCardStyle().disabled(attempt > maxAttempts)
             }
             GlassButton(speechEngine.isListening ? localization.t("interactiveMission.listening") : localization.t("interactiveMission.speakHebrew"),
                          variant: speechEngine.isListening ? .secondary : .primary, size: .large) { toggleVoice() }

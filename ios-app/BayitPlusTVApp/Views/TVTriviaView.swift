@@ -130,8 +130,7 @@ struct TVTriviaView: View {
             .background(answerBackground(isSelected: isSelected, isCorrect: isCorrect, isAnswered: isAnswered))
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .disabled(isAnswered)
     }
 

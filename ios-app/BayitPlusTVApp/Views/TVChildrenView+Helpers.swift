@@ -19,8 +19,7 @@ extension TVChildrenView {
                 .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     var loadingState: some View {

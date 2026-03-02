@@ -82,8 +82,7 @@ struct TVCultureView: View {
                 .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func cultureShelf(title: String, items: [CultureItem]) -> some View {

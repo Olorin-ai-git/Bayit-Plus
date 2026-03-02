@@ -37,7 +37,7 @@ struct TVSubtitleOffButton: View {
             .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
             .padding(.horizontal, TVDesignTokens.Spacing.lg)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
     }
 }
 
@@ -109,7 +109,7 @@ struct TVSubtitleLanguageButton: View {
             .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
             .padding(.horizontal, TVDesignTokens.Spacing.lg)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
     }
 }
 
@@ -160,7 +160,7 @@ struct TVSubtitleSplitButton: View {
                 .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
                 .padding(.horizontal, TVDesignTokens.Spacing.lg)
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
         }
     }
 }

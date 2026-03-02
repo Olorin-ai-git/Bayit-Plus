@@ -121,8 +121,7 @@ struct TVCityContentRow: View {
                 } label: {
                     TVCityTopicCard(item: item, accentColor: accentColor)
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

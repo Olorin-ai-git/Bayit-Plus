@@ -116,7 +116,7 @@ struct TVInteractiveSubtitleOverlay: View {
                             .padding(.horizontal, TVDesignTokens.Spacing.md)
                             .padding(.vertical, TVDesignTokens.Spacing.sm)
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                     .focused($focusedWordId, equals: word.id)
                 }
             }

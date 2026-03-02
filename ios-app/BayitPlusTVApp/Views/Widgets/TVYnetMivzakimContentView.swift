@@ -43,8 +43,7 @@ struct TVYnetMivzakimContentView: View {
                     .clipShape(Circle())
                     .opacity(viewModel?.isLoading == true ? 0.5 : 1.0)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .disabled(viewModel?.isLoading == true)
 
             Spacer()

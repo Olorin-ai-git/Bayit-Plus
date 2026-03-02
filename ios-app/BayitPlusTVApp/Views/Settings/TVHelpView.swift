@@ -146,8 +146,7 @@
                 .background(DesignTokens.Background.elevated)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
 
         private var contactSupportButton: some View {
@@ -167,8 +166,7 @@
                 .background(DesignTokens.Glass.purpleLight)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .padding(.top, TVDesignTokens.Spacing.md)
         }
 

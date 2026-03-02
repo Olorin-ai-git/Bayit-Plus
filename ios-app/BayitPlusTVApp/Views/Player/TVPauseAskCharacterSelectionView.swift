@@ -96,19 +96,27 @@
                 .overlay(
                     Circle().stroke(
                         isFocused
-                            ? DesignTokens.Primary.default
-                            : DesignTokens.Primary.default.opacity(0.5),
-                        lineWidth: isFocused ? 5 : 3
+                            ? DesignTokens.Glass.borderFocus
+                            : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
                     )
                 )
                 .shadow(
                     color: isFocused
-                        ? DesignTokens.Primary.default.opacity(0.75)
-                        : .clear,
-                    radius: 20, x: 0, y: 0
+                        ? DesignTokens.Glass.purpleGlow : .clear,
+                    radius: TVDesignTokens.Focus.shadowRadius,
+                    x: 0, y: isFocused ? 8 : 0
                 )
-                .scaleEffect(isFocused ? 1.14 : 1.0)
-                .animation(.spring(duration: 0.28, bounce: 0.25), value: isFocused)
+                .scaleEffect(
+                    isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0
+                )
+                .animation(
+                    .spring(
+                        duration: TVDesignTokens.Focus.animationDuration,
+                        bounce: 0.2
+                    ),
+                    value: isFocused
+                )
 
                 Text(character.name)
                     .font(.system(
@@ -144,8 +152,30 @@
                         isFocused ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg
                     )
                 )
-                .scaleEffect(isFocused ? 1.05 : 1.0)
-                .animation(.spring(duration: 0.25, bounce: 0.2), value: isFocused)
+                .overlay(
+                    Capsule().stroke(
+                        isFocused
+                            ? DesignTokens.Glass.borderFocus
+                            : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+                )
+                .shadow(
+                    color: isFocused
+                        ? DesignTokens.Glass.purpleGlow : .clear,
+                    radius: TVDesignTokens.Focus.shadowRadius,
+                    x: 0, y: isFocused ? 6 : 0
+                )
+                .scaleEffect(
+                    isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0
+                )
+                .animation(
+                    .spring(
+                        duration: TVDesignTokens.Focus.animationDuration,
+                        bounce: 0.2
+                    ),
+                    value: isFocused
+                )
         }
     }
 #endif

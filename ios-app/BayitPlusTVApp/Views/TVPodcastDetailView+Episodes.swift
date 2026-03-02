@@ -70,8 +70,7 @@ extension TVPodcastDetailView {
             }
             .padding(TVDesignTokens.Spacing.lg)
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     func episodeButtonLabel(for episode: PodcastEpisodeItem) -> String {

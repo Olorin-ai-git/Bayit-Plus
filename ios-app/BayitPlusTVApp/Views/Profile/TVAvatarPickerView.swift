@@ -58,8 +58,7 @@ struct TVAvatarPickerView: View {
                         .background(DesignTokens.Glass.bgLight)
                         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
 
                 Button {
                     Task { await save() }
@@ -83,8 +82,7 @@ struct TVAvatarPickerView: View {
                     )
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
                 .disabled(isSaving)
             }
         }
@@ -158,7 +156,6 @@ private struct TVGradientOptionButton: View {
     let option: GradientOption
     let isSelected: Bool
     let onSelect: () -> Void
-    @Environment(\.isFocused) private var isFocused
 
     var body: some View {
         Button { onSelect() } label: {
@@ -175,15 +172,12 @@ private struct TVGradientOptionButton: View {
                     Circle().strokeBorder(
                         isSelected
                             ? DesignTokens.Glass.borderFocus
-                            : isFocused ? DesignTokens.Glass.border : Color.clear,
-                        lineWidth: isFocused ? 8 : 6
+                            : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
                     )
                 )
-                .scaleEffect(isFocused ? 1.12 : isSelected ? 1.05 : 1.0)
-                .animation(.spring(duration: 0.3, bounce: 0.3), value: isFocused)
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }
 

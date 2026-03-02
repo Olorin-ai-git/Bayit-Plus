@@ -91,8 +91,7 @@
                         .stroke(isConnected ? DesignTokens.Colors.Semantic.info : DesignTokens.Glass.border, lineWidth: 2)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .disabled(!isConnected)
             .focused($isFocused)
         }
@@ -125,8 +124,7 @@
                         .stroke(DesignTokens.Colors.Semantic.success, lineWidth: 2)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .focused($isFocused)
         }
     }
@@ -161,8 +159,7 @@
                         .stroke(DesignTokens.ErrorColor.default, lineWidth: 2)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .disabled(isLeavingParty)
             .focused($isFocused)
         }

@@ -115,7 +115,7 @@ struct TVComprehensionQuizOverlayView: View {
             .padding(TVDesignTokens.Spacing.lg)
             .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
         .disabled(showResult)
     }
 

@@ -3332,6 +3332,15 @@
       "title": "Chat",
       "inputPlaceholder": "Type a message...",
       "botLimitReached": "Chat limit reached for this game"
+    },
+    "invite": {
+      "title": "Chess Game Invite",
+      "subtitle": "You have been invited to play chess on Bayit+",
+      "codeLabel": "Game Code:",
+      "instructions": "Download or open the Bayit+ app to join this game.",
+      "appStore": "Download on App Store",
+      "googlePlay": "Get it on Google Play",
+      "footer": "Bayit+ - Premium Jewish Streaming"
     }
   },
   "children": {

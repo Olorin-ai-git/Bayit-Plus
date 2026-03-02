@@ -68,8 +68,7 @@ struct TVConnectedAccountsView: View {
                     .background(DesignTokens.Glass.purpleLight)
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
         .padding(TVDesignTokens.Spacing.xl)
     }
@@ -111,8 +110,7 @@ struct TVConnectedAccountsView: View {
                     .font(.system(size: 40))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 
@@ -168,8 +166,7 @@ struct TVConnectedAccountsView: View {
                 .background(DesignTokens.Glass.purpleLight)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func initializeViewModel() async {

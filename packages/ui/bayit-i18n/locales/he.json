@@ -3329,6 +3329,15 @@
       "title": "צ'אט",
       "inputPlaceholder": "כתוב הודעה...",
       "botLimitReached": "הגעת למגבלת הצ'אט למשחק זה"
+    },
+    "invite": {
+      "title": "הזמנה למשחק שחמט",
+      "subtitle": "הוזמנת לשחק שחמט ב-Bayit+",
+      "codeLabel": "קוד משחק:",
+      "instructions": "הורד או פתח את אפליקציית Bayit+ כדי להצטרף למשחק.",
+      "appStore": "הורד מ-App Store",
+      "googlePlay": "הורד מ-Google Play",
+      "footer": "Bayit+ - סטרימינג יהודי פרימיום"
     }
   },
   "children": {

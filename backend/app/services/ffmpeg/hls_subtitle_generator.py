@@ -8,7 +8,7 @@ and their corresponding HLS playlist wrappers.
 
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from app.models.subtitles import SubtitleTrackDoc
 
@@ -183,56 +183,69 @@ def generate_master_m3u8_with_subtitles(
     video_playlist_name: str,
     subtitle_files: List[dict],
     output_path: str,
+    variants: Optional[List[dict]] = None,
 ) -> str:
     """
-    Generate HLS master manifest with subtitle playlist references.
+    Generate HLS master manifest with subtitle and ABR variant references.
 
-    Apple TV requires subtitles to be referenced via .m3u8 playlists, not .vtt files.
+    Supports both single-stream (legacy) and multi-bitrate ABR manifests.
+    Apple TV requires subtitles referenced via .m3u8 playlists, not .vtt.
 
     Args:
-        video_playlist_name: Name of the video playlist file (e.g., "playlist.m3u8")
+        video_playlist_name: Name of the video playlist file (legacy fallback)
         subtitle_files: List of subtitle info dicts from generate_vtt_files_for_content
         output_path: Path to write the master manifest
+        variants: Optional list of ABR variant dicts with keys:
+            name, playlist, width, height, bandwidth
 
     Returns:
         Path to the generated master manifest
     """
-    # Start with HLS version
     manifest = "#EXTM3U\n"
     manifest += "#EXT-X-VERSION:3\n\n"
 
-    # Add subtitle tracks using .m3u8 playlist references (Apple TV compatible)
-    # CRITICAL: Set ALL subtitles to DEFAULT=NO and AUTOSELECT=NO
-    # This prevents HLS.js from auto-loading subtitles during manifest parsing
-    # The app will handle subtitle selection through the UI
+    # Subtitle tracks (DEFAULT=NO, AUTOSELECT=NO to prevent auto-loading)
     if subtitle_files:
         for sub in subtitle_files:
-            # Use playlist_filename (.m3u8) for Apple TV, fallback to filename for legacy
             subtitle_uri = sub.get("playlist_filename", sub["filename"])
             manifest += (
                 f'#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",'
                 f'NAME="{sub["label"]}",DEFAULT=NO,'
                 f'AUTOSELECT=NO,FORCED=NO,'
                 f'LANGUAGE="{sub["language"]}",'
-                f'CHARACTERISTICS="public.accessibility.transcribes-spoken-dialog",'
+                f'CHARACTERISTICS='
+                f'"public.accessibility.transcribes-spoken-dialog",'
                 f'URI="{subtitle_uri}"\n'
             )
         manifest += "\n"
 
-    # Add video stream reference with subtitle group
-    if subtitle_files:
-        manifest += '#EXT-X-STREAM-INF:BANDWIDTH=2000000,SUBTITLES="subs"\n'
+    has_subs = bool(subtitle_files)
+    subs_attr = ',SUBTITLES="subs"' if has_subs else ""
+
+    if variants:
+        # ABR: one STREAM-INF per variant with resolution and codecs
+        for variant in variants:
+            manifest += (
+                f"#EXT-X-STREAM-INF:"
+                f"BANDWIDTH={variant['bandwidth']},"
+                f"RESOLUTION={variant['width']}x{variant['height']},"
+                f'CODECS="avc1.640029,mp4a.40.2"'
+                f"{subs_attr}\n"
+            )
+            manifest += f"{variant['playlist']}\n"
     else:
-        manifest += "#EXT-X-STREAM-INF:BANDWIDTH=2000000\n"
+        # Legacy: single stream
+        manifest += (
+            f"#EXT-X-STREAM-INF:BANDWIDTH=2000000{subs_attr}\n"
+        )
+        manifest += f"{video_playlist_name}\n"
 
-    manifest += f"{video_playlist_name}\n"
-
-    # Write to file
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(manifest)
 
+    variant_count = len(variants) if variants else 1
     logger.info(
-        f"Generated Apple TV compatible master manifest with "
-        f"{len(subtitle_files)} subtitle tracks: {output_path}"
+        f"Generated master manifest with {variant_count} variant(s) and "
+        f"{len(subtitle_files)} subtitle track(s): {output_path}"
     )
     return output_path

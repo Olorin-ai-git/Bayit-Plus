@@ -89,8 +89,7 @@ struct TVVoiceSelectorView: View {
                 .padding(TVDesignTokens.Spacing.md)
             }
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .accessibilityLabel("\(voice.name) voice for \(voice.language)")
         .accessibilityValue(isSelected ? "Selected" : "")
         .accessibilityHint(voice.description ?? "")

@@ -84,8 +84,7 @@
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .accessibilityLabel(isCollapsed ? "Expand dock" : "Collapse dock")
         }
 
@@ -108,8 +107,7 @@
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .accessibilityLabel("Close dock")
         }
     }
@@ -128,8 +126,7 @@
             } label: {
                 DockPillLabel(widget: widget)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .accessibilityLabel("Restore \(widget.title)")
         }
     }

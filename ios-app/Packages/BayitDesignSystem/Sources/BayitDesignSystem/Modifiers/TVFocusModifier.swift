@@ -2,9 +2,10 @@
     import SwiftUI
 
     /// Applies tvOS focus scale, highlight ring, and shadow on focus.
-    /// Uses `@Environment(\.isFocused)` for automatic focus state detection.
+    /// Uses `.focusable(true)` + `@FocusState` + `.focusEffectDisabled()`
+    /// to fully bypass the system white highlight that Button receives.
     public struct TVFocusModifier: ViewModifier {
-        @Environment(\.isFocused) private var isFocused
+        @FocusState private var isFocused: Bool
 
         private let scaleAmount: CGFloat
         private let highlightColor: Color
@@ -22,10 +23,13 @@
 
         public func body(content: Content) -> some View {
             content
+                .focusable(true)
+                .focused($isFocused)
                 .focusEffectDisabled()
                 .scaleEffect(isFocused ? scaleAmount : 1.0)
                 .overlay(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                        .inset(by: -TVDesignTokens.Focus.ringWidth)
                         .stroke(
                             isFocused ? highlightColor : Color.clear,
                             lineWidth: TVDesignTokens.Focus.ringWidth

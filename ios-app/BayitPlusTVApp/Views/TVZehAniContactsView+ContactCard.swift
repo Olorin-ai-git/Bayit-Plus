@@ -58,7 +58,7 @@
                     .foregroundStyle(DesignTokens.ErrorColor.default)
                     .padding(TVDesignTokens.Spacing.md)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
             }
             .padding(TVDesignTokens.Spacing.xl)
             .background(DesignTokens.Glass.bgMedium)

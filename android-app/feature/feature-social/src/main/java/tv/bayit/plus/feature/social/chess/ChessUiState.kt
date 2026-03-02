@@ -10,6 +10,7 @@ sealed interface ChessUiState {
     data class GameActive(
         val game: ChessGame,
         val board: List<List<Char?>>,
+        val localUserId: String? = null,
         val selectedSquare: Pair<Int, Int>? = null,
         val lastMove: Pair<String, String>? = null,
         val currentTurn: String = "white",

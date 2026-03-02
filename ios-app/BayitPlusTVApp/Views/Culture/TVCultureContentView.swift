@@ -107,8 +107,7 @@
                     .background(DesignTokens.Glass.bgStrong)
                     .clipShape(Circle())
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .padding([.top, .trailing], TVDesignTokens.Spacing.xxl)
         }
     }

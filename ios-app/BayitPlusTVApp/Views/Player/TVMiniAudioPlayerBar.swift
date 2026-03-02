@@ -119,7 +119,7 @@
                         height: TVDesignTokens.MinSize.focusableHeight
                     )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel("Sleep timer")
         }
 
@@ -135,7 +135,7 @@
                         height: TVDesignTokens.MinSize.focusableHeight
                     )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel(audioManager.isPlaying ? "Pause" : "Play")
         }
 
@@ -151,7 +151,7 @@
                         height: TVDesignTokens.MinSize.focusableHeight
                     )
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .accessibilityLabel("Stop audio")
         }
 

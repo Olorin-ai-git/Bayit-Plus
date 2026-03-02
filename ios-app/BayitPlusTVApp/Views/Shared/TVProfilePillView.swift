@@ -39,8 +39,7 @@
                     Capsule().stroke(Color.white.opacity(0.12), lineWidth: 1)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .contextMenu {
                 Button {
                     coordinator.selectedTab = .profile

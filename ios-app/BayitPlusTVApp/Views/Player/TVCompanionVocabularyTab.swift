@@ -91,8 +91,7 @@ struct TVCompanionVocabularyTab: View {
             .background(DesignTokens.Glass.bgLight)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func languageBadge(_ language: String) -> some View {

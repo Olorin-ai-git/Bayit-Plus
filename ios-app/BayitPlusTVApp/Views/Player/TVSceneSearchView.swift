@@ -123,7 +123,7 @@
                 .padding(TVDesignTokens.Spacing.lg)
                 .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
         }
 
         private var emptyResultsView: some View {

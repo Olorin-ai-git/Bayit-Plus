@@ -8,6 +8,7 @@ struct ChessBoardView: View {
     let selectedSquare: (row: Int, col: Int)?
     let lastMove: (from: (row: Int, col: Int), to: (row: Int, col: Int))?
     let currentTurn: PlayerColor
+    let isFlipped: Bool
     let onSquareTap: (Int, Int) -> Void
 
     /// Percentage of the board image occupied by decorative border.
@@ -29,10 +30,12 @@ struct ChessBoardView: View {
                     .frame(width: size, height: size)
 
                 VStack(spacing: 0) {
-                    ForEach(0 ..< 8, id: \.self) { row in
+                    ForEach(0 ..< 8, id: \.self) { visualRow in
                         HStack(spacing: 0) {
-                            ForEach(0 ..< 8, id: \.self) { col in
-                                squareCell(row: row, col: col, size: cellSize)
+                            ForEach(0 ..< 8, id: \.self) { visualCol in
+                                let dataRow = isFlipped ? (7 - visualRow) : visualRow
+                                let dataCol = isFlipped ? (7 - visualCol) : visualCol
+                                squareCell(row: dataRow, col: dataCol, size: cellSize)
                             }
                         }
                     }
@@ -47,10 +50,12 @@ struct ChessBoardView: View {
                     .onEnded { value in
                         let x = value.location.x - inset
                         let y = value.location.y - inset
-                        let col = Int(x / cellSize)
-                        let row = Int(y / cellSize)
-                        guard row >= 0, row < 8, col >= 0, col < 8 else { return }
-                        onSquareTap(row, col)
+                        let visualCol = Int(x / cellSize)
+                        let visualRow = Int(y / cellSize)
+                        guard visualRow >= 0, visualRow < 8, visualCol >= 0, visualCol < 8 else { return }
+                        let dataRow = isFlipped ? (7 - visualRow) : visualRow
+                        let dataCol = isFlipped ? (7 - visualCol) : visualCol
+                        onSquareTap(dataRow, dataCol)
                     }
             )
         }

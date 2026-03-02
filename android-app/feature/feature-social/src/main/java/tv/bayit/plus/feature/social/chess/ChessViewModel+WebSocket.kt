@@ -9,6 +9,7 @@ internal fun ChessViewModel.transitionToGame(game: ChessGame) {
     _uiState.value = ChessUiState.GameActive(
         game = game,
         board = board,
+        localUserId = localUserId,
         currentTurn = game.currentTurn,
         whiteTimeRemainingMs = game.whitePlayer?.timeRemainingMs,
         blackTimeRemainingMs = game.blackPlayer?.timeRemainingMs,
@@ -117,6 +118,7 @@ internal fun ChessViewModel.applyGameUpdate(game: ChessGame) {
     _uiState.value = ChessUiState.GameActive(
         game = game,
         board = parseFen(game.boardFen),
+        localUserId = localUserId,
         currentTurn = game.currentTurn,
         whiteTimeRemainingMs = game.whitePlayer?.timeRemainingMs
             ?: current?.whiteTimeRemainingMs,

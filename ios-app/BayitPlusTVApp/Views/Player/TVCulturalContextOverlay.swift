@@ -141,7 +141,7 @@ struct TVCulturalContextOverlay: View {
                         .padding(.horizontal, TVDesignTokens.Spacing.lg)
                         .padding(.vertical, TVDesignTokens.Spacing.sm)
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                     .focused($focusedRefId, equals: ref.id)
                 }
             }

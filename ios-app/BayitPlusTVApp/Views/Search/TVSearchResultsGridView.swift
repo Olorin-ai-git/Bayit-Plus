@@ -136,7 +136,7 @@ struct TVSearchResultsGridView: View {
     private func resultSubtitle(_ result: UnifiedSearchResult) -> String? {
         var parts: [String] = []
         if let year = result.year { parts.append(String(year)) }
-        if let duration = result.duration { parts.append(duration) }
+        if let duration = result.duration?.value { parts.append(duration) }
         if let genres = result.genres, let firstGenre = genres.first {
             parts.append(firstGenre)
         }

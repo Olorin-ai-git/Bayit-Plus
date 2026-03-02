@@ -50,18 +50,19 @@ extension TVCredentialPanel {
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
                     .stroke(
                         focusedField == .email
-                            ? DesignTokens.Colors.Primary.base
+                            ? DesignTokens.Glass.borderFocus
                             : DesignTokens.Glass.border,
-                        lineWidth: focusedField == .email ? 2 : 1
+                        lineWidth: focusedField == .email
+                            ? TVDesignTokens.Focus.ringWidth : 1
                     )
             )
             .shadow(
                 color: focusedField == .email
-                    ? DesignTokens.Colors.Primary.base.opacity(0.3)
+                    ? DesignTokens.Glass.purpleGlow
                     : .clear,
-                radius: 10,
+                radius: TVDesignTokens.Focus.shadowRadius,
                 x: 0,
-                y: 4
+                y: focusedField == .email ? 4 : 0
             )
         }
     }
@@ -121,18 +122,19 @@ extension TVCredentialPanel {
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
                     .stroke(
                         focusedField == .password
-                            ? DesignTokens.Colors.Primary.base
+                            ? DesignTokens.Glass.borderFocus
                             : DesignTokens.Glass.border,
-                        lineWidth: focusedField == .password ? 2 : 1
+                        lineWidth: focusedField == .password
+                            ? TVDesignTokens.Focus.ringWidth : 1
                     )
             )
             .shadow(
                 color: focusedField == .password
-                    ? DesignTokens.Colors.Primary.base.opacity(0.3)
+                    ? DesignTokens.Glass.purpleGlow
                     : .clear,
-                radius: 10,
+                radius: TVDesignTokens.Focus.shadowRadius,
                 x: 0,
-                y: 4
+                y: focusedField == .password ? 4 : 0
             )
         }
     }

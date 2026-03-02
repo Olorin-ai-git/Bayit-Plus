@@ -170,8 +170,7 @@ extension TVSeriesDetailView {
                     }
                 )
                 .frame(width: 400)
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

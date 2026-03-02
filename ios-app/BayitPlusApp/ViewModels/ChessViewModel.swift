@@ -48,6 +48,9 @@ final class ChessViewModel {
     var showingJoinSheet: Bool = false
     var joinCode: String = ""
 
+    var localUserId: String?
+    var webHost: String = "bayit.tv"
+
     let repository: any ChessRepository
     let authTokenProvider: AuthTokenProvider
     var connection: WebSocketConnection?
@@ -135,9 +138,14 @@ final class ChessViewModel {
     // MARK: - Computed Properties
 
     var currentUserId: String? {
-        guard let game else { return nil }
-        if game.whitePlayer?.isBot == false { return game.whitePlayer?.userId }
-        return game.blackPlayer?.userId
+        localUserId
+    }
+
+    var myColor: PlayerColor? {
+        guard let game, let localUserId else { return nil }
+        if game.whitePlayer?.userId == localUserId { return .white }
+        if game.blackPlayer?.userId == localUserId { return .black }
+        return nil
     }
 
     var botChatLimitReached: Bool {

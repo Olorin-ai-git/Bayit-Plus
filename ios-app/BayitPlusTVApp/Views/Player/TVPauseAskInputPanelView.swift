@@ -4,7 +4,7 @@
     import SwiftUI
 
     /// tvOS input panel for Pause & Ask questions.
-    /// Displays character name, text field, and send/resume buttons.
+    /// Displays character name, glass-themed text field, and action buttons.
     struct TVPauseAskInputPanelView: View {
         @Environment(LocalizationManager.self) private var localization
         @FocusState private var isInputFocused: Bool
@@ -36,19 +36,45 @@
                     .textFieldStyle(.plain)
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .tint(DesignTokens.Primary.default)
                     .disabled(isSending)
+                    .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                    .background(DesignTokens.Glass.bgStrong)
+                    .clipShape(
+                        RoundedRectangle(
+                            cornerRadius: TVDesignTokens.Radius.md
+                        )
+                    )
+                    .overlay(
+                        RoundedRectangle(
+                            cornerRadius: TVDesignTokens.Radius.md
+                        )
+                        .stroke(
+                            isInputFocused
+                                ? DesignTokens.Glass.borderFocus
+                                : DesignTokens.Glass.border,
+                            lineWidth: isInputFocused
+                                ? TVDesignTokens.Focus.ringWidth : 1
+                        )
+                    )
+                    .animation(
+                        .easeInOut(duration: 0.2), value: isInputFocused
+                    )
 
                     HStack(spacing: TVDesignTokens.Spacing.md) {
-                        Button(localization.t("common.send")) {
-                            onSend()
-                        }
-                        .buttonStyle(.card)
-                        .disabled(messageText.isEmpty || isSending)
+                        GlassButton(
+                            localization.t("common.send"),
+                            variant: .primary,
+                            size: .large,
+                            isDisabled: messageText.isEmpty || isSending
+                        ) { onSend() }
 
-                        Button(localization.t("player.pauseAsk.resumeMovie")) {
-                            onDismiss()
-                        }
-                        .buttonStyle(.card)
+                        GlassButton(
+                            localization.t("player.pauseAsk.resumeMovie"),
+                            variant: .secondary,
+                            size: .large
+                        ) { onDismiss() }
                     }
                 }
                 .padding(TVDesignTokens.Spacing.xl)

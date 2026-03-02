@@ -103,7 +103,7 @@ struct TVStarStoryGalleryView: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         }
-        .buttonStyle(.card).tvFocusStyle()
+        .tvCardStyle()
     }
 
     private var avatarPlaceholder: some View {

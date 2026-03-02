@@ -1,8 +1,6 @@
 import BayitLocalization
 import Foundation
 
-private let deepLinkChessBase = "bayitplus://chess"
-
 /// Game action methods extracted from ChessViewModel for the 200-line limit.
 extension ChessViewModel {
     @MainActor
@@ -19,7 +17,7 @@ extension ChessViewModel {
             )
             applyGameState(created)
             await connectWebSocket(gameCode: created.gameCode)
-            let link = "\(deepLinkChessBase)/\(created.gameCode)"
+            let link = "https://\(webHost)/chess/\(created.gameCode)"
             let message = localization.t(
                 "chess.whatsAppMessage",
                 ["code": created.gameCode, "link": link]

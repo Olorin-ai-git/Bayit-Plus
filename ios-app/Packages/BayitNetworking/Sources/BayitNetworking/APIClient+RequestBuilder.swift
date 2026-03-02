@@ -61,18 +61,19 @@ extension APIClient {
                 metadata: ["correlationId": correlationID, "hasToken": "true"]
             )
         } else if requiresAuth {
-            // Token provider returned nil for an authenticated endpoint.
-            // Throw locally so no unauthenticated request reaches the backend.
-            // This prevents background/non-critical callers (e.g. progress tracking)
-            // from inadvertently triggering the global unauthorizedNotification and
-            // signing the user out on a transient refresh failure.
-            // Genuine server-side revocation is still caught correctly: requests that
-            // carry a valid token but are rejected by the server still return HTTP 401,
-            // which posts the notification through the normal execution path.
+            // Token provider returned nil — refresh already attempted and failed.
+            // Post the unauthorized notification so the app navigates to login
+            // instead of showing a dead-end error screen.
             logger.warning(
-                "No auth token available, aborting request",
+                "No auth token available, redirecting to login",
                 metadata: ["correlationId": correlationID, "path": request.url?.path ?? ""]
             )
+            Task { @MainActor in
+                NotificationCenter.default.post(
+                    name: APIClient.unauthorizedNotification,
+                    object: nil
+                )
+            }
             throw APIError.unauthorized(message: "No token available; refresh failed or session not established")
         }
         // requiresAuth == false: proceed without Authorization header (public endpoint)

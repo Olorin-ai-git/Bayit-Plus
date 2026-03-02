@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 private const val TIMER_INTERVAL_MS = 100L
 private const val ARG_GAME_ID = "gameId"
+private const val WEB_HOST = "bayit.tv"
 
 @HiltViewModel
 class ChessViewModel @Inject constructor(
@@ -29,8 +31,13 @@ class ChessViewModel @Inject constructor(
     internal val logger: BayitLogger,
     internal val stringProvider: BayitStringProvider,
     private val friendsRepository: FriendsRepository,
+    private val authService: OlorinAuthService,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    internal val localUserId: String? get() = authService.currentUserId
+
+    internal val webHost: String = WEB_HOST
 
     internal val _uiState = MutableStateFlow<ChessUiState>(ChessUiState.Lobby())
     val uiState: StateFlow<ChessUiState> = _uiState.asStateFlow()

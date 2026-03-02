@@ -6284,6 +6284,15 @@
       "title": "Chat",
       "inputPlaceholder": "Tapez un message...",
       "botLimitReached": "Limite de chat atteinte pour cette partie"
+    },
+    "invite": {
+      "title": "Invitation à une partie d'échecs",
+      "subtitle": "Vous avez été invité à jouer aux échecs sur Bayit+",
+      "codeLabel": "Code de jeu :",
+      "instructions": "Téléchargez ou ouvrez l'application Bayit+ pour rejoindre cette partie.",
+      "appStore": "Télécharger sur l'App Store",
+      "googlePlay": "Disponible sur Google Play",
+      "footer": "Bayit+ - Streaming juif premium"
     }
   },
   "clock": {

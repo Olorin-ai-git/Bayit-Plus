@@ -61,7 +61,7 @@ struct TVPlaybackControlsOverlay: View {
 }
 
 /// Individual focusable button for the playback overlay.
-/// Uses .buttonStyle(.card) so the tvOS focus engine properly handles it,
+/// Uses .tvCardStyle() so the tvOS focus engine properly handles it,
 /// with a transparent appearance via the custom style.
 private struct TVOverlayButton: View {
     let icon: String
@@ -107,12 +107,19 @@ private struct TVOverlayButton: View {
         }
         .buttonStyle(.plain)
         .focused($isFocused)
-        .scaleEffect(isFocused ? 1.15 : 1.0)
+        .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .shadow(
-            color: isFocused ? .white.opacity(0.5) : .clear,
-            radius: isFocused ? 24 : 0
+            color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
+            radius: TVDesignTokens.Focus.shadowRadius,
+            x: 0, y: isFocused ? 6 : 0
         )
-        .animation(.spring(duration: 0.25, bounce: 0.2), value: isFocused)
+        .animation(
+            .spring(
+                duration: TVDesignTokens.Focus.animationDuration,
+                bounce: 0.2
+            ),
+            value: isFocused
+        )
         .accessibilityLabel(accessibilityLabel)
     }
 }

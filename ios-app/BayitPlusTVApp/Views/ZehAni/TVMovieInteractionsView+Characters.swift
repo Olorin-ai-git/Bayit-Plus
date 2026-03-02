@@ -52,8 +52,7 @@
                 } label: {
                     characterCardLabel(character)
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
 

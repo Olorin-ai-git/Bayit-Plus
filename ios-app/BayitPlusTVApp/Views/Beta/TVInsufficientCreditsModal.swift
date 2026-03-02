@@ -59,8 +59,7 @@ struct TVInsufficientCreditsModal: View {
                 .background(DesignTokens.Glass.bgStrong)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }
 #endif

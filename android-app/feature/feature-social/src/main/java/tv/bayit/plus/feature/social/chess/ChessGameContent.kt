@@ -37,6 +37,15 @@ internal fun ChessGameContent(
 ) {
     val gameCode = state.game.gameCode
     val context = LocalContext.current
+    val isBlackPlayer = state.localUserId != null &&
+        state.game.blackPlayer?.userId == state.localUserId
+    val isFlipped = isBlackPlayer
+    val opponentPlayer = if (isFlipped) state.game.whitePlayer else state.game.blackPlayer
+    val myPlayer = if (isFlipped) state.game.blackPlayer else state.game.whitePlayer
+    val opponentTurn = if (isFlipped) "white" else "black"
+    val myTurn = if (isFlipped) "black" else "white"
+    val opponentTimeMs = if (isFlipped) state.whiteTimeRemainingMs else state.blackTimeRemainingMs
+    val myTimeMs = if (isFlipped) state.blackTimeRemainingMs else state.whiteTimeRemainingMs
 
     Column(
         modifier = modifier
@@ -52,11 +61,11 @@ internal fun ChessGameContent(
         StatusIndicator(state)
 
         ChessPlayerInfoView(
-            player = state.game.blackPlayer,
+            player = opponentPlayer,
             label = bayitString("chess.opponent"),
             isYou = false,
-            timeRemainingMs = state.blackTimeRemainingMs,
-            isCurrentTurn = state.currentTurn == "black",
+            timeRemainingMs = opponentTimeMs,
+            isCurrentTurn = state.currentTurn == opponentTurn,
         )
 
         ChessBoardComposable(
@@ -64,16 +73,17 @@ internal fun ChessGameContent(
             selectedSquare = state.selectedSquare,
             lastMove = state.lastMove,
             currentTurn = state.currentTurn,
+            isFlipped = isFlipped,
             onSquareTap = onTapSquare,
             modifier = Modifier.fillMaxWidth(),
         )
 
         ChessPlayerInfoView(
-            player = state.game.whitePlayer,
+            player = myPlayer,
             label = bayitString("chess.you"),
             isYou = true,
-            timeRemainingMs = state.whiteTimeRemainingMs,
-            isCurrentTurn = state.currentTurn == "white",
+            timeRemainingMs = myTimeMs,
+            isCurrentTurn = state.currentTurn == myTurn,
         )
 
         ChessControlsView(
@@ -100,7 +110,7 @@ internal fun ChessGameContent(
         if (state.game.chatEnabled) {
             ChessChatPanel(
                 messages = state.chatMessages,
-                currentUserId = state.game.whitePlayer?.userId ?: "",
+                currentUserId = state.localUserId ?: "",
                 isExpanded = state.isChatExpanded,
                 onToggle = onToggleChat,
                 onSend = onSendChat,

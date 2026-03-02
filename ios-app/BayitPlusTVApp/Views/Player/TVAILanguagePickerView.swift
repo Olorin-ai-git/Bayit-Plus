@@ -77,7 +77,7 @@ struct TVAILanguagePickerView: View {
                             }
                         }
                     }
-                    .buttonStyle(.card)
+                    .tvCardStyle()
                 }
             }
 

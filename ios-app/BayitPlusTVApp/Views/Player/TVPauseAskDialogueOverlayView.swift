@@ -188,8 +188,7 @@
                             .padding(.horizontal, TVDesignTokens.Spacing.lg)
                             .padding(.vertical, TVDesignTokens.Spacing.md)
                         }
-                        .buttonStyle(.card)
-                        .tvFocusStyle()
+                        .tvCardStyle()
                         .focused($idleFocus, equals: .replay)
                     }
                     GlassButton(

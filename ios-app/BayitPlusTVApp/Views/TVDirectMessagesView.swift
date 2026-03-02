@@ -65,8 +65,7 @@ struct TVDirectMessagesView: View {
                 NavigationLink(value: conversation.friendId) {
                     TVConversationRowCard(conversation: conversation)
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }

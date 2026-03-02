@@ -80,8 +80,7 @@ struct TVTrendingRow: View {
                 } label: {
                     TVTrendingTopicCard(item: item)
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

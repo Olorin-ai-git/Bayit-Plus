@@ -118,7 +118,7 @@
                                 .padding(.horizontal, TVDesignTokens.Spacing.lg)
                                 .padding(.vertical, TVDesignTokens.Spacing.sm)
                             }
-                            .buttonStyle(.card)
+                            .tvCardStyle()
                             .padding(TVDesignTokens.Spacing.md)
                         }
                     }

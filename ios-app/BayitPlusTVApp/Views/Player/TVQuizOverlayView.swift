@@ -71,8 +71,7 @@ struct TVQuizOverlayView: View {
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .focused($isCloseButtonFocused)
         }
     }
@@ -111,8 +110,7 @@ struct TVQuizOverlayView: View {
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

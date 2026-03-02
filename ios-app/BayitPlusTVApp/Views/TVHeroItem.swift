@@ -118,10 +118,10 @@ struct TVHeroItem: View {
                 .brightness(watchNowFocused ? 0.22 : 0)
         )
         .shadow(
-            color: watchNowFocused ? DesignTokens.Primary.p500.opacity(0.75) : .clear,
+            color: watchNowFocused ? DesignTokens.Glass.purpleGlow : .clear,
             radius: TVDesignTokens.Focus.shadowRadius,
             x: 0,
-            y: 6
+            y: watchNowFocused ? 6 : 0
         )
         .scaleEffect(watchNowFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: watchNowFocused)
@@ -152,9 +152,17 @@ struct TVHeroItem: View {
         .overlay(
             Capsule()
                 .stroke(
-                    Color.white.opacity(moreInfoFocused ? 0.75 : 0.32),
-                    lineWidth: moreInfoFocused ? 2.5 : 1.5
+                    moreInfoFocused
+                        ? DesignTokens.Glass.borderFocus
+                        : DesignTokens.Glass.border,
+                    lineWidth: moreInfoFocused
+                        ? TVDesignTokens.Focus.ringWidth : 1
                 )
+        )
+        .shadow(
+            color: moreInfoFocused ? DesignTokens.Glass.purpleGlow : .clear,
+            radius: TVDesignTokens.Focus.shadowRadius,
+            x: 0, y: moreInfoFocused ? 6 : 0
         )
         .scaleEffect(moreInfoFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
         .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: moreInfoFocused)

@@ -110,8 +110,7 @@ struct TVNewsClipView: View {
                                 .background(index == selectedIdx ? Color.blue.opacity(0.15) : Color.white.opacity(0.05))
                                 .clipShape(RoundedRectangle(cornerRadius: 16))
                             }
-                            .buttonStyle(.card)
-                            .tvFocusStyle()
+                            .tvCardStyle()
                         }
                     }
                 }

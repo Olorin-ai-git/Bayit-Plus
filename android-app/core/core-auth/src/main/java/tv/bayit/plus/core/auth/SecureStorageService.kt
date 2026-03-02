@@ -38,7 +38,6 @@ class SecureStorageService @Inject constructor(
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
     )
-
     fun setItem(key: String, value: String): BayitResult<Unit> {
         if (key.isBlank() || value.isBlank()) {
             return BayitResult.failure(BayitError.Validation("Key and value cannot be empty", field = "key"))
@@ -68,7 +67,8 @@ class SecureStorageService @Inject constructor(
             tokenPrefs.edit()
                 .putString("$TOKEN_PREFIX$tokenId", token)
                 .putLong("$EXPIRY_PREFIX$tokenId", expiresAt)
-                .putString("$METADATA_PREFIX$tokenId", buildMetadata(tokenId, expiresAt))
+                .putString("$METADATA_PREFIX$tokenId",
+                    "{\"id\":\"$tokenId\",\"storedAt\":${System.currentTimeMillis()},\"expiresAt\":$expiresAt}")
                 .apply()
         }
 
@@ -101,7 +101,6 @@ class SecureStorageService @Inject constructor(
         logger.error("Failed to refresh token", error = e, metadata = mapOf("tokenId" to tokenId))
         BayitResult.failure(BayitError.Unknown("Failed to refresh token: ${e.message}", e))
     }
-
     fun shouldRefreshToken(tokenId: String): Boolean {
         val secondsRemaining = (tokenPrefs.getLong("$EXPIRY_PREFIX$tokenId", 0) -
             System.currentTimeMillis()) / MS_PER_SEC
@@ -134,9 +133,6 @@ class SecureStorageService @Inject constructor(
         val count = tokenPrefs.getInt("$ROTATION_PREFIX$tokenId", 0)
         tokenPrefs.edit().putInt("$ROTATION_PREFIX$tokenId", count + 1).apply()
     }
-
-    private fun buildMetadata(tokenId: String, expiresAt: Long): String =
-        "{\"id\":\"$tokenId\",\"storedAt\":${System.currentTimeMillis()},\"expiresAt\":$expiresAt}"
 
     private fun runSafe(
         operation: String,
@@ -178,8 +174,11 @@ class SecureStorageService @Inject constructor(
 
     override fun clearAuthTokens() {
         storagePrefs.edit().remove(ACCESS_TOKEN_KEY).remove(ACCESS_TOKEN_EXPIRY_KEY)
-            .remove(REFRESH_TOKEN_KEY).remove(REFRESH_TOKEN_EXPIRY_KEY).apply()
+            .remove(REFRESH_TOKEN_KEY).remove(REFRESH_TOKEN_EXPIRY_KEY).remove(USER_ID_KEY).apply()
     }
+
+    override fun saveUserId(userId: String) { storagePrefs.edit().putString(USER_ID_KEY, userId).apply() }
+    override fun getUserId(): String? = storagePrefs.getString(USER_ID_KEY, null)
 
     companion object {
         private const val STORAGE_PREF_NAME = "bayit_plus_secure_storage"
@@ -195,5 +194,6 @@ class SecureStorageService @Inject constructor(
         private const val ACCESS_TOKEN_EXPIRY_KEY = "bayit_access_token_expiry"
         private const val REFRESH_TOKEN_KEY = "bayit_refresh_token"
         private const val REFRESH_TOKEN_EXPIRY_KEY = "bayit_refresh_token_expiry"
+        private const val USER_ID_KEY = "bayit_user_id"
     }
 }

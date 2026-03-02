@@ -3108,6 +3108,15 @@
       "title": "聊天",
       "inputPlaceholder": "输入消息...",
       "botLimitReached": "此游戏的聊天限制已达到"
+    },
+    "invite": {
+      "title": "国际象棋对局邀请",
+      "subtitle": "你已被邀请在Bayit+上下棋",
+      "codeLabel": "游戏代码:",
+      "instructions": "下载或打开Bayit+应用以加入此对局。",
+      "appStore": "从App Store下载",
+      "googlePlay": "从Google Play获取",
+      "footer": "Bayit+ - 犹太优质流媒体"
     }
   },
   "children": {

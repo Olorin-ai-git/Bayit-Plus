@@ -87,7 +87,7 @@
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
                 }
-                .buttonStyle(.card)
+                .tvCardStyle()
                 .focused($addButtonFocused)
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)

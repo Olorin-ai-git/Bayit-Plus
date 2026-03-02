@@ -18,6 +18,35 @@ struct FlexibleRating: Decodable, Sendable {
     }
 }
 
+// MARK: - Flexible Duration
+
+/// Decodes a duration that may arrive as an integer (minutes: 120) or string ("2:03:00") from the API.
+struct FlexibleDuration: Decodable, Sendable {
+    let value: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let intValue = try? container.decode(Int.self) {
+            let hours = intValue / 60
+            let minutes = intValue % 60
+            value = hours > 0
+                ? String(format: "%d:%02d:00", hours, minutes)
+                : String(format: "0:%02d:00", minutes)
+        } else if let doubleValue = try? container.decode(Double.self) {
+            let total = Int(doubleValue)
+            let hours = total / 60
+            let minutes = total % 60
+            value = hours > 0
+                ? String(format: "%d:%02d:00", hours, minutes)
+                : String(format: "0:%02d:00", minutes)
+        } else if let stringValue = try? container.decode(String.self) {
+            value = stringValue
+        } else {
+            value = ""
+        }
+    }
+}
+
 // MARK: - Featured / Home
 
 /// Response from GET /api/v1/content/featured

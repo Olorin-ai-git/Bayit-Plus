@@ -45,8 +45,7 @@ struct TVCouponRedemptionSheet: View {
                         .background(DesignTokens.Glass.bg)
                         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
             .padding(TVDesignTokens.Spacing.xxl)
         }

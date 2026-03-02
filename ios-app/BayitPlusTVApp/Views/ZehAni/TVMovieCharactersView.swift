@@ -43,8 +43,7 @@
                                 } label: {
                                     TVCharacterCard(character: character)
                                 }
-                                .buttonStyle(.card)
-                                .tvFocusStyle()
+                                .tvCardStyle()
                             }
                         }
                         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

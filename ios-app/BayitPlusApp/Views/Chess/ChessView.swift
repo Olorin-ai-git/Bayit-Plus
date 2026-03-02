@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -7,6 +8,7 @@ struct ChessView: View {
     let gameId: String?
 
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) var localization
     @State private var viewModel: ChessViewModel?
     @State private var inviteViewModel: ChessInviteViewModel?
@@ -78,17 +80,18 @@ struct ChessView: View {
     // MARK: - Active Game
 
     private func activeGameContent(_ vm: ChessViewModel) -> some View {
-        ScrollView(showsIndicators: false) {
+        let flipped = vm.myColor == .black
+        return ScrollView(showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.md) {
                 if let game = vm.game, game.gameMode == .pvp, game.status == .waiting {
                     gameCodeChip(game.gameCode)
                 }
 
                 ChessPlayerBar(
-                    player: vm.game?.blackPlayer,
+                    player: flipped ? vm.game?.whitePlayer : vm.game?.blackPlayer,
                     label: localization.t("chess.opponent"),
-                    isCurrentTurn: vm.currentTurn == .black && vm.gameStatus == .active,
-                    timeRemainingMs: vm.blackTimeRemainingMs
+                    isCurrentTurn: vm.currentTurn == (flipped ? .white : .black) && vm.gameStatus == .active,
+                    timeRemainingMs: flipped ? vm.whiteTimeRemainingMs : vm.blackTimeRemainingMs
                 )
                 .padding(.horizontal, DesignTokens.Spacing.sm)
 
@@ -97,15 +100,16 @@ struct ChessView: View {
                     selectedSquare: vm.selectedSquare,
                     lastMove: vm.lastMove,
                     currentTurn: vm.currentTurn,
+                    isFlipped: flipped,
                     onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
                 )
                 .padding(.horizontal, DesignTokens.Spacing.sm)
 
                 ChessPlayerBar(
-                    player: vm.game?.whitePlayer,
+                    player: flipped ? vm.game?.blackPlayer : vm.game?.whitePlayer,
                     label: localization.t("chess.you"),
-                    isCurrentTurn: vm.currentTurn == .white && vm.gameStatus == .active,
-                    timeRemainingMs: vm.whiteTimeRemainingMs
+                    isCurrentTurn: vm.currentTurn == (flipped ? .black : .white) && vm.gameStatus == .active,
+                    timeRemainingMs: flipped ? vm.blackTimeRemainingMs : vm.whiteTimeRemainingMs
                 )
                 .padding(.horizontal, DesignTokens.Spacing.sm)
 
@@ -153,6 +157,8 @@ struct ChessView: View {
             repository: repos.chess,
             authTokenProvider: repos.authTokenProvider
         )
+        vm.localUserId = authManager.user?.id
+        vm.webHost = "bayit.tv"
         viewModel = vm
         let inviteVM = ChessInviteViewModel(repository: repos.chess)
         inviteViewModel = inviteVM
@@ -183,11 +189,5 @@ struct ChessView: View {
 
     private func retryLoad(_ vm: ChessViewModel) async {
         if let gameId { await vm.loadGame(gameId: gameId) }
-    }
-
-    private func openWhatsApp(message: String) {
-        guard let encoded = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://wa.me/?text=\(encoded)") else { return }
-        UIApplication.shared.open(url)
     }
 }

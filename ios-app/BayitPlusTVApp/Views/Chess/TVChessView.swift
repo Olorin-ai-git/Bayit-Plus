@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -6,7 +7,7 @@ import SwiftUI
 /// and full game board with focus-based d-pad navigation.
 struct TVChessView: View {
     @Environment(LocalizationManager.self) var localization
-
+    @Environment(AuthManager.self) private var authManager
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: ChessViewModel?
     @State private var showBotDifficulty = false
@@ -35,10 +36,12 @@ struct TVChessView: View {
 
     private func setupViewModel() {
         guard viewModel == nil else { return }
-        viewModel = ChessViewModel(
+        let vm = ChessViewModel(
             repository: repos.chess,
             authTokenProvider: repos.authTokenProvider
         )
+        vm.localUserId = authManager.user?.id
+        viewModel = vm
     }
 
     // MARK: - Lobby
@@ -145,10 +148,15 @@ struct TVChessView: View {
     // MARK: - Active Game
 
     private func gameContent(_ vm: ChessViewModel) -> some View {
-        VStack(spacing: TVDesignTokens.Spacing.lg) {
-            playerInfoBar(player: vm.game?.blackPlayer, label: "Opponent")
-            boardSection(vm)
-            playerInfoBar(player: vm.game?.whitePlayer, label: "You")
+        let flipped = vm.myColor == .black
+        return VStack(spacing: TVDesignTokens.Spacing.lg) {
+            playerInfoBar(
+                player: flipped ? vm.game?.whitePlayer : vm.game?.blackPlayer, label: "Opponent"
+            )
+            boardSection(vm, isFlipped: flipped)
+            playerInfoBar(
+                player: flipped ? vm.game?.blackPlayer : vm.game?.whitePlayer, label: "You"
+            )
             turnIndicator(vm)
             controlsSection(vm)
 
@@ -164,11 +172,12 @@ struct TVChessView: View {
         .padding(.vertical, TVDesignTokens.Spacing.lg)
     }
 
-    private func boardSection(_ vm: ChessViewModel) -> some View {
+    private func boardSection(_ vm: ChessViewModel, isFlipped: Bool) -> some View {
         TVChessBoardView(
             board: vm.board,
             selectedSquare: vm.selectedSquare,
             currentTurn: vm.currentTurn,
+            isFlipped: isFlipped,
             onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
         )
         .padding(.horizontal, TVDesignTokens.Spacing.xl)

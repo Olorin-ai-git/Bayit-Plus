@@ -137,8 +137,7 @@ struct TVDailyMissionsView: View {
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
             .opacity(mission.isClaimed ? 0.6 : 1.0)
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .disabled(mission.isClaimed || !mission.isCompleted || vm.isClaimingMissionId == mission.id)
     }
 

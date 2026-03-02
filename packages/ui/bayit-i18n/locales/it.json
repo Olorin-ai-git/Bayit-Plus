@@ -7039,6 +7039,15 @@
       "title": "Chat",
       "inputPlaceholder": "Scrivi un messaggio...",
       "botLimitReached": "Limite chat raggiunto per questa partita"
+    },
+    "invite": {
+      "title": "Invito a una partita di scacchi",
+      "subtitle": "Sei stato invitato a giocare a scacchi su Bayit+",
+      "codeLabel": "Codice partita:",
+      "instructions": "Scarica o apri l'app Bayit+ per unirti a questa partita.",
+      "appStore": "Scarica dall'App Store",
+      "googlePlay": "Disponibile su Google Play",
+      "footer": "Bayit+ - Streaming ebraico premium"
     }
   },
   "friends": {

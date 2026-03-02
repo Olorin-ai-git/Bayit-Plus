@@ -24,8 +24,7 @@ struct TVShabbatBannerView: View {
             } label: {
                 bannerContent(vm)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 

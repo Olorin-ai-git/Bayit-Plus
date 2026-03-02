@@ -81,7 +81,7 @@ struct TVMagicMirrorErrorView: View {
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
         }
     }
 }
@@ -106,7 +106,7 @@ struct TVMagicMirrorRefreshButton: View {
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
         }
-        .buttonStyle(.card)
+        .tvCardStyle()
         .focused($isFocused)
     }
 }

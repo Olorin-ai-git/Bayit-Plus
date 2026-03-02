@@ -43,6 +43,9 @@ proguard/
 # Android Profiling
 *.hprof
 
+# Kotlin
+.kotlin/
+
 # Gradle
 .gradle/
 gradle-app.setting

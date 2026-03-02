@@ -104,7 +104,7 @@
                                 .frame(maxWidth: .infinity)
                                 .padding(TVDesignTokens.Spacing.lg)
                         }
-                        .buttonStyle(.card)
+                        .tvCardStyle()
 
                         Button {
                             onSave()

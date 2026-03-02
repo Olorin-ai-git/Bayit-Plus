@@ -37,8 +37,7 @@ extension TVPodcastsView {
                     .background(DesignTokens.Glass.bg)
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
 
                 Button {
                     Task { await vm.refresh() }
@@ -62,8 +61,7 @@ extension TVPodcastsView {
                     .background(DesignTokens.Glass.bg)
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
                 .disabled(vm.isSyncing)
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -137,7 +135,6 @@ extension TVPodcastsView {
                 .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }

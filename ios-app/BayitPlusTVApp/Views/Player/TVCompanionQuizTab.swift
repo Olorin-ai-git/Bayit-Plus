@@ -104,8 +104,7 @@ struct TVCompanionQuizTab: View {
             .background(viewModel.showResults && isCorrect ? DesignTokens.Success.default.opacity(0.1) : DesignTokens.Glass.bgMedium)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
         .focused($focusedAnswer, equals: "\(question.id)-\(index)")
         .disabled(viewModel.showResults)
     }

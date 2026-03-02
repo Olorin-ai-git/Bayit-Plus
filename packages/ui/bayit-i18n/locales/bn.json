@@ -6782,6 +6782,15 @@
       "title": "চ্যাট",
       "inputPlaceholder": "একটি বার্তা লিখুন...",
       "botLimitReached": "এই গেমের জন্য চ্যাট সীমা পৌঁছে গেছে"
+    },
+    "invite": {
+      "title": "দাবা খেলার আমন্ত্রণ",
+      "subtitle": "আপনাকে Bayit+ এ দাবা খেলতে আমন্ত্রণ জানানো হয়েছে",
+      "codeLabel": "গেম কোড:",
+      "instructions": "এই গেমে যোগ দিতে Bayit+ অ্যাপ ডাউনলোড বা খুলুন।",
+      "appStore": "App Store থেকে ডাউনলোড করুন",
+      "googlePlay": "Google Play থেকে পান",
+      "footer": "Bayit+ - প্রিমিয়াম ইহুদি স্ট্রিমিং"
     }
   },
   "friends": {

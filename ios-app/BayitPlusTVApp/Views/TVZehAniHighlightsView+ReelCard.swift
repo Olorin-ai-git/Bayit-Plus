@@ -88,7 +88,7 @@
                 .foregroundStyle(DesignTokens.Primary.default)
                 .padding(TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
             .disabled(isSending)
         }
 

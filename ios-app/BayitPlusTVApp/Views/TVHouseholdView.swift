@@ -112,8 +112,7 @@ struct TVHouseholdView: View {
             .background(DesignTokens.Glass.bg)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func avatarView(_ member: HouseholdMember) -> some View {

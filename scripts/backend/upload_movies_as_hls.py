@@ -48,6 +48,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import get_settings
 from app.core.logging_config import get_logger
+from app.services.ffmpeg.conversion import convert_to_abr_hls
+from app.services.ffmpeg.hls_subtitle_generator import (
+    generate_master_m3u8_with_subtitles,
+)
 
 logger = get_logger(__name__)
 
@@ -144,79 +148,6 @@ def probe_video(file_path: str) -> Dict:
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
     return json.loads(result.stdout) if result.returncode == 0 else {}
-
-
-async def convert_to_hls(
-    input_path: str,
-    output_dir: str,
-    timeout: int = 14400,
-) -> Dict:
-    """Convert video to HLS format using ffmpeg."""
-    os.makedirs(output_dir, exist_ok=True)
-    playlist_path = os.path.join(output_dir, "playlist.m3u8")
-    segment_pattern = os.path.join(output_dir, "segment_%03d.ts")
-
-    cmd = [
-        "ffmpeg",
-        "-i", input_path,
-        "-c:v", "libx264",
-        "-preset", "fast",
-        "-crf", "23",
-        "-c:a", "aac",
-        "-b:a", "128k",
-        "-ac", "2",
-        "-hls_time", "10",
-        "-hls_list_size", "0",
-        "-hls_segment_filename", segment_pattern,
-        "-f", "hls",
-        "-y",
-        playlist_path,
-    ]
-
-    logger.info("  Starting ffmpeg HLS conversion...")
-    process = await asyncio.create_subprocess_exec(
-        *cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-
-    try:
-        _, stderr = await asyncio.wait_for(
-            process.communicate(), timeout=timeout
-        )
-    except asyncio.TimeoutError:
-        process.kill()
-        raise RuntimeError(
-            f"HLS conversion timed out after {timeout}s"
-        )
-
-    if process.returncode != 0:
-        raise RuntimeError(
-            f"ffmpeg failed: {stderr.decode()[-500:]}"
-        )
-
-    if not os.path.exists(playlist_path):
-        raise RuntimeError("playlist.m3u8 was not created")
-
-    segments = [f for f in os.listdir(output_dir) if f.endswith(".ts")]
-    total_size = sum(
-        os.path.getsize(os.path.join(output_dir, f))
-        for f in os.listdir(output_dir)
-    )
-
-    # Generate master.m3u8
-    master_path = os.path.join(output_dir, "master.m3u8")
-    with open(master_path, "w") as f:
-        f.write("#EXTM3U\n#EXT-X-VERSION:3\n\n")
-        f.write("#EXT-X-STREAM-INF:BANDWIDTH=2000000\n")
-        f.write("playlist.m3u8\n")
-
-    return {
-        "playlist_path": playlist_path,
-        "master_path": master_path,
-        "segment_count": len(segments),
-        "total_size_mb": total_size / (1024 * 1024),
-    }
 
 
 async def upload_hls_to_gcs(
@@ -356,11 +287,31 @@ async def process_movie(
     hls_dir = os.path.join(temp_dir, "hls")
 
     try:
-        result = await convert_to_hls(full_path, hls_dir)
+        result = await convert_to_abr_hls(full_path, hls_dir)
+        variants = result["variants"]
+        total_segments = result["total_segment_count"]
+
+        # Generate ABR master manifest
+        master_path = os.path.join(hls_dir, "master.m3u8")
+        generate_master_m3u8_with_subtitles(
+            video_playlist_name="v0_playlist.m3u8",
+            subtitle_files=[],
+            output_path=master_path,
+            variants=variants,
+        )
+
+        total_size = sum(
+            os.path.getsize(os.path.join(hls_dir, f))
+            for f in os.listdir(hls_dir)
+            if os.path.isfile(os.path.join(hls_dir, f))
+        )
+        total_size_mb = total_size / (1024 * 1024)
+
         logger.info(
-            "  HLS: %d segments, %.0fMB total",
-            result["segment_count"],
-            result["total_size_mb"],
+            "  HLS: %d segments across %d variants, %.0fMB total",
+            total_segments,
+            len(variants),
+            total_size_mb,
         )
 
         # Upload to GCS
@@ -414,7 +365,8 @@ async def process_movie(
                 "source_format": Path(filename).suffix.lstrip("."),
                 "source_size_mb": round(file_size_mb),
                 "duration_seconds": round(duration_s),
-                "hls_segment_count": result["segment_count"],
+                "hls_segment_count": total_segments,
+                "hls_variant_count": len(variants),
             },
             "updated_at": datetime.now(UTC),
         }

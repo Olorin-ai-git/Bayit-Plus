@@ -177,27 +177,31 @@ async def run_stage_transcode(state: ConversionState) -> bool:
         print("  [SKIP] Transcode stage already complete")
         return True
 
-    print("\n[STAGE 3/6] Transcoding to HLS...")
-    from app.services.ffmpeg.conversion import convert_to_hls
+    print("\n[STAGE 3/6] Transcoding to ABR HLS...")
+    from app.services.ffmpeg.conversion import convert_to_abr_hls
 
     source = state.state["local_source"]
     output_dir = state.state["hls_output_dir"]
 
     print(f"  Input: {source[:80]}...")
     print(f"  Output: {output_dir}")
-    print("  This may take a while (streaming + transcoding)...")
+    print("  This may take a while (multi-bitrate encoding)...")
 
     try:
-        result = await convert_to_hls(
+        result = await convert_to_abr_hls(
             input_path=source,
             output_dir=output_dir,
-            segment_duration=10,
-            playlist_name="playlist.m3u8",
+            segment_duration=6,
             timeout=28800,  # 8 hours max
         )
 
-        state.state["total_segments"] = result["segment_count"]
-        print(f"  [OK] Generated {result['segment_count']} segments")
+        state.state["variants"] = result["variants"]
+        state.state["total_segments"] = result["total_segment_count"]
+        variant_names = [v["name"] for v in result["variants"]]
+        print(
+            f"  [OK] Generated {result['total_segment_count']} segments "
+            f"across {len(result['variants'])} variants: {variant_names}"
+        )
 
         state.complete_stage("transcode")
         return True
@@ -274,9 +278,14 @@ subtitles_{lang}.vtt
         })
         print(f"    Generated: {lang} ({_get_language_label(lang)})")
 
-    # Generate master manifest with subtitles
-    _generate_master_manifest(output_dir, subtitle_files)
-    print(f"  [OK] Generated master manifest with {len(subtitle_files)} subtitle tracks")
+    # Generate ABR master manifest with subtitles and variants
+    variants = state.state.get("variants", [])
+    _generate_master_manifest(output_dir, subtitle_files, variants)
+    variant_count = len(variants) if variants else 1
+    print(
+        f"  [OK] Generated ABR master manifest with "
+        f"{variant_count} variant(s) and {len(subtitle_files)} subtitle track(s)"
+    )
 
     state.state["subtitle_files"] = subtitle_files
     state.complete_stage("subtitles")
@@ -436,8 +445,12 @@ def _get_content_type(filename: str) -> str:
     }.get(ext, "application/octet-stream")
 
 
-def _generate_master_manifest(output_dir: str, subtitle_files: list):
-    """Generate master HLS manifest with subtitle references."""
+def _generate_master_manifest(
+    output_dir: str,
+    subtitle_files: list,
+    variants: list = None,
+):
+    """Generate ABR master HLS manifest with variant and subtitle refs."""
     manifest = "#EXTM3U\n#EXT-X-VERSION:3\n\n"
 
     for sub in subtitle_files:
@@ -448,12 +461,25 @@ def _generate_master_manifest(output_dir: str, subtitle_files: list):
             f'URI="{sub["m3u8_file"]}"\n'
         )
 
-    manifest += "\n"
     if subtitle_files:
-        manifest += '#EXT-X-STREAM-INF:BANDWIDTH=2000000,SUBTITLES="subs"\n'
+        manifest += "\n"
+
+    has_subs = bool(subtitle_files)
+    subs_attr = ',SUBTITLES="subs"' if has_subs else ""
+
+    if variants:
+        for variant in variants:
+            manifest += (
+                f"#EXT-X-STREAM-INF:"
+                f"BANDWIDTH={variant['bandwidth']},"
+                f"RESOLUTION={variant['width']}x{variant['height']},"
+                f'CODECS="avc1.640029,mp4a.40.2"'
+                f"{subs_attr}\n"
+            )
+            manifest += f"{variant['playlist']}\n"
     else:
-        manifest += "#EXT-X-STREAM-INF:BANDWIDTH=2000000\n"
-    manifest += "playlist.m3u8\n"
+        manifest += f"#EXT-X-STREAM-INF:BANDWIDTH=2000000{subs_attr}\n"
+        manifest += "playlist.m3u8\n"
 
     with open(os.path.join(output_dir, "master.m3u8"), "w") as f:
         f.write(manifest)

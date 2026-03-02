@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "963B7732N5.tv.bayit.plus",
+        "paths": ["/chess/*"]
+      }
+    ]
+  }
+}

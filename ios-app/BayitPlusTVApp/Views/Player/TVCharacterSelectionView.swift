@@ -82,7 +82,7 @@
                 }
                 .padding(TVDesignTokens.Spacing.lg)
             }
-            .buttonStyle(.card)
+            .tvCardStyle()
         }
     }
 #endif

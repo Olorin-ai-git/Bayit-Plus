@@ -64,8 +64,7 @@
                 )
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
 
         var actionButtonsSection: some View {
@@ -81,8 +80,7 @@
                         .background(DesignTokens.Background.elevated)
                         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
 

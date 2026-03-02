@@ -85,16 +85,6 @@ struct TVCredentialPanel: View {
                 signInWithEmail()
             }
             .focused($focusedField, equals: .submit)
-            .shadow(
-                color: focusedField == .submit
-                    ? DesignTokens.Colors.Primary.base.opacity(0.6)
-                    : DesignTokens.Colors.Primary.base.opacity(0.2),
-                radius: focusedField == .submit ? 25 : 15,
-                x: 0,
-                y: focusedField == .submit ? 10 : 6
-            )
-            .scaleEffect(focusedField == .submit ? 1.05 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: focusedField)
 
             GlassButton(
                 localization.t("login.continueWithApple"),
@@ -106,16 +96,6 @@ struct TVCredentialPanel: View {
                 signInWithApple()
             }
             .focused($focusedField, equals: .apple)
-            .shadow(
-                color: focusedField == .apple
-                    ? DesignTokens.Colors.Primary.base.opacity(0.5)
-                    : .clear,
-                radius: 20,
-                x: 0,
-                y: 8
-            )
-            .scaleEffect(focusedField == .apple ? 1.05 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: focusedField)
         }
     }
 

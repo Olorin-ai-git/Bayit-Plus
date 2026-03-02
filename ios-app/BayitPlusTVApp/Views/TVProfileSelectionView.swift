@@ -150,7 +150,7 @@ private struct TVProfileButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .focusEffectDisabled()
-            .scaleEffect(isFocused ? 1.1 : 1.0)
+            .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
             .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                     .stroke(
@@ -160,7 +160,8 @@ private struct TVProfileButtonStyle: ButtonStyle {
             )
             .shadow(
                 color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
-                radius: 16, x: 0, y: isFocused ? 10 : 0
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0, y: isFocused ? 8 : 0
             )
             .animation(
                 .spring(duration: TVDesignTokens.Focus.animationDuration, bounce: 0.3),

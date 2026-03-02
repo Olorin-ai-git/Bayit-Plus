@@ -104,8 +104,7 @@ struct TVQuizResultsView: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.lg)
                 .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .focused($focusedButton, equals: .playAgain)
 
             Button {
@@ -117,8 +116,7 @@ struct TVQuizResultsView: View {
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .tvCardStyle()
             .focused($focusedButton, equals: .close)
         }
     }

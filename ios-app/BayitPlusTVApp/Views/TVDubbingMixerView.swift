@@ -81,10 +81,13 @@ private struct TVVolumeRow: View {
 
             GlassProgressBar(progress: Double(value))
                 .overlay(
-                    isFocused
-                        ? RoundedRectangle(cornerRadius: DesignTokens.Radius.full)
-                        .stroke(DesignTokens.Colors.Primary.light, lineWidth: 2)
-                        : nil
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.full)
+                        .stroke(
+                            isFocused
+                                ? DesignTokens.Glass.borderFocus
+                                : Color.clear,
+                            lineWidth: TVDesignTokens.Focus.ringWidth
+                        )
                 )
         }
         .padding(TVDesignTokens.Spacing.sm)

@@ -10,7 +10,9 @@ enum SubtitleMode: String, CaseIterable, Identifiable {
     case grammarFlip = "Grammar Flip"
     case slangSynthesis = "Slang Synthesis"
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var description: String {
         switch self {
@@ -107,13 +109,27 @@ struct TVSubtitleModePicker: View {
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                     .stroke(
                         isFocused
-                            ? DesignTokens.Primary.default
+                            ? DesignTokens.Glass.borderFocus
                             : Color.clear,
-                        lineWidth: 3
+                        lineWidth: TVDesignTokens.Focus.ringWidth
                     )
             )
-            .scaleEffect(isFocused ? 1.05 : 1.0)
-            .animation(.easeInOut(duration: 0.15), value: isFocused)
+            .shadow(
+                color: isFocused
+                    ? DesignTokens.Glass.purpleGlow : .clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0, y: isFocused ? 6 : 0
+            )
+            .scaleEffect(
+                isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0
+            )
+            .animation(
+                .spring(
+                    duration: TVDesignTokens.Focus.animationDuration,
+                    bounce: 0.2
+                ),
+                value: isFocused
+            )
         }
         .buttonStyle(.plain)
     }
