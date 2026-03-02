@@ -10,6 +10,7 @@ extension ChessViewModel {
                 gameCode: gameCode, authToken: token
             )
             startReceiving()
+            await loadChatHistory(gameCode: gameCode)
         } catch {
             logger.error("Chess WS connect failed", error: error)
         }
@@ -38,17 +39,23 @@ extension ChessViewModel {
             decodeGameState(payload)
         case "move":
             handleMoveMessage(payload)
+        case "chat":
+            handleChatMessage(payload)
         case "draw_offer":
             drawOffered = true
+        case "draw_declined":
+            drawOffered = false
         case "draw_response":
             drawOffered = false
         case "game_end":
             if let status = payload["status"] as? String {
                 gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
+                stopCountdown()
             }
         case "resign", "game_over":
             if let status = payload["status"] as? String {
                 gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
+                stopCountdown()
             }
         default:
             break
@@ -72,8 +79,25 @@ extension ChessViewModel {
         if let status = payload["status"] as? String {
             gameStatus = ChessGameStatus(rawValue: status) ?? gameStatus
         }
+        if let whiteMs = payload["white_time_remaining_ms"] as? Int {
+            whiteTimeRemainingMs = whiteMs
+        }
+        if let blackMs = payload["black_time_remaining_ms"] as? Int {
+            blackTimeRemainingMs = blackMs
+        }
         if let moveDict = payload["move"] as? [String: Any] {
             appendMoveFromJSON(moveDict)
+        }
+        if game?.timeControl != nil, gameStatus == .active {
+            startCountdown()
+        }
+    }
+
+    @MainActor
+    private func handleChatMessage(_ payload: [String: Any]) {
+        guard let payloadData = try? JSONSerialization.data(withJSONObject: payload) else { return }
+        if let msg = try? WebSocketDecoder.shared.decode(ChessChatMessage.self, from: payloadData) {
+            chatMessages.append(msg)
         }
     }
 
@@ -87,6 +111,15 @@ extension ChessViewModel {
             )
         } else {
             moveHistory.append(ChessMove(moveNumber: moveNum, whiteMove: notation, blackMove: nil))
+        }
+    }
+
+    @MainActor
+    private func loadChatHistory(gameCode: String) async {
+        do {
+            chatMessages = try await repository.loadChatHistory(gameCode: gameCode)
+        } catch {
+            logger.error("Failed to load chat history", error: error)
         }
     }
 

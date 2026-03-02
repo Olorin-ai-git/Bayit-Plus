@@ -3900,7 +3900,22 @@
     "whiteTurn": "Turno del bianco",
     "you": "Tu",
     "code": "Code: {{code}}",
-    "copyCode": "Copia Codice"
+    "copyCode": "Copia Codice",
+    "timeout": "Tempo scaduto!",
+    "timeControl": {
+      "label": "Controllo tempo",
+      "unlimited": "Illimitato",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Scrivi un messaggio...",
+      "botLimitReached": "Limite chat raggiunto per questa partita"
+    }
   },
   "children": {
     "title": "Bambini",

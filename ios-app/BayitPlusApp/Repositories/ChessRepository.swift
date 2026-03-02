@@ -4,44 +4,29 @@ import Foundation
 /// Repository protocol for chess game API operations and WebSocket connectivity.
 protocol ChessRepository: Sendable {
     /// Create a new chess game with the specified mode and color.
-    /// - Parameters:
-    ///   - color: Preferred piece color (white or black).
-    ///   - gameMode: Game mode (pvp or bot).
-    ///   - botDifficulty: Difficulty level when playing against a bot.
-    /// - Returns: The created chess game.
-    func createGame(color: String, gameMode: String, botDifficulty: String?) async throws -> ChessGame
+    func createGame(
+        color: String, gameMode: String, botDifficulty: String?, timeControl: Int?
+    ) async throws -> ChessGame
 
     /// Fetch the current state of a chess game.
-    /// - Parameter gameId: The game identifier.
-    /// - Returns: Current game state.
     func getGameState(gameId: String) async throws -> ChessGame
 
     /// Join an existing chess game by game code.
-    /// - Parameter gameCode: The 6-character game code.
-    /// - Returns: The joined chess game.
     func joinGame(gameCode: String) async throws -> ChessGame
 
     /// Invite a friend to a chess game.
-    /// - Parameters:
-    ///   - friendName: The friend's display name.
-    ///   - color: Preferred piece color.
-    ///   - timeControl: Optional time control in seconds.
-    /// - Returns: The created chess game.
     func invitePlayer(friendName: String, color: String, timeControl: String?) async throws -> ChessGame
 
     /// Make a chess move via REST API (fallback when WebSocket is unavailable).
-    /// - Parameters:
-    ///   - gameCode: The game code.
-    ///   - from: Source square in algebraic notation (e.g. "e2").
-    ///   - to: Target square in algebraic notation (e.g. "e4").
-    /// - Returns: Updated game state.
     func makeMove(gameCode: String, from: String, to: String) async throws -> ChessGame
 
+    /// Load chat history for a chess game.
+    func loadChatHistory(gameCode: String) async throws -> [ChessChatMessage]
+
+    /// Send a chat message via REST (fallback when WebSocket unavailable).
+    func sendChatMessage(gameCode: String, message: String) async throws -> ChessChatMessage
+
     /// Open a WebSocket connection for real-time chess moves.
-    /// - Parameters:
-    ///   - gameCode: The game code for the WebSocket path.
-    ///   - authToken: Bearer token for the auth handshake.
-    /// - Returns: A `WebSocketConnection` for send/receive.
     func connectWebSocket(
         gameCode: String,
         authToken: String
@@ -65,15 +50,18 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
 
     // MARK: - ChessRepository
 
-    func createGame(color: String, gameMode: String, botDifficulty: String?) async throws -> ChessGame {
+    func createGame(
+        color: String, gameMode: String, botDifficulty: String?, timeControl: Int?
+    ) async throws -> ChessGame {
         struct Body: Encodable, Sendable {
             let color: String
             let gameMode: String
             let botDifficulty: String?
+            let timeControl: Int?
         }
         let envelope = try await client.post(
             "/api/v1/chess/create",
-            body: Body(color: color, gameMode: gameMode, botDifficulty: botDifficulty),
+            body: Body(color: color, gameMode: gameMode, botDifficulty: botDifficulty, timeControl: timeControl),
             as: GameEnvelope.self
         )
         return envelope.game
@@ -128,6 +116,24 @@ final class APIChessRepository: ChessRepository, @unchecked Sendable {
             as: MoveEnvelope.self
         )
         return envelope.game
+    }
+
+    func loadChatHistory(gameCode: String) async throws -> [ChessChatMessage] {
+        struct ChatEnvelope: Decodable, Sendable { let messages: [ChessChatMessage] }
+        let envelope = try await client.get(
+            "/api/v1/chess/\(gameCode)/chat",
+            as: ChatEnvelope.self
+        )
+        return envelope.messages.reversed()
+    }
+
+    func sendChatMessage(gameCode: String, message: String) async throws -> ChessChatMessage {
+        struct Body: Encodable, Sendable { let message: String }
+        return try await client.post(
+            "/api/v1/chess/\(gameCode)/chat",
+            body: Body(message: message),
+            as: ChessChatMessage.self
+        )
     }
 
     func connectWebSocket(

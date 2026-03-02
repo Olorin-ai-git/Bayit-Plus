@@ -2,12 +2,12 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Main chess screen — routes between lobby, loading, error, and active game.
+/// Main chess screen -- routes between lobby, loading, error, and active game.
 struct ChessView: View {
     let gameId: String?
 
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @State private var viewModel: ChessViewModel?
 
     var body: some View {
@@ -41,18 +41,6 @@ struct ChessView: View {
         }
     }
 
-    private var loadingState: some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
-            ProgressView()
-                .tint(DesignTokens.Gradient.ctaStart)
-                .scaleEffect(1.2)
-            Text(localization.t("chess.waitingForOpponent"))
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
     // MARK: - Active Game
 
     private func activeGameContent(_ vm: ChessViewModel) -> some View {
@@ -65,13 +53,15 @@ struct ChessView: View {
                 ChessPlayerBar(
                     player: vm.game?.blackPlayer,
                     label: localization.t("chess.opponent"),
-                    isCurrentTurn: vm.currentTurn == .black && vm.gameStatus == .active
+                    isCurrentTurn: vm.currentTurn == .black && vm.gameStatus == .active,
+                    timeRemainingMs: vm.blackTimeRemainingMs
                 )
                 .padding(.horizontal, DesignTokens.Spacing.sm)
 
                 ChessBoardView(
                     board: vm.board,
                     selectedSquare: vm.selectedSquare,
+                    lastMove: vm.lastMove,
                     currentTurn: vm.currentTurn,
                     onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
                 )
@@ -80,7 +70,8 @@ struct ChessView: View {
                 ChessPlayerBar(
                     player: vm.game?.whitePlayer,
                     label: localization.t("chess.you"),
-                    isCurrentTurn: vm.currentTurn == .white && vm.gameStatus == .active
+                    isCurrentTurn: vm.currentTurn == .white && vm.gameStatus == .active,
+                    timeRemainingMs: vm.whiteTimeRemainingMs
                 )
                 .padding(.horizontal, DesignTokens.Spacing.sm)
 
@@ -99,51 +90,24 @@ struct ChessView: View {
                     ChessMoveHistoryView(moves: vm.moveHistory)
                         .padding(.horizontal, DesignTokens.Spacing.sm)
                 }
+
+                if vm.game?.chatEnabled == true {
+                    ChessChatPanel(
+                        messages: vm.chatMessages,
+                        currentUserId: vm.currentUserId ?? "",
+                        isBotGame: vm.game?.gameMode == .bot,
+                        botChatLimitReached: vm.botChatLimitReached,
+                        isExpanded: Binding(
+                            get: { vm.isChatExpanded },
+                            set: { vm.isChatExpanded = $0 }
+                        ),
+                        onSend: { text in Task { await vm.sendChatMessage(text) } }
+                    )
+                    .padding(.horizontal, DesignTokens.Spacing.sm)
+                }
             }
             .padding(.vertical, DesignTokens.Spacing.md)
             .padding(.bottom, 100)
-        }
-    }
-
-    // MARK: - Subviews
-
-    private func gameCodeChip(_ code: String) -> some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
-            Text(localization.t("chess.gameCode") + ": \(code)")
-                .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
-            GlassButton(localization.t("chess.copyCode"), variant: .ghost) {
-                UIPasteboard.general.string = code
-            }
-        }
-        .padding(.horizontal, DesignTokens.Spacing.base)
-    }
-
-    private func statusIndicator(_ vm: ChessViewModel) -> some View {
-        Group {
-            if vm.gameStatus == .active {
-                let turn = vm.currentTurn == .white
-                    ? localization.t("chess.whiteTurn")
-                    : localization.t("chess.blackTurn")
-                Text(turn)
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                    .foregroundStyle(DesignTokens.Gradient.ctaStart)
-            } else {
-                Text(statusLabel(vm.gameStatus))
-                    .font(.system(size: DesignTokens.FontSize.base, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-            }
-        }
-        .accessibilityLabel("Game status")
-    }
-
-    private func statusLabel(_ status: ChessGameStatus) -> String {
-        switch status {
-        case .checkmate: return localization.t("chess.checkmate")
-        case .stalemate: return localization.t("chess.stalemate")
-        case .draw: return localization.t("chess.draw")
-        case .resigned: return localization.t("chess.resigned")
-        default: return localization.t("chess.gameOver")
         }
     }
 

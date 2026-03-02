@@ -463,6 +463,8 @@ class Settings(BaseSettings):
     CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
     CLAUDE_MAX_TOKENS_SHORT: int = 200
     CLAUDE_MAX_TOKENS_LONG: int = 500
+    CHESS_BOT_CHAT_LIMIT: int = 10
+    CHESS_BOT_CHAT_MAX_TOKENS: int = 150
 
     # Subtitle AI Processing (Nikud & Shoresh)
     SUBTITLE_AI_MODEL: str = Field(

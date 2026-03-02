@@ -2,24 +2,33 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Glass-themed chess lobby with hero image, mode selection, and join game.
+/// Glass-themed chess lobby with hero image, mode selection, time control, and join game.
 struct ChessLobbyView: View {
     let vm: ChessViewModel
     @Environment(LocalizationManager.self) private var localization
     @State private var selectedMode: GameMode = .pvp
     @State private var selectedDifficulty: String = "medium"
     @State private var selectedColor: String = "white"
+    @State private var selectedTimeControl: Int?
 
     private enum GameMode { case pvp, bot }
+
+    private let timeControls: [(label: String, value: Int?)] = [
+        ("chess.timeControl.unlimited", nil),
+        ("chess.timeControl.bullet1", 60),
+        ("chess.timeControl.blitz3", 180),
+        ("chess.timeControl.blitz5", 300),
+        ("chess.timeControl.rapid10", 600),
+        ("chess.timeControl.classical30", 1800),
+    ]
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 heroSection
-                modeSelectionSection
-                    .padding(.top, -DesignTokens.Spacing.xxl)
+                modeSelectionSection.padding(.top, -DesignTokens.Spacing.xxl)
                 actionSection
-                joinSection
+                ChessLobbyJoinView(vm: vm)
             }
             .padding(.bottom, 120)
         }
@@ -63,7 +72,6 @@ struct ChessLobbyView: View {
                 icon: "person.2.fill",
                 isSelected: selectedMode == .pvp
             ) { selectedMode = .pvp }
-
             modeCard(
                 title: localization.t("chess.playVsBot"),
                 icon: "cpu",
@@ -102,15 +110,19 @@ struct ChessLobbyView: View {
 
     private var actionSection: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            if selectedMode == .bot {
-                difficultyPicker
-            }
+            if selectedMode == .bot { difficultyPicker }
             colorPicker
+            timeControlPicker
 
             GlassButton(localization.t("chess.createGame"), variant: .primary) {
                 let difficulty = selectedMode == .bot ? selectedDifficulty : nil
                 let mode = selectedMode == .pvp ? "pvp" : "bot"
-                Task { await vm.createGame(color: selectedColor, gameMode: mode, botDifficulty: difficulty) }
+                Task {
+                    await vm.createGame(
+                        color: selectedColor, gameMode: mode,
+                        botDifficulty: difficulty, timeControl: selectedTimeControl
+                    )
+                }
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.base)
@@ -122,7 +134,6 @@ struct ChessLobbyView: View {
             Text(localization.t("chess.difficulty"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
-
             HStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(["easy", "medium", "hard"], id: \.self) { level in
                     chipButton(
@@ -139,17 +150,30 @@ struct ChessLobbyView: View {
             Text(localization.t("chess.chooseColor"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
-
             HStack(spacing: DesignTokens.Spacing.sm) {
-                colorChip(label: localization.t("chess.white"), value: "white", accent: DesignTokens.Gradient.ctaStart)
-                colorChip(label: localization.t("chess.black"), value: "black", accent: DesignTokens.Primary.p500)
+                chipButton(label: localization.t("chess.white"), isSelected: selectedColor == "white",
+                           accent: DesignTokens.Gradient.ctaStart) { selectedColor = "white" }
+                chipButton(label: localization.t("chess.black"), isSelected: selectedColor == "black",
+                           accent: DesignTokens.Primary.p500) { selectedColor = "black" }
             }
         }
     }
 
-    private func colorChip(label: String, value: String, accent: Color) -> some View {
-        chipButton(label: label, isSelected: selectedColor == value, accent: accent) {
-            selectedColor = value
+    private var timeControlPicker: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            Text(localization.t("chess.timeControl.label"))
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                .foregroundStyle(DesignTokens.Text.secondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: DesignTokens.Spacing.sm) {
+                    ForEach(timeControls, id: \.label) { tc in
+                        chipButton(
+                            label: localization.t(tc.label),
+                            isSelected: selectedTimeControl == tc.value
+                        ) { selectedTimeControl = tc.value }
+                    }
+                }
+            }
         }
     }
 
@@ -168,51 +192,5 @@ struct ChessLobbyView: View {
                 .overlay(Capsule().stroke(isSelected ? accent.opacity(0.6) : Color.clear, lineWidth: 1))
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - Join Section
-
-    private var joinSection: some View {
-        VStack(spacing: DesignTokens.Spacing.md) {
-            divider
-            GlassButton(localization.t("chess.joinGame"), variant: .secondary) {
-                vm.showingJoinSheet = true
-            }
-
-            if vm.showingJoinSheet {
-                joinCodeEntry
-            }
-        }
-        .padding(.horizontal, DesignTokens.Spacing.base)
-        .padding(.top, DesignTokens.Spacing.lg)
-    }
-
-    private var divider: some View {
-        HStack(spacing: DesignTokens.Spacing.md) {
-            Rectangle().fill(DesignTokens.Glass.border).frame(height: 1)
-            Text("or").font(.system(size: DesignTokens.FontSize.xs))
-                .foregroundStyle(DesignTokens.Text.muted)
-            Rectangle().fill(DesignTokens.Glass.border).frame(height: 1)
-        }
-    }
-
-    private var joinCodeEntry: some View {
-        GlassCard {
-            VStack(spacing: DesignTokens.Spacing.md) {
-                Text(localization.t("chess.enterGameCode"))
-                    .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                HStack(spacing: DesignTokens.Spacing.sm) {
-                    GlassTextField("XXXXXX", text: Binding(
-                        get: { vm.joinCode },
-                        set: { vm.joinCode = $0.uppercased() }
-                    ))
-                    GlassButton(localization.t("chess.join"), variant: .primary) {
-                        Task { await vm.joinGame(code: vm.joinCode) }
-                    }
-                    .disabled(vm.joinCode.count != 6)
-                }
-            }
-        }
     }
 }

@@ -4855,7 +4855,11 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4868,7 +4872,10 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "features": [
@@ -8194,7 +8201,22 @@
     "you": "あなた",
     "opponent": "相手",
     "acceptDraw": "引き分け承諾",
-    "declineDraw": "引き分け拒否"
+    "declineDraw": "引き分け拒否",
+    "timeout": "時間切れ！",
+    "timeControl": {
+      "label": "持ち時間",
+      "unlimited": "無制限",
+      "bullet1": "1分",
+      "blitz3": "3分",
+      "blitz5": "5分",
+      "rapid10": "10分",
+      "classical30": "30分"
+    },
+    "chat": {
+      "title": "チャット",
+      "inputPlaceholder": "メッセージを入力...",
+      "botLimitReached": "このゲームのチャット制限に達しました"
+    }
   },
   "friends": {
     "title": "友達＆対戦相手",

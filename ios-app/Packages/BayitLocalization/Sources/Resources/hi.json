@@ -3659,7 +3659,22 @@
     "whiteTurn": "सफ़ेद की बारी",
     "you": "आप",
     "code": "Code: {{code}}",
-    "copyCode": "कोड कॉपी करें"
+    "copyCode": "कोड कॉपी करें",
+    "timeout": "समय समाप्त!",
+    "timeControl": {
+      "label": "समय नियंत्रण",
+      "unlimited": "असीमित",
+      "bullet1": "1 मिनट",
+      "blitz3": "3 मिनट",
+      "blitz5": "5 मिनट",
+      "rapid10": "10 मिनट",
+      "classical30": "30 मिनट"
+    },
+    "chat": {
+      "title": "चैट",
+      "inputPlaceholder": "संदेश लिखें...",
+      "botLimitReached": "इस गेम के लिए चैट सीमा पूरी हो गई"
+    }
   },
   "children": {
     "title": "बच्चे",

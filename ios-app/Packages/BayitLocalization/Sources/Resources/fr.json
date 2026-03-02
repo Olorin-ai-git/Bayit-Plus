@@ -3714,7 +3714,21 @@
     "whiteTurn": "Tour des blancs",
     "you": "Vous",
     "code": "Code: {{code}}",
-    "copyCode": "Copier le Code"
+    "copyCode": "Copier le Code",
+    "timeControl": {
+      "label": "Controle du temps",
+      "unlimited": "Illimite",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Tapez un message...",
+      "botLimitReached": "Limite de chat atteinte pour cette partie"
+    }
   },
   "children": {
     "title": "Enfants",

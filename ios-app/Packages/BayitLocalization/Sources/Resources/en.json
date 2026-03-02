@@ -3679,7 +3679,22 @@
     "whiteTurn": "White's Turn",
     "you": "You",
     "code": "Code: {{code}}",
-    "copyCode": "Copy Code"
+    "copyCode": "Copy Code",
+    "timeout": "Time Out!",
+    "timeControl": {
+      "label": "Time Control",
+      "unlimited": "Unlimited",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Type a message...",
+      "botLimitReached": "Chat limit reached for this game"
+    }
   },
   "children": {
     "title": "Kids",

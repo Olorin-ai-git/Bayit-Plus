@@ -11,7 +11,7 @@ struct ChessPieceView: View {
         Image(imageName)
             .resizable()
             .scaledToFit()
-            .padding(0)
+            .shadow(color: .black.opacity(0.4), radius: 2, x: 1, y: 2)
             .accessibilityLabel(accessibilityDescription)
     }
 

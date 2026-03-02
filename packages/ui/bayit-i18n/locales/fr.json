@@ -4003,7 +4003,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -6199,7 +6202,7 @@
     "youLose": "Vous avez perdu",
     "draw": "Nulle",
     "resignation": "Abandon",
-    "timeout": "Temps écoulé",
+    "timeout": "Temps ecoule!",
     "gameMode": "Mode de jeu",
     "playVsFriend": "Jouer contre un ami",
     "playVsBot": "Jouer contre le bot",
@@ -6259,7 +6262,21 @@
     "waitingForOpponent": "En attente de l'adversaire...",
     "challenge": "Défier",
     "playedAsWhite": "Joué avec les Blancs",
-    "playedAsBlack": "Joué avec les Noirs"
+    "playedAsBlack": "Joué avec les Noirs",
+    "timeControl": {
+      "label": "Controle du temps",
+      "unlimited": "Illimite",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Tapez un message...",
+      "botLimitReached": "Limite de chat atteinte pour cette partie"
+    }
   },
   "clock": {
     "shabbat": "Shabbat",

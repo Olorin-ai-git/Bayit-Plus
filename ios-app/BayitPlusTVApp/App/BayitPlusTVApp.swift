@@ -52,7 +52,11 @@ struct BayitPlusTVApp: App {
             logger: apiLogger
         )
 
-        let wsManager = WebSocketManager(configuration: networkConfig, logger: apiLogger)
+        let wsManager = WebSocketManager(
+            configuration: networkConfig,
+            logger: apiLogger,
+            authTokenProvider: authMgr.authTokenProvider
+        )
 
         let repos = TVRepositoryProvider(
             client: client,

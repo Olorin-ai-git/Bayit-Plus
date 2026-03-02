@@ -3427,7 +3427,22 @@
     "whiteTurn": "白の番",
     "you": "あなた",
     "code": "Code: {{code}}",
-    "copyCode": "コードをコピー"
+    "copyCode": "コードをコピー",
+    "timeout": "時間切れ！",
+    "timeControl": {
+      "label": "持ち時間",
+      "unlimited": "無制限",
+      "bullet1": "1分",
+      "blitz3": "3分",
+      "blitz5": "5分",
+      "rapid10": "10分",
+      "classical30": "30分"
+    },
+    "chat": {
+      "title": "チャット",
+      "inputPlaceholder": "メッセージを入力...",
+      "botLimitReached": "このゲームのチャット制限に達しました"
+    }
   },
   "children": {
     "title": "キッズ",

@@ -3653,7 +3653,22 @@
     "whiteTurn": "白方回合",
     "you": "你",
     "code": "Code: {{code}}",
-    "copyCode": "复制代码"
+    "copyCode": "复制代码",
+    "timeout": "超时！",
+    "timeControl": {
+      "label": "时间控制",
+      "unlimited": "无限制",
+      "bullet1": "1分钟",
+      "blitz3": "3分钟",
+      "blitz5": "5分钟",
+      "rapid10": "10分钟",
+      "classical30": "30分钟"
+    },
+    "chat": {
+      "title": "聊天",
+      "inputPlaceholder": "输入消息...",
+      "botLimitReached": "此游戏的聊天限制已达到"
+    }
   },
   "children": {
     "title": "儿童",

@@ -1,7 +1,4 @@
-"""
-WebSocket handler for real-time chess game communication.
-Uses auth-message pattern (no token in URL) and per-connection rate limiting.
-"""
+"""WebSocket handler for real-time chess game communication."""
 
 import asyncio
 import json
@@ -23,6 +20,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 active_game_connections: dict[str, list[WebSocket]] = {}
+_timeout_watchdogs: dict[str, asyncio.Task] = {}
 
 
 async def broadcast_to_game(game_code: str, message: dict) -> int:
@@ -65,8 +63,12 @@ async def execute_bot_move(game: ChessGame, game_code: str) -> None:
         )
         await broadcast_to_game(game_code, {
             "type": "move",
-            "data": {"move": move_rec.model_dump(mode="json"), "board_fen": game.board_fen,
-                     "current_turn": game.current_turn.value, "status": game.status.value},
+            "data": {
+                "move": move_rec.model_dump(mode="json"), "board_fen": game.board_fen,
+                "current_turn": game.current_turn.value, "status": game.status.value,
+                "white_time_remaining_ms": game.white_player.time_remaining_ms if game.white_player else None,
+                "black_time_remaining_ms": game.black_player.time_remaining_ms if game.black_player else None,
+            },
         })
         if game.status.value in ["checkmate", "stalemate", "draw"]:
             winner = ("white" if move_rec.player.value == "white" else "black") if game.status.value == "checkmate" else None
@@ -106,6 +108,10 @@ async def chess_websocket(websocket: WebSocket, game_code: str):
 
     try:
         await websocket.send_json(_build_game_state(game))
+
+        if game.time_control and game.status == "active" and game_code not in _timeout_watchdogs:
+            from app.api.routes.websocket_chess_handlers import timeout_watchdog
+            _timeout_watchdogs[game_code] = asyncio.create_task(timeout_watchdog(game_code, broadcast_to_game))
 
         if (game.game_mode == GameMode.BOT and game.status == "active"
                 and game.white_player and game.white_player.is_bot and len(game.move_history) == 0):
@@ -161,6 +167,8 @@ def _build_game_state(game: ChessGame) -> dict:
             "board_fen": game.board_fen,
             "move_history": [m.model_dump(mode="json") for m in game.move_history],
             "chat_enabled": game.chat_enabled, "voice_enabled": game.voice_enabled,
+            "time_control": game.time_control,
+            "last_move_at": game.last_move_at.isoformat() if game.last_move_at else None,
             "game_mode": game.game_mode.value, "bot_difficulty": game.bot_difficulty.value if game.bot_difficulty else None,
         },
     }
@@ -174,6 +182,9 @@ def _remove_connection(game_code: str, websocket: WebSocket):
             pass
         if not active_game_connections.get(game_code):
             active_game_connections.pop(game_code, None)
+            watchdog = _timeout_watchdogs.pop(game_code, None)
+            if watchdog:
+                watchdog.cancel()
 
 
 async def _update_player_disconnect(game_code: str, user_id: str):

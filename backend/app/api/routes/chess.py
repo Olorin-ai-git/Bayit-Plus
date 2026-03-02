@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
-from app.models.chess import (BotDifficulty, ChessChatMessage, ChessGame,
+from app.models.chess import (BotDifficulty, ChessGame,
                               GameMode, PlayerColor)
 from app.models.user import User
 from app.services.chess_service import chess_service
@@ -120,26 +120,6 @@ async def get_game(
             status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
         )
     return game.model_dump(mode="json")
-
-
-@router.get("/{game_code}/chat")
-async def get_chat_history(
-    game_code: str, current_user: User = Depends(get_current_active_user)
-):
-    """Get chat history for a chess game."""
-    game = await ChessGame.find_one({"game_code": game_code})
-    if not game:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Game not found"
-        )
-
-    messages = (
-        await ChessChatMessage.find({"game_id": str(game.id)})
-        .sort("-timestamp")
-        .to_list()
-    )
-
-    return {"messages": [msg.model_dump(mode="json") for msg in messages]}
 
 
 class MoveRequest(BaseModel):

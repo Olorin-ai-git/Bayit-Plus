@@ -3678,7 +3678,22 @@
     "whiteTurn": "תור הלבן",
     "you": "אתה",
     "code": "Code: {{code}}",
-    "copyCode": "העתק קוד"
+    "copyCode": "העתק קוד",
+    "timeout": "!הזמן נגמר",
+    "timeControl": {
+      "label": "בקרת זמן",
+      "unlimited": "ללא הגבלה",
+      "bullet1": "דקה 1",
+      "blitz3": "3 דקות",
+      "blitz5": "5 דקות",
+      "rapid10": "10 דקות",
+      "classical30": "30 דקות"
+    },
+    "chat": {
+      "title": "צ'אט",
+      "inputPlaceholder": "כתוב הודעה...",
+      "botLimitReached": "הגעת למגבלת הצ'אט למשחק זה"
+    }
   },
   "children": {
     "title": "ילדים",

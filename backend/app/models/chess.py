@@ -86,6 +86,7 @@ class ChessGame(Document):
     livekit_room_name: Optional[str] = None
     livekit_room_token: Optional[str] = None
     time_control: Optional[int] = None  # Time per player in seconds (null = untimed)
+    last_move_at: Optional[datetime] = None  # When the current player's clock started
     game_mode: GameMode = GameMode.PVP  # "pvp" or "bot"
     bot_difficulty: Optional[BotDifficulty] = None  # "easy", "medium", "hard"
     created_at: datetime = Field(default_factory=datetime.utcnow)

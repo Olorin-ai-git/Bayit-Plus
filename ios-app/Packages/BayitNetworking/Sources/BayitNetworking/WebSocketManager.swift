@@ -7,12 +7,12 @@ import Foundation
 /// `WebSocketManager+Reconnection.swift`.
 /// All social features (DMs, Watch Parties, Chess) route through this manager.
 public actor WebSocketManager {
-
     // MARK: - Dependencies
 
     public let configuration: NetworkConfiguration
     public let logger: APILogger
     private let session: URLSession
+    let authTokenProvider: AuthTokenProvider?
 
     // MARK: - State
 
@@ -23,18 +23,22 @@ public actor WebSocketManager {
 
     struct ReconnectInfo: Sendable {
         let url: URL
-        let authToken: String
     }
 
     // MARK: - Init
 
-    public init(configuration: NetworkConfiguration, logger: APILogger) {
+    public init(
+        configuration: NetworkConfiguration,
+        logger: APILogger,
+        authTokenProvider: AuthTokenProvider? = nil
+    ) {
         self.configuration = configuration
         self.logger = logger
+        self.authTokenProvider = authTokenProvider
 
         let sessionConfig = URLSessionConfiguration.default
         sessionConfig.timeoutIntervalForRequest = configuration.timeout
-        self.session = URLSession(configuration: sessionConfig)
+        session = URLSession(configuration: sessionConfig)
     }
 
     // MARK: - Public API
@@ -48,7 +52,7 @@ public actor WebSocketManager {
         guard connections.count < configuration.webSocketMaxConcurrentConnections else {
             logger.warning("Max concurrent WebSocket connections reached", metadata: [
                 "limit": "\(configuration.webSocketMaxConcurrentConnections)",
-                "active": "\(connections.count)"
+                "active": "\(connections.count)",
             ])
             throw APIError.unknown(
                 statusCode: nil,
@@ -62,7 +66,7 @@ public actor WebSocketManager {
             id: connectionId, url: url, task: task, logger: logger
         )
         connections[connectionId] = connection
-        reconnectInfo[connectionId] = ReconnectInfo(url: url, authToken: authToken)
+        reconnectInfo[connectionId] = ReconnectInfo(url: url)
         reconnectAttempts[connectionId] = 0
 
         task.resume()
@@ -74,7 +78,7 @@ public actor WebSocketManager {
         logger.info("WebSocket connected with auth handshake", metadata: [
             "connectionId": connectionId.uuidString,
             "url": url.absoluteString,
-            "activeConnections": "\(connections.count)"
+            "activeConnections": "\(connections.count)",
         ])
 
         startPingTimerIfNeeded()
@@ -90,7 +94,7 @@ public actor WebSocketManager {
 
         logger.info("WebSocket removed", metadata: [
             "connectionId": id.uuidString,
-            "remaining": "\(connections.count)"
+            "remaining": "\(connections.count)",
         ])
         stopPingTimerIfIdle()
     }
@@ -142,7 +146,7 @@ public actor WebSocketManager {
                 try await connection.sendRaw(message: "{\"type\":\"ping\"}")
             } catch {
                 logger.warning("Ping failed, scheduling reconnect", metadata: [
-                    "connectionId": id.uuidString
+                    "connectionId": id.uuidString,
                 ])
                 await reconnect(id: id)
             }

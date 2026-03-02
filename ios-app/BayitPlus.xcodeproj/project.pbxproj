@@ -1529,6 +1529,16 @@
 		FFB8DB4C7B77C3589078B3CF /* TriviaFactsOverlayView+BannerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E39E39473BC9DD32A839FBC /* TriviaFactsOverlayView+BannerViews.swift */; };
 		FFCD63AF55BBBD0DFEAF8550 /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D34B71E80921238BB4D0FF4 /* LeaderboardView.swift */; };
 		FFF2134FC283A3E57BB80475 /* WidgetDockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507234F17F50AB5A59DA3739 /* WidgetDockViewModel.swift */; };
+		AA0001000000000000000002 /* ChessChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* ChessChatMessage.swift */; };
+		AA0001000000000000000003 /* ChessChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* ChessChatMessage.swift */; };
+		AA0002000000000000000002 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000001 /* ChessViewModel+Actions.swift */; };
+		AA0002000000000000000003 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000001 /* ChessViewModel+Actions.swift */; };
+		AA0003000000000000000002 /* ChessLobbyJoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000001 /* ChessLobbyJoinView.swift */; };
+		AA0003000000000000000003 /* ChessLobbyJoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000001 /* ChessLobbyJoinView.swift */; };
+		AA0004000000000000000002 /* ChessChatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004000000000000000001 /* ChessChatPanel.swift */; };
+		AA0004000000000000000003 /* ChessChatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004000000000000000001 /* ChessChatPanel.swift */; };
+		AA0005000000000000000002 /* ChessView+Subviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005000000000000000001 /* ChessView+Subviews.swift */; };
+		AA0005000000000000000003 /* ChessView+Subviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005000000000000000001 /* ChessView+Subviews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2792,6 +2802,11 @@
 		FEEF77D8E51167B825A868CD /* RegisterView+FormFields.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "RegisterView+FormFields.swift"; sourceTree = "<group>"; };
 		FF3E821D5A151AE97C35F02F /* TVInsufficientCreditsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVInsufficientCreditsModal.swift; sourceTree = "<group>"; };
 		FF59107261711224AA031B50 /* TVChannelChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVChannelChatView.swift; sourceTree = "<group>"; };
+		AA0001000000000000000001 /* ChessChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessChatMessage.swift; sourceTree = "<group>"; };
+		AA0002000000000000000001 /* ChessViewModel+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessViewModel+Actions.swift"; sourceTree = "<group>"; };
+		AA0003000000000000000001 /* ChessLobbyJoinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyJoinView.swift; sourceTree = "<group>"; };
+		AA0004000000000000000001 /* ChessChatPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessChatPanel.swift; sourceTree = "<group>"; };
+		AA0005000000000000000001 /* ChessView+Subviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessView+Subviews.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3180,11 +3195,14 @@
 			children = (
 				088CB98B46241D416BB31B33 /* ChessBoardView.swift */,
 				C96B15B9ABA7BFAD5A60A8D5 /* ChessControlsView.swift */,
+				AA0004000000000000000001 /* ChessChatPanel.swift */,
 				4DC11691162606B9B206F6BB /* ChessLobbyView.swift */,
+				AA0003000000000000000001 /* ChessLobbyJoinView.swift */,
 				9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */,
 				6166FDC4128A5E96808D0562 /* ChessPieceView.swift */,
 				CA9E137E352D798639AF3A47 /* ChessPlayerBar.swift */,
 				C81EE2EE340D6BDFBFFFBCB6 /* ChessView.swift */,
+				AA0005000000000000000001 /* ChessView+Subviews.swift */,
 			);
 			path = Chess;
 			sourceTree = "<group>";
@@ -4333,6 +4351,7 @@
 				4F7FB95B423AA13EEB39F130 /* ChapterModels.swift */,
 				271F557FA59E82F6B24B831C /* ChatModels.swift */,
 				947C5C98003880872D8CD3C9 /* ChessGame.swift */,
+				AA0001000000000000000001 /* ChessChatMessage.swift */,
 				162EC7D233A9AB36061D9536 /* ContentModels.swift */,
 				34FADC5EE26C8D9E39F9706D /* ContentPickerItem.swift */,
 				7330275592A992D9613EDE68 /* ContentType.swift */,
@@ -4988,6 +5007,7 @@
 				8ADEAACE3CBD806C867EE97C /* ChatbotViewModel.swift */,
 				C875C4D18727249818456160 /* ChessViewModel.swift */,
 				276CCEF9B659D6492252B1C6 /* ChessViewModel+WebSocket.swift */,
+				AA0002000000000000000001 /* ChessViewModel+Actions.swift */,
 				6B178A68BCBD1CD66E9673F4 /* ChildrenViewModel.swift */,
 				C69F88D46B9CCA0661445C6D /* CollectionDetailViewModel.swift */,
 				F2C12F53F87C93E1E6F3E688 /* ContentPickerViewModel.swift */,
@@ -5322,6 +5342,11 @@
 				FD4DA5CFAD9C23EFD416A790 /* ChessRepository.swift in Sources */,
 				3A89C9E9F3D78373F204CADE /* ChessViewModel+WebSocket.swift in Sources */,
 				9AF1B88741A1CDB7F5815E16 /* ChessViewModel.swift in Sources */,
+				AA0005000000000000000002 /* ChessView+Subviews.swift in Sources */,
+				AA0004000000000000000002 /* ChessChatPanel.swift in Sources */,
+				AA0003000000000000000002 /* ChessLobbyJoinView.swift in Sources */,
+				AA0002000000000000000002 /* ChessViewModel+Actions.swift in Sources */,
+				AA0001000000000000000002 /* ChessChatMessage.swift in Sources */,
 				B817EA5B2E55C7EEE45E91E4 /* ChildrenViewModel.swift in Sources */,
 				13A3249348449181DEF454C1 /* CollectionDetailViewModel.swift in Sources */,
 				A66A6F8EB5FD89C7E67AF2FA /* ContentModels.swift in Sources */,
@@ -6085,6 +6110,11 @@
 				E20131D0583F4DD5D9C6BC13 /* ChessView.swift in Sources */,
 				FE3D6FB99057AA336B12DCE9 /* ChessViewModel+WebSocket.swift in Sources */,
 				E41F037A573F7A5EBA72FB31 /* ChessViewModel.swift in Sources */,
+				AA0005000000000000000003 /* ChessView+Subviews.swift in Sources */,
+				AA0004000000000000000003 /* ChessChatPanel.swift in Sources */,
+				AA0003000000000000000003 /* ChessLobbyJoinView.swift in Sources */,
+				AA0002000000000000000003 /* ChessViewModel+Actions.swift in Sources */,
+				AA0001000000000000000003 /* ChessChatMessage.swift in Sources */,
 				72DF87D55C8A0E150655F179 /* ChildrenView.swift in Sources */,
 				46E76BFDD5DBCDD472314CD6 /* ChildrenViewModel.swift in Sources */,
 				9709B55C46DD21CB06AD7F41 /* CityContentRow.swift in Sources */,

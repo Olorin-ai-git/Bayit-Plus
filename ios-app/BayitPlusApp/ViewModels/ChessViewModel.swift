@@ -36,8 +36,14 @@ final class ChessViewModel {
     var isLoading = false
     var error: String?
     var drawOffered = false
+    var whiteTimeRemainingMs: Int?
+    var blackTimeRemainingMs: Int?
+    var chatMessages: [ChessChatMessage] = []
+    var isChatExpanded = false
+    private var countdownTask: Task<Void, Never>?
 
     var selectedSquare: (row: Int, col: Int)?
+    var lastMove: (from: (row: Int, col: Int), to: (row: Int, col: Int))?
     var showingJoinSheet: Bool = false
     var joinCode: String = ""
 
@@ -52,130 +58,40 @@ final class ChessViewModel {
         self.authTokenProvider = authTokenProvider
     }
 
-    // MARK: - Public Actions
-
-    @MainActor
-    func loadGame(gameId: String) async {
-        isLoading = true
-        error = nil
-        do {
-            let fetched = try await repository.getGameState(gameId: gameId)
-            applyGameState(fetched)
-            logger.info("Game loaded", context: ["gameId": gameId])
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-            logger.error("Failed to load game", error: error)
-        }
-        isLoading = false
-    }
-
-    @MainActor
-    func createGame(color: String, gameMode: String, botDifficulty: String?) async {
-        isLoading = true
-        error = nil
-        do {
-            let created = try await repository.createGame(
-                color: color, gameMode: gameMode, botDifficulty: botDifficulty
-            )
-            applyGameState(created)
-            await connectWebSocket(gameCode: created.gameCode)
-            logger.info("Game created", context: ["gameCode": created.gameCode])
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-            logger.error("Failed to create game", error: error)
-        }
-        isLoading = false
-    }
-
-    @MainActor
-    func joinGame(code: String) async {
-        isLoading = true
-        error = nil
-        do {
-            let joined = try await repository.joinGame(gameCode: code)
-            applyGameState(joined)
-            await connectWebSocket(gameCode: joined.gameCode)
-            showingJoinSheet = false
-            joinCode = ""
-            logger.info("Game joined", context: ["gameCode": joined.gameCode])
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-            logger.error("Failed to join game", error: error)
-        }
-        isLoading = false
-    }
-
-    @MainActor
-    func sendMove(from: (Int, Int), to: (Int, Int)) async {
-        let fromNotation = squareNotation(row: from.0, col: from.1)
-        let toNotation = squareNotation(row: to.0, col: to.1)
-
-        // Try WebSocket first, fall back to REST API
-        if let conn = connection, await conn.state == .connected {
-            let payload = "{\"type\":\"move\",\"from\":\"\(fromNotation)\",\"to\":\"\(toNotation)\"}"
-            await sendWSPayload(payload)
-        } else if let gameCode = game?.gameCode {
-            await sendMoveViaREST(gameCode: gameCode, from: fromNotation, to: toNotation)
-        }
-        selectedSquare = nil
-    }
-
-    @MainActor
-    private func sendMoveViaREST(gameCode: String, from: String, to: String) async {
-        do {
-            let updated = try await repository.makeMove(gameCode: gameCode, from: from, to: to)
-            applyGameState(updated)
-            logger.info("Move via REST", context: ["from": from, "to": to])
-
-            // Poll for bot response after a delay
-            if updated.gameMode == .bot, updated.status == .active {
-                Task {
-                    try? await Task.sleep(nanoseconds: 1_500_000_000)
-                    await pollGameState(gameCode: gameCode)
-                }
-            }
-        } catch {
-            logger.error("REST move failed", error: error)
-            self.error = "Move failed"
-        }
-    }
-
-    @MainActor
-    private func pollGameState(gameCode: String) async {
-        do {
-            let refreshed = try await repository.getGameState(gameId: gameCode)
-            applyGameState(refreshed)
-        } catch {
-            logger.error("Poll game state failed", error: error)
-        }
-    }
-
-    @MainActor func resign() async {
-        await sendWSPayload("{\"type\":\"resign\"}")
-    }
-
-    @MainActor func offerDraw() async {
-        await sendWSPayload("{\"type\":\"offer_draw\"}")
-        drawOffered = true
-    }
-
-    @MainActor func respondToDraw(accept: Bool) async {
-        await sendWSPayload("{\"type\":\"draw_response\",\"accept\":\(accept)}")
-        drawOffered = false
-    }
-
     @MainActor
     func disconnect() async {
+        stopCountdown()
         receiveTask?.cancel()
         receiveTask = nil
         if let conn = connection { await conn.disconnect() }
         connection = nil
+    }
+
+    // MARK: - Countdown Timer
+
+    func startCountdown() {
+        stopCountdown()
+        countdownTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                guard let self else { return }
+                await self.tickCountdown()
+            }
+        }
+    }
+
+    func stopCountdown() {
+        countdownTask?.cancel()
+        countdownTask = nil
+    }
+
+    @MainActor
+    private func tickCountdown() {
+        if currentTurn == .white, let ms = whiteTimeRemainingMs {
+            whiteTimeRemainingMs = max(0, ms - 100)
+        } else if currentTurn == .black, let ms = blackTimeRemainingMs {
+            blackTimeRemainingMs = max(0, ms - 100)
+        }
     }
 
     // MARK: - FEN Parsing
@@ -185,7 +101,14 @@ final class ChessViewModel {
         self.game = game
         currentTurn = game.currentTurn
         gameStatus = game.status
+        whiteTimeRemainingMs = game.whitePlayer?.timeRemainingMs
+        blackTimeRemainingMs = game.blackPlayer?.timeRemainingMs
         parseFEN(game.boardFen)
+        if game.timeControl != nil, game.status == .active {
+            startCountdown()
+        } else {
+            stopCountdown()
+        }
     }
 
     @MainActor
@@ -206,6 +129,18 @@ final class ChessViewModel {
             }
         }
         board = newBoard
+    }
+
+    // MARK: - Computed Properties
+
+    var currentUserId: String? {
+        guard let game else { return nil }
+        if game.whitePlayer?.isBot == false { return game.whitePlayer?.userId }
+        return game.blackPlayer?.userId
+    }
+
+    var botChatLimitReached: Bool {
+        chatMessages.contains { $0.isSystem }
     }
 
     // MARK: - Helpers

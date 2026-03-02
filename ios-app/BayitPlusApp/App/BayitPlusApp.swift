@@ -66,7 +66,11 @@ struct BayitPlusApp: App {
             logger: apiLogger
         )
 
-        let wsManager = WebSocketManager(configuration: networkConfig, logger: apiLogger)
+        let wsManager = WebSocketManager(
+            configuration: networkConfig,
+            logger: apiLogger,
+            authTokenProvider: authMgr.authTokenProvider
+        )
 
         let repos = RepositoryProvider(
             client: client,

@@ -69,10 +69,10 @@ struct TVChessBoardView: View {
 
     private func pieceScale(_ piece: Character) -> CGFloat {
         switch piece.lowercased() {
-        case "k", "q": return 1.35
-        case "r": return 1.2
-        case "b", "n": return 1.1
-        default: return 0.85
+        case "k", "q": return 1.15
+        case "r": return 1.1
+        case "b", "n": return 1.05
+        default: return 1.0
         }
     }
 

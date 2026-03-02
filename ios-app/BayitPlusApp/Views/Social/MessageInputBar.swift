@@ -35,7 +35,7 @@ struct MessageInputBar: View {
             icon: Image(systemName: "paperplane.fill"),
             action: handleSend
         )
-        .frame(width: 72)
+        .fixedSize()
         .accessibilityLabel("Send message")
         .accessibilityHint(
             text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

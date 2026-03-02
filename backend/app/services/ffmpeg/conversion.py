@@ -602,7 +602,7 @@ async def convert_to_hls(
             "-crf",
             "16",
             "-preset",
-            "veryslow",
+            "slow",
             "-tune",
             "grain",
             "-profile:v",

@@ -3728,7 +3728,21 @@
     "whiteTurn": "Turno de blancas",
     "you": "Tú",
     "code": "Code: {{code}}",
-    "copyCode": "Copiar Código"
+    "copyCode": "Copiar Código",
+    "timeControl": {
+      "label": "Control de tiempo",
+      "unlimited": "Sin limite",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Escribe un mensaje...",
+      "botLimitReached": "Limite de chat alcanzado para este juego"
+    }
   },
   "children": {
     "title": "Niños",

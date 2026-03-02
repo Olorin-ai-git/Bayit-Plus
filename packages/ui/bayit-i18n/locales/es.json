@@ -3097,7 +3097,7 @@
     "youWin": "¡Ganaste!",
     "youLose": "Perdiste",
     "resignation": "Resignación",
-    "timeout": "Tiempo agotado",
+    "timeout": "Tiempo agotado!",
     "findOpponent": "Buscar Oponente",
     "cancelSearch": "Cancelar Búsqueda",
     "check": "Jaque",
@@ -3132,7 +3132,21 @@
     "you": "Tú",
     "opponent": "Oponente",
     "acceptDraw": "Aceptar Tablas",
-    "declineDraw": "Rechazar Tablas"
+    "declineDraw": "Rechazar Tablas",
+    "timeControl": {
+      "label": "Control de tiempo",
+      "unlimited": "Sin limite",
+      "bullet1": "1 min",
+      "blitz3": "3 min",
+      "blitz5": "5 min",
+      "rapid10": "10 min",
+      "classical30": "30 min"
+    },
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Escribe un mensaje...",
+      "botLimitReached": "Limite de chat alcanzado para este juego"
+    }
   },
   "children": {
     "title": "Niños",
@@ -5132,7 +5146,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -5144,7 +5162,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",

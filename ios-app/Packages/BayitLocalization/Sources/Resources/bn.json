@@ -3647,7 +3647,22 @@
     "whiteTurn": "সাদার পালা",
     "you": "আপনি",
     "code": "Code: {{code}}",
-    "copyCode": "কোড কপি করুন"
+    "copyCode": "কোড কপি করুন",
+    "timeout": "সময় শেষ!",
+    "timeControl": {
+      "label": "সময় নিয়ন্ত্রণ",
+      "unlimited": "সীমাহীন",
+      "bullet1": "১ মিনিট",
+      "blitz3": "৩ মিনিট",
+      "blitz5": "৫ মিনিট",
+      "rapid10": "১০ মিনিট",
+      "classical30": "৩০ মিনিট"
+    },
+    "chat": {
+      "title": "চ্যাট",
+      "inputPlaceholder": "একটি বার্তা লিখুন...",
+      "botLimitReached": "এই গেমের জন্য চ্যাট সীমা পৌঁছে গেছে"
+    }
   },
   "children": {
     "title": "শিশু",
