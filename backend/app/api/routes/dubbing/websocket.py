@@ -389,7 +389,10 @@ async def dubbing_websocket_endpoint(websocket: WebSocket, session_id: str):
             return
 
         user_id = payload.get("sub")
-        user = await User.get(user_id)
+        # RS256 tokens: sub is auth service user ID, not Bayit+ _id
+        user = await User.find_one({"auth_service_user_id": user_id})
+        if user is None:
+            user = await User.get(user_id)
         if not user or not user.is_active:
             await websocket.send_json(
                 {"type": "error", "error": "User not found or inactive"}

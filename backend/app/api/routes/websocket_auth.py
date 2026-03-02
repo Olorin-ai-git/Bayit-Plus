@@ -62,7 +62,11 @@ async def authenticate_websocket(
         await _close_with_error(websocket, "Invalid token payload", 4001)
         return None, True
 
-    user = await User.get(user_id)
+    # RS256 tokens: sub is the auth service user ID, not the Bayit+ _id.
+    # Mirror get_current_user() from security.py.
+    user = await User.find_one({"auth_service_user_id": user_id})
+    if user is None:
+        user = await User.get(user_id)
     if not user or not user.is_active:
         await _close_with_error(websocket, "User not found or inactive", 4001)
         return None, True
