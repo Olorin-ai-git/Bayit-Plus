@@ -193,7 +193,7 @@ async def run_stage_transcode(state: ConversionState) -> bool:
             output_dir=output_dir,
             segment_duration=10,
             playlist_name="playlist.m3u8",
-            timeout=14400,  # 4 hours max
+            timeout=28800,  # 8 hours max
         )
 
         state.state["total_segments"] = result["segment_count"]
@@ -292,6 +292,11 @@ async def run_stage_upload(state: ConversionState) -> bool:
     print("\n[STAGE 5/6] Uploading to GCS...")
     from google.cloud import storage as gcs_storage
     from app.core.config import settings
+
+    # Clear stale credentials path so GCS client falls back to ADC
+    creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
+    if creds_path and not os.path.exists(creds_path):
+        os.environ.pop("GOOGLE_APPLICATION_CREDENTIALS", None)
 
     output_dir = state.state["hls_output_dir"]
     title = state.state["title"]

@@ -31,6 +31,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+    }
 }
 
 dependencies {
@@ -70,6 +74,7 @@ dependencies {
 
     // Testing
     testImplementation(libs.bundles.testing)
+    testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.hilt.testing)
     kspTest(libs.hilt.compiler)
 
