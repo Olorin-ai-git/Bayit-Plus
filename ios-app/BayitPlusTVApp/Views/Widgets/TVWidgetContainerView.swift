@@ -93,6 +93,7 @@
                     )
             }
             .buttonStyle(WidgetCompactButtonStyle())
+            .focusEffectDisabled()
             .accessibilityLabel("Minimize \(title)")
         }
     }
@@ -118,6 +119,7 @@
 
         var body: some View {
             configuration.label
+                .focusEffectDisabled()
                 .overlay(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
                         .stroke(
@@ -129,8 +131,7 @@
                 .scaleEffect(isPressed ? 0.96 : 1.0)
                 .shadow(
                     color: isFocused
-                        ? DesignTokens.Glass.purpleGlow.opacity(0.4)
-                        : Color.clear,
+                        ? DesignTokens.Glass.purpleGlow : Color.clear,
                     radius: 8,
                     x: 0,
                     y: isFocused ? 4 : 0

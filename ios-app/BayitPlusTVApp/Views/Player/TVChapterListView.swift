@@ -29,6 +29,7 @@ struct TVChapterListView: View {
                                 chapterRow(chapter)
                             }
                             .buttonStyle(TVChapterButtonStyle())
+                            .focusEffectDisabled()
                             .id(chapter.stableId)
                         }
                     }
@@ -168,6 +169,7 @@ private struct TVChapterButtonContent: View {
 
     var body: some View {
         configuration.label
+            .focusEffectDisabled()
             .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
                     .stroke(
@@ -179,8 +181,7 @@ private struct TVChapterButtonContent: View {
             .scaleEffect(isPressed ? 0.97 : 1.0)
             .shadow(
                 color: isFocused
-                    ? DesignTokens.Primary.default.opacity(0.3)
-                    : .clear,
+                    ? DesignTokens.Glass.purpleGlow : .clear,
                 radius: isFocused ? TVDesignTokens.Focus.shadowRadius : 0
             )
             .animation(

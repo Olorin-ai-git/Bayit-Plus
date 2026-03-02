@@ -127,6 +127,7 @@ struct TVAIFeaturesPanel: View {
                 ))
         }
         .buttonStyle(AIFeatureCardStyle())
+        .focusEffectDisabled()
         .accessibilityLabel("Change AI language: \(currentLanguage)")
     }
 
@@ -154,6 +155,7 @@ struct TVAIFeaturesPanel: View {
             )
         }
         .buttonStyle(AIFeatureCardStyle())
+        .focusEffectDisabled()
         .accessibilityLabel("\(label): \(isActive ? "On" : "Off")")
     }
 }

@@ -37,6 +37,7 @@ struct PlayerControlButtonContent: View {
 
     var body: some View {
         configuration.label
+            .focusEffectDisabled()
             .padding(TVDesignTokens.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
@@ -53,8 +54,7 @@ struct PlayerControlButtonContent: View {
             .scaleEffect(isPressed ? 0.95 : 1.0)
             .shadow(
                 color: isFocused
-                    ? DesignTokens.Glass.purpleGlow.opacity(0.6)
-                    : Color.clear,
+                    ? DesignTokens.Glass.purpleGlow : Color.clear,
                 radius: TVDesignTokens.Focus.shadowRadius,
                 x: 0,
                 y: isFocused ? 8 : 0

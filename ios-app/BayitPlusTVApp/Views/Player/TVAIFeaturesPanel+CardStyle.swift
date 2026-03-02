@@ -21,17 +21,20 @@ struct AIFeatureCardContent: View {
 
     var body: some View {
         configuration.label
+            .focusEffectDisabled()
             .padding(TVDesignTokens.Spacing.sm)
-            .background(
+            .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                    .fill(isFocused ? Color.white.opacity(0.15) : Color.clear)
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
             )
             .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
             .scaleEffect(isPressed ? 0.95 : 1.0)
             .shadow(
                 color: isFocused
-                    ? Color.black.opacity(0.4)
-                    : Color.clear,
+                    ? DesignTokens.Glass.purpleGlow : Color.clear,
                 radius: isFocused ? TVDesignTokens.Focus.shadowRadius : 0,
                 x: 0,
                 y: isFocused ? 5 : 0

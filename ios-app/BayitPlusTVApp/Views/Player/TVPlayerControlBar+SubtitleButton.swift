@@ -49,6 +49,7 @@ extension TVPlayerControlBar {
             .clipped()
         }
         .buttonStyle(PlayerControlButtonStyle())
+        .focusEffectDisabled()
         .accessibilityLabel(subtitleAccessibilityLabel)
     }
 
@@ -84,6 +85,7 @@ extension TVPlayerControlBar {
             .frame(width: 120, height: 80)
         }
         .buttonStyle(PlayerControlButtonStyle())
+        .focusEffectDisabled()
         .accessibilityLabel(label)
     }
 }

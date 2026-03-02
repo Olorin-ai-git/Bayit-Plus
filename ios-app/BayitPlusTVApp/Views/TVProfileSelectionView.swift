@@ -120,6 +120,7 @@ private struct TVProfileCard: View {
             }
         }
         .buttonStyle(TVProfileButtonStyle())
+        .focusEffectDisabled()
     }
 
     private var initials: String {
@@ -148,9 +149,17 @@ private struct TVProfileButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .focusEffectDisabled()
             .scaleEffect(isFocused ? 1.1 : 1.0)
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+            )
             .shadow(
-                color: isFocused ? DesignTokens.Glass.purpleGlow.opacity(0.6) : .clear,
+                color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
                 radius: 16, x: 0, y: isFocused ? 10 : 0
             )
             .animation(

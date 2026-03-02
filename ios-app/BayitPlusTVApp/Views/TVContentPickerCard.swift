@@ -43,6 +43,7 @@
                 )
             }
             .buttonStyle(TVContentPickerCardStyle())
+            .focusEffectDisabled()
         }
 
         private var thumbnailView: some View {
@@ -76,9 +77,17 @@
 
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
+                .focusEffectDisabled()
                 .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                        .stroke(
+                            isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                            lineWidth: TVDesignTokens.Focus.ringWidth
+                        )
+                )
                 .shadow(
-                    color: isFocused ? DesignTokens.Glass.purpleGlow.opacity(0.5) : .clear,
+                    color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
                     radius: TVDesignTokens.Focus.shadowRadius,
                     x: 0, y: isFocused ? 8 : 0
                 )

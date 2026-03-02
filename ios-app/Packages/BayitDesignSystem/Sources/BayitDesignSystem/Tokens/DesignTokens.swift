@@ -114,7 +114,7 @@ public enum DesignTokens {
         public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.60)
         public static let purpleLight = Color(hex: 0x7E22CE).opacity(0.12)
         public static let purpleStrong = Color(hex: 0x7E22CE).opacity(0.22)
-        public static let purpleGlow = Color.black.opacity(0.20)
+        public static let purpleGlow = Color(hex: 0x7E22CE).opacity(0.40)
     }
 
     public enum Text {
