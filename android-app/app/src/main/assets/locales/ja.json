@@ -3670,6 +3670,17 @@
     "blackCaptured": "黒の取った駒",
     "online": "オンライン",
     "offline": "オフライン",
-    "joinByGameCode": "ゲームコードで参加"
+    "joinByGameCode": "ゲームコードで参加",
+    "timeout": "時間切れ",
+    "drawOffered": "引き分け提案",
+    "chat.title": "チャット",
+    "chat.inputPlaceholder": "メッセージを入力...",
+    "timeControl": "持ち時間",
+    "unlimited": "無制限",
+    "bullet1": "1分",
+    "blitz3": "3分",
+    "blitz5": "5分",
+    "rapid10": "10分",
+    "classical30": "30分"
   }
 }

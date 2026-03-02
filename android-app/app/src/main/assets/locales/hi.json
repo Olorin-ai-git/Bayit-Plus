@@ -2632,6 +2632,17 @@
     "blackCaptured": "काले ने पकड़ा",
     "online": "ऑनलाइन",
     "offline": "ऑफलाइन",
-    "joinByGameCode": "गेम कोड से जुड़ें"
+    "joinByGameCode": "गेम कोड से जुड़ें",
+    "timeout": "समय समाप्त",
+    "drawOffered": "ड्रॉ का प्रस्ताव",
+    "chat.title": "चैट",
+    "chat.inputPlaceholder": "संदेश लिखें...",
+    "timeControl": "समय नियंत्रण",
+    "unlimited": "असीमित",
+    "bullet1": "1 मिनट",
+    "blitz3": "3 मिनट",
+    "blitz5": "5 मिनट",
+    "rapid10": "10 मिनट",
+    "classical30": "30 मिनट"
   }
 }

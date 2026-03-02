@@ -2781,6 +2781,17 @@
     "blackCaptured": "Catturati dal Nero",
     "online": "Online",
     "offline": "Offline",
-    "joinByGameCode": "Unisciti con codice partita"
+    "joinByGameCode": "Unisciti con codice partita",
+    "timeout": "Tempo scaduto",
+    "drawOffered": "Patta offerta",
+    "chat.title": "Chat",
+    "chat.inputPlaceholder": "Scrivi un messaggio...",
+    "timeControl": "Controllo del tempo",
+    "unlimited": "Illimitato",
+    "bullet1": "1 min",
+    "blitz3": "3 min",
+    "blitz5": "5 min",
+    "rapid10": "10 min",
+    "classical30": "30 min"
   }
 }

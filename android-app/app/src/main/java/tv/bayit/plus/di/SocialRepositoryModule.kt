@@ -23,8 +23,7 @@ object SocialRepositoryModule {
     @Provides @Singleton
     fun provideChessRepository(
         client: BayitApiClient,
-        webSocketManager: WebSocketManager,
-    ): ChessRepository = ApiChessRepository(client, webSocketManager)
+    ): ChessRepository = ApiChessRepository(client)
 
     @Provides @Singleton
     fun provideDirectMessageRepository(

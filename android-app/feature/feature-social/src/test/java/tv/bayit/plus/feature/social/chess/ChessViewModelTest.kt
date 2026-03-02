@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.social.chess
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
@@ -46,12 +47,14 @@ class ChessViewModelTest {
         chessRepository = chessRepository,
         chessWebSocketHandler = chessWebSocketHandler,
         logger = logger,
+        savedStateHandle = SavedStateHandle(),
     )
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { chessWebSocketHandler.connect(any()) } returns flowOf()
+        coEvery { chessRepository.loadChatHistory(any()) } returns BayitResult.Success(emptyList())
     }
 
     @AfterEach
@@ -71,12 +74,12 @@ class ChessViewModelTest {
     @Test
     fun `createGame success transitions to GameActive`() = runTest {
         val game = buildGame()
-        coEvery { chessRepository.createGame(any(), any(), any()) } returns BayitResult.Success(game)
+        coEvery { chessRepository.createGame(any(), any(), any(), any()) } returns BayitResult.Success(game)
 
         val vm = buildViewModel()
         vm.uiState.test {
             assertEquals(ChessUiState.Lobby, awaitItem())
-            vm.createGame("white", "pvp", null)
+            vm.createGame("white", "pvp", null, null)
             assertEquals(ChessUiState.Loading, awaitItem())
             val active = awaitItem() as ChessUiState.GameActive
             assertEquals(game, active.game)
@@ -88,12 +91,12 @@ class ChessViewModelTest {
     @Test
     fun `createGame failure emits Error state`() = runTest {
         val error = RuntimeException("Network error")
-        coEvery { chessRepository.createGame(any(), any(), any()) } returns BayitResult.Error(error)
+        coEvery { chessRepository.createGame(any(), any(), any(), any()) } returns BayitResult.Error(error)
 
         val vm = buildViewModel()
         vm.uiState.test {
             awaitItem() // Lobby
-            vm.createGame("white", "pvp", null)
+            vm.createGame("white", "pvp", null, null)
             awaitItem() // Loading
             val errorState = awaitItem() as ChessUiState.Error
             assertTrue(errorState.message.isNotBlank())
@@ -120,11 +123,11 @@ class ChessViewModelTest {
     @Test
     fun `tapSquare first tap selects square with piece`() = runTest {
         val game = buildGame()
-        coEvery { chessRepository.createGame(any(), any(), any()) } returns BayitResult.Success(game)
+        coEvery { chessRepository.createGame(any(), any(), any(), any()) } returns BayitResult.Success(game)
         every { chessWebSocketHandler.connect(any()) } returns flowOf()
 
         val vm = buildViewModel()
-        vm.createGame("white", "pvp", null)
+        vm.createGame("white", "pvp", null, null)
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = vm.uiState.value as ChessUiState.GameActive
@@ -138,12 +141,12 @@ class ChessViewModelTest {
     @Test
     fun `tapSquare second tap sends move and clears selection`() = runTest {
         val game = buildGame()
-        coEvery { chessRepository.createGame(any(), any(), any()) } returns BayitResult.Success(game)
+        coEvery { chessRepository.createGame(any(), any(), any(), any()) } returns BayitResult.Success(game)
         every { chessWebSocketHandler.connect(any()) } returns flowOf()
         every { chessWebSocketHandler.send(any()) } returns true
 
         val vm = buildViewModel()
-        vm.createGame("white", "pvp", null)
+        vm.createGame("white", "pvp", null, null)
         testDispatcher.scheduler.advanceUntilIdle()
 
         vm.tapSquare(6, 0)
@@ -157,13 +160,13 @@ class ChessViewModelTest {
     @Test
     fun `drawOffer event sets drawOffered true`() = runTest {
         val game = buildGame()
-        coEvery { chessRepository.createGame(any(), any(), any()) } returns BayitResult.Success(game)
+        coEvery { chessRepository.createGame(any(), any(), any(), any()) } returns BayitResult.Success(game)
         every { chessWebSocketHandler.connect(any()) } returns flowOf(ChessWsEvent.DrawOffer)
 
         val vm = buildViewModel()
         vm.uiState.test {
             awaitItem() // Lobby
-            vm.createGame("white", "pvp", null)
+            vm.createGame("white", "pvp", null, null)
             awaitItem() // Loading
             val active = awaitItem() as ChessUiState.GameActive
             assertTrue(!active.drawOffered)

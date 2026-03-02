@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,12 +22,16 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
+private const val LOW_TIME_THRESHOLD_MS = 30_000L
+
 @Composable
 internal fun ChessPlayerInfoView(
     player: ChessPlayer?,
     label: String,
     isYou: Boolean,
     modifier: Modifier = Modifier,
+    timeRemainingMs: Long? = null,
+    isCurrentTurn: Boolean = false,
 ) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -36,30 +41,43 @@ internal fun ChessPlayerInfoView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = player?.userName ?: if (isYou) bayitString("chess.you") else label,
-                color = DesignTokens.Colors.Text.primary,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = DesignTokens.FontSize.base,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = player?.userName ?: if (isYou) bayitString("chess.you") else label,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = DesignTokens.FontSize.base,
+                )
+                if (isCurrentTurn) {
+                    TurnBadge()
+                }
+            }
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                player?.timeRemainingMs?.let { ms ->
+                val displayMs = timeRemainingMs ?: player?.timeRemainingMs
+                displayMs?.let { ms ->
                     val seconds = ms / 1000
                     val minutes = seconds / 60
                     val secs = seconds % 60
+                    val isLowTime = ms <= LOW_TIME_THRESHOLD_MS
                     Text(
                         text = "%d:%02d".format(minutes, secs),
-                        color = DesignTokens.Colors.Text.secondary,
+                        color = if (isLowTime) DesignTokens.Colors.Semantic.error
+                        else DesignTokens.Colors.Text.secondary,
+                        fontWeight = if (isLowTime) FontWeight.Bold else FontWeight.Normal,
                         fontSize = DesignTokens.FontSize.sm,
                     )
                 }
 
                 val isConnected = player?.isConnected ?: false
-                val statusDesc = if (isConnected) bayitString("chess.online") else bayitString("chess.offline")
+                val statusDesc = if (isConnected) bayitString("chess.online")
+                else bayitString("chess.offline")
                 Box(
                     modifier = Modifier
                         .size(10.dp)
@@ -72,5 +90,24 @@ internal fun ChessPlayerInfoView(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TurnBadge() {
+    Box(
+        modifier = Modifier
+            .background(
+                color = DesignTokens.Colors.Primary.p500,
+                shape = RoundedCornerShape(DesignTokens.Spacing.xs),
+            )
+            .padding(horizontal = DesignTokens.Spacing.xs, vertical = 2.dp),
+    ) {
+        Text(
+            text = bayitString("chess.yourTurn"),
+            color = DesignTokens.Colors.Text.primary,
+            fontSize = DesignTokens.FontSize.xs,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }

@@ -2955,6 +2955,17 @@
     "blackCaptured": "Capturées par les Noirs",
     "online": "En ligne",
     "offline": "Hors ligne",
-    "joinByGameCode": "Rejoindre avec un code de partie"
+    "joinByGameCode": "Rejoindre avec un code de partie",
+    "timeout": "Temps ecoule",
+    "drawOffered": "Nulle proposee",
+    "chat.title": "Chat",
+    "chat.inputPlaceholder": "Tapez un message...",
+    "timeControl": "Cadence",
+    "unlimited": "Sans limite",
+    "bullet1": "1 min",
+    "blitz3": "3 min",
+    "blitz5": "5 min",
+    "rapid10": "10 min",
+    "classical30": "30 min"
   }
 }

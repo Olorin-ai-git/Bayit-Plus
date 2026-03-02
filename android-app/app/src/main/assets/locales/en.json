@@ -3451,7 +3451,18 @@
     "blackCaptured": "Black captured",
     "online": "Online",
     "offline": "Offline",
-    "joinByGameCode": "Join by game code"
+    "joinByGameCode": "Join by game code",
+    "timeout": "Time Out",
+    "drawOffered": "Draw Offered",
+    "chat.title": "Chat",
+    "chat.inputPlaceholder": "Type a message...",
+    "timeControl": "Time Control",
+    "unlimited": "Unlimited",
+    "bullet1": "1 min",
+    "blitz3": "3 min",
+    "blitz5": "5 min",
+    "rapid10": "10 min",
+    "classical30": "30 min"
   },
   "friends": {
     "title": "Friends & Opponents",

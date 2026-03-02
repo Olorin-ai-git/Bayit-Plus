@@ -17,15 +17,21 @@ import androidx.compose.ui.semantics.semantics
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val BOARD_SIZE = 8
+private val LAST_MOVE_HIGHLIGHT = Color(0xFF4A90D9).copy(alpha = 0.35f)
 
 @Composable
 internal fun ChessBoardComposable(
     board: List<List<Char?>>,
     selectedSquare: Pair<Int, Int>?,
+    lastMove: Pair<String, String>?,
     currentTurn: String,
     onSquareTap: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val lastMoveSquares = lastMove?.let { (from, to) ->
+        setOf(from, to)
+    } ?: emptySet()
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(BOARD_SIZE),
         modifier = modifier
@@ -44,6 +50,7 @@ internal fun ChessBoardComposable(
             val rank = (8 - row)
             val squareLabel = "$file$rank"
             val pieceDesc = piece?.let { fenCharToUnicode(it) }
+            val isLastMove = squareLabel in lastMoveSquares
 
             Box(
                 modifier = Modifier
@@ -51,6 +58,7 @@ internal fun ChessBoardComposable(
                     .background(
                         when {
                             isSelected -> DesignTokens.Colors.gold.copy(alpha = 0.6f)
+                            isLastMove -> LAST_MOVE_HIGHLIGHT
                             isLight -> DesignTokens.Colors.Primary.p200
                             else -> DesignTokens.Colors.Primary.p800
                         }
@@ -73,7 +81,8 @@ internal fun ChessBoardComposable(
                     Text(
                         text = rank.toString(),
                         fontSize = DesignTokens.FontSize.xs,
-                        color = if (isLight) DesignTokens.Colors.Primary.p800 else DesignTokens.Colors.Primary.p200,
+                        color = if (isLight) DesignTokens.Colors.Primary.p800
+                        else DesignTokens.Colors.Primary.p200,
                         modifier = Modifier.align(Alignment.TopStart),
                     )
                 }
@@ -81,7 +90,8 @@ internal fun ChessBoardComposable(
                     Text(
                         text = file.toString(),
                         fontSize = DesignTokens.FontSize.xs,
-                        color = if (isLight) DesignTokens.Colors.Primary.p800 else DesignTokens.Colors.Primary.p200,
+                        color = if (isLight) DesignTokens.Colors.Primary.p800
+                        else DesignTokens.Colors.Primary.p200,
                         modifier = Modifier.align(Alignment.BottomEnd),
                     )
                 }

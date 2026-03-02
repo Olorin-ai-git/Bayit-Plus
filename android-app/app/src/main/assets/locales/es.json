@@ -3365,7 +3365,18 @@
     "easy": "Fácil",
     "medium": "Medio",
     "hard": "Difícil",
-    "chessBot": "Bot de Ajedrez"
+    "chessBot": "Bot de Ajedrez",
+    "timeout": "Tiempo agotado",
+    "drawOffered": "Tablas ofrecidas",
+    "chat.title": "Chat",
+    "chat.inputPlaceholder": "Escribe un mensaje...",
+    "timeControl": "Control de tiempo",
+    "unlimited": "Sin limite",
+    "bullet1": "1 min",
+    "blitz3": "3 min",
+    "blitz5": "5 min",
+    "rapid10": "10 min",
+    "classical30": "30 min"
   },
   "friends": {
     "title": "Amigos y Oponentes",

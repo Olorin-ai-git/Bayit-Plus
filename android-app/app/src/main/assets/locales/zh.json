@@ -1970,7 +1970,18 @@
     "blackCaptured": "黑方吃子",
     "online": "在线",
     "offline": "离线",
-    "joinByGameCode": "使用游戏代码加入"
+    "joinByGameCode": "使用游戏代码加入",
+    "timeout": "超时",
+    "drawOffered": "提议和棋",
+    "chat.title": "聊天",
+    "chat.inputPlaceholder": "输入消息...",
+    "timeControl": "时间控制",
+    "unlimited": "无限制",
+    "bullet1": "1分钟",
+    "blitz3": "3分钟",
+    "blitz5": "5分钟",
+    "rapid10": "10分钟",
+    "classical30": "30分钟"
   },
   "friends": {
     "title": "好友与对手",

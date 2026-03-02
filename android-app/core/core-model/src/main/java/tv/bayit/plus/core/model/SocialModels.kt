@@ -97,3 +97,22 @@ data class ChessGame(
     @SerialName("created_at") val createdAt: String = "",
     @SerialName("updated_at") val updatedAt: String = "",
 )
+
+@Serializable
+data class ChessChatMessage(
+    val id: String = "",
+    @SerialName("game_id") val gameId: String = "",
+    @SerialName("user_id") val userId: String = "",
+    @SerialName("user_name") val userName: String = "",
+    val message: String = "",
+    @SerialName("display_message") val displayMessage: String = "",
+    @SerialName("is_translated") val isTranslated: Boolean = false,
+    @SerialName("translation_available") val translationAvailable: Boolean = false,
+    @SerialName("is_bot_request") val isBotRequest: Boolean = false,
+    @SerialName("bot_response") val botResponse: String? = null,
+    @SerialName("source_language") val sourceLanguage: String = "",
+    val timestamp: String = "",
+) {
+    val isBot: Boolean get() = userId == "BOT"
+    val isSystem: Boolean get() = userId == "SYSTEM"
+}

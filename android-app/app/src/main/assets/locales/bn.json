@@ -2270,6 +2270,17 @@
     "blackCaptured": "কালো ক্যাপচার করেছে",
     "online": "অনলাইন",
     "offline": "অফলাইন",
-    "joinByGameCode": "গেম কোড দিয়ে যোগ দিন"
+    "joinByGameCode": "গেম কোড দিয়ে যোগ দিন",
+    "timeout": "সময় শেষ",
+    "drawOffered": "ড্র প্রস্তাব",
+    "chat.title": "চ্যাট",
+    "chat.inputPlaceholder": "বার্তা লিখুন...",
+    "timeControl": "সময় নিয়ন্ত্রণ",
+    "unlimited": "সীমাহীন",
+    "bullet1": "১ মিনিট",
+    "blitz3": "৩ মিনিট",
+    "blitz5": "৫ মিনিট",
+    "rapid10": "১০ মিনিট",
+    "classical30": "৩০ মিনিট"
   }
 }

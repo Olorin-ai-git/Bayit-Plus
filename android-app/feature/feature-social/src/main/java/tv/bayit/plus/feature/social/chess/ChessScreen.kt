@@ -22,9 +22,15 @@ fun ChessRoute(
         onCreateGame = viewModel::createGame,
         onJoinGame = viewModel::joinGame,
         onTapSquare = viewModel::tapSquare,
-        onResign = { gameCode -> viewModel.resign(gameCode) },
-        onOfferDraw = { gameCode -> viewModel.offerDraw(gameCode) },
-        onRespondToDraw = { accept, gameCode -> viewModel.respondToDraw(accept, gameCode) },
+        onResign = viewModel::resign,
+        onOfferDraw = viewModel::offerDraw,
+        onRespondToDraw = viewModel::respondToDraw,
+        onSendChat = { msg ->
+            val state = uiState as? ChessUiState.GameActive ?: return@ChessScreen
+            viewModel.sendChatMessage(state.game.gameCode, msg)
+        },
+        onToggleChat = viewModel::toggleChatExpanded,
+        onNavigateToLobby = viewModel::navigateToLobby,
         modifier = modifier,
     )
 }
@@ -32,12 +38,15 @@ fun ChessRoute(
 @Composable
 internal fun ChessScreen(
     uiState: ChessUiState,
-    onCreateGame: (String, String, String?) -> Unit,
+    onCreateGame: (String, String, String?, Int?) -> Unit,
     onJoinGame: (String) -> Unit,
     onTapSquare: (Int, Int) -> Unit,
     onResign: (String) -> Unit,
     onOfferDraw: (String) -> Unit,
     onRespondToDraw: (Boolean, String) -> Unit,
+    onSendChat: (String) -> Unit,
+    onToggleChat: () -> Unit,
+    onNavigateToLobby: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -54,6 +63,9 @@ internal fun ChessScreen(
                 onResign = onResign,
                 onOfferDraw = onOfferDraw,
                 onRespondToDraw = onRespondToDraw,
+                onSendChat = onSendChat,
+                onToggleChat = onToggleChat,
+                onNewGame = onNavigateToLobby,
             )
             is ChessUiState.Error -> ErrorContent(uiState.message)
         }

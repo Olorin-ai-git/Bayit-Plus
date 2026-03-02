@@ -3450,7 +3450,18 @@
     "blackCaptured": "שחור שבה",
     "online": "מחובר",
     "offline": "לא מחובר",
-    "joinByGameCode": "הצטרף באמצעות קוד משחק"
+    "joinByGameCode": "הצטרף באמצעות קוד משחק",
+    "timeout": "נגמר הזמן",
+    "drawOffered": "הוצע תיקו",
+    "chat.title": "צ'אט",
+    "chat.inputPlaceholder": "כתוב הודעה...",
+    "timeControl": "בקרת זמן",
+    "unlimited": "ללא הגבלה",
+    "bullet1": "דקה 1",
+    "blitz3": "3 דקות",
+    "blitz5": "5 דקות",
+    "rapid10": "10 דקות",
+    "classical30": "30 דקות"
   },
   "friends": {
     "title": "חברים ויריבים",

@@ -7,7 +7,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.model.ChessChatMessage
 import tv.bayit.plus.core.model.ChessGame
 import tv.bayit.plus.core.network.NetworkConfiguration
 import tv.bayit.plus.core.network.websocket.ChannelType
@@ -17,11 +19,20 @@ import javax.inject.Inject
 
 sealed interface ChessWsEvent {
     data class GameState(val game: ChessGame) : ChessWsEvent
-    data class Move(val fen: String, val san: String, val captured: String?) : ChessWsEvent
+    data class Move(
+        val fen: String,
+        val san: String,
+        val captured: String?,
+        val currentTurn: String?,
+        val status: String?,
+        val whiteTimeRemainingMs: Long?,
+        val blackTimeRemainingMs: Long?,
+    ) : ChessWsEvent
     data object DrawOffer : ChessWsEvent
     data class DrawResponse(val accepted: Boolean) : ChessWsEvent
     data class GameEnd(val status: String) : ChessWsEvent
     data class Resign(val status: String) : ChessWsEvent
+    data class Chat(val message: ChessChatMessage) : ChessWsEvent
     data class ParseError(val raw: String) : ChessWsEvent
 }
 
@@ -71,15 +82,7 @@ class ChessWebSocketHandler @Inject constructor(
                     )
                     ChessWsEvent.GameState(game)
                 }
-                "move" -> {
-                    val fen = data["board_fen"]?.jsonPrimitive?.content
-                        ?: obj["board_fen"]?.jsonPrimitive?.content ?: ""
-                    val san = data["san"]?.jsonPrimitive?.content
-                        ?: obj["san"]?.jsonPrimitive?.content ?: ""
-                    val captured = data["captured"]?.jsonPrimitive?.content
-                        ?: obj["captured"]?.jsonPrimitive?.content
-                    ChessWsEvent.Move(fen, san, captured)
-                }
+                "move" -> parseMoveEvent(obj, data)
                 "draw_offer" -> ChessWsEvent.DrawOffer
                 "draw_response" -> {
                     val accepted = data["accepted"]?.jsonPrimitive?.boolean
@@ -96,11 +99,36 @@ class ChessWebSocketHandler @Inject constructor(
                         ?: obj["status"]?.jsonPrimitive?.content ?: "resigned"
                     ChessWsEvent.Resign(status)
                 }
+                "chat" -> {
+                    val chatJson = data.takeIf { it.isNotEmpty() } ?: obj
+                    val msg = json.decodeFromJsonElement(
+                        kotlinx.serialization.serializer<ChessChatMessage>(), chatJson
+                    )
+                    ChessWsEvent.Chat(msg)
+                }
                 else -> null
             }
         } catch (e: Exception) {
-            logger.error("Failed to parse chess WebSocket message", e, mapOf("raw" to raw.take(200)))
+            logger.error("Failed to parse chess WS message", e, mapOf("raw" to raw.take(200)))
             null
         }
+    }
+
+    private fun parseMoveEvent(obj: JsonObject, data: JsonObject): ChessWsEvent.Move {
+        fun str(key: String) = data[key]?.jsonPrimitive?.content
+            ?: obj[key]?.jsonPrimitive?.content
+        fun lng(key: String) = try {
+            data[key]?.jsonPrimitive?.long ?: obj[key]?.jsonPrimitive?.long
+        } catch (_: Exception) { null }
+
+        return ChessWsEvent.Move(
+            fen = str("board_fen") ?: "",
+            san = str("san") ?: "",
+            captured = str("captured"),
+            currentTurn = str("current_turn"),
+            status = str("status"),
+            whiteTimeRemainingMs = lng("white_time_remaining_ms"),
+            blackTimeRemainingMs = lng("black_time_remaining_ms"),
+        )
     }
 }
