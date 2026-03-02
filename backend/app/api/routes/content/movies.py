@@ -3,7 +3,8 @@ Movie-specific endpoints.
 """
 
 import logging
-from typing import Optional
+import re
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -22,6 +23,67 @@ from app.services.tmdb_service import tmdb_service
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+_RELATED_LIMIT = 6
+_BASE_FILTER = {"is_published": True, "content_format": "movie"}
+
+
+async def _find_related_movies(
+    movie: Content, beta_filter: dict
+) -> List[Content]:
+    """Find related movies by genre, director, then cast overlap."""
+    exclude = {"_id": {"$ne": movie.id}, **_BASE_FILTER, **beta_filter}
+    seen_ids = set()
+    related: List[Content] = []
+
+    # Parse genres from comma-separated string (e.g. "Drama, Comedy")
+    genres = [
+        re.escape(g.strip())
+        for g in (movie.genre or "").split(",")
+        if g.strip()
+    ]
+
+    # Stage 1: same genre
+    if genres and len(related) < _RELATED_LIMIT:
+        genre_regex = "|".join(genres)
+        items = await Content.find(
+            {**exclude, "genre": {"$regex": genre_regex, "$options": "i"}}
+        ).limit(_RELATED_LIMIT).to_list()
+        for item in items:
+            if item.id not in seen_ids:
+                related.append(item)
+                seen_ids.add(item.id)
+
+    # Stage 2: same director
+    if movie.director and len(related) < _RELATED_LIMIT:
+        items = await Content.find(
+            {**exclude, "director": movie.director}
+        ).limit(_RELATED_LIMIT).to_list()
+        for item in items:
+            if item.id not in seen_ids and len(related) < _RELATED_LIMIT:
+                related.append(item)
+                seen_ids.add(item.id)
+
+    # Stage 3: shared cast (match any of the first 3 cast members)
+    if movie.cast and len(related) < _RELATED_LIMIT:
+        top_cast = movie.cast[:3]
+        items = await Content.find(
+            {**exclude, "cast": {"$in": top_cast}}
+        ).limit(_RELATED_LIMIT).to_list()
+        for item in items:
+            if item.id not in seen_ids and len(related) < _RELATED_LIMIT:
+                related.append(item)
+                seen_ids.add(item.id)
+
+    # Stage 4: fill remaining with any other movies
+    if len(related) < _RELATED_LIMIT:
+        remaining = _RELATED_LIMIT - len(related)
+        if seen_ids:
+            exclude["_id"] = {"$nin": [movie.id] + list(seen_ids)}
+        items = await Content.find(exclude).limit(remaining).to_list()
+        related.extend(items)
+
+    return related[:_RELATED_LIMIT]
+
 
 @router.get("/movies")
 async def list_all_movies(
@@ -36,17 +98,9 @@ async def list_all_movies(
 
     beta_filter = build_beta_content_filter(current_user)
 
-    # Build list of series category names to exclude (for index-backed queries)
-    from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
-    series_categories = SERIES_CATEGORY_KEYWORDS + [
-        "Israeli Series", "israeli series",
-        "סדרות ישראליות",  # Israeli Series in Hebrew
-    ]
-
     filters = {
         "is_published": True,
-        # Use $nin for better performance (can use category_name index)
-        "category_name": {"$nin": series_categories},
+        "content_format": "movie",
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},
@@ -147,17 +201,7 @@ async def get_movie_details(
     # Build beta filter for related items
     beta_filter = build_beta_content_filter(current_user)
 
-    # Query related items with beta filter
-    # Exclude series content using category name filter (is_series field removed)
-    from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
-    related_query = {
-        "category_id": movie.category_id,
-        "_id": {"$ne": movie.id},
-        "is_published": True,
-        "category_name": {"$nin": SERIES_CATEGORY_KEYWORDS + ["Israeli Series", "סדרות ישראליות"]},
-        **beta_filter,
-    }
-    related = await Content.find(related_query).limit(6).to_list()
+    related = await _find_related_movies(movie, beta_filter)
 
     # Determine stream URL based on platform
     user_agent = request.headers.get("User-Agent", "")
