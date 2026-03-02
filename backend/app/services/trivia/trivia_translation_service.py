@@ -12,6 +12,7 @@ from anthropic.types import TextBlock
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.olorin.metering.service import MeteringService
+from app.models.integration_partner import RateLimitConfig
 from app.services.olorin.rate_limiter import PartnerRateLimiter
 from app.services.trivia.trivia_text_sanitizer import TriviaTextSanitizer
 from app.services.trivia.trivia_translation_validator import TriviaTranslationValidator
@@ -121,12 +122,21 @@ class TriviaTranslationService:
 
         # Rate limiting using Olorin PartnerRateLimiter
         rate_limit_key = f"trivia_{content_id or 'general'}"
-        if not await self.rate_limiter.allow(partner_id, rate_limit_key):
+        is_allowed, limit_msg = await self.rate_limiter.check_rate_limit(
+            partner_id=partner_id,
+            capability=rate_limit_key,
+            rate_limits=RateLimitConfig(),
+        )
+        if not is_allowed:
             logger.error(
                 "Translation rate limit exceeded",
-                extra={"content_id": content_id, "target_lang": target_lang}
+                extra={
+                    "content_id": content_id,
+                    "target_lang": target_lang,
+                    "limit_detail": limit_msg,
+                }
             )
-            raise RateLimitExceeded("Translation rate limit exceeded")
+            raise RateLimitExceeded(limit_msg or "Translation rate limit exceeded")
 
         # Sanitize input
         sanitized_text = self.sanitizer.sanitize(english_text)
@@ -211,6 +221,12 @@ English text: {sanitized_text}
                     "target_lang": target_lang,
                     "source_lang": "en"
                 }
+            )
+
+            # Record rate-limit usage after success
+            await self.rate_limiter.record_request(
+                partner_id=partner_id,
+                capability=rate_limit_key,
             )
 
             logger.info(
