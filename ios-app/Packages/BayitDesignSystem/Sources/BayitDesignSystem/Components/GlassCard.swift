@@ -17,25 +17,31 @@ public struct GlassCard<Content: View>: View {
     }
 
     public var body: some View {
+        let shape = RoundedRectangle(cornerRadius: radius)
         content()
             .padding(padding)
             .background {
                 ZStack {
-                    Color.white.opacity(0.09)
                     VisualEffectBlur()
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.03)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: radius))
+            .clipShape(shape)
             .overlay(
-                RoundedRectangle(cornerRadius: radius)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
             )
-            .shadow(
-                color: DesignTokens.Glass.purpleGlow,
-                radius: 10,
-                x: 0,
-                y: 4
-            )
+            .shadow(color: Color.black.opacity(0.30), radius: 10, y: 4)
         #if os(tvOS)
             .tvFocusStyle()
         #endif

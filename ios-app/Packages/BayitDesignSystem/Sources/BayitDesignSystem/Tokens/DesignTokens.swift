@@ -25,8 +25,8 @@ public enum DesignTokens {
         public enum Glass {
             public static let background = Color.black.opacity(0.7)
             public static let backgroundLight = Color.black.opacity(0.5)
-            public static let border = Color(hex: 0x7E22CE).opacity(0.25)
-            public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.7)
+            public static let border = Color.white.opacity(0.12)
+            public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.60)
         }
 
         public enum Background {
@@ -109,12 +109,12 @@ public enum DesignTokens {
         public static let bgLight = Color.white.opacity(0.05)
         public static let bgMedium = Color.white.opacity(0.09)
         public static let bgStrong = Color.white.opacity(0.13)
-        public static let border = Color(hex: 0x7E22CE).opacity(0.30)
-        public static let borderLight = Color(hex: 0x7E22CE).opacity(0.18)
-        public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.75)
+        public static let border = Color.white.opacity(0.12)
+        public static let borderLight = Color.white.opacity(0.08)
+        public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.60)
         public static let purpleLight = Color(hex: 0x7E22CE).opacity(0.12)
         public static let purpleStrong = Color(hex: 0x7E22CE).opacity(0.22)
-        public static let purpleGlow = Color(hex: 0x7E22CE).opacity(0.40)
+        public static let purpleGlow = Color.black.opacity(0.20)
     }
 
     public enum Text {

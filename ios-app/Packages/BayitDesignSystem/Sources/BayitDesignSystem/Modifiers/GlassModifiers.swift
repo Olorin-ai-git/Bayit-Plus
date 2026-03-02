@@ -54,18 +54,29 @@ public struct GlassCardModifier: ViewModifier {
     let padding: CGFloat
 
     public func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: radius)
         content
             .padding(padding)
             .background {
                 ZStack {
-                    Color.white.opacity(0.09)
                     VisualEffectBlur()
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.03)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: radius))
+            .clipShape(shape)
             .overlay(
-                RoundedRectangle(cornerRadius: radius)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
             )
     }
 }
@@ -167,12 +178,12 @@ public extension View {
         modifier(GlassCardModifier(radius: radius, padding: padding))
     }
 
-    /// Apply ambient glass shadow with purple glow.
+    /// Apply ambient glass shadow.
     func glassShadow(
         color: Color = DesignTokens.Glass.purpleGlow,
         radius: CGFloat = 8,
         x: CGFloat = 0,
-        y: CGFloat = 4
+        y: CGFloat = 2
     ) -> some View {
         modifier(GlassShadowModifier(color: color, radius: radius, x: x, y: y))
     }
