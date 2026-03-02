@@ -37,7 +37,9 @@ public actor WebSocketManager {
         self.authTokenProvider = authTokenProvider
 
         let sessionConfig = URLSessionConfiguration.default
-        sessionConfig.timeoutIntervalForRequest = configuration.timeout
+        // WebSocket connections are long-lived -- don't apply the short HTTP
+        // request timeout.  The ping/keepalive timer handles liveness instead.
+        // timeoutIntervalForResource (default 7 days) remains appropriate.
         session = URLSession(configuration: sessionConfig)
     }
 

@@ -124,6 +124,7 @@ struct ChessLobbyView: View {
                     )
                 }
             }
+            .disabled(vm.isLoading)
         }
         .padding(.horizontal, DesignTokens.Spacing.base)
         .padding(.top, DesignTokens.Spacing.lg)

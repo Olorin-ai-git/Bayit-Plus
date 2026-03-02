@@ -20,8 +20,15 @@ struct ChessView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
-        .task { await setupAndLoad() }
-        .onDisappear { Task { await viewModel?.disconnect() } }
+        .task {
+            await setupAndLoad()
+            // Keep this task alive until the view is removed from the
+            // navigation stack. When that happens, Swift cancels the task
+            // and we fall through to disconnect -- unlike onDisappear which
+            // fires during internal SwiftUI re-layouts.
+            try? await Task.sleep(for: .seconds(365 * 86400))
+            await viewModel?.disconnect()
+        }
     }
 
     // MARK: - Content Router

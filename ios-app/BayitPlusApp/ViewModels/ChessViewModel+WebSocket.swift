@@ -23,6 +23,12 @@ extension ChessViewModel {
             for await text in stream {
                 self?.handleWSMessage(text)
             }
+            // Stream ended -- reconnect if the game is still active
+            guard let self, let code = self.game?.gameCode,
+                  self.gameStatus == .active || self.gameStatus == .waiting
+            else { return }
+            self.logger.info("WS stream ended, reconnecting", context: ["gameCode": code])
+            await self.connectWebSocket(gameCode: code)
         }
     }
 

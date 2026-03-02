@@ -45,7 +45,7 @@ struct ChessLobbyJoinView: View {
                     GlassButton(localization.t("chess.join"), variant: .primary) {
                         Task { await vm.joinGame(code: vm.joinCode) }
                     }
-                    .disabled(vm.joinCode.count != 6)
+                    .disabled(vm.joinCode.count != 6 || vm.isLoading)
                 }
             }
         }
