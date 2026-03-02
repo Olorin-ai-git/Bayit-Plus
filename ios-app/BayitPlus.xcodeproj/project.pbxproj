@@ -1533,11 +1533,8 @@
 		AA0001000000000000000003 /* ChessChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* ChessChatMessage.swift */; };
 		AA0002000000000000000002 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000001 /* ChessViewModel+Actions.swift */; };
 		AA0002000000000000000003 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000001 /* ChessViewModel+Actions.swift */; };
-		AA0003000000000000000002 /* ChessLobbyJoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000001 /* ChessLobbyJoinView.swift */; };
 		AA0003000000000000000003 /* ChessLobbyJoinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000001 /* ChessLobbyJoinView.swift */; };
-		AA0004000000000000000002 /* ChessChatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004000000000000000001 /* ChessChatPanel.swift */; };
 		AA0004000000000000000003 /* ChessChatPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0004000000000000000001 /* ChessChatPanel.swift */; };
-		AA0005000000000000000002 /* ChessView+Subviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005000000000000000001 /* ChessView+Subviews.swift */; };
 		AA0005000000000000000003 /* ChessView+Subviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0005000000000000000001 /* ChessView+Subviews.swift */; };
 /* End PBXBuildFile section */
 
@@ -5342,9 +5339,6 @@
 				FD4DA5CFAD9C23EFD416A790 /* ChessRepository.swift in Sources */,
 				3A89C9E9F3D78373F204CADE /* ChessViewModel+WebSocket.swift in Sources */,
 				9AF1B88741A1CDB7F5815E16 /* ChessViewModel.swift in Sources */,
-				AA0005000000000000000002 /* ChessView+Subviews.swift in Sources */,
-				AA0004000000000000000002 /* ChessChatPanel.swift in Sources */,
-				AA0003000000000000000002 /* ChessLobbyJoinView.swift in Sources */,
 				AA0002000000000000000002 /* ChessViewModel+Actions.swift in Sources */,
 				AA0001000000000000000002 /* ChessChatMessage.swift in Sources */,
 				B817EA5B2E55C7EEE45E91E4 /* ChildrenViewModel.swift in Sources */,
@@ -6818,7 +6812,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6841,7 +6835,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6953,7 +6947,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -7035,7 +7029,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
