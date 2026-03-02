@@ -26,9 +26,11 @@ async def execute_move(
 
     # Deduct elapsed time from the moving player's clock
     if game.time_control and game.last_move_at:
-        elapsed_ms = int(
-            (datetime.now(timezone.utc) - game.last_move_at).total_seconds() * 1000
-        )
+        now = datetime.now(timezone.utc)
+        last = game.last_move_at
+        if last.tzinfo is None:
+            last = last.replace(tzinfo=timezone.utc)
+        elapsed_ms = int((now - last).total_seconds() * 1000)
         remaining = (current_player.time_remaining_ms or 0) - elapsed_ms
         if remaining <= 0:
             current_player.time_remaining_ms = 0
@@ -80,7 +82,7 @@ async def execute_move(
     elif board.is_insufficient_material() or board.can_claim_draw():
         game.status = GameStatus.DRAW
 
-    game.updated_at = datetime.utcnow()
+    game.updated_at = datetime.now(timezone.utc)
     await game.save()
 
     if game.status in [GameStatus.CHECKMATE, GameStatus.DRAW, GameStatus.STALEMATE]:

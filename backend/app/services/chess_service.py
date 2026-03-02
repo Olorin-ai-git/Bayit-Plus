@@ -110,7 +110,7 @@ class ChessService:
         if game.invited_user_id == user_id:
             game.invite_status = "accepted"
 
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
         return game
 
@@ -136,7 +136,7 @@ class ChessService:
         """Resign from game."""
         game = await _get_validated_player_game(game_id, user_id)
         game.status = GameStatus.RESIGNED
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
         from app.services.stats_service import StatsService
         await StatsService.record_game_result(game)
@@ -147,7 +147,7 @@ class ChessService:
         """Offer draw (simplified - auto-accepts for now)."""
         game = await _get_validated_player_game(game_id, user_id)
         game.status = GameStatus.DRAW
-        game.updated_at = datetime.utcnow()
+        game.updated_at = datetime.now(timezone.utc)
         await game.save()
         return game
 
