@@ -22,9 +22,9 @@ public struct GlassCard<Content: View>: View {
             .padding(padding)
             .background {
                 ZStack {
-                    VisualEffectBlur()
+                    shape.fill(Color.white.opacity(0.12))
                     LinearGradient(
-                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.03)],
+                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.02)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -32,16 +32,9 @@ public struct GlassCard<Content: View>: View {
             }
             .clipShape(shape)
             .overlay(
-                shape.strokeBorder(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.25), Color.white.opacity(0.08)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 0.5
-                )
+                shape.strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.30), radius: 10, y: 4)
+            .shadow(color: Color.black.opacity(0.50), radius: 16, y: 8)
         #if os(tvOS)
             .tvFocusStyle()
         #endif
