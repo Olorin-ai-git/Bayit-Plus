@@ -37,6 +37,7 @@ private val menuCards = listOf(
     ZehAniMenuCard(ZehAniFeature.CONTACTS, "Contacts", "WhatsApp sharing contacts"),
     ZehAniMenuCard(ZehAniFeature.FEEDBACK, "Feedback", "Share your experience"),
     ZehAniMenuCard(ZehAniFeature.CONSENT, "Consent", "Biometric consent management"),
+    ZehAniMenuCard(ZehAniFeature.CHESS, "Chess", "Play chess with friends and family"),
 )
 
 @Composable
@@ -48,6 +49,7 @@ fun ZehAniDashboardRoute(
     onNavigateToContacts: (profileId: String) -> Unit,
     onNavigateToFeedback: (profileId: String) -> Unit,
     onNavigateToConsent: () -> Unit,
+    onNavigateToChess: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ZehAniDashboardViewModel = hiltViewModel(),
@@ -66,6 +68,7 @@ fun ZehAniDashboardRoute(
                     ZehAniFeature.CONTACTS -> onNavigateToContacts(profileId)
                     ZehAniFeature.FEEDBACK -> onNavigateToFeedback(profileId)
                     ZehAniFeature.CONSENT -> onNavigateToConsent()
+                    ZehAniFeature.CHESS -> onNavigateToChess()
                 }
             }
         },

@@ -31,6 +31,7 @@ fun NavGraphBuilder.zehAniNavGraph(navController: NavController) {
             onNavigateToContacts = { profileId -> navController.navigate(Route.ZehAniContacts(profileId = profileId)) },
             onNavigateToFeedback = { profileId -> navController.navigate(Route.ZehAniFeedback(profileId = profileId)) },
             onNavigateToConsent = { navController.navigate(Route.ZehAniConsent) },
+            onNavigateToChess = { navController.navigate(Route.Chess()) },
             onNavigateBack = { navController.popBackStack() },
         )
     }

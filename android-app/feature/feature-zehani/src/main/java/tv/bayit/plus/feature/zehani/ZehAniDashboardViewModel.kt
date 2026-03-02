@@ -97,4 +97,5 @@ enum class ZehAniFeature {
     CONTACTS,
     FEEDBACK,
     CONSENT,
+    CHESS,
 }
