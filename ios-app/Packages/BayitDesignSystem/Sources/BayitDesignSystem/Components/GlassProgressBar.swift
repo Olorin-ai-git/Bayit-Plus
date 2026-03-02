@@ -5,9 +5,9 @@ import SwiftUI
 /// Used within GlassPlayerControls for media timeline display.
 /// Supports drag gesture for seeking with haptic feedback.
 public struct GlassProgressBar: View {
-
     let progress: Double
     let buffered: Double
+    let tint: Color
     let onSeek: ((Double) -> Void)?
     let onSeekEnd: ((Double) -> Void)?
 
@@ -21,11 +21,13 @@ public struct GlassProgressBar: View {
     public init(
         progress: Double,
         buffered: Double = 0,
+        tint: Color = DesignTokens.Primary.default,
         onSeek: ((Double) -> Void)? = nil,
         onSeekEnd: ((Double) -> Void)? = nil
     ) {
         self.progress = progress
         self.buffered = buffered
+        self.tint = tint
         self.onSeek = onSeek
         self.onSeekEnd = onSeekEnd
     }
@@ -50,7 +52,7 @@ public struct GlassProgressBar: View {
 
                 // Progress fill
                 Capsule()
-                    .fill(DesignTokens.Primary.default)
+                    .fill(tint)
                     .frame(
                         width: max(0, width * CGFloat(clamp(progress))),
                         height: isDragging ? expandedHeight : trackHeight
@@ -69,33 +71,33 @@ public struct GlassProgressBar: View {
             .frame(height: thumbSize)
             .contentShape(Rectangle())
             #if !os(tvOS)
-            .gesture(seekGesture(width: width))
+                .gesture(seekGesture(width: width))
             #endif
-            .onAppear { barWidth = width }
-            .onChange(of: geometry.size.width) { _, newWidth in
-                barWidth = newWidth
-            }
+                .onAppear { barWidth = width }
+                .onChange(of: geometry.size.width) { _, newWidth in
+                    barWidth = newWidth
+                }
         }
         .frame(height: thumbSize)
         .animation(.easeInOut(duration: 0.15), value: isDragging)
     }
 
     #if !os(tvOS)
-    private func seekGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
-            .onChanged { value in
-                guard width > 0, onSeek != nil else { return }
-                isDragging = true
-                let fraction = clamp(Double(value.location.x / width))
-                onSeek?(fraction)
-            }
-            .onEnded { value in
-                guard width > 0, onSeekEnd != nil else { return }
-                isDragging = false
-                let fraction = clamp(Double(value.location.x / width))
-                onSeekEnd?(fraction)
-            }
-    }
+        private func seekGesture(width: CGFloat) -> some Gesture {
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    guard width > 0, onSeek != nil else { return }
+                    isDragging = true
+                    let fraction = clamp(Double(value.location.x / width))
+                    onSeek?(fraction)
+                }
+                .onEnded { value in
+                    guard width > 0, onSeekEnd != nil else { return }
+                    isDragging = false
+                    let fraction = clamp(Double(value.location.x / width))
+                    onSeekEnd?(fraction)
+                }
+        }
     #endif
 
     private func clamp(_ value: Double) -> Double {
