@@ -22,19 +22,26 @@ public struct GlassCard<Content: View>: View {
             .padding(padding)
             .background {
                 ZStack {
-                    shape.fill(Color.white.opacity(0.12))
+                    shape.fill(Color.white.opacity(0.07))
                     LinearGradient(
-                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.02)],
+                        colors: [Color.white.opacity(0.05), .clear],
                         startPoint: .top,
-                        endPoint: .bottom
+                        endPoint: .center
                     )
                 }
             }
             .clipShape(shape)
+            .contentShape(shape)
             .overlay(
-                shape.strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.28), Color.white.opacity(0.12)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ), lineWidth: 1
+                )
             )
-            .shadow(color: Color.black.opacity(0.50), radius: 16, y: 8)
+            .shadow(color: Color.black.opacity(0.40), radius: 12, y: 6)
         #if os(tvOS)
             .tvFocusStyle()
         #endif

@@ -59,17 +59,24 @@ public struct GlassCardModifier: ViewModifier {
             .padding(padding)
             .background {
                 ZStack {
-                    shape.fill(Color.white.opacity(0.12))
+                    shape.fill(Color.white.opacity(0.07))
                     LinearGradient(
-                        colors: [Color.white.opacity(0.10), Color.white.opacity(0.02)],
+                        colors: [Color.white.opacity(0.05), .clear],
                         startPoint: .top,
-                        endPoint: .bottom
+                        endPoint: .center
                     )
                 }
             }
             .clipShape(shape)
+            .contentShape(shape)
             .overlay(
-                shape.strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+                shape.strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.28), Color.white.opacity(0.12)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ), lineWidth: 1
+                )
             )
     }
 }
