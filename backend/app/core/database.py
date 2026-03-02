@@ -502,6 +502,27 @@ async def connect_to_mongo():
     logger.info(f"Connected to MongoDB via olorin-shared: {database.name}")
 
 
+async def connect_to_mongo_subset(document_models: list[type[Document]]) -> None:
+    """
+    Initialize MongoDB with a specific subset of Beanie models.
+
+    Used by extracted services that only need a fraction of the 120+ models.
+    Skips index creation (indexes managed via migration scripts).
+    """
+    await init_mongodb()
+    db.client = get_mongodb_client()
+    database = get_mongodb_database()
+    await init_beanie(
+        database=database,
+        document_models=document_models,
+        skip_indexes=True,
+    )
+    logger.info(
+        "Connected to MongoDB (subset)",
+        extra={"model_count": len(document_models), "database": database.name},
+    )
+
+
 async def ensure_ttl_indexes_background():
     """Run TTL index creation in background after server is ready to accept connections."""
     database = get_mongodb_database()

@@ -51,7 +51,6 @@ def register_all_routers(app: FastAPI) -> None:
                                 channel_chat, chess, chess_chat, children, content, content_taxonomy,
                                 cultures, device_pairing, device_pairing_proxy, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
-                                websocket_diagnostics,
                                 extension_config,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
@@ -70,19 +69,13 @@ def register_all_routers(app: FastAPI) -> None:
                                 synced_streams,
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
-                                playlist, voice, watchlist, webauthn, websocket,
-                                websocket_channel_chat,
-                                websocket_chess, websocket_dm,
-                                websocket_live_dubbing,
-                                websocket_live_subtitles, websocket_live_trivia,
-                                websocket_bilingual_dubbing, websocket_talk_back,
+                                playlist, voice, watchlist, webauthn,
                                 widget_toggle, widgets, youngsters, zman,
                                 vod_interactions, vod_interaction_reels,
                                 vod_interaction_multi, vod_interaction_shared,
                                 admin_interactive_moments,
                                 admin_voice_clone_preview,
                                 admin_voice_cloning,
-                                websocket_vod_interaction,
                                 vod_interaction_admin,
                                 vod_interaction_pause_ask)
     from app.api.routes.admin.recordings import \
@@ -117,10 +110,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.interactive_mission import mission_core as im_core
     from app.api.routes.interactive_mission import mission_play as im_play
     from app.api.routes import avatar_outfits, family_snaps
-    from app.api.routes import websocket_interactive_mission
     # Phonetic Mirror routes (Perfected Voice)
     from app.api.routes.phonetic_mirror import mirror_core as pm_core
-    from app.api.routes import websocket_phonetic_mirror
     # Gamification routes (Level Progression)
     from app.api.routes.gamification import level_routes as gamification_routes
     # Grandparent Bridge routes (news clips, sharing, voice notes)
@@ -131,13 +122,11 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.zeh_ani import avatar_routes as za_avatar
     from app.api.routes.zeh_ani import consent_routes as za_consent
     from app.api.routes.zeh_ani import v2v_routes as za_v2v
-    from app.api.routes import websocket_v2v
-    # Zeh Ani Phase 3+4 routes (triggers, mirror, live layer, highlights, WhatsApp)
+    # Zeh Ani Phase 3+4 routes (triggers, mirror, highlights, WhatsApp)
     from app.api.routes.zeh_ani import trigger_routes as za_triggers
     from app.api.routes.zeh_ani import mirror_routes as za_mirror
     from app.api.routes.zeh_ani import highlight_routes as za_highlights
     from app.api.routes.zeh_ani import whatsapp_routes as za_whatsapp
-    from app.api.routes import websocket_live_layer
     # Movie Interactions Hub (Zeh Ani Phase 4)
     from app.api.routes import movie_interactions
 
@@ -536,62 +525,13 @@ def register_all_routers(app: FastAPI) -> None:
     logger.debug("Registered VOD avatar interaction routes")
 
     # ============================================
-    # WebSocket Routes (dual-running with bayit-ws-gateway)
-    # Phase 5 cleanup: Remove this entire block once gateway is stable.
-    # Gateway service at ws.bayit.tv handles all WS routes.
+    # Channel Chat REST Routes (kept in monolith; WS moved to bayit-ws-gateway)
     # ============================================
-    app.include_router(websocket.router, prefix=prefix, tags=["websocket"])
-    app.include_router(websocket_diagnostics.router, tags=["websocket", "diagnostics"])
-    app.include_router(
-        websocket_live_subtitles.router,
-        prefix=prefix,
-        tags=["websocket", "live-subtitles"],
-    )
-    app.include_router(
-        websocket_live_dubbing.router,
-        prefix=prefix,
-        tags=["websocket", "live-dubbing"],
-    )
-    app.include_router(
-        websocket_live_trivia.router,
-        prefix=prefix,
-        tags=["websocket", "live-trivia"],
-    )
-    app.include_router(
-        websocket_channel_chat.router,
-        prefix=prefix,
-        tags=["websocket", "channel-chat"],
-    )
     app.include_router(
         channel_chat.router,
         prefix=prefix,
         tags=["channel-chat"],
     )
-    app.include_router(
-        websocket_chess.router, prefix=prefix, tags=["websocket", "chess"]
-    )
-    app.include_router(
-        websocket_dm.router, prefix=prefix, tags=["websocket", "direct-messages"]
-    )
-    app.include_router(
-        websocket_talk_back.router, prefix=prefix, tags=["websocket", "talk-back"]
-    )
-    app.include_router(
-        websocket_bilingual_dubbing.router,
-        prefix=prefix,
-        tags=["websocket", "bilingual-dubbing"],
-    )
-    app.include_router(
-        websocket_interactive_mission.router,
-        prefix=prefix,
-        tags=["websocket", "interactive-missions"],
-    )
-    app.include_router(
-        websocket_vod_interaction.router,
-        prefix=prefix,
-        tags=["websocket", "vod-interaction"],
-    )
-    logger.debug("Registered websocket routes")
 
     # ============================================
     # Live Dubbing Routes (REST)
@@ -679,12 +619,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Phonetic Mirror Routes (Perfected Voice)
     # ============================================
     app.include_router(pm_core.router, prefix=prefix, tags=["phonetic-mirror"])
-    app.include_router(
-        websocket_phonetic_mirror.router,
-        prefix=prefix,
-        tags=["websocket", "phonetic-mirror"],
-    )
-    logger.debug("Registered Phonetic Mirror routes (REST + WebSocket)")
+    logger.debug("Registered Phonetic Mirror routes (REST; WS moved to bayit-ws-gateway)")
 
     # ============================================
     # Gamification Routes (Level Progression)
@@ -710,18 +645,10 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(za_avatar.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_consent.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_v2v.router, prefix=prefix, tags=["zeh-ani"])
-    app.include_router(
-        websocket_v2v.router, prefix=prefix,
-        tags=["websocket", "zeh-ani"],
-    )
     app.include_router(za_triggers.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_mirror.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_highlights.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_whatsapp.router, prefix=prefix, tags=["zeh-ani"])
-    app.include_router(
-        websocket_live_layer.router, prefix=prefix,
-        tags=["websocket", "zeh-ani"],
-    )
     app.include_router(
         movie_interactions.router, prefix=prefix, tags=["movie-interactions"]
     )

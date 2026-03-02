@@ -30,6 +30,18 @@
 !shared/i18n/locales/**
 !bayit-ws-gateway/
 !bayit-ws-gateway/**
+!bayit-workers/
+!bayit-workers/**
+!bayit-admin/
+!bayit-admin/**
+!bayit-search/
+!bayit-search/**
+!bayit-ai/
+!bayit-ai/**
+!olorin-b2b-api/
+!olorin-b2b-api/**
+!service-template/
+!service-template/**
 !infrastructure/
 !infrastructure/scheduled-jobs/
 !infrastructure/scheduled-jobs/library-integrity/
@@ -58,3 +70,8 @@ bayit-ws-gateway/__pycache__/
 bayit-ws-gateway/**/__pycache__/
 bayit-ws-gateway/.venv/
 bayit-ws-gateway/.pytest_cache/
+bayit-workers/**/__pycache__/
+bayit-admin/**/__pycache__/
+bayit-search/**/__pycache__/
+bayit-ai/**/__pycache__/
+olorin-b2b-api/**/__pycache__/
