@@ -30,6 +30,7 @@ async def _run_extraction_batch(batch_limit: int) -> dict:
             {"trailer_extraction_status": None},
             {"trailer_extraction_status": "pending"},
         ]},
+        {"trailer_url": {"$not": {"$regex": "youtube\\.com|youtu\\.be"}}},
     ).limit(batch_limit).to_list()
 
     results = {"total": len(candidates), "extracted": 0, "failed": 0, "details": []}

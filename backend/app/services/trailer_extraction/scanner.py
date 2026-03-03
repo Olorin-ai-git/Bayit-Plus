@@ -31,6 +31,7 @@ async def scan_and_extract_trailers() -> int:
             {"trailer_extraction_status": None},
             {"trailer_extraction_status": "pending"},
         ]},
+        {"trailer_url": {"$not": {"$regex": "youtube\\.com|youtu\\.be"}}},
     ).limit(batch_limit).to_list()
 
     if not candidates:

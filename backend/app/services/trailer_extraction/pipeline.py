@@ -44,11 +44,24 @@ async def extract_trailer_for_content(
         The GCS URL of the extracted trailer, or None on failure.
     """
     trailer_url = content.trailer_url
-    if not trailer_url or not is_youtube_url(trailer_url):
+    if not trailer_url:
         logger.debug(
-            "Skipping content without YouTube trailer",
+            "Skipping content without trailer URL",
             extra={"content_id": str(content.id)},
         )
+        return None
+
+    if is_youtube_url(trailer_url):
+        logger.info(
+            "Rejecting YouTube trailer URL, marking permanently failed",
+            extra={
+                "content_id": str(content.id),
+                "trailer_url": trailer_url,
+            },
+        )
+        content.trailer_extraction_status = "failed"
+        content.trailer_extraction_error = "YouTube extraction disabled"
+        await content.save()
         return None
 
     video_id = extract_video_id(trailer_url)
