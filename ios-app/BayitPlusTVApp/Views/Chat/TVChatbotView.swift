@@ -135,8 +135,7 @@
                                             .stroke(DesignTokens.Glass.border, lineWidth: 1)
                                     )
                             }
-                            .buttonStyle(.plain)
-                            .tvFocusStyle()
+                            .tvCardStyle()
                             .accessibilityLabel("Suggestion: \(suggestion)")
                         }
                     }

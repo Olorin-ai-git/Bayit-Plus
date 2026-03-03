@@ -7415,7 +7415,12 @@
       "contentRating": "内容分级",
       "kidsOnly": "仅儿童内容",
       "excludeKids": "排除儿童内容",
-      "allContent": "所有内容"
+      "allContent": "所有内容",
+      "actors": "演员",
+      "movies": "电影",
+      "series": "剧集",
+      "collections": "合集",
+      "audiobooks": "有声书"
     },
     "suggestions": "[ZH] Suggestions",
     "controls": {

@@ -126,13 +126,14 @@
                     ForEach(widgets) { widget in
                         GlassFocusPoster(
                             thumbnailURL: posterURL(for: widget), title: widget.title,
-                            subtitle: widget.description, aspectRatio: 16.0 / 9.0,
+                            subtitle: widget.description, aspectRatio: 4.0 / 3.0,
                             onSelect: { playWidget(widget) }
                         )
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
+            .focusSection()
         }
 
         private func personalSection(_ widgets: [WidgetItem]) -> some View {
@@ -150,12 +151,13 @@
                         GlassFocusPoster(
                             thumbnailURL: posterURL(for: widget), title: widget.title,
                             subtitle: widget.content?.contentType?.displayLabel,
-                            aspectRatio: 16.0 / 9.0, onSelect: { playWidget(widget) }
+                            aspectRatio: 4.0 / 3.0, onSelect: { playWidget(widget) }
                         )
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
+            .focusSection()
         }
 
         private var loadingState: some View {

@@ -23,17 +23,22 @@ async def actor_search_helper(
     Returns a list of dicts matching the UnifiedSearchResult shape so they
     can be merged directly into unified search responses.
     """
-    if not query or not query.strip():
-        return []
+    base_match = {
+        "cast": {"$exists": True, "$ne": []},
+        "is_published": True,
+        "content_format": {"$ne": "series"},
+    }
 
     pipeline = [
-        {"$match": {
-            "cast": {"$exists": True, "$ne": []},
-            "is_published": True,
-            "content_format": {"$ne": "series"},
-        }},
+        {"$match": base_match},
         {"$unwind": "$cast"},
-        {"$match": {"cast": {"$regex": query, "$options": "i"}}},
+    ]
+
+    # When a query is provided, filter actors by name; otherwise browse all actors
+    if query and query.strip():
+        pipeline.append({"$match": {"cast": {"$regex": query, "$options": "i"}}})
+
+    pipeline.extend([
         {
             "$group": {
                 "_id": "$cast",
@@ -43,7 +48,7 @@ async def actor_search_helper(
         },
         {"$sort": {"movie_count": -1}},
         {"$limit": limit},
-    ]
+    ])
 
     collection = Content.get_pymongo_collection()
     raw_actors = await collection.aggregate(pipeline).to_list(length=None)
@@ -76,5 +81,6 @@ async def actor_search_helper(
             }
         )
 
-    logger.info("Actor search for '%s' returned %d results", query, len(results))
+    label = f"query='{query}'" if query and query.strip() else "browse"
+    logger.info("Actor search (%s) returned %d results", label, len(results))
     return results

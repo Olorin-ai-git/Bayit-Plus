@@ -4,7 +4,7 @@
     /// Full-width hero banner carousel for tvOS home screen.
     /// Uses crossfade transitions for smooth page changes (including wrap-around).
     /// Child views provide their own focusable buttons; page navigation via
-    /// focusable indicator dots or auto-advance timer.
+    /// auto-advance timer. Dots are display-only indicators (standard tvOS pattern).
     public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
         let items: [Item]
         let autoAdvanceInterval: TimeInterval
@@ -12,7 +12,6 @@
 
         @State private var currentIndex = 0
         @State private var autoAdvanceTask: Task<Void, Never>?
-        @FocusState private var focusedDotIndex: Int?
 
         public init(
             items: [Item],
@@ -47,7 +46,7 @@
             .onDisappear { stopAutoAdvance() }
         }
 
-        // MARK: - Page Indicator
+        // MARK: - Page Indicator (display-only, not focusable)
 
         private var pageIndicator: some View {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
@@ -59,36 +58,13 @@
                                 : DesignTokens.Text.muted
                         )
                         .frame(
-                            width: dotSize(for: index),
-                            height: dotSize(for: index)
+                            width: index == currentIndex ? 10 : 6,
+                            height: index == currentIndex ? 10 : 6
                         )
                         .animation(.easeInOut(duration: 0.2), value: currentIndex)
-                        .animation(.easeInOut(duration: 0.15), value: focusedDotIndex)
-                        .focusable(true)
-                        .focused($focusedDotIndex, equals: index)
-                        .focusEffectDisabled()
-                        .onLongPressGesture(minimumDuration: 0) { selectPage(index) }
                 }
             }
-            .onChange(of: focusedDotIndex) { _, newIndex in
-                if let newIndex {
-                    selectPage(newIndex)
-                }
-            }
-        }
-
-        private func dotSize(for index: Int) -> CGFloat {
-            if index == focusedDotIndex { return 14 }
-            if index == currentIndex { return 10 }
-            return 6
-        }
-
-        private func selectPage(_ index: Int) {
-            pauseAutoAdvance()
-            guard index != currentIndex, index >= 0, index < items.count else { return }
-            withAnimation(.easeInOut(duration: 0.6)) {
-                currentIndex = index
-            }
+            .allowsHitTesting(false)
         }
 
         // MARK: - Auto-Advance

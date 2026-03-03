@@ -81,8 +81,7 @@ struct TVAvatarPreferencesView: View {
                     .stroke(isSelected ? DesignTokens.Primary.default : DesignTokens.Glass.border, lineWidth: isSelected ? 2 : 1)
             )
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     // MARK: - Voice
@@ -154,8 +153,7 @@ struct TVAvatarPreferencesView: View {
                                         )
                                 )
                         }
-                        .buttonStyle(.plain)
-                        .tvFocusStyle()
+                        .tvCardStyle()
                     }
                 }
             }

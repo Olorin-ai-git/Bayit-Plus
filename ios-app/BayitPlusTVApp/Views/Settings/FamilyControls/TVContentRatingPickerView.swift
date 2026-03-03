@@ -57,8 +57,7 @@ struct TVContentRatingPickerView: View {
             .padding(.horizontal, TVDesignTokens.Spacing.sm)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     private func ratingDescription(_ rating: ContentRating) -> String {

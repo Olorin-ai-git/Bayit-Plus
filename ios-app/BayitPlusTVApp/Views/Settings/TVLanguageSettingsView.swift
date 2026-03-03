@@ -105,7 +105,6 @@ struct TVLanguageSettingsView: View {
                     )
             )
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }

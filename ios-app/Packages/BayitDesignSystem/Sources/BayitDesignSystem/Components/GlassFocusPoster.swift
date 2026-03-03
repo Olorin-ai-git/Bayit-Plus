@@ -75,10 +75,8 @@
                 .overlay(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster)
                         .stroke(
-                            isFocused
-                                ? DesignTokens.Glass.borderFocus
-                                : DesignTokens.Glass.border,
-                            lineWidth: isFocused ? TVDesignTokens.Focus.ringWidth : 1
+                            DesignTokens.Glass.border,
+                            lineWidth: 1
                         )
                 )
             }
@@ -157,7 +155,10 @@
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case let .success(image):
-                            image.resizable().aspectRatio(contentMode: .fill)
+                            ZStack {
+                                DesignTokens.Background.primary
+                                image.resizable().aspectRatio(contentMode: .fit)
+                            }
                         default:
                             placeholderGradient
                         }

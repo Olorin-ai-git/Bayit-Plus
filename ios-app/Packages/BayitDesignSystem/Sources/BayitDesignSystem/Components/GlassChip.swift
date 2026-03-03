@@ -93,6 +93,7 @@ private struct ChipButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
         #if os(tvOS)
+            .focusEffectDisabled()
             .scaleEffect(
                 isFocused
                     ? TVDesignTokens.Focus.scaleAmount

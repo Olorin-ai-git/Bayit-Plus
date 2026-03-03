@@ -8191,7 +8191,12 @@
       "contentRating": "コンテンツレーティング",
       "kidsOnly": "キッズコンテンツのみ",
       "excludeKids": "キッズコンテンツを除外",
-      "allContent": "すべてのコンテンツ"
+      "allContent": "すべてのコンテンツ",
+      "actors": "俳優",
+      "movies": "映画",
+      "series": "シリーズ",
+      "collections": "コレクション",
+      "audiobooks": "オーディオブック"
     },
     "loadingMore": "さらに読み込み中...",
     "viewMode": {

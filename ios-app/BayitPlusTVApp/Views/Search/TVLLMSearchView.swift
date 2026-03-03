@@ -121,8 +121,7 @@ struct TVLLMSearchView: View {
                             .background(DesignTokens.Glass.bgLight)
                             .clipShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
             }
         }
@@ -159,8 +158,7 @@ struct TVLLMSearchView: View {
                         .padding(.vertical, TVDesignTokens.Spacing.md)
                         .padding(.horizontal, TVDesignTokens.Spacing.lg)
                     }
-                    .buttonStyle(.plain)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                     .accessibilityLabel("Suggestion: \(suggestion)")
                 }
             }

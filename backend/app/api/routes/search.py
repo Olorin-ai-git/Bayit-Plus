@@ -111,8 +111,8 @@ async def unified_search_endpoint(
                 has_more=False, execution_time_ms=0,
             )
 
-        # Merge actor results when requested
-        if include_actors and query.strip():
+        # Merge actor results when requested (supports empty query for browsing)
+        if include_actors:
             actor_results = await actor_search_helper(query, limit=limit)
             if actor_results:
                 merged = actor_results + results.results

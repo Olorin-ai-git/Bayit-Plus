@@ -64,8 +64,7 @@ struct TVContentSection<Item, CardContent: View>: View {
                         .padding(.horizontal, TVDesignTokens.Spacing.md)
                         .padding(.vertical, TVDesignTokens.Spacing.sm)
                     }
-                    .buttonStyle(.plain)
-                    .tvFocusStyle()
+                    .tvCardStyle()
                 }
             }
 
@@ -78,7 +77,7 @@ struct TVContentSection<Item, CardContent: View>: View {
                 }
                 .padding(.vertical, TVDesignTokens.Spacing.md)
             }
-            .clipped()
+            .focusSection()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, TVDesignTokens.Spacing.lg)

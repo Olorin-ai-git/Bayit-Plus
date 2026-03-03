@@ -42,8 +42,7 @@ extension TVAvatarPreferencesView {
             .background(DesignTokens.Glass.bgLight)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     var animationLevels: [(label: String, value: Double)] {

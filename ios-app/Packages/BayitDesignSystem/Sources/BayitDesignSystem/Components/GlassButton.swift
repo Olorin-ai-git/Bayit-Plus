@@ -93,39 +93,49 @@ public struct GlassButton: View {
 
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: DesignTokens.Spacing.sm) {
-                if isLoading {
-                    ProgressView()
-                        .tint(.white)
-                        .scaleEffect(0.8)
-                } else if let icon {
-                    icon
-                        .font(.system(size: size.fontSize))
-                }
-
-                Text(title)
-                    .font(.system(size: size.fontSize, weight: .semibold))
-            }
-            .padding(.vertical, size.verticalPadding)
-            .padding(.horizontal, size.horizontalPadding)
-            .frame(maxWidth: (variant == .ghost) ? nil : .infinity)
-            .foregroundStyle(foregroundColor)
-            .background(background)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .stroke(borderColor, lineWidth: borderLineWidth)
-            )
+            buttonLabel
         }
         .disabled(isDisabled || isLoading)
         .opacity(isDisabled ? 0.5 : 1.0)
-        .buttonStyle(.plain)
         #if os(tvOS)
+            .buttonStyle(GlassButtonTVStyle())
             .focusEffectDisabled()
-            .tvFocusStyle(
-                scale: 1.03,
-                shadowRadius: 8
-            )
+        #else
+            .buttonStyle(.plain)
+        #endif
+    }
+
+    private var buttonLabel: some View {
+        HStack(spacing: DesignTokens.Spacing.sm) {
+            if isLoading {
+                ProgressView()
+                    .tint(.white)
+                    .scaleEffect(0.8)
+            } else if let icon {
+                icon
+                    .font(.system(size: size.fontSize))
+            }
+
+            Text(title)
+                .font(.system(size: size.fontSize, weight: .semibold))
+        }
+        .padding(.vertical, size.verticalPadding)
+        .padding(.horizontal, size.horizontalPadding)
+        .frame(maxWidth: maxLabelWidth)
+        .foregroundStyle(foregroundColor)
+        .background(background)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                .stroke(borderColor, lineWidth: borderLineWidth)
+        )
+    }
+
+    private var maxLabelWidth: CGFloat? {
+        #if os(tvOS)
+            return nil
+        #else
+            return (variant == .ghost) ? nil : .infinity
         #endif
     }
 
@@ -183,3 +193,37 @@ public struct GlassButton: View {
         }
     }
 }
+
+// MARK: - tvOS Button Style
+
+#if os(tvOS)
+    /// ButtonStyle for GlassButton on tvOS. Uses `@Environment(\.isFocused)` so
+    /// the Button itself remains the focus target and its action fires on press.
+    struct GlassButtonTVStyle: ButtonStyle {
+        @Environment(\.isFocused) private var isFocused
+
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .scaleEffect(
+                    isFocused
+                        ? 1.03
+                        : (configuration.isPressed ? 0.97 : 1.0)
+                )
+                .shadow(
+                    color: isFocused
+                        ? DesignTokens.Glass.purpleGlow : .clear,
+                    radius: 8,
+                    x: 0,
+                    y: isFocused ? 6 : 0
+                )
+                .animation(
+                    .spring(
+                        duration: TVDesignTokens.Focus.animationDuration,
+                        bounce: 0.2
+                    ),
+                    value: isFocused
+                )
+                .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+        }
+    }
+#endif

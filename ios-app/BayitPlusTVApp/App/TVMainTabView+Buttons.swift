@@ -97,22 +97,27 @@
         // MARK: - Language Picker Sheet
 
         var languagePickerSheet: some View {
-            ZStack(alignment: .topTrailing) {
-                TVLanguageSettingsView()
-
-                Button {
-                    showLanguagePicker = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: TVDesignTokens.FontSize.xl))
-                        .foregroundStyle(DesignTokens.Text.secondary)
+            VStack(spacing: 0) {
+                // Close button at top-right, inside the layout flow so focus can reach it
+                HStack {
+                    Spacer()
+                    Button {
+                        showLanguagePicker = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: TVDesignTokens.FontSize.xl))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
+                    .tvCardStyle()
+                    .accessibilityLabel(localization.t("common.dismiss"))
                 }
-                .tvCardStyle()
-                .padding(.top, TVDesignTokens.Spacing.xl)
+                .padding(.top, TVDesignTokens.Spacing.md)
                 .padding(.trailing, TVDesignTokens.Spacing.xl)
-                .accessibilityLabel(localization.t("common.dismiss"))
+
+                TVLanguageSettingsView()
             }
             .background(DesignTokens.Background.primary)
+            .onExitCommand { showLanguagePicker = false }
         }
     }
 #endif

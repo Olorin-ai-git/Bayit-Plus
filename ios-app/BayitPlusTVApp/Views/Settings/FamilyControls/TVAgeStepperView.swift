@@ -15,11 +15,11 @@ struct TVAgeStepperView: View {
     init(
         label: String,
         value: Binding<Double>,
-        range: ClosedRange<Double> = 1...18,
+        range: ClosedRange<Double> = 1 ... 18,
         step: Double = 1
     ) {
         self.label = label
-        self._value = value
+        _value = value
         self.range = range
         self.step = step
     }
@@ -64,8 +64,7 @@ struct TVAgeStepperView: View {
                         .stroke(DesignTokens.Glass.border, lineWidth: 1)
                 )
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
         .disabled(value <= range.lowerBound)
     }
 
@@ -93,8 +92,7 @@ struct TVAgeStepperView: View {
                         .stroke(DesignTokens.Glass.border, lineWidth: 1)
                 )
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
         .disabled(value >= range.upperBound)
     }
 

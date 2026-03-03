@@ -51,7 +51,7 @@ struct TVTimeRangePickerView: View {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 timeUnit(
                     value: hourBinding(for: time),
-                    range: 0...23
+                    range: 0 ... 23
                 )
 
                 Text(":")
@@ -64,7 +64,7 @@ struct TVTimeRangePickerView: View {
 
                 timeUnit(
                     value: minuteBinding(for: time),
-                    range: 0...45,
+                    range: 0 ... 45,
                     step: 15
                 )
             }
@@ -90,8 +90,7 @@ struct TVTimeRangePickerView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .frame(width: 56, height: 28)
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
 
             Text(String(format: "%02d", value.wrappedValue))
                 .font(.system(
@@ -119,8 +118,7 @@ struct TVTimeRangePickerView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .frame(width: 56, height: 28)
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 

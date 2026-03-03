@@ -58,8 +58,7 @@ extension TVSecurityView {
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundStyle(DesignTokens.ErrorColor.default)
                 }
-                .buttonStyle(.plain)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(TVDesignTokens.Spacing.lg)

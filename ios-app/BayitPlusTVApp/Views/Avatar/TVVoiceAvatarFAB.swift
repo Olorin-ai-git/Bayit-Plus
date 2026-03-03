@@ -3,7 +3,6 @@ import SwiftUI
 
 /// tvOS floating action button for activating the AI assistant.
 struct TVVoiceAvatarFAB: View {
-
     let onTap: () -> Void
 
     @State private var bounceOffset: CGFloat = 0
@@ -31,14 +30,13 @@ struct TVVoiceAvatarFAB: View {
             }
             .offset(y: bounceOffset)
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
         .accessibilityLabel("AI Assistant")
         .accessibilityHint("Activate the AI voice assistant")
         .onAppear {
             withAnimation(
                 .easeInOut(duration: 2.0)
-                .repeatForever(autoreverses: true)
+                    .repeatForever(autoreverses: true)
             ) {
                 bounceOffset = -5
             }

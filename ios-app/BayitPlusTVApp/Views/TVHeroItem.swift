@@ -12,8 +12,6 @@ struct TVHeroItem: View {
     let onMoreInfo: () -> Void
 
     @Environment(LocalizationManager.self) private var localization
-    @FocusState private var watchNowFocused: Bool
-    @FocusState private var moreInfoFocused: Bool
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -103,32 +101,20 @@ struct TVHeroItem: View {
     // MARK: - Watch Now Button
 
     private var watchNowButton: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            Image(systemName: "play.fill")
-                .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
-            Text(localization.t("hero.watchNow"))
-                .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+        Button(action: onWatchNow) {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "play.fill")
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+                Text(localization.t("hero.watchNow"))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(Capsule().fill(DesignTokens.Primary.default))
         }
-        .foregroundStyle(.white)
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
-        .padding(.vertical, TVDesignTokens.Spacing.md)
-        .background(
-            Capsule()
-                .fill(DesignTokens.Primary.default)
-                .brightness(watchNowFocused ? 0.22 : 0)
-        )
-        .shadow(
-            color: watchNowFocused ? DesignTokens.Glass.purpleGlow : .clear,
-            radius: TVDesignTokens.Focus.shadowRadius,
-            x: 0,
-            y: watchNowFocused ? 6 : 0
-        )
-        .scaleEffect(watchNowFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
-        .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: watchNowFocused)
-        .focusable(true)
-        .focused($watchNowFocused)
+        .buttonStyle(HeroPrimaryButtonStyle())
         .focusEffectDisabled()
-        .onLongPressGesture(minimumDuration: 0, perform: onWatchNow)
         .accessibilityLabel(localization.t("hero.watchNow"))
         .accessibilityAddTraits(.isButton)
     }
@@ -136,40 +122,21 @@ struct TVHeroItem: View {
     // MARK: - More Info Button
 
     private var moreInfoButton: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            Image(systemName: "info.circle")
-                .font(.system(size: TVDesignTokens.FontSize.md))
-            Text(localization.t("common.moreInfo"))
-                .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+        Button(action: onMoreInfo) {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                Text(localization.t("common.moreInfo"))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(Capsule().fill(Color.white.opacity(0.08)))
+            .overlay(Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1))
         }
-        .foregroundStyle(.white)
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
-        .padding(.vertical, TVDesignTokens.Spacing.md)
-        .background(
-            Capsule()
-                .fill(Color.white.opacity(moreInfoFocused ? 0.18 : 0.08))
-        )
-        .overlay(
-            Capsule()
-                .stroke(
-                    moreInfoFocused
-                        ? DesignTokens.Glass.borderFocus
-                        : DesignTokens.Glass.border,
-                    lineWidth: moreInfoFocused
-                        ? TVDesignTokens.Focus.ringWidth : 1
-                )
-        )
-        .shadow(
-            color: moreInfoFocused ? DesignTokens.Glass.purpleGlow : .clear,
-            radius: TVDesignTokens.Focus.shadowRadius,
-            x: 0, y: moreInfoFocused ? 6 : 0
-        )
-        .scaleEffect(moreInfoFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
-        .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: moreInfoFocused)
-        .focusable(true)
-        .focused($moreInfoFocused)
+        .buttonStyle(HeroSecondaryButtonStyle())
         .focusEffectDisabled()
-        .onLongPressGesture(minimumDuration: 0, perform: onMoreInfo)
         .accessibilityLabel(localization.t("common.moreInfo"))
         .accessibilityAddTraits(.isButton)
     }
@@ -189,5 +156,58 @@ struct TVHeroItem: View {
             .padding(.vertical, TVDesignTokens.Spacing.xxs)
             .background(DesignTokens.Glass.bgStrong)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
+    }
+}
+
+// MARK: - Hero Button Styles
+
+private struct HeroPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .focusEffectDisabled()
+            .brightness(isFocused ? 0.22 : 0)
+            .scaleEffect(
+                isFocused
+                    ? TVDesignTokens.Focus.scaleAmount
+                    : (configuration.isPressed ? 0.97 : 1.0)
+            )
+            .shadow(
+                color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0,
+                y: isFocused ? 6 : 0
+            )
+            .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: isFocused)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+private struct HeroSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .focusEffectDisabled()
+            .overlay(
+                Capsule()
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+            )
+            .scaleEffect(
+                isFocused
+                    ? TVDesignTokens.Focus.scaleAmount
+                    : (configuration.isPressed ? 0.97 : 1.0)
+            )
+            .shadow(
+                color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0, y: isFocused ? 6 : 0
+            )
+            .animation(.easeInOut(duration: TVDesignTokens.Focus.animationDuration), value: isFocused)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }

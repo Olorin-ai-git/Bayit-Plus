@@ -7490,7 +7490,12 @@
       "contentRating": "உள்ளடக்க மதிப்பீடு",
       "kidsOnly": "குழந்தைகள் உள்ளடக்கம் மட்டும்",
       "excludeKids": "குழந்தைகள் உள்ளடக்கத்தை விலக்கு",
-      "allContent": "அனைத்து உள்ளடக்கமும்"
+      "allContent": "அனைத்து உள்ளடக்கமும்",
+      "actors": "நடிகர்கள்",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்கள்",
+      "collections": "தொகுப்புகள்",
+      "audiobooks": "ஒலிப்புத்தகங்கள்"
     },
     "controls": {
       "placeholder": "Search for content...",

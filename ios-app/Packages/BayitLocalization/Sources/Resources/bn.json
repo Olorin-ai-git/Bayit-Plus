@@ -7398,7 +7398,12 @@
       "contentRating": "কন্টেন্ট রেটিং",
       "kidsOnly": "শুধুমাত্র শিশুদের কন্টেন্ট",
       "excludeKids": "শিশুদের কন্টেন্ট বাদ দিন",
-      "allContent": "সব কন্টেন্ট"
+      "allContent": "সব কন্টেন্ট",
+      "actors": "অভিনেতা",
+      "movies": "সিনেমা",
+      "series": "সিরিজ",
+      "collections": "সংকলন",
+      "audiobooks": "অডিওবুক"
     },
     "controls": {
       "placeholder": "Search for content...",

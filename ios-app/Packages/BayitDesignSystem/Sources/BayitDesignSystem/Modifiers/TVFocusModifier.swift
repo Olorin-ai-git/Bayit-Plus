@@ -2,8 +2,10 @@
     import SwiftUI
 
     /// Applies tvOS focus scale, highlight ring, and shadow on focus.
-    /// Uses `.focusable(true)` + `@FocusState` + `.focusEffectDisabled()`
-    /// to fully bypass the system white highlight that Button receives.
+    /// Uses `@FocusState` + `.focusEffectDisabled()` to replace the system
+    /// white highlight with custom purple effects. Does NOT add `.focusable(true)`
+    /// because that creates a competing focus target on Buttons and prevents
+    /// their actions from firing.
     public struct TVFocusModifier: ViewModifier {
         @FocusState private var isFocused: Bool
 
@@ -23,7 +25,6 @@
 
         public func body(content: Content) -> some View {
             content
-                .focusable(true)
                 .focused($isFocused)
                 .focusEffectDisabled()
                 .scaleEffect(isFocused ? scaleAmount : 1.0)

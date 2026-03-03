@@ -14,6 +14,10 @@ from .billing import router as billing_router
 from .campaigns import router as campaigns_router
 # Import all routers
 from .cost_dashboard import router as cost_dashboard_router
+from .cost_health import router as cost_health_router
+from .cost_platforms import router as cost_platforms_router
+from .cost_services import router as cost_services_router
+from .cost_toggles import router as cost_toggles_router
 from .dashboard import router as dashboard_router
 from .database_maintenance import router as database_maintenance_router
 from .email_templates import router as email_templates_router
@@ -38,6 +42,10 @@ router = APIRouter()
 router.include_router(ai_usage_router, tags=["admin-ai-usage"])
 router.include_router(dashboard_router, tags=["admin-dashboard"])
 router.include_router(cost_dashboard_router, tags=["admin-costs"])
+router.include_router(cost_services_router, tags=["admin-costs-ios"])
+router.include_router(cost_platforms_router, tags=["admin-costs-ios"])
+router.include_router(cost_health_router, tags=["admin-costs-ios"])
+router.include_router(cost_toggles_router, tags=["admin-costs-ios"])
 router.include_router(users_router, tags=["admin-users"])
 router.include_router(campaigns_router, tags=["admin-campaigns"])
 router.include_router(billing_router, tags=["admin-billing"])

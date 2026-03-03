@@ -101,8 +101,7 @@
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                 )
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
             .frame(maxWidth: .infinity, alignment: .center)
         }
 
@@ -259,8 +258,7 @@
                 .background(DesignTokens.Glass.bg)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
         }
     }
 #endif

@@ -134,7 +134,6 @@ struct TVVoiceLanguageSelectStep: View {
                     )
             )
         }
-        .buttonStyle(.plain)
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 }

@@ -62,8 +62,7 @@
                         )
                 }
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
             .disabled(vm.isTranscribing)
             .accessibilityLabel(vm.isRecording ? "Stop recording" : "Start voice input")
             .accessibilityHint("Press to use Siri Remote microphone")

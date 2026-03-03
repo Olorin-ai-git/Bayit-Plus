@@ -1,9 +1,10 @@
 """Base cost provider interface."""
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
 
 @dataclass
@@ -15,6 +16,8 @@ class CostData:
     currency: str = "USD"
     start_date: date = None
     end_date: date = None
+    breakdown: dict[str, Decimal] | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class CostProvider(ABC):

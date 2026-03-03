@@ -112,8 +112,7 @@ struct TVSubscriptionView: View {
                             )
                         )
                 }
-                .buttonStyle(.plain)
-                .tvFocusStyle()
+                .tvCardStyle()
             }
         }
         .padding(TVDesignTokens.Spacing.xs)

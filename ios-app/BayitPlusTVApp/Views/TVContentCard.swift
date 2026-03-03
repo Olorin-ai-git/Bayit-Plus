@@ -187,13 +187,6 @@ private struct TVContentCardButtonStyle: ButtonStyle {
                     ? TVDesignTokens.Focus.scaleAmount
                     : (configuration.isPressed ? 0.97 : 1.0)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster)
-                    .stroke(
-                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
-                        lineWidth: TVDesignTokens.Focus.ringWidth
-                    )
-            )
             .shadow(
                 color: isFocused
                     ? DesignTokens.Glass.purpleGlow : .clear,

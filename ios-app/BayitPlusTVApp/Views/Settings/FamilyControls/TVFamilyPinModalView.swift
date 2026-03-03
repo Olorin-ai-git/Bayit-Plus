@@ -77,7 +77,7 @@ struct TVFamilyPinModalView: View {
 
     private var digitColumns: some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            ForEach(0..<4, id: \.self) { index in
+            ForEach(0 ..< 4, id: \.self) { index in
                 digitColumn(at: index)
             }
         }
@@ -93,8 +93,7 @@ struct TVFamilyPinModalView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .frame(width: 64, height: 36)
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
 
             Text(String(digits[index]))
                 .font(.system(
@@ -124,8 +123,7 @@ struct TVFamilyPinModalView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .frame(width: 64, height: 36)
             }
-            .buttonStyle(.plain)
-            .tvFocusStyle()
+            .tvCardStyle()
             .focused($focusedDigit, equals: index)
 
             Circle()

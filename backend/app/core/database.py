@@ -22,6 +22,7 @@ from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.models.cost_breakdown import CostBreakdown, UserCostBreakdown
+from app.models.cost_provider_settings import CostProviderSettings
 from app.models.chapters import VideoChapters
 from app.models.channel_chat import (
     ChannelChatMessage,
@@ -315,6 +316,7 @@ async def connect_to_mongo():
         # Cost tracking models
         CostBreakdown,
         UserCostBreakdown,
+        CostProviderSettings,
         # Security audit log
         SecurityAuditLog,
         # Diagnostics models (system health monitoring)

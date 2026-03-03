@@ -7673,7 +7673,12 @@
       "contentRating": "Classificazione Contenuti",
       "kidsOnly": "Solo contenuti per bambini",
       "excludeKids": "Escludi contenuti per bambini",
-      "allContent": "Tutti i contenuti"
+      "allContent": "Tutti i contenuti",
+      "actors": "Attori",
+      "movies": "Film",
+      "series": "Serie",
+      "collections": "Collezioni",
+      "audiobooks": "Audiolibri"
     },
     "suggestions": "[IT] Suggestions",
     "controls": {

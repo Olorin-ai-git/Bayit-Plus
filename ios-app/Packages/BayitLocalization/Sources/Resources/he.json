@@ -7497,7 +7497,12 @@
       "contentRating": "דירוג תוכן",
       "kidsOnly": "תוכן לילדים בלבד",
       "excludeKids": "ללא תוכן לילדים",
-      "allContent": "כל התוכן"
+      "allContent": "כל התוכן",
+      "actors": "שחקנים",
+      "movies": "סרטים",
+      "series": "סדרות",
+      "collections": "אוספים",
+      "audiobooks": "ספרי שמע"
     },
     "suggestions": "[HE] Suggestions",
     "controls": {

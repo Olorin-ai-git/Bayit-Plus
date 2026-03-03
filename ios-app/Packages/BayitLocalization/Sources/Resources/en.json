@@ -7464,7 +7464,12 @@
       "contentRating": "Content Rating",
       "kidsOnly": "Kids content only",
       "excludeKids": "Exclude kids content",
-      "allContent": "All content"
+      "allContent": "All content",
+      "actors": "Actors",
+      "movies": "Movies",
+      "series": "Series",
+      "collections": "Collections",
+      "audiobooks": "Audiobooks"
     },
     "suggestions": "Suggestions",
     "controls": {

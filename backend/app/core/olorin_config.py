@@ -1468,6 +1468,133 @@ class LiveTriviaConfig(BaseSettings):
         env_prefix = "LIVE_TRIVIA_"
 
 
+class GCPBillingConfig(BaseSettings):
+    """GCP billing via BigQuery export tables."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable BigQuery billing export queries",
+    )
+    billing_export_table: str = Field(
+        default="",
+        description="BigQuery table ref (project.dataset.table)",
+    )
+    project_ids: list[str] = Field(
+        default_factory=lambda: [
+            "bayit-plus",
+            "olorin-fraud-detection",
+            "olorin-production",
+            "israeli-radio-475c9",
+        ],
+        description="GCP project IDs to aggregate billing for",
+    )
+    data_lag_hours: int = Field(
+        default=4,
+        ge=1,
+        le=48,
+        description="Hours of data lag in billing export",
+    )
+
+    class Config:
+        env_prefix = "GCP_BILLING_"
+
+
+class MongoDBBillingConfig(BaseSettings):
+    """MongoDB Atlas billing API configuration."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable Atlas billing API queries",
+    )
+    org_id: str = Field(
+        default="",
+        description="MongoDB Atlas organization ID",
+    )
+    public_key: str = Field(
+        default="",
+        description="Atlas API public key (digest auth)",
+    )
+    private_key: str = Field(
+        default="",
+        description="Atlas API private key (digest auth)",
+    )
+
+    class Config:
+        env_prefix = "MONGODB_ATLAS_"
+
+
+class OpenAIBillingConfig(BaseSettings):
+    """OpenAI billing API configuration."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable OpenAI cost queries",
+    )
+    api_key: str = Field(
+        default="",
+        description="OpenAI API key for billing endpoint",
+    )
+
+    class Config:
+        env_prefix = "OPENAI_BILLING_"
+
+
+class PineconeBillingConfig(BaseSettings):
+    """Pinecone serverless billing configuration."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable Pinecone usage queries",
+    )
+
+    class Config:
+        env_prefix = "PINECONE_BILLING_"
+
+
+class TwilioBillingConfig(BaseSettings):
+    """Twilio billing API configuration."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable Twilio usage queries",
+    )
+    account_sid: str = Field(
+        default="",
+        description="Twilio account SID",
+    )
+    auth_token: str = Field(
+        default="",
+        description="Twilio auth token",
+    )
+
+    class Config:
+        env_prefix = "TWILIO_BILLING_"
+
+
+class RedisCloudBillingConfig(BaseSettings):
+    """Redis Cloud billing API configuration."""
+
+    enabled: bool = Field(
+        default=False,
+        description="Enable Redis Cloud cost queries",
+    )
+    api_key: str = Field(
+        default="",
+        description="Redis Cloud API key",
+    )
+    api_secret: str = Field(
+        default="",
+        description="Redis Cloud API secret",
+    )
+    subscription_id: str = Field(
+        default="",
+        description="Redis Cloud subscription ID",
+    )
+
+    class Config:
+        env_prefix = "REDIS_CLOUD_"
+
+
 class OlorinSettings(BaseSettings):
     """
     Olorin.ai Platform Configuration.
@@ -1603,6 +1730,39 @@ class OlorinSettings(BaseSettings):
     catchup: CatchupConfig = Field(
         default_factory=CatchupConfig,
         description="Catchup service for transcript accumulation",
+    )
+
+    # Billing provider configs
+    gcp_billing: GCPBillingConfig = Field(
+        default_factory=GCPBillingConfig,
+        description="GCP billing via BigQuery export",
+    )
+    mongodb_billing: MongoDBBillingConfig = Field(
+        default_factory=MongoDBBillingConfig,
+        description="MongoDB Atlas billing API",
+    )
+    openai_billing: OpenAIBillingConfig = Field(
+        default_factory=OpenAIBillingConfig,
+        description="OpenAI billing API",
+    )
+    pinecone_billing: PineconeBillingConfig = Field(
+        default_factory=PineconeBillingConfig,
+        description="Pinecone serverless billing",
+    )
+    twilio_billing: TwilioBillingConfig = Field(
+        default_factory=TwilioBillingConfig,
+        description="Twilio billing API",
+    )
+    redis_cloud_billing: RedisCloudBillingConfig = Field(
+        default_factory=RedisCloudBillingConfig,
+        description="Redis Cloud billing API",
+    )
+
+    # Admin access
+    costs_admin_uid: str = Field(
+        default="",
+        description="Firebase UID allowed to access cost dashboard iOS app",
+        alias="OLORIN_COSTS_ADMIN_UID",
     )
 
     class Config:

@@ -75,9 +75,7 @@ struct TVActorPromoBannerView: View {
             .background(DesignTokens.Glass.bgMedium)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         }
-        .buttonStyle(.plain)
-        .focusEffectDisabled()
-        .tvFocusStyle()
+        .tvCardStyle()
     }
 
     @ViewBuilder

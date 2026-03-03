@@ -1,24 +1,23 @@
 #if os(tvOS)
     import SwiftUI
 
-    /// ViewModifier that kills the system white focus highlight and replaces
-    /// it with a purple border ring, glow shadow, and spring-animated scale.
+    /// ButtonStyle that replaces the system white focus highlight with a purple
+    /// border ring, glow shadow, and spring-animated scale.
     ///
-    /// Uses the same pattern as TVHeroItem: `.focusable(true)` +
-    /// `.focusEffectDisabled()` to fully bypass the system focus decoration
-    /// that `Button` normally receives on tvOS.
-    public struct TVCardModifier: ViewModifier {
-        @FocusState private var isFocused: Bool
+    /// Uses `@Environment(\.isFocused)` inside a ButtonStyle so the Button
+    /// itself remains the focus target and its action fires on press.
+    /// The previous `.focusable(true)` + `@FocusState` pattern created a
+    /// competing focus wrapper that intercepted events.
+    private struct TVCardInternalButtonStyle: ButtonStyle {
+        @Environment(\.isFocused) private var isFocused
 
-        public init() {}
-
-        public func body(content: Content) -> some View {
-            content
-                .buttonStyle(.plain)
-                .focusable(true)
-                .focused($isFocused)
-                .focusEffectDisabled()
-                .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .scaleEffect(
+                    isFocused
+                        ? TVDesignTokens.Focus.scaleAmount
+                        : (configuration.isPressed ? 0.97 : 1.0)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                         .inset(by: -TVDesignTokens.Focus.ringWidth)
@@ -41,15 +40,16 @@
                     ),
                     value: isFocused
                 )
+                .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
         }
     }
 
     public extension View {
-        /// Replaces `.buttonStyle(.card)` with purple focus ring + glow.
-        /// Uses `.focusable(true)` + `.focusEffectDisabled()` to fully
-        /// bypass the system white highlight that `Button` receives on tvOS.
+        /// Replaces the tvOS system focus highlight with a purple focus ring + glow.
+        /// Uses a proper ButtonStyle so the Button action fires correctly on press.
         func tvCardStyle() -> some View {
-            modifier(TVCardModifier())
+            buttonStyle(TVCardInternalButtonStyle())
+                .focusEffectDisabled()
         }
     }
 #endif

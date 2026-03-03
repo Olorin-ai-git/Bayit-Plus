@@ -7423,7 +7423,12 @@
       "contentRating": "सामग्री रेटिंग",
       "kidsOnly": "केवल बच्चों की सामग्री",
       "excludeKids": "बच्चों की सामग्री को बाहर करें",
-      "allContent": "सभी सामग्री"
+      "allContent": "सभी सामग्री",
+      "actors": "अभिनेता",
+      "movies": "फ़िल्में",
+      "series": "सीरीज़",
+      "collections": "संग्रह",
+      "audiobooks": "ऑडियोबुक"
     },
     "controls": {
       "placeholder": "Search for content...",

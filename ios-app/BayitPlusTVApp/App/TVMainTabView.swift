@@ -59,17 +59,6 @@
                     hasAppeared = true
                     coord.selectedTab = .home
                 }
-                // Top-right navigation pills: widgets toggle + language picker
-                .overlay(alignment: .topTrailing) {
-                    HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        if let vm = dockViewModel, !vm.widgets.isEmpty {
-                            widgetsButton(viewModel: vm)
-                        }
-                        languageButton
-                    }
-                    .padding(.top, TVDesignTokens.Spacing.md)
-                    .padding(.trailing, TVDesignTokens.Spacing.xl)
-                }
                 // Mini audio player bar overlays at bottom when inline audio is active
                 .overlay(alignment: .bottom) {
                     TVMiniAudioPlayerBar()
@@ -87,8 +76,19 @@
                 }
             }
             .ignoresSafeArea(.all, edges: .trailing)
-            // Widget dock placed on the outer HStack so the tvOS focus engine can reach it.
+            // Top-right pills placed on outer HStack so tvOS focus engine can reach them.
             // Overlays nested inside TabView are outside the focus scope and receive no focus.
+            .overlay(alignment: .topTrailing) {
+                HStack(spacing: TVDesignTokens.Spacing.sm) {
+                    if let vm = dockViewModel, !vm.widgets.isEmpty {
+                        widgetsButton(viewModel: vm)
+                    }
+                    languageButton
+                }
+                .padding(.top, TVDesignTokens.Spacing.md)
+                .padding(.trailing, TVDesignTokens.Spacing.xl)
+            }
+            // Widget dock also on outer HStack for focus reachability.
             .overlay(alignment: .bottom) {
                 if let vm = dockViewModel, vm.isDockVisible, !vm.minimizedWidgets.isEmpty {
                     TVWidgetDockView(
