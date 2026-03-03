@@ -30,6 +30,7 @@ public enum AuthError: LocalizedError, Sendable {
     case networkError(underlying: String)
     case passwordResetFailed(underlying: String)
     case endpointDeprecated(message: String)
+    case biometricAuthFailed(underlying: String)
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -83,6 +84,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Password reset failed. Please try again."
         case .endpointDeprecated:
             return "Please update your app. Your session has expired."
+        case .biometricAuthFailed:
+            return "Biometric authentication failed. Please try another sign-in method."
         }
     }
 
@@ -90,60 +93,62 @@ public enum AuthError: LocalizedError, Sendable {
         switch self {
         case .notAuthenticated:
             return "User is not authenticated"
-        case .tokenRefreshFailed(let underlying):
+        case let .tokenRefreshFailed(underlying):
             return "Token refresh failed: \(underlying)"
-        case .googleSignInFailed(let underlying):
+        case let .googleSignInFailed(underlying):
             return "Google sign-in failed: \(underlying)"
-        case .appleSignInFailed(let underlying):
+        case let .appleSignInFailed(underlying):
             return "Apple sign-in failed: \(underlying)"
-        case .emailSignInFailed(let underlying):
+        case let .emailSignInFailed(underlying):
             return "Email sign-in failed: \(underlying)"
-        case .registrationFailed(let underlying):
+        case let .registrationFailed(underlying):
             return "Registration failed: \(underlying)"
-        case .keychainSaveFailed(let status):
+        case let .keychainSaveFailed(status):
             return "Keychain save failed with status: \(status)"
-        case .keychainLoadFailed(let status):
+        case let .keychainLoadFailed(status):
             return "Keychain load failed with status: \(status)"
-        case .keychainDeleteFailed(let status):
+        case let .keychainDeleteFailed(status):
             return "Keychain delete failed with status: \(status)"
         case .keychainItemNotFound:
             return "Keychain item not found"
-        case .profileSelectionFailed(let underlying):
+        case let .profileSelectionFailed(underlying):
             return "Profile selection failed: \(underlying)"
-        case .profileLoadFailed(let underlying):
+        case let .profileLoadFailed(underlying):
             return "Profile load failed: \(underlying)"
-        case .profileCreateFailed(let underlying):
+        case let .profileCreateFailed(underlying):
             return "Profile creation failed: \(underlying)"
-        case .betaCreditsFetchFailed(let underlying):
+        case let .betaCreditsFetchFailed(underlying):
             return "Beta credits fetch failed: \(underlying)"
         case .invalidFirebaseUser:
             return "Firebase user is invalid or missing"
         case .missingIDToken:
             return "Firebase ID token is missing"
-        case .signOutFailed(let underlying):
+        case let .signOutFailed(underlying):
             return "Sign-out failed: \(underlying)"
         case .cancelled:
             return "Authentication was cancelled"
-        case .devicePairingFailed(let underlying):
+        case let .devicePairingFailed(underlying):
             return "Device pairing failed: \(underlying)"
         case .sessionExpired:
             return "Session has expired"
         case .invalidEmailFormat:
             return "Invalid email format"
-        case .linkedProvidersFetchFailed(let underlying):
+        case let .linkedProvidersFetchFailed(underlying):
             return "Linked providers fetch failed: \(underlying)"
-        case .linkProviderFailed(let underlying):
+        case let .linkProviderFailed(underlying):
             return "Link provider failed: \(underlying)"
-        case .unlinkProviderFailed(let underlying):
+        case let .unlinkProviderFailed(underlying):
             return "Unlink provider failed: \(underlying)"
-        case .providerAlreadyLinked(let underlying):
+        case let .providerAlreadyLinked(underlying):
             return "Provider already linked: \(underlying)"
-        case .networkError(let underlying):
+        case let .networkError(underlying):
             return "Network error: \(underlying)"
-        case .passwordResetFailed(let underlying):
+        case let .passwordResetFailed(underlying):
             return "Password reset failed: \(underlying)"
-        case .endpointDeprecated(let message):
+        case let .endpointDeprecated(message):
             return "Endpoint deprecated: \(message). Please update your app."
+        case let .biometricAuthFailed(underlying):
+            return "Biometric auth failed: \(underlying)"
         }
     }
 }
