@@ -175,6 +175,9 @@ class Content(Document):
     # Trailer/Preview
     trailer_url: Optional[str] = None
     trailer_stream_url: Optional[str] = None  # GCS-hosted merged HD trailer MP4
+    trailer_extraction_status: Optional[str] = None  # "pending", "completed", "failed"
+    trailer_extraction_attempts: int = 0
+    trailer_extraction_error: Optional[str] = None
     preview_url: Optional[str] = None  # 5-second preview clip
 
     # Visibility

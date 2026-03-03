@@ -26,6 +26,10 @@ async def _run_extraction_batch(batch_limit: int) -> dict:
         Content.is_published == True,  # noqa: E712
         Content.trailer_url != None,  # noqa: E711
         Content.trailer_stream_url == None,  # noqa: E711
+        {"$or": [
+            {"trailer_extraction_status": None},
+            {"trailer_extraction_status": "pending"},
+        ]},
     ).limit(batch_limit).to_list()
 
     results = {"total": len(candidates), "extracted": 0, "failed": 0, "details": []}
@@ -36,6 +40,7 @@ async def _run_extraction_batch(batch_limit: int) -> dict:
             "content_id": str(content.id),
             "title": content.title,
             "trailer_url": content.trailer_url,
+            "trailer_extraction_error": content.trailer_extraction_error,
         }
         if gcs_url:
             results["extracted"] += 1

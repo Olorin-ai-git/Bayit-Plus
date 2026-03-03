@@ -71,9 +71,12 @@ async def extract_trailer_for_content(
         video_id,
     )
 
+    max_retries = settings.TRAILER_EXTRACTION_MAX_RETRIES
+
     try:
         result = await download_separate_streams(video_id, work_dir)
         if not result:
+            await _record_failure(content, video_id, max_retries, "Download failed")
             return None
 
         merged_path = os.path.join(work_dir, f"{video_id}_merged.mp4")
@@ -83,13 +86,17 @@ async def extract_trailer_for_content(
             merged_path,
         )
         if not merged:
+            await _record_failure(content, video_id, max_retries, "Merge failed")
             return None
 
         gcs_url = await upload_trailer(merged, video_id)
         if not gcs_url:
+            await _record_failure(content, video_id, max_retries, "Upload failed")
             return None
 
         content.trailer_stream_url = gcs_url
+        content.trailer_extraction_status = "completed"
+        content.trailer_extraction_error = None
         await content.save()
 
         logger.info(
@@ -103,7 +110,7 @@ async def extract_trailer_for_content(
 
         return gcs_url
 
-    except Exception:
+    except Exception as exc:
         logger.exception(
             "Trailer extraction pipeline failed",
             extra={
@@ -111,8 +118,46 @@ async def extract_trailer_for_content(
                 "video_id": video_id,
             },
         )
+        await _record_failure(content, video_id, max_retries, str(exc))
         return None
 
     finally:
         if os.path.isdir(work_dir):
             shutil.rmtree(work_dir, ignore_errors=True)
+
+
+async def _record_failure(
+    content: Content,
+    video_id: str,
+    max_retries: int,
+    error_message: str,
+) -> None:
+    """Increment attempt counter and mark permanently failed when exhausted."""
+    content.trailer_extraction_attempts += 1
+    content.trailer_extraction_error = error_message
+
+    if content.trailer_extraction_attempts >= max_retries:
+        content.trailer_extraction_status = "failed"
+        logger.warning(
+            "Trailer extraction permanently failed after max retries",
+            extra={
+                "content_id": str(content.id),
+                "video_id": video_id,
+                "attempts": content.trailer_extraction_attempts,
+                "error": error_message,
+            },
+        )
+    else:
+        content.trailer_extraction_status = "pending"
+        logger.info(
+            "Trailer extraction attempt failed, will retry",
+            extra={
+                "content_id": str(content.id),
+                "video_id": video_id,
+                "attempts": content.trailer_extraction_attempts,
+                "max_retries": max_retries,
+                "error": error_message,
+            },
+        )
+
+    await content.save()

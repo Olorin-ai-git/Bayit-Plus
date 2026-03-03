@@ -17,7 +17,8 @@ from app.api.dependencies.premium_features import (
 )
 from app.models.user import User
 from app.models.user_audible_account import UserAudibleAccount
-from app.services.audible_service import AudibleAudiobook, AudibleAPIError
+from app.services.audible_library_service import AudibleAudiobook
+from app.services.audible_service import AudibleAPIError
 
 
 @pytest.fixture

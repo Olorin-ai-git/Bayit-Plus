@@ -1571,6 +1571,10 @@ class Settings(BaseSettings):
         default=10,
         description="Max trailers to extract per scan batch",
     )
+    TRAILER_EXTRACTION_MAX_RETRIES: int = Field(
+        default=3,
+        description="Max extraction attempts before marking trailer as permanently failed",
+    )
     TRAILER_GCS_PATH_PREFIX: str = Field(
         default="trailers",
         description="GCS object path prefix for uploaded trailer MP4s",

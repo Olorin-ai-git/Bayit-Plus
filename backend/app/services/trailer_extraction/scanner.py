@@ -27,6 +27,10 @@ async def scan_and_extract_trailers() -> int:
         Content.is_published == True,  # noqa: E712
         Content.trailer_url != None,  # noqa: E711
         Content.trailer_stream_url == None,  # noqa: E711
+        {"$or": [
+            {"trailer_extraction_status": None},
+            {"trailer_extraction_status": "pending"},
+        ]},
     ).limit(batch_limit).to_list()
 
     if not candidates:

@@ -11,10 +11,10 @@ import httpx
 
 from app.services.audible_service import (
     AudibleService,
-    AudibleAudiobook,
-    AudibleOAuthToken,
     AudibleAPIError,
 )
+from app.services.audible_library_service import AudibleAudiobook
+from app.services.audible_oauth_service import AudibleOAuthToken
 from app.services.audible_token_crypto import AudibleTokenCrypto
 from app.services.audible_oauth_helpers import generate_pkce_pair, generate_state_token
 from app.services.audible_state_manager import store_state_token, validate_state_token

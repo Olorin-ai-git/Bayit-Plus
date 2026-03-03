@@ -342,6 +342,9 @@ async def get_trailer_stream(
     if content.trailer_stream_url:
         return {"stream_url": content.trailer_stream_url}
 
+    if content.trailer_extraction_status == "failed":
+        raise HTTPException(status_code=404, detail="Trailer unavailable")
+
     trailer_url = content.trailer_url
     if not trailer_url:
         raise HTTPException(status_code=404, detail="No trailer available")
