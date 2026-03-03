@@ -9,6 +9,7 @@
 ## 📱 Quick Start
 
 **New to Bayit+?** Start here:
+
 - [Startup Guide](guides/STARTUP_GUIDE.md) - Get up and running in 15 minutes
 - [Web Development](guides/WEB_DEVELOPMENT_GUIDE.md) - React 18 + Vite + TypeScript
 - [Mobile Web App](guides/MOBILE_WEB_APP_GUIDE.md) - m.bayit.tv mobile-optimized PWA
@@ -16,6 +17,7 @@
 - [tvOS Development](guides/TVOS_DEVELOPMENT_GUIDE.md) - Apple TV development
 
 **For Users:**
+
 - [Zeh Ani User Guide](guides/ZEH_ANI_USER_GUIDE.md) - AI-powered Hebrew identity feature for parents and children
 - [Family Controls Guide](guides/FAMILY_CONTROLS_USER_GUIDE.md) - Parental controls for safe content
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features closed beta program
@@ -24,6 +26,7 @@
 - [Troubleshooting Bayit+](guides/TROUBLESHOOTING_BAYIT.md) - Port conflicts, frontend-backend connectivity, MongoDB
 
 **Printable PDFs:**
+
 - [Zeh Ani Guide (PDF)](guides/Bayit_Plus_Zeh_Ani_Guide.pdf) - 8 pages
 - [Family Controls (PDF)](guides/Bayit_Plus_Family_Controls_Guide.pdf) - 14 pages
 - [Beta 500 Manual (PDF)](guides/Bayit_Plus_Beta_500_Manual.pdf) - 21 pages
@@ -37,6 +40,7 @@
 **Visit:** https://docs.bayitplus.com
 
 The documentation portal provides:
+
 - 🔍 **Fast Search** - Local search with keyboard shortcuts (Cmd/Ctrl+K)
 - 🎨 **Glass UI Theme** - Glassmorphism design with dark mode
 - 📱 **Responsive** - Works on all devices
@@ -52,6 +56,7 @@ The documentation portal provides:
 Complete API reference for all Bayit+ services:
 
 **Endpoint Reference (NEW - Complete Coverage):**
+
 - [Authentication & Security API](api/AUTH_API_REFERENCE.md) - Auth, OAuth, WebAuthn, device pairing, verification
 - [Content & Search API](api/CONTENT_API_REFERENCE.md) - Search, EPG, chapters, subtitles, taxonomy, trending
 - [User Management API](api/USER_API_REFERENCE.md) - Profiles, subscriptions, watchlist, favorites, downloads, devices
@@ -62,6 +67,7 @@ Complete API reference for all Bayit+ services:
 - [WebSocket API](api/WEBSOCKET_API_REFERENCE.md) - Live subtitles, dubbing, trivia, chess, DM, diagnostics
 
 **Overview & Feature APIs:**
+
 - [API Overview](api/API_OVERVIEW.md) - REST API architecture, auth, rate limiting
 - [AI API Reference](api/AI_API_REFERENCE.md) - AI Search, Recommendations, Catch-Up
 - [Channel Chat API](api/CHANNEL_CHAT_API.md) - Real-time chat for live channels
@@ -70,6 +76,7 @@ Complete API reference for all Bayit+ services:
 - [Voice API Reference](api/VOICE_API_REFERENCE.md) - TTS/STT integration
 
 **300+ API endpoints documented with:**
+
 - Request/response schemas
 - Authentication requirements
 - Rate limiting details
@@ -81,6 +88,7 @@ Complete API reference for all Bayit+ services:
 
 System design and architecture documents:
 
+- [Service Mesh Architecture](architecture/SERVICE_MESH.md) - 13-service Cloud Run decomposition, LB path rules, overlay pattern, deployment scripts (2026-03-02)
 - [System Overview](architecture/SYSTEM_OVERVIEW.md) - High-level architecture
 - [Component Architecture](architecture/COMPONENT_ARCHITECTURE.md) - Component design
 - [Unified Voice Architecture](architecture/UNIFIED_VOICE_ARCHITECTURE.md) - Voice system design
@@ -115,11 +123,13 @@ Feature specifications and implementation guides:
 Platform-specific development documentation:
 
 **Platform Guides:**
+
 - [Web Development Guide](guides/WEB_DEVELOPMENT_GUIDE.md) - React 18 + Vite + TypeScript ⭐ **NEW**
 - [Mobile Development Guide](guides/MOBILE_DEVELOPMENT_GUIDE.md) - React Native iOS/Android ⭐ **NEW**
 - [tvOS Development Guide](guides/TVOS_DEVELOPMENT_GUIDE.md) - Apple TV development ⭐ **NEW**
 
 **Feature Guides:**
+
 - [HLS Subtitles for AirPlay](guides/HLS_SUBTITLES_AIRPLAY.md) - Apple TV/AirPlay subtitle compatibility implementation ⭐ **NEW**
 - [Zeh Ani User Guide](guides/ZEH_ANI_USER_GUIDE.md) - Complete guide for parents and children using Zeh Ani (It's Me) Hebrew AI feature ⭐ **NEW**
 - [Family Controls User Guide](guides/FAMILY_CONTROLS_USER_GUIDE.md) - Parental controls for safe content (setup, PIN, age limits, viewing hours) ⭐ **NEW**
@@ -130,11 +140,13 @@ Platform-specific development documentation:
 - [Contributing Guide](guides/CONTRIBUTING.md) - How to contribute
 
 **AI Integration Guides:**
+
 - [Web AI Integration](guides/AI_INTEGRATION_WEB.md) - React 18 + Zustand + TailwindCSS ⭐ **NEW**
 - [Mobile AI Integration](guides/AI_INTEGRATION_MOBILE.md) - React Native iOS/Android + AsyncStorage ⭐ **NEW**
 - [tvOS AI Integration](guides/AI_INTEGRATION_TVOS.md) - Apple TV + Focus Navigation ⭐ **NEW**
 
 **AI Support:**
+
 - [AI Troubleshooting](guides/AI_TROUBLESHOOTING.md) - Common issues and solutions ⭐ **NEW**
 
 ---
@@ -272,6 +284,7 @@ Implementation summaries and session reports:
 ## 🎯 Key Technologies
 
 ### Backend
+
 - **Python 3.11** + FastAPI
 - **MongoDB Atlas** with Beanie ODM
 - **Poetry** dependency management
@@ -279,6 +292,7 @@ Implementation summaries and session reports:
 - **Olorin Services** for AI/ML
 
 ### Frontend Web
+
 - **React 18** + TypeScript
 - **Vite** build tool
 - **Zustand** state management
@@ -287,6 +301,7 @@ Implementation summaries and session reports:
 - **i18next** for 10 languages
 
 ### Mobile
+
 - **React Native** for iOS/Android
 - **React Native for TV** for tvOS
 - **StyleSheet** for styling
@@ -294,12 +309,14 @@ Implementation summaries and session reports:
 - **React Navigation** for routing
 
 ### AI/ML
+
 - **Anthropic Claude** (Sonnet 4.5, Haiku 3.5)
 - **OpenAI** GPT-4, Embeddings
 - **ElevenLabs** TTS/STT
 - **MongoDB Atlas** Vector Search
 
 ### Testing
+
 - **pytest** for backend (87%+ coverage)
 - **Jest** + React Testing Library for frontend
 - **Playwright** for web E2E
@@ -310,6 +327,7 @@ Implementation summaries and session reports:
 ## 🚀 Quick Commands
 
 ### Backend
+
 ```bash
 cd backend
 poetry install
@@ -317,6 +335,7 @@ poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Web
+
 ```bash
 cd web
 npm install
@@ -324,6 +343,7 @@ npm start  # Opens http://localhost:3000
 ```
 
 ### Mobile
+
 ```bash
 cd mobile-app
 npm install
@@ -332,6 +352,7 @@ npm run android  # Android Emulator
 ```
 
 ### tvOS
+
 ```bash
 cd tvos-app
 npm install
@@ -339,6 +360,7 @@ npm run ios  # tvOS Simulator
 ```
 
 ### Documentation Portal
+
 ```bash
 cd docs-portal
 npm install
@@ -360,12 +382,15 @@ npm run dev  # Opens http://localhost:5173
 ## 🔍 Search & Discovery
 
 ### Documentation Portal
+
 The fastest way to find documentation:
+
 - Visit https://docs.bayitplus.com
 - Use search (Cmd/Ctrl+K)
 - Browse by category
 
 ### Local Search
+
 ```bash
 # Search all docs
 grep -r "keyword" docs/
@@ -378,6 +403,7 @@ rg "keyword" docs/
 ```
 
 ### File Naming Conventions
+
 - **Implementation:** `FEATURE_NAME_IMPLEMENTATION.md`
 - **Guides:** `FEATURE_NAME_GUIDE.md`
 - **API References:** `SERVICE_NAME_API_REFERENCE.md`
@@ -397,6 +423,7 @@ Use these templates for new documentation:
 - [User Guide Template](templates/USER_GUIDE_TEMPLATE.md) - User-facing guides
 
 **Quality Standards:**
+
 - Follow [Naming Conventions](templates/NAMING_CONVENTIONS.md)
 - Use [Documentation Quality Checklist](templates/DOCUMENTATION_QUALITY_CHECKLIST.md)
 - All new docs must be indexed in this README
@@ -407,14 +434,15 @@ Use these templates for new documentation:
 
 Bayit+ runs on 4 platforms with unified documentation:
 
-| Platform | Documentation | Technology |
-|----------|--------------|------------|
-| **Web** | [Web Dev Guide](guides/WEB_DEVELOPMENT_GUIDE.md) | React 18, Vite, TailwindCSS |
-| **iOS** | [Mobile Dev Guide](guides/MOBILE_DEVELOPMENT_GUIDE.md) | React Native, iOS 16+ |
-| **Android** | [Mobile Dev Guide](guides/MOBILE_DEVELOPMENT_GUIDE.md) | React Native, Android 10+ |
-| **tvOS** | [tvOS Dev Guide](guides/TVOS_DEVELOPMENT_GUIDE.md) | React Native for TV, Focus Nav |
+| Platform    | Documentation                                          | Technology                     |
+| ----------- | ------------------------------------------------------ | ------------------------------ |
+| **Web**     | [Web Dev Guide](guides/WEB_DEVELOPMENT_GUIDE.md)       | React 18, Vite, TailwindCSS    |
+| **iOS**     | [Mobile Dev Guide](guides/MOBILE_DEVELOPMENT_GUIDE.md) | React Native, iOS 16+          |
+| **Android** | [Mobile Dev Guide](guides/MOBILE_DEVELOPMENT_GUIDE.md) | React Native, Android 10+      |
+| **tvOS**    | [tvOS Dev Guide](guides/TVOS_DEVELOPMENT_GUIDE.md)     | React Native for TV, Focus Nav |
 
 **Shared Infrastructure:**
+
 - `@bayit/glass` - Glass UI component library
 - `@olorin/shared-i18n` - 10-language internationalization
 - MongoDB Atlas database (64+ collections)
@@ -426,6 +454,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 ## 🛠️ Contributing
 
 **Before Contributing:**
+
 1. Read [Contributing Guide](guides/CONTRIBUTING.md)
 2. Use appropriate [documentation templates](templates/)
 3. Follow [naming conventions](templates/NAMING_CONVENTIONS.md)
@@ -433,6 +462,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 5. Test code examples in documentation
 
 **Code Standards:**
+
 - All code fully functional (no stubs/mocks/TODOs)
 - No hardcoded values (use configuration)
 - 87%+ test coverage required
@@ -444,18 +474,31 @@ Bayit+ runs on 4 platforms with unified documentation:
 ## 🆘 Support
 
 **Documentation Issues:**
+
 - Report at: https://github.com/bayit-plus/issues
 - Email: support@bayitplus.com
 - Community: community.bayitplus.com
 
 **Emergency Contact:**
+
 - Critical issues: emergency@bayitplus.com
 
 ---
 
 ## Recent Updates
 
+**2026-03-02: Backend Service Mesh -- 13-Service Decomposition**
+
+- Completed monolith decomposition into 13 independent Cloud Run services
+- Phase 2 added 7 new services: bayit-auth, bayit-content, bayit-user, bayit-payments, bayit-social, bayit-media-pipeline, bayit-community
+- All traffic routed via GCP Global Application Load Balancer with ~80 path rules through `api.bayit.tv`
+- Overlay Docker pattern: services share monolith codebase, overlay only `main.py` + `router_registry.py`
+- No client-side changes required (all 5 platforms already use `api.bayit.tv`)
+- Local development unchanged (monolith retains all routes on port 8000)
+- See [Service Mesh Architecture](architecture/SERVICE_MESH.md) for full details
+
 **2026-02-12: Voice & Avatar AI Features v1.1.0**
+
 - Added comprehensive Voice & Avatar AI features user guide
 - Complete deployment documentation with 5-phase rollout strategy
 - GCloud Secret Manager configuration for all Voice & Avatar features
@@ -466,6 +509,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Rollback procedures and troubleshooting guides
 
 **2026-02-11: Cross-Platform Feature Parity Audit v2.0**
+
 - Comprehensive feature parity audit comparing Web, iOS, and tvOS
 - 180+ features compared across 26 categories
 - Side-by-side parity table with gap notes for every sub-feature
@@ -475,6 +519,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Supersedes PLATFORM_PARITY_AUDIT_2026-02-08
 
 **2026-02-04: Marketing Materials & App Store Guide**
+
 - Added comprehensive App Store Connect tvOS Metadata Guide
 - Created complete marketing assets package for Apple TV launch
 - Social media campaigns (Twitter, Instagram, Facebook, LinkedIn)
@@ -487,6 +532,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Launch checklist and performance metrics
 
 **2026-02-03: Documentation Organization**
+
 - Reduced docs from 306 to 226 files
 - Cleaned up obsolete summaries, phase reports, and dated files
 - Organized root-level docs into proper subfolders
@@ -495,6 +541,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Updated docs index with current structure
 
 **2026-02-02: HLS Subtitles for Apple TV/AirPlay**
+
 - Comprehensive implementation guide for HLS-compatible subtitles
 - Browser playback (HLS.js) and Apple TV AirPlay casting support
 - Proper HLS subtitle playlist architecture (.m3u8 wrappers)
@@ -503,6 +550,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Testing procedures for both platforms
 
 **2026-02-02: MongoDB SSL Connection Fix**
+
 - Fixed MongoDB Atlas SSL connection errors on macOS with Python 3.13+
 - Added explicit TLS/SSL configuration to olorin-shared MongoDB client
 - Created diagnostic tool for troubleshooting SSL issues
@@ -510,6 +558,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Updated documentation with security best practices
 
 **2026-02-01: Beta 500 User Manual v2.0**
+
 - Complete rewrite of Beta 500 User Manual with accurate information
 - Corrected credit allocation (5,000 credits, not 500)
 - Added comprehensive testing guidelines for beta testers
@@ -520,6 +569,7 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Privacy and data handling documentation
 
 **2026-02-01: Real EPG Integration (Schedules Direct)**
+
 - Added Schedules Direct API integration for real TV schedule data
 - Israel Plus channel now has 146 real EPG entries
 - Total 739 EPG entries across 6 channels from real sources:
@@ -529,12 +579,14 @@ Bayit+ runs on 4 platforms with unified documentation:
 - Created ingest scripts for automated EPG updates
 
 **2026-01-31: Emoji to Icons Migration Plan**
+
 - Comprehensive migration plan to replace 306+ emojis with @olorin/shared-icons
 - 28 new icons identified for registry extension
 - 84 files across web, mobile, tvOS, and backend
 - 5-week implementation timeline
 
 **2026-01-30: Documentation Portal Launch**
+
 - ✅ VitePress portal deployed at https://docs.bayitplus.com
 - ✅ Glass UI theme with glassmorphism design
 - ✅ Local search with Cmd/Ctrl+K shortcuts
@@ -544,17 +596,20 @@ Bayit+ runs on 4 platforms with unified documentation:
 - ✅ 9 critical documentation files created
 
 **2026-01-29: Beta 500 Program**
+
 - Beta 500 closed beta program implementation
 - 500 AI credits per user
 - AI Search, AI Recommendations, Auto Catch-Up
 - Comprehensive user manual published
 
 **2026-01-25: Admin Pages Rebuild**
+
 - Content admin pages refactored
 - Security improvements
 - i18n and accessibility enhancements
 
 **2026-01-13: Documentation Organization**
+
 - Moved 88 root-level files to proper subdirectories
 - Created logical category structure
 - Improved discoverability
