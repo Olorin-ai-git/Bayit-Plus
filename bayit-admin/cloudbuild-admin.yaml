@@ -85,6 +85,7 @@ steps:
       - '--update-secrets=TURBO_TOKEN=turbo-token:latest,TURBO_TEAM=turbo-team:latest'
       # Olorin Costs billing providers + admin lock
       - '--update-secrets=OLORIN_COSTS_ADMIN_UID=olorin-costs-admin-uid:latest,OLORIN_COSTS_ADMIN_EMAIL=olorin-costs-admin-email:latest,OPENAI_BILLING_ENABLED=bayit-openai-billing-enabled:latest,PINECONE_BILLING_ENABLED=bayit-pinecone-billing-enabled:latest,PINECONE_API_KEY=olorin-pinecone-api-key:latest,TWILIO_BILLING_ENABLED=bayit-twilio-billing-enabled:latest'
+      - '--update-secrets=MONGODB_ATLAS_ENABLED=bayit-mongodb-atlas-enabled:latest,MONGODB_ATLAS_ORG_ID=bayit-mongodb-atlas-org-id:latest,MONGODB_ATLAS_PUBLIC_KEY=bayit-mongodb-atlas-public-key:latest,MONGODB_ATLAS_PRIVATE_KEY=bayit-mongodb-atlas-private-key:latest'
       - '--update-secrets=VOICE_PROACTIVE_SUGGESTIONS_ENABLED=VOICE_PROACTIVE_SUGGESTIONS_ENABLED:latest,VOICE_MULTI_LANGUAGE_ENABLED=VOICE_MULTI_LANGUAGE_ENABLED:latest,VOICE_SHORTCUTS_ENABLED=VOICE_SHORTCUTS_ENABLED:latest,AVATAR_ANIMATIONS_ENABLED=AVATAR_ANIMATIONS_ENABLED:latest,VOICE_ANALYTICS_ENABLED=VOICE_ANALYTICS_ENABLED:latest,VOICE_ANALYTICS_SAMPLE_RATE=VOICE_ANALYTICS_SAMPLE_RATE:latest,AVATAR_CACHE_TTL=AVATAR_CACHE_TTL:latest,VOICE_WEB_MICROPHONE_REQUIRED=VOICE_WEB_MICROPHONE_REQUIRED:latest,VOICE_MOBILE_BACKGROUND_LISTENING=VOICE_MOBILE_BACKGROUND_LISTENING:latest,VOICE_TVOS_SIRI_REMOTE_INTEGRATION=VOICE_TVOS_SIRI_REMOTE_INTEGRATION:latest,FERNET_ENCRYPTION_KEY=FERNET_ENCRYPTION_KEY:latest'
 
 images:
