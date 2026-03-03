@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException, Request
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.core.security import get_current_active_user
 from app.models.user import User
 
 logger = get_logger(__name__)
@@ -11,7 +12,7 @@ logger = get_logger(__name__)
 
 async def require_costs_admin_uid(
     request: Request,
-    user: User = Depends(),
+    user: User = Depends(get_current_active_user),
 ) -> User:
     """Verify the user's Firebase UID matches the configured admin."""
     admin_uid = settings.olorin.costs_admin_uid
