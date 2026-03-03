@@ -1,6 +1,11 @@
-"""Admin UID lock for cost dashboard iOS app."""
+"""Admin lock for cost dashboard iOS app.
 
-from fastapi import Depends, HTTPException, Request
+Verifies the authenticated user matches the configured admin identity.
+Checks email (OLORIN_COSTS_ADMIN_EMAIL) or user ID
+(OLORIN_COSTS_ADMIN_UID) against the current user.
+"""
+
+from fastapi import Depends, HTTPException
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -11,28 +16,33 @@ logger = get_logger(__name__)
 
 
 async def require_costs_admin_uid(
-    request: Request,
     user: User = Depends(get_current_active_user),
 ) -> User:
-    """Verify the user's Firebase UID matches the configured admin."""
+    """Verify the authenticated user is the costs admin."""
     admin_uid = settings.olorin.costs_admin_uid
-    if not admin_uid:
-        logger.error("OLORIN_COSTS_ADMIN_UID not configured")
+    admin_email = settings.olorin.costs_admin_email
+
+    if not admin_uid and not admin_email:
+        logger.error("Cost admin identity not configured")
         raise HTTPException(
             status_code=503,
             detail="Cost dashboard not configured",
         )
 
-    firebase_uid = getattr(request.state, "firebase_uid", None)
-    if not firebase_uid:
-        firebase_uid = getattr(user, "firebase_uid", None)
+    user_email = getattr(user, "email", None)
+    user_id = str(getattr(user, "id", ""))
 
-    if firebase_uid != admin_uid:
+    is_admin = (
+        (admin_email and user_email == admin_email)
+        or (admin_uid and user_id == admin_uid)
+    )
+
+    if not is_admin:
         logger.warning(
             "COSTS_ADMIN_ACCESS_DENIED",
             extra={
-                "attempted_uid": firebase_uid,
-                "user_id": user.id,
+                "user_email": user_email,
+                "user_id": user_id,
             },
         )
         raise HTTPException(

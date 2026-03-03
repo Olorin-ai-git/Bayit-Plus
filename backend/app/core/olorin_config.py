@@ -1761,8 +1761,13 @@ class OlorinSettings(BaseSettings):
     # Admin access
     costs_admin_uid: str = Field(
         default="",
-        description="Firebase UID allowed to access cost dashboard iOS app",
+        description="User ID allowed to access cost dashboard iOS app",
         alias="OLORIN_COSTS_ADMIN_UID",
+    )
+    costs_admin_email: str = Field(
+        default="",
+        description="Email allowed to access cost dashboard iOS app",
+        alias="OLORIN_COSTS_ADMIN_EMAIL",
     )
 
     class Config:

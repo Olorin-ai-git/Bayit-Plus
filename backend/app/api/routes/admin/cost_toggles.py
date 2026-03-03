@@ -116,8 +116,8 @@ async def update_toggle(
             detail=f"Invalid provider_key: {provider_key}",
         )
 
-    firebase_uid = getattr(request.state, "firebase_uid", None) or getattr(
-        current_user, "firebase_uid", ""
+    admin_identity = getattr(current_user, "email", "") or str(
+        getattr(current_user, "id", "")
     )
 
     existing = await CostProviderSettings.find_one(
@@ -127,14 +127,14 @@ async def update_toggle(
     if existing is not None:
         existing.enabled = body.enabled
         existing.updated_at = datetime.utcnow()
-        existing.updated_by = firebase_uid
+        existing.updated_by = admin_identity
         await existing.save()
         doc = existing
     else:
         doc = CostProviderSettings(
             provider_key=provider_key,
             enabled=body.enabled,
-            updated_by=firebase_uid,
+            updated_by=admin_identity,
         )
         await doc.insert()
 
@@ -147,7 +147,7 @@ async def update_toggle(
         extra={
             "provider_key": provider_key,
             "enabled": body.enabled,
-            "admin_uid": firebase_uid,
+            "admin_identity": admin_identity,
         },
     )
 

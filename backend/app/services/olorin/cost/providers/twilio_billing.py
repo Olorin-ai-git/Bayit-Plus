@@ -18,11 +18,19 @@ class TwilioBillingProvider(CostProvider):
     """Fetches Twilio usage via daily records API."""
 
     def __init__(self):
-        """Initialize with Twilio billing config."""
+        """Initialize with Twilio billing config.
+
+        Falls back to main TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN
+        when billing-specific credentials are not set.
+        """
         cfg = settings.olorin.twilio_billing
         self._enabled = cfg.enabled
-        self._account_sid = cfg.account_sid
-        self._auth_token = cfg.auth_token
+        self._account_sid = cfg.account_sid or getattr(
+            settings, "TWILIO_ACCOUNT_SID", ""
+        )
+        self._auth_token = cfg.auth_token or getattr(
+            settings, "TWILIO_AUTH_TOKEN", ""
+        )
 
     @circuit_breaker("twilio_billing")
     async def get_costs(

@@ -18,10 +18,16 @@ class OpenAIBillingProvider(CostProvider):
     """Fetches costs from OpenAI organization costs endpoint."""
 
     def __init__(self):
-        """Initialize with OpenAI billing config."""
+        """Initialize with OpenAI billing config.
+
+        Falls back to main OPENAI_API_KEY when billing-specific key
+        is not set, avoiding duplicate secret management.
+        """
         cfg = settings.olorin.openai_billing
         self._enabled = cfg.enabled
-        self._api_key = cfg.api_key
+        self._api_key = cfg.api_key or getattr(
+            settings, "OPENAI_API_KEY", ""
+        )
 
     @circuit_breaker("openai_billing")
     async def get_costs(
