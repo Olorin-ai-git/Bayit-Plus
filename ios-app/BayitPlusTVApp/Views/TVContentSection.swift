@@ -71,7 +71,7 @@ struct TVContentSection<Item, CardContent: View>: View {
 
             // Horizontal scrolling cards
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                HStack(alignment: .top, spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(Array(visibleItems.indices), id: \.self) { index in
                         cardBuilder(visibleItems[index])
                     }

@@ -18,6 +18,11 @@ struct TVContentCard: View {
     /// Fixed card width matching special sections (360px)
     private let cardWidth: CGFloat = 360
 
+    /// Computed poster height from width and aspect ratio
+    private var posterHeight: CGFloat {
+        cardWidth / aspectRatio
+    }
+
     init(
         imageURL: String?,
         title: String,
@@ -43,10 +48,10 @@ struct TVContentCard: View {
     var body: some View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                // Thumbnail/poster
+                // Thumbnail/poster - fixed size for consistent row alignment
                 posterImage
-                    .frame(width: cardWidth)
-                    .aspectRatio(aspectRatio, contentMode: .fit)
+                    .frame(width: cardWidth, height: posterHeight)
+                    .clipped()
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
                     .overlay(alignment: .topTrailing) {
                         badgeOverlay
@@ -63,7 +68,7 @@ struct TVContentCard: View {
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(2)
-                    .frame(width: cardWidth, alignment: .leading)
+                    .frame(width: cardWidth, height: 56, alignment: .topLeading)
 
                 // Subtitle
                 if let subtitle = subtitle {
@@ -74,6 +79,7 @@ struct TVContentCard: View {
                         .frame(width: cardWidth, alignment: .leading)
                 }
             }
+            .frame(width: cardWidth)
         }
         .buttonStyle(TVContentCardButtonStyle())
         .focusEffectDisabled()
@@ -105,7 +111,7 @@ struct TVContentCard: View {
                 .font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
-        .aspectRatio(aspectRatio, contentMode: .fit)
+        .frame(width: cardWidth, height: posterHeight)
     }
 
     @ViewBuilder
