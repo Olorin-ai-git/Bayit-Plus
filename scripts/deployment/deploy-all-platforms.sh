@@ -75,6 +75,48 @@ deploy_ws_gateway() {
   log "WebSocket Gateway deployment complete"
 }
 
+deploy_auth_service() {
+  log "Deploying Auth Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_auth.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Auth service deployment complete"
+}
+
+deploy_content_service() {
+  log "Deploying Content Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_content.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Content service deployment complete"
+}
+
+deploy_user_service() {
+  log "Deploying User Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_user.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "User service deployment complete"
+}
+
+deploy_payments_service() {
+  log "Deploying Payments Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_payments.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Payments service deployment complete"
+}
+
+deploy_social_service() {
+  log "Deploying Social Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_social.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Social service deployment complete"
+}
+
+deploy_media_pipeline() {
+  log "Deploying Media Pipeline Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_media.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Media Pipeline service deployment complete"
+}
+
+deploy_community_service() {
+  log "Deploying Community Service..."
+  bash "$PROJECT_ROOT/scripts/deployment/deploy_community.sh" "$ENVIRONMENT" us-east1 bayit-plus
+  log "Community service deployment complete"
+}
+
 deploy_shared_packages() {
   log "📦 Deploying Shared Packages (@bayit/glass-ui)..."
 
@@ -266,7 +308,7 @@ main() {
   deploy_backend
   echo ""
 
-  # 2. Extracted Services (Cloud Run)
+  # 2. Extracted Services - Phase 1 (Cloud Run)
   deploy_admin_service
   echo ""
   deploy_b2b_api
@@ -280,27 +322,43 @@ main() {
   deploy_ws_gateway
   echo ""
 
-  # 3. Shared Packages
+  # 3. Extracted Services - Phase 2 (Cloud Run)
+  deploy_auth_service
+  echo ""
+  deploy_content_service
+  echo ""
+  deploy_user_service
+  echo ""
+  deploy_payments_service
+  echo ""
+  deploy_social_service
+  echo ""
+  deploy_media_pipeline
+  echo ""
+  deploy_community_service
+  echo ""
+
+  # 4. Shared Packages
   deploy_shared_packages
   echo ""
 
-  # 3. Web Application (Desktop)
+  # 5. Web Application (Desktop)
   deploy_web
   echo ""
 
-  # 4. Mobile Web Application
+  # 6. Mobile Web Application
   deploy_mobile_web
   echo ""
 
-  # 5. Documentation Portal
+  # 7. Documentation Portal
   deploy_docs_portal
   echo ""
 
-  # 6. Mobile Apps (Native iOS/Android)
+  # 8. Mobile Apps (Native iOS/Android)
   build_mobile
   echo ""
 
-  # 7. tvOS Application
+  # 9. tvOS Application
   build_tvos
   echo ""
 
@@ -332,6 +390,13 @@ Platforms Deployed:
   AI Service (Cloud Run)
   Workers + Cron Jobs (Cloud Run)
   WebSocket Gateway (Cloud Run)
+  Auth Service (Cloud Run)
+  Content Service (Cloud Run)
+  User Service (Cloud Run)
+  Payments Service (Cloud Run)
+  Social Service (Cloud Run)
+  Media Pipeline Service (Cloud Run)
+  Community Service (Cloud Run)
   Shared Packages (npm)
   Web Application - Desktop (Firebase Hosting)
   Web Application - Mobile (Firebase Hosting)
