@@ -6,7 +6,6 @@ import Foundation
 // MARK: - Internal Helpers
 
 extension AuthManager {
-
     /// Processes a successful Firebase auth result:
     /// 1. Gets the Firebase ID token (for Firebase features)
     /// 2. Exchanges the provider token with the backend for a JWT
@@ -75,7 +74,7 @@ extension AuthManager {
     /// Exchanges a provider-specific token with the backend for a JWT.
     func exchangeForBackendJWT(providerToken: ProviderToken) async throws -> String {
         switch providerToken {
-        case .google(let idToken):
+        case let .google(idToken):
             let response = try await BackendTokenExchangeClient.loginWithGoogle(
                 idToken: idToken,
                 logger: logger
@@ -90,7 +89,7 @@ extension AuthManager {
             }
             return response.accessToken
 
-        case .apple(let identityToken, let fullName, let email):
+        case let .apple(identityToken, fullName, email):
             let response = try await BackendTokenExchangeClient.loginWithApple(
                 idToken: identityToken,
                 fullName: fullName,
@@ -107,7 +106,7 @@ extension AuthManager {
             }
             return response.accessToken
 
-        case .emailPassword(let accessToken, let refreshToken):
+        case let .emailPassword(accessToken, refreshToken):
             try keychainService.save(
                 token: accessToken, for: backendTokenKeychainKey
             )
@@ -123,7 +122,8 @@ extension AuthManager {
     /// Parses the user role from Firebase custom claims.
     func parseRole(from claims: [String: Any]) -> UserRole {
         guard let roleString = claims["role"] as? String,
-              let role = UserRole(rawValue: roleString) else {
+              let role = UserRole(rawValue: roleString)
+        else {
             return .user
         }
         return role
@@ -144,7 +144,7 @@ extension AuthManager {
             logger.info(
                 "Cached session expired, clearing credentials",
                 metadata: [
-                    "max_age_days": String(sessionMaxAgeDays)
+                    "max_age_days": String(sessionMaxAgeDays),
                 ]
             )
             clearKeychainAndState()
@@ -184,7 +184,8 @@ extension AuthManager {
         if token != nil,
            let userJSON = try? keychainService.load(for: userKeychainKey),
            let userData = userJSON.data(using: .utf8),
-           let cachedUser = try? JSONDecoder().decode(BayitUser.self, from: userData) {
+           let cachedUser = try? JSONDecoder().decode(BayitUser.self, from: userData)
+        {
             user = cachedUser
             logger.debug("Session restored successfully", metadata: ["user_id": cachedUser.id])
         }
@@ -243,10 +244,10 @@ extension AuthManager {
                 )
             } catch {
                 logger.error(
-                    "Token refresh failed, clearing credentials",
+                    "Token refresh failed, clearing access tokens",
                     metadata: ["error": error.localizedDescription]
                 )
-                clearKeychainAndState()
+                clearAccessTokensAndState()
             }
         }
     }
@@ -274,7 +275,8 @@ extension AuthManager {
         }
 
         guard let payload = try? JSONDecoder().decode(JWTPayload.self, from: data),
-              let expiration = payload.exp else {
+              let expiration = payload.exp
+        else {
             return true
         }
 
@@ -291,6 +293,15 @@ extension AuthManager {
         try? keychainService.delete(for: refreshTokenKeychainKey)
         try? keychainService.delete(for: userKeychainKey)
         try? keychainService.delete(for: sessionTimestampKeychainKey)
+    }
+
+    /// Clears access tokens and local state but preserves the refresh
+    /// token so biometric re-authentication remains available.
+    private func clearAccessTokensAndState() {
+        clearState()
+        try? keychainService.delete(for: tokenKeychainKey)
+        try? keychainService.delete(for: backendTokenKeychainKey)
+        try? keychainService.delete(for: userKeychainKey)
     }
 
     /// Listens for Firebase auth state changes to keep local state in sync.
@@ -311,12 +322,7 @@ extension AuthManager {
                 hadFirebaseUser = true
             } else if hadFirebaseUser {
                 hadFirebaseUser = false
-                self.clearState()
-                try? self.keychainService.delete(for: self.tokenKeychainKey)
-                try? self.keychainService.delete(for: self.backendTokenKeychainKey)
-                try? self.keychainService.delete(for: self.refreshTokenKeychainKey)
-                try? self.keychainService.delete(for: self.userKeychainKey)
-                try? self.keychainService.delete(for: self.sessionTimestampKeychainKey)
+                self.clearAccessTokensAndState()
             }
         }
     }
