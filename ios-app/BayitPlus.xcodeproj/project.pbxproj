@@ -1154,6 +1154,8 @@
 		BF4FA39E7B21E3273C71B78D /* CouponShopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A0704AA514DAE226ABDA76 /* CouponShopView.swift */; };
 		BFBA41B8F94530C5BA0A93D1 /* CreateWidgetForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A02800C9DB5086A8C4339 /* CreateWidgetForm.swift */; };
 		BFDFBD42FC6687E06ABECFE0 /* AudiobookSortSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263C4BB0E819C8B74994BC8E /* AudiobookSortSheet.swift */; };
+		BFEA01C3A7B24D8E9F0C1234 /* AudiobookContinueListeningSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C3D4E5F6B78A9012345678 /* AudiobookContinueListeningSection.swift */; };
+		BFEA01C4A7B24D8E9F0C5678 /* AudiobookSeekBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C3D4E6F6B78A9012345679 /* AudiobookSeekBar.swift */; };
 		C017561B679148E9C4D2665A /* AvatarCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89B4C4C02EC1718F09E607AC /* AvatarCreationView.swift */; };
 		C024E1DA7065086BE308EB05 /* AudiobookModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DAB84410DA4CB0F3FA9FF3B /* AudiobookModels.swift */; };
 		C052C2E442F345B7F05F5A66 /* QuickActionsWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51B132C26C3242F0C0DC586 /* QuickActionsWidgetView.swift */; };
@@ -1773,6 +1775,8 @@
 		2629F4FBBCD2DF91B00BBE41 /* TriviaFactsOverlayView+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriviaFactsOverlayView+Helpers.swift"; sourceTree = "<group>"; };
 		262A16D2FEB79D1FABCD40C8 /* PhoneticMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneticMirrorView.swift; sourceTree = "<group>"; };
 		263C4BB0E819C8B74994BC8E /* AudiobookSortSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookSortSheet.swift; sourceTree = "<group>"; };
+		A1C3D4E5F6B78A9012345678 /* AudiobookContinueListeningSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookContinueListeningSection.swift; sourceTree = "<group>"; };
+		A1C3D4E6F6B78A9012345679 /* AudiobookSeekBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookSeekBar.swift; sourceTree = "<group>"; };
 		26780A61769C7EF38C44FCA9 /* IPadPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadPlayerView.swift; sourceTree = "<group>"; };
 		26C2A194EE2A3C902053DA38 /* TVVoiceOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVoiceOnboardingView.swift; sourceTree = "<group>"; };
 		26E9AA96236AC7C89BFC5F5C /* CatchUpAutoPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatchUpAutoPromptView.swift; sourceTree = "<group>"; };
@@ -4863,6 +4867,8 @@
 				130DF41A7750ECAAC6B7F7E3 /* AudiobookDetailView+Playback.swift */,
 				D5052BA9A2C48BC05D57AECA /* AudiobookDetailView+PlaybackActions.swift */,
 				F72988A1C80D61AB24089877 /* AudiobookFilterView.swift */,
+				A1C3D4E5F6B78A9012345678 /* AudiobookContinueListeningSection.swift */,
+				A1C3D4E6F6B78A9012345679 /* AudiobookSeekBar.swift */,
 				263C4BB0E819C8B74994BC8E /* AudiobookSortSheet.swift */,
 				51B8C704E2F464F3151C9E8E /* AudiobooksView.swift */,
 			);
@@ -6110,6 +6116,8 @@
 				187C163B3B12A7C3336A130C /* AudiobookFilterView.swift in Sources */,
 				C024E1DA7065086BE308EB05 /* AudiobookModels.swift in Sources */,
 				9C118C760178FCCA8DB7C411 /* AudiobookRepository.swift in Sources */,
+				BFEA01C3A7B24D8E9F0C1234 /* AudiobookContinueListeningSection.swift in Sources */,
+				BFEA01C4A7B24D8E9F0C5678 /* AudiobookSeekBar.swift in Sources */,
 				BFDFBD42FC6687E06ABECFE0 /* AudiobookSortSheet.swift in Sources */,
 				17D9748DFB637479BF10F8BF /* AudiobooksListenTab.swift in Sources */,
 				106FC55ADF142CDF6D8BD4F6 /* AudiobooksView.swift in Sources */,
@@ -6881,7 +6889,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6904,7 +6912,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -7016,7 +7024,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -7098,7 +7106,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;

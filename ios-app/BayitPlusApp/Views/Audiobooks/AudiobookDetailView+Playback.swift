@@ -37,34 +37,18 @@ extension AudiobookDetailView {
         isLive: Bool,
         savedPercent: Double
     ) -> some View {
-        GeometryReader { geo in
-            let fraction = isLive ? (total > 0 ? current / total : 0) : savedPercent / 100
-            let width = geo.size.width
-
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(DesignTokens.Glass.bgMedium)
-                    .frame(height: 4)
-
-                Capsule()
-                    .fill(DesignTokens.Primary.default)
-                    .frame(width: width * CGFloat(min(max(fraction, 0), 1)), height: 4)
+        AudiobookSeekBar(
+            current: current,
+            total: total,
+            isLive: isLive,
+            savedPercent: savedPercent,
+            onSeek: { seekTime in
+                Task {
+                    await audioManager.mediaPlayer.seek(to: seekTime)
+                    audioManager.updateNowPlayingPosition()
+                }
             }
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onEnded { value in
-                        guard isLive, total > 0 else { return }
-                        let percent = max(0, min(value.location.x / width, 1))
-                        let seekTime = Double(percent) * total
-                        Task {
-                            await audioManager.mediaPlayer.seek(to: seekTime)
-                            audioManager.updateNowPlayingPosition()
-                        }
-                    }
-            )
-        }
-        .frame(height: 4)
+        )
     }
 
     private func progressTimeLabels(

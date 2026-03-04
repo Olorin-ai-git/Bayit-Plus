@@ -80,19 +80,23 @@ final class AudiobooksViewModel {
 
     // MARK: - Computed Properties
 
-    /// Items filtered by search query and sorted by the selected option
+    /// Items filtered by search query, author, genre and sorted
     var filteredItems: [Audiobook] {
-        let base: [Audiobook]
+        var base = items
+
+        if let author = selectedAuthor {
+            base = base.filter { $0.author?.caseInsensitiveCompare(author) == .orderedSame }
+        }
+
         if searchQuery.trimmingCharacters(in: .whitespaces).count >= 2 {
             let query = searchQuery.lowercased()
-            base = items.filter { audiobook in
+            base = base.filter { audiobook in
                 (audiobook.title?.lowercased().contains(query) ?? false)
                     || (audiobook.author?.lowercased().contains(query) ?? false)
                     || (audiobook.narrator?.lowercased().contains(query) ?? false)
             }
-        } else {
-            base = items
         }
+
         return applySorting(to: base)
     }
 
@@ -189,6 +193,7 @@ final class AudiobooksViewModel {
 
     @MainActor
     func refresh() async {
+        repository.invalidateCache()
         await loadInitial()
     }
 

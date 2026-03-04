@@ -7,6 +7,7 @@ struct AudiobooksView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: AudiobooksViewModel?
     @State private var showSortSheet = false
+    @State private var continueListeningItems: [WatchHistoryItem] = []
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -31,13 +32,19 @@ struct AudiobooksView: View {
         }
         .background(DesignTokens.Background.primary)
         .refreshable {
-            await viewModel?.refresh()
+            async let refresh: () = viewModel?.refresh() ?? ()
+            async let reloadContinue: () = loadContinueListening()
+            _ = await (refresh, reloadContinue)
         }
         .task {
             if viewModel == nil {
                 viewModel = AudiobooksViewModel(repository: repos.audiobook)
             }
-            await viewModel?.loadInitial()
+            // Load audiobooks, authors, and continue-listening in parallel
+            async let loadBooks: () = viewModel?.loadInitial() ?? ()
+            async let prefetchAuthors: () = { _ = try? await repos.audiobook.fetchAuthors() }()
+            async let loadContinue: () = loadContinueListening()
+            _ = await (loadBooks, prefetchAuthors, loadContinue)
         }
         .sheet(isPresented: $showSortSheet) {
             if let vm = viewModel {
@@ -57,6 +64,11 @@ struct AudiobooksView: View {
 
     private func contentView(_ vm: AudiobooksViewModel) -> some View {
         LazyVStack(spacing: DesignTokens.Spacing.lg) {
+            if !continueListeningItems.isEmpty {
+                AudiobookContinueListeningSection(items: continueListeningItems) { item in
+                    coordinator.navigate(to: .audiobookDetail(audiobookId: item.id))
+                }
+            }
             searchAndSortBar(vm)
             autocompleteOverlay(vm)
             browseByAuthorButton
@@ -96,8 +108,6 @@ struct AudiobooksView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Autocomplete
-
     private func autocompleteOverlay(_ vm: AudiobooksViewModel) -> some View {
         Group {
             if !vm.autocompleteSuggestions.isEmpty {
@@ -132,8 +142,6 @@ struct AudiobooksView: View {
         .animation(.easeInOut(duration: 0.2), value: vm.autocompleteSuggestions.isEmpty)
     }
 
-    // MARK: - Browse by Author
-
     private var browseByAuthorButton: some View {
         Button {
             coordinator.navigate(to: .audiobookCollections)
@@ -156,8 +164,6 @@ struct AudiobooksView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Grid
-
     private func audiobookGrid(_ vm: AudiobooksViewModel) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(vm.filteredItems) { audiobook in
@@ -168,6 +174,13 @@ struct AudiobooksView: View {
         }
         .id(vm.sortOption)
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Continue Listening
+
+    private func loadContinueListening() async {
+        let response = try? await repos.media.fetchContinueWatching()
+        continueListeningItems = response?.items.filter { $0.type == "audiobook" } ?? []
     }
 
     // MARK: - Loading

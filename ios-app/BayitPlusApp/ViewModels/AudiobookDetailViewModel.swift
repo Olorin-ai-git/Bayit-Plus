@@ -129,10 +129,10 @@ final class AudiobookDetailViewModel {
     #if os(tvOS)
         func currentChapterIndex(audioManager: TVAudioPlaybackManager, audiobook _: Audiobook) -> Int? {
             let chapters = effectiveChapters
-            guard !chapters.isEmpty else { return nil }
+            guard !chapters.isEmpty, audioManager.isActive else { return nil }
 
-            guard let activeId = audioManager.activeContentId else { return nil }
-            return chapters.firstIndex { $0.id == activeId }
+            guard let selectedId = currentChapter?.stableId else { return nil }
+            return chapters.firstIndex { $0.stableId == selectedId }
         }
 
         func canGoNextChapter(audioManager: TVAudioPlaybackManager, audiobook: Audiobook) -> Bool {
@@ -151,7 +151,7 @@ final class AudiobookDetailViewModel {
     #else
         func currentChapterIndex(audioManager: AudioPlaybackManager, audiobook _: Audiobook) -> Int? {
             let chapters = effectiveChapters
-            guard !chapters.isEmpty else { return nil }
+            guard !chapters.isEmpty, audioManager.isActive else { return nil }
 
             if hasEmbeddedChapters {
                 let current = audioManager.currentTime
@@ -161,8 +161,8 @@ final class AudiobookDetailViewModel {
                 }
             }
 
-            guard let activeId = audioManager.activeContentId else { return nil }
-            return chapters.firstIndex { $0.id == activeId }
+            guard let selectedId = currentChapter?.stableId else { return nil }
+            return chapters.firstIndex { $0.stableId == selectedId }
         }
 
         func canGoNextChapter(audioManager: AudioPlaybackManager, audiobook: Audiobook) -> Bool {

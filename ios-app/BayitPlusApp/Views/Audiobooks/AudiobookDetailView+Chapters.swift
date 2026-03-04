@@ -32,7 +32,7 @@ extension AudiobookDetailView {
     ) -> some View {
         let isActive = isEmbedded
             ? isEmbeddedChapterPlaying(chapter, audiobook: audiobook)
-            : isChapterPlaying(chapter)
+            : isChapterPlaying(chapter, vm: vm)
         let canPlay = chapter.streamUrl != nil || isEmbedded
 
         return GlassCard {

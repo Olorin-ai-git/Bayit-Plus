@@ -1,58 +1,111 @@
 /**
  * Audiobooks Page Filters
- * Filter panel for discovery page with options
+ * Filter panel for discovery page with author, quality, subscription, and sort
  */
 
-import { useState } from 'react'
-import { View, Text, StyleSheet, Pressable } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { ChevronDown } from 'lucide-react'
-import { colors, spacing } from '@olorin/design-tokens'
-import { GlassSelect, GlassButton, GlassView } from '@bayit/shared/ui'
-import type { AudiobookFilters, AudioQuality, SubscriptionTier } from '@/types/audiobook'
+import { useState } from "react";
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
+import { ChevronDown } from "lucide-react";
+import { colors, spacing } from "@olorin/design-tokens";
+import { GlassSelect, GlassButton, GlassView } from "@bayit/shared/ui";
+import type {
+  AudiobookFilters,
+  AudioQuality,
+  SubscriptionTier,
+} from "@/types/audiobook";
+import type { AudiobookAuthor } from "@/services/audiobookService";
 
-const AUDIO_QUALITIES: AudioQuality[] = ['8-bit', '16-bit', '24-bit', '32-bit', 'high-fidelity', 'standard', 'premium', 'lossless']
-const SUBSCRIPTION_TIERS: SubscriptionTier[] = ['free', 'basic', 'premium', 'family']
-const SORT_OPTIONS = ['title', 'newest', 'views', 'rating'] as const
+const AUDIO_QUALITIES: AudioQuality[] = [
+  "8-bit",
+  "16-bit",
+  "24-bit",
+  "32-bit",
+  "high-fidelity",
+  "standard",
+  "premium",
+  "lossless",
+];
+const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
+  "free",
+  "basic",
+  "premium",
+  "family",
+];
+const SORT_OPTIONS = ["title", "newest", "views", "rating"] as const;
+const PAGE_SIZE = 20;
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: `${colors.border}33` },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  title: { fontSize: 14, fontWeight: '600', color: colors.text },
-  content: { flexDirection: 'row', gap: spacing.md, flexWrap: 'wrap' },
+  container: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: `${colors.border}33`,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  title: { fontSize: 14, fontWeight: "600", color: colors.text },
+  content: { flexDirection: "row", gap: spacing.md, flexWrap: "wrap" },
   selectContainer: { flex: 1, minWidth: 150 },
-  buttonGroup: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: `${colors.border}33` },
+  buttonGroup: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: `${colors.border}33`,
+  },
   button: { flex: 1 },
-})
+});
 
 interface AudiobooksPageFiltersProps {
-  filters: AudiobookFilters
-  onChange: (filters: AudiobookFilters) => void
-  isRTL?: boolean
+  filters: AudiobookFilters;
+  onChange: (filters: AudiobookFilters) => void;
+  authors?: AudiobookAuthor[];
+  isRTL?: boolean;
 }
 
 export default function AudiobooksPageFilters({
   filters,
   onChange,
+  authors = [],
 }: AudiobooksPageFiltersProps) {
-  const { t } = useTranslation()
-  const [isExpanded, setIsExpanded] = useState(false)
+  const { t } = useTranslation();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleAuthorChange = (author: string) => {
+    onChange({
+      ...filters,
+      author: author === filters.author ? undefined : author || undefined,
+    });
+  };
 
   const handleQualityChange = (quality: AudioQuality) => {
-    onChange({ ...filters, audio_quality: quality !== filters.audio_quality ? quality : undefined })
-  }
+    onChange({
+      ...filters,
+      audio_quality: quality !== filters.audio_quality ? quality : undefined,
+    });
+  };
 
   const handleSubscriptionChange = (tier: SubscriptionTier) => {
-    onChange({ ...filters, requires_subscription: tier !== filters.requires_subscription ? tier : undefined })
-  }
+    onChange({
+      ...filters,
+      requires_subscription:
+        tier !== filters.requires_subscription ? tier : undefined,
+    });
+  };
 
   const handleSortChange = (sort: string) => {
-    onChange({ ...filters, sort_by: (sort as any) || 'newest' })
-  }
+    onChange({ ...filters, sort_by: (sort as any) || "newest" });
+  };
 
   const handleClear = () => {
-    onChange({ page: 1, page_size: 50 } as any)
-  }
+    onChange({ page: 1, page_size: PAGE_SIZE } as any);
+  };
 
   return (
     <GlassView style={styles.container}>
@@ -60,13 +113,11 @@ export default function AudiobooksPageFilters({
         style={styles.header}
         onPress={() => setIsExpanded(!isExpanded)}
       >
-        <Text style={styles.title}>
-          {t('audiobooks.filters', 'Filters')}
-        </Text>
+        <Text style={styles.title}>{t("audiobooks.filters", "Filters")}</Text>
         <View
           style={[
             (styles as any).toggleButton,
-            isExpanded && { transform: [{ rotate: '180deg' }] },
+            isExpanded && { transform: [{ rotate: "180deg" }] },
           ]}
         >
           <ChevronDown size={20} color={colors.text} />
@@ -75,11 +126,26 @@ export default function AudiobooksPageFilters({
 
       {isExpanded && (
         <View style={styles.content}>
+          {/* Author Filter */}
+          {authors.length > 0 && (
+            <View style={styles.selectContainer}>
+              <GlassSelect
+                label={t("audiobooks.author", "Author")}
+                value={filters.author || ""}
+                onChangeText={handleAuthorChange}
+                options={authors.map((a) => ({
+                  label: `${a.name} (${a.audiobook_count})`,
+                  value: a.name,
+                }))}
+              />
+            </View>
+          )}
+
           {/* Audio Quality Filter */}
           <View style={styles.selectContainer}>
             <GlassSelect
-              label={t('audiobooks.quality', 'Audio Quality')}
-              value={filters.audio_quality || ''}
+              label={t("audiobooks.quality", "Audio Quality")}
+              value={filters.audio_quality || ""}
               onChangeText={handleQualityChange}
               options={AUDIO_QUALITIES.map((q) => ({
                 label: q,
@@ -91,8 +157,8 @@ export default function AudiobooksPageFilters({
           {/* Subscription Tier Filter */}
           <View style={styles.selectContainer}>
             <GlassSelect
-              label={t('audiobooks.subscription', 'Subscription')}
-              value={filters.requires_subscription || ''}
+              label={t("audiobooks.subscription", "Subscription")}
+              value={filters.requires_subscription || ""}
               onChangeText={handleSubscriptionChange}
               options={SUBSCRIPTION_TIERS.map((tier) => ({
                 label: t(`audiobooks.tier.${tier}`, tier),
@@ -104,8 +170,8 @@ export default function AudiobooksPageFilters({
           {/* Sort Filter */}
           <View style={styles.selectContainer}>
             <GlassSelect
-              label={t('audiobooks.sortBy', 'Sort By')}
-              value={filters.sort_by || 'newest'}
+              label={t("audiobooks.sortBy", "Sort By")}
+              value={filters.sort_by || "newest"}
               onChangeText={handleSortChange}
               options={SORT_OPTIONS.map((opt) => ({
                 label: t(`audiobooks.sort.${opt}`, opt),
@@ -117,17 +183,23 @@ export default function AudiobooksPageFilters({
           {/* Sort Order */}
           <View style={styles.selectContainer}>
             <GlassSelect
-              label={t('audiobooks.sortOrder', 'Order')}
-              value={filters.sort_order || 'desc'}
+              label={t("audiobooks.sortOrder", "Order")}
+              value={filters.sort_order || "desc"}
               onChangeText={(val: string) =>
                 onChange({
                   ...filters,
-                  sort_order: (val as 'asc' | 'desc') || 'desc',
+                  sort_order: (val as "asc" | "desc") || "desc",
                 })
               }
               options={[
-                { label: t('common.descending', 'Newest First'), value: 'desc' },
-                { label: t('common.ascending', 'Oldest First'), value: 'asc' },
+                {
+                  label: t("common.descending", "Newest First"),
+                  value: "desc",
+                },
+                {
+                  label: t("common.ascending", "Oldest First"),
+                  value: "asc",
+                },
               ]}
             />
           </View>
@@ -139,17 +211,17 @@ export default function AudiobooksPageFilters({
               variant="secondary"
               onPress={handleClear}
             >
-              {t('common.clear', 'Clear')}
+              {t("common.clear", "Clear")}
             </GlassButton>
             <GlassButton
               style={styles.button}
               onPress={() => setIsExpanded(false)}
             >
-              {t('common.apply', 'Apply')}
+              {t("common.apply", "Apply")}
             </GlassButton>
           </View>
         </View>
       )}
     </GlassView>
-  )
+  );
 }

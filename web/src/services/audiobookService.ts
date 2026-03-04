@@ -3,7 +3,7 @@
  * Client-side service for public audiobook endpoints
  */
 
-import api from './api'
+import api from "./api";
 import type {
   Audiobook,
   AudiobookListResponse,
@@ -13,62 +13,63 @@ import type {
   AudiobookSearchResponse,
   AudiobookFeaturedSection,
   AudiobookWithChapters,
-} from '../types/audiobook'
+} from "../types/audiobook";
 
-const CACHE_TTL_FEATURED = 5 * 60 * 1000 // 5 minutes
-const CACHE_TTL_LIST = 2 * 60 * 1000 // 2 minutes
+export interface AudiobookAuthor {
+  name: string;
+  audiobook_count: number;
+  thumbnail?: string;
+}
+
+const CACHE_TTL_FEATURED = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_LIST = 2 * 60 * 1000; // 2 minutes
 
 interface CacheEntry<T> {
-  data: T
-  timestamp: number
+  data: T;
+  timestamp: number;
 }
 
-const cache = new Map<string, CacheEntry<unknown>>()
+const cache = new Map<string, CacheEntry<unknown>>();
 
-const setCacheEntry = <T,>(key: string, data: T, ttlMs: number): void => {
-  cache.set(key, { data, timestamp: Date.now() + ttlMs })
-}
+const setCacheEntry = <T>(key: string, data: T, ttlMs: number): void => {
+  cache.set(key, { data, timestamp: Date.now() + ttlMs });
+};
 
-const getCacheEntry = <T,>(key: string): T | null => {
-  const entry = cache.get(key) as CacheEntry<T> | undefined
-  if (!entry) return null
+const getCacheEntry = <T>(key: string): T | null => {
+  const entry = cache.get(key) as CacheEntry<T> | undefined;
+  if (!entry) return null;
   if (Date.now() > entry.timestamp) {
-    cache.delete(key)
-    return null
+    cache.delete(key);
+    return null;
   }
-  return entry.data
-}
+  return entry.data;
+};
 
 export const audiobookService = {
   /**
    * Get paginated list of audiobooks with optional filters
    * Cached for 2 minutes
    */
-  getAudiobooks: async (filters?: AudiobookFilters): Promise<AudiobookListResponse> => {
-    const queryParams = new URLSearchParams()
+  getAudiobooks: async (
+    filters?: AudiobookFilters,
+  ): Promise<AudiobookListResponse> => {
+    const queryParams = new URLSearchParams();
     if (filters) {
-      if (filters.page) queryParams.append('page', filters.page.toString())
-      if (filters.page_size) queryParams.append('page_size', filters.page_size.toString())
-      if (filters.author) queryParams.append('author', filters.author)
-      if (filters.narrator) queryParams.append('narrator', filters.narrator)
-      if (filters.audio_quality) queryParams.append('audio_quality', filters.audio_quality)
-      if (filters.requires_subscription) queryParams.append('requires_subscription', filters.requires_subscription)
-      if (filters.is_published !== undefined) queryParams.append('is_published', filters.is_published.toString())
-      if (filters.search_query) queryParams.append('search_query', filters.search_query)
-      if (filters.genre_ids?.length) {
-        filters.genre_ids.forEach(id => queryParams.append('genre_ids', id))
-      }
-      if (filters.sort_by) queryParams.append('sort_by', filters.sort_by)
-      if (filters.sort_order) queryParams.append('sort_order', filters.sort_order)
+      if (filters.page) queryParams.append("page", filters.page.toString());
+      if (filters.page_size)
+        queryParams.append("page_size", filters.page_size.toString());
+      if (filters.author) queryParams.append("author", filters.author);
     }
 
-    const cacheKey = `audiobooks:${queryParams.toString()}`
-    const cached = getCacheEntry<AudiobookListResponse>(cacheKey)
-    if (cached) return cached
+    const cacheKey = `audiobooks:${queryParams.toString()}`;
+    const cached = getCacheEntry<AudiobookListResponse>(cacheKey);
+    if (cached) return cached;
 
-    const data = await api.get(`/audiobooks?${queryParams.toString()}`) as AudiobookListResponse
-    setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
-    return data
+    const data = (await api.get(
+      `/audiobooks?${queryParams.toString()}`,
+    )) as AudiobookListResponse;
+    setCacheEntry(cacheKey, data, CACHE_TTL_LIST);
+    return data;
   },
 
   /**
@@ -76,27 +77,31 @@ export const audiobookService = {
    * Returns user-safe response (no stream URL)
    */
   getAudiobookDetail: async (id: string): Promise<Audiobook> => {
-    const cacheKey = `audiobook:${id}`
-    const cached = getCacheEntry<Audiobook>(cacheKey)
-    if (cached) return cached
+    const cacheKey = `audiobook:${id}`;
+    const cached = getCacheEntry<Audiobook>(cacheKey);
+    if (cached) return cached;
 
-    const data = await api.get(`/audiobooks/${id}`) as Audiobook
-    setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
-    return data
+    const data = (await api.get(`/audiobooks/${id}`)) as Audiobook;
+    setCacheEntry(cacheKey, data, CACHE_TTL_LIST);
+    return data;
   },
 
   /**
    * Get audiobook with chapters for player page
    * Returns audiobook metadata plus list of chapters/parts
    */
-  getAudiobookWithChapters: async (id: string): Promise<AudiobookWithChapters> => {
-    const cacheKey = `audiobook:chapters:${id}`
-    const cached = getCacheEntry<AudiobookWithChapters>(cacheKey)
-    if (cached) return cached
+  getAudiobookWithChapters: async (
+    id: string,
+  ): Promise<AudiobookWithChapters> => {
+    const cacheKey = `audiobook:chapters:${id}`;
+    const cached = getCacheEntry<AudiobookWithChapters>(cacheKey);
+    if (cached) return cached;
 
-    const data = await api.get(`/audiobooks/${id}/chapters`) as AudiobookWithChapters
-    setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
-    return data
+    const data = (await api.get(
+      `/audiobooks/${id}/chapters`,
+    )) as AudiobookWithChapters;
+    setCacheEntry(cacheKey, data, CACHE_TTL_LIST);
+    return data;
   },
 
   /**
@@ -104,7 +109,9 @@ export const audiobookService = {
    * Returns 403 Forbidden if user lacks admin permission
    */
   getAudiobookStream: async (id: string): Promise<AudiobookStreamResponse> => {
-    return await api.get(`/audiobooks/${id}/stream`) as AudiobookStreamResponse
+    return (await api.get(
+      `/audiobooks/${id}/stream`,
+    )) as AudiobookStreamResponse;
   },
 
   /**
@@ -113,52 +120,64 @@ export const audiobookService = {
    * @param limit Maximum number of featured audiobooks to return
    */
   getFeaturedAudiobooks: async (limit: number = 10): Promise<Audiobook[]> => {
-    const cacheKey = `audiobooks:featured:${limit}`
-    const cached = getCacheEntry<Audiobook[]>(cacheKey)
-    if (cached) return cached
+    const cacheKey = `audiobooks:featured:${limit}`;
+    const cached = getCacheEntry<Audiobook[]>(cacheKey);
+    if (cached) return cached;
 
-    const queryParams = new URLSearchParams()
-    queryParams.append('is_featured', 'true')
-    queryParams.append('page_size', limit.toString())
+    const queryParams = new URLSearchParams();
+    queryParams.append("is_featured", "true");
+    queryParams.append("page_size", limit.toString());
 
-    const response = await api.get(`/audiobooks?${queryParams.toString()}`) as AudiobookListResponse
-    setCacheEntry(cacheKey, response.items, CACHE_TTL_FEATURED)
-    return response.items
+    const response = (await api.get(
+      `/audiobooks?${queryParams.toString()}`,
+    )) as AudiobookListResponse;
+    setCacheEntry(cacheKey, response.items, CACHE_TTL_FEATURED);
+    return response.items;
   },
 
   /**
    * Search audiobooks by title, author, or narrator
    * Returns search suggestions for typeahead and full results
    */
-  searchAudiobooks: async (query: string, limit: number = 10): Promise<AudiobookSearchResponse> => {
+  searchAudiobooks: async (
+    query: string,
+    limit: number = 10,
+  ): Promise<AudiobookSearchResponse> => {
     if (!query || query.length < 2) {
-      return { results: [], total: 0, query }
+      return { results: [], total: 0, query };
     }
 
-    const queryParams = new URLSearchParams()
-    queryParams.append('q', query)
-    queryParams.append('content_types', 'audiobook')
-    queryParams.append('limit', limit.toString())
+    const queryParams = new URLSearchParams();
+    queryParams.append("q", query);
+    queryParams.append("content_types", "audiobook");
+    queryParams.append("limit", limit.toString());
 
-    return await api.get(`/search?${queryParams.toString()}`) as AudiobookSearchResponse
+    return (await api.get(
+      `/search?${queryParams.toString()}`,
+    )) as AudiobookSearchResponse;
   },
 
   /**
    * Get search suggestions for typeahead
    * Suggests audiobooks by title, author, or narrator
    */
-  getSearchSuggestions: async (query: string, limit: number = 5): Promise<AudiobookSearchSuggestion[]> => {
+  getSearchSuggestions: async (
+    query: string,
+    limit: number = 5,
+  ): Promise<AudiobookSearchSuggestion[]> => {
     if (!query || query.length < 2) {
-      return []
+      return [];
     }
 
-    const queryParams = new URLSearchParams()
-    queryParams.append('q', query)
-    queryParams.append('content_types', 'audiobook')
-    queryParams.append('limit', limit.toString())
+    const queryParams = new URLSearchParams();
+    queryParams.append("q", query);
+    queryParams.append("content_types", "audiobook");
+    queryParams.append("limit", limit.toString());
 
-    const response = await api.get(`/search/suggestions?${queryParams.toString()}`) as { suggestions: AudiobookSearchSuggestion[] }
-    return response.suggestions
+    const response = (await api.get(
+      `/search/suggestions?${queryParams.toString()}`,
+    )) as { suggestions: AudiobookSearchSuggestion[] };
+    return response.suggestions;
   },
 
   /**
@@ -166,13 +185,31 @@ export const audiobookService = {
    * Returns audiobooks grouped by category/section
    */
   getFeaturedBySection: async (): Promise<AudiobookFeaturedSection[]> => {
-    const cacheKey = 'audiobooks:featured:sections'
-    const cached = getCacheEntry<AudiobookFeaturedSection[]>(cacheKey)
-    if (cached) return cached
+    const cacheKey = "audiobooks:featured:sections";
+    const cached = getCacheEntry<AudiobookFeaturedSection[]>(cacheKey);
+    if (cached) return cached;
 
-    const data = await api.get('/audiobooks/featured/sections') as AudiobookFeaturedSection[]
-    setCacheEntry(cacheKey, data, CACHE_TTL_FEATURED)
-    return data
+    const data = (await api.get(
+      "/audiobooks/featured/sections",
+    )) as AudiobookFeaturedSection[];
+    setCacheEntry(cacheKey, data, CACHE_TTL_FEATURED);
+    return data;
+  },
+
+  /**
+   * Get distinct audiobook authors with counts
+   * Cached for 5 minutes
+   */
+  getAuthors: async (): Promise<AudiobookAuthor[]> => {
+    const cacheKey = "audiobooks:authors";
+    const cached = getCacheEntry<AudiobookAuthor[]>(cacheKey);
+    if (cached) return cached;
+
+    const data = (await api.get("/audiobooks/authors")) as {
+      authors: AudiobookAuthor[];
+    };
+    setCacheEntry(cacheKey, data.authors, CACHE_TTL_FEATURED);
+    return data.authors;
   },
 
   /**
@@ -180,9 +217,11 @@ export const audiobookService = {
    * Useful after admin operations that modify audiobooks
    */
   clearCache: (): void => {
-    const keysToDelete = Array.from(cache.keys()).filter(key => key.startsWith('audiobook'))
-    keysToDelete.forEach(key => cache.delete(key))
+    const keysToDelete = Array.from(cache.keys()).filter((key) =>
+      key.startsWith("audiobook"),
+    );
+    keysToDelete.forEach((key) => cache.delete(key));
   },
-}
+};
 
-export default audiobookService
+export default audiobookService;

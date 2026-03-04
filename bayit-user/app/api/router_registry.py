@@ -34,8 +34,10 @@ from app.models.user_audible_account import UserAudibleAccount
 from app.models.user_audiobook import UserAudiobook, UserAudiobookReview
 from app.models.notification_event import NotificationEvent, NotificationMetrics
 from app.models.biometric_consent import BiometricConsent
-from app.models.content import Content
+from app.models.content import Content, Podcast, PodcastEpisode
 from app.models.beta_credit import BetaCredit
+from app.api.routes.favorites import Favorite
+from app.api.routes.downloads import Download
 
 SERVICE_MODELS: List[Type[Document]] = [
     User,
@@ -63,6 +65,10 @@ SERVICE_MODELS: List[Type[Document]] = [
     BiometricConsent,
     Content,
     BetaCredit,
+    Favorite,
+    Download,
+    Podcast,
+    PodcastEpisode,
 ]
 
 

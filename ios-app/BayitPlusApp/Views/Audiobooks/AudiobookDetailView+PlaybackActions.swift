@@ -12,9 +12,8 @@ extension AudiobookDetailView {
         audioManager.activeContentId == audiobook.id && audioManager.isActive
     }
 
-    func isChapterPlaying(_ chapter: AudiobookChapter) -> Bool {
-        guard let chapterId = chapter.id else { return false }
-        return audioManager.activeContentId == chapterId && audioManager.isActive
+    func isChapterPlaying(_ chapter: AudiobookChapter, vm: AudiobookDetailViewModel) -> Bool {
+        vm.currentChapter?.stableId == chapter.stableId && audioManager.isActive
     }
 
     func playAudiobook(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) {
@@ -28,12 +27,13 @@ extension AudiobookDetailView {
            let url = URL(string: urlStr)
         {
             let coverURL = audiobook.thumbnail.flatMap { URL(string: $0) }
+            vm.selectChapter(firstChapter)
             audioManager.playDirectURL(
                 url: url,
                 title: firstChapter.title ?? audiobook.title ?? "",
                 subtitle: audiobook.author,
                 artworkURL: coverURL,
-                contentId: firstChapter.id ?? audiobook.id,
+                contentId: audiobook.id,
                 contentType: .audiobook
             )
         } else {
@@ -43,7 +43,7 @@ extension AudiobookDetailView {
     }
 
     func playChapter(_ chapter: AudiobookChapter, audiobook: Audiobook, vm: AudiobookDetailViewModel) {
-        if isChapterPlaying(chapter) {
+        if isChapterPlaying(chapter, vm: vm) {
             audioManager.togglePlayPause()
             return
         }
@@ -52,12 +52,13 @@ extension AudiobookDetailView {
               let url = URL(string: urlStr) else { return }
 
         let coverURL = audiobook.thumbnail.flatMap { URL(string: $0) }
+        vm.selectChapter(chapter)
         audioManager.playDirectURL(
             url: url,
             title: chapter.title ?? "Chapter",
             subtitle: audiobook.title,
             artworkURL: coverURL,
-            contentId: chapter.id ?? audiobook.id,
+            contentId: audiobook.id,
             contentType: .audiobook
         )
         audioManager.setChapters(vm.effectiveChapters, audiobook: audiobook, isEmbedded: false)

@@ -3,13 +3,14 @@
  * Main entry point for audiobook browsing and discovery
  */
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useDirection } from "@/hooks/useDirection";
 import { Search, X, RefreshCw } from "lucide-react";
 import audiobookService from "@/services/audiobookService";
-import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import type { AudiobookAuthor } from "@/services/audiobookService";
+import { colors, spacing } from "@olorin/design-tokens";
 import {
   GlassView,
   GlassInput,
@@ -20,9 +21,10 @@ import { WidgetToggleProvider } from "@/contexts/WidgetToggleContext";
 import logger from "@/utils/logger";
 import PageLoading from "@/components/common/PageLoading";
 import type { Audiobook, AudiobookFilters } from "@/types/audiobook";
-import AudiobooksPageHeader from "./AudiobooksPageHeader";
 import AudiobooksPageFilters from "./AudiobooksPageFilters";
 import AudiobooksPageGrid from "./AudiobooksPageGrid";
+
+const PAGE_SIZE = 20;
 
 const styles = StyleSheet.create({
   container: {
@@ -55,27 +57,62 @@ export default function AudiobooksPage() {
   const { isRTL } = useDirection();
 
   const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
+  const [authors, setAuthors] = useState<AudiobookAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<AudiobookFilters>({
     page: 1,
-    page_size: 20,
+    page_size: PAGE_SIZE,
   } as AudiobookFilters);
 
-  // Filter audiobooks by search query
-  const filteredAudiobooks = useMemo(() => {
-    if (!searchQuery.trim()) return audiobooks;
+  // Track which backend params actually changed to avoid refetching
+  const prevBackendKey = useRef("");
 
-    const query = searchQuery.toLowerCase();
-    return audiobooks.filter(
-      (book) =>
-        book.title.toLowerCase().includes(query) ||
-        book.author?.toLowerCase().includes(query) ||
-        book.narrator?.toLowerCase().includes(query),
-    );
-  }, [audiobooks, searchQuery]);
+  // Backend-relevant key: only page + page_size + author
+  const backendKey = `${filters.page}:${filters.page_size}:${filters.author || ""}`;
+
+  // Apply client-side filtering and sorting
+  const displayAudiobooks = useMemo(() => {
+    let items = [...audiobooks];
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      items = items.filter(
+        (book) =>
+          book.title.toLowerCase().includes(query) ||
+          book.author?.toLowerCase().includes(query) ||
+          book.narrator?.toLowerCase().includes(query),
+      );
+    }
+
+    // Quality filter
+    if (filters.audio_quality) {
+      items = items.filter((b) => b.audio_quality === filters.audio_quality);
+    }
+
+    // Subscription filter
+    if (filters.requires_subscription) {
+      items = items.filter(
+        (b) => b.requires_subscription === filters.requires_subscription,
+      );
+    }
+
+    // Client-side sort
+    const order = filters.sort_order === "asc" ? 1 : -1;
+    if (filters.sort_by === "title") {
+      items.sort((a, b) => order * a.title.localeCompare(b.title));
+    } else if (filters.sort_by === "views") {
+      items.sort((a, b) => order * (a.view_count - b.view_count));
+    } else if (filters.sort_by === "rating") {
+      items.sort((a, b) => order * (a.avg_rating - b.avg_rating));
+    }
+    // "newest" keeps server order (already sorted by created_at desc)
+
+    return items;
+  }, [audiobooks, searchQuery, filters]);
 
   // Collect items for widget toggle batch-check
   const widgetItems = useMemo(() => {
@@ -85,18 +122,27 @@ export default function AudiobooksPage() {
     }));
   }, [audiobooks]);
 
-  // Load audiobooks on mount and filter change
+  // Fetch data on mount and when backend-relevant filters change
   useEffect(() => {
-    loadAudiobooks();
-  }, [filters]);
+    if (backendKey === prevBackendKey.current) return;
+    prevBackendKey.current = backendKey;
+    loadData();
+  }, [backendKey]);
 
-  const loadAudiobooks = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await audiobookService.getAudiobooks(filters as any);
+      const [response, authorList] = await Promise.all([
+        audiobookService.getAudiobooks(filters),
+        authors.length > 0
+          ? Promise.resolve(authors)
+          : audiobookService.getAuthors().catch(() => []),
+      ]);
+
       setAudiobooks(response.items);
+      if (authorList !== authors) setAuthors(authorList);
     } catch (err) {
       logger.error("Failed to load audiobooks", "AudiobooksPage", err);
       setError(t("audiobooks.loadError", "Failed to load audiobooks"));
@@ -110,12 +156,21 @@ export default function AudiobooksPage() {
     try {
       setSyncing(true);
       audiobookService.clearCache();
-      await loadAudiobooks();
+      prevBackendKey.current = "";
+      await loadData();
     } catch (err) {
       logger.error("Failed to sync audiobooks", "AudiobooksPage", err);
     } finally {
       setSyncing(false);
     }
+  };
+
+  const handleFilterChange = (next: AudiobookFilters) => {
+    // Reset to page 1 when author changes
+    if (next.author !== filters.author) {
+      next = { ...next, page: 1 };
+    }
+    setFilters(next);
   };
 
   if (loading && audiobooks.length === 0) {
@@ -172,7 +227,8 @@ export default function AudiobooksPage() {
           {/* Filters */}
           <AudiobooksPageFilters
             filters={filters}
-            onChange={setFilters}
+            onChange={handleFilterChange}
+            authors={authors}
             isRTL={isRTL}
           />
 
@@ -188,7 +244,7 @@ export default function AudiobooksPage() {
           {/* Grid */}
           {!error && (
             <AudiobooksPageGrid
-              audiobooks={filteredAudiobooks}
+              audiobooks={displayAudiobooks}
               loading={loading}
               currentPage={filters.page || 1}
               onPageChange={(page) => setFilters({ ...filters, page })}
