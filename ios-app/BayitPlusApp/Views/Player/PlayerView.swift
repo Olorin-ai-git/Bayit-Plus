@@ -169,8 +169,12 @@ struct PlayerView: View {
                 handleTimeChange(newTime)
             }
             .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active, isPiPActive {
-                    isPiPActive = false
+                // Do NOT force-close PiP when returning to foreground.
+                // The user may tap the PiP window to restore the player,
+                // which triggers scenePhase -> .active. Forcing isPiPActive
+                // to false here kills PiP before the restore handler fires.
+                if newPhase == .background, !isPiPActive {
+                    viewModel.player.pause()
                 }
             }
             .sheet(isPresented: $showSplitLanguagePicker) { splitLanguagePickerSheet }

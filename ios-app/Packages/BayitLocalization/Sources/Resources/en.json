@@ -3116,6 +3116,7 @@
     "subscription": "Subscription",
     "by": "By",
     "speed": "Speed:",
+    "continueListening": "Continue Listening",
     "loadingAudiobooks": "Loading audiobooks..."
   },
   "auth": {
@@ -6229,6 +6230,7 @@
     "dismiss": "Dismiss",
     "dismissPlayer": "Dismiss player",
     "loadingMedia": "Loading media",
+    "preparingStream": "Preparing stream...",
     "speedNormal": "Normal",
     "recordingError": "Recording Error",
     "startRecording": "Start recording",

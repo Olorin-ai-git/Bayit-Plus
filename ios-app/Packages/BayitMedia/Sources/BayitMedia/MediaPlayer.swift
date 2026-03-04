@@ -37,6 +37,11 @@ public final class MediaPlayer {
     private var loadedRangesObservation: NSKeyValueObservation?
     private var seekableRangesObservation: NSKeyValueObservation?
     private var stallRecoveryTask: Task<Void, Never>?
+    private var preBufferTask: Task<Void, Never>?
+
+    /// Seconds of buffer to fill before starting playback for non-live
+    /// single-bitrate streams. Prevents mid-playback stalls on slow connections.
+    private let preBufferThreshold: TimeInterval = 30
 
     /// Set once the asset reports a finite duration via its own property
     /// or via AVPlayerItem.duration. Prevents seekableTimeRanges (which
@@ -67,21 +72,18 @@ public final class MediaPlayer {
         audioSession.activate()
 
         let asset = AVURLAsset(url: url)
-        // Pre-load duration and playable keys so the full HLS manifest
-        // is parsed before the item reports readyToPlay. Without this,
-        // AVPlayerItem can become ready after only a partial manifest
-        // parse, causing the duration to show a fraction of the real length.
-        let item = AVPlayerItem(
-            asset: asset,
-            automaticallyLoadedAssetKeys: ["duration", "playable"]
-        )
+        // Do not pre-load asset keys: for ABR HLS this forces sequential
+        // fetching of every variant + subtitle playlist before readyToPlay,
+        // which can take several seconds and causes the stall recovery to
+        // fire prematurely. Duration is derived from seekableTimeRanges
+        // in updateDurationFromSeekableRanges() instead.
+        let item = AVPlayerItem(asset: asset)
 
-        // Live streams cap forward buffer at 30s to stay near the live edge.
-        // VOD uses 300s (5 min): long-form content (films, series) drains a
-        // shorter window during high-bitrate action sequences faster than ABR
-        // can recover. 300s gives the CDN ample time to deliver large 4K/1080p
-        // segments without exhausting the pre-roll during sustained bitrate spikes.
-        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 300.0
+        // Live streams buffer 30s to stay near the live edge.
+        // Non-live single-bitrate: 500s forward buffer to prevent mid-playback
+        // stalls on slow connections. ABR streams use 0 (AVFoundation default)
+        // because the player can switch variants instead of buffering more.
+        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 500
         item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
         // Start playback from the lowest eligible variant and ramp up.
@@ -172,6 +174,8 @@ public final class MediaPlayer {
 
     /// Stop playback and unload the current item.
     public func stop() {
+        preBufferTask?.cancel()
+        preBufferTask = nil
         avPlayer.pause()
         avPlayer.replaceCurrentItem(with: nil)
         tearDownItemObservers()
@@ -187,6 +191,14 @@ public final class MediaPlayer {
     public var progress: Double {
         guard duration > 0 else { return 0 }
         return currentTime / duration
+    }
+
+    /// Pre-buffer progress fraction (0.0 to 1.0).
+    /// Returns 1.0 when not in pre-buffering state.
+    public var preBufferProgress: Double {
+        guard state == .preBuffering else { return 1.0 }
+        let buffered = bufferedTime - currentTime
+        return min(max(buffered / preBufferThreshold, 0), 1.0)
     }
 }
 
@@ -261,6 +273,8 @@ extension MediaPlayer {
         seekableRangesObservation = nil
         stallRecoveryTask?.cancel()
         stallRecoveryTask = nil
+        preBufferTask?.cancel()
+        preBufferTask = nil
     }
 
     private func tearDownObservers() {
@@ -286,7 +300,12 @@ extension MediaPlayer {
                 updateDurationFromSeekableRanges(item)
             }
             if state == .loading {
-                state = .ready
+                if !contentType.isLive {
+                    state = .preBuffering
+                    startPreBufferMonitor()
+                } else {
+                    state = .ready
+                }
             }
         case .failed:
             let message = item.error?.localizedDescription ?? "Unknown playback error"
@@ -327,6 +346,44 @@ extension MediaPlayer {
         }
     }
 
+    /// Monitor buffer fill and transition to .ready once the pre-buffer
+    /// threshold is reached, or after a timeout so playback is never blocked
+    /// indefinitely.
+    @MainActor
+    private func startPreBufferMonitor() {
+        preBufferTask?.cancel()
+        preBufferTask = Task { @MainActor [weak self] in
+            let maxWait: TimeInterval = 45
+            let pollInterval: UInt64 = 500_000_000 // 0.5s
+            let start = Date()
+
+            while !Task.isCancelled {
+                guard let self else { return }
+
+                let buffered = self.bufferedTime - self.currentTime
+                let elapsed = Date().timeIntervalSince(start)
+
+                if buffered >= self.preBufferThreshold || elapsed >= maxWait {
+                    self.logger.info(
+                        "Pre-buffer complete",
+                        context: [
+                            "buffered": String(format: "%.1fs", buffered),
+                            "elapsed": String(format: "%.1fs", elapsed),
+                        ]
+                    )
+                    self.state = .ready
+                    return
+                }
+
+                do {
+                    try await Task.sleep(nanoseconds: pollInterval)
+                } catch {
+                    return
+                }
+            }
+        }
+    }
+
     /// Schedule a stall-recovery seek when buffering persists for over 6 seconds.
     ///
     /// Seeks 1 second behind the current position so AVFoundation abandons
@@ -342,7 +399,10 @@ extension MediaPlayer {
             } catch {
                 return
             }
-            guard let self, self.isBuffering else { return }
+            // Only recover if playback actually started (state == .buffering means
+            // we transitioned from .playing). During initial load the state is
+            // .loading or .ready — firing then resets the buffer and creates a loop.
+            guard let self, self.isBuffering, self.state == .buffering else { return }
             let target = max(self.currentTime - 1.0, 0)
             self.logger.warning(
                 "Stall recovery: restarting from keyframe",

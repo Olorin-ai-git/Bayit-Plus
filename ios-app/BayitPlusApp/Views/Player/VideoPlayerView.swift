@@ -5,8 +5,8 @@ import SwiftUI
 ///
 /// Integrates the system video player with SwiftUI, providing native
 /// PiP support, AirPlay, and system-level playback controls.
-/// PiP is delegated to the AVPlayerViewController which owns the player layer,
-/// ensuring the system PiP controller has a valid, on-screen layer to work with.
+/// Uses AVPictureInPictureController with the AVPlayerViewController
+/// content source so PiP works even with showsPlaybackControls = false.
 struct VideoPlayerView: UIViewControllerRepresentable {
     let player: AVPlayer
     var allowsPiP: Bool = true
@@ -27,6 +27,7 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         controller.videoGravity = videoGravity
         controller.delegate = context.coordinator
         context.coordinator.playerViewController = controller
+        context.coordinator.setupPiPController(from: controller)
         return controller
     }
 
@@ -44,17 +45,16 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         context.coordinator.handlePiPToggle()
     }
 
-    // Toggle PiP from SwiftUI by flipping `isPiPActive`.
-    // The coordinator detects the change in `updateUIViewController` and acts.
-
     // MARK: - Coordinator
 
-    final class Coordinator: NSObject, AVPlayerViewControllerDelegate {
+    final class Coordinator: NSObject, AVPlayerViewControllerDelegate,
+        AVPictureInPictureControllerDelegate
+    {
         var parent: VideoPlayerView
         weak var playerViewController: AVPlayerViewController?
         private var lastPiPState: Bool = false
         #if os(iOS)
-            private var cachedPiPController: AVPictureInPictureController?
+            private var pipController: AVPictureInPictureController?
         #endif
 
         init(parent: VideoPlayerView) {
@@ -62,41 +62,38 @@ struct VideoPlayerView: UIViewControllerRepresentable {
             lastPiPState = parent.isPiPActive
         }
 
+        #if os(iOS)
+            func setupPiPController(from pvc: AVPlayerViewController) {
+                guard AVPictureInPictureController.isPictureInPictureSupported() else {
+                    return
+                }
+                let contentSource = AVPictureInPictureController.ContentSource(
+                    playerLayer: AVPlayerLayer(player: pvc.player)
+                )
+                let pip = AVPictureInPictureController(contentSource: contentSource)
+                pip.delegate = self
+                pipController = pip
+            }
+        #else
+            func setupPiPController(from _: AVPlayerViewController) {}
+        #endif
+
         func handlePiPToggle() {
             let desired = parent.isPiPActive
             guard desired != lastPiPState else { return }
             lastPiPState = desired
 
-            guard let pvc = playerViewController else { return }
             #if os(iOS)
-                if let pipController = getOrCreatePiPController(from: pvc) {
-                    if desired, !pipController.isPictureInPictureActive {
-                        pipController.startPictureInPicture()
-                    } else if !desired, pipController.isPictureInPictureActive {
-                        pipController.stopPictureInPicture()
-                    }
+                guard let pip = pipController else { return }
+                if desired, !pip.isPictureInPictureActive {
+                    pip.startPictureInPicture()
+                } else if !desired, pip.isPictureInPictureActive {
+                    pip.stopPictureInPicture()
                 }
             #endif
         }
 
-        #if os(iOS)
-            private func getOrCreatePiPController(from pvc: AVPlayerViewController) -> AVPictureInPictureController? {
-                if let existing = cachedPiPController {
-                    return existing
-                }
-                let controller: AVPictureInPictureController?
-                if let playerLayer = pvc.view.layer.sublayers?.first(where: { $0 is AVPlayerLayer }) as? AVPlayerLayer {
-                    controller = AVPictureInPictureController(playerLayer: playerLayer)
-                } else if let player = pvc.player {
-                    let layer = AVPlayerLayer(player: player)
-                    controller = AVPictureInPictureController(playerLayer: layer)
-                } else {
-                    controller = nil
-                }
-                cachedPiPController = controller
-                return controller
-            }
-        #endif
+        // MARK: - AVPlayerViewControllerDelegate
 
         func playerViewControllerWillStartPictureInPicture(
             _: AVPlayerViewController
@@ -122,5 +119,34 @@ struct VideoPlayerView: UIViewControllerRepresentable {
                 completion(true)
             }
         }
+
+        // MARK: - AVPictureInPictureControllerDelegate
+
+        #if os(iOS)
+            func pictureInPictureControllerWillStartPictureInPicture(
+                _: AVPictureInPictureController
+            ) {
+                parent.isPiPActive = true
+                lastPiPState = true
+            }
+
+            func pictureInPictureControllerDidStopPictureInPicture(
+                _: AVPictureInPictureController
+            ) {
+                parent.isPiPActive = false
+                lastPiPState = false
+            }
+
+            func pictureInPictureController(
+                _: AVPictureInPictureController,
+                restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completion: @escaping (Bool) -> Void
+            ) {
+                if let handler = parent.onRestoreUserInterface {
+                    handler(completion)
+                } else {
+                    completion(true)
+                }
+            }
+        #endif
     }
 }

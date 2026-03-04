@@ -6,6 +6,8 @@ public enum PlaybackState: Sendable, Equatable {
     case idle
     /// Media is loading / buffering before first play.
     case loading
+    /// Pre-buffering: stream is ready but filling buffer before playback.
+    case preBuffering
     /// Media is ready to play but paused.
     case ready
     /// Actively playing.
@@ -30,7 +32,7 @@ public enum PlaybackState: Sendable, Equatable {
 
     public var canPlay: Bool {
         switch self {
-        case .ready, .paused, .ended:
+        case .loading, .preBuffering, .ready, .paused, .ended:
             return true
         default:
             return false

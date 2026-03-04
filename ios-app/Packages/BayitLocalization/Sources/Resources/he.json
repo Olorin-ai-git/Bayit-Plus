@@ -3115,6 +3115,7 @@
     "sortOrder": "סדר",
     "subscription": "מנוי",
     "by": "By",
+    "continueListening": "\u05d4\u05de\u05e9\u05da \u05dc\u05d4\u05d0\u05d6\u05d9\u05df",
     "loadingAudiobooks": "Loading audiobooks...",
     "speed": "Speed:"
   },
@@ -6287,6 +6288,7 @@
     "dismiss": "סגור",
     "dismissPlayer": "סגור נגן",
     "loadingMedia": "טוען מדיה",
+    "preparingStream": "...מכין את השידור",
     "speedNormal": "רגיל",
     "recordingError": "שגיאת הקלטה",
     "startRecording": "התחל הקלטה",

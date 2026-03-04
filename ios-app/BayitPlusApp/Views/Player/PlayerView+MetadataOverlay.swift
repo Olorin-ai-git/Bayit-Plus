@@ -81,6 +81,23 @@ extension PlayerView {
             .accessibilityLabel(localization.t("player.loadingMedia"))
     }
 
+    // MARK: - Pre-Buffer Overlay
+
+    var preBufferOverlay: some View {
+        VStack(spacing: DesignTokens.Spacing.md) {
+            ProgressView(
+                value: viewModel.player.preBufferProgress
+            )
+            .progressViewStyle(.linear)
+            .tint(DesignTokens.Primary.default)
+            .frame(maxWidth: 200)
+
+            Text(localization.t("player.preparingStream"))
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+    }
+
     // MARK: - Error Overlay
 
     func errorOverlay(_ message: String) -> some View {

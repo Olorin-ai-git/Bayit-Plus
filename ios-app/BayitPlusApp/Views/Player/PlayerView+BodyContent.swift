@@ -42,6 +42,10 @@ extension PlayerView {
                 loadingOverlay
             }
 
+            if viewModel.player.state == .preBuffering {
+                preBufferOverlay
+            }
+
             if let error = viewModel.errorMessage {
                 errorOverlay(error)
             }

@@ -140,6 +140,24 @@ extension TVPlayerView {
         .ignoresSafeArea()
     }
 
+    var preBufferOverlay: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            ProgressView(
+                value: mediaPlayer.preBufferProgress
+            )
+            .progressViewStyle(.linear)
+            .tint(DesignTokens.Primary.default)
+            .frame(maxWidth: 400)
+
+            Text(localization.t("player.preparingStream"))
+                .font(.system(size: TVDesignTokens.FontSize.md))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black.opacity(0.7))
+        .ignoresSafeArea()
+    }
+
     func streamErrorView(_ message: String) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             Image(systemName: "exclamationmark.triangle")

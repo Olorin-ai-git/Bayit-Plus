@@ -55,6 +55,10 @@ struct TVPlayerView: View {
                 streamErrorView(error)
             } else {
                 playerContentLayer
+
+                if mediaPlayer.state == .preBuffering {
+                    preBufferOverlay
+                }
             }
         }
         .focusScope(playerFocus)
