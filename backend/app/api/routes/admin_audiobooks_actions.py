@@ -16,6 +16,7 @@ from app.models.user import User
 from app.api.routes.admin_content_utils import has_permission, log_audit
 from app.api.routes.audiobook_schemas import AudiobookAdminResponse, FeatureResponse
 from app.api.routes.audiobook_utils import audiobook_to_admin_response
+from app.services import audiobook_cache_service as ab_cache
 
 router = APIRouter()
 
@@ -51,6 +52,9 @@ async def publish_audiobook(
         request=request,
     )
 
+    await ab_cache.invalidate_audiobook(audiobook_id)
+    await ab_cache.invalidate_all()
+
     return audiobook_to_admin_response(audiobook)
 
 
@@ -83,6 +87,9 @@ async def unpublish_audiobook(
         },
         request=request,
     )
+
+    await ab_cache.invalidate_audiobook(audiobook_id)
+    await ab_cache.invalidate_all()
 
     return audiobook_to_admin_response(audiobook)
 
@@ -125,5 +132,8 @@ async def feature_audiobook(
         },
         request=request,
     )
+
+    await ab_cache.invalidate_audiobook(audiobook_id)
+    await ab_cache.invalidate_all()
 
     return FeatureResponse(message="Audiobook featured successfully", audiobook_id=audiobook_id)

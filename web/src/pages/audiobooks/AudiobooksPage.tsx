@@ -3,26 +3,26 @@
  * Main entry point for audiobook browsing and discovery
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native'
-import { useTranslation } from 'react-i18next'
-import { useDirection } from '@/hooks/useDirection'
-import { Search, X, RefreshCw } from 'lucide-react'
-import audiobookService from '@/services/audiobookService'
-import { colors, spacing, borderRadius } from '@olorin/design-tokens'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
+import { useDirection } from "@/hooks/useDirection";
+import { Search, X, RefreshCw } from "lucide-react";
+import audiobookService from "@/services/audiobookService";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
 import {
   GlassView,
   GlassInput,
   GlassPageHeader,
   GlassEmptyState,
-} from '@bayit/shared/ui'
-import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext'
-import logger from '@/utils/logger'
-import PageLoading from '@/components/common/PageLoading'
-import type { Audiobook, AudiobookFilters } from '@/types/audiobook'
-import AudiobooksPageHeader from './AudiobooksPageHeader'
-import AudiobooksPageFilters from './AudiobooksPageFilters'
-import AudiobooksPageGrid from './AudiobooksPageGrid'
+} from "@bayit/shared/ui";
+import { WidgetToggleProvider } from "@/contexts/WidgetToggleContext";
+import logger from "@/utils/logger";
+import PageLoading from "@/components/common/PageLoading";
+import type { Audiobook, AudiobookFilters } from "@/types/audiobook";
+import AudiobooksPageHeader from "./AudiobooksPageHeader";
+import AudiobooksPageFilters from "./AudiobooksPageFilters";
+import AudiobooksPageGrid from "./AudiobooksPageGrid";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
     borderBottomWidth: 1,
@@ -48,152 +48,155 @@ const styles = StyleSheet.create({
   refreshButtonDisabled: {
     opacity: 0.5,
   },
-})
+});
 
 export default function AudiobooksPage() {
-  const { t } = useTranslation()
-  const { isRTL } = useDirection()
+  const { t } = useTranslation();
+  const { isRTL } = useDirection();
 
-  const [audiobooks, setAudiobooks] = useState<Audiobook[]>([])
-  const [loading, setLoading] = useState(true)
-  const [syncing, setSyncing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [audiobooks, setAudiobooks] = useState<Audiobook[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<AudiobookFilters>({
     page: 1,
-    page_size: 50,
-  } as AudiobookFilters)
+    page_size: 20,
+  } as AudiobookFilters);
 
   // Filter audiobooks by search query
   const filteredAudiobooks = useMemo(() => {
-    if (!searchQuery.trim()) return audiobooks
+    if (!searchQuery.trim()) return audiobooks;
 
-    const query = searchQuery.toLowerCase()
+    const query = searchQuery.toLowerCase();
     return audiobooks.filter(
       (book) =>
         book.title.toLowerCase().includes(query) ||
         book.author?.toLowerCase().includes(query) ||
-        book.narrator?.toLowerCase().includes(query)
-    )
-  }, [audiobooks, searchQuery])
+        book.narrator?.toLowerCase().includes(query),
+    );
+  }, [audiobooks, searchQuery]);
 
   // Collect items for widget toggle batch-check
   const widgetItems = useMemo(() => {
     return audiobooks.map((book) => ({
-      content_type: 'audiobook',
+      content_type: "audiobook",
       content_id: book.id,
-    }))
-  }, [audiobooks])
+    }));
+  }, [audiobooks]);
 
   // Load audiobooks on mount and filter change
   useEffect(() => {
-    loadAudiobooks()
-  }, [filters])
+    loadAudiobooks();
+  }, [filters]);
 
   const loadAudiobooks = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await audiobookService.getAudiobooks(filters as any)
-      setAudiobooks(response.items)
+      const response = await audiobookService.getAudiobooks(filters as any);
+      setAudiobooks(response.items);
     } catch (err) {
-      logger.error('Failed to load audiobooks', 'AudiobooksPage', err)
-      setError(t('audiobooks.loadError', 'Failed to load audiobooks'))
-      setAudiobooks([])
+      logger.error("Failed to load audiobooks", "AudiobooksPage", err);
+      setError(t("audiobooks.loadError", "Failed to load audiobooks"));
+      setAudiobooks([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleRefresh = async () => {
     try {
-      setSyncing(true)
-      audiobookService.clearCache()
-      await loadAudiobooks()
+      setSyncing(true);
+      audiobookService.clearCache();
+      await loadAudiobooks();
     } catch (err) {
-      logger.error('Failed to sync audiobooks', 'AudiobooksPage', err)
+      logger.error("Failed to sync audiobooks", "AudiobooksPage", err);
     } finally {
-      setSyncing(false)
+      setSyncing(false);
     }
-  }
+  };
 
   if (loading && audiobooks.length === 0) {
     return (
       <PageLoading
-        title={t('audiobooks.title', 'Audiobooks')}
+        title={t("audiobooks.title", "Audiobooks")}
         pageType={"audiobooks" as any}
-        message={t('audiobooks.loading', 'Loading audiobooks...')}
+        message={t("audiobooks.loading", "Loading audiobooks...")}
         isRTL={isRTL}
       />
-    )
+    );
   }
 
   return (
     <WidgetToggleProvider items={widgetItems}>
-    <GlassView style={styles.container}>
-      <ScrollView scrollEnabled={true} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <GlassPageHeader
-            title={t('audiobooks.title', 'Audiobooks')}
-            pageType={"audiobooks" as any}
-            badge={audiobooks.length}
+      <GlassView style={styles.container}>
+        <ScrollView scrollEnabled={true} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <GlassPageHeader
+              title={t("audiobooks.title", "Audiobooks")}
+              pageType={"audiobooks" as any}
+              badge={audiobooks.length}
+              isRTL={isRTL}
+            />
+            <Pressable
+              onPress={handleRefresh}
+              disabled={syncing}
+              style={[
+                styles.refreshButton,
+                syncing && styles.refreshButtonDisabled,
+              ]}
+            >
+              <RefreshCw size={20} color={colors.text} />
+            </Pressable>
+          </View>
+
+          {/* Search */}
+          <GlassInput
+            placeholder={t("common.search", "Search")}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            leftIcon={<Search size={18} color={colors.textMuted} />}
+            rightIcon={
+              searchQuery ? (
+                <Pressable onPress={() => setSearchQuery("")}>
+                  <X size={18} color={colors.textMuted} />
+                </Pressable>
+              ) : undefined
+            }
+            containerStyle={styles.searchContainer}
+          />
+
+          {/* Filters */}
+          <AudiobooksPageFilters
+            filters={filters}
+            onChange={setFilters}
             isRTL={isRTL}
           />
-          <Pressable
-            onPress={handleRefresh}
-            disabled={syncing}
-            style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
-          >
-            <RefreshCw size={20} color={colors.text} />
-          </Pressable>
-        </View>
 
-        {/* Search */}
-        <GlassInput
-          placeholder={t('common.search', 'Search')}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          leftIcon={<Search size={18} color={colors.textMuted} />}
-          rightIcon={
-            searchQuery ? (
-              <Pressable onPress={() => setSearchQuery('')}>
-                <X size={18} color={colors.textMuted} />
-              </Pressable>
-            ) : undefined
-          }
-          containerStyle={styles.searchContainer}
-        />
+          {/* Error State */}
+          {error && (
+            <GlassEmptyState
+              variant="error"
+              title={t("common.error", "Error")}
+              description={error}
+            />
+          )}
 
-        {/* Filters */}
-        <AudiobooksPageFilters
-          filters={filters}
-          onChange={setFilters}
-          isRTL={isRTL}
-        />
-
-        {/* Error State */}
-        {error && (
-          <GlassEmptyState
-            variant="error"
-            title={t('common.error', 'Error')}
-            description={error}
-          />
-        )}
-
-        {/* Grid */}
-        {!error && (
-          <AudiobooksPageGrid
-            audiobooks={filteredAudiobooks}
-            loading={loading}
-            currentPage={filters.page || 1}
-            onPageChange={(page) => setFilters({ ...filters, page })}
-            searchQuery={searchQuery}
-          />
-        )}
-      </ScrollView>
-    </GlassView>
+          {/* Grid */}
+          {!error && (
+            <AudiobooksPageGrid
+              audiobooks={filteredAudiobooks}
+              loading={loading}
+              currentPage={filters.page || 1}
+              onPageChange={(page) => setFilters({ ...filters, page })}
+              searchQuery={searchQuery}
+            />
+          )}
+        </ScrollView>
+      </GlassView>
     </WidgetToggleProvider>
-  )
+  );
 }

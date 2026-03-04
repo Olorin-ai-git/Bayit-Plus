@@ -375,6 +375,18 @@ class Content(Document):
             ("collection_parent_id", "collection_order"),
             ("tmdb_collection_id", "is_published"),
             ("is_collection_parent", "is_published"),
+            # Audiobook list query compound index (browse + featured sort)
+            IndexModel(
+                [
+                    ("content_format", pymongo.ASCENDING),
+                    ("is_published", pymongo.ASCENDING),
+                    ("series_id", pymongo.ASCENDING),
+                    ("is_featured", pymongo.DESCENDING),
+                    ("featured_order.audiobooks", pymongo.DESCENDING),
+                    ("created_at", pymongo.DESCENDING),
+                ],
+                name="audiobook_list_query_idx",
+            ),
         ]
 
 

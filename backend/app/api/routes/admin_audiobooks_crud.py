@@ -22,6 +22,7 @@ from app.api.routes.audiobook_schemas import (
     AudiobookAdminResponse,
 )
 from app.api.routes.audiobook_utils import audiobook_to_admin_response
+from app.services import audiobook_cache_service as ab_cache
 
 router = APIRouter()
 
@@ -77,6 +78,8 @@ async def create_audiobook(
         },
         request=request,
     )
+
+    await ab_cache.invalidate_all()
 
     return audiobook_to_admin_response(audiobook)
 
@@ -167,6 +170,9 @@ async def update_audiobook(
         request=request,
     )
 
+    await ab_cache.invalidate_audiobook(audiobook_id)
+    await ab_cache.invalidate_all()
+
     return audiobook_to_admin_response(audiobook)
 
 
@@ -197,5 +203,8 @@ async def delete_audiobook(
     )
 
     await audiobook.delete()
+
+    await ab_cache.invalidate_audiobook(audiobook_id)
+    await ab_cache.invalidate_all()
 
     return {"message": "Audiobook deleted successfully"}

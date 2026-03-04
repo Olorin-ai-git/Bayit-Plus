@@ -3,10 +3,13 @@
  * Manages audiobook details, chapters, and user interactions
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { audiobookService, playlistService } from '@/services/api';
-import type { AudiobookWithChapters, AudiobookChapter } from '@/types/audiobook';
-import logger from '@/utils/logger';
+import { useState, useEffect, useCallback } from "react";
+import { audiobookService, playlistService } from "@/services/api";
+import type {
+  AudiobookWithChapters,
+  AudiobookChapter,
+} from "@/types/audiobook";
+import logger from "@/utils/logger";
 
 interface UseAudiobookDataProps {
   audiobookId: string | undefined;
@@ -22,27 +25,45 @@ interface UseAudiobookDataReturn {
   togglePlaylist: () => Promise<void>;
 }
 
-export function useAudiobookData({ audiobookId }: UseAudiobookDataProps): UseAudiobookDataReturn {
-  const [audiobook, setAudiobook] = useState<AudiobookWithChapters | null>(null);
+export function useAudiobookData({
+  audiobookId,
+}: UseAudiobookDataProps): UseAudiobookDataReturn {
+  const [audiobook, setAudiobook] = useState<AudiobookWithChapters | null>(
+    null,
+  );
   const [chapters, setChapters] = useState<AudiobookChapter[]>([]);
-  const [selectedChapter, setSelectedChapter] = useState<AudiobookChapter | null>(null);
+  const [selectedChapter, setSelectedChapter] =
+    useState<AudiobookChapter | null>(null);
   const [loading, setLoading] = useState(true);
   const [inPlaylist, setInPlaylist] = useState(false);
 
-  const loadAudiobookDetails = useCallback(async () => {
+  const loadAudiobookData = useCallback(async () => {
     if (!audiobookId) return;
 
     setLoading(true);
     try {
-      const data = await audiobookService.getAudiobookWithChapters(audiobookId);
+      // Fetch audiobook details and playlist status in parallel
+      const [data, playlistResult] = await Promise.all([
+        audiobookService.getAudiobookWithChapters(audiobookId),
+        playlistService.checkItem(audiobookId).catch(() => null),
+      ]);
+
       setAudiobook(data);
       setChapters(data.chapters || []);
 
       if (data.chapters && data.chapters.length > 0) {
         setSelectedChapter(data.chapters[0]);
       }
+
+      if (playlistResult && typeof playlistResult.in_playlist === "boolean") {
+        setInPlaylist(playlistResult.in_playlist);
+      }
     } catch (error) {
-      logger.error('Failed to load audiobook details', 'useAudiobookData', error);
+      logger.error(
+        "Failed to load audiobook details",
+        "useAudiobookData",
+        error,
+      );
     } finally {
       setLoading(false);
     }
@@ -50,7 +71,10 @@ export function useAudiobookData({ audiobookId }: UseAudiobookDataProps): UseAud
 
   const togglePlaylist = useCallback(async () => {
     if (!audiobook || !audiobook.id) {
-      logger.warn('Cannot toggle playlist: audiobook or audiobook.id is missing', 'useAudiobookData');
+      logger.warn(
+        "Cannot toggle playlist: audiobook or audiobook.id is missing",
+        "useAudiobookData",
+      );
       return;
     }
 
@@ -59,47 +83,33 @@ export function useAudiobookData({ audiobookId }: UseAudiobookDataProps): UseAud
     try {
       setInPlaylist(!inPlaylist);
 
-      logger.info('Toggling playlist', 'useAudiobookData', {
+      logger.info("Toggling playlist", "useAudiobookData", {
         audiobookId: audiobook.id,
-        contentType: 'audiobook',
-        currentState: inPlaylist
+        contentType: "audiobook",
+        currentState: inPlaylist,
       });
 
-      const result = await playlistService.toggleItem(audiobook.id, 'audiobook');
+      const result = await playlistService.toggleItem(
+        audiobook.id,
+        "audiobook",
+      );
 
-      logger.info('Playlist toggle response', 'useAudiobookData', { result });
+      logger.info("Playlist toggle response", "useAudiobookData", { result });
 
-      if (result && typeof result.in_playlist === 'boolean') {
+      if (result && typeof result.in_playlist === "boolean") {
         setInPlaylist(result.in_playlist);
       }
     } catch (error) {
-      logger.error('Failed to toggle playlist', 'useAudiobookData', error);
+      logger.error("Failed to toggle playlist", "useAudiobookData", error);
       setInPlaylist(previousState);
     }
   }, [audiobook, inPlaylist]);
 
   useEffect(() => {
     if (audiobookId) {
-      loadAudiobookDetails();
+      loadAudiobookData();
     }
-  }, [audiobookId, loadAudiobookDetails]);
-
-  useEffect(() => {
-    const checkPlaylistStatus = async () => {
-      if (audiobook && audiobook.id) {
-        try {
-          const result = await playlistService.checkItem(audiobook.id);
-          if (result && typeof result.in_playlist === 'boolean') {
-            setInPlaylist(result.in_playlist);
-          }
-        } catch (error) {
-          logger.error('Failed to check playlist status', 'useAudiobookData', error);
-        }
-      }
-    };
-
-    checkPlaylistStatus();
-  }, [audiobook?.id]);
+  }, [audiobookId, loadAudiobookData]);
 
   return {
     audiobook,

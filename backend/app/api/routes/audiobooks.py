@@ -5,6 +5,7 @@ Browsing endpoints use optional auth (public access).
 Streaming endpoints require authenticated user.
 """
 
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -31,14 +32,28 @@ from app.api.routes.audiobook_utils import (
     audiobook_to_response,
     audiobook_to_stream_response,
 )
+from app.services import audiobook_cache_service as cache
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _build_list_response(items, total, page, page_size) -> dict:
+    """Serialize audiobook list to a cacheable dict."""
+    return {
+        "items": [audiobook_to_response(i).model_dump() for i in items],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size,
+    }
 
 
 @router.get("", response_model=AudiobookListResponse)
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=50, le=500),
+    page_size: int = Query(default=20, le=500),
     author: Optional[str] = Query(default=None),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
@@ -50,34 +65,59 @@ async def get_audiobooks(
 
     Optionally filter by author name using the `author` query parameter.
     """
-    filters: dict = {
+    cache_filters = {"page": page, "page_size": page_size, "author": author}
+    cached = await cache.get_cached_list(cache_filters)
+    if cached:
+        return AudiobookListResponse(**cached)
+
+    match_stage: dict = {
         "content_format": "audiobook",
         "is_published": True,
         "title": {"$exists": True, "$nin": ["", None]},
-        "$or": [
-            {"series_id": None},
-            {"series_id": {"$exists": False}},
-        ],
+        "series_id": None,
     }
 
     if author:
-        filters["author"] = author
+        match_stage["author"] = author
 
-    query = Content.find(filters)
-
-    total = await query.count()
     skip = (page - 1) * page_size
-    items = await query.sort(
-        [("is_featured", -1), ("featured_order.audiobooks", -1), ("created_at", -1)]
-    ).skip(skip).limit(page_size).to_list()
 
-    return AudiobookListResponse(
-        items=[audiobook_to_response(item) for item in items],
-        total=total,
-        page=page,
-        page_size=page_size,
-        total_pages=(total + page_size - 1) // page_size,
-    )
+    # Single aggregation: $facet returns both count and paginated results
+    pipeline = [
+        {"$match": match_stage},
+        {
+            "$facet": {
+                "metadata": [{"$count": "total"}],
+                "items": [
+                    {
+                        "$sort": {
+                            "is_featured": -1,
+                            "featured_order.audiobooks": -1,
+                            "created_at": -1,
+                        }
+                    },
+                    {"$skip": skip},
+                    {"$limit": page_size},
+                ],
+            }
+        },
+    ]
+
+    collection = Content.get_pymongo_collection()
+    cursor = collection.aggregate(pipeline)
+    result = await cursor.to_list(length=1)
+
+    facet = result[0] if result else {"metadata": [], "items": []}
+    total = facet["metadata"][0]["total"] if facet["metadata"] else 0
+    raw_items = facet["items"]
+
+    # Hydrate into Content documents for audiobook_to_response
+    items = [Content.model_validate(doc) for doc in raw_items]
+
+    response_data = _build_list_response(items, total, page, page_size)
+    await cache.set_cached_list(cache_filters, response_data)
+
+    return AudiobookListResponse(**response_data)
 
 
 @router.get("/authors", response_model=AudiobookAuthorsListResponse)
@@ -89,6 +129,10 @@ async def get_audiobook_authors(
     Returns only authors from parent audiobooks (no chapters), sorted by
     audiobook count descending then alphabetically.
     """
+    cached = await cache.get_cached_authors()
+    if cached:
+        return AudiobookAuthorsListResponse(**cached)
+
     pipeline = [
         {
             "$match": {
@@ -96,10 +140,7 @@ async def get_audiobook_authors(
                 "is_published": True,
                 "title": {"$exists": True, "$nin": ["", None]},
                 "author": {"$exists": True, "$nin": ["", None]},
-                "$or": [
-                    {"series_id": None},
-                    {"series_id": {"$exists": False}},
-                ],
+                "series_id": None,
                 "$expr": {"$ne": ["$author", "$title"]},
             }
         },
@@ -125,7 +166,10 @@ async def get_audiobook_authors(
         for doc in results
     ]
 
-    return AudiobookAuthorsListResponse(authors=authors)
+    response = AudiobookAuthorsListResponse(authors=authors)
+    await cache.set_cached_authors(response.model_dump())
+
+    return response
 
 
 @router.get("/{audiobook_id}", response_model=AudiobookResponse)
@@ -134,6 +178,10 @@ async def get_audiobook(
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get single audiobook metadata."""
+    cached = await cache.get_cached_detail(audiobook_id)
+    if cached:
+        return AudiobookResponse(**cached)
+
     audiobook = await Content.get(audiobook_id)
     if not audiobook or audiobook.content_format != "audiobook":
         raise HTTPException(
@@ -141,7 +189,10 @@ async def get_audiobook(
             detail="Audiobook not found",
         )
 
-    return audiobook_to_response(audiobook)
+    response = audiobook_to_response(audiobook)
+    await cache.set_cached_detail(audiobook_id, response.model_dump())
+
+    return response
 
 
 @router.get("/{audiobook_id}/chapters", response_model=AudiobookWithChaptersResponse)
@@ -154,6 +205,10 @@ async def get_audiobook_with_chapters(
     Returns parent audiobook metadata along with a list of chapters
     (parts) sorted by episode/chapter number.
     """
+    cached = await cache.get_cached_chapters(audiobook_id)
+    if cached:
+        return AudiobookWithChaptersResponse(**cached)
+
     audiobook = await Content.get(audiobook_id)
     if not audiobook or audiobook.content_format != "audiobook":
         raise HTTPException(
@@ -161,24 +216,21 @@ async def get_audiobook_with_chapters(
             detail="Audiobook not found",
         )
 
-    # Fetch chapters (items with series_id pointing to this audiobook)
     chapters_query = Content.find({
         "content_format": "audiobook",
         "series_id": str(audiobook.id),
         "is_published": True,
     })
 
-    # Sort by episode (chapter number)
     chapters = await chapters_query.sort([("episode", 1)]).to_list()
 
-    # Map chapters to response format
     chapter_responses = [
         AudiobookChapterResponse(
             id=str(chapter.id),
             title=chapter.title or f"Chapter {idx + 1}",
             chapter_number=chapter.episode or idx + 1,
             duration=chapter.duration,
-            progress=None,  # Can be enriched with user progress later
+            progress=None,
             thumbnail=chapter.thumbnail,
             stream_url=chapter.stream_url,
             stream_type=chapter.stream_type,
@@ -186,7 +238,7 @@ async def get_audiobook_with_chapters(
         for idx, chapter in enumerate(chapters)
     ]
 
-    return AudiobookWithChaptersResponse(
+    response = AudiobookWithChaptersResponse(
         id=str(audiobook.id),
         title=audiobook.title,
         author=audiobook.author,
@@ -209,6 +261,10 @@ async def get_audiobook_with_chapters(
         chapters=chapter_responses,
         total_chapters=len(chapter_responses),
     )
+
+    await cache.set_cached_chapters(audiobook_id, response.model_dump())
+
+    return response
 
 
 @router.post("/{audiobook_id}/stream", response_model=AudiobookStreamResponse)
