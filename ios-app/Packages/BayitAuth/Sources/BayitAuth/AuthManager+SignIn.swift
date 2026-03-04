@@ -477,6 +477,91 @@ public extension AuthManager {
         }
     }
 
+    // MARK: - Biometric Login
+
+    // Restores a session after biometric authentication succeeds.
+    // Tries the stored refresh token first. If unavailable, silently
+    // restores the previous Google Sign-In session to get a fresh
+    // ID token and exchanges it with the backend for a new JWT.
+    #if os(iOS)
+        func loginWithBiometric() async throws {
+            isLoading = true
+            error = nil
+
+            do {
+                if let rt = try? keychainService.load(for: refreshTokenKeychainKey) {
+                    try await restoreWithRefreshToken(rt)
+                    return
+                }
+
+                let googleUser = try await GIDSignIn.sharedInstance
+                    .restorePreviousSignIn()
+                guard let googleIDToken = googleUser.idToken?.tokenString else {
+                    throw AuthError.biometricAuthFailed(
+                        underlying: "No stored session for biometric sign-in"
+                    )
+                }
+
+                let credential = GoogleAuthProvider.credential(
+                    withIDToken: googleIDToken,
+                    accessToken: googleUser.accessToken.tokenString
+                )
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let firebaseToken = try await authResult.user.getIDToken()
+                try keychainService.save(
+                    token: firebaseToken, for: tokenKeychainKey
+                )
+
+                let backendToken = try await BackendTokenExchangeClient
+                    .loginWithGoogle(
+                        idToken: googleIDToken,
+                        logger: logger
+                    )
+
+                try keychainService.save(
+                    token: backendToken.accessToken,
+                    for: backendTokenKeychainKey
+                )
+                if let rt = backendToken.refreshToken {
+                    try keychainService.save(
+                        token: rt, for: refreshTokenKeychainKey
+                    )
+                }
+
+                let bayitUser = try await fetchUserProfile(
+                    token: backendToken.accessToken
+                )
+                if let userData = try? JSONEncoder().encode(bayitUser) {
+                    try? keychainService.save(
+                        token: String(data: userData, encoding: .utf8) ?? "",
+                        for: userKeychainKey
+                    )
+                }
+
+                user = bayitUser
+                token = backendToken.accessToken
+                stampSessionTimestamp()
+                isLoading = false
+
+                logger.info(
+                    "Biometric sign-in successful via Google restore",
+                    metadata: ["user_id": bayitUser.id]
+                )
+            } catch let authError as AuthError {
+                isLoading = false
+                error = authError
+                throw authError
+            } catch {
+                let wrapped = AuthError.biometricAuthFailed(
+                    underlying: error.localizedDescription
+                )
+                isLoading = false
+                self.error = wrapped
+                throw wrapped
+            }
+        }
+    #endif
+
     // MARK: - Helpers
 
     #if os(iOS)

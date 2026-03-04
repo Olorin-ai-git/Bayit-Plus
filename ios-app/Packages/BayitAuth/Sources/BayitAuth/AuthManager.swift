@@ -41,6 +41,12 @@ public final class AuthManager {
         try? keychainService.load(for: refreshTokenKeychainKey)
     }
 
+    /// True when a prior Firebase session exists that could be restored
+    /// with biometric authentication (without showing the Google sign-in UI).
+    public var hasPotentialSession: Bool {
+        Auth.auth().currentUser != nil || currentRefreshToken != nil
+    }
+
     // MARK: - Dependencies
 
     let configuration: AuthConfiguration
