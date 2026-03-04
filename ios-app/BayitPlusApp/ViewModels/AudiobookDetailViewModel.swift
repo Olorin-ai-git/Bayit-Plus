@@ -10,6 +10,11 @@ final class AudiobookDetailViewModel {
     private(set) var isLoading = false
     private(set) var error: String?
 
+    /// Saved progress from watch history (0-100).
+    private(set) var savedProgress: Double = 0
+    /// Saved position in seconds from watch history.
+    private(set) var savedPosition: Double = 0
+
     /// Chapters parsed from embedded m4b metadata (used when backend has none).
     private(set) var embeddedChapters: [EmbeddedChapter] = []
 
@@ -44,13 +49,15 @@ final class AudiobookDetailViewModel {
     var isPlaying = false
 
     private let repository: any AudiobookRepository
+    private let mediaRepository: any MediaRepository
     private let audiobookId: String
 
     static let availableSpeeds: [Float] = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
 
-    init(audiobookId: String, repository: any AudiobookRepository) {
+    init(audiobookId: String, repository: any AudiobookRepository, mediaRepository: any MediaRepository) {
         self.audiobookId = audiobookId
         self.repository = repository
+        self.mediaRepository = mediaRepository
     }
 
     @MainActor
@@ -80,6 +87,22 @@ final class AudiobookDetailViewModel {
         }
 
         isLoading = false
+
+        // Fetch saved progress from watch history (non-blocking)
+        await loadSavedProgress()
+    }
+
+    /// Load saved progress from the continue-watching history.
+    private func loadSavedProgress() async {
+        do {
+            let history = try await mediaRepository.fetchContinueWatching()
+            if let item = history.items.first(where: { $0.id == audiobookId }) {
+                savedProgress = item.progress ?? 0
+                savedPosition = item.position ?? 0
+            }
+        } catch {
+            // Progress fetch is non-critical
+        }
     }
 
     @MainActor

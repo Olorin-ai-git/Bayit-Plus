@@ -34,7 +34,8 @@ struct TVAudiobookDetailView: View {
             if viewModel == nil {
                 viewModel = AudiobookDetailViewModel(
                     audiobookId: audiobookId,
-                    repository: repos.audiobook
+                    repository: repos.audiobook,
+                    mediaRepository: repos.media
                 )
             }
             await viewModel?.load()

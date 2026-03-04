@@ -131,7 +131,6 @@
 		122AC95BF6BEDA49D6ABB39C /* MediaPlayerViewModel+Playback.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC17F5C1522E831D9D1ED3AF /* MediaPlayerViewModel+Playback.swift */; };
 		124675E64DD101845DE197F2 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38DC71EAAEF883D8D0BDBE4 /* ZehAniModels.swift */; };
 		1278CCDA5DD6D696AD070C31 /* TVCollectionPromoBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B786C95D08511444B7297FD0 /* TVCollectionPromoBannerView.swift */; };
-		E6DADF80F20DF3C08973FF7B /* TVActorPromoBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D195C85CE5298D2429EDA4 /* TVActorPromoBannerView.swift */; };
 		1305E757611B4AC9BDBF7111 /* SubscriptionGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61A45D0E7426FF6AE61D142 /* SubscriptionGateView.swift */; };
 		132DD576F9CF6F65F66A04B0 /* FamilyControlsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA05C5D5419ED36365490CF /* FamilyControlsRepository.swift */; };
 		1333068F66DD7675B1A23655 /* TVPlayerStateContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED4874F6833EE61FB30F187 /* TVPlayerStateContainer.swift */; };
@@ -245,6 +244,7 @@
 		24A9E209BDB1439121F55D12 /* TVVoiceInteractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8861402F112B374BD683AE77 /* TVVoiceInteractionService.swift */; };
 		250231419A6FBF1AFC914FDB /* StarStoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD5B1FAC68F021B3FA2F52 /* StarStoryRepository.swift */; };
 		2526604C4359EA1423460FC1 /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A971C7776E6E11D23807909E /* RadioView.swift */; };
+		252F6D5C74F6FEED4C4299B9 /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E27450C38BDA8CFD14CC8DD /* ChessInviteViewModel.swift */; };
 		253C15F564420A06EC23B604 /* TVAppAuthConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F00D36274DE375B78EAE2B /* TVAppAuthConfiguration.swift */; };
 		2578CC86F921B1731A2F4CA0 /* MorningRitualViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CE4FFD736B23904DFCD963 /* MorningRitualViewModel.swift */; };
 		257E3F8F6D7A42D3FFE8CDCA /* TVInteractiveMomentOverlayView+Players.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5682C6008C2C2673E661BD /* TVInteractiveMomentOverlayView+Players.swift */; };
@@ -389,6 +389,7 @@
 		3C705F5C3B1CF79571568D25 /* TVLocationContentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08972DB65069A806D0B258D /* TVLocationContentRow.swift */; };
 		3CB9C186846D755D14603934 /* MediaPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B12ED7C60671D9D2A76E6D /* MediaPlayerViewModel.swift */; };
 		3CC03C4064874FFD73CBACEF /* TVChessPieceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1EBC84A06FC9CF952689AA /* TVChessPieceView.swift */; };
+		3CC10741C30E68136240C757 /* TVActorPromoBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18309B2586A35F5AF21E5F51 /* TVActorPromoBannerView.swift */; };
 		3CC232557955DE702AF0D361 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A081A5A1486FF32B3436784 /* BiometricConsentView.swift */; };
 		3CC5B323F658B3F17C49EDA5 /* TVQRAuthWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0308E66A2ED93E81BBE08414 /* TVQRAuthWebSocket.swift */; };
 		3CCADC615C997F0D801C1C50 /* LoginFormFields+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F850E17AEE7AE8AC1629ADF /* LoginFormFields+Actions.swift */; };
@@ -402,6 +403,7 @@
 		3EA728AABE763054605B20BD /* IPADOS_VS_IOS_PARITY_REVIEW.md in Resources */ = {isa = PBXBuildFile; fileRef = 272C75CCB90B4FBA66863A55 /* IPADOS_VS_IOS_PARITY_REVIEW.md */; };
 		3F1A3F727681E48E8869DB73 /* IPadSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDCA6049FD0C6C0C965B117C /* IPadSidebarView.swift */; };
 		3F3CBE19847B46A37B9798E5 /* ContentPickerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FADC5EE26C8D9E39F9706D /* ContentPickerItem.swift */; };
+		3F3F06745E130EB4ABB13009 /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E27450C38BDA8CFD14CC8DD /* ChessInviteViewModel.swift */; };
 		3FAF07AF7098D32900822360 /* TVRewardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D78C6AF71443E5F0B5B099C /* TVRewardsView.swift */; };
 		3FE7FC85D6D6F7C984BF474A /* UITestingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EEE224B8B7B9D78E323425 /* UITestingSupport.swift */; };
 		4033259CA3255F38C34992E9 /* TVChapterMarkersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1DB36C82D52F826BE9863A /* TVChapterMarkersView.swift */; };
@@ -681,6 +683,7 @@
 		720895CCC7003F9EB6010FE8 /* TVMovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83BDDD1548F940D060A03635 /* TVMovieDetailView.swift */; };
 		7254D2AE5637E61096A3BEA2 /* CardActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1861A667CCF8DA3C026CCCD5 /* CardActionsViewModel.swift */; };
 		7261690E1053CDECFFECF810 /* TVMovieCharactersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817D565784B8CF5EB739820A /* TVMovieCharactersView.swift */; };
+		72C6F2FA61845536CFEC0360 /* AudiobookDetailView+Chapters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35726D04CC03E312EF1DC396 /* AudiobookDetailView+Chapters.swift */; };
 		72DF87D55C8A0E150655F179 /* ChildrenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86FEAB7B5CDA1521131337EC /* ChildrenView.swift */; };
 		72E34EF9A6273D0D3D17ED23 /* LiveLayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCC3C22D3F0D98543FB0FBA /* LiveLayerViewModel.swift */; };
 		7328A7496BF244908EEBA0FF /* SceneSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97A4E03DAB79600D4FE9AE4 /* SceneSearchView.swift */; };
@@ -1021,9 +1024,6 @@
 		AB1EDABD0E45ED1D5B57E0C4 /* AICompanionSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3727A30736ACB8C8F3F40EE3 /* AICompanionSidebarView.swift */; };
 		AB23496E02482319BABC7DCF /* ProactiveVoiceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E59B7A2E93FB96C869BDCE8 /* ProactiveVoiceModels.swift */; };
 		AB44F9ABE75474105EC8D814 /* TVContentPickerCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D511222326531B8820154261 /* TVContentPickerCard.swift */; };
-		6293280AABB68197DE665E2B /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */; };
-		6FE7BA8DF729753FD282B6B0 /* ChessLobbyFriendPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */; };
-		ACBAE4B6FBE6DF5974BD86A9 /* ChessInviteBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */; };
 		AB4C8060EEC2239B0AFD441D /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */; };
 		AB6E373CE4946B63D1F3008D /* StarStoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BD5B1FAC68F021B3FA2F52 /* StarStoryRepository.swift */; };
 		AB72B858DE01A3C60A8C00E0 /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD3E1F0B577CB6636E6F091 /* Friend.swift */; };
@@ -1170,6 +1170,7 @@
 		C1A911A5E4AF19AC3623019A /* AvatarViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC559423D48004992B90C07 /* AvatarViewModel+Actions.swift */; };
 		C1AA322612F027DD12CAD428 /* TVFlowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29439650593AAF212CC9C432 /* TVFlowsView.swift */; };
 		C1C07DD5D42ED8789AE8F4DB /* TVAvatarPreferencesView+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473DC69786EB442B8263BB02 /* TVAvatarPreferencesView+Helpers.swift */; };
+		C1D341632DA4FC7490E8BF22 /* ChessLobbyFriendPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F7810D125B485AEBD22DB8D /* ChessLobbyFriendPickerView.swift */; };
 		C217ED56499BDF8124F6CCB4 /* VODTrendingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE7618DB6C47E340AF01759 /* VODTrendingSection.swift */; };
 		C2299C7C6012AC59258C8889 /* TVSecurityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D0777C4B2CDE981A2F987A /* TVSecurityView.swift */; };
 		C242BEA31DE8F5709351708D /* AvatarOutfitRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C98F9F4669BAA0D639B752 /* AvatarOutfitRepository.swift */; };
@@ -1195,7 +1196,6 @@
 		C56B2F21200DE4BFBD1EBA98 /* DownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA9B7F6E0D5F197D75264AD /* DownloadStore.swift */; };
 		C59B78BE672A2D959E46DE32 /* AuthComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B9F1CD8C64CF2B05A989C0 /* AuthComponents.swift */; };
 		C5A6C26E2F671CA51287C31F /* TVWatchlistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82921033A6EB60FDFED39D93 /* TVWatchlistView.swift */; };
-		B7154B4C1CF15A8C74F9E40C /* ChessInviteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */; };
 		C5BE9B0E5416B01C53B67932 /* ChessViewModel+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */; };
 		C5CA94EE88BC33300E33ACB2 /* AICompanionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A144BA219665417CC50F1F22 /* AICompanionModels.swift */; };
 		C5E3B1EAA7FE4837466535E7 /* TVSplitSubtitleOverlayView+Layouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B65A5CDFB7B8D7627E015A6 /* TVSplitSubtitleOverlayView+Layouts.swift */; };
@@ -1293,6 +1293,7 @@
 		D11F68673A769F0A446CCE54 /* DevicePairingRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A895DE08A2DC7A81C245AF /* DevicePairingRepository.swift */; };
 		D1359CEA3ACCF22BE285FC27 /* RewardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64559A0DF0154DC42DAB394D /* RewardsViewModel.swift */; };
 		D1D7DBE5065CAB77E2CF0F00 /* ChannelChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050BC88E71A82B2C4CBE9A60 /* ChannelChatViewModel.swift */; };
+		D1E0310AC918A9654DB835C5 /* ChessLobbyView+Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209576B3D338D09B80ABF287 /* ChessLobbyView+Chips.swift */; };
 		D22962F168A1F5F1E68FB671 /* LiveLayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CCC3C22D3F0D98543FB0FBA /* LiveLayerViewModel.swift */; };
 		D23C70F14BA42CFFE9C3CE87 /* TriviaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52DA961EA1D12F35923644A /* TriviaRepository.swift */; };
 		D2443C670A71E30DBD1DA8B5 /* AudiobookDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59F8347D3F3B056C30F0D8C /* AudiobookDetailViewModel.swift */; };
@@ -1388,6 +1389,7 @@
 		E20131D0583F4DD5D9C6BC13 /* ChessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81EE2EE340D6BDFBFFFBCB6 /* ChessView.swift */; };
 		E21FEA4E776B4B8116DF58C9 /* TVMovieDetailView+Trailer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE87C941171C177A4BB21AF8 /* TVMovieDetailView+Trailer.swift */; };
 		E22A440DA9C8015C5A3D5DAC /* AvatarViewModel+SpeechRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6C934BE4B417B574156E1D /* AvatarViewModel+SpeechRecognition.swift */; };
+		E23BB36D65D3EA381D816CCA /* ChessInviteBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB448C65C7A72BEAC305614 /* ChessInviteBannerView.swift */; };
 		E2628474F12E22D855E6044D /* TVZehAniHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132E9F2A9CBD970A0CBA45CA /* TVZehAniHubView.swift */; };
 		E2812707F20854921C176E63 /* InteractiveMissionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C2E60F333A901D54F1BC25 /* InteractiveMissionRepository.swift */; };
 		E2F61B2E7F1D0402D81A2956 /* ChessMoveHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */; };
@@ -1419,7 +1421,6 @@
 		E83C173541ED90BD811A820A /* TVZehAniFeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FDE651F32B665D10D62667 /* TVZehAniFeedbackView.swift */; };
 		E84DA3ABD96143D9702C5FC6 /* Bayit_Intro_Hebrew.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AAC318B4D17C0AAEE86175DF /* Bayit_Intro_Hebrew.mp3 */; };
 		E8C70EB4992E12CDD2665F22 /* DownloadManager+Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20C6591EF0DEB5DC25BF24F5 /* DownloadManager+Tasks.swift */; };
-		D1E2F3A4B5C6D7E8F9A0B1C2 /* ChessLobbyView+Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */; };
 		E8E6A41CA76ACB0A8B83AB61 /* ChessLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */; };
 		E906E2461EBDC0F9BECE31E1 /* BACKEND_VERIFICATION_COMPLETE.md in Resources */ = {isa = PBXBuildFile; fileRef = A161A2AF53EFCCBED5187AF7 /* BACKEND_VERIFICATION_COMPLETE.md */; };
 		E958423D6DFBD3DEF813BF69 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A8C9CFD91A4B5F0E05DF81 /* VideoPlayerView.swift */; };
@@ -1525,6 +1526,7 @@
 		FB873F965DA2E9652607E3EB /* TVSplashView+VideoLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF16C1ABCE45339546BA5E12 /* TVSplashView+VideoLayer.swift */; };
 		FB926B3C23304D47261AF51F /* ChatbotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97E1EAC53BAADD9ADB3E8D80 /* ChatbotView.swift */; };
 		FBC7EA33480F1322E319C3C9 /* StreamQualityModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C79B2BCED0005DE405A59F /* StreamQualityModels.swift */; };
+		FBFEA5B7A85DE6AA1574C8A0 /* AudiobookDetailView+PlaybackActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5052BA9A2C48BC05D57AECA /* AudiobookDetailView+PlaybackActions.swift */; };
 		FC1302323EC783DC60E5DF7F /* SubtitleRepository+AIGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7442F537A72675414AE3FA5 /* SubtitleRepository+AIGeneration.swift */; };
 		FC2036F61D149C49B1BA0F57 /* PlaylistLargeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BED383482B2D7BEAE5A58B /* PlaylistLargeView.swift */; };
 		FC25B762FC64BA9D8825B4A3 /* ZmanimView+Sections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414B1F21645265D29B7D3633 /* ZmanimView+Sections.swift */; };
@@ -1693,6 +1695,7 @@
 		181FF6B8033E245BEB5E34B8 /* TVPlayerView+MetadataOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+MetadataOverlay.swift"; sourceTree = "<group>"; };
 		182D151FB36690099E175A1A /* ChatbotView+InputBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatbotView+InputBar.swift"; sourceTree = "<group>"; };
 		182F6582B70CA655317437B3 /* SubtitleModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleModels.swift; sourceTree = "<group>"; };
+		18309B2586A35F5AF21E5F51 /* TVActorPromoBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVActorPromoBannerView.swift; sourceTree = "<group>"; };
 		1861A667CCF8DA3C026CCCD5 /* CardActionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardActionsViewModel.swift; sourceTree = "<group>"; };
 		18BF1206707C14F81EAADD50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		18DD225EFF4D9D44BFCC7B18 /* BayitPlusTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BayitPlusTVApp.swift; sourceTree = "<group>"; };
@@ -1721,12 +1724,14 @@
 		1E59B7A2E93FB96C869BDCE8 /* ProactiveVoiceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveVoiceModels.swift; sourceTree = "<group>"; };
 		1F0D3A9866C2019DC8F30B98 /* TVRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVRoute.swift; sourceTree = "<group>"; };
 		1F1ABD0F3006DBF28811A54A /* PlayerView+OrientationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlayerView+OrientationHelper.swift"; sourceTree = "<group>"; };
+		1F7810D125B485AEBD22DB8D /* ChessLobbyFriendPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyFriendPickerView.swift; sourceTree = "<group>"; };
 		1FA9B7F6E0D5F197D75264AD /* DownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadStore.swift; sourceTree = "<group>"; };
 		20188A1DA017A67DE93393D9 /* DeepLinkRouter+Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeepLinkRouter+Parsing.swift"; sourceTree = "<group>"; };
 		2030087F85C26A5A78D7C615 /* MiniVideoPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniVideoPlayerBar.swift; sourceTree = "<group>"; };
 		20674679C206CC92965F96B1 /* TVPauseAskInputPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPauseAskInputPanelView.swift; sourceTree = "<group>"; };
 		208CE0B235E3E23438799030 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		208FE686967A3080E736C3DA /* TVPageHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPageHeader.swift; sourceTree = "<group>"; };
+		209576B3D338D09B80ABF287 /* ChessLobbyView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessLobbyView+Chips.swift"; sourceTree = "<group>"; };
 		20C6591EF0DEB5DC25BF24F5 /* DownloadManager+Tasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadManager+Tasks.swift"; sourceTree = "<group>"; };
 		20D72922DB19B0F15FAAA6A3 /* TriviaFactsOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriviaFactsOverlayView.swift; sourceTree = "<group>"; };
 		20FDE651F32B665D10D62667 /* TVZehAniFeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVZehAniFeedbackView.swift; sourceTree = "<group>"; };
@@ -1804,6 +1809,7 @@
 		2D5C6F75714407EB045C2A47 /* BayitPlusApp+Initialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BayitPlusApp+Initialization.swift"; sourceTree = "<group>"; };
 		2D6DE12E5096708FE302C207 /* SortOptionsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOptionsSheet.swift; sourceTree = "<group>"; };
 		2DDCCC14D54925180A32BAA9 /* CharacterSelectionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterSelectionSheet.swift; sourceTree = "<group>"; };
+		2E27450C38BDA8CFD14CC8DD /* ChessInviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteViewModel.swift; sourceTree = "<group>"; };
 		2E76E4472B90D31DDF4D757B /* VoiceSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceSelectorView.swift; sourceTree = "<group>"; };
 		2EC026F11AC9A58BABA7FFF6 /* DownloadManager+TaskManagement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DownloadManager+TaskManagement.swift"; sourceTree = "<group>"; };
 		2EDB9B3710EDC413E11255F9 /* RecordingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsViewModel.swift; sourceTree = "<group>"; };
@@ -1840,6 +1846,7 @@
 		34FADC5EE26C8D9E39F9706D /* ContentPickerItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentPickerItem.swift; sourceTree = "<group>"; };
 		34FD818D4550C202A9673E42 /* UserPlaylistModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPlaylistModels.swift; sourceTree = "<group>"; };
 		3532FBAE8A90D657EA11742B /* TVWidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWidgetsView.swift; sourceTree = "<group>"; };
+		35726D04CC03E312EF1DC396 /* AudiobookDetailView+Chapters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudiobookDetailView+Chapters.swift"; sourceTree = "<group>"; };
 		357B9236ED1F00136B627F79 /* CategoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRow.swift; sourceTree = "<group>"; };
 		35A0C9107B68BEC156C5B603 /* TVChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVChatbotView.swift; sourceTree = "<group>"; };
 		362047F034E41BED7597219B /* LiveTVRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVRepository.swift; sourceTree = "<group>"; };
@@ -1896,9 +1903,6 @@
 		406555BED728CE3F1E39C9F4 /* SettingsView+AccountSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView+AccountSection.swift"; sourceTree = "<group>"; };
 		4082384E2CF43F4AA8DDA1C0 /* FamilyControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyControlsView.swift; sourceTree = "<group>"; };
 		40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessViewModel+Actions.swift"; sourceTree = "<group>"; };
-		76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteViewModel.swift; sourceTree = "<group>"; };
-		C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyFriendPickerView.swift; sourceTree = "<group>"; };
-		BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteBannerView.swift; sourceTree = "<group>"; };
 		40F5688B6282AEDA547F5390 /* SearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModels.swift; sourceTree = "<group>"; };
 		4109D804B02B9CE4BDC0511F /* IntentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentError.swift; sourceTree = "<group>"; };
 		410FA6D4BC1B011DA720F3CD /* FamilySnapsSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySnapsSubviews.swift; sourceTree = "<group>"; };
@@ -2273,6 +2277,7 @@
 		8D07D40ACD6D5542EE30A04F /* ActivityDonationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDonationService.swift; sourceTree = "<group>"; };
 		8D23A26F6ED33DF5AD887194 /* DownloadsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsView.swift; sourceTree = "<group>"; };
 		8D8842C13B48507C119D31D4 /* GLBBuilder+Binary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GLBBuilder+Binary.swift"; sourceTree = "<group>"; };
+		8DB448C65C7A72BEAC305614 /* ChessInviteBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteBannerView.swift; sourceTree = "<group>"; };
 		8DE09375E7C656F66CFC4847 /* MissionProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionProgressCard.swift; sourceTree = "<group>"; };
 		8DFC7992D0C7E78330E386EF /* TVPlayerView+TransportControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+TransportControls.swift"; sourceTree = "<group>"; };
 		8E069BB63D69CD6F79ABDE93 /* FamilyControlsViewModel+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyControlsViewModel+Sync.swift"; sourceTree = "<group>"; };
@@ -2309,7 +2314,6 @@
 		942154D3EBF8885EE47C26F3 /* TVHomeSectionConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVHomeSectionConfig.swift; sourceTree = "<group>"; };
 		9437AC1601C8B32BB8507712 /* AudiobookRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookRepository.swift; sourceTree = "<group>"; };
 		947C5C98003880872D8CD3C9 /* ChessGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessGame.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChessLobbyView+Chips.swift"; sourceTree = "<group>"; };
 		9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessLobbyView.swift; sourceTree = "<group>"; };
 		949EF00A25F174AD31C0E318 /* PiPWidgetContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPWidgetContainerView.swift; sourceTree = "<group>"; };
 		956E2FEB7E5D266CB41A116A /* AvatarMeshModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshModels.swift; sourceTree = "<group>"; };
@@ -2470,7 +2474,6 @@
 		B740536702B0A367B464D015 /* FeatureValidationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureValidationService.swift; sourceTree = "<group>"; };
 		B7619BC62EECD44BED9C38B6 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		B786C95D08511444B7297FD0 /* TVCollectionPromoBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVCollectionPromoBannerView.swift; sourceTree = "<group>"; };
-		25D195C85CE5298D2429EDA4 /* TVActorPromoBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVActorPromoBannerView.swift; sourceTree = "<group>"; };
 		B7DD3692E8E4839C80D8748B /* VoiceDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceDiagnosticsView.swift; sourceTree = "<group>"; };
 		B855F3146C08C1D600CFCB64 /* QuickActionsSmallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsSmallView.swift; sourceTree = "<group>"; };
 		B89808B2CC9430BEB910AA3D /* TVMovieDetailView+DetailSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVMovieDetailView+DetailSections.swift"; sourceTree = "<group>"; };
@@ -2639,6 +2642,7 @@
 		D475E4CF3433A643810D84A1 /* HouseholdModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdModels.swift; sourceTree = "<group>"; };
 		D4BCF81F3039E76B95A4821A /* AvatarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarModels.swift; sourceTree = "<group>"; };
 		D4E5BC59D2987A25B9A3651B /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		D5052BA9A2C48BC05D57AECA /* AudiobookDetailView+PlaybackActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudiobookDetailView+PlaybackActions.swift"; sourceTree = "<group>"; };
 		D511222326531B8820154261 /* TVContentPickerCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVContentPickerCard.swift; sourceTree = "<group>"; };
 		D52DA961EA1D12F35923644A /* TriviaRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriviaRepository.swift; sourceTree = "<group>"; };
 		D550EF66864B099FCF8C5AAA /* ShareSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetView.swift; sourceTree = "<group>"; };
@@ -3110,6 +3114,7 @@
 				C073242775D318D65FAA9B83 /* Widgets */,
 				8C302C157485459DA635F7CE /* ZehAni */,
 				5C7AEDCD037A7382AFFC715A /* TVActorDetailView.swift */,
+				18309B2586A35F5AF21E5F51 /* TVActorPromoBannerView.swift */,
 				0E15CB63F087072006F1CCBC /* TVAddPodcastView.swift */,
 				7F384C0D3AB3F026B5F43919 /* TVAudiobookDetailView.swift */,
 				C74EEB6403C9EBCC9B739BA5 /* TVAudiobookDetailView+Chapters.swift */,
@@ -3122,7 +3127,6 @@
 				9B361A5A0F9E3CFD4473281B /* TVCollectionDetailView+Actions.swift */,
 				61DDF70112CB2F8DCA050C77 /* TVCollectionDetailView+Trailer.swift */,
 				59E5729943A956D861745279 /* TVCollectionMovieListView.swift */,
-				25D195C85CE5298D2429EDA4 /* TVActorPromoBannerView.swift */,
 				B786C95D08511444B7297FD0 /* TVCollectionPromoBannerView.swift */,
 				530329007A0515AF9443B059 /* TVContentCard.swift */,
 				D511222326531B8820154261 /* TVContentPickerCard.swift */,
@@ -3225,11 +3229,11 @@
 				088CB98B46241D416BB31B33 /* ChessBoardView.swift */,
 				CF2431E1673AAA175ADC6400 /* ChessChatPanel.swift */,
 				C96B15B9ABA7BFAD5A60A8D5 /* ChessControlsView.swift */,
-				BA9FB2ED731951896CC6B173 /* ChessInviteBannerView.swift */,
+				8DB448C65C7A72BEAC305614 /* ChessInviteBannerView.swift */,
+				1F7810D125B485AEBD22DB8D /* ChessLobbyFriendPickerView.swift */,
 				CB3DF626478B426820B85D87 /* ChessLobbyJoinView.swift */,
-				C7CE785711E270C7A7660022 /* ChessLobbyFriendPickerView.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* ChessLobbyView+Chips.swift */,
 				9495482F68C2DCE446BAEFA1 /* ChessLobbyView.swift */,
+				209576B3D338D09B80ABF287 /* ChessLobbyView+Chips.swift */,
 				9DD875E25DEEDD1670EB3219 /* ChessMoveHistoryView.swift */,
 				6166FDC4128A5E96808D0562 /* ChessPieceView.swift */,
 				E4FCF3A5AC6C2932F319CA52 /* ChessPlayerBar.swift */,
@@ -4854,8 +4858,10 @@
 				E86B083828CBA4031865331D /* AudiobookCollectionsView.swift */,
 				110224550F22D892189C4751 /* AudiobookDetailSections.swift */,
 				E9AAEDC62A6EBA4352852E49 /* AudiobookDetailView.swift */,
+				35726D04CC03E312EF1DC396 /* AudiobookDetailView+Chapters.swift */,
 				3220701CCEE247FC9EF22CDA /* AudiobookDetailView+Metadata.swift */,
 				130DF41A7750ECAAC6B7F7E3 /* AudiobookDetailView+Playback.swift */,
+				D5052BA9A2C48BC05D57AECA /* AudiobookDetailView+PlaybackActions.swift */,
 				F72988A1C80D61AB24089877 /* AudiobookFilterView.swift */,
 				263C4BB0E819C8B74994BC8E /* AudiobookSortSheet.swift */,
 				51B8C704E2F464F3151C9E8E /* AudiobooksView.swift */,
@@ -5051,7 +5057,7 @@
 				496DCA5CC40AD6D376B50439 /* ChapterNavigationViewModel.swift */,
 				8ADEAACE3CBD806C867EE97C /* ChatbotViewModel.swift */,
 				B19C46FEA5240C2C1DB54A5A /* ChatbotViewModel+VoiceInput.swift */,
-				76559EAA9DED2C7FC2C6A23F /* ChessInviteViewModel.swift */,
+				2E27450C38BDA8CFD14CC8DD /* ChessInviteViewModel.swift */,
 				C875C4D18727249818456160 /* ChessViewModel.swift */,
 				40C842A072A82AD8E10ED194 /* ChessViewModel+Actions.swift */,
 				276CCEF9B659D6492252B1C6 /* ChessViewModel+WebSocket.swift */,
@@ -5402,8 +5408,8 @@
 				9DB300E5B4D05AD68E0632F7 /* ChatbotViewModel.swift in Sources */,
 				AC8287602641DB106BA7753C /* ChessChatMessage.swift in Sources */,
 				F61F25BE4EFC7E5FDDFAD6B6 /* ChessGame.swift in Sources */,
+				3F3F06745E130EB4ABB13009 /* ChessInviteViewModel.swift in Sources */,
 				FD4DA5CFAD9C23EFD416A790 /* ChessRepository.swift in Sources */,
-				B7154B4C1CF15A8C74F9E40C /* ChessInviteViewModel.swift in Sources */,
 				C5BE9B0E5416B01C53B67932 /* ChessViewModel+Actions.swift in Sources */,
 				3A89C9E9F3D78373F204CADE /* ChessViewModel+WebSocket.swift in Sources */,
 				9AF1B88741A1CDB7F5815E16 /* ChessViewModel.swift in Sources */,
@@ -5587,6 +5593,7 @@
 				D0B6569B7F9115ADF5A08C07 /* TVAccountSettingsView.swift in Sources */,
 				DEC35446E9142A73ED6BC1C1 /* TVActivePartySectionView.swift in Sources */,
 				CBBB6670D2192E4C9CC6F1C6 /* TVActorDetailView.swift in Sources */,
+				3CC10741C30E68136240C757 /* TVActorPromoBannerView.swift in Sources */,
 				750B64361BE9825CF2BD4694 /* TVAddPodcastView.swift in Sources */,
 				02517C5A4B27198EA3FB49F2 /* TVAgeStepperView.swift in Sources */,
 				B10B6198294BCD46DE9937B8 /* TVAppAPILogger.swift in Sources */,
@@ -5651,7 +5658,6 @@
 				93A210BA21B90DFDB6EB16F8 /* TVCollectionDetailView+Trailer.swift in Sources */,
 				D038F4CE71470BA6FA2D0D68 /* TVCollectionDetailView.swift in Sources */,
 				52B94A2868FA5ACD2BBA466F /* TVCollectionMovieListView.swift in Sources */,
-				E6DADF80F20DF3C08973FF7B /* TVActorPromoBannerView.swift in Sources */,
 				1278CCDA5DD6D696AD070C31 /* TVCollectionPromoBannerView.swift in Sources */,
 				912A1E92190FD8740DA0928D /* TVCompanionContextTab.swift in Sources */,
 				156B660D58BE307C852AC9D9 /* TVCompanionQuizTab.swift in Sources */,
@@ -6095,8 +6101,10 @@
 				788E5FB20D1A5FA61010404D /* AudiobookChapterList.swift in Sources */,
 				117F2D325B94567FDA1D8B8F /* AudiobookCollectionsView.swift in Sources */,
 				7ADBF2E5097D1969EE7B27A5 /* AudiobookDetailSections.swift in Sources */,
+				72C6F2FA61845536CFEC0360 /* AudiobookDetailView+Chapters.swift in Sources */,
 				86E46A4936B0FCC8773F1973 /* AudiobookDetailView+Metadata.swift in Sources */,
 				8859E5442AFDBA16E4EB1A3A /* AudiobookDetailView+Playback.swift in Sources */,
+				FBFEA5B7A85DE6AA1574C8A0 /* AudiobookDetailView+PlaybackActions.swift in Sources */,
 				1ED0BE9509E60CE6940D920E /* AudiobookDetailView.swift in Sources */,
 				D2443C670A71E30DBD1DA8B5 /* AudiobookDetailViewModel.swift in Sources */,
 				187C163B3B12A7C3336A130C /* AudiobookFilterView.swift in Sources */,
@@ -6206,8 +6214,11 @@
 				E1B7C8502E336DAC32CF4770 /* ChessChatPanel.swift in Sources */,
 				0BC9B172EE880565D85BE7B4 /* ChessControlsView.swift in Sources */,
 				B1902648EE9562E6C1D9FF6A /* ChessGame.swift in Sources */,
+				E23BB36D65D3EA381D816CCA /* ChessInviteBannerView.swift in Sources */,
+				252F6D5C74F6FEED4C4299B9 /* ChessInviteViewModel.swift in Sources */,
+				C1D341632DA4FC7490E8BF22 /* ChessLobbyFriendPickerView.swift in Sources */,
 				FD0769B597922682F66FF5B0 /* ChessLobbyJoinView.swift in Sources */,
-				D1E2F3A4B5C6D7E8F9A0B1C2 /* ChessLobbyView+Chips.swift in Sources */,
+				D1E0310AC918A9654DB835C5 /* ChessLobbyView+Chips.swift in Sources */,
 				E8E6A41CA76ACB0A8B83AB61 /* ChessLobbyView.swift in Sources */,
 				E2F61B2E7F1D0402D81A2956 /* ChessMoveHistoryView.swift in Sources */,
 				3682FA7A75C11E66D0D95811 /* ChessPieceView.swift in Sources */,
@@ -6215,9 +6226,6 @@
 				B23819F3FB80F8FE9A165FA8 /* ChessRepository.swift in Sources */,
 				FE6CD499F1CA6A35A3F5D9B0 /* ChessView+Subviews.swift in Sources */,
 				E20131D0583F4DD5D9C6BC13 /* ChessView.swift in Sources */,
-				6293280AABB68197DE665E2B /* ChessInviteViewModel.swift in Sources */,
-				6FE7BA8DF729753FD282B6B0 /* ChessLobbyFriendPickerView.swift in Sources */,
-				ACBAE4B6FBE6DF5974BD86A9 /* ChessInviteBannerView.swift in Sources */,
 				AB4C8060EEC2239B0AFD441D /* ChessViewModel+Actions.swift in Sources */,
 				FE3D6FB99057AA336B12DCE9 /* ChessViewModel+WebSocket.swift in Sources */,
 				E41F037A573F7A5EBA72FB31 /* ChessViewModel.swift in Sources */,
@@ -6873,7 +6881,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -6896,7 +6904,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -7008,7 +7016,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -7090,7 +7098,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
