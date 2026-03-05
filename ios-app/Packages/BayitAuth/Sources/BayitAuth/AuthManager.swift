@@ -63,7 +63,7 @@ public final class AuthManager {
     let configuration: AuthConfiguration
     let keychainService: KeychainService
     let logger: APILogger
-    private let tokenProvider: AuthTokenProviderImpl
+    private var tokenProvider: AuthTokenProviderImpl!
 
     /// Keychain keys
     let tokenKeychainKey = "bayit_firebase_id_token"
@@ -88,8 +88,13 @@ public final class AuthManager {
         self.configuration = configuration
         keychainService = KeychainService(configuration: configuration)
         self.logger = logger
-        // Capture `self` weakly so the AuthTokenProviderImpl closure reads
-        // the latest `onRefreshTokenRotated` value at call time (set by the app).
+
+        let info = Bundle.main.infoDictionary ?? [:]
+        let configuredDays = info["SESSION_MAX_AGE_DAYS"] as? String
+            ?? ProcessInfo.processInfo.environment["SESSION_MAX_AGE_DAYS"]
+        sessionMaxAgeDays = Int(configuredDays ?? "") ?? 30
+
+        // tokenProvider is IUO so self is fully initialized at this point.
         let weakSelf = Weak(self)
         tokenProvider = AuthTokenProviderImpl(
             keychainService: keychainService,
@@ -100,11 +105,6 @@ public final class AuthManager {
                 weakSelf.value?.onRefreshTokenRotated?(newToken)
             }
         )
-
-        let info = Bundle.main.infoDictionary ?? [:]
-        let configuredDays = info["SESSION_MAX_AGE_DAYS"] as? String
-            ?? ProcessInfo.processInfo.environment["SESSION_MAX_AGE_DAYS"]
-        sessionMaxAgeDays = Int(configuredDays ?? "") ?? 30
 
         restoreCachedSession()
         listenForAuthStateChanges()
