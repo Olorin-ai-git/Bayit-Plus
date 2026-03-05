@@ -36,7 +36,10 @@ public struct GlassNavigationBar<LeadingContent: View, TrailingContent: View>: V
         .padding(.vertical, DesignTokens.Spacing.md)
         .background {
             ZStack {
-                Color.black.opacity(0.8)
+                Color.adaptive(
+                    light: { PlatformColor.white.withAlphaComponent(0.9) },
+                    dark: { PlatformColor.black.withAlphaComponent(0.8) }
+                )
                 VisualEffectBlur()
             }
             .ignoresSafeArea(edges: .top)

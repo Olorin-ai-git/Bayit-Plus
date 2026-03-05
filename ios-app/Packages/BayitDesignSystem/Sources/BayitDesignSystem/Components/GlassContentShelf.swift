@@ -76,7 +76,7 @@
             .padding(.vertical, TVDesignTokens.Spacing.lg)
             .background(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(DesignTokens.Glass.bgLight)
                     .background(
                         RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                             .fill(.ultraThinMaterial.opacity(0.2))

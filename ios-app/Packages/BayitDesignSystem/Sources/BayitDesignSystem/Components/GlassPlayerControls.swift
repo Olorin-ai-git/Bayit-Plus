@@ -136,7 +136,7 @@ public struct GlassPlayerControls: View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: size, weight: .medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(DesignTokens.Text.primary)
                 .frame(width: size + 16, height: size + 16)
                 .contentShape(Rectangle())
         }

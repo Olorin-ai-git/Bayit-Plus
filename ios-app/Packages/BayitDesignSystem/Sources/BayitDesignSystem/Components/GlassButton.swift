@@ -109,7 +109,7 @@ public struct GlassButton: View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             if isLoading {
                 ProgressView()
-                    .tint(.white)
+                    .tint(DesignTokens.Text.primary)
                     .scaleEffect(0.8)
             } else if let icon {
                 icon

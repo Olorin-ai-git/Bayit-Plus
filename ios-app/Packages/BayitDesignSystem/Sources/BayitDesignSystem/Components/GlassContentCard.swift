@@ -155,13 +155,18 @@ public struct GlassContentCard: View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: width <= 160 ? 12 : 14, weight: .medium))
-                .foregroundStyle(isActive ? activeColor : .white)
+                .foregroundStyle(isActive ? activeColor : DesignTokens.Text.primary)
                 .frame(width: width <= 160 ? 26 : 32, height: width <= 160 ? 26 : 32)
-                .background(Color.black.opacity(0.6))
+                .background(
+                    Color.adaptive(
+                        light: { PlatformColor.white.withAlphaComponent(0.8) },
+                        dark: { PlatformColor.black.withAlphaComponent(0.6) }
+                    )
+                )
                 .clipShape(Circle())
                 .overlay(
                     Circle().stroke(
-                        isActive ? activeColor.opacity(0.5) : Color.white.opacity(0.15),
+                        isActive ? activeColor.opacity(0.5) : DesignTokens.Glass.border,
                         lineWidth: 1
                     )
                 )

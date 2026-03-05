@@ -1,5 +1,15 @@
 import SwiftUI
 
+#if os(iOS) || os(tvOS)
+    import UIKit
+
+    typealias PlatformColor = UIColor
+#elseif os(macOS)
+    import AppKit
+
+    typealias PlatformColor = NSColor
+#endif
+
 public enum DesignTokens {
     public enum Colors {
         public enum Primary {
@@ -16,22 +26,22 @@ public enum DesignTokens {
         }
 
         public enum Text {
-            public static let primary = Color.white
-            public static let secondary = Color.white.opacity(0.7)
-            public static let muted = Color.white.opacity(0.5)
-            public static let disabled = Color.white.opacity(0.3)
+            public static let primary = DesignTokens.Text.primary
+            public static let secondary = DesignTokens.Text.secondary
+            public static let muted = DesignTokens.Text.muted
+            public static let disabled = DesignTokens.Text.disabled
         }
 
         public enum Glass {
             public static let background = Color.black.opacity(0.7)
             public static let backgroundLight = Color.black.opacity(0.5)
-            public static let border = Color.white.opacity(0.12)
-            public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.60)
+            public static let border = DesignTokens.Glass.border
+            public static let borderFocus = DesignTokens.Glass.borderFocus
         }
 
         public enum Background {
-            public static let primary = Color(hex: 0x0D0D1A)
-            public static let elevated = Color(hex: 0x1A1A2E)
+            public static let primary = DesignTokens.Background.primary
+            public static let elevated = DesignTokens.Background.elevated
         }
     }
 
@@ -104,29 +114,79 @@ public enum DesignTokens {
     public static let live = Color(hex: 0xFF4444)
     public static let gold = Color(hex: 0xFFD700)
 
+    // MARK: - Adaptive Glass Tokens
+
     public enum Glass {
-        public static let bg = Color.white.opacity(0.07)
-        public static let bgLight = Color.white.opacity(0.05)
-        public static let bgMedium = Color.white.opacity(0.09)
-        public static let bgStrong = Color.white.opacity(0.13)
-        public static let border = Color.white.opacity(0.12)
-        public static let borderLight = Color.white.opacity(0.08)
+        public static let bg = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.04) },
+            dark: { PlatformColor.white.withAlphaComponent(0.07) }
+        )
+        public static let bgLight = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.03) },
+            dark: { PlatformColor.white.withAlphaComponent(0.05) }
+        )
+        public static let bgMedium = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.06) },
+            dark: { PlatformColor.white.withAlphaComponent(0.09) }
+        )
+        public static let bgStrong = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.09) },
+            dark: { PlatformColor.white.withAlphaComponent(0.13) }
+        )
+        public static let border = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.10) },
+            dark: { PlatformColor.white.withAlphaComponent(0.12) }
+        )
+        public static let borderLight = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.06) },
+            dark: { PlatformColor.white.withAlphaComponent(0.08) }
+        )
+        public static let borderBright = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.15) },
+            dark: { PlatformColor.white.withAlphaComponent(0.28) }
+        )
+        public static let shadow = Color.adaptive(
+            light: { PlatformColor.black.withAlphaComponent(0.08) },
+            dark: { PlatformColor.black.withAlphaComponent(0.40) }
+        )
         public static let borderFocus = Color(hex: 0x7E22CE).opacity(0.60)
         public static let purpleLight = Color(hex: 0x7E22CE).opacity(0.12)
         public static let purpleStrong = Color(hex: 0x7E22CE).opacity(0.22)
         public static let purpleGlow = Color(hex: 0x7E22CE).opacity(0.40)
     }
 
+    // MARK: - Adaptive Text Tokens
+
     public enum Text {
-        public static let primary = Color.white
-        public static let secondary = Color.white.opacity(0.7)
-        public static let muted = Color.white.opacity(0.5)
-        public static let disabled = Color.white.opacity(0.3)
+        public static let primary = Color.adaptive(
+            light: { PlatformColor(hex: 0x1A1A2E) },
+            dark: { .white }
+        )
+        public static let secondary = Color.adaptive(
+            light: { PlatformColor(hex: 0x1A1A2E).withAlphaComponent(0.7) },
+            dark: { PlatformColor.white.withAlphaComponent(0.7) }
+        )
+        public static let muted = Color.adaptive(
+            light: { PlatformColor(hex: 0x1A1A2E).withAlphaComponent(0.5) },
+            dark: { PlatformColor.white.withAlphaComponent(0.5) }
+        )
+        public static let disabled = Color.adaptive(
+            light: { PlatformColor(hex: 0x1A1A2E).withAlphaComponent(0.3) },
+            dark: { PlatformColor.white.withAlphaComponent(0.3) }
+        )
     }
 
+    // MARK: - Adaptive Background Tokens
+
     public enum Background {
-        public static let primary = Color(hex: 0x0D0D1A)
-        public static let elevated = Color(hex: 0x1A1A2E)
+        public static let primary = Color.adaptive(
+            light: { PlatformColor(hex: 0xF5F5FA) },
+            dark: { PlatformColor(hex: 0x0D0D1A) }
+        )
+        public static let elevated = Color.adaptive(
+            light: { .white },
+            dark: { PlatformColor(hex: 0x1A1A2E) }
+        )
     }
 
     public enum Spacing {
@@ -166,6 +226,8 @@ public enum DesignTokens {
     }
 }
 
+// MARK: - Color Helpers
+
 public extension Color {
     init(hex: UInt, alpha: Double = 1.0) {
         self.init(
@@ -174,6 +236,38 @@ public extension Color {
             green: Double((hex >> 8) & 0xFF) / 255.0,
             blue: Double(hex & 0xFF) / 255.0,
             opacity: alpha
+        )
+    }
+
+    #if os(iOS) || os(tvOS)
+        static func adaptive(
+            light: @escaping () -> UIColor,
+            dark: @escaping () -> UIColor
+        ) -> Color {
+            Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? dark() : light() })
+        }
+
+    #elseif os(macOS)
+        static func adaptive(
+            light: @escaping () -> NSColor,
+            dark: @escaping () -> NSColor
+        ) -> Color {
+            Color(nsColor: NSColor(name: nil) { appearance in
+                appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? dark() : light()
+            })
+        }
+    #endif
+}
+
+// MARK: - PlatformColor hex initializer
+
+extension PlatformColor {
+    convenience init(hex: UInt) {
+        self.init(
+            red: CGFloat((hex >> 16) & 0xFF) / 255.0,
+            green: CGFloat((hex >> 8) & 0xFF) / 255.0,
+            blue: CGFloat(hex & 0xFF) / 255.0,
+            alpha: 1.0
         )
     }
 }

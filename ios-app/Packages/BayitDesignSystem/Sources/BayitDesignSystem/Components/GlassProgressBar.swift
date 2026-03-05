@@ -61,7 +61,7 @@ public struct GlassProgressBar: View {
                 // Thumb
                 if isDragging || onSeek != nil {
                     Circle()
-                        .fill(.white)
+                        .fill(DesignTokens.Text.primary)
                         .frame(width: thumbSize, height: thumbSize)
                         .shadow(color: .black.opacity(0.3), radius: 2)
                         .offset(x: max(0, width * CGFloat(clamp(progress)) - thumbSize / 2))

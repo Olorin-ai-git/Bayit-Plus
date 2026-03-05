@@ -89,7 +89,7 @@ public struct GlassTextField: View {
     private func errorTooltip(_ message: String) -> some View {
         Text(message)
             .font(.system(size: DesignTokens.FontSize.xs))
-            .foregroundStyle(.white)
+            .foregroundStyle(Color.white)
             .padding(.horizontal, DesignTokens.Spacing.sm)
             .padding(.vertical, DesignTokens.Spacing.xs)
             .background(DesignTokens.ErrorColor.default)

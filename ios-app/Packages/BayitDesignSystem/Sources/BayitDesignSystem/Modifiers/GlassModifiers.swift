@@ -10,7 +10,10 @@ import SwiftUI
         public func body(content: Content) -> some View {
             content.background {
                 ZStack {
-                    Color.white.opacity(opacity * 0.12)
+                    Color.adaptive(
+                        light: { PlatformColor.black.withAlphaComponent(opacity * 0.08) },
+                        dark: { PlatformColor.white.withAlphaComponent(opacity * 0.12) }
+                    )
                     VisualEffectBlur(style: blurStyle)
                 }
             }
@@ -23,7 +26,10 @@ import SwiftUI
         public func body(content: Content) -> some View {
             content.background {
                 ZStack {
-                    Color.white.opacity(opacity * 0.12)
+                    Color.adaptive(
+                        light: { PlatformColor.black.withAlphaComponent(opacity * 0.08) },
+                        dark: { PlatformColor.white.withAlphaComponent(opacity * 0.12) }
+                    )
                     VisualEffectBlur()
                 }
             }
@@ -59,9 +65,9 @@ public struct GlassCardModifier: ViewModifier {
             .padding(padding)
             .background {
                 ZStack {
-                    shape.fill(Color.white.opacity(0.07))
+                    shape.fill(DesignTokens.Glass.bg)
                     LinearGradient(
-                        colors: [Color.white.opacity(0.05), .clear],
+                        colors: [DesignTokens.Glass.bgLight, .clear],
                         startPoint: .top,
                         endPoint: .center
                     )
@@ -72,7 +78,7 @@ public struct GlassCardModifier: ViewModifier {
             .overlay(
                 shape.strokeBorder(
                     LinearGradient(
-                        colors: [Color.white.opacity(0.28), Color.white.opacity(0.12)],
+                        colors: [DesignTokens.Glass.borderBright, DesignTokens.Glass.border],
                         startPoint: .top,
                         endPoint: .bottom
                     ), lineWidth: 1
@@ -105,7 +111,7 @@ public struct GlassShadowModifier: ViewModifier {
                 self.style = style
             }
         #else
-            public init(style: UIBlurEffect.Style = .systemUltraThinMaterialDark) {
+            public init(style: UIBlurEffect.Style = .systemUltraThinMaterial) {
                 self.style = style
             }
         #endif
@@ -122,7 +128,7 @@ public struct GlassShadowModifier: ViewModifier {
     #if os(tvOS)
         public let defaultGlassBlurStyle: UIBlurEffect.Style = .dark
     #else
-        public let defaultGlassBlurStyle: UIBlurEffect.Style = .systemUltraThinMaterialDark
+        public let defaultGlassBlurStyle: UIBlurEffect.Style = .systemUltraThinMaterial
     #endif
 
 #else

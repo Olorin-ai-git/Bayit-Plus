@@ -16,10 +16,13 @@ public struct GlassModal<Content: View>: View {
     public var body: some View {
         ZStack {
             if isPresented {
-                Color.black.opacity(0.75)
-                    .ignoresSafeArea()
-                    .onTapGesture { isPresented = false }
-                    .transition(.opacity)
+                Color.adaptive(
+                    light: { PlatformColor.black.withAlphaComponent(0.35) },
+                    dark: { PlatformColor.black.withAlphaComponent(0.75) }
+                )
+                .ignoresSafeArea()
+                .onTapGesture { isPresented = false }
+                .transition(.opacity)
 
                 content()
                     .glassCard()

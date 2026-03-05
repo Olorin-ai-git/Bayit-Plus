@@ -153,7 +153,14 @@ public struct GlassLiveControlButton: View {
 
     private var backgroundView: some View {
         ZStack {
-            isActive ? DesignTokens.Primary.p900.opacity(0.6) : Color.black.opacity(0.85)
+            if isActive {
+                DesignTokens.Primary.p900.opacity(0.6)
+            } else {
+                Color.adaptive(
+                    light: { PlatformColor.white.withAlphaComponent(0.92) },
+                    dark: { PlatformColor.black.withAlphaComponent(0.85) }
+                )
+            }
             VisualEffectBlur().opacity(isActive ? 0.3 : 1.0)
         }
     }

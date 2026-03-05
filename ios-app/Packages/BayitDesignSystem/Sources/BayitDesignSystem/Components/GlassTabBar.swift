@@ -27,7 +27,7 @@ public struct GlassTabBar: View {
 
     public init(tabs: [GlassTab], selection: Binding<String>) {
         self.tabs = tabs
-        self._selection = selection
+        _selection = selection
     }
 
     public var body: some View {
@@ -40,7 +40,10 @@ public struct GlassTabBar: View {
         .padding(.vertical, DesignTokens.Spacing.sm)
         .background {
             ZStack {
-                Color.black.opacity(0.85)
+                Color.adaptive(
+                    light: { PlatformColor.white.withAlphaComponent(0.92) },
+                    dark: { PlatformColor.black.withAlphaComponent(0.85) }
+                )
                 VisualEffectBlur()
             }
         }
