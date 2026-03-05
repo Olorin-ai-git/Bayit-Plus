@@ -223,6 +223,7 @@ extension AuthManager {
                         token: rotatedRefresh,
                         for: refreshTokenKeychainKey
                     )
+                    onRefreshTokenRotated?(rotatedRefresh)
                 }
 
                 let bayitUser = try await fetchUserProfile(token: response.accessToken)

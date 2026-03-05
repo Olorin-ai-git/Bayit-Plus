@@ -116,19 +116,14 @@ extension LoginView {
                 ?? KeychainHelper.retrieveBiometricRefreshToken()
 
             if let refreshToken {
-                if KeychainHelper.isJWTExpired(refreshToken) {
-                    KeychainHelper.deleteBiometricRefreshToken()
-                    authManager.setError(.sessionExpired)
-                    return
-                }
-
                 do {
                     try await authManager.restoreWithRefreshToken(refreshToken)
                     persistRefreshTokenForBiometric()
                     onLoginSuccess()
                 } catch {
-                    // Token was rejected by the server. Clear the biometric backup so
-                    // subsequent Face ID attempts don't retry the same invalid token.
+                    // Token was rejected by the server (expired or already rotated).
+                    // Clear the biometric backup so subsequent Face ID attempts
+                    // don't retry the same invalid token.
                     KeychainHelper.deleteBiometricRefreshToken()
                     // authManager.error is already set by restoreWithRefreshToken.
                 }

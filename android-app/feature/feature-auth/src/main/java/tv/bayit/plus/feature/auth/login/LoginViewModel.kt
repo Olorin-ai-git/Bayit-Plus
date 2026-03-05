@@ -30,7 +30,7 @@ class LoginViewModel @Inject constructor(
     init {
         val capable = biometricAuthService.checkCapability().canAuthenticate
         val enrolled = biometricAuthService.isBiometricSignInEnabled()
-        val hasToken = secureStorage.getAccessToken() != null
+        val hasToken = secureStorage.getRefreshToken() != null
         _uiState.value = LoginUiState.Input(
             email = "", password = "",
             showBiometricSignIn = capable && enrolled && hasToken,
@@ -152,13 +152,42 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onBiometricSignInResult(success: Boolean) {
-        if (success && secureStorage.getAccessToken() != null) {
-            _uiState.value = LoginUiState.Success(requiresPayment = false, offerBiometricEnrollment = false)
-        } else if (success) {
+        if (!success) return
+        val accessToken = secureStorage.getAccessToken()
+        if (accessToken != null) {
+            _uiState.value = LoginUiState.Success(
+                requiresPayment = false,
+                offerBiometricEnrollment = false,
+            )
+            return
+        }
+        val refreshToken = secureStorage.getRefreshToken() ?: run {
             _uiState.value = LoginUiState.Error(
                 message = "Session expired. Please sign in again.",
                 previousEmail = "", previousPassword = "",
             )
+            return
+        }
+        viewModelScope.launch {
+            _uiState.value = LoginUiState.Loading
+            when (val result = olorinAuthService.refreshAccessToken(refreshToken)) {
+                is BayitResult.Success -> {
+                    _uiState.value = LoginUiState.Success(
+                        requiresPayment = false,
+                        offerBiometricEnrollment = false,
+                    )
+                }
+                is BayitResult.Failure -> {
+                    logger.error(
+                        "Biometric token refresh failed",
+                        error = result.error.cause,
+                    )
+                    _uiState.value = LoginUiState.Error(
+                        message = "Session expired. Please sign in again.",
+                        previousEmail = "", previousPassword = "",
+                    )
+                }
+            }
         }
     }
 

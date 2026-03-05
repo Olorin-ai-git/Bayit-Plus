@@ -90,6 +90,14 @@ struct BayitPlusApp: App {
             audiobookRepository: repos.audiobook
         )
 
+        authMgr.onSignOut = {
+            KeychainHelper.deleteCredentials()
+            KeychainHelper.deleteBiometricRefreshToken()
+        }
+        authMgr.onRefreshTokenRotated = { newToken in
+            KeychainHelper.storeBiometricRefreshToken(newToken)
+        }
+
         _authManager = State(initialValue: authMgr)
         _localizationManager = State(initialValue: LocalizationManager())
         _apiClient = State(initialValue: client)

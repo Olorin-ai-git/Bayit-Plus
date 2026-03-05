@@ -47,6 +47,17 @@ public final class AuthManager {
         Auth.auth().currentUser != nil || currentRefreshToken != nil
     }
 
+    /// Optional callback invoked after sign-out completes keychain cleanup.
+    /// Wire this from the app target to clear app-specific keychain items
+    /// (e.g. biometric credentials) that are not accessible from this package.
+    public var onSignOut: (@Sendable () -> Void)?
+
+    /// Optional callback invoked when the refresh token is rotated.
+    /// Wire this from the app target to keep biometric backup tokens in sync,
+    /// since `AuthTokenProviderImpl` and `AuthManager` both rotate tokens
+    /// independently from the app-level `KeychainHelper`.
+    public var onRefreshTokenRotated: (@Sendable (String) -> Void)?
+
     // MARK: - Dependencies
 
     let configuration: AuthConfiguration
@@ -77,11 +88,17 @@ public final class AuthManager {
         self.configuration = configuration
         keychainService = KeychainService(configuration: configuration)
         self.logger = logger
+        // Capture `self` weakly so the AuthTokenProviderImpl closure reads
+        // the latest `onRefreshTokenRotated` value at call time (set by the app).
+        let weakSelf = Weak(self)
         tokenProvider = AuthTokenProviderImpl(
             keychainService: keychainService,
             logger: logger,
             tokenKeychainKey: backendTokenKeychainKey,
-            refreshTokenKeychainKey: refreshTokenKeychainKey
+            refreshTokenKeychainKey: refreshTokenKeychainKey,
+            onRefreshTokenRotated: { newToken in
+                weakSelf.value?.onRefreshTokenRotated?(newToken)
+            }
         )
 
         let info = Bundle.main.infoDictionary ?? [:]
@@ -192,6 +209,8 @@ public final class AuthManager {
         try? keychainService.delete(for: userKeychainKey)
         try? keychainService.delete(for: sessionTimestampKeychainKey)
 
+        onSignOut?()
+
         clearState()
         logger.info("User signed out", metadata: [:])
     }
@@ -230,6 +249,7 @@ public final class AuthManager {
                     token: rotatedRefresh,
                     for: refreshTokenKeychainKey
                 )
+                onRefreshTokenRotated?(rotatedRefresh)
             }
 
             token = response.accessToken
@@ -437,5 +457,14 @@ public final class AuthManager {
         activeProfile = nil
         betaCredits = 0
         error = nil
+    }
+}
+
+/// Sendable weak reference wrapper used to break retain cycles
+/// between AuthManager and its closures passed to child objects.
+private final class Weak<T: AnyObject>: @unchecked Sendable {
+    weak var value: T?
+    init(_ value: T) {
+        self.value = value
     }
 }

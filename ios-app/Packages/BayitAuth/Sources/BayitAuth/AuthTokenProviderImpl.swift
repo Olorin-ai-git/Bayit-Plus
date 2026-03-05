@@ -1,16 +1,16 @@
-import Foundation
 import BayitNetworking
+import Foundation
 
 /// Thread-safe implementation of `AuthTokenProvider` from BayitNetworking.
 ///
 /// Reads the cached backend JWT from Keychain and auto-refreshes via
 /// the backend refresh endpoint when the token is expired or about to expire.
 public actor AuthTokenProviderImpl: AuthTokenProvider {
-
     private let keychainService: KeychainService
     private let logger: APILogger
     private let tokenKeychainKey: String
     private let refreshTokenKeychainKey: String
+    private let refreshTokenRotatedHandler: (@Sendable (String) -> Void)?
 
     /// Number of seconds before expiration at which the token is proactively refreshed.
     private let refreshMarginSeconds: TimeInterval = 300 // 5 minutes
@@ -19,12 +19,14 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
         keychainService: KeychainService,
         logger: APILogger,
         tokenKeychainKey: String,
-        refreshTokenKeychainKey: String
+        refreshTokenKeychainKey: String,
+        onRefreshTokenRotated: (@Sendable (String) -> Void)? = nil
     ) {
         self.keychainService = keychainService
         self.logger = logger
         self.tokenKeychainKey = tokenKeychainKey
         self.refreshTokenKeychainKey = refreshTokenKeychainKey
+        refreshTokenRotatedHandler = onRefreshTokenRotated
     }
 
     /// Returns the current backend Bearer token, refreshing if needed.
@@ -68,6 +70,7 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
                             token: rotatedRefresh,
                             for: refreshTokenKeychainKey
                         )
+                        refreshTokenRotatedHandler?(rotatedRefresh)
                     }
 
                     logger.info(
@@ -126,7 +129,8 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
         }
 
         guard let payload = try? JSONDecoder().decode(JWTPayload.self, from: data),
-              let expiration = payload.exp else {
+              let expiration = payload.exp
+        else {
             return true
         }
 
