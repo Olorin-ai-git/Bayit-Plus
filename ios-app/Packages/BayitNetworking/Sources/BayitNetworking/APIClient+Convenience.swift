@@ -209,4 +209,26 @@ public extension APIClient {
         )
         return try await request(apiRequest, as: responseType)
     }
+
+    /// PATCH request with raw Data body and custom content type.
+    /// Use this for multipart/form-data or other binary uploads.
+    func patchRaw<Response: Decodable & Sendable>(
+        _ path: String,
+        body: Data,
+        contentType: String,
+        queryItems: [URLQueryItem] = [],
+        headers: [String: String] = [:],
+        as responseType: Response.Type
+    ) async throws -> Response {
+        var finalHeaders = headers
+        finalHeaders["Content-Type"] = contentType
+        let apiRequest = APIRequest(
+            path: path,
+            method: .patch,
+            queryItems: queryItems,
+            body: RawDataBody(data: body),
+            headers: finalHeaders
+        )
+        return try await request(apiRequest, as: responseType)
+    }
 }
