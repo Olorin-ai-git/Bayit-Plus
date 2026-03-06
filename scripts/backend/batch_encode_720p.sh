@@ -24,8 +24,18 @@ DONE_FILE="$BATCH_STATE_DIR/done.txt"
 FAILED_FILE="$BATCH_STATE_DIR/failed.txt"
 SKIPPED_FILE="$BATCH_STATE_DIR/skipped.txt"
 
-# No pre-done list — all movies need re-encoding with sc_thresh=0 fix
-ALREADY_DONE=()
+# Movies already encoded at 720p stereo (skip these)
+ALREADY_DONE=(
+    "6990a63350ef49850241311d"  # Karate Kid
+    "698ff4b53fb07d3546f6fa4d"  # BTTF 1
+    "699000a4bc7563d643295005"  # BTTF 2
+    "699018e2a7757156ed19d492"  # BTTF 3
+    "69902464e8abbba4612f499d"  # LOTR Fellowship P1
+    "699034157ef5e108eb4cc2f2"  # LOTR Fellowship P2
+    "698faeecc369b683bfb8df88"  # LOTR Two Towers P2
+    "699041ade73588b9b0c20736"  # LOTR Return King P1
+    "69904c80fc1273c3123b21b3"  # LOTR Return King P2
+)
 
 init_state() {
     mkdir -p "$BATCH_STATE_DIR"
