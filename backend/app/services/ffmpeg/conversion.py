@@ -24,45 +24,6 @@ class VideoConversionTimeoutError(VideoConversionError):
     """Raised when video conversion times out."""
 
 
-ABR_TIERS: List[Dict[str, Any]] = [
-    {
-        "name": "1080p",
-        "width": 1920,
-        "video_bitrate": "5000k",
-        "audio_bitrate": "192k",
-        "maxrate": "5500k",
-        "bufsize": "10000k",
-        "bandwidth": 5500000,
-    },
-    {
-        "name": "720p",
-        "width": 1280,
-        "video_bitrate": "3000k",
-        "audio_bitrate": "128k",
-        "maxrate": "3300k",
-        "bufsize": "6000k",
-        "bandwidth": 3300000,
-    },
-    {
-        "name": "480p",
-        "width": 854,
-        "video_bitrate": "1500k",
-        "audio_bitrate": "96k",
-        "maxrate": "1650k",
-        "bufsize": "3000k",
-        "bandwidth": 1700000,
-    },
-    {
-        "name": "360p",
-        "width": 640,
-        "video_bitrate": "800k",
-        "audio_bitrate": "64k",
-        "maxrate": "900k",
-        "bufsize": "1600k",
-        "bandwidth": 900000,
-    },
-]
-
 
 async def convert_video(
     input_path: str,
@@ -637,14 +598,14 @@ async def convert_to_hls(
             "ffmpeg",
             "-i",
             input_path,
+            "-vf",
+            "scale=1280:-2",
             "-c:v",
             "libx264",
             "-crf",
-            "16",
+            "23",
             "-preset",
-            "slow",
-            "-tune",
-            "grain",
+            "medium",
             "-profile:v",
             "high",
             "-level:v",
@@ -657,8 +618,10 @@ async def convert_to_hls(
             "48",
             "-c:a",
             "aac",
+            "-ac",
+            "2",
             "-b:a",
-            "320k",
+            "192k",
             "-hls_time",
             str(segment_duration),
             "-hls_list_size",
@@ -712,259 +675,3 @@ async def convert_to_hls(
         raise VideoConversionError(f"Failed to convert to HLS: {str(e)}")
 
 
-async def probe_video_resolution(input_path: str) -> tuple:
-    """
-    Probe video file to determine source resolution.
-
-    Args:
-        input_path: Path or URL to the input video file
-
-    Returns:
-        Tuple of (width, height) in pixels
-
-    Raises:
-        VideoConversionError: If probing fails
-    """
-    cmd = [
-        "ffprobe",
-        "-v", "quiet",
-        "-print_format", "json",
-        "-show_streams",
-        "-select_streams", "v:0",
-        input_path,
-    ]
-
-    process = await asyncio.create_subprocess_exec(
-        *cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-
-    try:
-        stdout, stderr = await asyncio.wait_for(
-            process.communicate(), timeout=60
-        )
-    except asyncio.TimeoutError:
-        process.kill()
-        raise VideoConversionError(
-            "ffprobe timed out reading video resolution"
-        )
-
-    if process.returncode != 0:
-        raise VideoConversionError(
-            f"ffprobe failed to read video: {stderr.decode()}"
-        )
-
-    data = json.loads(stdout.decode())
-    streams = data.get("streams", [])
-
-    if not streams:
-        raise VideoConversionError("No video stream found in source")
-
-    width = streams[0].get("width", 0)
-    height = streams[0].get("height", 0)
-
-    if width <= 0 or height <= 0:
-        raise VideoConversionError(
-            f"Invalid video resolution: {width}x{height}"
-        )
-
-    logger.info(f"Probed source resolution: {width}x{height}")
-    return (width, height)
-
-
-async def convert_to_abr_hls(
-    input_path: str,
-    output_dir: str,
-    segment_duration: int = 6,
-    timeout: int = 28800,
-) -> Dict[str, Any]:
-    """
-    Convert video to multi-bitrate ABR HLS format.
-
-    Encodes the source into multiple quality tiers so HLS players can
-    adaptively switch between resolutions based on available bandwidth.
-    Tiers above source resolution are skipped (no upscaling).
-
-    Args:
-        input_path: Path or URL to the input video file
-        output_dir: Directory for HLS output files
-        segment_duration: Duration of each segment in seconds (default 6)
-        timeout: Maximum time in seconds to wait (default 8 hours)
-
-    Returns:
-        Dictionary with ABR output information:
-        {
-            "output_dir": "/path/to/output",
-            "variants": [
-                {"name", "playlist", "width", "height",
-                 "bandwidth", "segment_count"}
-            ],
-            "total_segment_count": 2286
-        }
-
-    Raises:
-        VideoConversionError: If conversion fails
-    """
-    try:
-        logger.info(
-            f"Starting ABR HLS conversion: {input_path} -> {output_dir}"
-        )
-        os.makedirs(output_dir, exist_ok=True)
-
-        src_width, src_height = await probe_video_resolution(input_path)
-
-        # Filter tiers: skip those wider than source (no upscaling)
-        tiers = [t for t in ABR_TIERS if t["width"] <= src_width]
-        if not tiers:
-            # Source smaller than all tiers - use the smallest tier
-            tiers = [ABR_TIERS[-1]]
-
-        num_tiers = len(tiers)
-        tier_names = [t["name"] for t in tiers]
-        logger.info(f"Selected {num_tiers} ABR tiers: {tier_names}")
-
-        # Build filter_complex: split source video, scale each variant
-        split_labels = "".join(f"[v{i}]" for i in range(num_tiers))
-        filter_parts = [f"[0:v]split={num_tiers}{split_labels}"]
-        for i, tier in enumerate(tiers):
-            filter_parts.append(
-                f"[v{i}]scale={tier['width']}:-2[v{i}out]"
-            )
-        filter_complex = "; ".join(filter_parts)
-
-        cmd = [
-            "ffmpeg", "-i", input_path,
-            "-filter_complex", filter_complex,
-        ]
-
-        # Map all video outputs then all audio copies
-        for i in range(num_tiers):
-            cmd.extend(["-map", f"[v{i}out]"])
-        for i in range(num_tiers):
-            cmd.extend(["-map", "a:0"])
-
-        # Per-tier video encoding params
-        for i, tier in enumerate(tiers):
-            cmd.extend([
-                f"-c:v:{i}", "libx264",
-                f"-b:v:{i}", tier["video_bitrate"],
-                f"-maxrate:v:{i}", tier["maxrate"],
-                f"-bufsize:v:{i}", tier["bufsize"],
-            ])
-
-        # Per-tier audio encoding params
-        cmd.extend(["-c:a", "aac"])
-        for i, tier in enumerate(tiers):
-            cmd.extend([f"-b:a:{i}", tier["audio_bitrate"]])
-
-        # Shared encoding settings for keyframe-aligned ABR
-        cmd.extend([
-            "-preset", "slow",
-            "-profile:v", "high",
-            "-level:v", "4.1",
-            "-pix_fmt", "yuv420p",
-            "-g", "48",
-            "-keyint_min", "48",
-            "-sc_threshold", "0",
-        ])
-
-        # HLS output settings with flat naming
-        segment_pattern = os.path.join(
-            output_dir, "v%v_segment_%03d.ts"
-        )
-        cmd.extend([
-            "-f", "hls",
-            "-hls_time", str(segment_duration),
-            "-hls_list_size", "0",
-            "-hls_segment_filename", segment_pattern,
-        ])
-
-        # Variant stream mapping
-        var_map = " ".join(
-            f"v:{i},a:{i}" for i in range(num_tiers)
-        )
-        cmd.extend(["-var_stream_map", var_map])
-
-        # Output playlist pattern
-        output_pattern = os.path.join(
-            output_dir, "v%v_playlist.m3u8"
-        )
-        cmd.extend(["-y", output_pattern])
-
-        process = await asyncio.create_subprocess_exec(
-            *cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-
-        try:
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(), timeout=timeout
-            )
-        except asyncio.TimeoutError:
-            process.kill()
-            raise VideoConversionTimeoutError(
-                f"ABR HLS conversion timed out after {timeout} seconds"
-            )
-
-        if process.returncode != 0:
-            raise VideoConversionError(
-                f"ABR HLS conversion failed: "
-                f"{stderr.decode()[-2000:]}"
-            )
-
-        # Build variant info and count segments per variant
-        variants = []
-        total_segment_count = 0
-
-        for i, tier in enumerate(tiers):
-            playlist_name = f"v{i}_playlist.m3u8"
-            playlist_path = os.path.join(output_dir, playlist_name)
-
-            if not os.path.exists(playlist_path):
-                raise VideoConversionError(
-                    f"Variant playlist not created: {playlist_name}"
-                )
-
-            prefix = f"v{i}_segment_"
-            segment_count = len([
-                f for f in os.listdir(output_dir)
-                if f.startswith(prefix) and f.endswith(".ts")
-            ])
-
-            # Calculate actual height preserving aspect ratio
-            height = int(
-                round(tier["width"] * src_height / src_width)
-            )
-            if height % 2 != 0:
-                height += 1
-
-            variants.append({
-                "name": tier["name"],
-                "playlist": playlist_name,
-                "width": tier["width"],
-                "height": height,
-                "bandwidth": tier["bandwidth"],
-                "segment_count": segment_count,
-            })
-            total_segment_count += segment_count
-
-        logger.info(
-            f"ABR HLS conversion complete: {len(variants)} variants, "
-            f"{total_segment_count} total segments"
-        )
-
-        return {
-            "output_dir": output_dir,
-            "variants": variants,
-            "total_segment_count": total_segment_count,
-        }
-
-    except VideoConversionError:
-        raise
-    except Exception as e:
-        logger.error(f"ABR HLS conversion failed: {str(e)}")
-        raise VideoConversionError(
-            f"ABR HLS conversion failed: {str(e)}"
-        )

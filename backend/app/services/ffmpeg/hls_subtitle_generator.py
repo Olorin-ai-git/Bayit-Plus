@@ -8,7 +8,7 @@ and their corresponding HLS playlist wrappers.
 
 import logging
 import os
-from typing import List, Optional
+from typing import List
 
 from app.models.subtitles import SubtitleTrackDoc
 
@@ -183,20 +183,16 @@ def generate_master_m3u8_with_subtitles(
     video_playlist_name: str,
     subtitle_files: List[dict],
     output_path: str,
-    variants: Optional[List[dict]] = None,
 ) -> str:
     """
-    Generate HLS master manifest with subtitle and ABR variant references.
+    Generate HLS master manifest with subtitle references.
 
-    Supports both single-stream (legacy) and multi-bitrate ABR manifests.
     Apple TV requires subtitles referenced via .m3u8 playlists, not .vtt.
 
     Args:
-        video_playlist_name: Name of the video playlist file (legacy fallback)
+        video_playlist_name: Name of the video playlist file
         subtitle_files: List of subtitle info dicts from generate_vtt_files_for_content
         output_path: Path to write the master manifest
-        variants: Optional list of ABR variant dicts with keys:
-            name, playlist, width, height, bandwidth
 
     Returns:
         Path to the generated master manifest
@@ -222,30 +218,16 @@ def generate_master_m3u8_with_subtitles(
     has_subs = bool(subtitle_files)
     subs_attr = ',SUBTITLES="subs"' if has_subs else ""
 
-    if variants:
-        # ABR: one STREAM-INF per variant with resolution and codecs
-        for variant in variants:
-            manifest += (
-                f"#EXT-X-STREAM-INF:"
-                f"BANDWIDTH={variant['bandwidth']},"
-                f"RESOLUTION={variant['width']}x{variant['height']},"
-                f'CODECS="avc1.640029,mp4a.40.2"'
-                f"{subs_attr}\n"
-            )
-            manifest += f"{variant['playlist']}\n"
-    else:
-        # Legacy: single stream
-        manifest += (
-            f"#EXT-X-STREAM-INF:BANDWIDTH=2000000{subs_attr}\n"
-        )
-        manifest += f"{video_playlist_name}\n"
+    manifest += (
+        f"#EXT-X-STREAM-INF:BANDWIDTH=5000000{subs_attr}\n"
+    )
+    manifest += f"{video_playlist_name}\n"
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(manifest)
 
-    variant_count = len(variants) if variants else 1
     logger.info(
-        f"Generated master manifest with {variant_count} variant(s) and "
+        f"Generated master manifest with "
         f"{len(subtitle_files)} subtitle track(s): {output_path}"
     )
     return output_path

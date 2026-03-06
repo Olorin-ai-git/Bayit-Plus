@@ -48,10 +48,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import get_settings
 from app.core.logging_config import get_logger
-from app.services.ffmpeg.conversion import convert_to_abr_hls
-from app.services.ffmpeg.hls_subtitle_generator import (
-    generate_master_m3u8_with_subtitles,
-)
+from app.services.ffmpeg.conversion import convert_to_hls
 
 logger = get_logger(__name__)
 
@@ -287,18 +284,19 @@ async def process_movie(
     hls_dir = os.path.join(temp_dir, "hls")
 
     try:
-        result = await convert_to_abr_hls(full_path, hls_dir)
-        variants = result["variants"]
-        total_segments = result["total_segment_count"]
+        result = await convert_to_hls(full_path, hls_dir)
+        total_segments = result["segment_count"]
 
-        # Generate ABR master manifest
+        # Generate master manifest
         master_path = os.path.join(hls_dir, "master.m3u8")
-        generate_master_m3u8_with_subtitles(
-            video_playlist_name="v0_playlist.m3u8",
-            subtitle_files=[],
-            output_path=master_path,
-            variants=variants,
+        master_content = (
+            "#EXTM3U\n"
+            "#EXT-X-VERSION:3\n\n"
+            "#EXT-X-STREAM-INF:BANDWIDTH=5000000\n"
+            "playlist.m3u8\n"
         )
+        with open(master_path, "w") as f:
+            f.write(master_content)
 
         total_size = sum(
             os.path.getsize(os.path.join(hls_dir, f))
@@ -308,9 +306,8 @@ async def process_movie(
         total_size_mb = total_size / (1024 * 1024)
 
         logger.info(
-            "  HLS: %d segments across %d variants, %.0fMB total",
+            "  HLS: %d segments, %.0fMB total",
             total_segments,
-            len(variants),
             total_size_mb,
         )
 
@@ -366,7 +363,6 @@ async def process_movie(
                 "source_size_mb": round(file_size_mb),
                 "duration_seconds": round(duration_s),
                 "hls_segment_count": total_segments,
-                "hls_variant_count": len(variants),
             },
             "updated_at": datetime.now(UTC),
         }

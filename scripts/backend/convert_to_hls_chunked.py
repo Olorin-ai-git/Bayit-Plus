@@ -130,7 +130,20 @@ async def run_stage_init(state: ConversionState, db) -> bool:
     print(f"  Stream URL: {content.get('stream_url', 'N/A')}")
 
     state.state["title"] = content["title"]
-    state.state["source_url"] = content.get("stream_url")
+
+    # Prefer: CLI --source > metadata.original_stream_url (if accessible) > stream_url
+    metadata = content.get("metadata", {}) or {}
+    original_url = metadata.get("original_stream_url")
+    stream_url = content.get("stream_url")
+
+    # Skip original_stream_url if it's a local path that no longer exists
+    if original_url and not original_url.startswith("http") and not os.path.exists(original_url):
+        print(f"  Original source not found: {original_url}")
+        original_url = None
+
+    source = state.state.get("source_override") or original_url or stream_url
+    state.state["source_url"] = source
+    print(f"  Source: {source}")
 
     # Create temp directory for this conversion
     temp_dir = tempfile.mkdtemp(prefix=f"hls_{state.content_id}_")
@@ -177,30 +190,27 @@ async def run_stage_transcode(state: ConversionState) -> bool:
         print("  [SKIP] Transcode stage already complete")
         return True
 
-    print("\n[STAGE 3/6] Transcoding to ABR HLS...")
-    from app.services.ffmpeg.conversion import convert_to_abr_hls
+    print("\n[STAGE 3/6] Transcoding to HLS...")
+    from app.services.ffmpeg.conversion import convert_to_hls
 
     source = state.state["local_source"]
     output_dir = state.state["hls_output_dir"]
 
     print(f"  Input: {source[:80]}...")
     print(f"  Output: {output_dir}")
-    print("  This may take a while (multi-bitrate encoding)...")
+    print("  This may take a while...")
 
     try:
-        result = await convert_to_abr_hls(
+        result = await convert_to_hls(
             input_path=source,
             output_dir=output_dir,
-            segment_duration=6,
+            segment_duration=10,
             timeout=28800,  # 8 hours max
         )
 
-        state.state["variants"] = result["variants"]
-        state.state["total_segments"] = result["total_segment_count"]
-        variant_names = [v["name"] for v in result["variants"]]
+        state.state["total_segments"] = result["segment_count"]
         print(
-            f"  [OK] Generated {result['total_segment_count']} segments "
-            f"across {len(result['variants'])} variants: {variant_names}"
+            f"  [OK] Generated {result['segment_count']} segments"
         )
 
         state.complete_stage("transcode")
@@ -278,13 +288,11 @@ subtitles_{lang}.vtt
         })
         print(f"    Generated: {lang} ({_get_language_label(lang)})")
 
-    # Generate ABR master manifest with subtitles and variants
-    variants = state.state.get("variants", [])
-    _generate_master_manifest(output_dir, subtitle_files, variants)
-    variant_count = len(variants) if variants else 1
+    # Generate master manifest with subtitles
+    _generate_master_manifest(output_dir, subtitle_files)
     print(
-        f"  [OK] Generated ABR master manifest with "
-        f"{variant_count} variant(s) and {len(subtitle_files)} subtitle track(s)"
+        f"  [OK] Generated master manifest with "
+        f"{len(subtitle_files)} subtitle track(s)"
     )
 
     state.state["subtitle_files"] = subtitle_files
@@ -448,9 +456,8 @@ def _get_content_type(filename: str) -> str:
 def _generate_master_manifest(
     output_dir: str,
     subtitle_files: list,
-    variants: list = None,
 ):
-    """Generate ABR master HLS manifest with variant and subtitle refs."""
+    """Generate master HLS manifest with subtitle refs."""
     manifest = "#EXTM3U\n#EXT-X-VERSION:3\n\n"
 
     for sub in subtitle_files:
@@ -467,19 +474,8 @@ def _generate_master_manifest(
     has_subs = bool(subtitle_files)
     subs_attr = ',SUBTITLES="subs"' if has_subs else ""
 
-    if variants:
-        for variant in variants:
-            manifest += (
-                f"#EXT-X-STREAM-INF:"
-                f"BANDWIDTH={variant['bandwidth']},"
-                f"RESOLUTION={variant['width']}x{variant['height']},"
-                f'CODECS="avc1.640029,mp4a.40.2"'
-                f"{subs_attr}\n"
-            )
-            manifest += f"{variant['playlist']}\n"
-    else:
-        manifest += f"#EXT-X-STREAM-INF:BANDWIDTH=2000000{subs_attr}\n"
-        manifest += "playlist.m3u8\n"
+    manifest += f"#EXT-X-STREAM-INF:BANDWIDTH=2000000{subs_attr}\n"
+    manifest += "playlist.m3u8\n"
 
     with open(os.path.join(output_dir, "master.m3u8"), "w") as f:
         f.write(manifest)
@@ -488,6 +484,7 @@ def _generate_master_manifest(
 async def main():
     parser = argparse.ArgumentParser(description="Chunked HLS conversion with resume")
     parser.add_argument("content_id", help="MongoDB content ID")
+    parser.add_argument("--source", help="Override source file path (use instead of stream_url)")
     parser.add_argument("--force", action="store_true", help="Re-run completed stages")
     parser.add_argument("--clean", action="store_true", help="Remove state and start fresh")
     args = parser.parse_args()
@@ -502,6 +499,9 @@ async def main():
         print(f"Cleaning state for {args.content_id}...")
         state.cleanup()
         state = ConversionState(args.content_id)
+
+    if args.source:
+        state.state["source_override"] = args.source
 
     if args.force:
         print("Force mode: re-running all stages")

@@ -16,7 +16,7 @@ from typing import Optional
 from google.cloud import storage as gcs_storage
 
 from app.core.config import settings
-from app.services.ffmpeg.conversion import convert_to_abr_hls
+from app.services.ffmpeg.conversion import convert_to_hls
 from app.services.ffmpeg.hls_subtitle_generator import (
     generate_vtt_files_for_content,
     generate_master_m3u8_with_subtitles,
@@ -83,20 +83,18 @@ class HLSConversionService:
             if on_progress:
                 await on_progress("Converting to HLS...", 10)
 
-            # Convert to ABR HLS using FFmpeg (multi-bitrate)
-            result = await convert_to_abr_hls(
+            # Convert to HLS using FFmpeg
+            result = await convert_to_hls(
                 input_path=source_path,
                 output_dir=temp_dir,
-                segment_duration=6,
+                segment_duration=10,
                 timeout=14400,
             )
 
-            variants = result["variants"]
-            total_segment_count = result["total_segment_count"]
+            segment_count = result["segment_count"]
 
             logger.info(
-                f"ABR HLS conversion complete: {total_segment_count} "
-                f"segments across {len(variants)} variants"
+                f"HLS conversion complete: {segment_count} segments"
             )
 
             # Generate VTT subtitle files if content_id provided
@@ -113,22 +111,18 @@ class HLSConversionService:
                 if subtitle_files:
                     logger.info(f"Generated {len(subtitle_files)} subtitle files")
 
-            # Always generate ABR master manifest
+            # Generate master manifest
             master_playlist_path = os.path.join(temp_dir, "master.m3u8")
             generate_master_m3u8_with_subtitles(
-                video_playlist_name="v0_playlist.m3u8",
+                video_playlist_name="playlist.m3u8",
                 subtitle_files=subtitle_files,
                 output_path=master_playlist_path,
-                variants=variants,
             )
-            logger.info(
-                f"Created ABR master manifest with {len(variants)} variants"
-            )
+            logger.info("Created master manifest")
 
             if on_progress:
                 total_files = (
-                    total_segment_count + len(subtitle_files)
-                    + len(variants) + 1
+                    segment_count + len(subtitle_files) + 2
                 )
                 await on_progress(f"Uploading {total_files} files...", 50)
 
