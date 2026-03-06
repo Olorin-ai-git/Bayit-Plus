@@ -1,6 +1,6 @@
 """Tests for /admin/costs/services endpoint."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -99,6 +99,9 @@ class TestServicesCostListResponse:
     """Test response schema validation."""
 
     def test_valid_response(self):
+        now = datetime.now(UTC)
+        month_start = now.replace(day=1, hour=0, minute=0, second=0)
+        prev_start = datetime(now.year, now.month - 1 if now.month > 1 else 12, 1, tzinfo=UTC)
         response = ServicesCostListResponse(
             services=[
                 ServiceCostResponse(
@@ -115,6 +118,12 @@ class TestServicesCostListResponse:
             total_current_month=Decimal("200"),
             total_previous_month=Decimal("180"),
             service_count=1,
+            current_period_start=month_start,
+            current_period_end=now,
+            previous_period_start=prev_start,
+            previous_period_end=month_start,
         )
         assert response.service_count == 1
         assert response.services[0].service_name == "GCP"
+        assert response.current_period_start == month_start
+        assert response.current_period_end == now

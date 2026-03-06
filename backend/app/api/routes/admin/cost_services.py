@@ -1,6 +1,6 @@
 """Cost services endpoint for iOS dashboard."""
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, Request
@@ -10,7 +10,7 @@ from app.core.rate_limiter import limiter
 from app.models.cost_breakdown import CostBreakdown
 from app.models.user import User
 
-from .cost_admin_lock import require_costs_admin_uid
+from .cost_auth import require_cost_read_permission
 from .cost_service_schemas import (
     CostCategoryEnum,
     DataSourceEnum,
@@ -27,10 +27,10 @@ logger = get_logger(__name__)
 @limiter.limit("60/hour")
 async def get_cost_services(
     request: Request,
-    current_user: User = Depends(require_costs_admin_uid),
+    current_user: User = Depends(require_cost_read_permission),
 ) -> ServicesCostListResponse:
     """All services with current/previous month cost and trends."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     current_start = now.replace(day=1, hour=0, minute=0, second=0)
     prev_start = (current_start - timedelta(days=1)).replace(day=1)
 
@@ -83,6 +83,10 @@ async def get_cost_services(
         total_current_month=grand_current,
         total_previous_month=grand_prev,
         service_count=len(services),
+        current_period_start=current_start,
+        current_period_end=now,
+        previous_period_start=prev_start,
+        previous_period_end=current_start,
     )
 
 

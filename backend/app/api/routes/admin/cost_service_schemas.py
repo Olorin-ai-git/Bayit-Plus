@@ -58,6 +58,10 @@ class ServicesCostListResponse(BaseModel):
     total_current_month: JsonDecimal
     total_previous_month: JsonDecimal
     service_count: int
+    current_period_start: datetime
+    current_period_end: datetime
+    previous_period_start: datetime
+    previous_period_end: datetime
 
 
 class PlatformTopService(BaseModel):
