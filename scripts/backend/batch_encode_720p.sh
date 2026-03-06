@@ -54,7 +54,7 @@ log() {
 }
 
 get_all_movie_ids() {
-    cd "$BACKEND_DIR" && set -a && source .env 2>/dev/null && set +a
+    cd "$BACKEND_DIR" && set -a && source .env < /dev/null 2>/dev/null && set +a
     "$POETRY_PYTHON" -c "
 from pymongo import MongoClient
 import os
@@ -73,7 +73,7 @@ for m in movies:
 get_movie_title() {
     local content_id="$1"
     local title
-    cd "$BACKEND_DIR" && set -a && source .env 2>/dev/null && set +a
+    cd "$BACKEND_DIR" && set -a && source .env < /dev/null 2>/dev/null && set +a
     title=$("$POETRY_PYTHON" -c "
 from pymongo import MongoClient
 from bson import ObjectId
@@ -126,9 +126,9 @@ encode_movie() {
     start_time=$(date +%s)
 
     cd "$PROJECT_ROOT"
-    set -a && source "$BACKEND_DIR/.env" 2>/dev/null && set +a
-    "$POETRY_PYTHON" scripts/backend/convert_to_hls_chunked.py "$content_id" --force --clean 2>&1 || true
-    exit_code=${PIPESTATUS[0]:-$?}
+    set -a && source "$BACKEND_DIR/.env" < /dev/null 2>/dev/null && set +a
+    "$POETRY_PYTHON" scripts/backend/convert_to_hls_chunked.py "$content_id" --force --clean 2>&1
+    exit_code=$?
 
     elapsed=$(( $(date +%s) - start_time ))
     minutes=$((elapsed / 60))
@@ -161,7 +161,8 @@ run_batch() {
 
     log "Total movies in database: $total"
 
-    while IFS= read -r content_id; do
+    # Read from fd 3 to prevent source/subcommands from consuming loop stdin
+    while IFS= read -r content_id <&3; do
         count=$((count + 1))
 
         # Skip if already done
@@ -198,7 +199,7 @@ run_batch() {
         # Clean up temp files to prevent disk fill
         rm -rf /var/folders/*/T/hls_${content_id}_* 2>/dev/null || true
 
-    done <<< "$all_ids"
+    done 3<<< "$all_ids"
 
     local batch_elapsed=$(( $(date +%s) - batch_start ))
     local batch_hours=$((batch_elapsed / 3600))
