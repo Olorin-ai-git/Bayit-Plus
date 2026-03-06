@@ -190,4 +190,53 @@ final class TVNavigationCoordinator {
             fullscreenRoute = route
         }
     }
+
+    /// Handle an NSUserActivity from Siri/Spotlight search.
+    func handleUserActivity(_ activity: NSUserActivity) {
+        logger.info("Handling user activity: \(activity.activityType)")
+
+        let userInfo = activity.userInfo ?? [:]
+
+        switch activity.activityType {
+        case "tv.bayit.plus.playContent":
+            guard let contentId = userInfo["contentId"] as? String else {
+                return
+            }
+            let typeString = userInfo["contentType"] as? String
+            let contentType = TVContentTypeMapper.map(typeString)
+            fullscreenRoute = .player(
+                contentId: contentId,
+                contentType: contentType,
+                channelId: nil
+            )
+
+        case "tv.bayit.plus.searchContent":
+            selectedTab = .search
+
+        case "tv.bayit.plus.resumeWatching":
+            if let contentId = userInfo["contentId"] as? String {
+                let typeString = userInfo["contentType"] as? String
+                let type = TVContentTypeMapper.map(typeString)
+                fullscreenRoute = .player(
+                    contentId: contentId,
+                    contentType: type,
+                    channelId: nil
+                )
+            }
+
+        default:
+            break
+        }
+    }
+
+    /// Handle pending intent navigation from AppIntents.
+    func handlePendingIntent() {
+        let pending = TVPendingIntentManager.shared.consumePending()
+        if let tab = pending.tab {
+            selectedTab = tab
+        }
+        if let route = pending.route {
+            fullscreenRoute = route
+        }
+    }
 }

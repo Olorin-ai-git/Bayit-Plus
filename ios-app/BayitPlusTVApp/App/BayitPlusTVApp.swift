@@ -24,6 +24,7 @@ struct BayitPlusTVApp: App {
     @State private var mediaPlayer = MediaPlayer()
     @State private var audioPlaybackManager: TVAudioPlaybackManager?
     @State private var featureFlags = FeatureFlags()
+    @State private var siriSearchCoordinator = TVSiriSearchCoordinator()
 
     init() {
         if FirebaseApp.app() == nil {
@@ -101,6 +102,15 @@ struct BayitPlusTVApp: App {
                         return
                     }
                     coordinator.showingAuth = !authManager.isAuthenticated
+                }
+                .onChange(of: authManager.isAuthenticated) { _, isAuth in
+                    if isAuth {
+                        Task {
+                            await siriSearchCoordinator.indexAllContent(
+                                repos: repositories
+                            )
+                        }
+                    }
                 }
         }
     }

@@ -60,6 +60,27 @@
             .onOpenURL { url in
                 coordinator.handleDeepLink(url)
             }
+            .onContinueUserActivity(
+                "tv.bayit.plus.playContent"
+            ) { activity in
+                coordinator.handleUserActivity(activity)
+            }
+            .onContinueUserActivity(
+                "tv.bayit.plus.searchContent"
+            ) { activity in
+                coordinator.handleUserActivity(activity)
+            }
+            .onContinueUserActivity(
+                "tv.bayit.plus.resumeWatching"
+            ) { activity in
+                coordinator.handleUserActivity(activity)
+            }
+            .onChange(of: TVPendingIntentManager.shared.pendingRoute) {
+                coordinator.handlePendingIntent()
+            }
+            .onChange(of: TVPendingIntentManager.shared.pendingTab) {
+                coordinator.handlePendingIntent()
+            }
             .onAppear { registerRemoteVoiceTrigger() }
             .onDisappear { unregisterRemoteVoiceTrigger() }
             .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
