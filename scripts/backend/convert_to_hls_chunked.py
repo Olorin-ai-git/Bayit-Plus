@@ -381,8 +381,26 @@ async def run_stage_upload(state: ConversionState) -> bool:
         print(f"    [{len(uploaded)}/{total}] {filename} ({progress:.0f}%)")
 
     state.state["final_url"] = master_url or playlist_url
+    state.state["gcs_path"] = gcs_path
+    state.state["gcs_bucket"] = settings.GCS_BUCKET_NAME
     state.complete_stage("upload")
     print(f"  [OK] Upload complete: {state.state['final_url']}")
+
+    # Clean up old orphan files on GCS that we didn't just upload
+    uploaded_set = set(uploaded)
+    prefix = f"{gcs_path}/"
+    orphans = []
+    for blob in bucket.list_blobs(prefix=prefix):
+        name = blob.name.split("/")[-1]
+        if name not in uploaded_set:
+            orphans.append(blob)
+
+    if orphans:
+        print(f"  Cleaning {len(orphans)} old orphan files from GCS...")
+        for blob in orphans:
+            blob.delete()
+        print(f"  [OK] Deleted {len(orphans)} orphan files")
+
     return True
 
 
