@@ -254,6 +254,11 @@ async def run_stage_subtitles(state: ConversionState, db) -> bool:
 
     subtitle_files = []
     for lang, track in lang_tracks.items():
+        cues = track.get("cues", [])
+        if not cues:
+            print(f"    Skipping {lang}: no cues")
+            continue
+
         # Generate VTT content
         vtt = "WEBVTT\n\n"
         for cue in track.get("cues", []):

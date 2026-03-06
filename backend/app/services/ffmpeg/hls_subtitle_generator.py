@@ -77,6 +77,10 @@ async def generate_vtt_files_for_content(
         subtitle_files = []
 
         for language, track in language_tracks.items():
+            if not track.cues:
+                logger.info(f"Skipping {language}: no cues")
+                continue
+
             # Generate VTT content
             vtt_content = _generate_vtt_from_track(track)
 

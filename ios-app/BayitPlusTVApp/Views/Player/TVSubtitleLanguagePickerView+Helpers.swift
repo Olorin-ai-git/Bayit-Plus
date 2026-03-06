@@ -12,12 +12,14 @@ extension TVSubtitleLanguagePickerView {
             switch code {
             case "he":
                 for mode in SubtitleHebrewMode.allCases {
+                    guard mode == .standard || isAdmin || hebrewModeAvailable(mode) else { continue }
                     items.append(SubtitlePickerItem(
                         languageInfo: info, hebrewMode: mode, englishMode: nil
                     ))
                 }
             case "en":
                 for mode in SubtitleEnglishMode.allCases {
+                    guard mode == .standard || isAdmin || englishModeAvailable(mode) else { continue }
                     items.append(SubtitlePickerItem(
                         languageInfo: info, hebrewMode: nil, englishMode: mode
                     ))

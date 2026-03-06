@@ -50,6 +50,7 @@ extension SubtitleLanguagePickerView {
             switch code {
             case "he":
                 for mode in SubtitleHebrewMode.allCases {
+                    guard mode == .standard || isAdmin || hebrewModeAvailable(mode) else { continue }
                     items.append(PickerItem(
                         languageInfo: info,
                         hebrewMode: mode,
@@ -58,6 +59,7 @@ extension SubtitleLanguagePickerView {
                 }
             case "en":
                 for mode in SubtitleEnglishMode.allCases {
+                    guard mode == .standard || isAdmin || englishModeAvailable(mode) else { continue }
                     items.append(PickerItem(
                         languageInfo: info,
                         hebrewMode: nil,

@@ -82,13 +82,16 @@ struct TVSubtitleLanguageButton: View {
                                     .foregroundStyle(
                                         DesignTokens.Primary.p400
                                     )
+                            } else if isAvailable {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(DesignTokens.Primary.p400)
                             } else {
-                                Image(
-                                    systemName: isAvailable
-                                        ? "sparkles" : "lock.fill"
-                                )
-                                .font(.system(size: 14))
-                                .foregroundStyle(DesignTokens.Primary.p400)
+                                Text("Not generated")
+                                    .font(.system(
+                                        size: TVDesignTokens.FontSize.xs
+                                    ))
+                                    .foregroundStyle(DesignTokens.Text.muted)
                             }
                         }
                     }
