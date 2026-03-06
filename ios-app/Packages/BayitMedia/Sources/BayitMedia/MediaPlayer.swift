@@ -80,10 +80,9 @@ public final class MediaPlayer {
         let item = AVPlayerItem(asset: asset)
 
         // Live streams buffer 30s to stay near the live edge.
-        // Non-live single-bitrate: 500s forward buffer to prevent mid-playback
-        // stalls on slow connections. ABR streams use 0 (AVFoundation default)
-        // because the player can switch variants instead of buffering more.
-        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 500
+        // VOD buffers 120s ahead to reduce mid-playback stalls on
+        // single-bitrate HLS streams served from GCS.
+        item.preferredForwardBufferDuration = contentType.isLive ? 30.0 : 120.0
         item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
         // Start playback from the lowest eligible variant and ramp up.
@@ -403,16 +402,26 @@ extension MediaPlayer {
             // we transitioned from .playing). During initial load the state is
             // .loading or .ready — firing then resets the buffer and creates a loop.
             guard let self, self.isBuffering, self.state == .buffering else { return }
-            let target = max(self.currentTime - 1.0, 0)
-            self.logger.warning(
-                "Stall recovery: restarting from keyframe",
-                context: ["seekTarget": String(format: "%.1f", target)]
-            )
-            let cmTime = CMTime(seconds: target, preferredTimescale: 600)
-            let tolerance = CMTime(seconds: 2, preferredTimescale: 600)
-            await self.avPlayer.seek(
-                to: cmTime, toleranceBefore: tolerance, toleranceAfter: tolerance
-            )
+            // Skip seek when near the start — seeking to 0 resets the download
+            // buffer and creates a stall-recovery loop that prevents initial
+            // buffering from ever completing.
+            if self.currentTime > 2 {
+                let target = max(self.currentTime - 1.0, 0)
+                self.logger.warning(
+                    "Stall recovery: restarting from keyframe",
+                    context: ["seekTarget": String(format: "%.1f", target)]
+                )
+                let cmTime = CMTime(seconds: target, preferredTimescale: 600)
+                let tolerance = CMTime(seconds: 2, preferredTimescale: 600)
+                await self.avPlayer.seek(
+                    to: cmTime, toleranceBefore: tolerance, toleranceAfter: tolerance
+                )
+            } else {
+                self.logger.info(
+                    "Stall recovery: waiting for initial buffer",
+                    context: ["currentTime": String(format: "%.1f", self.currentTime)]
+                )
+            }
             self.avPlayer.play()
         }
     }
