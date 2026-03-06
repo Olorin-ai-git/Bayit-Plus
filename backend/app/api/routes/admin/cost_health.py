@@ -1,6 +1,6 @@
 """Cost provider health endpoint for iOS dashboard."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Request
 
@@ -10,7 +10,7 @@ from app.models.cost_breakdown import CostBreakdown
 from app.models.user import User
 from app.services.olorin.cost.aggregation import CostAggregationService
 
-from .cost_admin_lock import require_costs_admin_uid
+from .cost_auth import require_cost_read_permission
 from .cost_service_schemas import (
     CostHealthResponse,
     ProviderHealthResponse,
@@ -37,7 +37,7 @@ _PROVIDER_NAMES = [
 @limiter.limit("30/hour")
 async def get_cost_health(
     request: Request,
-    current_user: User = Depends(require_costs_admin_uid),
+    current_user: User = Depends(require_cost_read_permission),
 ) -> CostHealthResponse:
     """Provider health status and data freshness."""
     svc = CostAggregationService()
@@ -93,5 +93,8 @@ async def _get_data_freshness() -> int | None:
     )
     if not latest:
         return None
-    delta = datetime.utcnow() - latest[0].period_end
+    period_end = latest[0].period_end
+    if period_end.tzinfo is None:
+        period_end = period_end.replace(tzinfo=UTC)
+    delta = datetime.now(UTC) - period_end
     return int(delta.total_seconds() / 60)

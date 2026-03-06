@@ -1,6 +1,6 @@
 """Cost Dashboard Service - Beanie ODM queries for admin cost endpoints."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from app.core.logging_config import get_logger
@@ -16,42 +16,79 @@ logger = get_logger(__name__)
 
 
 async def get_overview() -> CostOverviewResponse:
-    """Get latest monthly CostBreakdown as P&L summary."""
+    """Get P&L summary from monthly rollup, falling back to hourly."""
     doc = await CostBreakdown.find(
         {"period_type": "monthly"}
-).sort("-period_start").first_or_none()
+    ).sort("-period_start").first_or_none()
 
-    if not doc:
+    if doc:
         return CostOverviewResponse(
-            period_start=datetime.utcnow(),
-            period_end=datetime.utcnow(),
+            period_start=doc.period_start,
+            period_end=doc.period_end,
+            revenue=doc.revenue.net_revenue,
+            total_costs=doc.totals.platform_cost,
+            profit_loss=doc.metrics.profit_loss,
+            profit_margin=float(doc.metrics.profit_margin),
+            cost_per_minute=doc.metrics.cost_per_minute,
+            last_updated=doc.updated_at,
+        )
+
+    now = datetime.now(UTC)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    hourly_docs = await CostBreakdown.find(
+        {"period_type": "hourly"},
+        CostBreakdown.period_start >= month_start,
+    ).to_list()
+
+    if not hourly_docs:
+        return CostOverviewResponse(
+            period_start=month_start,
+            period_end=now,
             revenue=Decimal("0"),
             total_costs=Decimal("0"),
             profit_loss=Decimal("0"),
             profit_margin=0.0,
             cost_per_minute=Decimal("0"),
-            last_updated=datetime.utcnow(),
+            last_updated=now,
         )
 
+    total_rev = sum(
+        (d.revenue.net_revenue for d in hourly_docs), Decimal("0")
+    )
+    total_cost = sum(
+        (d.totals.platform_cost for d in hourly_docs), Decimal("0")
+    )
+    pl = total_rev - total_cost
+    margin = float(pl / total_rev * 100) if total_rev else 0.0
+    latest = max(hourly_docs, key=lambda d: d.period_end)
+
     return CostOverviewResponse(
-        period_start=doc.period_start,
-        period_end=doc.period_end,
-        revenue=doc.revenue.net_revenue,
-        total_costs=doc.totals.platform_cost,
-        profit_loss=doc.metrics.profit_loss,
-        profit_margin=float(doc.metrics.profit_margin),
-        cost_per_minute=doc.metrics.cost_per_minute,
-        last_updated=doc.updated_at,
+        period_start=month_start,
+        period_end=now,
+        revenue=total_rev,
+        total_costs=total_cost,
+        profit_loss=pl,
+        profit_margin=margin,
+        cost_per_minute=Decimal("0"),
+        last_updated=latest.updated_at,
     )
 
 
 async def get_timeline(params: CostQueryParams) -> list[TimelineDataPoint]:
-    """Get daily CostBreakdown docs in range as time-series."""
+    """Get cost time-series, preferring daily rollups with hourly fallback."""
     docs = await CostBreakdown.find(
-        {"period_type": "daily"}, 
-        CostBreakdown.period_start >= params.start_date, 
-        CostBreakdown.period_end <= params.end_date, 
+        {"period_type": "daily"},
+        CostBreakdown.period_start >= params.start_date,
+        CostBreakdown.period_end <= params.end_date,
     ).sort("period_start").to_list()
+
+    if not docs:
+        docs = await CostBreakdown.find(
+            {"period_type": "hourly"},
+            CostBreakdown.period_start >= params.start_date,
+            CostBreakdown.period_end <= params.end_date,
+        ).sort("period_start").to_list()
+        return _aggregate_hourly_to_daily(docs)
 
     return [
         TimelineDataPoint(
@@ -66,13 +103,58 @@ async def get_timeline(params: CostQueryParams) -> list[TimelineDataPoint]:
     ]
 
 
+def _aggregate_hourly_to_daily(
+    docs: list[CostBreakdown],
+) -> list[TimelineDataPoint]:
+    """Group hourly CostBreakdown docs into daily timeline points."""
+    daily: dict[datetime, list] = {}
+    for doc in docs:
+        day_key = doc.period_start.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        daily.setdefault(day_key, []).append(doc)
+
+    points = []
+    for day in sorted(daily):
+        group = daily[day]
+        points.append(
+            TimelineDataPoint(
+                date=day,
+                revenue=sum(
+                    (d.revenue.net_revenue for d in group), Decimal("0")
+                ),
+                total_cost=sum(
+                    (d.totals.platform_cost for d in group), Decimal("0")
+                ),
+                profit_loss=sum(
+                    (d.metrics.profit_loss for d in group), Decimal("0")
+                ),
+                ai_cost=sum(
+                    (d.ai_costs.total for d in group), Decimal("0")
+                ),
+                infrastructure_cost=sum(
+                    (d.infrastructure_costs.total for d in group),
+                    Decimal("0"),
+                ),
+            )
+        )
+    return points
+
+
 async def _fetch_daily_docs(params: CostQueryParams) -> list:
-    """Shared helper to fetch daily CostBreakdown docs in range."""
-    return await CostBreakdown.find(
-        {"period_type": "daily"}, 
-        CostBreakdown.period_start >= params.start_date, 
-        CostBreakdown.period_end <= params.end_date, 
+    """Fetch daily docs in range, falling back to hourly if none exist."""
+    docs = await CostBreakdown.find(
+        {"period_type": "daily"},
+        CostBreakdown.period_start >= params.start_date,
+        CostBreakdown.period_end <= params.end_date,
     ).to_list()
+    if not docs:
+        docs = await CostBreakdown.find(
+            {"period_type": "hourly"},
+            CostBreakdown.period_start >= params.start_date,
+            CostBreakdown.period_end <= params.end_date,
+        ).to_list()
+    return docs
 
 
 async def get_breakdown(params: CostQueryParams) -> CostBreakdownResponse:
