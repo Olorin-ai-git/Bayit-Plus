@@ -83,11 +83,7 @@ struct TVHomeView: View {
                     TVHeroItem(
                         item: item,
                         onWatchNow: {
-                            let contentType = TVContentTypeMapper.map(item.type)
-                            coordinator.presentPlayer(
-                                contentId: item.id,
-                                contentType: contentType
-                            )
+                            coordinator.fullscreenRoute = detailRoute(for: item)
                         },
                         onMoreInfo: {
                             coordinator.fullscreenRoute = detailRoute(for: item)

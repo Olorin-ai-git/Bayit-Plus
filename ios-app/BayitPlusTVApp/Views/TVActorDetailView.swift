@@ -206,11 +206,7 @@
 
         func tvMovieRow(index: Int, movie: ActorMovie) -> some View {
             Button {
-                coordinator.fullscreenRoute = .player(
-                    contentId: movie.id,
-                    contentType: .vod,
-                    channelId: nil
-                )
+                coordinator.fullscreenRoute = .movieDetail(movieId: movie.id)
             } label: {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
                     Text("\(index)")

@@ -103,10 +103,15 @@ struct TVWatchlistView: View {
                     subtitle: item.contentType?.capitalized,
                     aspectRatio: 2 / 3,
                     onSelect: {
-                        coordinator.presentPlayer(
-                            contentId: item.contentId,
-                            contentType: TVContentTypeMapper.map(item.contentType)
-                        )
+                        let contentType = TVContentTypeMapper.map(item.contentType)
+                        if contentType == .vod {
+                            coordinator.fullscreenRoute = .movieDetail(movieId: item.contentId)
+                        } else {
+                            coordinator.presentPlayer(
+                                contentId: item.contentId,
+                                contentType: contentType
+                            )
+                        }
                     }
                 )
                 .contextMenu {
@@ -179,7 +184,9 @@ struct TVWatchlistView: View {
 private enum WatchlistFilter: String, CaseIterable, Identifiable {
     case all, inProgress, movies, series
 
-    var id: String { rawValue }
+    var id: String {
+        rawValue
+    }
 
     var localizationKey: String {
         switch self {

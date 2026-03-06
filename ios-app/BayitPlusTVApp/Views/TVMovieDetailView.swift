@@ -12,6 +12,7 @@ struct TVMovieDetailView: View {
     @State var viewModel: MovieDetailViewModel?
     @State var trailerPlayer: AVPlayer?
     @State var showTrailer = false
+    @State var showPlayer = false
     @State var resolvedTrailerUrl: String?
 
     let movieId: String
@@ -57,6 +58,13 @@ struct TVMovieDetailView: View {
                     onDismiss: { showTrailer = false }
                 )
             }
+        }
+        .fullScreenCover(isPresented: $showPlayer) {
+            TVPlayerView(
+                contentId: movieId,
+                contentType: .vod,
+                channelId: nil
+            )
         }
     }
 

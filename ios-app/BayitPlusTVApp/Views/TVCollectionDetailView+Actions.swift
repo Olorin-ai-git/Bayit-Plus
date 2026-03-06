@@ -26,8 +26,6 @@
                             Task { try? await repos.playlist.addBulkToPlaylist(contentIds: ids) }
                         }
                     )
-                    .frame(width: 400)
-                    .tvCardStyle()
                 }
 
                 if resolvedTrailerUrl != nil {
@@ -37,8 +35,6 @@
                         size: .large,
                         action: { showTrailer = true }
                     )
-                    .frame(width: 300)
-                    .tvCardStyle()
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)

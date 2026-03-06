@@ -169,8 +169,6 @@ extension TVSeriesDetailView {
                         Task { try? await repos.playlist.addBulkToPlaylist(contentIds: ids) }
                     }
                 )
-                .frame(width: 400)
-                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

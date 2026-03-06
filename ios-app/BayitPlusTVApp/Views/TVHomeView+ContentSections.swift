@@ -22,10 +22,15 @@ extension TVHomeView {
                 aspectRatio: 2.0 / 3.0,
                 placeholderIcon: "play.circle.fill"
             ) {
-                coordinator.presentPlayer(
-                    contentId: item.id,
-                    contentType: TVContentTypeMapper.map(item.type)
-                )
+                let contentType = TVContentTypeMapper.map(item.type)
+                if contentType == .vod {
+                    coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
+                } else {
+                    coordinator.presentPlayer(
+                        contentId: item.id,
+                        contentType: contentType
+                    )
+                }
             }
         }
     }

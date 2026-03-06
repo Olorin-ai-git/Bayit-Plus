@@ -113,7 +113,11 @@ struct TVDownloadsView: View {
             aspectRatio: 2 / 3,
             onSelect: {
                 guard item.status == .completed else { return }
-                coordinator.presentPlayer(contentId: item.contentId, contentType: contentType)
+                if contentType == .vod {
+                    coordinator.fullscreenRoute = .movieDetail(movieId: item.contentId)
+                } else {
+                    coordinator.presentPlayer(contentId: item.contentId, contentType: contentType)
+                }
             }
         )
         .contextMenu {

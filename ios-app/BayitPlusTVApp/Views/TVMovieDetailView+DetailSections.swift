@@ -83,36 +83,29 @@ extension TVMovieDetailView {
     }
 
     func actionButtons(_ detail: ContentDetail, vm: MovieDetailViewModel) -> some View {
-        HStack(spacing: TVDesignTokens.Spacing.xl) {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
             GlassButton(
-                "Play",
+                localization.t("content.play"),
                 variant: .primary,
                 size: .large,
+                icon: Image(systemName: "play.fill"),
                 action: {
                     logger.info("Playing movie", context: ["movieId": movieId])
-                    coordinator.presentPlayer(
-                        contentId: detail.id,
-                        contentType: .vod
-                    )
+                    showPlayer = true
                 }
             )
-            .frame(width: 400)
-            .tvCardStyle()
 
             if vm.hasTrailer {
                 GlassButton(
                     localization.t("content.trailer"),
                     variant: .secondary,
                     size: .large,
+                    icon: Image(systemName: "film"),
                     action: {
                         logger.info("Opening trailer", context: ["movieId": movieId])
-                        Task {
-                            await resolveAndShowTrailer(contentId: detail.id)
-                        }
+                        Task { await resolveAndShowTrailer(contentId: detail.id) }
                     }
                 )
-                .frame(width: 300)
-                .tvCardStyle()
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

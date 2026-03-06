@@ -143,8 +143,6 @@ struct TVAudiobookDetailView: View {
                     )
                 }
             )
-            .frame(width: 400)
-            .tvCardStyle()
 
             speedControl(vm: vm)
         }

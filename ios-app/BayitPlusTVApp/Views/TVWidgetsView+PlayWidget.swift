@@ -18,7 +18,7 @@
                 }
             case .vod:
                 if let contentId = content.contentId {
-                    coordinator.presentPlayer(contentId: contentId, contentType: .vod)
+                    coordinator.fullscreenRoute = .movieDetail(movieId: contentId)
                 }
             case .podcast:
                 if let podcastId = content.podcastId {

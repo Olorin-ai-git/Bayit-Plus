@@ -19,9 +19,9 @@ public struct GlassButton: View {
         var verticalPadding: CGFloat {
             #if os(tvOS)
                 switch self {
-                case .small: return TVDesignTokens.Spacing.md
-                case .medium: return TVDesignTokens.Spacing.lg
-                case .large: return TVDesignTokens.Spacing.xl
+                case .small: return TVDesignTokens.Spacing.xs
+                case .medium: return TVDesignTokens.Spacing.sm
+                case .large: return TVDesignTokens.Spacing.md
                 }
             #else
                 switch self {
@@ -35,9 +35,9 @@ public struct GlassButton: View {
         var horizontalPadding: CGFloat {
             #if os(tvOS)
                 switch self {
-                case .small: return TVDesignTokens.Spacing.lg
-                case .medium: return TVDesignTokens.Spacing.xl
-                case .large: return TVDesignTokens.Spacing.xxl
+                case .small: return TVDesignTokens.Spacing.md
+                case .medium: return TVDesignTokens.Spacing.lg
+                case .large: return TVDesignTokens.Spacing.xl
                 }
             #else
                 switch self {
@@ -51,9 +51,9 @@ public struct GlassButton: View {
         var fontSize: CGFloat {
             #if os(tvOS)
                 switch self {
-                case .small: return TVDesignTokens.FontSize.sm
-                case .medium: return TVDesignTokens.FontSize.base
-                case .large: return TVDesignTokens.FontSize.lg
+                case .small: return TVDesignTokens.FontSize.xs
+                case .medium: return TVDesignTokens.FontSize.sm
+                case .large: return TVDesignTokens.FontSize.md
                 }
             #else
                 switch self {
@@ -117,18 +117,31 @@ public struct GlassButton: View {
             }
 
             Text(title)
-                .font(.system(size: size.fontSize, weight: .semibold))
+                .font(.system(size: size.fontSize, weight: fontWeight))
         }
         .padding(.vertical, size.verticalPadding)
         .padding(.horizontal, size.horizontalPadding)
         .frame(maxWidth: maxLabelWidth)
         .foregroundStyle(foregroundColor)
         .background(background)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                .stroke(borderColor, lineWidth: borderLineWidth)
-        )
+        #if os(tvOS)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(borderColor, lineWidth: borderLineWidth))
+        #else
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .stroke(borderColor, lineWidth: borderLineWidth)
+            )
+        #endif
+    }
+
+    private var fontWeight: Font.Weight {
+        #if os(tvOS)
+            return variant == .primary || variant == .destructive ? .bold : .semibold
+        #else
+            return .semibold
+        #endif
     }
 
     private var maxLabelWidth: CGFloat? {
@@ -197,30 +210,35 @@ public struct GlassButton: View {
 // MARK: - tvOS Button Style
 
 #if os(tvOS)
-    /// ButtonStyle for GlassButton on tvOS. Uses `@Environment(\.isFocused)` so
-    /// the Button itself remains the focus target and its action fires on press.
+    /// ButtonStyle for GlassButton on tvOS — matches the hero carousel capsule
+    /// button look with brightness lift on focus, purple glow shadow, and scale.
     struct GlassButtonTVStyle: ButtonStyle {
         @Environment(\.isFocused) private var isFocused
 
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
+                .focusEffectDisabled()
+                .brightness(isFocused ? 0.22 : 0)
+                .overlay(
+                    Capsule()
+                        .stroke(
+                            isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                            lineWidth: TVDesignTokens.Focus.ringWidth
+                        )
+                )
                 .scaleEffect(
                     isFocused
-                        ? 1.03
+                        ? TVDesignTokens.Focus.scaleAmount
                         : (configuration.isPressed ? 0.97 : 1.0)
                 )
                 .shadow(
-                    color: isFocused
-                        ? DesignTokens.Glass.purpleGlow : .clear,
-                    radius: 8,
+                    color: isFocused ? DesignTokens.Glass.purpleGlow : .clear,
+                    radius: TVDesignTokens.Focus.shadowRadius,
                     x: 0,
                     y: isFocused ? 6 : 0
                 )
                 .animation(
-                    .spring(
-                        duration: TVDesignTokens.Focus.animationDuration,
-                        bounce: 0.2
-                    ),
+                    .easeInOut(duration: TVDesignTokens.Focus.animationDuration),
                     value: isFocused
                 )
                 .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
