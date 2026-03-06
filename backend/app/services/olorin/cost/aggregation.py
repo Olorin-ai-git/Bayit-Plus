@@ -1,13 +1,17 @@
 """Cost aggregation service for admin dashboard."""
 
 import asyncio
+import calendar
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import List
 
+from beanie.operators import In
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.cost_provider_settings import CostProviderSettings
+from app.models.subscription import Invoice, Subscription, SUBSCRIPTION_PLANS
 from app.models.cost_breakdown import (
     AICostBreakdown,
     CostBreakdown,
@@ -353,13 +357,88 @@ class CostAggregationService:
     async def _aggregate_revenue(
         self, start: datetime, end: datetime
     ) -> RevenueBreakdown:
-        """Aggregate revenue from subscriptions and transactions."""
-        return RevenueBreakdown(
-            subscription_revenue=Decimal("0"),
-            onetime_revenue=Decimal("0"),
-            refunds=Decimal("0"),
-            net_revenue=Decimal("0"),
+        """Aggregate revenue from active subscriptions and invoices."""
+        sub_rev, invoice_rev, refund_total = await asyncio.gather(
+            self._calc_subscription_revenue(start, end),
+            self._calc_invoice_revenue(start, end),
+            self._calc_refunds(start, end),
         )
+
+        net = sub_rev + invoice_rev - refund_total
+
+        return RevenueBreakdown(
+            subscription_revenue=sub_rev,
+            onetime_revenue=invoice_rev,
+            refunds=refund_total,
+            net_revenue=net,
+        )
+
+    async def _calc_subscription_revenue(
+        self, start: datetime, end: datetime
+    ) -> Decimal:
+        """Prorate active subscription revenue to the aggregation period."""
+        active_subs = await Subscription.find(
+            In(Subscription.status, ["active", "trialing"]),
+        ).to_list()
+
+        hours_in_month = Decimal(
+            str(
+                calendar.monthrange(start.year, start.month)[1] * 24
+            )
+        )
+        period_hours = Decimal(
+            str((end - start).total_seconds() / 3600)
+        )
+
+        total = Decimal("0")
+        for sub in active_subs:
+            plan = SUBSCRIPTION_PLANS.get(sub.plan_id)
+            if not plan:
+                continue
+
+            if sub.billing_period == "yearly":
+                monthly_price = Decimal(str(plan.price_yearly)) / 12
+            else:
+                monthly_price = Decimal(str(plan.price))
+
+            hourly_rate = monthly_price / hours_in_month
+            total += hourly_rate * period_hours
+
+        return total.quantize(Decimal("0.01"))
+
+    async def _calc_invoice_revenue(
+        self, start: datetime, end: datetime
+    ) -> Decimal:
+        """Sum paid invoices in the period (non-subscription one-time payments)."""
+        paid_invoices = await Invoice.find(
+            Invoice.status == "paid",
+            Invoice.paid_at >= start,
+            Invoice.paid_at < end,
+        ).to_list()
+
+        # Only count invoices not tied to a subscription
+        total = Decimal("0")
+        for inv in paid_invoices:
+            if not inv.subscription_id:
+                total += Decimal(str(inv.amount))
+
+        return total.quantize(Decimal("0.01"))
+
+    async def _calc_refunds(
+        self, start: datetime, end: datetime
+    ) -> Decimal:
+        """Sum voided/refunded invoices in the period."""
+        refunded = await Invoice.find(
+            In(Invoice.status, ["void", "uncollectible"]),
+            Invoice.created_at >= start,
+            Invoice.created_at < end,
+        ).to_list()
+
+        total = sum(
+            (Decimal(str(inv.amount)) for inv in refunded),
+            Decimal("0"),
+        )
+        return total.quantize(Decimal("0.01"))
 
     def _calculate_metrics(
         self, totals: CostTotals, revenue: RevenueBreakdown

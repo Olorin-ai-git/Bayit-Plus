@@ -4,6 +4,7 @@ import hashlib
 
 from fastapi import Depends, HTTPException, Request
 from app.core.logging_config import get_logger
+from app.core.security import get_current_active_user
 from app.models.admin import Permission, Role, AuditLog, AuditAction
 from app.models.user import User
 
@@ -11,7 +12,7 @@ logger = get_logger(__name__)
 
 
 async def require_cost_read_permission(
-    user: User = Depends(),
+    user: User = Depends(get_current_active_user),
 ) -> User:
     """
     Require BILLING_READ permission to access cost data.

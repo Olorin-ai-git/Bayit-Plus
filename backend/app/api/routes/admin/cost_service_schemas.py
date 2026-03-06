@@ -3,9 +3,12 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, PlainSerializer
+
+# Serialize Decimal as float in JSON responses (iOS expects numbers, not strings)
+JsonDecimal = Annotated[Decimal, PlainSerializer(lambda v: float(v), return_type=float)]
 
 
 class CostCategoryEnum(str, Enum):
@@ -40,8 +43,8 @@ class ServiceCostResponse(BaseModel):
 
     service_name: str
     category: CostCategoryEnum
-    current_month_cost: Decimal
-    previous_month_cost: Decimal
+    current_month_cost: JsonDecimal
+    previous_month_cost: JsonDecimal
     trend_pct: float
     pct_of_total: float
     platform: PlatformEnum
@@ -52,8 +55,8 @@ class ServicesCostListResponse(BaseModel):
     """Response for /admin/costs/services."""
 
     services: list[ServiceCostResponse]
-    total_current_month: Decimal
-    total_previous_month: Decimal
+    total_current_month: JsonDecimal
+    total_previous_month: JsonDecimal
     service_count: int
 
 
@@ -61,14 +64,14 @@ class PlatformTopService(BaseModel):
     """Top service within a platform."""
 
     service_name: str
-    cost: Decimal
+    cost: JsonDecimal
 
 
 class PlatformCostResponse(BaseModel):
     """Single platform cost entry."""
 
     platform: PlatformEnum
-    total_cost: Decimal
+    total_cost: JsonDecimal
     service_count: int
     top_services: list[PlatformTopService]
     trend_pct: float
@@ -78,7 +81,7 @@ class PlatformsCostListResponse(BaseModel):
     """Response for /admin/costs/platforms."""
 
     platforms: list[PlatformCostResponse]
-    total_cost: Decimal
+    total_cost: JsonDecimal
 
 
 class ProviderHealthResponse(BaseModel):
