@@ -594,6 +594,10 @@ async def convert_to_hls(
         playlist_path = os.path.join(output_dir, playlist_name)
         segment_pattern = os.path.join(output_dir, "segment_%03d.ts")
 
+        # GOP = segment_duration * fps for keyframe-aligned segments
+        # sc_thresh=0 disables scene-change keyframes that cause uneven splits
+        # force_key_frames ensures clean segment boundaries for Apple TV
+        gop_size = str(segment_duration * 24)
         cmd = [
             "ffmpeg",
             "-i",
@@ -613,9 +617,13 @@ async def convert_to_hls(
             "-pix_fmt",
             "yuv420p",
             "-g",
-            "48",
+            gop_size,
             "-keyint_min",
-            "48",
+            gop_size,
+            "-sc_thresh",
+            "0",
+            "-force_key_frames",
+            f"expr:gte(t,n_forced*{segment_duration})",
             "-c:a",
             "aac",
             "-ac",
