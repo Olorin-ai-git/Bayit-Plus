@@ -5,7 +5,6 @@
     import BayitLocalization
     import SwiftUI
 
-    /// Full-screen sheet for managing BYOC content sources.
     struct TVBYOCSourceListView: View {
         @Environment(BYOCSourceManager.self) private var byocManager
         @Environment(LocalizationManager.self) private var localization
@@ -14,6 +13,7 @@
 
         @State private var showAddIPTV = false
         @State private var showPlexAuth = false
+        @State private var showAddYouTube = false
         @State private var plexAuthToken: String?
         @State private var sourceToRemove: BYOCSourceConfig?
 
@@ -38,6 +38,9 @@
             }
             .fullScreenCover(isPresented: $showAddIPTV) {
                 TVAddIPTVSourceSheet(onDismiss: { showAddIPTV = false })
+            }
+            .fullScreenCover(isPresented: $showAddYouTube) {
+                TVAddYouTubeSheet(onDismiss: { showAddYouTube = false })
             }
             .fullScreenCover(isPresented: $showPlexAuth) {
                 TVPlexAuthSheet(
@@ -125,9 +128,9 @@
             addSourceRow(
                 icon: "play.rectangle.fill",
                 title: localization.t("byoc.addYouTube"),
-                subtitle: localization.t("byoc.audioAIOnly"),
+                subtitle: localization.t("byoc.youtubeConnectDesc"),
                 color: .red
-            ) { /* Phase 6 */ }
+            ) { showAddYouTube = true }
         }
 
         @ViewBuilder

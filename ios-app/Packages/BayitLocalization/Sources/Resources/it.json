@@ -10863,6 +10863,16 @@
     "plexLocal": "Rete locale",
     "plexRemote": "Accesso remoto",
     "plexItemCount": "%d elementi importati",
-    "plexConnectDesc": "Connetti il tuo server multimediale Plex"
+    "plexConnectDesc": "Connetti il tuo server multimediale Plex",
+    "youtubeVisitLink": "Visita l'URL qui sotto e inserisci il codice",
+    "youtubeEnterCode": "Inserisci questo codice nella pagina",
+    "youtubeWaiting": "In attesa di autorizzazione...",
+    "youtubeRequestingCode": "Richiesta del codice di autorizzazione...",
+    "youtubeConnected": "YouTube collegato",
+    "youtubeVideoCount": "video trovati",
+    "youtubeOpenApp": "Apri in YouTube",
+    "youtubeAudioAINote": "Funzioni audio AI disponibili durante la riproduzione",
+    "fromYouTube": "Da YouTube",
+    "youtubeConnectDesc": "Collega il tuo account Google per i contenuti YouTube"
   }
 }

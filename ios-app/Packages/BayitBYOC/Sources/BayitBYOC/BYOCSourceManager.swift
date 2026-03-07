@@ -113,6 +113,31 @@ public final class BYOCSourceManager: @unchecked Sendable {
         return newId
     }
 
+    // MARK: - YouTube
+
+    public func addYouTubeSource(
+        name: String,
+        accessToken: String,
+        refreshToken _: String?
+    ) async throws {
+        let config = BYOCSourceConfig(type: .youtube, name: name)
+        _ = BYOCKeychainStore.storeToken(accessToken, forSourceId: config.id)
+
+        let client = YouTubeAPIClient(accessToken: accessToken)
+        let subs = try await client.fetchSubscriptions()
+        var allVideos: [YouTubeVideo] = []
+        for sub in subs.items.prefix(5) {
+            let vids = try await client.fetchChannelVideos(channelId: sub.channelId, maxResults: 10)
+            allVideos.append(contentsOf: vids.items)
+        }
+
+        let items = YouTubeContentAdapter.adaptAll(videos: allVideos, sourceId: config.id)
+        sources.append(config)
+        youtubeItems.append(contentsOf: items)
+        BYOCSourceStore.saveSources(sources)
+        logger.info("Added YouTube source", context: ["name": name, "items": "\(items.count)"])
+    }
+
     // MARK: - Source Removal
 
     public func removeSource(id: String) {
@@ -140,6 +165,7 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public func isBYOCStream(url: URL) -> Bool {
         iptvChannels.contains { $0.streamURL == url }
             || plexItems.contains { $0.streamURL == url }
+            || youtubeItems.contains { $0.streamURL == url }
     }
 
     /// Get capabilities for a stream URL.

@@ -10608,6 +10608,16 @@
     "plexLocal": "本地网络",
     "plexRemote": "远程访问",
     "plexItemCount": "已导入%d个项目",
-    "plexConnectDesc": "连接您的Plex媒体服务器"
+    "plexConnectDesc": "连接您的Plex媒体服务器",
+    "youtubeVisitLink": "访问下方链接并输入验证码",
+    "youtubeEnterCode": "在页面上输入此验证码",
+    "youtubeWaiting": "等待授权中...",
+    "youtubeRequestingCode": "正在请求授权码...",
+    "youtubeConnected": "YouTube 已连接",
+    "youtubeVideoCount": "个视频已找到",
+    "youtubeOpenApp": "在YouTube中打开",
+    "youtubeAudioAINote": "播放期间可使用音频AI功能",
+    "fromYouTube": "来自YouTube",
+    "youtubeConnectDesc": "连接您的Google帐户以获取YouTube内容"
   }
 }

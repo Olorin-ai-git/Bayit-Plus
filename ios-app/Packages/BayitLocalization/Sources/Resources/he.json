@@ -10671,6 +10671,16 @@
     "plexLocal": "רשת מקומית",
     "plexRemote": "גישה מרחוק",
     "plexItemCount": "%d פריטים יובאו",
-    "plexConnectDesc": "חבר את שרת המדיה Plex שלך"
+    "plexConnectDesc": "חבר את שרת המדיה Plex שלך",
+    "youtubeVisitLink": "בקר בכתובת למטה והזן את הקוד",
+    "youtubeEnterCode": "הזן את הקוד הזה בעמוד",
+    "youtubeWaiting": "ממתין לאישור...",
+    "youtubeRequestingCode": "מבקש קוד אישור...",
+    "youtubeConnected": "YouTube מחובר",
+    "youtubeVideoCount": "סרטונים נמצאו",
+    "youtubeOpenApp": "פתח ב-YouTube",
+    "youtubeAudioAINote": "תכונות AI שמע זמינות במהלך הנגינה",
+    "fromYouTube": "מ-YouTube",
+    "youtubeConnectDesc": "חבר את חשבון Google שלך לתוכן YouTube"
   }
 }

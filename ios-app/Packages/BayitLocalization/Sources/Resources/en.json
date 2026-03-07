@@ -9857,6 +9857,16 @@
     "plexLocal": "Local Network",
     "plexRemote": "Remote Access",
     "plexItemCount": "%d items imported",
-    "plexConnectDesc": "Connect your Plex media server"
+    "plexConnectDesc": "Connect your Plex media server",
+    "youtubeVisitLink": "Visit the URL below and enter the code",
+    "youtubeEnterCode": "Enter this code on the page",
+    "youtubeWaiting": "Waiting for authorization...",
+    "youtubeRequestingCode": "Requesting authorization code...",
+    "youtubeConnected": "YouTube Connected",
+    "youtubeVideoCount": "videos found",
+    "youtubeOpenApp": "Open in YouTube",
+    "youtubeAudioAINote": "Audio AI features available during playback",
+    "fromYouTube": "From YouTube",
+    "youtubeConnectDesc": "Connect your Google account for YouTube content"
   }
 }

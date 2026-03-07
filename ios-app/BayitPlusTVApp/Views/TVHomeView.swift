@@ -118,8 +118,9 @@ struct TVHomeView: View {
             // Live now channels with EPG (independent loader)
             TVLiveNowRow()
 
-            // Plex library content (BYOC)
+            // BYOC content shelves
             TVPlexRow()
+            TVYouTubeRow()
 
             // Trending recommendations (owner mode — matches VOD library to news)
             if appConfiguration.ownerMode {

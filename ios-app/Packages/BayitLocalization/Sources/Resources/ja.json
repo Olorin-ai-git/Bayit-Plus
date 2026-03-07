@@ -11537,6 +11537,16 @@
     "plexLocal": "ローカルネットワーク",
     "plexRemote": "リモートアクセス",
     "plexItemCount": "%d件インポート済み",
-    "plexConnectDesc": "Plexメディアサーバーを接続"
+    "plexConnectDesc": "Plexメディアサーバーを接続",
+    "youtubeVisitLink": "下記のURLにアクセスしてコードを入力してください",
+    "youtubeEnterCode": "このコードをページに入力してください",
+    "youtubeWaiting": "認証を待っています...",
+    "youtubeRequestingCode": "認証コードをリクエスト中...",
+    "youtubeConnected": "YouTube接続済み",
+    "youtubeVideoCount": "件の動画が見つかりました",
+    "youtubeOpenApp": "YouTubeで開く",
+    "youtubeAudioAINote": "再生中にオーディオAI機能が利用可能です",
+    "fromYouTube": "YouTubeから",
+    "youtubeConnectDesc": "YouTubeコンテンツ用にGoogleアカウントを接続"
   }
 }

@@ -10622,6 +10622,16 @@
     "plexLocal": "स्थानीय नेटवर्क",
     "plexRemote": "रिमोट एक्सेस",
     "plexItemCount": "%d आइटम आयात किए गए",
-    "plexConnectDesc": "अपना Plex मीडिया सर्वर कनेक्ट करें"
+    "plexConnectDesc": "अपना Plex मीडिया सर्वर कनेक्ट करें",
+    "youtubeVisitLink": "नीचे दिए गए URL पर जाएं और कोड दर्ज करें",
+    "youtubeEnterCode": "इस कोड को पेज पर दर्ज करें",
+    "youtubeWaiting": "प्राधिकरण की प्रतीक्षा हो रही है...",
+    "youtubeRequestingCode": "प्राधिकरण कोड का अनुरोध किया जा रहा है...",
+    "youtubeConnected": "YouTube कनेक्ट हो गया",
+    "youtubeVideoCount": "वीडियो मिले",
+    "youtubeOpenApp": "YouTube में खोलें",
+    "youtubeAudioAINote": "प्लेबैक के दौरान ऑडियो AI सुविधाएं उपलब्ध हैं",
+    "fromYouTube": "YouTube से",
+    "youtubeConnectDesc": "YouTube सामग्री के लिए अपना Google खाता कनेक्ट करें"
   }
 }

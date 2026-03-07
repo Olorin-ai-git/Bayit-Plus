@@ -10696,6 +10696,16 @@
     "plexLocal": "உள்ளூர் நெட்வொர்க்",
     "plexRemote": "தொலைநிலை அணுகல்",
     "plexItemCount": "%d உருப்படிகள் இறக்குமதி செய்யப்பட்டன",
-    "plexConnectDesc": "உங்கள் Plex மீடியா சேவையகத்தை இணைக்கவும்"
+    "plexConnectDesc": "உங்கள் Plex மீடியா சேவையகத்தை இணைக்கவும்",
+    "youtubeVisitLink": "கீழே உள்ள URL-ஐ பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
+    "youtubeEnterCode": "இந்த குறியீட்டை பக்கத்தில் உள்ளிடவும்",
+    "youtubeWaiting": "அங்கீகாரத்திற்காக காத்திருக்கிறது...",
+    "youtubeRequestingCode": "அங்கீகார குறியீட்டைக் கோருகிறது...",
+    "youtubeConnected": "YouTube இணைக்கப்பட்டது",
+    "youtubeVideoCount": "வீடியோக்கள் கண்டறியப்பட்டன",
+    "youtubeOpenApp": "YouTube-இல் திறக்கவும்",
+    "youtubeAudioAINote": "பிளேபேக் நேரத்தில் ஆடியோ AI அம்சங்கள் கிடைக்கும்",
+    "fromYouTube": "YouTube-இலிருந்து",
+    "youtubeConnectDesc": "YouTube உள்ளடக்கத்திற்கு உங்கள் Google கணக்கை இணைக்கவும்"
   }
 }
