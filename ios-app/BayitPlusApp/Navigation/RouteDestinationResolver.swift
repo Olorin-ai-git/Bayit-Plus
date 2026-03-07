@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitVoice
 import SwiftUI
 
@@ -48,6 +49,8 @@ struct RouteDestinationResolver {
             ConnectedAccountsView()
         case .byocSources:
             BYOCSourceListView()
+        case let .byocDetail(item):
+            BYOCDetailView(item: item)
         case .playbackSettings:
             PlaybackSettingsView()
         case .audioSettings:

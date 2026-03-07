@@ -32,6 +32,7 @@ extension Route {
         case .security: return "Security"
         case .connectedAccounts: return "Connected Accounts"
         case .byocSources: return "Content Sources"
+        case .byocDetail: return "Content"
         case .playbackSettings: return "Playback"
         case .audioSettings: return "Audio"
         case .accessibilitySettings: return "Accessibility"

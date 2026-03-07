@@ -14,6 +14,7 @@ struct BYOCYouTubeAuthSheet: View {
     @State private var isPolling = false
     @State private var isSuccess = false
     @State private var error: String?
+    @State private var generateInteractionMoments = false
 
     private let logger = BayitLogger(category: "BYOCYouTubeAuth")
 
@@ -80,6 +81,28 @@ struct BYOCYouTubeAuthSheet: View {
                     .foregroundStyle(DesignTokens.ErrorColor.default)
                     .font(.system(size: DesignTokens.FontSize.sm))
             }
+
+            interactionMomentsToggle
+        }
+    }
+
+    private var interactionMomentsToggle: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                Toggle(isOn: $generateInteractionMoments) {
+                    Label(
+                        localization.t("byoc.interactionMoments"),
+                        systemImage: "wand.and.stars"
+                    )
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                }
+                .tint(DesignTokens.Primary.default)
+                Text(localization.t("byoc.interactionMomentsDescription"))
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            .padding(DesignTokens.Spacing.md)
         }
     }
 

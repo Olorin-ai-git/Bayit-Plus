@@ -120,7 +120,7 @@ public final class NavigationCoordinator {
         case .profile, .favorites, .playlist, .downloads,
              .recordings, .settings, .languageSettings,
              .notificationSettings, .billing, .subscription,
-             .security, .connectedAccounts, .byocSources,
+             .security, .connectedAccounts, .byocSources, .byocDetail,
              .playbackSettings, .audioSettings,
              .accessibilitySettings, .privacySettings,
              .children, .youngsters, .judaism,

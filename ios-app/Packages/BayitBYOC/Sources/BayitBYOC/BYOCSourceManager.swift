@@ -15,6 +15,7 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public internal(set) var youtubeItems: [BYOCContentItem] = []
     public internal(set) var isRefreshing = false
     public internal(set) var lastError: String?
+    public private(set) var enrichmentQueue: BYOCEnrichmentQueue?
 
     public var hasAnySources: Bool {
         !sources.isEmpty
@@ -37,6 +38,11 @@ public final class BYOCSourceManager: @unchecked Sendable {
         if !sources.isEmpty {
             Task { await refreshAll() }
         }
+    }
+
+    public func configureEnrichment(baseURL: URL) {
+        let service = BYOCEnrichmentService(baseURL: baseURL)
+        enrichmentQueue = BYOCEnrichmentQueue(service: service)
     }
 
     // MARK: - IPTV
@@ -103,17 +109,7 @@ public final class BYOCSourceManager: @unchecked Sendable {
             "Added Plex source",
             context: ["name": name, "items": "\(allItems.count)"]
         )
-    }
-
-    /// The Plex client identifier (stable per device).
-    public var plexClientId: String {
-        let key = "tv.bayit.plus.byoc.plex.clientId"
-        if let existing = UserDefaults.standard.string(forKey: key) {
-            return existing
-        }
-        let newId = UUID().uuidString
-        UserDefaults.standard.set(newId, forKey: key)
-        return newId
+        Task { await triggerInitialEnrichment(items: allItems) }
     }
 
     // MARK: - YouTube
@@ -139,6 +135,7 @@ public final class BYOCSourceManager: @unchecked Sendable {
         youtubeItems.append(contentsOf: items)
         BYOCSourceStore.saveSources(sources)
         logger.info("Added YouTube source", context: ["name": name, "items": "\(items.count)"])
+        Task { await triggerInitialEnrichment(items: items) }
     }
 
     // MARK: - Source Removal
@@ -164,24 +161,32 @@ public final class BYOCSourceManager: @unchecked Sendable {
         logger.info("Removed BYOC source", context: ["id": id])
     }
 
-    /// Check if a stream URL belongs to a BYOC source.
-    public func isBYOCStream(url: URL) -> Bool {
-        iptvChannels.contains { $0.streamURL == url }
-            || plexItems.contains { $0.streamURL == url }
-            || youtubeItems.contains { $0.streamURL == url }
+    // MARK: - Enrichment
+
+    /// Enrich a single item on demand if not already cached.
+    public func enrichIfNeeded(_ item: BYOCContentItem) async {
+        guard let queue = enrichmentQueue else { return }
+        await queue.enrichSingle(item)
     }
 
-    /// Get capabilities for a stream URL.
-    public func capabilities(for url: URL) -> BYOCCapabilities {
-        if iptvChannels.contains(where: { $0.streamURL == url }) {
-            return .capabilities(for: .iptv)
-        }
-        if plexItems.contains(where: { $0.streamURL == url }) {
-            return .capabilities(for: .plex)
-        }
-        if youtubeItems.contains(where: { $0.streamURL == url }) {
-            return .capabilities(for: .youtube)
-        }
-        return .none
+    /// Get the cached enrichment result for an item.
+    public func enrichmentResult(
+        for item: BYOCContentItem
+    ) -> BYOCEnrichmentResult? {
+        enrichmentQueue?.result(for: item)
+    }
+
+    private func triggerInitialEnrichment(
+        items: [BYOCContentItem]
+    ) async {
+        guard let queue = enrichmentQueue else { return }
+        let initialBatchSize = 20
+        let batch = Array(items.prefix(initialBatchSize))
+        guard !batch.isEmpty else { return }
+        logger.info(
+            "Starting initial enrichment",
+            context: ["count": "\(batch.count)"]
+        )
+        await queue.enrichBatch(batch)
     }
 }

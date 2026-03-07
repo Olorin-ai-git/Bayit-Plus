@@ -1,3 +1,4 @@
+import BayitBYOC
 import Foundation
 
 /// All navigation destinations in the Bayit+ app
@@ -37,6 +38,7 @@ public enum Route: Hashable {
     case security
     case connectedAccounts
     case byocSources
+    case byocDetail(item: BYOCContentItem)
     case playbackSettings
     case audioSettings
     case accessibilitySettings
