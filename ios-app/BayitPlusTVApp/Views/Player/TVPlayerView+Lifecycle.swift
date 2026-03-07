@@ -1,4 +1,5 @@
 import BayitAuth
+import BayitBYOC
 import BayitCore
 import BayitMedia
 import BayitNetworking
@@ -125,9 +126,8 @@ extension TVPlayerView {
     // MARK: - View Model Initialization
 
     func initializeViewModels() {
-        BayitLogger(category: "TVPlayerView").warning(
-            "initializeViewModels called: isLive=\(isLive), contentId=\(contentId)"
-        )
+        resolveBYOCCapabilities()
+
         if isLive, authManager.user?.isBetaUser == true {
             let vm = CatchUpViewModel(repository: repos.liveTV)
             state.catchUpVM = vm
@@ -138,44 +138,62 @@ extension TVPlayerView {
             }
         }
 
-        if state.triviaVM == nil {
-            state.triviaVM = TriviaFactsViewModel(
-                repository: repos.trivia, offlineCache: repos.offlineCache
-            )
-        }
+        let caps = state.byocCapabilities
+        let isBYOC = caps != .none
 
-        if !isLive {
-            Task {
-                await state.triviaVM?.loadFacts(
-                    contentId: contentId, language: state.selectedAILanguage
+        if !isBYOC || caps.trivia {
+            if state.triviaVM == nil {
+                state.triviaVM = TriviaFactsViewModel(
+                    repository: repos.trivia, offlineCache: repos.offlineCache
                 )
+            }
+            if !isLive {
+                Task {
+                    await state.triviaVM?.loadFacts(
+                        contentId: contentId, language: state.selectedAILanguage
+                    )
+                }
             }
         }
 
-        if !isLive {
+        if !isLive, !isBYOC || caps.trivia {
             Task { await initializeInteractiveMoments() }
         }
 
-        let dubbingWS = LiveDubbingWebSocketService(
-            webSocketManager: repos.webSocketManager,
-            configuration: repos.configuration,
-            authTokenProvider: repos.authTokenProvider
-        )
-        state.webSocketService = dubbingWS
-        state.liveDubbingVM = LiveDubbingViewModel(
-            repository: repos.liveDubbing,
-            webSocketService: dubbingWS, authManager: authManager
-        )
+        if !isBYOC || caps.dubbing || caps.audioOverlayOnly {
+            let dubbingWS = LiveDubbingWebSocketService(
+                webSocketManager: repos.webSocketManager,
+                configuration: repos.configuration,
+                authTokenProvider: repos.authTokenProvider
+            )
+            state.webSocketService = dubbingWS
+            let dubbingVM = LiveDubbingViewModel(
+                repository: repos.liveDubbing,
+                webSocketService: dubbingWS, authManager: authManager
+            )
+            dubbingVM.byocStreamUrl = state.byocStreamUrl
+            state.liveDubbingVM = dubbingVM
+        }
 
-        if isLive {
+        if isLive, !isBYOC || caps.liveSubtitles {
             let subtitleWS = LiveSubtitlesWebSocketService(
                 webSocketManager: repos.webSocketManager,
                 configuration: repos.configuration,
                 authTokenProvider: repos.authTokenProvider
             )
-            state.liveSubtitlesVM = LiveSubtitlesViewModel(
+            let subtitleVM = LiveSubtitlesViewModel(
                 webSocketService: subtitleWS
             )
+            subtitleVM.byocStreamUrl = state.byocStreamUrl
+            state.liveSubtitlesVM = subtitleVM
         }
+    }
+
+    private func resolveBYOCCapabilities() {
+        guard let urlString = directUrl, let url = URL(string: urlString) else { return }
+        let caps = BYOCAICapabilityResolver.resolve(streamURL: url, manager: byocManager)
+        guard caps != .none else { return }
+        state.byocCapabilities = caps
+        state.byocStreamUrl = urlString
     }
 }

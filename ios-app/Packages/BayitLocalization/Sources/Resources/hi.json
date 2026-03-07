@@ -6202,11 +6202,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6218,10 +6214,7 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": [
-        "ऑफ़लाइन देखना",
-        "फैमिली प्रोफाइल"
-      ]
+      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
     },
     "family": {
       "name": "फैमिली",
@@ -10588,5 +10581,47 @@
   "network": {
     "connectionLost": "कनेक्शन टूट गया",
     "reconnecting": "पुनः कनेक्ट हो रहा है..."
+  },
+  "byoc": {
+    "yourChannels": "आपके चैनल",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "IPTV प्लेलिस्ट जोड़ें",
+    "addPlex": "Plex कनेक्ट करें",
+    "addYouTube": "YouTube कनेक्ट करें",
+    "playlistURL": "प्लेलिस्ट URL",
+    "playlistName": "प्लेलिस्ट नाम",
+    "noChannels": "प्लेलिस्ट में कोई चैनल नहीं मिले",
+    "refreshing": "रिफ्रेश हो रहा है...",
+    "sourceAdded": "स्रोत जोड़ा गया",
+    "sourceRemoved": "स्रोत हटाया गया",
+    "connectedSources": "कनेक्टेड स्रोत",
+    "aiAvailable": "AI सुविधाएं उपलब्ध",
+    "audioAIOnly": "केवल ऑडियो AI",
+    "aiDubbing": "AI डबिंग",
+    "aiSubtitles": "AI उपशीर्षक",
+    "connectContent": "अपनी सामग्री कनेक्ट करें",
+    "connectContentDesc": "AI सुविधाओं के लिए IPTV, Plex या YouTube जोड़ें",
+    "removeSource": "स्रोत हटाएं",
+    "removeConfirm": "क्या यह स्रोत हटाना है?",
+    "channelCount": "%d चैनल",
+    "fromPlex": "आपके Plex से",
+    "enterURL": "M3U प्लेलिस्ट URL दर्ज करें",
+    "validating": "प्लेलिस्ट सत्यापित हो रही...",
+    "invalidURL": "अमान्य URL प्रारूप",
+    "fetchFailed": "प्लेलिस्ट लोड विफल",
+    "plexVisitLink": "किसी भी डिवाइस पर इस URL पर जाएं",
+    "plexEnterCode": "अपना खाता लिंक करने के लिए यह कोड दर्ज करें",
+    "plexWaiting": "प्रमाणीकरण की प्रतीक्षा...",
+    "plexRequestingPin": "PIN का अनुरोध हो रहा है...",
+    "plexSelectServer": "सर्वर चुनें",
+    "plexSelectServerDesc": "कनेक्ट करने के लिए Plex सर्वर चुनें",
+    "plexDiscovering": "सर्वर खोज रहे हैं...",
+    "plexNoServers": "कोई Plex सर्वर नहीं मिला",
+    "plexLocal": "स्थानीय नेटवर्क",
+    "plexRemote": "रिमोट एक्सेस",
+    "plexItemCount": "%d आइटम आयात किए गए",
+    "plexConnectDesc": "अपना Plex मीडिया सर्वर कनेक्ट करें"
   }
 }

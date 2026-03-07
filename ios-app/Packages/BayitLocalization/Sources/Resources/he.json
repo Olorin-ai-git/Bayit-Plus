@@ -6258,11 +6258,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -6274,10 +6270,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",
@@ -10637,5 +10630,47 @@
   "network": {
     "connectionLost": "החיבור אבד",
     "reconnecting": "מתחבר מחדש..."
+  },
+  "byoc": {
+    "yourChannels": "הערוצים שלך",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "הוסף פלייליסט IPTV",
+    "addPlex": "חבר Plex",
+    "addYouTube": "חבר YouTube",
+    "playlistURL": "כתובת פלייליסט",
+    "playlistName": "שם פלייליסט",
+    "noChannels": "לא נמצאו ערוצים בפלייליסט",
+    "refreshing": "מרענן...",
+    "sourceAdded": "מקור נוסף",
+    "sourceRemoved": "מקור הוסר",
+    "connectedSources": "מקורות מחוברים",
+    "aiAvailable": "תכונות AI זמינות",
+    "audioAIOnly": "AI שמע בלבד",
+    "aiDubbing": "דיבוב AI",
+    "aiSubtitles": "כתוביות AI",
+    "connectContent": "חבר את התוכן שלך",
+    "connectContentDesc": "הוסף IPTV, Plex או YouTube לשיפור עם תכונות AI",
+    "removeSource": "הסר מקור",
+    "removeConfirm": "להסיר מקור תוכן זה?",
+    "channelCount": "%d ערוצים",
+    "fromPlex": "מ-Plex שלך",
+    "enterURL": "הזן כתובת פלייליסט M3U",
+    "validating": "מאמת פלייליסט...",
+    "invalidURL": "פורמט כתובת לא תקין",
+    "fetchFailed": "נכשל בטעינת פלייליסט",
+    "plexVisitLink": "בקר בכתובת זו מכל מכשיר",
+    "plexEnterCode": "הזן קוד זה לקישור החשבון שלך",
+    "plexWaiting": "ממתין לאימות...",
+    "plexRequestingPin": "מבקש קוד PIN...",
+    "plexSelectServer": "בחר שרת",
+    "plexSelectServerDesc": "בחר שרת Plex להתחברות",
+    "plexDiscovering": "מגלה שרתים...",
+    "plexNoServers": "לא נמצאו שרתי Plex",
+    "plexLocal": "רשת מקומית",
+    "plexRemote": "גישה מרחוק",
+    "plexItemCount": "%d פריטים יובאו",
+    "plexConnectDesc": "חבר את שרת המדיה Plex שלך"
   }
 }

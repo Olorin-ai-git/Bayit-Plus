@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitDesignSystem
 import BayitLocalization
 import BayitMedia
@@ -30,6 +31,7 @@ struct TVLiveTVView: View {
                         }
                     } else {
                         channelGrid(vm.channels)
+                        TVIPTVChannelsSection()
                     }
                 }
             }

@@ -12,6 +12,7 @@
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
         @Environment(TVOnboardingPreferences.self) var prefs
+        @Environment(\.appConfiguration) private var appConfiguration
         @State var dockViewModel: WidgetDockViewModel?
         @State var showLanguagePicker = false
         @State var widgetAutoHideTask: Task<Void, Never>?
@@ -37,9 +38,11 @@
                             .tag(TVTab.liveTV)
                     }
 
-                    TVVODView()
-                        .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
-                        .tag(TVTab.vod)
+                    if appConfiguration.ownerMode {
+                        TVVODView()
+                            .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
+                            .tag(TVTab.vod)
+                    }
 
                     TVZehAniHubView()
                         .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }

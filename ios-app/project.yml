@@ -60,6 +60,8 @@ targets:
         product: BayitCast
       - package: BayitPlus
         product: BayitNotifications
+      - package: BayitPlus
+        product: BayitBYOC
       - sdk: CarPlay.framework
       - target: BayitWidgets
         embed: true
@@ -148,6 +150,8 @@ targets:
         product: BayitVoice
       - package: BayitPlus
         product: BayitAnalytics
+      - package: BayitPlus
+        product: BayitBYOC
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus
@@ -169,6 +173,7 @@ targets:
         HOME_CONTENT_ROW_LIMIT: "$(HOME_CONTENT_ROW_LIMIT)"
         DEFAULT_CULTURE_ID: "$(DEFAULT_CULTURE_ID)"
         HIDDEN_CHANNEL_KEYWORDS: "$(HIDDEN_CHANNEL_KEYWORDS)"
+        OWNER_MODE: "$(OWNER_MODE)"
         CFBundleDisplayName: "Bayit+"
         CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"

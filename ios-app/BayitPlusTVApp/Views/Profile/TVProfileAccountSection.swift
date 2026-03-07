@@ -1,4 +1,5 @@
 import BayitAuth
+import BayitBYOC
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -57,11 +58,21 @@ struct TVProfileAccountSection: View {
 // MARK: - Advanced Section
 
 struct TVProfileAdvancedSection: View {
+    @Environment(BYOCSourceManager.self) private var byocManager
     let localization: LocalizationManager
     let onAction: (ProfileSheet) -> Void
 
     var body: some View {
         Section {
+            profileActionRow(
+                icon: "play.tv",
+                title: localization.t("byoc.connectedSources"),
+                subtitle: byocManager.hasAnySources
+                    ? String(format: localization.t("byoc.channelCount"), byocManager.sources.count)
+                    : localization.t("byoc.connectContentDesc"),
+                color: DesignTokens.Primary.p400
+            ) { onAction(.contentSources) }
+
             profileActionRow(
                 icon: "person.2.fill",
                 title: localization.t("profile.householdProfiles"),

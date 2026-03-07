@@ -9,6 +9,7 @@ struct MainTabView: View {
     @Environment(FeatureFlags.self) private var featureFlags
     @Environment(AudioPlaybackManager.self) private var audioPlaybackManager
     @Environment(UserUIPreferencesStore.self) private var uiPreferences
+    @Environment(\.appConfiguration) private var appConfiguration
     @State private var isVoiceModalPresented = false
     @State private var dockViewModel: WidgetDockViewModel?
 
@@ -17,7 +18,7 @@ struct MainTabView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ZStack {
-                ForEach(AppTab.allCases) { tab in
+                ForEach(AppTab.visibleTabs(ownerMode: appConfiguration.ownerMode)) { tab in
                     tabContent(for: tab)
                         .opacity(coordinator.selectedTab == tab ? 1 : 0)
                         .allowsHitTesting(coordinator.selectedTab == tab)

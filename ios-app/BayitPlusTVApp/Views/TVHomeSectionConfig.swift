@@ -67,6 +67,20 @@ enum TVHomeSection: Int, CaseIterable {
         }
     }
 
+    /// Sections that depend on the owner's private content library.
+    /// In public (non-owner) mode, these are hidden.
+    var requiresOwnerMode: Bool {
+        switch self {
+        case .continueWatching, .nearMe, .whatsHot, .jerusalem, .telAviv, .liveTV:
+            return false
+        case .israeliMovies, .movies, .kids, .youngsters, .music,
+             .documentary, .israeliSeries, .series:
+            return true
+        case .podcasts, .audiobooks:
+            return false
+        }
+    }
+
     var aspectRatio: CGFloat {
         switch self {
         case .podcasts, .audiobooks, .liveTV:

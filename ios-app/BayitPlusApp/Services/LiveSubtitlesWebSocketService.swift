@@ -3,8 +3,6 @@ import BayitNetworking
 import Foundation
 import Observation
 
-/// WebSocket service for receiving real-time live subtitle translations.
-/// Delegates connection management to the centralized `WebSocketManager`.
 @Observable
 final class LiveSubtitlesWebSocketService: @unchecked Sendable {
     private(set) var isConnected = false
@@ -40,8 +38,12 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
     }
 
     @MainActor
-    func connect(channelId: String, targetLanguage: String, sourceLang: String) {
-        // Derive API path prefix from apiBaseURL to match backend route registration
+    func connect(
+        channelId: String,
+        targetLanguage: String,
+        sourceLang: String,
+        streamUrl: String? = nil
+    ) {
         var wsURL = configuration.webSocketBaseURL
         for component in configuration.apiBaseURL.pathComponents where component != "/" {
             wsURL = wsURL.appendingPathComponent(component)
@@ -53,12 +55,16 @@ final class LiveSubtitlesWebSocketService: @unchecked Sendable {
             .appendingPathComponent("subtitles")
 
         var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: false)
-        urlComponents?.queryItems = [
+        var queryItems = [
             URLQueryItem(name: "source_lang", value: sourceLang),
             URLQueryItem(name: "target_lang", value: targetLanguage),
             URLQueryItem(name: "audio_source", value: "server"),
             URLQueryItem(name: "platform", value: Self.platformIdentifier),
         ]
+        if let streamUrl {
+            queryItems.append(URLQueryItem(name: "stream_url", value: streamUrl))
+        }
+        urlComponents?.queryItems = queryItems
 
         guard let url = urlComponents?.url else {
             error = "Failed to construct WebSocket URL"

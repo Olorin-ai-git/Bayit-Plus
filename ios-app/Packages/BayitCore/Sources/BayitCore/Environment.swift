@@ -68,6 +68,11 @@ public protocol EnvironmentConfiguration: Sendable {
     var homeContentRowLimit: Int { get }
     var defaultCultureId: String { get }
     var hiddenChannelKeywords: [String] { get }
+
+    /// When true, the app shows the owner's personal content library (VOD, movies, series).
+    /// When false (App Store release), VOD content is hidden — only radio, podcasts,
+    /// and AI features are available.
+    var ownerMode: Bool { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -93,6 +98,7 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let homeContentRowLimit: Int
     public let defaultCultureId: String
     public let hiddenChannelKeywords: [String]
+    public let ownerMode: Bool
 }
 
 // MARK: - SwiftUI Environment Key

@@ -1,4 +1,5 @@
 import BayitAuth
+import BayitBYOC
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -62,6 +63,8 @@ extension TVProfileView {
             TVHelpView()
         case .connectedAccounts:
             TVConnectedAccountsView(onDismiss: { activeSheet = nil })
+        case .contentSources:
+            TVBYOCSourceListView(onDismiss: { activeSheet = nil })
         case .widgets:
             // Handled via coordinator signal; dismiss immediately
             Color.clear

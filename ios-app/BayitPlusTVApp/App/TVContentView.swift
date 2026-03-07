@@ -1,5 +1,6 @@
 #if os(tvOS)
     import BayitAuth
+    import BayitBYOC
     import BayitDesignSystem
     import BayitMedia
     import BayitNetworking
@@ -19,6 +20,7 @@
         @State private var networkMonitor = NetworkMonitor()
         @State private var multiUserService = TVMultiUserService()
         @State private var onboardingPrefs = TVOnboardingPreferences(profileId: "")
+        @State private var byocManager = BYOCSourceManager()
         @Environment(\.scenePhase) private var scenePhase
 
         var body: some View {
@@ -85,6 +87,7 @@
             .overlay { TVNetworkBannerView(isConnected: networkMonitor.isConnected) }
             .environment(networkMonitor)
             .environment(onboardingPrefs)
+            .environment(byocManager)
             .animation(.easeInOut, value: coordinator.showingSplash)
             .animation(.easeInOut, value: coordinator.showingAuth)
             .animation(.easeInOut, value: coordinator.profileSelected)

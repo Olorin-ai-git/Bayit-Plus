@@ -6279,11 +6279,7 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6295,10 +6291,7 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": [
-        "ஆஃப்லைன் பார்வை",
-        "குடும்ப சுயவிவரங்கள்"
-      ]
+      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
     },
     "family": {
       "name": "குடும்பம்",
@@ -10662,5 +10655,47 @@
   "network": {
     "connectionLost": "இணைப்பு துண்டிக்கப்பட்டது",
     "reconnecting": "மீண்டும் இணைக்கிறது..."
+  },
+  "byoc": {
+    "yourChannels": "உங்கள் சானல்கள்",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "IPTV பட்டியல் சேர்",
+    "addPlex": "Plex இணை",
+    "addYouTube": "YouTube இணை",
+    "playlistURL": "பட்டியல் URL",
+    "playlistName": "பட்டியல் பெயர்",
+    "noChannels": "சானல்கள் கண்டறியவில்லை",
+    "refreshing": "புதுப்பிக்கிறது...",
+    "sourceAdded": "மூலம் சேர்க்கப்பட்டது",
+    "sourceRemoved": "மூலம் நீக்கப்பட்டது",
+    "connectedSources": "இணைக்கப்பட்ட மூலங்கள்",
+    "aiAvailable": "AI அம்சங்கள் கிடைக்கின்றன",
+    "audioAIOnly": "ஒலி AI மட்டுமே",
+    "aiDubbing": "AI டப்பிங்",
+    "aiSubtitles": "AI வசன வரிகள்",
+    "connectContent": "உங்கள் உள்ளடக்கத்தை இணைக்கவும்",
+    "connectContentDesc": "AI அம்சங்களுடன் IPTV, Plex அல்லது YouTube சேர்க்கவும்",
+    "removeSource": "மூலம் நீக்கு",
+    "removeConfirm": "இந்த மூலத்தை நீக்கவா?",
+    "channelCount": "%d சானல்கள்",
+    "fromPlex": "உங்கள் Plex-லிருந்து",
+    "enterURL": "M3U பட்டியல் URL உள்ளிடவும்",
+    "validating": "பட்டியல் சரிபார்க்கப்படுகிறது...",
+    "invalidURL": "தவறான URL வடிவமைப்பு",
+    "fetchFailed": "பட்டியல் ஏற்றம் விபலம்",
+    "plexVisitLink": "எந்த சாதனத்திலும் இந்த URL-ஐ பார்வையிடவும்",
+    "plexEnterCode": "உங்கள் கணக்கை இணைக்க இந்த குறியீட்டை உள்ளிடவும்",
+    "plexWaiting": "அங்கீகாரத்திற்கு காத்திருக்கிறது...",
+    "plexRequestingPin": "PIN கோரப்படுகிறது...",
+    "plexSelectServer": "சேவையகம் தேர்ந்தெடுக்கவும்",
+    "plexSelectServerDesc": "இணைக்க Plex சேவையகத்தைத் தேர்ந்தெடுக்கவும்",
+    "plexDiscovering": "சேவையகங்களைக் கண்டறிகிறது...",
+    "plexNoServers": "Plex சேவையகங்கள் கிடைக்கவில்லை",
+    "plexLocal": "உள்ளூர் நெட்வொர்க்",
+    "plexRemote": "தொலைநிலை அணுகல்",
+    "plexItemCount": "%d உருப்படிகள் இறக்குமதி செய்யப்பட்டன",
+    "plexConnectDesc": "உங்கள் Plex மீடியா சேவையகத்தை இணைக்கவும்"
   }
 }

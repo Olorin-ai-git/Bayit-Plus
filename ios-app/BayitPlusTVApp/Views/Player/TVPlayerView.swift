@@ -1,5 +1,6 @@
 import AVKit
 import BayitAuth
+import BayitBYOC
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -16,6 +17,7 @@ struct TVPlayerView: View {
 
     @Environment(NetworkMonitor.self) var networkMonitor
     @Environment(TVOnboardingPreferences.self) var onboardingPrefs
+    @Environment(BYOCSourceManager.self) var byocManager
     @Environment(\.dismiss) var dismiss
 
     let contentId: String

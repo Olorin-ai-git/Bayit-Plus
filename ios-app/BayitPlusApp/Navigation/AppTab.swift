@@ -10,7 +10,9 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
     case search
     case downloads
 
-    public var id: String { rawValue }
+    public var id: String {
+        rawValue
+    }
 
     /// Fallback title (English). Prefer `localizationKey` with LocalizationManager.
     public var title: String {
@@ -56,6 +58,21 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .search: return "magnifyingglass"
         case .downloads: return "arrow.down.circle"
         }
+    }
+
+    /// Whether this tab requires the owner's private content library.
+    public var requiresOwnerMode: Bool {
+        switch self {
+        case .vod, .downloads:
+            return true
+        case .home, .liveTV, .zehAni, .podcasts, .search:
+            return false
+        }
+    }
+
+    /// Tabs visible for the given owner mode.
+    public static func visibleTabs(ownerMode: Bool) -> [AppTab] {
+        allCases.filter { ownerMode || !$0.requiresOwnerMode }
     }
 
     public var selectedIconName: String {

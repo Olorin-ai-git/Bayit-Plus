@@ -25,6 +25,8 @@ final class LiveDubbingViewModel {
     var originalVolume: Float = 0.3
     var dubbedVolume: Float = 0.8
 
+    var byocStreamUrl: String?
+
     let webSocketService: LiveDubbingWebSocketService
     private let repository: any LiveDubbingRepository
     private let authManager: AuthManager?
@@ -100,7 +102,8 @@ final class LiveDubbingViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: selectedLanguage,
-                voiceId: selectedVoice?.id
+                voiceId: selectedVoice?.id,
+                streamUrl: byocStreamUrl
             )
             isEnabled = true
             observeConnection()
@@ -115,7 +118,8 @@ final class LiveDubbingViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: selectedLanguage,
-                voiceId: voice.id
+                voiceId: voice.id,
+                streamUrl: byocStreamUrl
             )
         }
     }
@@ -128,7 +132,8 @@ final class LiveDubbingViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: language,
-                voiceId: selectedVoice?.id
+                voiceId: selectedVoice?.id,
+                streamUrl: byocStreamUrl
             )
         }
     }

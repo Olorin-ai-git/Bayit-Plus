@@ -6279,11 +6279,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -6295,10 +6291,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -10680,5 +10673,47 @@
   "network": {
     "connectionLost": "Conexion perdida",
     "reconnecting": "Reconectando..."
+  },
+  "byoc": {
+    "yourChannels": "Tus Canales",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "Agregar Lista IPTV",
+    "addPlex": "Conectar Plex",
+    "addYouTube": "Conectar YouTube",
+    "playlistURL": "URL de Lista",
+    "playlistName": "Nombre de Lista",
+    "noChannels": "No se encontraron canales",
+    "refreshing": "Actualizando...",
+    "sourceAdded": "Fuente agregada",
+    "sourceRemoved": "Fuente eliminada",
+    "connectedSources": "Fuentes Conectadas",
+    "aiAvailable": "Funciones AI Disponibles",
+    "audioAIOnly": "Solo Audio AI",
+    "aiDubbing": "Doblaje IA",
+    "aiSubtitles": "Subtitulos IA",
+    "connectContent": "Conecta Tu Contenido",
+    "connectContentDesc": "Agrega IPTV, Plex o YouTube para mejorar con funciones AI",
+    "removeSource": "Eliminar Fuente",
+    "removeConfirm": "¿Eliminar esta fuente?",
+    "channelCount": "%d canales",
+    "fromPlex": "De Tu Plex",
+    "enterURL": "Ingresa URL de lista M3U",
+    "validating": "Validando lista...",
+    "invalidURL": "Formato de URL no válido",
+    "fetchFailed": "Error al cargar la lista",
+    "plexVisitLink": "Visita esta URL en cualquier dispositivo",
+    "plexEnterCode": "Ingresa este codigo para vincular tu cuenta",
+    "plexWaiting": "Esperando autenticacion...",
+    "plexRequestingPin": "Solicitando PIN...",
+    "plexSelectServer": "Seleccionar servidor",
+    "plexSelectServerDesc": "Elige un servidor Plex para conectar",
+    "plexDiscovering": "Descubriendo servidores...",
+    "plexNoServers": "No se encontraron servidores Plex",
+    "plexLocal": "Red local",
+    "plexRemote": "Acceso remoto",
+    "plexItemCount": "%d elementos importados",
+    "plexConnectDesc": "Conecta tu servidor de medios Plex"
   }
 }

@@ -1,4 +1,5 @@
 import BayitAuth
+import BayitBYOC
 import BayitCore
 import BayitMedia
 import Foundation
@@ -107,4 +108,9 @@ final class TVPlayerStateContainer {
     // MARK: - Chapters
 
     var chapters: [Chapter] = []
+
+    // MARK: - BYOC
+
+    var byocCapabilities: BYOCCapabilities = .none
+    var byocStreamUrl: String?
 }

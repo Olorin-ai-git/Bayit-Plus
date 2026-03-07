@@ -86,6 +86,9 @@ extension AppConfiguration {
         defaultCultureId = cultureIdStr
         hiddenChannelKeywords = hiddenKeywordsStr.split(separator: ",")
             .map { String($0.trimmingCharacters(in: .whitespaces)) }
+
+        let ownerModeStr = info["OWNER_MODE"] as? String ?? processEnv["OWNER_MODE"]
+        ownerMode = ownerModeStr?.uppercased() == "YES"
     }
 
     private static func defaultAPIBaseURL(for _: AppEnvironment) -> String {

@@ -6192,11 +6192,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6208,10 +6204,7 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": [
-        "অফলাইন দেখা",
-        "পরিবার প্রোফাইল"
-      ]
+      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -10564,5 +10557,47 @@
   "network": {
     "connectionLost": "সংযোগ বিচ্ছিন্ন",
     "reconnecting": "পুনরায় সংযোগ হচ্ছে..."
+  },
+  "byoc": {
+    "yourChannels": "আপনার চ্যানেলগুলি",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "IPTV প্লেলিস্ট যোগ করুন",
+    "addPlex": "Plex সংযুক্ত করুন",
+    "addYouTube": "YouTube সংযুক্ত করুন",
+    "playlistURL": "প্লেলিস্ট URL",
+    "playlistName": "প্লেলিস্ট নাম",
+    "noChannels": "প্লেলিস্টে কোনো চ্যানেল পাওয়া যায়নি",
+    "refreshing": "রিফ্রেশ হচ্ছে...",
+    "sourceAdded": "উৎস যোগ হয়েছে",
+    "sourceRemoved": "উৎস সরানো হয়েছে",
+    "connectedSources": "সংযুক্ত উৎসগুলি",
+    "aiAvailable": "AI সুবিধা উপলব্ধ",
+    "audioAIOnly": "শুধু অডিও AI",
+    "aiDubbing": "AI ডাবিং",
+    "aiSubtitles": "AI সাবটাইটেল",
+    "connectContent": "আপনার বিষয়বস্তু সংযুক্ত করুন",
+    "connectContentDesc": "AI সুবিধার জন্য IPTV, Plex বা YouTube যোগ করুন",
+    "removeSource": "উৎস সরান",
+    "removeConfirm": "এই উৎস সরাতে চান?",
+    "channelCount": "%d চ্যানেল",
+    "fromPlex": "আপনার Plex থেকে",
+    "enterURL": "M3U প্লেলিস্ট URL লিখুন",
+    "validating": "প্লেলিস্ট যাচাই হচ্ছে...",
+    "invalidURL": "অবৈধ URL ফর্ম্যাট",
+    "fetchFailed": "প্লেলিস্ট লোড ব্যর্থ",
+    "plexVisitLink": "যেকোনো ডিভাইসে এই URL-এ যান",
+    "plexEnterCode": "আপনার অ্যাকাউন্ট লিঙ্ক করতে এই কোড দিন",
+    "plexWaiting": "প্রমাণীকরণের জন্য অপেক্ষা করা হচ্ছে...",
+    "plexRequestingPin": "PIN অনুরোধ করা হচ্ছে...",
+    "plexSelectServer": "সার্ভার নির্বাচন করুন",
+    "plexSelectServerDesc": "সংযোগ করতে একটি Plex সার্ভার বেছে নিন",
+    "plexDiscovering": "সার্ভার খুঁজছে...",
+    "plexNoServers": "কোনো Plex সার্ভার পাওয়া যায়নি",
+    "plexLocal": "স্থানীয় নেটওয়ার্ক",
+    "plexRemote": "রিমোট অ্যাক্সেস",
+    "plexItemCount": "%d আইটেম আমদানি করা হয়েছে",
+    "plexConnectDesc": "আপনার Plex মিডিয়া সার্ভার সংযুক্ত করুন"
   }
 }

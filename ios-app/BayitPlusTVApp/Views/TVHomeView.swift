@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitDesignSystem
 import BayitLocalization
 import BayitMedia
@@ -81,8 +82,8 @@ struct TVHomeView: View {
             // Personalized greeting
             greetingSection
 
-            // Hero carousel with auto-rotation
-            if !vm.spotlight.isEmpty {
+            // Hero carousel (owner mode only — spotlight is from private library)
+            if appConfiguration.ownerMode, !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
                     TVHeroItem(
                         item: item,
@@ -96,11 +97,13 @@ struct TVHomeView: View {
                 }
             }
 
-            // Continue watching (independent loader)
-            TVContinueWatchingRow()
+            // Continue watching (owner mode only)
+            if appConfiguration.ownerMode {
+                TVContinueWatchingRow()
+            }
 
-            // Featured collections carousel
-            if !featuredCollections.isEmpty {
+            // Featured collections carousel (owner mode only)
+            if appConfiguration.ownerMode, !featuredCollections.isEmpty {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
@@ -115,26 +118,38 @@ struct TVHomeView: View {
             // Live now channels with EPG (independent loader)
             TVLiveNowRow()
 
-            // Trending recommendations (VOD based on news)
-            TVTrendingRecommendationsRow()
+            // Plex library content (BYOC)
+            TVPlexRow()
+
+            // Trending recommendations (owner mode — matches VOD library to news)
+            if appConfiguration.ownerMode {
+                TVTrendingRecommendationsRow()
+            }
 
             // Radio stations (filtered by interest)
             if prefs.showRadio, !vm.radioStations.isEmpty {
                 radioStationsSection(vm.radioStations)
             }
 
-            // All content sections filtered by onboarding interests
+            // All content sections filtered by onboarding interests + owner mode
             ForEach(TVHomeSection.allCases, id: \.rawValue) { section in
-                if section.hasData(in: vm), section.isVisible(given: prefs) {
+                if section.hasData(in: vm),
+                   section.isVisible(given: prefs),
+                   !section.requiresOwnerMode || appConfiguration.ownerMode
+                {
                     renderSection(section, vm: vm)
                 }
             }
 
-            // Personalized recommendations (independent loader)
-            TVRecommendedRow()
+            // Personalized recommendations (owner mode only)
+            if appConfiguration.ownerMode {
+                TVRecommendedRow()
+            }
 
-            // New releases (independent loader)
-            TVNewReleasesRow()
+            // New releases (owner mode only)
+            if appConfiguration.ownerMode {
+                TVNewReleasesRow()
+            }
 
             // Audio picks filtered by interests
             if prefs.showPodcasts || prefs.showAudiobooks {

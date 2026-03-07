@@ -19,6 +19,8 @@ final class LiveSubtitlesViewModel {
     var isPremiumRequired = false
     var isQuotaExceeded = false
 
+    var byocStreamUrl: String?
+
     let webSocketService: LiveSubtitlesWebSocketService
     private let authManager: AuthManager?
     var cueDismissTask: Task<Void, Never>?
@@ -56,7 +58,8 @@ final class LiveSubtitlesViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: selectedLanguage,
-                sourceLang: sourceLang
+                sourceLang: sourceLang,
+                streamUrl: byocStreamUrl
             )
             isEnabled = true
             observeConnection()
@@ -72,7 +75,8 @@ final class LiveSubtitlesViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: language,
-                sourceLang: sourceLang
+                sourceLang: sourceLang,
+                streamUrl: byocStreamUrl
             )
             observeConnection()
         }

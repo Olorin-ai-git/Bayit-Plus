@@ -21,6 +21,7 @@ let package = Package(
         .library(name: "BayitWidgetShared", targets: ["BayitWidgetShared"]),
         .library(name: "BayitNotifications", targets: ["BayitNotifications"]),
         .library(name: "BayitCast", targets: ["BayitCast"]),
+        .library(name: "BayitBYOC", targets: ["BayitBYOC"]),
     ],
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0"),
@@ -169,6 +170,14 @@ let package = Package(
             checksum: "c9c3a794e8585198b59c6bb7da5418a3194ffa1ffa6f9a1cbdf4dc0ea26dc6cf"
         ),
 
+        // MARK: - BayitBYOC
+
+        .target(
+            name: "BayitBYOC",
+            dependencies: ["BayitCore", "BayitNetworking"],
+            path: "Packages/BayitBYOC/Sources/BayitBYOC"
+        ),
+
         // MARK: - Tests
 
         .testTarget(
@@ -223,6 +232,12 @@ let package = Package(
             name: "BayitCastTests",
             dependencies: ["BayitCast", "BayitCore", "BayitMedia"],
             path: "Packages/BayitCast/Tests/BayitCastTests"
+        ),
+
+        .testTarget(
+            name: "BayitBYOCTests",
+            dependencies: ["BayitBYOC", "BayitCore"],
+            path: "Packages/BayitBYOC/Tests/BayitBYOCTests"
         ),
     ]
 )

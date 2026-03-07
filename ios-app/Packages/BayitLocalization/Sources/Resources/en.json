@@ -6042,11 +6042,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -6058,10 +6054,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -9823,5 +9816,47 @@
     "syncing": "Syncing...",
     "end": "End SharePlay",
     "title": "SharePlay"
+  },
+  "byoc": {
+    "yourChannels": "Your Channels",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "Add IPTV Playlist",
+    "addPlex": "Connect Plex",
+    "addYouTube": "Connect YouTube",
+    "playlistURL": "Playlist URL",
+    "playlistName": "Playlist Name",
+    "noChannels": "No channels found in playlist",
+    "refreshing": "Refreshing...",
+    "sourceAdded": "Source added",
+    "sourceRemoved": "Source removed",
+    "connectedSources": "Connected Sources",
+    "aiAvailable": "AI Features Available",
+    "audioAIOnly": "Audio AI Only",
+    "aiDubbing": "AI Dubbing",
+    "aiSubtitles": "AI Subtitles",
+    "connectContent": "Connect Your Content",
+    "connectContentDesc": "Add your IPTV, Plex, or YouTube to enhance with AI features",
+    "removeSource": "Remove Source",
+    "removeConfirm": "Remove this content source?",
+    "channelCount": "%d channels",
+    "fromPlex": "From Your Plex",
+    "enterURL": "Enter M3U playlist URL",
+    "validating": "Validating playlist...",
+    "invalidURL": "Invalid URL format",
+    "fetchFailed": "Failed to load playlist",
+    "plexVisitLink": "Visit this URL on any device",
+    "plexEnterCode": "Enter this code to link your account",
+    "plexWaiting": "Waiting for authentication...",
+    "plexRequestingPin": "Requesting PIN...",
+    "plexSelectServer": "Select Server",
+    "plexSelectServerDesc": "Choose a Plex server to connect",
+    "plexDiscovering": "Discovering servers...",
+    "plexNoServers": "No Plex servers found",
+    "plexLocal": "Local Network",
+    "plexRemote": "Remote Access",
+    "plexItemCount": "%d items imported",
+    "plexConnectDesc": "Connect your Plex media server"
   }
 }

@@ -20,6 +20,7 @@ enum ProfileSheet: Identifiable {
     case settings
     case help
     case connectedAccounts
+    case contentSources
     case widgets
 
     var id: String {

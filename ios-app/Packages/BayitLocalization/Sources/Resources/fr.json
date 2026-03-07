@@ -6608,10 +6608,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -11458,5 +11455,47 @@
   "network": {
     "connectionLost": "Connexion perdue",
     "reconnecting": "Reconnexion..."
+  },
+  "byoc": {
+    "yourChannels": "Vos Chaînes",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "Ajouter Liste IPTV",
+    "addPlex": "Connecter Plex",
+    "addYouTube": "Connecter YouTube",
+    "playlistURL": "URL de Liste",
+    "playlistName": "Nom de Liste",
+    "noChannels": "Aucune chaîne trouvée",
+    "refreshing": "Actualisation...",
+    "sourceAdded": "Source ajoutée",
+    "sourceRemoved": "Source supprimée",
+    "connectedSources": "Sources Connectées",
+    "aiAvailable": "Fonctions IA Disponibles",
+    "audioAIOnly": "Audio IA Uniquement",
+    "aiDubbing": "Doublage IA",
+    "aiSubtitles": "Sous-titres IA",
+    "connectContent": "Connectez Votre Contenu",
+    "connectContentDesc": "Ajoutez IPTV, Plex ou YouTube pour améliorer avec l'IA",
+    "removeSource": "Supprimer Source",
+    "removeConfirm": "Supprimer cette source ?",
+    "channelCount": "%d chaînes",
+    "fromPlex": "De Votre Plex",
+    "enterURL": "Entrez l'URL de la liste M3U",
+    "validating": "Validation de la liste...",
+    "invalidURL": "Format d'URL invalide",
+    "fetchFailed": "Échec du chargement",
+    "plexVisitLink": "Visitez cette URL sur n'importe quel appareil",
+    "plexEnterCode": "Entrez ce code pour lier votre compte",
+    "plexWaiting": "En attente d'authentification...",
+    "plexRequestingPin": "Demande de PIN...",
+    "plexSelectServer": "Choisir un serveur",
+    "plexSelectServerDesc": "Choisissez un serveur Plex a connecter",
+    "plexDiscovering": "Decouverte des serveurs...",
+    "plexNoServers": "Aucun serveur Plex trouve",
+    "plexLocal": "Reseau local",
+    "plexRemote": "Acces a distance",
+    "plexItemCount": "%d elements importes",
+    "plexConnectDesc": "Connectez votre serveur multimedia Plex"
   }
 }

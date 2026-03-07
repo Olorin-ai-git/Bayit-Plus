@@ -7,10 +7,11 @@ import SwiftUI
 struct GlassTabBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(\.appConfiguration) private var appConfiguration
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(AppTab.allCases.filter { $0 != .zehAni }) { tab in
+            ForEach(AppTab.visibleTabs(ownerMode: appConfiguration.ownerMode).filter { $0 != .zehAni }) { tab in
                 tabBarButton(for: tab)
             }
         }

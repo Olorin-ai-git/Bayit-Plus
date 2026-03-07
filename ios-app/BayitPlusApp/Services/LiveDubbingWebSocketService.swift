@@ -40,7 +40,12 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
     }
 
     @MainActor
-    func connect(channelId: String, targetLanguage: String, voiceId: String?) {
+    func connect(
+        channelId: String,
+        targetLanguage: String,
+        voiceId: String?,
+        streamUrl: String? = nil
+    ) {
         let wsURL = configuration.webSocketBaseURL
             .appendingPathComponent("live-dubbing/stream")
         var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: false)
@@ -51,6 +56,9 @@ final class LiveDubbingWebSocketService: @unchecked Sendable {
         ]
         if let voiceId {
             queryItems.append(URLQueryItem(name: "voice_id", value: voiceId))
+        }
+        if let streamUrl {
+            queryItems.append(URLQueryItem(name: "stream_url", value: streamUrl))
         }
         urlComponents?.queryItems = queryItems
 

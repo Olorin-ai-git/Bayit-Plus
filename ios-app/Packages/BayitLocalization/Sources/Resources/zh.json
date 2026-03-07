@@ -6195,17 +6195,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6217,10 +6208,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -10579,5 +10567,47 @@
   "network": {
     "connectionLost": "连接丢失",
     "reconnecting": "重新连接中..."
+  },
+  "byoc": {
+    "yourChannels": "你的频道",
+    "iptv": "IPTV",
+    "plex": "Plex",
+    "youtube": "YouTube",
+    "addIPTV": "添加IPTV播放列表",
+    "addPlex": "连接Plex",
+    "addYouTube": "连接YouTube",
+    "playlistURL": "播放列表URL",
+    "playlistName": "播放列表名称",
+    "noChannels": "播放列表中未找到频道",
+    "refreshing": "刷新中...",
+    "sourceAdded": "已添加源",
+    "sourceRemoved": "已移除源",
+    "connectedSources": "已连接的源",
+    "aiAvailable": "AI功能可用",
+    "audioAIOnly": "仅音频AI",
+    "aiDubbing": "AI配音",
+    "aiSubtitles": "AI字幕",
+    "connectContent": "连接你的内容",
+    "connectContentDesc": "添加IPTV、Plex或YouTube以使用AI功能增强",
+    "removeSource": "移除源",
+    "removeConfirm": "移除此内容源？",
+    "channelCount": "%d个频道",
+    "fromPlex": "来自你的Plex",
+    "enterURL": "输入M3U播放列表URL",
+    "validating": "验证播放列表...",
+    "invalidURL": "URL格式无效",
+    "fetchFailed": "加载播放列表失败",
+    "plexVisitLink": "在任意设备上访问此链接",
+    "plexEnterCode": "输入此代码以关联您的账户",
+    "plexWaiting": "等待认证...",
+    "plexRequestingPin": "正在请求PIN...",
+    "plexSelectServer": "选择服务器",
+    "plexSelectServerDesc": "选择要连接的Plex服务器",
+    "plexDiscovering": "正在发现服务器...",
+    "plexNoServers": "未找到Plex服务器",
+    "plexLocal": "本地网络",
+    "plexRemote": "远程访问",
+    "plexItemCount": "已导入%d个项目",
+    "plexConnectDesc": "连接您的Plex媒体服务器"
   }
 }
