@@ -6113,6 +6113,15 @@
       "getStarted": "בואו נתחיל",
       "subtitle": "בואו נתאים את החוויה שלך",
       "title": "ברוכים הבאים ל-Bayit+"
+    },
+    "byoc": {
+      "title": "הביאו את התוכן שלכם",
+      "subtitle": "חברו את מקורות התוכן האהובים עליכם ושפרו אותם עם דיבוב AI, כתוביות ועוד",
+      "iptvDesc": "ערוצי טלוויזיה חיים מרשימות M3U",
+      "plexDesc": "ספריית המדיה האישית שלכם",
+      "youtubeDesc": "סרטונים מהמנויים שלכם",
+      "connectNow": "חבר מקור",
+      "skipForNow": "הגדר מאוחר יותר"
     }
   },
   "pairing": {
@@ -6258,7 +6267,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -6270,7 +6283,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",
@@ -10681,6 +10697,10 @@
     "youtubeOpenApp": "פתח ב-YouTube",
     "youtubeAudioAINote": "תכונות AI שמע זמינות במהלך הנגינה",
     "fromYouTube": "מ-YouTube",
-    "youtubeConnectDesc": "חבר את חשבון Google שלך לתוכן YouTube"
+    "youtubeConnectDesc": "חבר את חשבון Google שלך לתוכן YouTube",
+    "bannerTitle": "הביאו את התוכן שלכם",
+    "bannerSubtitle": "חברו IPTV, Plex או YouTube ושפרו עם דיבוב AI וכתוביות",
+    "bannerConnect": "התחבר עכשיו",
+    "bannerDismiss": "סגור"
   }
 }

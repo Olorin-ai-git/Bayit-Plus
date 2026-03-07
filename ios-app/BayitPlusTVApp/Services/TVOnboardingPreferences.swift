@@ -35,6 +35,11 @@ final class TVOnboardingPreferences {
         set { set(newValue, for: .primaryLanguage) }
     }
 
+    var byocBannerDismissed: Bool {
+        get { UserDefaults.standard.bool(forKey: key(for: .byocBannerDismissed)) }
+        set { UserDefaults.standard.set(newValue, forKey: key(for: .byocBannerDismissed)) }
+    }
+
     var isOnboarded: Bool {
         UserDefaults.standard.bool(forKey: key(for: .completed))
     }
@@ -116,7 +121,7 @@ final class TVOnboardingPreferences {
 
     private enum PrefKey: String {
         case completed, userName, culture, interests
-        case contentLanguages, primaryLanguage
+        case contentLanguages, primaryLanguage, byocBannerDismissed
     }
 
     private func key(for pref: PrefKey) -> String {

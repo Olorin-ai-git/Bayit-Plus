@@ -6404,6 +6404,15 @@
       "getStarted": "Commencer",
       "subtitle": "Personnalisons votre experience",
       "title": "Bienvenue sur Bayit+"
+    },
+    "byoc": {
+      "title": "Apportez Votre Propre Contenu",
+      "subtitle": "Connectez vos sources de contenu preferees et ameliorez-les avec le doublage IA, les sous-titres et plus",
+      "iptvDesc": "Chaines TV en direct depuis des listes M3U",
+      "plexDesc": "Votre bibliotheque multimedia personnelle",
+      "youtubeDesc": "Videos de vos abonnements",
+      "connectNow": "Connecter une Source",
+      "skipForNow": "Configurer Plus Tard"
     }
   },
   "pairing": {
@@ -6608,7 +6617,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -11506,6 +11518,10 @@
     "youtubeOpenApp": "Ouvrir dans YouTube",
     "youtubeAudioAINote": "Fonctions audio AI disponibles pendant la lecture",
     "fromYouTube": "Depuis YouTube",
-    "youtubeConnectDesc": "Connectez votre compte Google pour le contenu YouTube"
+    "youtubeConnectDesc": "Connectez votre compte Google pour le contenu YouTube",
+    "bannerTitle": "Apportez Votre Propre Contenu",
+    "bannerSubtitle": "Connectez IPTV, Plex ou YouTube et ameliorez avec le doublage IA et les sous-titres",
+    "bannerConnect": "Connecter Maintenant",
+    "bannerDismiss": "Ignorer"
   }
 }

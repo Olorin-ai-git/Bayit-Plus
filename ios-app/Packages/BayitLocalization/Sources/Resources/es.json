@@ -6142,6 +6142,15 @@
       "getStarted": "Empezar",
       "subtitle": "Personalicemos tu experiencia",
       "title": "Bienvenido a Bayit+"
+    },
+    "byoc": {
+      "title": "Trae Tu Propio Contenido",
+      "subtitle": "Conecta tus fuentes de contenido favoritas y mejoralas con doblaje IA, subtitulos y mas",
+      "iptvDesc": "Canales de TV en vivo desde listas M3U",
+      "plexDesc": "Tu biblioteca multimedia personal",
+      "youtubeDesc": "Videos de tus suscripciones",
+      "connectNow": "Conectar una Fuente",
+      "skipForNow": "Configurar Despues"
     }
   },
   "pairing": {
@@ -6279,7 +6288,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6291,7 +6304,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",
@@ -10724,6 +10740,10 @@
     "youtubeOpenApp": "Abrir en YouTube",
     "youtubeAudioAINote": "Funciones de audio AI disponibles durante la reproduccion",
     "fromYouTube": "Desde YouTube",
-    "youtubeConnectDesc": "Conecta tu cuenta de Google para contenido de YouTube"
+    "youtubeConnectDesc": "Conecta tu cuenta de Google para contenido de YouTube",
+    "bannerTitle": "Trae Tu Propio Contenido",
+    "bannerSubtitle": "Conecta IPTV, Plex o YouTube y mejora con doblaje IA y subtitulos",
+    "bannerConnect": "Conectar Ahora",
+    "bannerDismiss": "Descartar"
   }
 }

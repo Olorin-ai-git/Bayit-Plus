@@ -14,6 +14,7 @@ struct TVHomeView: View {
     @Environment(\.appConfiguration) private var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var featuredCollections: [CollectionDetail] = []
+    @State private var showBYOCSources = false
 
     var body: some View {
         Group {
@@ -58,6 +59,9 @@ struct TVHomeView: View {
             if coordinator.categoryBrowseActive {
                 coordinator.dismissCategoryBrowse()
             }
+        }
+        .fullScreenCover(isPresented: $showBYOCSources) {
+            TVBYOCSourceListView(onDismiss: { showBYOCSources = false })
         }
     }
 
@@ -107,6 +111,9 @@ struct TVHomeView: View {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
+
+            // BYOC connect banner (dismissable)
+            TVBYOCBannerView { showBYOCSources = true }
 
             // Shabbat banner
             TVShabbatBannerView()

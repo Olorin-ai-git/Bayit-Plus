@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -13,6 +14,7 @@ struct TVOnboardingView: View {
     let onComplete: () -> Void
 
     @State private var viewModel: TVOnboardingViewModel?
+    @State private var showBYOCSources = false
 
     var body: some View {
         ZStack {
@@ -89,6 +91,15 @@ struct TVOnboardingView: View {
         case .interests:
             TVOnboardingInterestsStep(viewModel: vm)
                 .transition(.move(edge: .trailing))
+
+        case .byoc:
+            TVOnboardingBYOCStep(viewModel: vm) {
+                showBYOCSources = true
+            }
+            .transition(.move(edge: .trailing))
+            .fullScreenCover(isPresented: $showBYOCSources) {
+                TVBYOCSourceListView(onDismiss: { showBYOCSources = false })
+            }
 
         case .voiceName:
             TVOnboardingVoiceStep(viewModel: vm)

@@ -5897,6 +5897,15 @@
       "name": "Name",
       "saving": "Saving your preferences...",
       "startWatching": "Start Watching"
+    },
+    "byoc": {
+      "title": "Bring Your Own Content",
+      "subtitle": "Connect your favorite content sources and enhance them with AI-powered dubbing, subtitles, and more",
+      "iptvDesc": "Live TV channels from M3U playlists",
+      "plexDesc": "Your personal media library",
+      "youtubeDesc": "Videos from your subscriptions",
+      "connectNow": "Connect a Source",
+      "skipForNow": "Set Up Later"
     }
   },
   "pairing": {
@@ -6042,7 +6051,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6054,7 +6067,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -9867,6 +9883,10 @@
     "youtubeOpenApp": "Open in YouTube",
     "youtubeAudioAINote": "Audio AI features available during playback",
     "fromYouTube": "From YouTube",
-    "youtubeConnectDesc": "Connect your Google account for YouTube content"
+    "youtubeConnectDesc": "Connect your Google account for YouTube content",
+    "bannerTitle": "Bring Your Own Content",
+    "bannerSubtitle": "Connect IPTV, Plex, or YouTube and enhance with AI dubbing and subtitles",
+    "bannerConnect": "Connect Now",
+    "bannerDismiss": "Dismiss"
   }
 }

@@ -6064,6 +6064,15 @@
       "getStarted": "开始使用",
       "subtitle": "让我们个性化您的体验",
       "title": "欢迎来到 Bayit+"
+    },
+    "byoc": {
+      "title": "自带内容",
+      "subtitle": "连接您喜爱的内容源，并通过AI配音、字幕等功能增强它们",
+      "iptvDesc": "来自M3U播放列表的直播电视频道",
+      "plexDesc": "您的个人媒体库",
+      "youtubeDesc": "来自您订阅的视频",
+      "connectNow": "连接来源",
+      "skipForNow": "稍后设置"
     }
   },
   "pairing": {
@@ -6195,8 +6204,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6208,7 +6226,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -10618,6 +10639,10 @@
     "youtubeOpenApp": "在YouTube中打开",
     "youtubeAudioAINote": "播放期间可使用音频AI功能",
     "fromYouTube": "来自YouTube",
-    "youtubeConnectDesc": "连接您的Google帐户以获取YouTube内容"
+    "youtubeConnectDesc": "连接您的Google帐户以获取YouTube内容",
+    "bannerTitle": "自带内容",
+    "bannerSubtitle": "连接IPTV、Plex或YouTube，并通过AI配音和字幕增强",
+    "bannerConnect": "立即连接",
+    "bannerDismiss": "关闭"
   }
 }

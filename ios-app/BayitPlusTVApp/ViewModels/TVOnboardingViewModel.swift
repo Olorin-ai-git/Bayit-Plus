@@ -2,17 +2,16 @@ import BayitCore
 import Foundation
 import Observation
 
-/// Steps in the onboarding flow.
 enum TVOnboardingStep: Int, CaseIterable, Sendable {
     case welcome = 0
     case language
     case culture
     case interests
+    case byoc
     case voiceName
     case complete
 }
 
-/// Content interest categories available during onboarding.
 enum TVContentInterest: String, CaseIterable, Identifiable, Sendable {
     case movies
     case series
@@ -49,7 +48,6 @@ enum TVContentInterest: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// ViewModel managing onboarding state and preference persistence.
 @MainActor
 @Observable
 final class TVOnboardingViewModel {

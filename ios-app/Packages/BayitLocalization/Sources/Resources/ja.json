@@ -6605,6 +6605,15 @@
       "getStarted": "始めましょう",
       "subtitle": "あなた好みにカスタマイズしましょう",
       "title": "Bayit+ へようこそ"
+    },
+    "byoc": {
+      "title": "自分のコンテンツを持ち込む",
+      "subtitle": "お気に入りのコンテンツソースを接続して、AI吹き替え、字幕などで強化しましょう",
+      "iptvDesc": "M3Uプレイリストからのライブテレビチャンネル",
+      "plexDesc": "あなたの個人メディアライブラリ",
+      "youtubeDesc": "登録チャンネルからの動画",
+      "connectNow": "ソースを接続",
+      "skipForNow": "後で設定"
     }
   },
   "pairing": {
@@ -11547,6 +11556,10 @@
     "youtubeOpenApp": "YouTubeで開く",
     "youtubeAudioAINote": "再生中にオーディオAI機能が利用可能です",
     "fromYouTube": "YouTubeから",
-    "youtubeConnectDesc": "YouTubeコンテンツ用にGoogleアカウントを接続"
+    "youtubeConnectDesc": "YouTubeコンテンツ用にGoogleアカウントを接続",
+    "bannerTitle": "自分のコンテンツを持ち込む",
+    "bannerSubtitle": "IPTV、Plex、またはYouTubeを接続してAI吹き替えと字幕で強化",
+    "bannerConnect": "今すぐ接続",
+    "bannerDismiss": "閉じる"
   }
 }
