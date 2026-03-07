@@ -116,7 +116,7 @@ struct OpenSubtitlesDownloadView: View {
         }
     }
 
-    private func failedSection(_ failed: [String]) -> some View {
+    private func failedSection(_ failed: [FailedTrack]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 Image(systemName: "exclamationmark.triangle.fill")
@@ -128,8 +128,8 @@ struct OpenSubtitlesDownloadView: View {
                     .foregroundStyle(DesignTokens.Text.primary)
             }
 
-            ForEach(failed, id: \.self) { language in
-                Text("• \(language)")
+            ForEach(failed, id: \.language) { track in
+                Text("- \(track.language): \(track.reason ?? "Unknown")")
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .padding(.leading, DesignTokens.Spacing.md)

@@ -24,6 +24,10 @@ extension OpenSubtitlesDownloadView {
                 self.error = localization.t("subtitles.rateLimitExceeded")
             } else if errorDescription.contains("decode") || errorDescription.contains("format") {
                 self.error = localization.t("subtitles.noAdditionalFound")
+            } else if errorDescription.contains("404") || errorDescription.contains("Not Found") {
+                self.error = localization.t("subtitles.noAdditionalFound")
+            } else if errorDescription.contains("422") || errorDescription.contains("Validation") {
+                self.error = localization.t("subtitles.noAdditionalFound")
             } else {
                 self.error = errorDescription
             }

@@ -134,6 +134,12 @@ struct TVOpenSubtitlesDownloadView: View {
                 self.error = "OpenSubtitles rate limit exceeded. Please wait and try again."
             } else if errorDescription.contains("decode") || errorDescription.contains("format") {
                 self.error = "No additional subtitles found for this content."
+            } else if errorDescription.contains("404") || errorDescription.contains("Not Found") {
+                self.error = "This content does not support external subtitles."
+            } else if errorDescription.contains("422") || errorDescription.contains("Validation") {
+                self.error = "This content does not support external subtitles."
+            } else if errorDescription.contains("IMDB") || errorDescription.contains("imdb") {
+                self.error = "No IMDB match found. External subtitles unavailable."
             } else {
                 self.error = errorDescription
             }

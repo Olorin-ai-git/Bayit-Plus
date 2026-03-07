@@ -224,7 +224,17 @@ async def fetch_external_subtitles(
 
     logger = get_logger(__name__)
 
-    content = await Content.get(content_id)
+    try:
+        content = await Content.get(content_id)
+    except Exception as e:
+        logger.error(
+            f"Failed to load content document: {e}",
+            extra={"content_id": content_id},
+        )
+        raise HTTPException(
+            status_code=404,
+            detail="Content not found or could not be loaded",
+        )
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
 

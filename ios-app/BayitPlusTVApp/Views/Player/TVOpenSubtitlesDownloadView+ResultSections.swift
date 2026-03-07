@@ -37,7 +37,7 @@ extension TVOpenSubtitlesDownloadView {
         }
     }
 
-    func failedSection(_ failed: [String]) -> some View {
+    func failedSection(_ failed: [FailedTrack]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 Image(systemName: "exclamationmark.triangle.fill")
@@ -49,8 +49,8 @@ extension TVOpenSubtitlesDownloadView {
                     .foregroundStyle(DesignTokens.Text.primary)
             }
 
-            ForEach(failed, id: \.self) { language in
-                Text("- \(language)")
+            ForEach(failed, id: \.language) { track in
+                Text("- \(track.language): \(track.reason ?? "Unknown")")
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .padding(.leading, TVDesignTokens.Spacing.lg)
