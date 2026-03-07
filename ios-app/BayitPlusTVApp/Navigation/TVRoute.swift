@@ -24,6 +24,10 @@ enum TVRoute: Hashable, Identifiable {
     case audiobookDetail(audiobookId: String)
     /// Navigate to full audiobooks listing.
     case audiobooks
+    /// Navigate to audiobook browse/discovery grid.
+    case audiobookBrowse
+    /// Navigate to podcast browse/discovery grid.
+    case podcastBrowse
     /// Show voice assistant overlay.
     case voiceAssistant
     /// Show help center.
@@ -85,6 +89,10 @@ enum TVRoute: Hashable, Identifiable {
             hasher.combine(audiobookId)
         case .audiobooks:
             hasher.combine("audiobooks")
+        case .audiobookBrowse:
+            hasher.combine("audiobookBrowse")
+        case .podcastBrowse:
+            hasher.combine("podcastBrowse")
         case .voiceAssistant:
             hasher.combine("voiceAssistant")
         case .help:
@@ -140,6 +148,10 @@ enum TVRoute: Hashable, Identifiable {
         case let (.audiobookDetail(lId), .audiobookDetail(rId)):
             return lId == rId
         case (.audiobooks, .audiobooks):
+            return true
+        case (.audiobookBrowse, .audiobookBrowse):
+            return true
+        case (.podcastBrowse, .podcastBrowse):
             return true
         case (.voiceAssistant, .voiceAssistant):
             return true

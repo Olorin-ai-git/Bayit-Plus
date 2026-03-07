@@ -6,9 +6,10 @@ import SwiftUI
 /// Viewing history screen for tvOS - shows what user has watched.
 struct TVViewingHistoryView: View {
     @Environment(LocalizationManager.self) var localization
+    @Environment(TVRepositoryProvider.self) var repos
     let onDismiss: () -> Void
 
-    @State private var historyItems: [HistoryItem] = []
+    @State private var historyItems: [WatchHistoryItem] = []
     @State private var isLoading = true
     @State private var error: String?
     @State private var selectedFilter: HistoryFilter = .all
@@ -27,32 +28,37 @@ struct TVViewingHistoryView: View {
                 }
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Viewing History")
+            .navigationTitle(localization.t("profile.viewingHistory"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
+                    Button(localization.t("common.done")) {
                         onDismiss()
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button("All") { selectedFilter = .all }
-                        Button("Movies") { selectedFilter = .movies }
-                        Button("TV Shows") { selectedFilter = .shows }
-                        Button("Live TV") { selectedFilter = .live }
-                    } label: {
-                        HStack {
-                            Text(selectedFilter.rawValue)
-                            Image(systemName: "chevron.down")
-                        }
-                    }
+                    filterMenu
                 }
             }
         }
         .onExitCommand { onDismiss() }
         .task {
             await loadHistory()
+        }
+    }
+
+    private var filterMenu: some View {
+        Menu {
+            ForEach(HistoryFilter.allCases, id: \.self) { filter in
+                Button(filter.label(localization)) {
+                    selectedFilter = filter
+                }
+            }
+        } label: {
+            HStack {
+                Text(selectedFilter.label(localization))
+                Image(systemName: "chevron.down")
+            }
         }
     }
 
@@ -65,7 +71,7 @@ struct TVViewingHistoryView: View {
         .listStyle(.grouped)
     }
 
-    var filteredItems: [HistoryItem] {
+    var filteredItems: [WatchHistoryItem] {
         switch selectedFilter {
         case .all:
             return historyItems
@@ -84,42 +90,12 @@ struct TVViewingHistoryView: View {
         isLoading = true
         error = nil
 
-        // Simulate loading - replace with real API call
-        try? await Task.sleep(for: .seconds(1))
-
-        // Mock data for demonstration
-        historyItems = [
-            .init(
-                id: "1",
-                contentId: "c1",
-                title: "The Marvelous Mrs. Maisel",
-                thumbnail: "https://via.placeholder.com/300x169",
-                type: "series",
-                year: 2023,
-                progress: 0.65,
-                watchedAt: Date().addingTimeInterval(-3600)
-            ),
-            .init(
-                id: "2",
-                contentId: "c2",
-                title: "Shtisel",
-                thumbnail: "https://via.placeholder.com/300x169",
-                type: "series",
-                year: 2021,
-                progress: 1.0,
-                watchedAt: Date().addingTimeInterval(-7200)
-            ),
-            .init(
-                id: "3",
-                contentId: "c3",
-                title: "Fauda",
-                thumbnail: "https://via.placeholder.com/300x169",
-                type: "series",
-                year: 2022,
-                progress: 0.45,
-                watchedAt: Date().addingTimeInterval(-86400)
-            ),
-        ]
+        do {
+            let response = try await repos.media.fetchWatchHistory(page: 1, limit: 50)
+            historyItems = response.items
+        } catch {
+            self.error = localization.t("profile.noViewingHistory")
+        }
 
         isLoading = false
     }

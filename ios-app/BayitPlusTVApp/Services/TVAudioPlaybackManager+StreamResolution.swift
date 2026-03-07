@@ -1,4 +1,5 @@
 #if os(tvOS)
+    import AVFoundation
     import BayitCore
     import BayitMedia
     import Foundation
@@ -85,6 +86,7 @@
             self.subtitle = subtitle
             self.artworkURL = artworkURL
 
+            configureAudioSession(for: contentType)
             mediaPlayer.load(url: url, contentType: contentType)
 
             // Load resume position for seekable content before starting playback
@@ -143,6 +145,29 @@
                 currentTime: mediaPlayer.currentTime,
                 rate: mediaPlayer.rate
             )
+        }
+
+        /// Configure AVAudioSession for the given content type.
+        /// Uses `.playback` category for background audio continuation.
+        /// Podcasts and audiobooks use `.spokenAudio` mode; video uses `.moviePlayback`.
+        /// Spatial audio is automatically enabled on tvOS when AirPods are connected
+        /// and `.moviePlayback` mode is active - no explicit API call needed.
+        func configureAudioSession(for contentType: MediaContentType) {
+            let session = AVAudioSession.sharedInstance()
+            do {
+                // Use .moviePlayback for spatial audio support with AirPods,
+                // .spokenAudio for spoken word content (podcasts/audiobooks)
+                let mode: AVAudioSession.Mode = contentType.isSeekable ? .spokenAudio : .moviePlayback
+                try session.setCategory(.playback, mode: mode, options: [.allowAirPlay])
+                try session.setActive(true)
+
+                logger.info("Audio session configured", context: [
+                    "mode": mode.rawValue,
+                    "contentType": contentType.rawValue,
+                ])
+            } catch {
+                logger.error("Failed to configure audio session", error: error)
+            }
         }
 
         func resetState() {

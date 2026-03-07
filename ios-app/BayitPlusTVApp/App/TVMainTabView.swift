@@ -11,6 +11,7 @@
         @Environment(TVNavigationCoordinator.self) var coordinator
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
+        @Environment(TVOnboardingPreferences.self) var prefs
         @State var dockViewModel: WidgetDockViewModel?
         @State var showLanguagePicker = false
         @State var widgetAutoHideTask: Task<Void, Never>?
@@ -30,9 +31,11 @@
                         .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
                         .tag(TVTab.home)
 
-                    TVLiveTVView()
-                        .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
-                        .tag(TVTab.liveTV)
+                    if prefs.showLiveTV {
+                        TVLiveTVView()
+                            .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
+                            .tag(TVTab.liveTV)
+                    }
 
                     TVVODView()
                         .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
@@ -42,7 +45,7 @@
                         .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
                         .tag(TVTab.zehAni)
 
-                    TVPodcastsView()
+                    TVListenView()
                         .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
                         .tag(TVTab.podcasts)
 

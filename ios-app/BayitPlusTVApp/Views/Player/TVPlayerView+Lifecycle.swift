@@ -178,31 +178,4 @@ extension TVPlayerView {
             )
         }
     }
-
-    // MARK: - Cleanup
-
-    @MainActor
-    func cleanup() {
-        state.progressTrackingTask?.cancel()
-        state.progressTrackingTask = nil
-        Task { await saveProgress() }
-        mediaPlayer.pause()
-        state.liveDubbingVM?.cleanup()
-        state.liveSubtitlesVM?.cleanup()
-        state.triviaVM?.cleanup()
-        state.triviaVM?.disconnectLiveTrivia()
-        state.catchUpVM?.reset()
-        state.catchUpVM = nil
-        state.interactionVM = nil
-        state.voiceService = nil
-        if state.dialogueVM?.isActive == true {
-            Task { await state.dialogueVM?.endSession() }
-        }
-        state.dialogueVM = nil
-        if state.sharedVM?.isActive == true {
-            Task { await state.sharedVM?.endSharedInteraction() }
-        }
-        state.sharedVM = nil
-        state.showSharedInteraction = false
-    }
 }

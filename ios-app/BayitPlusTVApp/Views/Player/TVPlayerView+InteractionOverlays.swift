@@ -102,6 +102,47 @@ extension TVPlayerView {
         }
     }
 
+    // MARK: - Interactive Subtitles Toggle
+
+    func toggleInteractiveSubtitles() {
+        if state.interactiveSubtitleVM == nil {
+            state.interactiveSubtitleVM = TVWordInteractionViewModel(
+                repository: repos.subtitle
+            )
+        }
+        if let vm = state.interactiveSubtitleVM {
+            vm.isEnabled.toggle()
+        }
+    }
+
+    // MARK: - SharePlay
+
+    func activateSharePlay() async {
+        if state.sharePlayService == nil {
+            state.sharePlayService = TVSharePlayService()
+        }
+        guard let service = state.sharePlayService else { return }
+        await service.startActivity(
+            contentId: contentId,
+            contentType: contentType.rawValue,
+            contentTitle: ""
+        )
+        state.showSharePlayOverlay = true
+    }
+
+    @ViewBuilder
+    var sharePlayOverlay: some View {
+        if state.showSharePlayOverlay, let service = state.sharePlayService {
+            TVSharePlayOverlay(
+                service: service,
+                onEnd: {
+                    Task { await service.leaveSession() }
+                    state.showSharePlayOverlay = false
+                }
+            )
+        }
+    }
+
     // MARK: - Volume Ducking
 
     func duckVolume() {

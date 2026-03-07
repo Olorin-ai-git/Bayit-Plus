@@ -2824,7 +2824,7 @@
     },
     "expandMore": "Expand More",
     "goBack": "Go Back",
-    "continueListening": "\u7d9a\u304d\u3092\u805e\u304f",
+    "continueListening": "続きを聞く",
     "loadingAudiobooks": "Loading audiobooks...",
     "narratedBy": "Narrated by",
     "pause": "Pause",
@@ -6539,7 +6539,12 @@
     "chooseAvatar": "アバターを選択",
     "enableVoice": "音声コマンドを有効にする",
     "finish": "完了",
-    "language": "言語",
+    "language": {
+      "content": "コンテンツ言語",
+      "primary": "主要言語",
+      "subtitle": "ご希望の言語を選択してください",
+      "title": "言語を選択"
+    },
     "namePlaceholder": "名前を入力",
     "next": "次へ",
     "profileTitle": "プロフィールを設定",
@@ -6550,7 +6555,57 @@
     "voiceTitle": "音声コントロール",
     "wakeWord": "ウェイクワード",
     "welcomeSubtitle": "エクスペリエンスをカスタマイズしましょう",
-    "welcomeTitle": "Bayit+へようこそ"
+    "welcomeTitle": "Bayit+へようこそ",
+    "complete": {
+      "culture": "文化",
+      "interests": "興味",
+      "language": "言語",
+      "name": "名前",
+      "saving": "設定を保存中...",
+      "startWatching": "視聴を開始",
+      "subtitle": "パーソナライズされた体験の準備ができました",
+      "title": "準備完了！"
+    },
+    "culture": {
+      "american": "アメリカン",
+      "european": "ヨーロピアン",
+      "israeli": "イスラエル",
+      "mixed": "ミックス",
+      "subtitle": "コンテンツの好みに合った文化を選択してください",
+      "title": "文化を選択"
+    },
+    "interest": {
+      "audiobooks": "オーディオブック",
+      "kids": "キッズ",
+      "kidsContent": "キッズ",
+      "liveTV": "ライブTV",
+      "movies": "映画",
+      "music": "音楽",
+      "news": "ニュース",
+      "podcasts": "ポッドキャスト",
+      "radio": "ラジオ",
+      "series": "シリーズ",
+      "sports": "スポーツ"
+    },
+    "interests": {
+      "selected": "%d 件選択済み",
+      "subtitle": "お好みのコンテンツを3つ以上選択してください",
+      "title": "何がお好きですか？"
+    },
+    "skip": "スキップ",
+    "voice": {
+      "micUnavailable": "マイクが利用できません",
+      "noAudio": "音声が検出されません",
+      "orType": "または名前を入力",
+      "subtitle": "名前を話すか入力してください",
+      "title": "お名前は？",
+      "useTextInput": "テキスト入力を使用"
+    },
+    "welcome": {
+      "getStarted": "始めましょう",
+      "subtitle": "あなた好みにカスタマイズしましょう",
+      "title": "Bayit+ へようこそ"
+    }
   },
   "pairing": {
     "codePlaceholder": "ペアリングコードを入力",
@@ -6991,7 +7046,14 @@
       "yourTurn": "[JA] Your Turn",
       "waitingForTurn": "[JA] Waiting for your turn..."
     },
-    "streamLoadFailed": "[JA] Failed to load stream"
+    "streamLoadFailed": "[JA] Failed to load stream",
+    "interactive": {
+      "addToGlossary": "用語集に追加",
+      "close": "閉じる",
+      "tapToTranslate": "単語をタップして翻訳",
+      "toggle": "インタラクティブ字幕",
+      "translating": "翻訳中..."
+    }
   },
   "playlist": {
     "title": "マイリスト",
@@ -7779,7 +7841,14 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "ウィジェット",
     "widgetsDesc": "ウィジェットを管理する",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "addProfile": "プロフィールを追加",
+    "addProfileSubtitle": "家族用の新しいプロフィールを作成",
+    "chooseAvatar": "アバターを選択",
+    "loadingProfiles": "プロフィールを読み込み中...",
+    "switchProfile": "プロフィールを切り替え",
+    "switchProfileDesc": "別のプロフィールに切り替え",
+    "whosWatching": "誰が見ていますか？"
   },
   "mfa": {
     "title": "多要素認証",
@@ -8351,7 +8420,19 @@
       "clearSearchHistory": "[JA] Clear Search History"
     },
     "security": "セキュリティ",
-    "accessibility": "[JA] Accessibility",
+    "accessibility": {
+      "audioVisual": "オーディオとビジュアル",
+      "boldText": "太字テキスト",
+      "closedCaptions": "クローズドキャプション",
+      "colorBlind": "色覚サポートモード",
+      "description": "視聴体験をカスタマイズ",
+      "display": "ディスプレイ",
+      "highContrast": "ハイコントラスト",
+      "largeText": "大きなテキスト",
+      "largeTextDesc": "アプリ全体のテキストサイズを拡大",
+      "reduceMotion": "モーションを減らす",
+      "title": "アクセシビリティ"
+    },
     "advanced": "詳細設定",
     "about": {
       "title": "[JA] About",
@@ -8511,7 +8592,13 @@
     "unlinkConfirm": "リンク解除",
     "connected": "接続済み",
     "notConnected": "未接続",
-    "help": "[JA] Help & Support",
+    "help": {
+      "contactSupport": "サポートに連絡",
+      "loading": "ヘルプを読み込み中...",
+      "noFaqs": "FAQはありません",
+      "subtitle": "回答を見つけてサポートを受ける",
+      "title": "ヘルプとサポート"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -9936,7 +10023,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "キャンセル",
+    "chooseMethod": "一緒に視聴",
+    "chooseMethodDescription": "他の人との視聴方法を選択"
   },
   "widget": {
     "103fmEpisodes": "103FMエピソード",
@@ -11251,7 +11341,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "閉じる",
+    "empty": "保存された単語はまだありません",
+    "emptyHint": "字幕の単語をタップして保存",
+    "newWords": "新しい単語",
+    "reviewedWords": "復習済みの単語",
+    "title": "語彙",
+    "wordCount": "{{count}} 語"
   },
   "wallet": {
     "earned": "Earned",
@@ -11377,5 +11474,27 @@
       "title": "お問い合わせリクエスト",
       "noRequests": "まだお問い合わせリクエストはありません"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "バックグラウンド再生",
+    "sessionCategory": "再生",
+    "spatialEnabled": "空間オーディオ"
+  },
+  "sharePlay": {
+    "bayitParty": "Bayit+ パーティー",
+    "bayitPartyDescription": "Bayit+ ウォッチパーティーに友達を招待",
+    "end": "SharePlayを終了",
+    "faceTimeDescription": "FaceTimeで友達と一緒に視聴",
+    "inviteDescription": "友達との視聴方法を選択",
+    "synced": "同期済み",
+    "syncing": "同期中...",
+    "title": "SharePlay",
+    "viaFaceTime": "FaceTime経由のSharePlay",
+    "watchTogether": "一緒に視聴",
+    "watching": "{{count}} 人が視聴中"
+  },
+  "network": {
+    "connectionLost": "接続が切断されました",
+    "reconnecting": "再接続中..."
   }
 }

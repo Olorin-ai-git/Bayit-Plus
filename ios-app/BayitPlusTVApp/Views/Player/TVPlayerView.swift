@@ -14,6 +14,8 @@ struct TVPlayerView: View {
     @Environment(TVRepositoryProvider.self) var repos
     @Environment(AuthManager.self) var authManager
 
+    @Environment(NetworkMonitor.self) var networkMonitor
+    @Environment(TVOnboardingPreferences.self) var onboardingPrefs
     @Environment(\.dismiss) var dismiss
 
     let contentId: String
@@ -59,6 +61,14 @@ struct TVPlayerView: View {
                 if mediaPlayer.state == .preBuffering {
                     preBufferOverlay
                 }
+            }
+        }
+        .overlay { networkDisconnectedOverlay }
+        .onChange(of: networkMonitor.isConnected) { _, connected in
+            if !connected {
+                mediaPlayer.pause()
+            } else if state.streamError == nil, !state.isResolvingStream {
+                mediaPlayer.play()
             }
         }
         .focusScope(playerFocus)
@@ -132,6 +142,12 @@ struct TVPlayerView: View {
                 onDismiss: { state.showQuiz = false }
             )
         }
+        .fullScreenCover(isPresented: $state.showVocabulary) {
+            TVVocabularyTrackerView(
+                savedWords: state.interactiveSubtitleVM?.savedWords ?? [],
+                onDismiss: { state.showVocabulary = false }
+            )
+        }
     }
 
     // MARK: - Player Content Layer
@@ -142,13 +158,17 @@ struct TVPlayerView: View {
             .ignoresSafeArea()
 
         triviaOverlay.allowsHitTesting(false)
-        subtitleOverlay.allowsHitTesting(false)
+        subtitleOverlay.allowsHitTesting(
+            state.interactiveSubtitleVM?.isEnabled != true
+                ? false : true
+        )
         splitSubtitleOverlay.allowsHitTesting(false)
         liveSubtitleOverlay.allowsHitTesting(false)
         translationOverlay
         catchUpAutoPromptOverlay
         interactiveMomentOverlay.allowsHitTesting(false)
         sharedInteractionOverlay
+        sharePlayOverlay
 
         if state.showControlButtons {
             controlsOverlayLayer

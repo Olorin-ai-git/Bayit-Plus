@@ -109,6 +109,7 @@ extension TVMovieDetailView {
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .focusSection()
     }
 
     func descriptionSection(_ detail: ContentDetail) -> some View {
@@ -137,5 +138,6 @@ extension TVMovieDetailView {
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .frame(maxWidth: 1200, alignment: .leading)
+        .focusSection()
     }
 }

@@ -7,13 +7,13 @@ import Foundation
 /// Data is written to `UserDefaults(suiteName: "group.tv.bayit.plus")`
 /// and read by `TopShelfProvider` in the extension target.
 enum TopShelfDataProvider {
-
     private static let logger = BayitLogger(category: "TopShelfData")
 
     // MARK: - Shared Keys
 
     static let continueWatchingKey = "topshelf.continueWatching"
     static let trendingKey = "topshelf.trending"
+    static let liveChannelsKey = "topshelf.liveChannels"
 
     // MARK: - Write (Main App)
 
@@ -41,6 +41,18 @@ enum TopShelfDataProvider {
         }
     }
 
+    /// Cache live channel items to shared storage for the Top Shelf extension.
+    static func cacheLiveChannels(_ items: [TopShelfCachedItem]) {
+        guard let defaults = sharedDefaults else { return }
+        do {
+            let data = try JSONEncoder().encode(items)
+            defaults.set(data, forKey: liveChannelsKey)
+            logger.info("Cached \(items.count) live channels for Top Shelf")
+        } catch {
+            logger.error("Failed to encode live channels for Top Shelf: \(error)")
+        }
+    }
+
     // MARK: - Read (Extension)
 
     /// Load cached continue watching items from shared storage.
@@ -51,6 +63,11 @@ enum TopShelfDataProvider {
     /// Load cached trending items from shared storage.
     static func loadTrending() -> [TopShelfCachedItem] {
         decode(forKey: trendingKey)
+    }
+
+    /// Load cached live channel items from shared storage.
+    static func loadLiveChannels() -> [TopShelfCachedItem] {
+        decode(forKey: liveChannelsKey)
     }
 
     // MARK: - Private

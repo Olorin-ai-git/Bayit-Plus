@@ -3061,7 +3061,7 @@
     },
     "expandMore": "Expand More",
     "goBack": "Go Back",
-    "continueListening": "\u0938\u0941\u0928\u0928\u093e \u091c\u093e\u0930\u0940 \u0930\u0916\u0947\u0902",
+    "continueListening": "सुनना जारी रखें",
     "loadingAudiobooks": "Loading audiobooks...",
     "narratedBy": "Narrated by",
     "pause": "Pause",
@@ -5999,7 +5999,12 @@
     "chooseAvatar": "अपना अवतार चुनें",
     "enableVoice": "वॉइस कमांड सक्षम करें",
     "finish": "समाप्त",
-    "language": "भाषा",
+    "language": {
+      "content": "सामग्री भाषाएँ",
+      "primary": "प्राथमिक भाषा",
+      "subtitle": "अपनी पसंदीदा भाषा चुनें",
+      "title": "अपनी भाषा चुनें"
+    },
     "namePlaceholder": "अपना नाम दर्ज करें",
     "next": "अगला",
     "profileTitle": "अपनी प्रोफ़ाइल सेट करें",
@@ -6010,7 +6015,57 @@
     "voiceTitle": "वॉइस कंट्रोल",
     "wakeWord": "वेक वर्ड",
     "welcomeSubtitle": "आइए आपके अनुभव को वैयक्तिकृत करें",
-    "welcomeTitle": "Bayit+ में आपका स्वागत है"
+    "welcomeTitle": "Bayit+ में आपका स्वागत है",
+    "complete": {
+      "culture": "संस्कृति",
+      "interests": "रुचियाँ",
+      "language": "भाषा",
+      "name": "नाम",
+      "saving": "आपकी प्राथमिकताएँ सहेज रहे हैं...",
+      "startWatching": "देखना शुरू करें",
+      "subtitle": "आपका व्यक्तिगत अनुभव तैयार है",
+      "title": "सब तैयार है!"
+    },
+    "culture": {
+      "american": "अमेरिकी",
+      "european": "यूरोपियन",
+      "israeli": "इज़राइली",
+      "mixed": "मिश्रित",
+      "subtitle": "अपनी सामग्री पसंद के अनुसार संस्कृति चुनें",
+      "title": "अपनी संस्कृति चुनें"
+    },
+    "interest": {
+      "audiobooks": "ऑडियोबुक्स",
+      "kids": "बच्चे",
+      "kidsContent": "बच्चे",
+      "liveTV": "लाइव टीवी",
+      "movies": "फिल्में",
+      "music": "संगीत",
+      "news": "समाचार",
+      "podcasts": "पॉडकास्ट",
+      "radio": "रेडियो",
+      "series": "सीरीज़",
+      "sports": "खेल"
+    },
+    "interests": {
+      "selected": "%d चयनित",
+      "subtitle": "कम से कम 3 सामग्री प्रकार चुनें",
+      "title": "आपको क्या पसंद है?"
+    },
+    "skip": "छोड़ें",
+    "voice": {
+      "micUnavailable": "माइक्रोफ़ोन उपलब्ध नहीं है",
+      "noAudio": "कोई ऑडियो नहीं मिला",
+      "orType": "या अपना नाम टाइप करें",
+      "subtitle": "अपना नाम बोलें या नीचे टाइप करें",
+      "title": "हम आपको क्या बुलाएँ?",
+      "useTextInput": "टेक्स्ट इनपुट का उपयोग करें"
+    },
+    "welcome": {
+      "getStarted": "शुरू करें",
+      "subtitle": "आपके अनुभव को व्यक्तिगत बनाएँ",
+      "title": "Bayit+ में आपका स्वागत है"
+    }
   },
   "pairing": {
     "codePlaceholder": "पेयरिंग कोड दर्ज करें",
@@ -6147,7 +6202,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6159,7 +6218,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -6415,7 +6477,14 @@
       "yourTurn": "[HI] Your Turn",
       "waitingForTurn": "[HI] Waiting for your turn..."
     },
-    "streamLoadFailed": "[HI] Failed to load stream"
+    "streamLoadFailed": "[HI] Failed to load stream",
+    "interactive": {
+      "addToGlossary": "शब्दकोश में जोड़ें",
+      "close": "बंद करें",
+      "tapToTranslate": "अनुवाद के लिए शब्द पर टैप करें",
+      "toggle": "इंटरएक्टिव सबटाइटल",
+      "translating": "अनुवाद हो रहा है..."
+    }
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -7117,7 +7186,14 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "विजेट",
     "widgetsDesc": "अपने विजेट प्रबंधित करें",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "addProfile": "प्रोफ़ाइल जोड़ें",
+    "addProfileSubtitle": "अपने घर के लिए नया प्रोफ़ाइल बनाएँ",
+    "chooseAvatar": "अवतार चुनें",
+    "loadingProfiles": "प्रोफ़ाइल लोड हो रहे हैं...",
+    "switchProfile": "प्रोफ़ाइल बदलें",
+    "switchProfileDesc": "अलग प्रोफ़ाइल पर स्विच करें",
+    "whosWatching": "कौन देख रहा है?"
   },
   "mfa": {
     "title": "बहु-कारक प्रमाणीकरण",
@@ -7679,7 +7755,19 @@
       "title": "शीर्षक",
       "videos": "वीडियो"
     },
-    "accessibility": "[HI] Accessibility",
+    "accessibility": {
+      "audioVisual": "ऑडियो और विज़ुअल",
+      "boldText": "बोल्ड टेक्स्ट",
+      "closedCaptions": "क्लोज़्ड कैप्शन",
+      "colorBlind": "कलर ब्लाइंड मोड",
+      "description": "अपने देखने के अनुभव को अनुकूलित करें",
+      "display": "डिस्प्ले",
+      "highContrast": "हाई कॉन्ट्रास्ट",
+      "largeText": "बड़ा टेक्स्ट",
+      "largeTextDesc": "ऐप में टेक्स्ट का आकार बढ़ाएँ",
+      "reduceMotion": "मोशन कम करें",
+      "title": "एक्सेसिबिलिटी"
+    },
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "खाता",
@@ -7727,7 +7815,13 @@
     "unlinkConfirm": "अनलिंक करें",
     "connected": "कनेक्टेड",
     "notConnected": "कनेक्ट नहीं है",
-    "help": "[HI] Help & Support",
+    "help": {
+      "contactSupport": "सहायता से संपर्क करें",
+      "loading": "सहायता लोड हो रही है...",
+      "noFaqs": "कोई FAQ उपलब्ध नहीं",
+      "subtitle": "उत्तर खोजें और सहायता प्राप्त करें",
+      "title": "सहायता और समर्थन"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7759,7 +7853,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "[HI] Audio",
+    "audio": {
+      "description": "ऑडियो प्राथमिकताएँ कॉन्फ़िगर करें",
+      "dubbing": "डबिंग",
+      "dubbingLanguage": "डबिंग भाषा",
+      "preferDubbed": "डब्ड ऑडियो को प्राथमिकता दें",
+      "preferredLanguage": "पसंदीदा भाषा",
+      "processing": "प्रोसेसिंग",
+      "quality": "ऑडियो गुणवत्ता",
+      "title": "ऑडियो सेटिंग्स",
+      "volumeNormDesc": "सामग्री में वॉल्यूम सामान्य करें",
+      "volumeNormalization": "वॉल्यूम नॉर्मलाइज़ेशन"
+    },
     "mediaSection": "[HI] Media",
     "privacyData": "[HI] Privacy & Data",
     "general": "[HI] General",
@@ -9010,7 +9115,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "रद्द करें",
+    "chooseMethod": "साथ में देखें",
+    "chooseMethodDescription": "दूसरों के साथ देखने का तरीका चुनें"
   },
   "widget": {
     "103fmEpisodes": "103FM एपिसोड",
@@ -10325,7 +10433,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "बंद करें",
+    "empty": "अभी तक कोई शब्द सहेजा नहीं गया",
+    "emptyHint": "शब्दों को सहेजने के लिए सबटाइटल में टैप करें",
+    "newWords": "नए शब्द",
+    "reviewedWords": "समीक्षित शब्द",
+    "title": "शब्दावली",
+    "wordCount": "{{count}} शब्द"
   },
   "wallet": {
     "earned": "Earned",
@@ -10451,5 +10566,27 @@
       "title": "संपर्क अनुरोध",
       "noRequests": "अभी तक कोई संपर्क अनुरोध नहीं"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "बैकग्राउंड प्लेबैक",
+    "sessionCategory": "प्लेबैक",
+    "spatialEnabled": "स्पेशल ऑडियो"
+  },
+  "sharePlay": {
+    "bayitParty": "Bayit+ पार्टी",
+    "bayitPartyDescription": "दोस्तों को Bayit+ वॉच पार्टी में आमंत्रित करें",
+    "end": "SharePlay समाप्त करें",
+    "faceTimeDescription": "FaceTime पर दोस्तों के साथ देखें",
+    "inviteDescription": "दोस्तों के साथ देखने का तरीका चुनें",
+    "synced": "सभी सिंक हो गया",
+    "syncing": "सिंक हो रहा है...",
+    "title": "SharePlay",
+    "viaFaceTime": "FaceTime के ज़रिए SharePlay",
+    "watchTogether": "साथ में देखें",
+    "watching": "{{count}} देख रहे हैं"
+  },
+  "network": {
+    "connectionLost": "कनेक्शन टूट गया",
+    "reconnecting": "पुनः कनेक्ट हो रहा है..."
   }
 }

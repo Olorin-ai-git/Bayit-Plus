@@ -112,6 +112,11 @@ struct TVSearchView: View {
         } else if vm.hasSearched && vm.results.isEmpty {
             emptyState(vm)
         } else if !vm.results.isEmpty {
+            TVRecentSearchesView(
+                recentSearches: vm.recentSearches,
+                onSelect: { searchText = $0; vm.selectSuggestion($0) },
+                onClear: { vm.clearRecentSearches() }
+            )
             TVSearchResultsGridView(
                 results: vm.results, totalResults: vm.totalResults,
                 query: searchText,

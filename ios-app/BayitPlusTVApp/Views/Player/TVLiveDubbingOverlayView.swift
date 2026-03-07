@@ -65,9 +65,25 @@ struct TVLiveDubbingOverlayView: View {
             languagePicker
 
             if viewModel.isEnabled {
+                audioMixerSection
                 statusBadges
             }
         }
+    }
+
+    // MARK: - Audio Mixer
+
+    private var audioMixerSection: some View {
+        TVDubbingMixerView(
+            balance: Binding(
+                get: { viewModel.dubbedVolume / (viewModel.originalVolume + viewModel.dubbedVolume) },
+                set: { newBalance in
+                    viewModel.dubbedVolume = newBalance
+                    viewModel.originalVolume = 1.0 - newBalance
+                }
+            ),
+            isActive: viewModel.isEnabled
+        )
     }
 
     // MARK: - Toggle
@@ -123,7 +139,8 @@ struct TVLiveDubbingOverlayView: View {
     @ViewBuilder
     private var languagePicker: some View {
         if let languages = viewModel.availability?.supportedLanguages,
-           !languages.isEmpty {
+           !languages.isEmpty
+        {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(languages, id: \.self) { language in
@@ -151,42 +168,15 @@ struct TVLiveDubbingOverlayView: View {
 
     private var statusBadges: some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            syncDelayBadge
-            qualityTierBadge
-        }
-    }
-
-    // MARK: - Sync Delay Badge
-
-    @ViewBuilder
-    private var syncDelayBadge: some View {
-        if viewModel.syncDelayMs > 0 {
-            GlassBadge(
-                text: "Sync: \(viewModel.syncDelayMs)ms",
-                variant: .info
-            )
-            .accessibilityLabel("Sync delay: \(viewModel.syncDelayMs) milliseconds")
-        }
-    }
-
-    // MARK: - Quality Tier Badge
-
-    @ViewBuilder
-    private var qualityTierBadge: some View {
-        if let tier = viewModel.qualityTier {
-            GlassBadge(
-                text: tier.displayName,
-                variant: badgeVariant(for: tier)
-            )
-            .accessibilityLabel("Quality: \(tier.displayName)")
-        }
-    }
-
-    private func badgeVariant(for tier: DubbingQualityTier) -> GlassBadge.Variant {
-        switch tier {
-        case .standard: return .primary
-        case .premium: return .info
-        case .ultra: return .success
+            if viewModel.syncDelayMs > 0 {
+                GlassBadge(text: "Sync: \(viewModel.syncDelayMs)ms", variant: .info)
+            }
+            if let tier = viewModel.qualityTier {
+                GlassBadge(
+                    text: tier.displayName,
+                    variant: tier == .ultra ? .success : (tier == .premium ? .info : .primary)
+                )
+            }
         }
     }
 }

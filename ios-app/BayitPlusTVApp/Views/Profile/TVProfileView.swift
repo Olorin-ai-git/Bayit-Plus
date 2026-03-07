@@ -99,6 +99,11 @@ struct TVProfileView: View {
                 TVProfileAdminSection(authManager: authManager, localization: localization)
             }
 
+            TVProfileSwitchProfileSection(
+                localization: localization,
+                onSwitchProfile: { switchProfile() }
+            )
+
             TVProfileSignOutSection(localization: localization, onSignOut: { signOut() })
         }
         .listStyle(.grouped)
@@ -161,9 +166,17 @@ struct TVProfileView: View {
 
     // MARK: - Actions
 
+    private func switchProfile() {
+        coordinator.profileSelected = false
+        coordinator.selectedProfileId = nil
+        coordinator.selectedTab = .home
+    }
+
     private func signOut() {
         Task {
             await authManager.signOut()
+            coordinator.profileSelected = false
+            coordinator.selectedProfileId = nil
             coordinator.showingAuth = true
             coordinator.selectedTab = .home
         }

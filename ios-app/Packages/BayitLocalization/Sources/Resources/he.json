@@ -3115,7 +3115,7 @@
     "sortOrder": "סדר",
     "subscription": "מנוי",
     "by": "By",
-    "continueListening": "\u05d4\u05de\u05e9\u05da \u05dc\u05d4\u05d0\u05d6\u05d9\u05df",
+    "continueListening": "המשך להאזין",
     "loadingAudiobooks": "Loading audiobooks...",
     "speed": "Speed:"
   },
@@ -6047,7 +6047,12 @@
     "chooseAvatar": "בחר את האווטאר שלך",
     "enableVoice": "הפעל פקודות קוליות",
     "finish": "סיום",
-    "language": "שפה",
+    "language": {
+      "content": "שפות תוכן",
+      "primary": "שפה ראשית",
+      "subtitle": "בחר את השפה המועדפת עליך",
+      "title": "בחר שפה"
+    },
     "namePlaceholder": "הכנס את שמך",
     "next": "הבא",
     "profileTitle": "הגדר את הפרופיל שלך",
@@ -6058,7 +6063,57 @@
     "voiceTitle": "שליטה קולית",
     "wakeWord": "מילת השכמה",
     "welcomeSubtitle": "בואו נתאים את החוויה שלך",
-    "welcomeTitle": "ברוכים הבאים לבית+"
+    "welcomeTitle": "ברוכים הבאים לבית+",
+    "complete": {
+      "culture": "תרבות",
+      "interests": "תחומי עניין",
+      "language": "שפה",
+      "name": "שם",
+      "saving": "שומר את ההעדפות שלך...",
+      "startWatching": "התחל לצפות",
+      "subtitle": "החוויה המותאמת אישית שלך מוכנה",
+      "title": "הכל מוכן!"
+    },
+    "culture": {
+      "american": "אמריקאי",
+      "european": "אירופאי",
+      "israeli": "ישראלי",
+      "mixed": "מעורב",
+      "subtitle": "בחר את התרבות שמתאימה לך",
+      "title": "בחר תרבות"
+    },
+    "interest": {
+      "audiobooks": "ספרי שמע",
+      "kids": "ילדים",
+      "kidsContent": "ילדים",
+      "liveTV": "שידור חי",
+      "movies": "סרטים",
+      "music": "מוזיקה",
+      "news": "חדשות",
+      "podcasts": "פודקאסטים",
+      "radio": "רדיו",
+      "series": "סדרות",
+      "sports": "ספורט"
+    },
+    "interests": {
+      "selected": "%d נבחרו",
+      "subtitle": "בחר לפחות 3 סוגי תוכן שאתה נהנה מהם",
+      "title": "מה אתה אוהב?"
+    },
+    "skip": "דלג",
+    "voice": {
+      "micUnavailable": "המיקרופון אינו זמין",
+      "noAudio": "לא זוהה שמע",
+      "orType": "או הקלד את שמך",
+      "subtitle": "אמור את שמך או הקלד אותו למטה",
+      "title": "איך לקרוא לך?",
+      "useTextInput": "השתמש בהקלדה"
+    },
+    "welcome": {
+      "getStarted": "בואו נתחיל",
+      "subtitle": "בואו נתאים את החוויה שלך",
+      "title": "ברוכים הבאים ל-Bayit+"
+    }
   },
   "pairing": {
     "codePlaceholder": "הכנס קוד התאמה",
@@ -6203,7 +6258,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -6215,7 +6274,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",
@@ -6401,7 +6463,12 @@
     "interactive": {
       "skip": "דלג",
       "continue": "המשך לצפות",
-      "thinking": "{{character}} חושב..."
+      "thinking": "{{character}} חושב...",
+      "addToGlossary": "הוסף למילון",
+      "close": "סגור",
+      "tapToTranslate": "לחץ על מילה לתרגום",
+      "toggle": "כתוביות אינטראקטיביות",
+      "translating": "מתרגם..."
     },
     "dialogue": {
       "talkToCharacter": "דבר עם דמות",
@@ -7191,7 +7258,14 @@
     "settingsDesc": "הגדרות ותצורת אפליקציה",
     "widgets": "ווידג'טים",
     "widgetsDesc": "נהל את הווידג'טים שלך",
-    "socialSettings": "חברתי והגדרות"
+    "socialSettings": "חברתי והגדרות",
+    "addProfile": "הוסף פרופיל",
+    "addProfileSubtitle": "צור פרופיל חדש למשק הבית שלך",
+    "chooseAvatar": "בחר אווטאר",
+    "loadingProfiles": "טוען פרופילים...",
+    "switchProfile": "החלף פרופיל",
+    "switchProfileDesc": "החלף לפרופיל אחר במשק הבית",
+    "whosWatching": "מי צופה?"
   },
   "mfa": {
     "title": "אימות דו-שלבי",
@@ -7748,7 +7822,19 @@
       "title": "טקס בוקר",
       "videos": "סרטונים"
     },
-    "accessibility": "[HE] Accessibility",
+    "accessibility": {
+      "audioVisual": "שמע וחזותי",
+      "boldText": "טקסט מודגש",
+      "closedCaptions": "כתוביות סגורות",
+      "colorBlind": "מצב עיוורון צבעים",
+      "description": "התאם את חוויית הצפייה שלך",
+      "display": "תצוגה",
+      "highContrast": "ניגודיות גבוהה",
+      "largeText": "טקסט גדול",
+      "largeTextDesc": "הגדל את גודל הטקסט בכל האפליקציה",
+      "reduceMotion": "הפחת תנועה",
+      "title": "נגישות"
+    },
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "חשבון",
@@ -7801,7 +7887,13 @@
     "unlinkConfirm": "נתק",
     "connected": "מחובר",
     "notConnected": "לא מחובר",
-    "help": "[HE] Help & Support",
+    "help": {
+      "contactSupport": "צור קשר עם התמיכה",
+      "loading": "טוען עזרה...",
+      "noFaqs": "אין שאלות נפוצות זמינות",
+      "subtitle": "מצא תשובות וקבל תמיכה",
+      "title": "עזרה ותמיכה"
+    },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7828,7 +7920,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "[HE] Audio",
+    "audio": {
+      "description": "הגדר העדפות שמע",
+      "dubbing": "דיבוב",
+      "dubbingLanguage": "שפת דיבוב",
+      "preferDubbed": "העדף שמע מדובב",
+      "preferredLanguage": "שפה מועדפת",
+      "processing": "עיבוד",
+      "quality": "איכות שמע",
+      "title": "הגדרות שמע",
+      "volumeNormDesc": "נרמל עוצמת שמע בין תכנים",
+      "volumeNormalization": "נרמול עוצמה"
+    },
     "mediaSection": "[HE] Media",
     "privacyData": "[HE] Privacy & Data",
     "general": "[HE] General",
@@ -9080,7 +9183,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "ביטול",
+    "chooseMethod": "צפו יחד",
+    "chooseMethodDescription": "בחר איך לצפות עם אחרים"
   },
   "widget": {
     "103fmEpisodes": "פרקי 103FM",
@@ -10376,7 +10482,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "סגור",
+    "empty": "עדיין לא נשמרו מילים",
+    "emptyHint": "לחץ על מילים בכתוביות כדי לשמור אותן",
+    "newWords": "מילים חדשות",
+    "reviewedWords": "מילים שנסקרו",
+    "title": "אוצר מילים",
+    "wordCount": "{{count}} מילים"
   },
   "wallet": {
     "earned": "Earned",
@@ -10502,5 +10615,27 @@
       "title": "בקשות יצירת קשר",
       "noRequests": "אין בקשות יצירת קשר עדיין"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "השמעה ברקע",
+    "sessionCategory": "השמעה",
+    "spatialEnabled": "שמע מרחבי"
+  },
+  "sharePlay": {
+    "bayitParty": "מסיבת Bayit+",
+    "bayitPartyDescription": "הזמן חברים למסיבת צפייה ב-Bayit+",
+    "end": "סיים SharePlay",
+    "faceTimeDescription": "צפו יחד עם חברים ב-FaceTime",
+    "inviteDescription": "בחר איך לצפות עם חברים",
+    "synced": "הכל מסונכרן",
+    "syncing": "מסנכרן...",
+    "title": "SharePlay",
+    "viaFaceTime": "SharePlay דרך FaceTime",
+    "watchTogether": "צפו יחד",
+    "watching": "{{count}} צופים"
+  },
+  "network": {
+    "connectionLost": "החיבור אבד",
+    "reconnecting": "מתחבר מחדש..."
   }
 }

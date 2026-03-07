@@ -32,6 +32,16 @@ final class TVPlayerStateContainer {
     var showPauseAskOverlay = false
     var hasVoiceClone = false
 
+    // MARK: - Interactive Subtitles
+
+    var interactiveSubtitleVM: TVWordInteractionViewModel?
+    var showVocabulary = false
+
+    // MARK: - SharePlay
+
+    var sharePlayService: TVSharePlayService?
+    var showSharePlayOverlay = false
+
     // MARK: - Shared Interaction (Phase 3 WS4)
 
     var sharedVM: SharedInteractionViewModel?

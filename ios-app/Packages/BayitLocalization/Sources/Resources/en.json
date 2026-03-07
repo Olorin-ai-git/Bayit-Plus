@@ -4208,7 +4208,11 @@
       "episodes": "{{count}} Episodes"
     },
     "related": "Related",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "filters": {
+      "movies": "Movies",
+      "series": "Series"
+    }
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -4364,166 +4368,11 @@
     "active": "Active Downloads"
   },
   "dubbing": {
-    "title": "Live Dubbing",
-    "enabled": "Live Dubbing Enabled",
-    "selectLanguage": "Select Language",
-    "originalAudio": "Original Audio",
-    "dubbedAudio": "Dubbed Audio",
-    "selectVoice": "Select Voice",
-    "adjustVolume": "Adjust Volume",
-    "tapToSelect": "Tap to select this language",
-    "languages": {
-      "en": "English",
-      "es": "Español",
-      "he": "עברית",
-      "ar": "العربية",
-      "ru": "Русский",
-      "fr": "Français",
-      "de": "Deutsch"
-    },
-    "onboarding": {
-      "title": "Introducing Live Dubbing",
-      "description": "Experience live content in your language. Our AI translates and replays audio in real-time as you watch.",
-      "feature1": "7 languages supported",
-      "feature2": "Real-time processing",
-      "feature3": "Adjust audio balance",
-      "tryNow": "Try Now",
-      "later": "Maybe Later"
-    },
-    "consent": {
-      "title": "Audio Processing Consent",
-      "message": "Live dubbing processes your audio in real-time using AI services. Audio is processed for translation only and not stored permanently.",
-      "accept": "I Agree",
-      "decline": "No Thanks"
-    },
-    "errors": {
-      "connectionFailed": "Connection Failed",
-      "connectionFailedMessage": "Unable to connect to dubbing service",
-      "connectionFailedAction": "Check your internet connection and try again",
-      "notAuthenticated": "Not Authenticated",
-      "notAuthenticatedMessage": "Please sign in again",
-      "notAuthenticatedAction": "Sign in to use live dubbing",
-      "premiumRequired": "Premium Feature",
-      "premiumRequiredMessage": "Live dubbing requires a Premium subscription",
-      "premiumRequiredAction": "Upgrade to Premium to access this feature",
-      "channelUnavailable": "Not Available",
-      "channelUnavailableMessage": "Dubbing is not available for this channel",
-      "audioCaptureError": "Microphone Error",
-      "audioCaptureErrorMessage": "Unable to access your microphone",
-      "sttServiceError": "Speech Recognition Error",
-      "sttServiceErrorMessage": "Failed to recognize speech",
-      "ttsServiceError": "Dubbing Error",
-      "ttsServiceErrorMessage": "Failed to generate dubbed audio",
-      "translationTimeout": "Translation Timeout",
-      "translationTimeoutMessage": "Translation took too long, retrying",
-      "websocketClosed": "Connection Lost",
-      "websocketClosedMessage": "Dubbing connection was closed",
-      "rateLimitExceeded": "Too Many Attempts",
-      "rateLimitExceededMessage": "Please wait before trying again",
-      "sessionTimeout": "Session Expired",
-      "sessionTimeoutMessage": "Your dubbing session has expired",
-      "audioCaptureTitle": "Microphone Access Denied",
-      "authFailed": {
-        "title": "Authentication Error"
-      },
-      "rateLimitTitle": "Too Many Requests",
-      "sessionTitle": "Session Expired",
-      "sttTitle": "Speech Recognition Error",
-      "translationAction": "The system will continue with original audio",
-      "translationTitle": "Translation Timeout",
-      "ttsTitle": "Text-to-Speech Error",
-      "websocketTitle": "Connection Lost"
-    },
-    "simplifiedHebrew": {
-      "title": "Simplified Hebrew",
-      "description": "Slower, clearer Hebrew with simplified vocabulary",
-      "vocabularyLevel": "Vocabulary Level",
-      "alef": "Alef (Beginner)",
-      "bet": "Bet (Intermediate)",
-      "gimel": "Gimel (Advanced)",
-      "active": "Simplified Hebrew Active",
-      "clickToEnable": "Click to enable simplified Hebrew audio",
-      "premiumRequired": "Premium subscription required"
-    },
-    "active": "Live Dubbing Active",
-    "clickToEnable": "Click to enable live dubbing",
-    "controls": {
-      "liveDubbing": "Live Dubbing",
-      "enableDubbing": "Enable Live Dubbing",
-      "enableSubtitles": "Enable Live Subtitles",
-      "selectLanguage": "Select Language",
-      "selectVoice": "Select Voice",
-      "originalVolume": "Original Audio",
-      "dubbedVolume": "Dubbed Audio",
-      "tooltips": {
-        "enableDubbing": "Translate and dub live audio in real-time",
-        "enableSubtitles": "Display translated subtitles in real-time",
-        "selectLanguage": "Choose your preferred language for translation",
-        "selectVoice": "Choose the voice for dubbed audio",
-        "originalVolume": "Adjust volume of original audio (0 = muted)",
-        "dubbedVolume": "Adjust volume of dubbed audio (1 = full volume)"
-      }
-    },
-    "inputLanguageTooltip": "Check Input Language",
-    "latency": {
-      "badge": {
-        "accessibilityHint": "Double tap to toggle latency details panel",
-        "title": "Latency Monitor",
-        "tooltip": "Real-time audio processing delay. Video is automatically delayed to match for perfect sync."
-      },
-      "breakdown": {
-        "cacheHitRate": "Cache Hit Rate",
-        "provider": "Provider",
-        "title": "Latency Breakdown"
-      },
-      "components": {
-        "buffer": "Audio Buffer",
-        "network": "Network",
-        "stt": "Speech-to-Text",
-        "sync": "Video Sync",
-        "translation": "Translation",
-        "tts": "Text-to-Speech",
-        "capture": "Audio Capture",
-        "captureDesc": "Time to capture audio from video",
-        "sttDesc": "Converting speech to text",
-        "translationDesc": "Translating to target language",
-        "ttsDesc": "Generating dubbed audio",
-        "networkDesc": "Data transmission delay",
-        "bufferDesc": "Audio processing buffer",
-        "syncDesc": "Video delay for perfect sync"
-      },
-      "graph": {
-        "noData": "No data yet...",
-        "title": "Latency History",
-        "tooltip": "60-second rolling history of processing latency",
-        "xAxis": "Time (seconds ago)",
-        "yAxis": "Latency (ms)"
-      },
-      "status": {
-        "excellent": "Excellent",
-        "good": "Good",
-        "fair": "Fair",
-        "poor": "Poor"
-      },
-      "info": {
-        "autoSync": "Automatic Synchronization",
-        "autoSyncDesc": "Video is automatically delayed to match audio processing time, ensuring perfect lip-sync and subtitle timing.",
-        "howItWorks": "How It Works",
-        "howItWorksDesc": "The system measures actual processing latency and delays the video stream by the same amount. This is how professional broadcast translation works.",
-        "noManualAdjustment": "No Manual Adjustment Needed",
-        "noManualAdjustmentDesc": "Unlike other systems, you don't need to manually sync audio and video. Everything is automatic.",
-        "whyDelay": "Why Is There a Delay?",
-        "whyDelayDesc": "Real-time translation and dubbing takes time (typically 600-800ms). Rather than showing out-of-sync content, we delay the video to match. You see content slightly behind 'live' but perfectly synchronized.",
-        "professionalQuality": "Professional Quality",
-        "professionalQualityDesc": "This is the same approach used by professional broadcasters for live international coverage."
-      }
-    },
-    "noVoicesAvailable": "No voices available",
-    "premiumRequired": "Premium subscription required",
-    "selectInputLanguage": "Select input language",
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
-    "maybeLater": "Maybe Later",
-    "liveOnly": "Live dubbing is only available for live channels"
+    "mixer": "Audio Mixer",
+    "original": "Original",
+    "dubbed": "Dubbed",
+    "balance": "{{original}}% Original / {{dubbed}}% Dubbed",
+    "adjustHint": "Swipe left or right to adjust audio balance"
   },
   "email": {
     "greeting": "Hello",
@@ -4837,7 +4686,9 @@
       "loadFailed": "Failed to load video",
       "noStreamUrl": "No stream URL available",
       "notReady": "Video not ready",
-      "sessionCreateFailed": "Failed to create playback session after multiple attempts"
+      "sessionCreateFailed": "Failed to create playback session after multiple attempts",
+      "connectionLost": "Connection lost. Will resume when connected.",
+      "connectionRestored": "Connection restored."
     },
     "podcast": {
       "playbackError": "Audio playback error",
@@ -5470,7 +5321,14 @@
     "locationPermissionDeniedDescription": "Location access was denied. Open Settings to enable it and see Israeli content near you.",
     "openSettings": "Open Settings",
     "jerusalem": "Jerusalem",
-    "telAviv": "Tel Aviv"
+    "telAviv": "Tel Aviv",
+    "recommended": "Recommended For You",
+    "newReleases": "New Releases",
+    "audioPicks": "Audio Picks",
+    "trendingRecommendations": "Trending Recommendations",
+    "topNumber": "#{{position}}",
+    "minutesRemaining": "{{minutes}}m left",
+    "nowPlaying": "Now Playing"
   },
   "household": {
     "title": "Household Management",
@@ -5984,23 +5842,62 @@
     }
   },
   "onboarding": {
-    "autoplay": "Autoplay",
-    "back": "Back",
-    "chooseAvatar": "Choose Your Avatar",
-    "enableVoice": "Enable Voice Commands",
-    "finish": "Finish",
-    "language": "Language",
-    "namePlaceholder": "Enter your name",
-    "next": "Next",
-    "profileTitle": "Set Up Your Profile",
-    "subtitles": "Subtitles",
-    "tasteSubtitle": "Select your favorite genres and categories",
-    "tasteTitle": "What Do You Like?",
-    "voiceSubtitle": "Set up voice commands for hands-free control",
-    "voiceTitle": "Voice Control",
-    "wakeWord": "Wake Word",
-    "welcomeSubtitle": "Let's personalize your experience",
-    "welcomeTitle": "Welcome to Bayit+"
+    "welcome": {
+      "title": "Welcome to Bayit+",
+      "subtitle": "Let's personalize your experience",
+      "getStarted": "Get Started"
+    },
+    "skip": "Skip",
+    "language": {
+      "title": "Choose Your Language",
+      "subtitle": "Select your preferred language for the app",
+      "primary": "Primary Language",
+      "content": "Content Languages"
+    },
+    "culture": {
+      "title": "Choose Your Culture",
+      "subtitle": "Select the culture that best fits your content preferences",
+      "israeli": "Israeli",
+      "american": "American",
+      "european": "European",
+      "mixed": "Mixed"
+    },
+    "interests": {
+      "title": "What Do You Like?",
+      "subtitle": "Select at least 3 content types you enjoy",
+      "selected": "%d selected"
+    },
+    "interest": {
+      "movies": "Movies",
+      "series": "Series",
+      "liveTV": "Live TV",
+      "podcasts": "Podcasts",
+      "audiobooks": "Audiobooks",
+      "radio": "Radio",
+      "kids": "Kids",
+      "music": "Music",
+      "news": "News",
+      "sports": "Sports",
+      "kidsContent": "Kids"
+    },
+    "voice": {
+      "title": "What Should We Call You?",
+      "subtitle": "Speak your name or type it below",
+      "orType": "Or type your name",
+      "noAudio": "No audio detected",
+      "useTextInput": "Use text input instead",
+      "micUnavailable": "Microphone is not available"
+    },
+    "complete": {
+      "title": "You're All Set!",
+      "subtitle": "Your personalized experience is ready",
+      "language": "Language",
+      "culture": "Culture",
+      "interests": "Interests",
+      "name": "Name",
+      "saving": "Saving your preferences...",
+      "startWatching": "Start Watching"
+    }
   },
   "pairing": {
     "codePlaceholder": "Enter pairing code",
@@ -6145,7 +6042,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6157,7 +6058,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -6198,234 +6102,71 @@
     }
   },
   "player": {
-    "loading": "Loading...",
-    "retry": "Try Again",
-    "error": "Error playing video",
-    "back": "← Back",
-    "liveBadge": "LIVE",
-    "live": "LIVE",
-    "play": "Play",
-    "pause": "Pause",
-    "mute": "Mute",
-    "unmute": "Unmute",
-    "volume": "Volume",
-    "albumArt": "Album art for {{title}}",
-    "seekBar": "Playback progress",
-    "skipBack": "Skip back {{seconds}} seconds",
-    "skipForward": "Skip forward 30 seconds",
-    "noStream": "Stream not available",
-    "loadError": "Failed to load stream",
-    "settings": "Settings",
-    "subtitles": "Subtitles",
-    "playbackSpeed": "Playback Speed",
-    "quality": "Quality",
-    "auto": "Auto",
-    "previousChapter": "Previous chapter",
-    "nextChapter": "Next chapter",
-    "skipBackward": "Skip backward 30 seconds",
-    "restart": "Restart from beginning",
-    "subtitlesOff": "Off",
-    "speed": "Speed",
-    "qualitySettings": "Quality settings",
-    "dismiss": "Dismiss",
-    "dismissPlayer": "Dismiss player",
-    "loadingMedia": "Loading media",
-    "preparingStream": "Preparing stream...",
-    "speedNormal": "Normal",
-    "recordingError": "Recording Error",
-    "startRecording": "Start recording",
-    "stopRecording": "Stop recording",
-    "premiumRequired": "Premium Required",
-    "recordingLiveOnly": "Recording is only available for live channels",
-    "subscription": {
-      "requiredTitle": "Subscription Required",
-      "requiredMessage": "requires a paid subscription",
-      "upgradeInfo": "Upgrade your subscription to access premium content",
-      "upgrade": "Upgrade Now"
+    "interactive": {
+      "tapToTranslate": "Tap a word to translate",
+      "translating": "Translating...",
+      "addToGlossary": "Add to Glossary",
+      "close": "Close",
+      "toggle": "Interactive Subtitles"
     },
-    "chapters": "Chapters",
-    "sceneSearch": {
-      "title": "Search Scenes",
-      "placeholder": "Search for a scene...",
-      "inputLabel": "Scene search input",
-      "searching": "Searching...",
-      "noResults": "No scenes found",
-      "resultsFound": "Found {{count}} scenes",
-      "searchError": "Search failed. Please try again.",
-      "hint": "Type at least 2 characters to search",
-      "voiceReceived": "Searching for: {{query}}",
-      "seekingTo": "Jumping to {{time}}",
-      "previous": "Previous",
-      "next": "Next",
-      "result": {
-        "jumpTo": "Jump to {{title}} at {{time}}",
-        "hint": "Press to jump to this scene"
-      },
-      "panelOpened": "Scene search panel opened",
-      "navigation": "Scene search navigation",
-      "position": "Result {{current}} of {{total}}",
-      "error": "Error",
-      "results": {
-        "found": "Found",
-        "label": "Label"
-      }
-    },
-    "streamLimit": {
-      "title": "Stream Limit Reached",
-      "message": "You have reached the maximum number of concurrent streams ({{maxStreams}}) for your plan.",
-      "activeDevices": "Currently streaming on {{count}} device(s):",
-      "hint": "Disconnect a device to free up a streaming slot, or upgrade your plan for more concurrent streams.",
-      "manageDevices": "Manage Devices"
-    },
-    "cast": {
-      "start": "Cast to TV",
-      "connected": "Casting to {{device}}",
-      "disconnect": "Disconnect from {{device}}",
-      "connecting": "Connecting to cast device...",
-      "error": "Failed to connect to cast device",
-      "noDevices": "No cast devices found",
-      "unsupported": "Casting not available for this content"
-    },
-    "liveChat": "Live Chat",
-    "chat": "Chat",
-    "liveTrivia": "Live Trivia",
-    "showAIFeatures": "Show AI Features",
-    "hideAIFeatures": "Hide AI Features",
-    "enterFullscreen": "Enter Fullscreen",
-    "enterPiP": "Picture-in-Picture",
-    "exitPiP": "Exit Picture-in-Picture",
-    "errors": {
-      "decodeError": "Cannot decode audio stream",
-      "loadAborted": "Loading was aborted",
-      "networkError": "Network error - stream may be unavailable",
-      "noSource": "No stream available",
-      "streamFailed": "Stream failed to load",
-      "unknown": "Unknown playback error",
-      "unsupportedFormat": "Audio format not supported"
-    },
-    "exitFullscreen": "Exit Fullscreen",
-    "liveLanguageMagic": "Live Language Magic",
-    "retrying": "Retry attempt",
-    "selectLanguage": "Select Language",
-    "primaryLanguage": "Primary Language",
-    "secondaryLanguage": "Secondary Language",
-    "dualLanguageHint": "Select a second language for split screen",
-    "currentLanguage": "Current language",
-    "selectOutputLanguage": "Select Output Language",
-    "liveDubbing": "Live Dubbing",
-    "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
-    "director": "Director",
-    "castLabel": "Cast",
-    "related": "Related",
+    "audio": "Audio",
     "audioTrack": "Audio Track",
-    "episode": "Episode",
-    "episodes": "Episodes",
+    "catchUp": "Catch Up",
+    "chapters": "Chapters",
+    "chat": "Chat",
+    "dialogue": {
+      "endDialogue": "End Dialogue",
+      "noCharactersAvailable": "No characters available",
+      "selectCharacter": "Select Character",
+      "sending": "Sending...",
+      "typeQuestion": "Type your question",
+      "voiceMode": "Voice Mode"
+    },
+    "dubbing": "Dubbing",
+    "interaction": {
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "liveBadge": "LIVE",
     "loadingEpisode": "Loading episode...",
     "loadingStream": "Loading stream...",
-    "season": "Season",
-    "seasons": "Seasons",
-    "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Premium",
-    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
-    "videoQuality": "Video Quality",
-    "audio": "Audio",
-    "catchUp": "Catch Up",
-    "scenes": "Scenes",
-    "translate": "Translate",
-    "split": "Split",
-    "dubbing": "Dubbing",
-    "interactive": {
-      "skip": "Skip",
-      "continue": "Continue Watching",
-      "thinking": "{{character}} is thinking..."
-    },
-    "dialogue": {
-      "talkToCharacter": "Talk to Character",
-      "selectCharacter": "Select Character",
-      "typeQuestion": "Type your question...",
-      "sending": "Sending...",
-      "characterSpeaking": "Character is speaking...",
-      "endDialogue": "End Dialogue",
-      "noCharactersAvailable": "No characters available for dialogue",
-      "voiceMode": "Voice Mode",
-      "holdToSpeak": "Hold to Speak"
-    },
-    "interaction": {
-      "previous": "Previous Interaction",
-      "next": "Next Interaction"
-    },
-    "pauseAsk": {
-      "title": "Interact",
-      "processing": "Processing...",
-      "askAnother": "Ask Another",
-      "resumeMovie": "Resume",
-      "watchAgain": "Watch Again",
-      "selectCharacter": "Select Character",
-      "noCharacters": "Characters are not yet available for this movie",
-      "stages": {
-        "polishing": "Polishing your question...",
-        "thinking": "Thinking about your question...",
-        "biff1": "Biff didn't like your question very much...",
-        "biff2": "Biff is flexing in the mirror...",
-        "biff3": "Biff is trying to spell his answer...",
-        "biff4": "Biff just called someone a butthead...",
-        "doc1": "Doc is consulting the flux capacitor...",
-        "doc2": "Great Scott! Still calculating...",
-        "doc3": "Doc is adjusting 1.21 gigawatts...",
-        "doc4": "Doc is checking the space-time continuum...",
-        "marty1": "Marty is tuning his guitar first...",
-        "marty2": "This is heavy...",
-        "marty3": "Marty is checking if he still exists...",
-        "marty4": "Marty says nobody calls him chicken...",
-        "george1": "George is working up the courage to answer...",
-        "george2": "George is writing his response in his notebook...",
-        "george3": "George says his density brought him here...",
-        "george4": "George finally has confidence...",
-        "lorraine1": "Lorraine is fixing her hair first...",
-        "lorraine2": "Lorraine is thinking about the Enchantment Under the Sea...",
-        "lorraine3": "Lorraine says it was meant to be...",
-        "lorraine4": "Lorraine is getting ready for the dance...",
-        "jennifer1": "Jennifer is waiting in the car...",
-        "jennifer2": "Jennifer is wondering about the future...",
-        "jennifer3": "Jennifer says she can handle it...",
-        "jennifer4": "Jennifer is being patient...",
-        "generic1": "{{name}} is thinking...",
-        "generic2": "{{name}} is crafting a response...",
-        "generic3": "Almost there...",
-        "generic4": "Just a moment longer..."
-      },
-      "error": {
-        "generic": "Something went wrong",
-        "anthropic": "AI service unavailable",
-        "falAi": "Video generation service unavailable",
-        "elevenlabs": "Voice service unavailable",
-        "credits": "Insufficient credits"
-      }
-    },
-    "premiumRequiredRecording": "Premium subscription required",
-    "sleepTimer": {
-      "title": "Sleep Timer",
-      "setTimer": "Set Sleep Timer",
-      "minutesFormat": "{{minutes}} min",
-      "remaining": "{{time}} remaining",
-      "extend": "+{{minutes}} min",
-      "cancel": "Cancel Timer",
-      "off": "Off",
-      "timerSet": "Sleep timer set for {{minutes}} minutes",
-      "timerExtended": "Timer extended by {{minutes}} minutes",
-      "timerCancelled": "Sleep timer cancelled"
-    },
-    "startOver": "Start Over",
     "multiCharacter": {
       "selectCharacter": "Select Character",
       "talkingTo": "Talking to"
     },
+    "pauseAsk": {
+      "askAnother": "Ask Another",
+      "error": {
+        "anthropic": "AI service unavailable",
+        "credits": "Insufficient credits",
+        "elevenlabs": "Voice service unavailable",
+        "falAi": "AI generation unavailable",
+        "generic": "Something went wrong"
+      },
+      "noCharacters": "No characters available for this content",
+      "resumeMovie": "Resume Movie",
+      "selectCharacter": "Select a Character",
+      "title": "Ask a Character",
+      "watchAgain": "Watch Again"
+    },
+    "play": "Play",
+    "playbackSpeed": "Playback Speed",
+    "preparingStream": "Preparing stream...",
+    "scenes": "Scenes",
     "shared": {
       "participants": "Participants",
-      "yourTurn": "Your Turn",
-      "waitingForTurn": "Waiting for your turn..."
+      "waitingForTurn": "Waiting for your turn",
+      "yourTurn": "Your turn"
     },
-    "streamLoadFailed": "Failed to load stream"
+    "sleepTimer": {
+      "cancel": "Cancel Timer",
+      "off": "Off",
+      "setTimer": "Set Sleep Timer"
+    },
+    "speed": "Speed",
+    "startOver": "Start Over",
+    "streamLoadFailed": "Failed to load stream",
+    "videoQuality": "Video Quality"
   },
   "playlist": {
     "title": "My Playlist",
@@ -6476,7 +6217,28 @@
     "podcastDetailsShort": "Podcast"
   },
   "listen": {
-    "title": "Listen"
+    "title": "Listen",
+    "featured": "Featured Audio",
+    "continueListening": "Continue Listening",
+    "radioStations": "Radio Stations",
+    "discoverPodcasts": "Discover Podcasts",
+    "discoverAudiobooks": "Discover Audiobooks",
+    "categories": "Categories",
+    "nowPlaying": "NOW PLAYING",
+    "browseAll": "Browse All",
+    "browseAudiobooks": "Browse Audiobooks",
+    "browsePodcasts": "Browse Podcasts",
+    "noFeatured": "No featured audio available",
+    "noContinueListening": "No audio in progress",
+    "sortBy": "Sort By",
+    "sortRecent": "Recent",
+    "sortPopular": "Popular",
+    "sortDuration": "Duration",
+    "filterGenre": "Genre",
+    "filterLanguage": "Language",
+    "episodeCount": "{{count}} episodes",
+    "latestEpisode": "Latest: {{date}}",
+    "loading": "Loading audio content..."
   },
   "podcasts": {
     "title": "Podcasts",
@@ -6570,6 +6332,11 @@
     "skipBackward": "Skip back 15 seconds",
     "skipForward": "Skip forward 30 seconds",
     "closePlayer": "Close player"
+  },
+  "audio": {
+    "spatialEnabled": "Spatial Audio",
+    "backgroundPlayback": "Background Playback",
+    "sessionCategory": "Playback"
   },
   "portal": {
     "nav": {
@@ -7090,6 +6857,13 @@
     "organizeContent": "Organize your content",
     "viewingHistory": "Viewing History",
     "seeWhatYouWatched": "See what you've watched",
+    "whosWatching": "Who's Watching?",
+    "loadingProfiles": "Loading profiles...",
+    "addProfile": "Add Profile",
+    "addProfileSubtitle": "Create a new profile for your household",
+    "chooseAvatar": "Choose Avatar",
+    "switchProfile": "Switch Profile",
+    "switchProfileDesc": "Change to a different household profile",
     "myDownloads": "My Downloads",
     "offlineContent": "Available offline content",
     "messages": "Messages",
@@ -7717,7 +7491,19 @@
       "title": "Title",
       "videos": "Videos"
     },
-    "accessibility": "Accessibility",
+    "accessibility": {
+      "audioVisual": "Audio & Visual",
+      "boldText": "Bold Text",
+      "closedCaptions": "Closed Captions",
+      "colorBlind": "Color Blind Mode",
+      "description": "Customize your viewing experience",
+      "display": "Display",
+      "highContrast": "High Contrast",
+      "largeText": "Large Text",
+      "largeTextDesc": "Increase text size throughout the app",
+      "reduceMotion": "Reduce Motion",
+      "title": "Accessibility"
+    },
     "account": "Account",
     "appUpdates": "App Updates",
     "appUpdatesDescription": "Get notified about new features and improvements",
@@ -7768,7 +7554,13 @@
     "unlinkConfirm": "Unlink",
     "connected": "Connected",
     "notConnected": "Not Connected",
-    "help": "Help & Support",
+    "help": {
+      "contactSupport": "Contact Support",
+      "loading": "Loading help...",
+      "noFaqs": "No FAQs available",
+      "subtitle": "Find answers and get support",
+      "title": "Help & Support"
+    },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
     "contentRating": "Content Rating",
@@ -7795,7 +7587,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "Audio",
+    "audio": {
+      "description": "Configure audio preferences",
+      "dubbing": "Dubbing",
+      "dubbingLanguage": "Dubbing Language",
+      "preferDubbed": "Prefer Dubbed Audio",
+      "preferredLanguage": "Preferred Language",
+      "processing": "Processing",
+      "quality": "Audio Quality",
+      "title": "Audio Settings",
+      "volumeNormDesc": "Normalize volume across content",
+      "volumeNormalization": "Volume Normalization"
+    },
     "mediaSection": "Media",
     "privacyData": "Privacy & Data",
     "general": "General",
@@ -8642,103 +8445,22 @@
     "streamUnavailable": "Stream Unavailable"
   },
   "watchParty": {
-    "title": "Watch Party",
-    "create": "Create Party",
-    "join": "Join Party",
-    "active": "Party Active",
-    "createTitle": "Create Watch Party",
-    "joinTitle": "Join Party",
-    "enterCode": "Enter Room Code",
-    "roomCode": "Code: {{code}}",
-    "roomCodeHint": "Enter 8-character room code to join party",
-    "copyCode": "Copy Code",
-    "codeCopied": "Code Copied!",
-    "participants": "Participants",
-    "host": "Host",
-    "you": "You",
-    "leave": "Leave Party",
-    "end": "End Party",
-    "chat": "Chat",
-    "sendMessage": "Send Message",
-    "typeMessage": "Type a message...",
-    "synced": "Synced",
-    "syncing": "Syncing...",
-    "hostPaused": "Host Paused",
-    "userJoined": "{{name}} joined",
-    "userLeft": "{{name}} left",
-    "partyEnded": "The party has ended",
-    "connecting": "Connecting...",
-    "options": {
-      "chatEnabled": "Enable Chat",
-      "syncPlayback": "Sync Playback"
-    },
-    "errors": {
-      "invalidCode": "Invalid code",
-      "partyFull": "Party is full",
-      "partyEnded": "Party has ended",
-      "connectionError": "Connection error",
-      "createFailed": "Failed to create party",
-      "joinFailed": "Failed to join party"
-    },
-    "audio": {
-      "mute": "Mute",
-      "unmute": "Unmute",
-      "speaking": "Speaking",
-      "connecting": "Connecting to audio...",
-      "noAudio": "Audio not available",
-      "muteHint": "Mutes your microphone",
-      "unmuteHint": "Unmutes your microphone to speak"
-    },
-    "textOnlyMode": "Text Chat Only",
-    "endParty": "End Party",
-    "toggleEmoji": "Toggle emoji picker",
-    "toggleEmojiHint": "Opens emoji quick picker for reactions",
-    "sendEmoji": "Send {{emoji}}",
-    "sendEmojiHint": "Sends emoji reaction to chat",
-    "emojiPicker": "Emoji picker",
-    "chatInput": "Chat message input",
-    "chatInputHint": "Type a message to send to the party chat",
-    "sendMessageHint": "Sends your message to the party chat",
-    "copyCodeHint": "Copies room code to clipboard",
-    "share": "Share",
-    "shareHint": "Share party link or copy code",
-    "copied": "Copied!",
-    "endPartyHint": "Ends the party for all participants",
-    "leaveParty": "Leave Party",
-    "leavePartyHint": "Leaves the party without ending it",
-    "buttonHint": "Opens menu to create or join a watch party",
-    "createHint": "Creates a new watch party",
-    "joinHint": "Joins an existing watch party with a code",
-    "emojiPickerHint": "Shows quick emoji reactions",
-    "chatEnabledHint": "Enables chat for participants",
-    "syncPlaybackHint": "Keeps playback synchronized with host",
-    "createPartyHint": "Creates party with selected options",
-    "joinPartyHint": "Joins party with entered code",
-    "closePanelHint": "Closes watch party panel",
-    "cancelHint": "Cancels and closes dialog",
-    "viewPartyHint": "Opens watch party panel",
-    "panel": "Watch Party panel",
-    "activeLabel": "Watch Party - Active",
-    "buffering": "Buffering...",
-    "hostActiveLabel": "Watch Party - You are hosting",
-    "hosting": "Hosting",
-    "listening": "Listening",
-    "placeholder": {
-      "roomCode": "ABCD1234"
-    },
-    "roomCodeLabel": "Room code",
-    "startVoice": "Start Voice",
-    "stopVoice": "Stop Voice",
-    "voiceInputHint": "Voice Input Hint",
-    "watching": "Watching",
+    "chooseMethod": "Watch Together",
+    "chooseMethodDescription": "Choose how you want to watch with others",
+    "cancel": "Cancel",
     "createOrJoin": "Create or Join",
-    "createParty": "Create Watch Party",
-    "loading": "Loading Watch Parties...",
-    "maxGuests": "Max guests",
-    "myParties": "MY PARTIES",
-    "noParties": "No active watch parties",
+    "createParty": "Create Party",
+    "enterCode": "Enter Room Code",
+    "join": "Join",
+    "loading": "Loading parties...",
+    "maxGuests": "Max Guests",
+    "myParties": "My Parties",
+    "noParties": "No active parties",
+    "participants": "Participants",
+    "roomCode": "Room Code",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "title": "Watch Party",
+    "type": "Party Type"
   },
   "widget": {
     "103fmEpisodes": "103FM Episodes",
@@ -9956,10 +9678,13 @@
     "title": "Family Snaps"
   },
   "vocabulary": {
-    "hebrewRatio": "Hebrew Ratio",
-    "totalWordsLearned": "Total Words Learned",
-    "known": "Known",
-    "learning": "Learning"
+    "title": "Vocabulary",
+    "wordCount": "{{count}} words",
+    "empty": "No words saved yet",
+    "emptyHint": "Tap words in subtitles to save them",
+    "newWords": "New Words",
+    "reviewedWords": "Reviewed Words",
+    "close": "Close"
   },
   "wallet": {
     "earned": "Earned",
@@ -10085,5 +9810,18 @@
       "title": "Contact Requests",
       "noRequests": "No contact requests yet"
     }
+  },
+  "sharePlay": {
+    "watchTogether": "Watch Together",
+    "inviteDescription": "Choose how to watch with friends",
+    "viaFaceTime": "SharePlay via FaceTime",
+    "faceTimeDescription": "Watch together with friends on FaceTime",
+    "bayitParty": "Bayit+ Party",
+    "bayitPartyDescription": "Invite friends to a Bayit+ watch party",
+    "watching": "{{count}} watching",
+    "synced": "All synced",
+    "syncing": "Syncing...",
+    "end": "End SharePlay",
+    "title": "SharePlay"
   }
 }

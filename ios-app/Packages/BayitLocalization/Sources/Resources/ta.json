@@ -3149,7 +3149,7 @@
     },
     "expandMore": "Expand More",
     "goBack": "Go Back",
-    "continueListening": "\u0b95\u0bc7\u0b9f\u0bcd\u0b95\u0bb5\u0bc1\u0bae\u0bcd \u0ba4\u0bca\u0b9f\u0bb0\u0bb5\u0bc1\u0bae\u0bcd",
+    "continueListening": "கேட்கவும் தொடரவும்",
     "loadingAudiobooks": "Loading audiobooks...",
     "narratedBy": "Narrated by",
     "pause": "Pause",
@@ -6076,7 +6076,12 @@
     "chooseAvatar": "உங்கள் அவதாரத்தைத் தேர்ந்தெடுங்கள்",
     "enableVoice": "குரல் கட்டளைகளை இயக்கு",
     "finish": "முடி",
-    "language": "மொழி",
+    "language": {
+      "content": "உள்ளடக்க மொழிகள்",
+      "primary": "முதன்மை மொழி",
+      "subtitle": "உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்",
+      "title": "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்"
+    },
     "namePlaceholder": "உங்கள் பெயரை உள்ளிடவும்",
     "next": "அடுத்து",
     "profileTitle": "உங்கள் சுயவிவரத்தை அமைக்கவும்",
@@ -6087,7 +6092,57 @@
     "voiceTitle": "குரல் கட்டுப்பாடு",
     "wakeWord": "விழிப்பு வார்த்தை",
     "welcomeSubtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்குவோம்",
-    "welcomeTitle": "Bayit+ க்கு வரவேற்கிறோம்"
+    "welcomeTitle": "Bayit+ க்கு வரவேற்கிறோம்",
+    "complete": {
+      "culture": "கலாச்சாரம்",
+      "interests": "ஆர்வங்கள்",
+      "language": "மொழி",
+      "name": "பெயர்",
+      "saving": "உங்கள் விருப்பங்களைச் சேமிக்கிறது...",
+      "startWatching": "பார்க்கத் தொடங்கு",
+      "subtitle": "உங்கள் தனிப்பயன் அனுபவம் தயாராக உள்ளது",
+      "title": "எல்லாம் தயார்!"
+    },
+    "culture": {
+      "american": "அமெரிக்கன்",
+      "european": "ஐரோப்பியன்",
+      "israeli": "இஸ்ரேலி",
+      "mixed": "கலப்பு",
+      "subtitle": "உங்கள் விருப்பத்திற்கு ஏற்ற கலாச்சாரத்தைத் தேர்ந்தெடுக்கவும்",
+      "title": "உங்கள் கலாச்சாரத்தைத் தேர்ந்தெடுக்கவும்"
+    },
+    "interest": {
+      "audiobooks": "ஒலி புத்தகங்கள்",
+      "kids": "குழந்தைகள்",
+      "kidsContent": "குழந்தைகள்",
+      "liveTV": "நேரடி டிவி",
+      "movies": "திரைப்படங்கள்",
+      "music": "இசை",
+      "news": "செய்திகள்",
+      "podcasts": "பாட்காஸ்ட்கள்",
+      "radio": "வானொலி",
+      "series": "தொடர்கள்",
+      "sports": "விளையாட்டு"
+    },
+    "interests": {
+      "selected": "%d தேர்ந்தெடுக்கப்பட்டவை",
+      "subtitle": "குறைந்தது 3 உள்ளடக்க வகைகளைத் தேர்ந்தெடுக்கவும்",
+      "title": "உங்களுக்கு என்ன பிடிக்கும்?"
+    },
+    "skip": "தவிர்",
+    "voice": {
+      "micUnavailable": "ஒலிவாங்கி கிடைக்கவில்லை",
+      "noAudio": "ஒலி கண்டறியப்படவில்லை",
+      "orType": "அல்லது உங்கள் பெயரை உள்ளிடவும்",
+      "subtitle": "உங்கள் பெயரைச் சொல்லுங்கள் அல்லது கீழே உள்ளிடவும்",
+      "title": "உங்களை என்னவென்று அழைக்கலாம்?",
+      "useTextInput": "உரை உள்ளீட்டைப் பயன்படுத்தவும்"
+    },
+    "welcome": {
+      "getStarted": "தொடங்குவோம்",
+      "subtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்குவோம்",
+      "title": "Bayit+ க்கு வரவேற்கிறோம்"
+    }
   },
   "pairing": {
     "codePlaceholder": "இணைப்புக் குறியீடு உள்ளிடவும்",
@@ -6224,7 +6279,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6236,7 +6295,10 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
+      "notIncluded": [
+        "ஆஃப்லைன் பார்வை",
+        "குடும்ப சுயவிவரங்கள்"
+      ]
     },
     "family": {
       "name": "குடும்பம்",
@@ -6488,7 +6550,14 @@
       "yourTurn": "[TA] Your Turn",
       "waitingForTurn": "[TA] Waiting for your turn..."
     },
-    "streamLoadFailed": "[TA] Failed to load stream"
+    "streamLoadFailed": "[TA] Failed to load stream",
+    "interactive": {
+      "addToGlossary": "சொற்களஞ்சியத்தில் சேர்",
+      "close": "மூடு",
+      "tapToTranslate": "மொழிபெயர்க்க ஒரு சொல்லைத் தட்டவும்",
+      "toggle": "ஊடாடும் வசனங்கள்",
+      "translating": "மொழிபெயர்க்கிறது..."
+    }
   },
   "playlist": {
     "title": "எனது பட்டியல்",
@@ -7195,7 +7264,14 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "விட்ஜெட்",
     "widgetsDesc": "உங்கள் விட்ஜெட்களை நிர்வகிக்கவும்",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "addProfile": "சுயவிவரம் சேர்",
+    "addProfileSubtitle": "உங்கள் குடும்பத்திற்கு புதிய சுயவிவரத்தை உருவாக்கவும்",
+    "chooseAvatar": "அவதாரத்தைத் தேர்ந்தெடுக்கவும்",
+    "loadingProfiles": "சுயவிவரங்களை ஏற்றுகிறது...",
+    "switchProfile": "சுயவிவரத்தை மாற்று",
+    "switchProfileDesc": "வேறு சுயவிவரத்திற்கு மாறவும்",
+    "whosWatching": "யார் பார்க்கிறார்கள்?"
   },
   "mfa": {
     "title": "பல காரணி அங்கீகாரம்",
@@ -7749,7 +7825,19 @@
       "title": "தலைப்பு",
       "videos": "வீடியோக்கள்"
     },
-    "accessibility": "[TA] Accessibility",
+    "accessibility": {
+      "audioVisual": "ஒலி மற்றும் காட்சி",
+      "boldText": "தடித்த எழுத்து",
+      "closedCaptions": "மூடிய வசனங்கள்",
+      "colorBlind": "நிற குருட்டு பயன்முறை",
+      "description": "உங்கள் பார்வை அனுபவத்தைத் தனிப்பயனாக்கவும்",
+      "display": "காட்சி",
+      "highContrast": "உயர் மாறுபாடு",
+      "largeText": "பெரிய எழுத்து",
+      "largeTextDesc": "பயன்பாடு முழுவதும் எழுத்து அளவை அதிகரிக்கவும்",
+      "reduceMotion": "இயக்கத்தைக் குறை",
+      "title": "அணுகல்தன்மை"
+    },
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "கணக்கு",
@@ -7797,7 +7885,13 @@
     "unlinkConfirm": "இணைப்பை நீக்கு",
     "connected": "இணைக்கப்பட்டது",
     "notConnected": "இணைக்கப்படவில்லை",
-    "help": "[TA] Help & Support",
+    "help": {
+      "contactSupport": "ஆதரவைத் தொடர்பு கொள்ளவும்",
+      "loading": "உதவியை ஏற்றுகிறது...",
+      "noFaqs": "அடிக்கடி கேட்கப்படும் கேள்விகள் இல்லை",
+      "subtitle": "பதில்களைக் கண்டறிந்து ஆதரவைப் பெறுங்கள்",
+      "title": "உதவி மற்றும் ஆதரவு"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7829,7 +7923,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "[TA] Audio",
+    "audio": {
+      "description": "ஒலி விருப்பங்களை அமைக்கவும்",
+      "dubbing": "டப்பிங்",
+      "dubbingLanguage": "டப்பிங் மொழி",
+      "preferDubbed": "டப் செய்யப்பட்ட ஒலியை விரும்பு",
+      "preferredLanguage": "விருப்பமான மொழி",
+      "processing": "செயலாக்கம்",
+      "quality": "ஒலி தரம்",
+      "title": "ஒலி அமைப்புகள்",
+      "volumeNormDesc": "உள்ளடக்கங்கள் முழுவதும் ஒலி அளவை சீராக்கவும்",
+      "volumeNormalization": "ஒலி அளவு சீரமைப்பு"
+    },
     "mediaSection": "[TA] Media",
     "privacyData": "[TA] Privacy & Data",
     "general": "[TA] General",
@@ -9078,7 +9183,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "ரத்துசெய்",
+    "chooseMethod": "ஒன்றாகப் பாருங்கள்",
+    "chooseMethodDescription": "மற்றவர்களுடன் பார்க்கும் வழியைத் தேர்ந்தெடுக்கவும்"
   },
   "widget": {
     "103fmEpisodes": "103FM அத்தியாயங்கள்",
@@ -10399,7 +10507,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "மூடு",
+    "empty": "இன்னும் சொற்கள் சேமிக்கப்படவில்லை",
+    "emptyHint": "சொற்களைச் சேமிக்க வசனங்களில் தட்டவும்",
+    "newWords": "புதிய சொற்கள்",
+    "reviewedWords": "மதிப்பாய்வு செய்யப்பட்ட சொற்கள்",
+    "title": "சொற்களஞ்சியம்",
+    "wordCount": "{{count}} சொற்கள்"
   },
   "wallet": {
     "earned": "Earned",
@@ -10525,5 +10640,27 @@
       "title": "தொடர்பு கோரிக்கைகள்",
       "noRequests": "இன்னும் தொடர்பு கோரிக்கைகள் இல்லை"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "பின்னணி இயக்கம்",
+    "sessionCategory": "இயக்கம்",
+    "spatialEnabled": "இடஞ்சார் ஒலி"
+  },
+  "sharePlay": {
+    "bayitParty": "Bayit+ விருந்து",
+    "bayitPartyDescription": "நண்பர்களை Bayit+ விருந்துக்கு அழைக்கவும்",
+    "end": "SharePlay-ஐ முடி",
+    "faceTimeDescription": "FaceTime-ல் நண்பர்களுடன் பாருங்கள்",
+    "inviteDescription": "நண்பர்களுடன் பார்க்கும் விதத்தைத் தேர்ந்தெடுக்கவும்",
+    "synced": "அனைத்தும் ஒத்திசைக்கப்பட்டது",
+    "syncing": "ஒத்திசைக்கிறது...",
+    "title": "SharePlay",
+    "viaFaceTime": "FaceTime வழியாக SharePlay",
+    "watchTogether": "ஒன்றாகப் பாருங்கள்",
+    "watching": "{{count}} பேர் பார்க்கிறார்கள்"
+  },
+  "network": {
+    "connectionLost": "இணைப்பு துண்டிக்கப்பட்டது",
+    "reconnecting": "மீண்டும் இணைக்கிறது..."
   }
 }

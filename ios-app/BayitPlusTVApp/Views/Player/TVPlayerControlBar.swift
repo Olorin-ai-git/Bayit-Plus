@@ -20,8 +20,12 @@ struct TVPlayerControlBar: View {
     var onSceneSearch: (() -> Void)?
     var onChat: (() -> Void)?
     var onTalk: (() -> Void)?
+    var onVocabulary: (() -> Void)?
+    var onInteractiveSubtitles: (() -> Void)?
+    var onSharePlay: (() -> Void)?
     var onPreviousInteraction: (() -> Void)?
     var onNextInteraction: (() -> Void)?
+    var isInteractiveSubtitlesEnabled: Bool = false
 
     // Subtitle state for flag display
     var selectedSubtitleLanguage: String? = nil
@@ -59,6 +63,30 @@ struct TVPlayerControlBar: View {
 
             if let onChat {
                 controlButton(icon: "bubble.left.and.bubble.right", label: localization.t("player.chat"), action: onChat)
+            }
+
+            if let onInteractiveSubtitles {
+                controlButton(
+                    icon: isInteractiveSubtitlesEnabled ? "character.textbox" : "textformat.abc",
+                    label: localization.t("player.interactive.toggle"),
+                    action: onInteractiveSubtitles
+                )
+            }
+
+            if let onVocabulary {
+                controlButton(
+                    icon: "book.closed",
+                    label: localization.t("vocabulary.title"),
+                    action: onVocabulary
+                )
+            }
+
+            if let onSharePlay {
+                controlButton(
+                    icon: "shareplay",
+                    label: localization.t("sharePlay.title"),
+                    action: onSharePlay
+                )
             }
 
             if let onTalk {

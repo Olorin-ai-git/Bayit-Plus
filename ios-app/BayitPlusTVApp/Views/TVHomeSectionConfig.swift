@@ -72,7 +72,35 @@ enum TVHomeSection: Int, CaseIterable {
         case .podcasts, .audiobooks, .liveTV:
             return 1.0
         default:
-            return 2.0/3.0
+            return 2.0 / 3.0
+        }
+    }
+
+    /// Returns true if the user expressed interest in this section type.
+    /// Sections without a direct interest mapping (continueWatching, nearMe, etc.)
+    /// are always visible.
+    @MainActor
+    func isVisible(given prefs: TVOnboardingPreferences) -> Bool {
+        guard prefs.isOnboarded else { return true }
+        switch self {
+        case .continueWatching, .nearMe, .whatsHot, .jerusalem, .telAviv:
+            return true
+        case .liveTV:
+            return prefs.showLiveTV
+        case .israeliMovies, .movies:
+            return prefs.showMovies
+        case .kids, .youngsters:
+            return prefs.showKids
+        case .music:
+            return prefs.showMusic
+        case .documentary:
+            return prefs.showMovies || prefs.showNews
+        case .israeliSeries, .series:
+            return prefs.showSeries
+        case .podcasts:
+            return prefs.showPodcasts
+        case .audiobooks:
+            return prefs.showAudiobooks
         }
     }
 
@@ -94,13 +122,13 @@ enum TVHomeSection: Int, CaseIterable {
             return !viewModel.liveChannels.isEmpty
         case .israeliMovies:
             return hasCategory(viewModel, matching: { name in
-                return (name.contains("israeli") || name.contains("israel")) &&
-                       (name.contains("movie") || name.contains("film"))
+                (name.contains("israeli") || name.contains("israel")) &&
+                    (name.contains("movie") || name.contains("film"))
             })
         case .movies:
             return hasCategory(viewModel, matching: { name in
-                return (name.contains("movie") || name.contains("film")) &&
-                       !name.contains("israeli") && !name.contains("israel")
+                (name.contains("movie") || name.contains("film")) &&
+                    !name.contains("israeli") && !name.contains("israel")
             })
         case .kids:
             return hasCategory(viewModel, matching: { $0.contains("kid") || $0.contains("children") })
@@ -124,11 +152,13 @@ enum TVHomeSection: Int, CaseIterable {
     @MainActor
     private func hasNearMeData(_ viewModel: HomeViewModel) -> Bool {
         if let israelis = viewModel.israelisInCity?.content,
-           let articles = israelis.newsArticles, !articles.isEmpty {
+           let articles = israelis.newsArticles, !articles.isEmpty
+        {
             return true
         }
         if let businesses = viewModel.israeliBusinesses?.content,
-           let businessArticles = businesses.newsArticles, !businessArticles.isEmpty {
+           let businessArticles = businesses.newsArticles, !businessArticles.isEmpty
+        {
             return true
         }
         return false
@@ -146,17 +176,16 @@ enum TVHomeSection: Int, CaseIterable {
     func category(from viewModel: HomeViewModel) -> ContentCategory? {
         switch self {
         case .israeliMovies:
-            let name = viewModel.categories.first { category in
+            return viewModel.categories.first { category in
                 let lower = category.name.lowercased()
                 return (lower.contains("israeli") || lower.contains("israel")) &&
-                       (lower.contains("movie") || lower.contains("film"))
+                    (lower.contains("movie") || lower.contains("film"))
             }
-            return name
         case .movies:
             return viewModel.categories.first { category in
                 let lower = category.name.lowercased()
                 return (lower.contains("movie") || lower.contains("film")) &&
-                       !lower.contains("israeli") && !lower.contains("israel")
+                    !lower.contains("israeli") && !lower.contains("israel")
             }
         case .kids:
             return viewModel.categories.first { $0.name.lowercased().contains("kid") || $0.name.lowercased().contains("children") }

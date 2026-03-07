@@ -9,6 +9,7 @@ struct TVHomeView: View {
     @Environment(TVRepositoryProvider.self) var repos
     @Environment(TVNavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
+    @Environment(TVOnboardingPreferences.self) var prefs
     @Environment(\.appConfiguration) private var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var featuredCollections: [CollectionDetail] = []
@@ -38,7 +39,7 @@ struct TVHomeView: View {
                     locationProvider: TVLocationProvider(),
                     featureFlags: FeatureFlags(),
                     contentRowLimit: appConfiguration.homeContentRowLimit,
-                    defaultCultureId: appConfiguration.defaultCultureId,
+                    defaultCultureId: prefs.cultureId ?? appConfiguration.defaultCultureId,
                     hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
                 )
             }
@@ -77,6 +78,9 @@ struct TVHomeView: View {
 
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
+            // Personalized greeting
+            greetingSection
+
             // Hero carousel with auto-rotation
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
@@ -92,6 +96,9 @@ struct TVHomeView: View {
                 }
             }
 
+            // Continue watching (independent loader)
+            TVContinueWatchingRow()
+
             // Featured collections carousel
             if !featuredCollections.isEmpty {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
@@ -105,16 +112,33 @@ struct TVHomeView: View {
             // Shabbat Eve section (Friday before candle lighting)
             TVShabbatEveView()
 
-            // Radio stations
-            if !vm.radioStations.isEmpty {
+            // Live now channels with EPG (independent loader)
+            TVLiveNowRow()
+
+            // Trending recommendations (VOD based on news)
+            TVTrendingRecommendationsRow()
+
+            // Radio stations (filtered by interest)
+            if prefs.showRadio, !vm.radioStations.isEmpty {
                 radioStationsSection(vm.radioStations)
             }
 
-            // All content sections in fixed order
+            // All content sections filtered by onboarding interests
             ForEach(TVHomeSection.allCases, id: \.rawValue) { section in
-                if section.hasData(in: vm) {
+                if section.hasData(in: vm), section.isVisible(given: prefs) {
                     renderSection(section, vm: vm)
                 }
+            }
+
+            // Personalized recommendations (independent loader)
+            TVRecommendedRow()
+
+            // New releases (independent loader)
+            TVNewReleasesRow()
+
+            // Audio picks filtered by interests
+            if prefs.showPodcasts || prefs.showAudiobooks {
+                TVAudioPicksRow()
             }
 
             // Dynamic culture city rows (beyond Jerusalem and Tel Aviv)
@@ -147,18 +171,6 @@ struct TVHomeView: View {
                 categorySection(section, category: category)
             }
         }
-    }
-
-    var loadingState: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
-            ProgressView()
-                .tint(DesignTokens.Primary.default)
-                .scaleEffect(1.5)
-            Text(localization.t("common.loading"))
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
-        .frame(maxWidth: .infinity, minHeight: 400)
     }
 }
 

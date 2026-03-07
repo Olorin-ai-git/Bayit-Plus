@@ -16,6 +16,10 @@
 
         @State private var showVoiceAssistant = false
         @State private var isHandlingUnauthorized = false
+        @State private var networkMonitor = NetworkMonitor()
+        @State private var multiUserService = TVMultiUserService()
+        @State private var onboardingPrefs = TVOnboardingPreferences(profileId: "")
+        @Environment(\.scenePhase) private var scenePhase
 
         var body: some View {
             ZStack {
@@ -41,13 +45,59 @@
                         logger: TVAppAPILogger()
                     )
                     .transition(.opacity)
+                } else if !coordinator.profileSelected {
+                    TVProfileSelectionView { member in
+                        withAnimation {
+                            coordinator.selectedProfileId = member.stableId
+                            coordinator.selectedProfileName = member.displayName
+                            onboardingPrefs.switchProfile(member.stableId)
+                            // Use onboarding name if profile has none
+                            if coordinator.selectedProfileName == nil {
+                                coordinator.selectedProfileName = onboardingPrefs.userName.isEmpty
+                                    ? nil : onboardingPrefs.userName
+                            }
+                            coordinator.profileSelected = true
+                            checkOnboardingNeeded(profileId: member.stableId)
+                        }
+                    }
+                    .transition(.opacity)
+                } else if coordinator.showingOnboarding {
+                    TVOnboardingView(
+                        profileId: coordinator.selectedProfileId ?? ""
+                    ) {
+                        withAnimation {
+                            // Reload preferences after onboarding saves them
+                            if let pid = coordinator.selectedProfileId {
+                                onboardingPrefs.switchProfile(pid)
+                            }
+                            if !onboardingPrefs.userName.isEmpty {
+                                coordinator.selectedProfileName = onboardingPrefs.userName
+                            }
+                            coordinator.showingOnboarding = false
+                        }
+                    }
+                    .transition(.opacity)
                 } else {
                     TVMainTabView()
                         .transition(.opacity)
                 }
             }
+            .overlay { TVNetworkBannerView(isConnected: networkMonitor.isConnected) }
+            .environment(networkMonitor)
+            .environment(onboardingPrefs)
             .animation(.easeInOut, value: coordinator.showingSplash)
             .animation(.easeInOut, value: coordinator.showingAuth)
+            .animation(.easeInOut, value: coordinator.profileSelected)
+            .animation(.easeInOut, value: coordinator.showingOnboarding)
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    multiUserService.checkForUserChange()
+                    if multiUserService.didUserChange {
+                        handleSystemUserChange()
+                        multiUserService.acknowledgeUserChange()
+                    }
+                }
+            }
             .fullScreenCover(item: fullscreenBinding) { route in
                 fullscreenView(for: route)
             }
@@ -57,30 +107,12 @@
                     onDismiss: { showVoiceAssistant = false }
                 )
             }
-            .onOpenURL { url in
-                coordinator.handleDeepLink(url)
-            }
-            .onContinueUserActivity(
-                "tv.bayit.plus.playContent"
-            ) { activity in
-                coordinator.handleUserActivity(activity)
-            }
-            .onContinueUserActivity(
-                "tv.bayit.plus.searchContent"
-            ) { activity in
-                coordinator.handleUserActivity(activity)
-            }
-            .onContinueUserActivity(
-                "tv.bayit.plus.resumeWatching"
-            ) { activity in
-                coordinator.handleUserActivity(activity)
-            }
-            .onChange(of: TVPendingIntentManager.shared.pendingRoute) {
-                coordinator.handlePendingIntent()
-            }
-            .onChange(of: TVPendingIntentManager.shared.pendingTab) {
-                coordinator.handlePendingIntent()
-            }
+            .onOpenURL { coordinator.handleDeepLink($0) }
+            .onContinueUserActivity("tv.bayit.plus.playContent") { coordinator.handleUserActivity($0) }
+            .onContinueUserActivity("tv.bayit.plus.searchContent") { coordinator.handleUserActivity($0) }
+            .onContinueUserActivity("tv.bayit.plus.resumeWatching") { coordinator.handleUserActivity($0) }
+            .onChange(of: TVPendingIntentManager.shared.pendingRoute) { coordinator.handlePendingIntent() }
+            .onChange(of: TVPendingIntentManager.shared.pendingTab) { coordinator.handlePendingIntent() }
             .onAppear { registerRemoteVoiceTrigger() }
             .onDisappear { unregisterRemoteVoiceTrigger() }
             .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
@@ -91,6 +123,8 @@
                 } else if !coordinator.showingSplash {
                     withAnimation {
                         coordinator.showingAuth = true
+                        coordinator.profileSelected = false
+                        coordinator.selectedProfileId = nil
                     }
                 }
             }
@@ -143,6 +177,10 @@
                 TVAudiobookDetailView(audiobookId: audiobookId)
             case .audiobooks:
                 TVAudiobooksView()
+            case .audiobookBrowse:
+                TVAudiobookBrowseView()
+            case .podcastBrowse:
+                TVPodcastBrowseView()
             case .voiceAssistant:
                 TVVoiceAssistantSheet(
                     chatRepository: repos.chat,
@@ -151,6 +189,23 @@
             default:
                 EmptyView()
                     .onAppear { coordinator.dismissFullscreen() }
+            }
+        }
+
+        // MARK: - Profile & Onboarding
+
+        private func checkOnboardingNeeded(profileId: String) {
+            let key = "tv.bayit.plus.onboarding.\(profileId).completed"
+            let completed = UserDefaults.standard.bool(forKey: key)
+            coordinator.showingOnboarding = !completed
+        }
+
+        private func handleSystemUserChange() {
+            coordinator.profileSelected = false
+            coordinator.selectedProfileId = nil
+            coordinator.showingOnboarding = false
+            Task {
+                await authManager.signOut()
             }
         }
 

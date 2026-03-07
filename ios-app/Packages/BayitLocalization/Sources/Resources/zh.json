@@ -3067,7 +3067,7 @@
     },
     "expandMore": "Expand More",
     "goBack": "Go Back",
-    "continueListening": "\u7ee7\u7eed\u6536\u542c",
+    "continueListening": "继续收听",
     "loadingAudiobooks": "Loading audiobooks...",
     "narratedBy": "Narrated by",
     "pause": "Pause",
@@ -5998,7 +5998,12 @@
     "chooseAvatar": "选择你的头像",
     "enableVoice": "启用语音命令",
     "finish": "完成",
-    "language": "语言",
+    "language": {
+      "content": "内容语言",
+      "primary": "主要语言",
+      "subtitle": "选择您的首选语言",
+      "title": "选择语言"
+    },
     "namePlaceholder": "输入您的名字",
     "next": "下一步",
     "profileTitle": "设置你的个人资料",
@@ -6009,7 +6014,57 @@
     "voiceTitle": "语音控制",
     "wakeWord": "唤醒词",
     "welcomeSubtitle": "让我们个性化您的体验",
-    "welcomeTitle": "欢迎来到Bayit+"
+    "welcomeTitle": "欢迎来到Bayit+",
+    "complete": {
+      "culture": "文化",
+      "interests": "兴趣",
+      "language": "语言",
+      "name": "名字",
+      "saving": "正在保存您的偏好设置...",
+      "startWatching": "开始观看",
+      "subtitle": "您的个性化体验已准备就绪",
+      "title": "一切就绪！"
+    },
+    "culture": {
+      "american": "美国",
+      "european": "欧洲",
+      "israeli": "以色列",
+      "mixed": "混合",
+      "subtitle": "选择最适合您的文化偏好",
+      "title": "选择您的文化"
+    },
+    "interest": {
+      "audiobooks": "有声书",
+      "kids": "儿童",
+      "kidsContent": "儿童",
+      "liveTV": "直播电视",
+      "movies": "电影",
+      "music": "音乐",
+      "news": "新闻",
+      "podcasts": "播客",
+      "radio": "广播",
+      "series": "电视剧",
+      "sports": "体育"
+    },
+    "interests": {
+      "selected": "已选择 %d 项",
+      "subtitle": "选择至少3种您喜欢的内容类型",
+      "title": "您喜欢什么？"
+    },
+    "skip": "跳过",
+    "voice": {
+      "micUnavailable": "麦克风不可用",
+      "noAudio": "未检测到音频",
+      "orType": "或输入您的名字",
+      "subtitle": "说出您的名字或在下方输入",
+      "title": "我们怎么称呼您？",
+      "useTextInput": "使用文本输入"
+    },
+    "welcome": {
+      "getStarted": "开始使用",
+      "subtitle": "让我们个性化您的体验",
+      "title": "欢迎来到 Bayit+"
+    }
   },
   "pairing": {
     "codePlaceholder": "输入配对码",
@@ -6140,8 +6195,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6153,7 +6217,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -6408,7 +6475,14 @@
       "yourTurn": "[ZH] Your Turn",
       "waitingForTurn": "[ZH] Waiting for your turn..."
     },
-    "streamLoadFailed": "[ZH] Failed to load stream"
+    "streamLoadFailed": "[ZH] Failed to load stream",
+    "interactive": {
+      "addToGlossary": "添加到词汇表",
+      "close": "关闭",
+      "tapToTranslate": "点击单词进行翻译",
+      "toggle": "互动字幕",
+      "translating": "翻译中..."
+    }
   },
   "playlist": {
     "title": "我的播放列表",
@@ -7110,7 +7184,14 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "小组件",
     "widgetsDesc": "管理您的小组件",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "addProfile": "添加个人资料",
+    "addProfileSubtitle": "为您的家庭创建新的个人资料",
+    "chooseAvatar": "选择头像",
+    "loadingProfiles": "加载个人资料...",
+    "switchProfile": "切换个人资料",
+    "switchProfileDesc": "切换到其他家庭成员的资料",
+    "whosWatching": "谁在看？"
   },
   "mfa": {
     "title": "多因素认证",
@@ -7664,7 +7745,19 @@
       "title": "晨间仪式",
       "videos": "视频"
     },
-    "accessibility": "[ZH] Accessibility",
+    "accessibility": {
+      "audioVisual": "音视频",
+      "boldText": "粗体文字",
+      "closedCaptions": "隐藏式字幕",
+      "colorBlind": "色盲模式",
+      "description": "自定义您的观看体验",
+      "display": "显示",
+      "highContrast": "高对比度",
+      "largeText": "大字体",
+      "largeTextDesc": "增大应用中的字体大小",
+      "reduceMotion": "减少动画",
+      "title": "辅助功能"
+    },
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "账户",
@@ -7712,7 +7805,13 @@
     "unlinkConfirm": "取消关联",
     "connected": "已连接",
     "notConnected": "未连接",
-    "help": "[ZH] Help & Support",
+    "help": {
+      "contactSupport": "联系客服",
+      "loading": "加载帮助...",
+      "noFaqs": "暂无常见问题",
+      "subtitle": "查找答案并获取支持",
+      "title": "帮助与支持"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -7744,7 +7843,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "[ZH] Audio",
+    "audio": {
+      "description": "配置音频偏好设置",
+      "dubbing": "配音",
+      "dubbingLanguage": "配音语言",
+      "preferDubbed": "优先配音音频",
+      "preferredLanguage": "首选语言",
+      "processing": "处理",
+      "quality": "音频质量",
+      "title": "音频设置",
+      "volumeNormDesc": "在不同内容间规范音量",
+      "volumeNormalization": "音量标准化"
+    },
     "mediaSection": "[ZH] Media",
     "privacyData": "[ZH] Privacy & Data",
     "general": "[ZH] General",
@@ -8995,7 +9105,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "取消",
+    "chooseMethod": "一起观看",
+    "chooseMethodDescription": "选择与他人一起观看的方式"
   },
   "widget": {
     "103fmEpisodes": "103FM 节目",
@@ -10311,7 +10424,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "关闭",
+    "empty": "还没有保存的单词",
+    "emptyHint": "点击字幕中的单词来保存",
+    "newWords": "新单词",
+    "reviewedWords": "已复习的单词",
+    "title": "词汇",
+    "wordCount": "{{count}} 个单词"
   },
   "wallet": {
     "earned": "Earned",
@@ -10437,5 +10557,27 @@
       "title": "联系请求",
       "noRequests": "暂无联系请求"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "后台播放",
+    "sessionCategory": "播放",
+    "spatialEnabled": "空间音频"
+  },
+  "sharePlay": {
+    "bayitParty": "Bayit+ 派对",
+    "bayitPartyDescription": "邀请朋友参加 Bayit+ 观影派对",
+    "end": "结束 SharePlay",
+    "faceTimeDescription": "通过 FaceTime 与朋友一起观看",
+    "inviteDescription": "选择与朋友一起观看的方式",
+    "synced": "已同步",
+    "syncing": "同步中...",
+    "title": "SharePlay",
+    "viaFaceTime": "通过 FaceTime 进行 SharePlay",
+    "watchTogether": "一起观看",
+    "watching": "{{count}} 人在看"
+  },
+  "network": {
+    "connectionLost": "连接丢失",
+    "reconnecting": "重新连接中..."
   }
 }

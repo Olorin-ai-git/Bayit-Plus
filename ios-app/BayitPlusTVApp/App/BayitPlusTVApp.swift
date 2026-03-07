@@ -24,6 +24,7 @@ struct BayitPlusTVApp: App {
     @State private var mediaPlayer = MediaPlayer()
     @State private var audioPlaybackManager: TVAudioPlaybackManager?
     @State private var featureFlags = FeatureFlags()
+    @State private var audioSessionCoordinator = TVAudioSessionCoordinator()
     @State private var siriSearchCoordinator = TVSiriSearchCoordinator()
 
     init() {
@@ -88,6 +89,7 @@ struct BayitPlusTVApp: App {
                 .environment(mediaPlayer)
                 .environment(featureFlags)
                 .environment(resolvedAudioPlaybackManager)
+                .environment(audioSessionCoordinator)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .task {
@@ -126,6 +128,7 @@ struct BayitPlusTVApp: App {
             radioRepository: repositories.radio,
             podcastRepository: repositories.podcasts
         )
+        audioSessionCoordinator.configure(playbackManager: manager)
         // Deferred mutation to avoid modifying state during view update
         DispatchQueue.main.async { [self] in
             audioPlaybackManager = manager

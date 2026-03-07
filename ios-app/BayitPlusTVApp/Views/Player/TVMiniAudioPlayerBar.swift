@@ -9,8 +9,9 @@
     /// Displays artwork thumbnail, title/subtitle, play/pause and stop buttons.
     /// Hides when the fullscreen player is active.
     struct TVMiniAudioPlayerBar: View {
-        @Environment(TVAudioPlaybackManager.self) private var audioManager
-        @Environment(TVNavigationCoordinator.self) private var coordinator
+        @Environment(TVAudioPlaybackManager.self) var audioManager
+        @Environment(TVAudioSessionCoordinator.self) var sessionCoordinator
+        @Environment(TVNavigationCoordinator.self) var coordinator
         @State private var showSleepTimerPicker = false
 
         var body: some View {
@@ -64,9 +65,13 @@
                             )
                     } else {
                         if !isLiveContent {
+                            skipBackButton
                             sleepTimerButton
                         }
                         playPauseButton
+                        if !isLiveContent {
+                            skipForwardButton
+                        }
                         stopButton
                     }
                 }
@@ -153,35 +158,6 @@
             }
             .tvCardStyle()
             .accessibilityLabel("Stop audio")
-        }
-
-        @ViewBuilder
-        private var artworkThumbnail: some View {
-            if let url = audioManager.artworkURL {
-                CachedAsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure, .empty:
-                        artworkPlaceholder
-                    @unknown default:
-                        artworkPlaceholder
-                    }
-                }
-            } else {
-                artworkPlaceholder
-            }
-        }
-
-        private var artworkPlaceholder: some View {
-            ZStack {
-                DesignTokens.Glass.bgMedium
-                Image(systemName: audioManager.activeContentType == .radio ? "radio" : "headphones")
-                    .font(.system(size: TVDesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Text.muted)
-            }
         }
     }
 #endif

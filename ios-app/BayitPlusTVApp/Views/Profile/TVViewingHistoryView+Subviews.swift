@@ -1,3 +1,4 @@
+import BayitCore
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -5,10 +6,9 @@ import SwiftUI
 // MARK: - History Row
 
 extension TVViewingHistoryView {
-    func historyRow(_ item: HistoryItem) -> some View {
+    func historyRow(_ item: WatchHistoryItem) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            // Thumbnail
-            CachedAsyncImage(url: URL(string: item.thumbnail)) { phase in
+            CachedAsyncImage(url: URL(string: item.thumbnail ?? "")) { phase in
                 if case let .success(image) = phase {
                     image
                         .resizable()
@@ -26,66 +26,65 @@ extension TVViewingHistoryView {
             .frame(width: 160, height: 90)
             .cornerRadius(TVDesignTokens.Radius.md)
 
-            // Info
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                Text(item.title)
+                Text(item.title ?? "")
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)
 
-                HStack(spacing: TVDesignTokens.Spacing.sm) {
-                    if let year = item.year {
-                        Text("\(year)")
-                            .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-
-                    Text("\u{2022}")
-                        .foregroundStyle(DesignTokens.Text.muted)
-
-                    Text(item.type.capitalized)
+                if let type = item.type {
+                    Text(type.capitalized)
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
 
-                // Progress bar
-                if item.progress > 0 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.white.opacity(0.2))
-                                    .frame(height: 4)
-
-                                Rectangle()
-                                    .fill(DesignTokens.Primary.p400)
-                                    .frame(width: geo.size.width * CGFloat(item.progress), height: 4)
-                            }
-                        }
-                        .frame(height: 4)
-                        .cornerRadius(2)
-
-                        Text("\(Int(item.progress * 100))% complete")
-                            .font(.system(size: TVDesignTokens.FontSize.xs))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                    }
+                if let progress = item.progress, progress > 0 {
+                    progressBar(progress: progress)
                 }
             }
 
             Spacer()
 
-            // Watched date
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(item.watchedAt.formatted(.dateTime.month().day()))
-                    .font(.system(size: TVDesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.secondary)
+            if let lastWatched = item.lastWatched,
+               let date = ISO8601DateFormatter().date(from: lastWatched)
+            {
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(date.formatted(.dateTime.month().day()))
+                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.secondary)
 
-                Text(item.watchedAt.formatted(.dateTime.hour().minute()))
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.muted)
+                    Text(date.formatted(.dateTime.hour().minute()))
+                        .font(.system(size: TVDesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
             }
         }
         .padding(.vertical, TVDesignTokens.Spacing.xs)
+    }
+
+    private func progressBar(progress: Double) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.white.opacity(0.2))
+                        .frame(height: 4)
+
+                    Rectangle()
+                        .fill(DesignTokens.Primary.p400)
+                        .frame(
+                            width: geo.size.width * CGFloat(progress),
+                            height: 4
+                        )
+                }
+            }
+            .frame(height: 4)
+            .cornerRadius(2)
+
+            Text("\(Int(progress * 100))%")
+                .font(.system(size: TVDesignTokens.FontSize.xs))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
     }
 }
 
@@ -115,7 +114,7 @@ extension TVViewingHistoryView {
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Button("Retry") {
+            Button(localization.t("common.retry")) {
                 Task { await loadHistory() }
             }
             .buttonStyle(.plain)
@@ -145,22 +144,20 @@ extension TVViewingHistoryView {
     }
 }
 
-// MARK: - Models
+// MARK: - Filter
 
-struct HistoryItem: Identifiable {
-    let id: String
-    let contentId: String
-    let title: String
-    let thumbnail: String
-    let type: String
-    let year: Int?
-    let progress: Double
-    let watchedAt: Date
-}
+enum HistoryFilter: String, CaseIterable {
+    case all
+    case movies
+    case shows
+    case live
 
-enum HistoryFilter: String {
-    case all = "All"
-    case movies = "Movies"
-    case shows = "TV Shows"
-    case live = "Live TV"
+    func label(_ localization: LocalizationManager) -> String {
+        switch self {
+        case .all: localization.t("common.all")
+        case .movies: localization.t("content.filters.movies")
+        case .shows: localization.t("content.filters.series")
+        case .live: localization.t("liveTV.title")
+        }
+    }
 }

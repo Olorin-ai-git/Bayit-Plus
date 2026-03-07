@@ -114,9 +114,16 @@ extension TVPlayerView {
             let response = try await repos.subtitle.fetchPreferences(contentId: contentId)
             if let language = response.language, !language.isEmpty {
                 handleSubtitleSelection(language)
+                return
             }
         } catch {
-            // Subtitle preferences are optional
+            // Subtitle preferences are optional — fall through to onboarding default
+        }
+        // Fall back to onboarding content language preference
+        if let preferred = onboardingPrefs.preferredSubtitleLanguage,
+           state.availableSubtitleLanguages.contains(preferred)
+        {
+            handleSubtitleSelection(preferred)
         }
     }
 

@@ -3,6 +3,40 @@ import BayitLocalization
 import BayitMedia
 import SwiftUI
 
+// MARK: - TVHomeView Greeting
+
+extension TVHomeView {
+    var greetingSection: some View {
+        Group {
+            if let name = coordinator.selectedProfileName, !name.isEmpty {
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    Text("\(timeOfDayGreeting), \(name)")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+
+                    Spacer()
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                .padding(.top, TVDesignTokens.Spacing.md)
+            }
+        }
+    }
+
+    private var timeOfDayGreeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5 ..< 12:
+            return localization.t("greeting.morning")
+        case 12 ..< 17:
+            return localization.t("greeting.afternoon")
+        case 17 ..< 21:
+            return localization.t("greeting.evening")
+        default:
+            return localization.t("greeting.night")
+        }
+    }
+}
+
 // MARK: - TVHomeView Navigation & Utility Helpers
 
 extension TVHomeView {
@@ -82,5 +116,14 @@ extension TVHomeView {
             TopShelfCachedItem(id: item.id, title: item.title, imageURL: nil)
         }
         TopShelfDataProvider.cacheTrending(trendingItems)
+
+        let liveItems = vm.liveChannels.prefix(10).map { channel in
+            TopShelfCachedItem(
+                id: channel.id,
+                title: channel.name ?? localization.t("liveTV.channel"),
+                imageURL: channel.logo ?? channel.thumbnail
+            )
+        }
+        TopShelfDataProvider.cacheLiveChannels(liveItems)
     }
 }

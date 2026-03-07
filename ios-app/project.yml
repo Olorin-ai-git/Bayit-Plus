@@ -85,6 +85,8 @@ targets:
           - "Views/Avatar/TVAvatarModeView+ColorHelpers.swift"
           - "Views/TVPodcastDetailView+EpisodeRow.swift"
           - "Views/TVMovieDetailView+Sections.swift"
+          - "Views/TVDubbingMixerView.swift"
+          - "Views/TVProfileSelectionView.swift"
       - path: BayitPlusApp/Models
         type: group
       - path: BayitPlusApp/Repositories
@@ -183,6 +185,8 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        UIBackgroundModes:
+          - audio
 
   BayitWidgets:
     type: app-extension

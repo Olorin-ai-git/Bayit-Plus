@@ -145,6 +145,26 @@ struct TVProfileAdminSection: View {
     }
 }
 
+// MARK: - Switch Profile Section
+
+struct TVProfileSwitchProfileSection: View {
+    let localization: LocalizationManager
+    let onSwitchProfile: () -> Void
+
+    var body: some View {
+        Section {
+            profileActionRow(
+                icon: "person.2.circle",
+                title: localization.t("profile.switchProfile"),
+                subtitle: localization.t("profile.switchProfileDesc"),
+                color: DesignTokens.Secondary.s400
+            ) {
+                onSwitchProfile()
+            }
+        }
+    }
+}
+
 // MARK: - Sign Out Section
 
 struct TVProfileSignOutSection: View {

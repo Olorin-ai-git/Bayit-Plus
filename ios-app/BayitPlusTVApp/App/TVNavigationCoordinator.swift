@@ -80,6 +80,18 @@ final class TVNavigationCoordinator {
 
     /// Set to `true` from any view (e.g. Profile) to surface the widget dock.
     /// TVMainTabView observes this and resets it after showing the dock.
+    /// Whether a household profile has been selected for this session.
+    var profileSelected: Bool = false
+
+    /// The selected household member profile ID for the current session.
+    var selectedProfileId: String?
+
+    /// The display name of the currently selected profile (for greetings).
+    var selectedProfileName: String?
+
+    /// Whether the onboarding flow should be shown for the current profile.
+    var showingOnboarding: Bool = false
+
     var showWidgetDock: Bool = false
 
     /// Reflects the current dock visibility state, kept in sync by TVMainTabView.

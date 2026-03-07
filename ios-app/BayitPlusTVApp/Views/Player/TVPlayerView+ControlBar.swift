@@ -75,8 +75,18 @@ extension TVPlayerView {
                     Task { await openCharacterSelection() }
                 }
             } : nil,
+            onVocabulary: state.interactiveSubtitleVM != nil ? {
+                state.showVocabulary = true
+            } : nil,
+            onInteractiveSubtitles: state.selectedSubtitleLanguage != nil ? {
+                toggleInteractiveSubtitles()
+            } : nil,
+            onSharePlay: {
+                Task { await activateSharePlay() }
+            },
             onPreviousInteraction: previousInteractionAction,
             onNextInteraction: nextInteractionAction,
+            isInteractiveSubtitlesEnabled: state.interactiveSubtitleVM?.isEnabled ?? false,
             selectedSubtitleLanguage: state.selectedSubtitleLanguage,
             isSplitEnabled: state.splitModeEnabled,
             splitLanguages: state.splitLanguages

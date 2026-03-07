@@ -6251,7 +6251,12 @@
     "chooseAvatar": "Scegli il tuo avatar",
     "enableVoice": "Abilita comandi vocali",
     "finish": "Fine",
-    "language": "Lingua",
+    "language": {
+      "content": "Lingue dei contenuti",
+      "primary": "Lingua principale",
+      "subtitle": "Seleziona la tua lingua preferita",
+      "title": "Scegli la lingua"
+    },
     "namePlaceholder": "Inserisci il tuo nome",
     "next": "Avanti",
     "profileTitle": "Configura il tuo profilo",
@@ -6262,7 +6267,57 @@
     "voiceTitle": "Controllo vocale",
     "wakeWord": "Parola di attivazione",
     "welcomeSubtitle": "Personalizziamo la tua esperienza",
-    "welcomeTitle": "Benvenuto su Bayit+"
+    "welcomeTitle": "Benvenuto su Bayit+",
+    "complete": {
+      "culture": "Cultura",
+      "interests": "Interessi",
+      "language": "Lingua",
+      "name": "Nome",
+      "saving": "Salvataggio delle preferenze...",
+      "startWatching": "Inizia a guardare",
+      "subtitle": "La tua esperienza personalizzata e pronta",
+      "title": "Tutto pronto!"
+    },
+    "culture": {
+      "american": "Americano",
+      "european": "Europeo",
+      "israeli": "Israeliano",
+      "mixed": "Misto",
+      "subtitle": "Seleziona la cultura che preferisci",
+      "title": "Scegli la tua cultura"
+    },
+    "interest": {
+      "audiobooks": "Audiolibri",
+      "kids": "Bambini",
+      "kidsContent": "Bambini",
+      "liveTV": "TV in diretta",
+      "movies": "Film",
+      "music": "Musica",
+      "news": "Notizie",
+      "podcasts": "Podcast",
+      "radio": "Radio",
+      "series": "Serie",
+      "sports": "Sport"
+    },
+    "interests": {
+      "selected": "%d selezionati",
+      "subtitle": "Seleziona almeno 3 tipi di contenuto",
+      "title": "Cosa ti piace?"
+    },
+    "skip": "Salta",
+    "voice": {
+      "micUnavailable": "Microfono non disponibile",
+      "noAudio": "Nessun audio rilevato",
+      "orType": "Oppure digita il tuo nome",
+      "subtitle": "Pronuncia il tuo nome o digitalo",
+      "title": "Come ti chiamiamo?",
+      "useTextInput": "Usa input di testo"
+    },
+    "welcome": {
+      "getStarted": "Iniziamo",
+      "subtitle": "Personalizziamo la tua esperienza",
+      "title": "Benvenuto su Bayit+"
+    }
   },
   "pairing": {
     "codePlaceholder": "Inserisci codice di associazione",
@@ -6399,7 +6454,11 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
+      "notIncluded": [
+        "Canali in diretta",
+        "Assistente AI",
+        "Visione offline"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6411,7 +6470,10 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": ["Visione offline", "Profili familiari"]
+      "notIncluded": [
+        "Visione offline",
+        "Profili familiari"
+      ]
     },
     "family": {
       "name": "Famiglia",
@@ -6666,7 +6728,14 @@
       "yourTurn": "[IT] Your Turn",
       "waitingForTurn": "[IT] Waiting for your turn..."
     },
-    "streamLoadFailed": "[IT] Failed to load stream"
+    "streamLoadFailed": "[IT] Failed to load stream",
+    "interactive": {
+      "addToGlossary": "Aggiungi al glossario",
+      "close": "Chiudi",
+      "tapToTranslate": "Tocca una parola per tradurre",
+      "toggle": "Sottotitoli interattivi",
+      "translating": "Traduzione in corso..."
+    }
   },
   "playlist": {
     "title": "La Mia Lista",
@@ -7368,7 +7437,14 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "Widget",
     "widgetsDesc": "Gestisci i tuoi widget",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "addProfile": "Aggiungi profilo",
+    "addProfileSubtitle": "Crea un nuovo profilo per la tua famiglia",
+    "chooseAvatar": "Scegli avatar",
+    "loadingProfiles": "Caricamento profili...",
+    "switchProfile": "Cambia profilo",
+    "switchProfileDesc": "Passa a un profilo diverso",
+    "whosWatching": "Chi sta guardando?"
   },
   "mfa": {
     "title": "Autenticazione multifattore",
@@ -7922,7 +7998,19 @@
       "title": "Rituale mattutino",
       "videos": "Video"
     },
-    "accessibility": "[IT] Accessibility",
+    "accessibility": {
+      "audioVisual": "Audio e video",
+      "boldText": "Testo in grassetto",
+      "closedCaptions": "Sottotitoli",
+      "colorBlind": "Modalita daltonismo",
+      "description": "Personalizza la tua esperienza",
+      "display": "Schermo",
+      "highContrast": "Contrasto elevato",
+      "largeText": "Testo grande",
+      "largeTextDesc": "Aumenta la dimensione del testo",
+      "reduceMotion": "Riduci movimento",
+      "title": "Accessibilita"
+    },
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls",
     "account": "Account",
@@ -7970,7 +8058,13 @@
     "unlinkConfirm": "Scollega",
     "connected": "Connesso",
     "notConnected": "Non Connesso",
-    "help": "[IT] Help & Support",
+    "help": {
+      "contactSupport": "Contatta il supporto",
+      "loading": "Caricamento aiuto...",
+      "noFaqs": "Nessuna FAQ disponibile",
+      "subtitle": "Trova risposte e ottieni supporto",
+      "title": "Aiuto e supporto"
+    },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
@@ -8002,7 +8096,18 @@
     "videoQuality": "Video Quality",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "audio": "[IT] Audio",
+    "audio": {
+      "description": "Configura le preferenze audio",
+      "dubbing": "Doppiaggio",
+      "dubbingLanguage": "Lingua del doppiaggio",
+      "preferDubbed": "Preferisci audio doppiato",
+      "preferredLanguage": "Lingua preferita",
+      "processing": "Elaborazione",
+      "quality": "Qualita audio",
+      "title": "Impostazioni audio",
+      "volumeNormDesc": "Normalizza il volume tra i contenuti",
+      "volumeNormalization": "Normalizzazione volume"
+    },
     "mediaSection": "[IT] Media",
     "privacyData": "[IT] Privacy & Data",
     "general": "[IT] General",
@@ -9251,7 +9356,10 @@
     "myParties": "MY PARTIES",
     "noParties": "No active watch parties",
     "subtitle": "Watch together with friends",
-    "type": "Type"
+    "type": "Type",
+    "cancel": "Annulla",
+    "chooseMethod": "Guarda insieme",
+    "chooseMethodDescription": "Scegli come guardare con altri"
   },
   "widget": {
     "103fmEpisodes": "Episodi 103FM",
@@ -10566,7 +10674,14 @@
     "hebrewRatio": "Hebrew Ratio",
     "totalWordsLearned": "Total Words Learned",
     "known": "Known",
-    "learning": "Learning"
+    "learning": "Learning",
+    "close": "Chiudi",
+    "empty": "Nessuna parola salvata",
+    "emptyHint": "Tocca le parole nei sottotitoli per salvarle",
+    "newWords": "Nuove parole",
+    "reviewedWords": "Parole revisionate",
+    "title": "Vocabolario",
+    "wordCount": "{{count}} parole"
   },
   "wallet": {
     "earned": "Earned",
@@ -10692,5 +10807,27 @@
       "title": "Richieste di contatto",
       "noRequests": "Nessuna richiesta di contatto ancora"
     }
+  },
+  "audio": {
+    "backgroundPlayback": "Riproduzione in background",
+    "sessionCategory": "Riproduzione",
+    "spatialEnabled": "Audio spaziale"
+  },
+  "sharePlay": {
+    "bayitParty": "Party Bayit+",
+    "bayitPartyDescription": "Invita amici a un party Bayit+",
+    "end": "Termina SharePlay",
+    "faceTimeDescription": "Guarda insieme su FaceTime",
+    "inviteDescription": "Scegli come guardare con gli amici",
+    "synced": "Tutto sincronizzato",
+    "syncing": "Sincronizzazione...",
+    "title": "SharePlay",
+    "viaFaceTime": "SharePlay via FaceTime",
+    "watchTogether": "Guarda insieme",
+    "watching": "{{count}} stanno guardando"
+  },
+  "network": {
+    "connectionLost": "Connessione persa",
+    "reconnecting": "Riconnessione..."
   }
 }

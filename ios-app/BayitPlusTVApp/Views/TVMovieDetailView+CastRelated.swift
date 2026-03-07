@@ -37,6 +37,7 @@ extension TVMovieDetailView {
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             }
         }
+        .focusSection()
     }
 
     func relatedSection(_ items: [RelatedItem]) -> some View {
@@ -64,6 +65,7 @@ extension TVMovieDetailView {
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             }
         }
+        .focusSection()
     }
 
     func relatedSubtitle(_ item: RelatedItem) -> String? {
