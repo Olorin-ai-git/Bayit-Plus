@@ -10653,6 +10653,13 @@
     "bannerSubtitle": "IPTV, Plex, या YouTube कनेक्ट करें और AI डबिंग और उपशीर्षक से बेहतर बनाएं",
     "bannerConnect": "अभी कनेक्ट करें",
     "bannerDismiss": "खारिज करें",
-    "itemsLoaded": "आइटम लोड हुए"
+    "itemsLoaded": "आइटम लोड हुए",
+    "enriching": "समृद्ध कर रहे हैं...",
+    "findingSubtitles": "सबटाइटल खोज रहे हैं...",
+    "subtitlesFound": "सबटाइटल मिले",
+    "noSubtitlesFound": "कोई सबटाइटल नहीं मिला",
+    "interactionMoments": "AI इंटरेक्शन क्षण उत्पन्न करें",
+    "interactionMomentsDescription": "मुख्य क्षणों और पात्र इंटरेक्शन बिंदुओं को जोड़ने के लिए सामग्री का विश्लेषण करता है। इसमें कुछ मिनट लग सकते हैं।",
+    "enrichmentFailed": "समृद्धि विफल"
   }
 }

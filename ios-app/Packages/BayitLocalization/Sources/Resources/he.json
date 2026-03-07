@@ -10702,6 +10702,13 @@
     "bannerSubtitle": "חברו IPTV, Plex או YouTube ושפרו עם דיבוב AI וכתוביות",
     "bannerConnect": "התחבר עכשיו",
     "bannerDismiss": "סגור",
-    "itemsLoaded": "פריטים נטענו"
+    "itemsLoaded": "פריטים נטענו",
+    "enriching": "מעשיר...",
+    "findingSubtitles": "מחפש כתוביות...",
+    "subtitlesFound": "כתוביות נמצאו",
+    "noSubtitlesFound": "לא נמצאו כתוביות",
+    "interactionMoments": "צור רגעי אינטראקציה עם AI",
+    "interactionMomentsDescription": "מנתח את התוכן שלך כדי להוסיף קפיצה לרגעים מרכזיים ונקודות אינטראקציה עם דמויות. עשוי לקחת כמה דקות.",
+    "enrichmentFailed": "העשרה נכשלה"
   }
 }

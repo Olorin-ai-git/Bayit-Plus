@@ -9888,6 +9888,13 @@
     "bannerSubtitle": "Connect IPTV, Plex, or YouTube and enhance with AI dubbing and subtitles",
     "bannerConnect": "Connect Now",
     "bannerDismiss": "Dismiss",
-    "itemsLoaded": "items loaded"
+    "itemsLoaded": "items loaded",
+    "enriching": "Enriching...",
+    "findingSubtitles": "Finding subtitles...",
+    "subtitlesFound": "Subtitles found",
+    "noSubtitlesFound": "No subtitles found",
+    "interactionMoments": "Generate AI interaction moments",
+    "interactionMomentsDescription": "Analyzes your content to add skip-to-highlight and character interaction points. This may take a few minutes.",
+    "enrichmentFailed": "Enrichment failed"
   }
 }

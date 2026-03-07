@@ -10644,6 +10644,13 @@
     "bannerSubtitle": "连接IPTV、Plex或YouTube，并通过AI配音和字幕增强",
     "bannerConnect": "立即连接",
     "bannerDismiss": "关闭",
-    "itemsLoaded": "项已加载"
+    "itemsLoaded": "项已加载",
+    "enriching": "正在丰富...",
+    "findingSubtitles": "正在搜索字幕...",
+    "subtitlesFound": "找到字幕",
+    "noSubtitlesFound": "未找到字幕",
+    "interactionMoments": "生成AI互动时刻",
+    "interactionMomentsDescription": "分析您的内容以添加跳转到精彩时刻和角色互动点。可能需要几分钟。",
+    "enrichmentFailed": "丰富失败"
   }
 }

@@ -10894,6 +10894,13 @@
     "bannerSubtitle": "Collega IPTV, Plex o YouTube e migliora con doppiaggio IA e sottotitoli",
     "bannerConnect": "Connetti Ora",
     "bannerDismiss": "Ignora",
-    "itemsLoaded": "elementi caricati"
+    "itemsLoaded": "elementi caricati",
+    "enriching": "Arricchimento...",
+    "findingSubtitles": "Ricerca sottotitoli...",
+    "subtitlesFound": "Sottotitoli trovati",
+    "noSubtitlesFound": "Nessun sottotitolo trovato",
+    "interactionMoments": "Genera momenti di interazione AI",
+    "interactionMomentsDescription": "Analizza il contenuto per aggiungere punti di salto ai momenti salienti e interazione con i personaggi. Potrebbe richiedere qualche minuto.",
+    "enrichmentFailed": "Arricchimento fallito"
   }
 }

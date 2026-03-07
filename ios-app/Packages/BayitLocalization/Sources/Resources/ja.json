@@ -11561,6 +11561,13 @@
     "bannerSubtitle": "IPTV、Plex、またはYouTubeを接続してAI吹き替えと字幕で強化",
     "bannerConnect": "今すぐ接続",
     "bannerDismiss": "閉じる",
-    "itemsLoaded": "件読み込み済み"
+    "itemsLoaded": "件読み込み済み",
+    "enriching": "充実中...",
+    "findingSubtitles": "字幕を検索中...",
+    "subtitlesFound": "字幕が見つかりました",
+    "noSubtitlesFound": "字幕が見つかりません",
+    "interactionMoments": "AIインタラクションモーメントを生成",
+    "interactionMomentsDescription": "ハイライトへのスキップポイントとキャラクターインタラクションポイントを追加するためにコンテンツを分析します。数分かかる場合があります。",
+    "enrichmentFailed": "充実に失敗しました"
   }
 }

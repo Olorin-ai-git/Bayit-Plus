@@ -10629,6 +10629,13 @@
     "bannerSubtitle": "IPTV, Plex, বা YouTube সংযুক্ত করুন এবং AI ডাবিং ও সাবটাইটেল দিয়ে উন্নত করুন",
     "bannerConnect": "এখনই সংযুক্ত করুন",
     "bannerDismiss": "বাতিল করুন",
-    "itemsLoaded": "আইটেম লোড হয়েছে"
+    "itemsLoaded": "আইটেম লোড হয়েছে",
+    "enriching": "সমৃদ্ধ করা হচ্ছে...",
+    "findingSubtitles": "সাবটাইটেল খোঁজা হচ্ছে...",
+    "subtitlesFound": "সাবটাইটেল পাওয়া গেছে",
+    "noSubtitlesFound": "কোনো সাবটাইটেল পাওয়া যায়নি",
+    "interactionMoments": "AI ইন্টারেকশন মুহূর্ত তৈরি করুন",
+    "interactionMomentsDescription": "মূল মুহূর্ত এবং চরিত্র ইন্টারেকশন পয়েন্ট যোগ করতে কন্টেন্ট বিশ্লেষণ করে। কয়েক মিনিট সময় লাগতে পারে।",
+    "enrichmentFailed": "সমৃদ্ধি ব্যর্থ হয়েছে"
   }
 }

@@ -11523,6 +11523,13 @@
     "bannerSubtitle": "Connectez IPTV, Plex ou YouTube et ameliorez avec le doublage IA et les sous-titres",
     "bannerConnect": "Connecter Maintenant",
     "bannerDismiss": "Ignorer",
-    "itemsLoaded": "éléments chargés"
+    "itemsLoaded": "éléments chargés",
+    "enriching": "Enrichissement...",
+    "findingSubtitles": "Recherche de sous-titres...",
+    "subtitlesFound": "Sous-titres trouvés",
+    "noSubtitlesFound": "Aucun sous-titre trouvé",
+    "interactionMoments": "Générer des moments d'interaction IA",
+    "interactionMomentsDescription": "Analyse votre contenu pour ajouter des points de saut vers les moments forts et d'interaction avec les personnages. Cela peut prendre quelques minutes.",
+    "enrichmentFailed": "Échec de l'enrichissement"
   }
 }
