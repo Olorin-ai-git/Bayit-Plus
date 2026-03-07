@@ -120,6 +120,9 @@ try:
         "grandparent_pin_verify": _dev_limit("5/minute"),  # PIN brute-force protection
         "grandparent_share": _dev_limit("10/hour"),  # Clip sharing rate limit
         "grandparent_voice_note": _dev_limit("20/hour"),  # Voice note upload rate limit
+        # BYOC Enrichment - External API quota protection
+        "byoc_enrich": _dev_limit("5/minute"),
+        "byoc_enrich_batch": _dev_limit("3/hour"),
         # VOD Interaction - Character dialogue (AI inference + animation)
         "vod_interaction_characters": _dev_limit("30/minute"),  # Character list fetch
         "vod_interaction_session_start": _dev_limit("10/minute"),  # Session creation
