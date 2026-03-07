@@ -6,7 +6,6 @@ import SwiftUI
 /// Account and media navigation sections extracted from SettingsView
 /// to keep each file under 200 lines.
 extension SettingsView {
-
     // MARK: - Media Navigation
 
     var mediaNavigationSection: some View {
@@ -50,6 +49,9 @@ extension SettingsView {
             }
             navRow(icon: "link.circle", title: localization.t("settings.connectedAccounts")) {
                 coordinator.pushToCurrentTab(.connectedAccounts)
+            }
+            navRow(icon: "play.tv", title: localization.t("byoc.connectedSources")) {
+                coordinator.pushToCurrentTab(.byocSources)
             }
             navRow(icon: "person.3", title: localization.t("settings.familyControls")) {
                 coordinator.pushToCurrentTab(.familyControls)

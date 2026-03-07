@@ -36,6 +36,7 @@ public enum Route: Hashable {
     case subscription
     case security
     case connectedAccounts
+    case byocSources
     case playbackSettings
     case audioSettings
     case accessibilitySettings

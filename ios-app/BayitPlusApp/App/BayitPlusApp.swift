@@ -1,5 +1,6 @@
 import BayitAnalytics
 import BayitAuth
+import BayitBYOC
 import BayitCast
 import BayitCore
 import BayitLocalization
@@ -35,6 +36,7 @@ struct BayitPlusApp: App {
     @State var mediaPlayerCastBridge: MediaPlayerCastBridge?
     @State var audioPlaybackManager: AudioPlaybackManager
     @State var downloadManager: DownloadManager
+    @State var byocManager = BYOCSourceManager()
 
     init() {
         if FirebaseApp.app() == nil {
@@ -136,6 +138,7 @@ struct BayitPlusApp: App {
                 .environment(castSessionManager)
                 .environment(audioPlaybackManager)
                 .environment(downloadManager)
+                .environment(byocManager)
                 .task {
                     initializeWidgetBridge()
                     initializeCrashlyticsContext()

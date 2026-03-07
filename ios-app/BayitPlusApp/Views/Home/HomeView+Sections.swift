@@ -30,6 +30,8 @@ extension HomeView {
             LiveTVRow(channels: vm.liveChannels, coordinator: coordinator)
         }
 
+        BYOCShelfRow()
+
         if !vm.radioStations.isEmpty {
             RadioStationsRow(stations: vm.radioStations)
         }

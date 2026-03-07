@@ -101,6 +101,8 @@
 	<string>$(SUPPORT_EMAIL)</string>
 	<key>OWNER_MODE</key>
 	<string>$(OWNER_MODE)</string>
+	<key>YOUTUBE_CLIENT_ID</key>
+	<string>$(YOUTUBE_CLIENT_ID)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -46,6 +46,8 @@ struct RouteDestinationResolver {
             SecurityView()
         case .connectedAccounts:
             ConnectedAccountsView()
+        case .byocSources:
+            BYOCSourceListView()
         case .playbackSettings:
             PlaybackSettingsView()
         case .audioSettings:
