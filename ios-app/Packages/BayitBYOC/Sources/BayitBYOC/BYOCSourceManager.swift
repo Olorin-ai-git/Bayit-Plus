@@ -11,6 +11,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
     public internal(set) var sources: [BYOCSourceConfig] = []
     public internal(set) var iptvChannels: [BYOCChannel] = []
     public internal(set) var iptvGroups: [BYOCChannelGroup] = []
+    public internal(set) var xtreamChannels: [BYOCChannel] = []
+    public internal(set) var xtreamVODItems: [BYOCContentItem] = []
+    public internal(set) var xtreamSeriesItems: [BYOCContentItem] = []
     public internal(set) var plexItems: [BYOCContentItem] = []
     public internal(set) var youtubeItems: [BYOCContentItem] = []
     public internal(set) var isRefreshing = false
@@ -23,6 +26,10 @@ public final class BYOCSourceManager: @unchecked Sendable {
 
     public var hasIPTV: Bool {
         sources.contains { $0.type == .iptv }
+    }
+
+    public var hasXtream: Bool {
+        sources.contains { $0.type == .xtream }
     }
 
     public var hasPlex: Bool {
@@ -65,6 +72,71 @@ public final class BYOCSourceManager: @unchecked Sendable {
             "Added IPTV source",
             context: ["name": name, "channels": "\(channels.count)"]
         )
+    }
+
+    // MARK: - Xtream Codes
+
+    public func addXtreamSource(
+        name: String,
+        serverURL: String,
+        username: String,
+        password: String
+    ) async throws {
+        let client = XtreamCodesClient(
+            serverURL: serverURL,
+            username: username,
+            password: password
+        )
+        let account = try await client.authenticate()
+
+        let config = BYOCSourceConfig(
+            type: .xtream,
+            name: name,
+            url: URL(string: serverURL),
+            accountExpiry: account.expirationDate
+        )
+        let credential = "\(serverURL)|\(username)|\(password)"
+        _ = BYOCKeychainStore.storeToken(credential, forSourceId: config.id)
+
+        async let liveCategories = client.fetchLiveCategories()
+        async let liveStreams = client.fetchLiveStreams()
+        async let vodCategories = client.fetchVODCategories()
+        async let vodStreams = client.fetchVODStreams()
+        async let seriesList = client.fetchSeries()
+
+        let channels = try await XtreamContentAdapter.adaptAllLiveStreams(
+            streams: await liveStreams,
+            categories: await liveCategories,
+            client: client,
+            sourceId: config.id
+        )
+        let vodItems = try await XtreamContentAdapter.adaptAllVOD(
+            items: await vodStreams,
+            categories: await vodCategories,
+            client: client,
+            sourceId: config.id
+        )
+        let seriesItems = try XtreamContentAdapter.adaptAllSeries(
+            series: await seriesList,
+            sourceId: config.id
+        )
+
+        sources.append(config)
+        xtreamChannels.append(contentsOf: channels)
+        xtreamVODItems.append(contentsOf: vodItems)
+        xtreamSeriesItems.append(contentsOf: seriesItems)
+        iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
+        BYOCSourceStore.saveSources(sources)
+        logger.info(
+            "Added Xtream source",
+            context: [
+                "name": name,
+                "channels": "\(channels.count)",
+                "vod": "\(vodItems.count)",
+                "series": "\(seriesItems.count)",
+            ]
+        )
+        Task { await triggerInitialEnrichment(items: vodItems + seriesItems) }
     }
 
     // MARK: - Plex
@@ -147,7 +219,13 @@ public final class BYOCSourceManager: @unchecked Sendable {
         switch sourceType {
         case .iptv:
             iptvChannels.removeAll { $0.sourceId == id }
-            iptvGroups = M3UParser.groupChannels(iptvChannels)
+            iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
+        case .xtream:
+            xtreamChannels.removeAll { $0.sourceId == id }
+            xtreamVODItems.removeAll { $0.sourceId == id }
+            xtreamSeriesItems.removeAll { $0.sourceId == id }
+            iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
+            BYOCKeychainStore.deleteToken(forSourceId: id)
         case .plex:
             plexItems.removeAll { $0.sourceId == id }
             BYOCKeychainStore.deleteToken(forSourceId: id)

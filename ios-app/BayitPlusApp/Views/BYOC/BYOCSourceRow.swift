@@ -43,6 +43,7 @@ struct BYOCSourceRow: View {
     private var iconName: String {
         switch source.type {
         case .iptv: return "antenna.radiowaves.left.and.right"
+        case .xtream: return "tv.and.mediabox"
         case .plex: return "server.rack"
         case .youtube: return "play.rectangle.fill"
         }
@@ -51,6 +52,7 @@ struct BYOCSourceRow: View {
     private var iconColor: Color {
         switch source.type {
         case .iptv: return DesignTokens.Primary.default
+        case .xtream: return .purple
         case .plex: return .orange
         case .youtube: return .red
         }
@@ -59,6 +61,7 @@ struct BYOCSourceRow: View {
     private var sourceTypeLabel: String {
         switch source.type {
         case .iptv: return localization.t("byoc.iptv")
+        case .xtream: return localization.t("byoc.addXtream")
         case .plex: return localization.t("byoc.plex")
         case .youtube: return localization.t("byoc.youtube")
         }

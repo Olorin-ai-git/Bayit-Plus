@@ -6267,11 +6267,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פרימיום",
@@ -6283,10 +6279,7 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
+      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
     },
     "family": {
       "name": "משפחתי",
@@ -10709,6 +10702,38 @@
     "noSubtitlesFound": "לא נמצאו כתוביות",
     "interactionMoments": "צור רגעי אינטראקציה עם AI",
     "interactionMomentsDescription": "מנתח את התוכן שלך כדי להוסיף קפיצה לרגעים מרכזיים ונקודות אינטראקציה עם דמויות. עשוי לקחת כמה דקות.",
-    "enrichmentFailed": "העשרה נכשלה"
+    "enrichmentFailed": "העשרה נכשלה",
+    "browsePlexLibrary": "עיין בספריית Plex",
+    "addXtream": "חיבור Xtream Codes",
+    "xtreamServer": "כתובת שרת",
+    "xtreamUsername": "שם משתמש",
+    "xtreamPassword": "סיסמה",
+    "xtreamConnectDesc": "חבר את שירות ה-IPTV של Xtream Codes שלך",
+    "xtreamAuthFailed": "האימות נכשל. בדוק את פרטי ההתחברות שלך.",
+    "sourceName": "שם המקור",
+    "selectProvider": "בחר את הספק שלך",
+    "manualEntry": "אחר",
+    "onboarding.title": "הגדר את התוכן שלך",
+    "onboarding.connectSource": "חבר את התוכן שלך",
+    "onboarding.connectDesc": "הוסף את שירות ה-IPTV או שרת המדיה שלך כדי להתחיל",
+    "onboarding.sourceAdded": "המקור חובר בהצלחה",
+    "onboarding.analyzing": "מנתח את התוכן שלך...",
+    "onboarding.analyze": "ניתוח תוכן",
+    "onboarding.analysisComplete": "הניתוח הושלם",
+    "onboarding.channelsIdentified": "ערוצים זוהו",
+    "onboarding.vodMatched": "סרטים וסדרות הותאמו",
+    "onboarding.duplicatesFound": "כפילויות נמצאו",
+    "onboarding.streamsHealthy": "שידורים תקינים",
+    "onboarding.languages": "שפות:",
+    "onboarding.topCategories": "קטגוריות מובילות:",
+    "onboarding.cleanupTitle": "נקה את התוכן שלך",
+    "onboarding.autoBestQuality": "בחירה אוטומטית באיכות הטובה ביותר",
+    "onboarding.autoBestQualityDesc": "שמור על ההזנה ברזולוציה הגבוהה ביותר עבור ערוצים כפולים",
+    "onboarding.applyCleanup": "החל ניקוי",
+    "onboarding.personalizeTitle": "התאם אישית את מסך הבית",
+    "onboarding.personalizeDesc": "בחר אילו קטגוריות ושפות יופיעו במסך הבית שלך",
+    "onboarding.languagePriority": "עדיפות שפה",
+    "onboarding.homeCategories": "קטגוריות מסך הבית",
+    "onboarding.ready": "התוכן שלך מוכן"
   }
 }

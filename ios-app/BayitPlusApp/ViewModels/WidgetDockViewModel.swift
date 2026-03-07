@@ -51,10 +51,10 @@ final class WidgetDockViewModel {
             let response = try await repository.fetchMyWidgets()
             widgets = response.items.filter { $0.isVisible != false }
 
-            // Initialize restored state from API: widgets not minimized are restored
-            restoredWidgetIds = Set(
-                widgets.filter { $0.isMinimized == false }.map(\.id)
-            )
+            // Don't auto-restore widgets into the floating sidebar on cold launch.
+            // The sidebar should only appear when the user explicitly restores a
+            // widget from the dock during the current session.
+            restoredWidgetIds = []
 
             // Only show dock if there are widgets sitting in minimized state
             if !isDockVisible {

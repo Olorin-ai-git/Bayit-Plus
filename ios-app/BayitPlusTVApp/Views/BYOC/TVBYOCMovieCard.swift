@@ -107,6 +107,7 @@
             case .plex: return "server.rack"
             case .youtube: return "play.rectangle.fill"
             case .iptv: return "antenna.radiowaves.left.and.right"
+            case .xtream: return "tv.and.mediabox"
             }
         }
 
@@ -115,6 +116,7 @@
             case .plex: return .orange
             case .youtube: return .red
             case .iptv: return DesignTokens.Primary.p400
+            case .xtream: return .purple
             }
         }
 

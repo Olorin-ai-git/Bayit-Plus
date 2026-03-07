@@ -10,6 +10,7 @@ struct BYOCSourceListView: View {
     @Environment(LocalizationManager.self) private var localization
 
     @State private var showAddIPTV = false
+    @State private var showAddXtream = false
     @State private var showPlexAuth = false
     @State private var showYouTubeAuth = false
     @State private var sourceToRemove: BYOCSourceConfig?
@@ -27,6 +28,9 @@ struct BYOCSourceListView: View {
         .navigationTitle(localization.t("byoc.connectedSources"))
         .sheet(isPresented: $showAddIPTV) {
             AddIPTVSourceSheet()
+        }
+        .sheet(isPresented: $showAddXtream) {
+            AddXtreamSourceSheet()
         }
         .sheet(isPresented: $showPlexAuth) {
             BYOCPlexAuthSheet()
@@ -84,6 +88,13 @@ struct BYOCSourceListView: View {
                 subtitle: localization.t("byoc.enterURL"),
                 color: DesignTokens.Primary.default
             ) { showAddIPTV = true }
+
+            sourceRow(
+                icon: "tv.and.mediabox",
+                title: localization.t("byoc.addXtream"),
+                subtitle: localization.t("byoc.xtreamConnectDesc"),
+                color: .purple
+            ) { showAddXtream = true }
 
             sourceRow(
                 icon: "server.rack",

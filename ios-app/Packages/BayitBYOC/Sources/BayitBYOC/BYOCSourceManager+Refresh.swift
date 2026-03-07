@@ -24,6 +24,8 @@ extension BYOCSourceManager {
         switch source.type {
         case .iptv:
             await refreshIPTVSource(source)
+        case .xtream:
+            await refreshXtreamSource(source)
         case .plex:
             await refreshPlexSource(source)
         case .youtube:
@@ -40,12 +42,71 @@ extension BYOCSourceManager {
                 sourceId: source.id
             )
             iptvChannels.append(contentsOf: channels)
-            iptvGroups = M3UParser.groupChannels(iptvChannels)
+            iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
             updateLastRefreshed(sourceId: source.id)
         } catch {
             lastError = error.localizedDescription
             logger.error(
                 "Failed to refresh IPTV source",
+                error: error,
+                context: ["sourceId": source.id]
+            )
+        }
+    }
+
+    func refreshXtreamSource(_ source: BYOCSourceConfig) async {
+        guard let credential = BYOCKeychainStore.retrieveToken(
+            forSourceId: source.id
+        ) else { return }
+        let parts = credential.split(separator: "|", maxSplits: 2)
+        guard parts.count == 3 else { return }
+        let serverURL = String(parts[0])
+        let username = String(parts[1])
+        let password = String(parts[2])
+        do {
+            let client = XtreamCodesClient(
+                serverURL: serverURL,
+                username: username,
+                password: password
+            )
+            _ = try await client.authenticate()
+
+            xtreamChannels.removeAll { $0.sourceId == source.id }
+            xtreamVODItems.removeAll { $0.sourceId == source.id }
+            xtreamSeriesItems.removeAll { $0.sourceId == source.id }
+
+            async let liveCats = client.fetchLiveCategories()
+            async let liveStreams = client.fetchLiveStreams()
+            async let vodCats = client.fetchVODCategories()
+            async let vodStreams = client.fetchVODStreams()
+            async let seriesList = client.fetchSeries()
+
+            let channels = try await XtreamContentAdapter.adaptAllLiveStreams(
+                streams: await liveStreams,
+                categories: await liveCats,
+                client: client,
+                sourceId: source.id
+            )
+            let vodItems = try await XtreamContentAdapter.adaptAllVOD(
+                items: await vodStreams,
+                categories: await vodCats,
+                client: client,
+                sourceId: source.id
+            )
+            let seriesItems = try XtreamContentAdapter.adaptAllSeries(
+                series: await seriesList,
+                sourceId: source.id
+            )
+
+            xtreamChannels.append(contentsOf: channels)
+            xtreamVODItems.append(contentsOf: vodItems)
+            xtreamSeriesItems.append(contentsOf: seriesItems)
+            iptvGroups = M3UParser.groupChannels(iptvChannels + xtreamChannels)
+            updateLastRefreshed(sourceId: source.id)
+        } catch {
+            lastError = error.localizedDescription
+            logger.error(
+                "Failed to refresh Xtream source",
                 error: error,
                 context: ["sourceId": source.id]
             )
@@ -104,7 +165,8 @@ extension BYOCSourceManager {
             name: sources[index].name,
             url: sources[index].url,
             addedAt: sources[index].addedAt,
-            lastRefreshedAt: Date()
+            lastRefreshedAt: Date(),
+            accountExpiry: sources[index].accountExpiry
         )
         BYOCSourceStore.saveSources(sources)
     }

@@ -15,6 +15,8 @@ public extension BYOCSourceManager {
     /// Check if a stream URL belongs to a BYOC source.
     func isBYOCStream(url: URL) -> Bool {
         iptvChannels.contains { $0.streamURL == url }
+            || xtreamChannels.contains { $0.streamURL == url }
+            || xtreamVODItems.contains { $0.streamURL == url }
             || plexItems.contains { $0.streamURL == url }
             || youtubeItems.contains { $0.streamURL == url }
     }
@@ -23,6 +25,11 @@ public extension BYOCSourceManager {
     func capabilities(for url: URL) -> BYOCCapabilities {
         if iptvChannels.contains(where: { $0.streamURL == url }) {
             return .capabilities(for: .iptv)
+        }
+        if xtreamChannels.contains(where: { $0.streamURL == url })
+            || xtreamVODItems.contains(where: { $0.streamURL == url })
+        {
+            return .capabilities(for: .xtream)
         }
         if plexItems.contains(where: { $0.streamURL == url }) {
             return .capabilities(for: .plex)

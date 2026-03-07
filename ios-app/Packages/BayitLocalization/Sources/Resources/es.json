@@ -6288,11 +6288,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -6304,10 +6300,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -10752,6 +10745,38 @@
     "noSubtitlesFound": "No se encontraron subtítulos",
     "interactionMoments": "Generar momentos de interacción con IA",
     "interactionMomentsDescription": "Analiza tu contenido para agregar puntos de salto a los momentos destacados e interacción con personajes. Puede tardar unos minutos.",
-    "enrichmentFailed": "Enriquecimiento fallido"
+    "enrichmentFailed": "Enriquecimiento fallido",
+    "browsePlexLibrary": "Explorar biblioteca Plex",
+    "addXtream": "Conectar Xtream Codes",
+    "xtreamServer": "URL del servidor",
+    "xtreamUsername": "Usuario",
+    "xtreamPassword": "Contrasena",
+    "xtreamConnectDesc": "Conecta tu servicio IPTV de Xtream Codes",
+    "xtreamAuthFailed": "Error de autenticacion. Verifica tus credenciales.",
+    "sourceName": "Nombre de la fuente",
+    "selectProvider": "Selecciona tu proveedor",
+    "manualEntry": "Otro",
+    "onboarding.title": "Configura tu contenido",
+    "onboarding.connectSource": "Conecta tu contenido",
+    "onboarding.connectDesc": "Agrega tu servicio IPTV o servidor multimedia para comenzar",
+    "onboarding.sourceAdded": "Fuente conectada correctamente",
+    "onboarding.analyzing": "Analizando tu contenido...",
+    "onboarding.analyze": "Analizar contenido",
+    "onboarding.analysisComplete": "Analisis completado",
+    "onboarding.channelsIdentified": "Canales identificados",
+    "onboarding.vodMatched": "Peliculas y series encontradas",
+    "onboarding.duplicatesFound": "Duplicados encontrados",
+    "onboarding.streamsHealthy": "Transmisiones activas",
+    "onboarding.languages": "Idiomas:",
+    "onboarding.topCategories": "Categorias principales:",
+    "onboarding.cleanupTitle": "Limpia tu contenido",
+    "onboarding.autoBestQuality": "Seleccionar mejor calidad automaticamente",
+    "onboarding.autoBestQualityDesc": "Conservar la transmision de mayor resolucion para canales duplicados",
+    "onboarding.applyCleanup": "Aplicar limpieza",
+    "onboarding.personalizeTitle": "Personaliza tu inicio",
+    "onboarding.personalizeDesc": "Elige que categorias e idiomas aparecen en tu pantalla de inicio",
+    "onboarding.languagePriority": "Prioridad de idioma",
+    "onboarding.homeCategories": "Categorias de inicio",
+    "onboarding.ready": "Tu contenido esta listo"
   }
 }

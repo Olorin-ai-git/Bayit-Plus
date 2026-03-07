@@ -12,6 +12,7 @@
         let onDismiss: () -> Void
 
         @State private var showAddIPTV = false
+        @State private var showAddXtream = false
         @State private var showPlexAuth = false
         @State private var showAddYouTube = false
         @State private var plexAuthToken: String?
@@ -26,6 +27,7 @@
                     ScrollView {
                         VStack(spacing: TVDesignTokens.Spacing.lg) {
                             iptvSection
+                            xtreamSection
                             plexSection
                             youtubeSection
                             existingSourcesList
@@ -38,6 +40,9 @@
             }
             .fullScreenCover(isPresented: $showAddIPTV) {
                 TVAddIPTVSourceSheet(onDismiss: { showAddIPTV = false })
+            }
+            .fullScreenCover(isPresented: $showAddXtream) {
+                TVAddXtreamSourceSheet(onDismiss: { showAddXtream = false })
             }
             .fullScreenCover(isPresented: $showAddYouTube) {
                 TVAddYouTubeSheet(onDismiss: { showAddYouTube = false })
@@ -116,6 +121,27 @@
                 subtitle: localization.t("byoc.enterURL"),
                 color: DesignTokens.Primary.p400
             ) { showAddIPTV = true }
+        }
+
+        @ViewBuilder
+        private var xtreamSection: some View {
+            if byocManager.hasXtream {
+                let count = byocManager.xtreamChannels.count
+                    + byocManager.xtreamVODItems.count
+                connectedRow(
+                    icon: "tv.and.mediabox",
+                    title: localization.t("byoc.addXtream"),
+                    subtitle: "\(count) \(localization.t("byoc.itemsLoaded"))",
+                    color: .purple
+                )
+            } else {
+                addSourceRow(
+                    icon: "tv.and.mediabox",
+                    title: localization.t("byoc.addXtream"),
+                    subtitle: localization.t("byoc.xtreamConnectDesc"),
+                    color: .purple
+                ) { showAddXtream = true }
+            }
         }
 
         @ViewBuilder

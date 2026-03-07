@@ -22,58 +22,57 @@
         var body: some View {
             @Bindable var coord = coordinator
 
-            HStack(spacing: 0) {
-                TabView(selection: $coord.selectedTab) {
-                    TVSearchView()
-                        .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
-                        .tag(TVTab.search)
+            TabView(selection: $coord.selectedTab) {
+                TVSearchView()
+                    .tabItem { Label(localization.t("nav.search"), systemImage: TVTab.search.iconName) }
+                    .tag(TVTab.search)
 
-                    TVHomeView()
-                        .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
-                        .tag(TVTab.home)
+                TVHomeView()
+                    .tabItem { Label(localization.t("nav.home"), systemImage: TVTab.home.iconName) }
+                    .tag(TVTab.home)
 
-                    if prefs.showLiveTV {
-                        TVLiveTVView()
-                            .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
-                            .tag(TVTab.liveTV)
-                    }
-
-                    if appConfiguration.ownerMode {
-                        TVVODView()
-                            .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
-                            .tag(TVTab.vod)
-                    }
-
-                    TVZehAniHubView()
-                        .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
-                        .tag(TVTab.zehAni)
-
-                    TVListenView()
-                        .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
-                        .tag(TVTab.podcasts)
-
-                    TVWidgetsView()
-                        .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
-                        .tag(TVTab.widgets)
-
-                    TVProfileView()
-                        .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
-                        .tag(TVTab.profile)
-                }
-                .onAppear {
-                    guard !hasAppeared else { return }
-                    hasAppeared = true
-                    coord.selectedTab = .home
-                }
-                // Mini audio player bar overlays at bottom when inline audio is active
-                .overlay(alignment: .bottom) {
-                    TVMiniAudioPlayerBar()
-                }
-                .fullScreenCover(isPresented: $showLanguagePicker) {
-                    languagePickerSheet
+                if prefs.showLiveTV {
+                    TVLiveTVView()
+                        .tabItem { Label(localization.t("nav.liveTV"), systemImage: TVTab.liveTV.iconName) }
+                        .tag(TVTab.liveTV)
                 }
 
-                // Widget sidebar - only rendered when dock is visible
+                if appConfiguration.ownerMode {
+                    TVVODView()
+                        .tabItem { Label(localization.t("nav.vod"), systemImage: TVTab.vod.iconName) }
+                        .tag(TVTab.vod)
+                }
+
+                TVZehAniHubView()
+                    .tabItem { Label(localization.t("nav.zehAni"), systemImage: TVTab.zehAni.iconName) }
+                    .tag(TVTab.zehAni)
+
+                TVListenView()
+                    .tabItem { Label(localization.t("nav.listen"), systemImage: TVTab.podcasts.iconName) }
+                    .tag(TVTab.podcasts)
+
+                TVWidgetsView()
+                    .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
+                    .tag(TVTab.widgets)
+
+                TVProfileView()
+                    .tabItem { Label(localization.t("nav.profile"), systemImage: TVTab.profile.iconName) }
+                    .tag(TVTab.profile)
+            }
+            .onAppear {
+                guard !hasAppeared else { return }
+                hasAppeared = true
+                coord.selectedTab = .home
+            }
+            // Mini audio player bar overlays at bottom when inline audio is active
+            .overlay(alignment: .bottom) {
+                TVMiniAudioPlayerBar()
+            }
+            .fullScreenCover(isPresented: $showLanguagePicker) {
+                languagePickerSheet
+            }
+            // Widget sidebar as overlay so it never compresses the TabView tab bar.
+            .overlay(alignment: .trailing) {
                 if let vm = dockViewModel, vm.isDockVisible, !vm.restoredWidgets.isEmpty {
                     TVWidgetSidebarView(
                         widgets: vm.restoredWidgets,
@@ -82,7 +81,7 @@
                 }
             }
             .ignoresSafeArea(.all, edges: .trailing)
-            // Top-right pills placed on outer HStack so tvOS focus engine can reach them.
+            // Top-right pills on outer overlay so tvOS focus engine can reach them.
             // Overlays nested inside TabView are outside the focus scope and receive no focus.
             .overlay(alignment: .topTrailing) {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {

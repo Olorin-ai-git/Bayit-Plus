@@ -164,6 +164,7 @@ extension BYOCDetailView {
         case .plex: byocManager.plexItems
         case .youtube: byocManager.youtubeItems
         case .iptv: []
+        case .xtream: byocManager.xtreamVODItems + byocManager.xtreamSeriesItems
         }
         return all.filter { $0.sourceId == item.sourceId && $0.id != item.id }
     }
@@ -173,6 +174,7 @@ extension BYOCDetailView {
         case .plex: return "server.rack"
         case .youtube: return "play.rectangle.fill"
         case .iptv: return "antenna.radiowaves.left.and.right"
+        case .xtream: return "tv.and.mediabox"
         }
     }
 
@@ -181,6 +183,7 @@ extension BYOCDetailView {
         case .plex: return .orange
         case .youtube: return .red
         case .iptv: return .blue
+        case .xtream: return .purple
         }
     }
 
@@ -189,6 +192,7 @@ extension BYOCDetailView {
         case .plex: return localization.t("byoc.plex")
         case .youtube: return localization.t("byoc.youtube")
         case .iptv: return localization.t("byoc.iptv")
+        case .xtream: return localization.t("byoc.addXtream")
         }
     }
 

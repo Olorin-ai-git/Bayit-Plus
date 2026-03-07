@@ -17,6 +17,9 @@ from app.models.admin import (AuditLog, Campaign, EmailCampaign,
                               SystemSettings, Transaction)
 from app.models.ai_generation_job import AIGenerationJob
 from app.models.audio_tracks import AudioTrackDoc
+# BYOC AI-powered ingestion models
+from app.models.byoc_channel_index import ChannelIndexEntry
+from app.models.byoc_provider import BYOCProvider
 # Beta 500 program models
 from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
@@ -469,6 +472,9 @@ async def connect_to_mongo():
         Character,
         # VOD interaction session model (Pause & Ask dialogue)
         VODInteractionSession,
+        # BYOC AI-powered ingestion models
+        ChannelIndexEntry,
+        BYOCProvider,
     ]
 
     # Conditionally add Olorin models based on database separation setting

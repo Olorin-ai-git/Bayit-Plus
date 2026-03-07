@@ -92,6 +92,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import subtitles_cues, subtitles_tracks, subtitles_translation
     # BYOC Enrichment routes (Bring Your Own Content)
     from app.api.routes import byoc_enrichment
+    # BYOC Normalization routes (AI-powered channel matching & dedup)
+    from app.api.routes import byoc_normalization
     # VTT streaming endpoint for native tracks (AirPlay/Chromecast)
     from app.api.v1.endpoints import subtitles as subtitles_vtt
     # VOD Audio Tracks routes (AI-generated audio dubbing)
@@ -242,6 +244,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         byoc_enrichment.router, prefix=prefix, tags=["byoc-enrichment"]
+    )
+    app.include_router(
+        byoc_normalization.router, prefix=prefix, tags=["byoc-normalization"]
     )
     app.include_router(trending.router, prefix=f"{prefix}/trending", tags=["trending"])
     app.include_router(

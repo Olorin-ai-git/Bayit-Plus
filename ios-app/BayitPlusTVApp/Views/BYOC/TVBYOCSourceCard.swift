@@ -77,6 +77,7 @@
         private var iconName: String {
             switch source.type {
             case .iptv: return "antenna.radiowaves.left.and.right"
+            case .xtream: return "tv.and.mediabox"
             case .plex: return "server.rack"
             case .youtube: return "play.rectangle.fill"
             }
@@ -85,6 +86,7 @@
         private var iconColor: Color {
             switch source.type {
             case .iptv: return DesignTokens.Primary.p400
+            case .xtream: return .purple
             case .plex: return .orange
             case .youtube: return .red
             }
@@ -93,6 +95,7 @@
         private var sourceTypeLabel: String {
             switch source.type {
             case .iptv: return localization.t("byoc.iptv")
+            case .xtream: return localization.t("byoc.addXtream")
             case .plex: return localization.t("byoc.plex")
             case .youtube: return localization.t("byoc.youtube")
             }
@@ -102,6 +105,9 @@
             switch source.type {
             case .iptv:
                 return byocManager.iptvChannels.filter { $0.sourceId == source.id }.count
+            case .xtream:
+                return byocManager.xtreamChannels.filter { $0.sourceId == source.id }.count
+                    + byocManager.xtreamVODItems.filter { $0.sourceId == source.id }.count
             case .plex:
                 return byocManager.plexItems.filter { $0.sourceId == source.id }.count
             case .youtube:

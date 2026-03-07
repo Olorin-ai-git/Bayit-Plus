@@ -6201,11 +6201,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -6217,10 +6213,7 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": [
-        "অফলাইন দেখা",
-        "পরিবার প্রোফাইল"
-      ]
+      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -10636,6 +10629,38 @@
     "noSubtitlesFound": "কোনো সাবটাইটেল পাওয়া যায়নি",
     "interactionMoments": "AI ইন্টারেকশন মুহূর্ত তৈরি করুন",
     "interactionMomentsDescription": "মূল মুহূর্ত এবং চরিত্র ইন্টারেকশন পয়েন্ট যোগ করতে কন্টেন্ট বিশ্লেষণ করে। কয়েক মিনিট সময় লাগতে পারে।",
-    "enrichmentFailed": "সমৃদ্ধি ব্যর্থ হয়েছে"
+    "enrichmentFailed": "সমৃদ্ধি ব্যর্থ হয়েছে",
+    "browsePlexLibrary": "Plex লাইব্রেরি ব্রাউজ করুন",
+    "addXtream": "Connect Xtream Codes",
+    "xtreamServer": "Server URL",
+    "xtreamUsername": "Username",
+    "xtreamPassword": "Password",
+    "xtreamConnectDesc": "Connect your Xtream Codes IPTV service",
+    "xtreamAuthFailed": "Authentication failed. Check your credentials.",
+    "sourceName": "Source Name",
+    "selectProvider": "Select your provider",
+    "manualEntry": "Other",
+    "onboarding.title": "Set Up Your Content",
+    "onboarding.connectSource": "Connect Your Content",
+    "onboarding.connectDesc": "Add your IPTV service or media server to get started",
+    "onboarding.sourceAdded": "Source connected successfully",
+    "onboarding.analyzing": "Analyzing your content...",
+    "onboarding.analyze": "Analyze Content",
+    "onboarding.analysisComplete": "Analysis Complete",
+    "onboarding.channelsIdentified": "Channels identified",
+    "onboarding.vodMatched": "Movies and series matched",
+    "onboarding.duplicatesFound": "Duplicates found",
+    "onboarding.streamsHealthy": "Streams healthy",
+    "onboarding.languages": "Languages:",
+    "onboarding.topCategories": "Top categories:",
+    "onboarding.cleanupTitle": "Clean Up Your Content",
+    "onboarding.autoBestQuality": "Auto-select best quality",
+    "onboarding.autoBestQualityDesc": "Keep the highest resolution feed for duplicate channels",
+    "onboarding.applyCleanup": "Apply Cleanup",
+    "onboarding.personalizeTitle": "Personalize Your Home",
+    "onboarding.personalizeDesc": "Choose which categories and languages appear on your home screen",
+    "onboarding.languagePriority": "Language Priority",
+    "onboarding.homeCategories": "Home Screen Categories",
+    "onboarding.ready": "Your Content is Ready"
   }
 }

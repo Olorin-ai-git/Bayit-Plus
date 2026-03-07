@@ -1,3 +1,4 @@
+import BayitBYOC
 import BayitMedia
 import Foundation
 
@@ -58,6 +59,8 @@ enum TVRoute: Hashable, Identifiable {
     case downloads
     /// Navigate to Judaism content with an optional category filter.
     case judaism(category: String)
+    /// Navigate to BYOC item detail screen (Plex/IPTV movie detail).
+    case byocDetail(item: BYOCContentItem)
 
     // MARK: - Hashable
 
@@ -128,6 +131,9 @@ enum TVRoute: Hashable, Identifiable {
         case let .judaism(category):
             hasher.combine("judaism")
             hasher.combine(category)
+        case let .byocDetail(item):
+            hasher.combine("byocDetail")
+            hasher.combine(item.id)
         }
     }
 
@@ -183,6 +189,8 @@ enum TVRoute: Hashable, Identifiable {
             return true
         case let (.judaism(lCat), .judaism(rCat)):
             return lCat == rCat
+        case let (.byocDetail(lItem), .byocDetail(rItem)):
+            return lItem.id == rItem.id
         default:
             return false
         }

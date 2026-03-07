@@ -3,6 +3,7 @@ import Foundation
 /// Type of external content source.
 public enum BYOCSourceType: String, Codable, Sendable {
     case iptv
+    case xtream
     case plex
     case youtube
 }
@@ -15,6 +16,7 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
     public let url: URL?
     public let addedAt: Date
     public var lastRefreshedAt: Date?
+    public var accountExpiry: Date?
 
     public init(
         id: String = UUID().uuidString,
@@ -22,7 +24,8 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
         name: String,
         url: URL? = nil,
         addedAt: Date = Date(),
-        lastRefreshedAt: Date? = nil
+        lastRefreshedAt: Date? = nil,
+        accountExpiry: Date? = nil
     ) {
         self.id = id
         self.type = type
@@ -30,5 +33,6 @@ public struct BYOCSourceConfig: Codable, Identifiable, Sendable {
         self.url = url
         self.addedAt = addedAt
         self.lastRefreshedAt = lastRefreshedAt
+        self.accountExpiry = accountExpiry
     }
 }

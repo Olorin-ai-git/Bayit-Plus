@@ -6288,11 +6288,7 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6304,10 +6300,7 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": [
-        "ஆஃப்லைன் பார்வை",
-        "குடும்ப சுயவிவரங்கள்"
-      ]
+      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
     },
     "family": {
       "name": "குடும்பம்",
@@ -10734,6 +10727,38 @@
     "noSubtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்படவில்லை",
     "interactionMoments": "AI தொடர்பு தருணங்களை உருவாக்கு",
     "interactionMomentsDescription": "முக்கிய தருணங்கள் மற்றும் பாத்திர தொடர்பு புள்ளிகளை சேர்க்க உள்ளடக்கத்தை பகுப்பாய்வு செய்கிறது. சில நிமிடங்கள் ஆகலாம்.",
-    "enrichmentFailed": "செறிவூட்டல் தோல்வியடைந்தது"
+    "enrichmentFailed": "செறிவூட்டல் தோல்வியடைந்தது",
+    "browsePlexLibrary": "Plex நூலகத்தை உலாவுங்கள்",
+    "addXtream": "Connect Xtream Codes",
+    "xtreamServer": "Server URL",
+    "xtreamUsername": "Username",
+    "xtreamPassword": "Password",
+    "xtreamConnectDesc": "Connect your Xtream Codes IPTV service",
+    "xtreamAuthFailed": "Authentication failed. Check your credentials.",
+    "sourceName": "Source Name",
+    "selectProvider": "Select your provider",
+    "manualEntry": "Other",
+    "onboarding.title": "Set Up Your Content",
+    "onboarding.connectSource": "Connect Your Content",
+    "onboarding.connectDesc": "Add your IPTV service or media server to get started",
+    "onboarding.sourceAdded": "Source connected successfully",
+    "onboarding.analyzing": "Analyzing your content...",
+    "onboarding.analyze": "Analyze Content",
+    "onboarding.analysisComplete": "Analysis Complete",
+    "onboarding.channelsIdentified": "Channels identified",
+    "onboarding.vodMatched": "Movies and series matched",
+    "onboarding.duplicatesFound": "Duplicates found",
+    "onboarding.streamsHealthy": "Streams healthy",
+    "onboarding.languages": "Languages:",
+    "onboarding.topCategories": "Top categories:",
+    "onboarding.cleanupTitle": "Clean Up Your Content",
+    "onboarding.autoBestQuality": "Auto-select best quality",
+    "onboarding.autoBestQualityDesc": "Keep the highest resolution feed for duplicate channels",
+    "onboarding.applyCleanup": "Apply Cleanup",
+    "onboarding.personalizeTitle": "Personalize Your Home",
+    "onboarding.personalizeDesc": "Choose which categories and languages appear on your home screen",
+    "onboarding.languagePriority": "Language Priority",
+    "onboarding.homeCategories": "Home Screen Categories",
+    "onboarding.ready": "Your Content is Ready"
   }
 }

@@ -123,6 +123,8 @@ try:
         # BYOC Enrichment - External API quota protection
         "byoc_enrich": _dev_limit("5/minute"),
         "byoc_enrich_batch": _dev_limit("3/hour"),
+        # BYOC Normalization - Heavy AI pipeline (channel index + TMDB + LLM)
+        "byoc_normalize": _dev_limit("5/hour"),
         # VOD Interaction - Character dialogue (AI inference + animation)
         "vod_interaction_characters": _dev_limit("30/minute"),  # Character list fetch
         "vod_interaction_session_start": _dev_limit("10/minute"),  # Session creation

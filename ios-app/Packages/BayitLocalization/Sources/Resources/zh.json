@@ -6204,17 +6204,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -6226,10 +6217,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -10651,6 +10639,38 @@
     "noSubtitlesFound": "未找到字幕",
     "interactionMoments": "生成AI互动时刻",
     "interactionMomentsDescription": "分析您的内容以添加跳转到精彩时刻和角色互动点。可能需要几分钟。",
-    "enrichmentFailed": "丰富失败"
+    "enrichmentFailed": "丰富失败",
+    "browsePlexLibrary": "浏览Plex库",
+    "addXtream": "Connect Xtream Codes",
+    "xtreamServer": "Server URL",
+    "xtreamUsername": "Username",
+    "xtreamPassword": "Password",
+    "xtreamConnectDesc": "Connect your Xtream Codes IPTV service",
+    "xtreamAuthFailed": "Authentication failed. Check your credentials.",
+    "sourceName": "Source Name",
+    "selectProvider": "Select your provider",
+    "manualEntry": "Other",
+    "onboarding.title": "Set Up Your Content",
+    "onboarding.connectSource": "Connect Your Content",
+    "onboarding.connectDesc": "Add your IPTV service or media server to get started",
+    "onboarding.sourceAdded": "Source connected successfully",
+    "onboarding.analyzing": "Analyzing your content...",
+    "onboarding.analyze": "Analyze Content",
+    "onboarding.analysisComplete": "Analysis Complete",
+    "onboarding.channelsIdentified": "Channels identified",
+    "onboarding.vodMatched": "Movies and series matched",
+    "onboarding.duplicatesFound": "Duplicates found",
+    "onboarding.streamsHealthy": "Streams healthy",
+    "onboarding.languages": "Languages:",
+    "onboarding.topCategories": "Top categories:",
+    "onboarding.cleanupTitle": "Clean Up Your Content",
+    "onboarding.autoBestQuality": "Auto-select best quality",
+    "onboarding.autoBestQualityDesc": "Keep the highest resolution feed for duplicate channels",
+    "onboarding.applyCleanup": "Apply Cleanup",
+    "onboarding.personalizeTitle": "Personalize Your Home",
+    "onboarding.personalizeDesc": "Choose which categories and languages appear on your home screen",
+    "onboarding.languagePriority": "Language Priority",
+    "onboarding.homeCategories": "Home Screen Categories",
+    "onboarding.ready": "Your Content is Ready"
   }
 }

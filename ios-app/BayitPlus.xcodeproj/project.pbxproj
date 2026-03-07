@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		802C39C6143848CE952E9DC0 /* AddXtreamSourceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D4DE266119343B4AB34FB67 /* AddXtreamSourceSheet.swift */; };
+		33643917799243ECB86E4E34 /* BYOCOnboardingWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E1C3C544024CF2A1344128 /* BYOCOnboardingWizardView.swift */; };
+		6DC2DE7F05E84EEA88AF1F2A /* BYOCAnalysisSummaryStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BE511E6C52415A8DDDA82E /* BYOCAnalysisSummaryStep.swift */; };
+		EEF1A14D6736428CADA4C294 /* BYOCContentPruningStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBAEF930FDDD410CA47B7FF5 /* BYOCContentPruningStep.swift */; };
+		0380F3ADAFDD405F9A3BA325 /* BYOCPersonalizationStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95FB365B84704FBDA28754D2 /* BYOCPersonalizationStep.swift */; };
+		9A272E7B02464B04AB872596 /* BYOCProviderPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9256156CFC6B4C538F282DE2 /* BYOCProviderPickerView.swift */; };
+		8145B22E2BB7459B8711C29C /* TVAddXtreamSourceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871B90FC1684F96B948793C /* TVAddXtreamSourceSheet.swift */; };
+		93C887430777449D8555BC68 /* TVBYOCOnboardingWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCEA4ED110D4DB4954E7EB0 /* TVBYOCOnboardingWizardView.swift */; };
+
 		002B5CCCC6E599FF50E68DE1 /* SettingsRepository+Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE1BF367DD0E5510361F72C3 /* SettingsRepository+Support.swift */; };
 		003148833831FED458F4DA32 /* SplashView+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCD9D642ADF4980D99AB7AA /* SplashView+Helpers.swift */; };
 		00332EA24DA2CCC8DD192D18 /* TVCompanionVocabularyTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE6B36C677799A094B870EC /* TVCompanionVocabularyTab.swift */; };
@@ -503,6 +512,7 @@
 		4AF69BB8F00EEAC320800937 /* TVPendingIntentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD9EC5108EE7ACFB80E2977 /* TVPendingIntentManager.swift */; };
 		4AFC61D8801D2FD3BD39ABF1 /* GLBBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A1048E6BEFB92613CE2B90 /* GLBBuilder.swift */; };
 		4B0DD8B74EF3F176794ACD1F /* BillingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1BD1CF555A9BA36A651A51 /* BillingView.swift */; };
+		4B100B0640703EE29C5BB339 /* TVContentView+Routing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C7BE9D4D59B50AD7F917AA /* TVContentView+Routing.swift */; };
 		4B15ADD8C68E94E325C28764 /* LoginView+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4226C9118DC3F14171951180 /* LoginView+Actions.swift */; };
 		4B15F27E424139CF9AF690FE /* DownloadManager+TaskManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC026F11AC9A58BABA7FFF6 /* DownloadManager+TaskManagement.swift */; };
 		4B2D4E6793DCBBF5E0F906D8 /* ShabbatBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C1D1562BBF7BF9C21248CD /* ShabbatBannerView.swift */; };
@@ -1713,6 +1723,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6D4DE266119343B4AB34FB67 /* AddXtreamSourceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddXtreamSourceSheet.swift; sourceTree = "<group>"; };
+		85E1C3C544024CF2A1344128 /* BYOCOnboardingWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCOnboardingWizardView.swift; sourceTree = "<group>"; };
+		E1BE511E6C52415A8DDDA82E /* BYOCAnalysisSummaryStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCAnalysisSummaryStep.swift; sourceTree = "<group>"; };
+		FBAEF930FDDD410CA47B7FF5 /* BYOCContentPruningStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCContentPruningStep.swift; sourceTree = "<group>"; };
+		95FB365B84704FBDA28754D2 /* BYOCPersonalizationStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCPersonalizationStep.swift; sourceTree = "<group>"; };
+		9256156CFC6B4C538F282DE2 /* BYOCProviderPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCProviderPickerView.swift; sourceTree = "<group>"; };
+		E871B90FC1684F96B948793C /* TVAddXtreamSourceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAddXtreamSourceSheet.swift; sourceTree = "<group>"; };
+		5DCEA4ED110D4DB4954E7EB0 /* TVBYOCOnboardingWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVBYOCOnboardingWizardView.swift; sourceTree = "<group>"; };
+
 		0015F91DC187DA186C0E1A1E /* TVUserAvatarRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVUserAvatarRow.swift; sourceTree = "<group>"; };
 		00230E3D6BD2250FCB1A57C3 /* SplitSubtitleLanguageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitSubtitleLanguageRow.swift; sourceTree = "<group>"; };
 		004B585E1C0515B050DCF017 /* TVQRAuthViewModel+Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVQRAuthViewModel+Session.swift"; sourceTree = "<group>"; };
@@ -2132,6 +2151,7 @@
 		49A4D8F1442A6061953776B8 /* AvatarDialogueViewModel+MultiCharacter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarDialogueViewModel+MultiCharacter.swift"; sourceTree = "<group>"; };
 		49AEA0F6B115F37ECCBB3606 /* TVCatchUpView+ErrorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVCatchUpView+ErrorViews.swift"; sourceTree = "<group>"; };
 		49C49B600A169F5D2C4D3AEE /* TVTriviaSettingsView+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVTriviaSettingsView+API.swift"; sourceTree = "<group>"; };
+		49C7BE9D4D59B50AD7F917AA /* TVContentView+Routing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVContentView+Routing.swift"; sourceTree = "<group>"; };
 		4A05A4D9CC83E861F02703DE /* MediaPlayerWidgetBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPlayerWidgetBridge.swift; sourceTree = "<group>"; };
 		4A08BB30FB06CDAFA4EFC7D4 /* PlaylistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistView.swift; sourceTree = "<group>"; };
 		4A1A5AFE37AD16DF14EFF402 /* TVAudioPlaybackManager+RemoteCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVAudioPlaybackManager+RemoteCommand.swift"; sourceTree = "<group>"; };
@@ -3625,6 +3645,12 @@
 			isa = PBXGroup;
 			children = (
 				2E6057A52F19BAE12B99E1A1 /* AddIPTVSourceSheet.swift */,
+				9256156CFC6B4C538F282DE2 /* BYOCProviderPickerView.swift */,
+				95FB365B84704FBDA28754D2 /* BYOCPersonalizationStep.swift */,
+				FBAEF930FDDD410CA47B7FF5 /* BYOCContentPruningStep.swift */,
+				E1BE511E6C52415A8DDDA82E /* BYOCAnalysisSummaryStep.swift */,
+				85E1C3C544024CF2A1344128 /* BYOCOnboardingWizardView.swift */,
+				6D4DE266119343B4AB34FB67 /* AddXtreamSourceSheet.swift */,
 				223517FEE7DA7B2DBC605C99 /* BYOCDetailActions.swift */,
 				645B792776D9FBAB6B53CFF4 /* BYOCDetailInfo.swift */,
 				20B31630BC85C635280DD8C9 /* BYOCDetailView.swift */,
@@ -3812,6 +3838,7 @@
 				C2B46DC2B76913E3DAC8C01B /* TVAppNetworkConfiguration.swift */,
 				F48529CF76413CC39200A8E4 /* TVAuthView.swift */,
 				4DD9BD72EA76CB87C70BFC2F /* TVContentView.swift */,
+				49C7BE9D4D59B50AD7F917AA /* TVContentView+Routing.swift */,
 				C50B2A7FE4C476772F236AA5 /* TVLocationProvider.swift */,
 				1634170B74642F0F354D29D6 /* TVMainTabView.swift */,
 				A8C8E9E66F2F00535BE12B74 /* TVMainTabView+Buttons.swift */,
@@ -5086,6 +5113,8 @@
 				CE15FC1E01C205FCE2529D5E /* TVBYOCSourceCard.swift */,
 				0F20FB59181CE12AE6EEF5BC /* TVBYOCSourceListView.swift */,
 				637E339C74410060E0321612 /* TVBYOCSourceListView+Rows.swift */,
+				5DCEA4ED110D4DB4954E7EB0 /* TVBYOCOnboardingWizardView.swift */,
+				E871B90FC1684F96B948793C /* TVAddXtreamSourceSheet.swift */,
 				0117515B151DB6021E55DA20 /* TVIPTVChannelCard.swift */,
 				D0066FE0442903BFB2B52E1B /* TVIPTVChannelsSection.swift */,
 				43C35C481D5661F099CA1315 /* TVPlexAuthSheet.swift */,
@@ -6095,6 +6124,8 @@
 				CBBB6670D2192E4C9CC6F1C6 /* TVActorDetailView.swift in Sources */,
 				3CC10741C30E68136240C757 /* TVActorPromoBannerView.swift in Sources */,
 				54AFE1785EF83817371B3AB9 /* TVAddIPTVSourceSheet.swift in Sources */,
+				93C887430777449D8555BC68 /* TVBYOCOnboardingWizardView.swift in Sources */,
+				8145B22E2BB7459B8711C29C /* TVAddXtreamSourceSheet.swift in Sources */,
 				750B64361BE9825CF2BD4694 /* TVAddPodcastView.swift in Sources */,
 				A17D8821E58E433C1BAF9C9B /* TVAddProfileSheet.swift in Sources */,
 				C6EA53530C58B9B76CBE7A51 /* TVAddYouTubeSheet.swift in Sources */,
@@ -6189,6 +6220,7 @@
 				454C436BD07BDC4C154018CD /* TVContentRatingPickerView.swift in Sources */,
 				4483BD66D158ABA684AD78CA /* TVContentSection.swift in Sources */,
 				74F694EB6F2FC86C2A8B9774 /* TVContentTypeMapper.swift in Sources */,
+				4B100B0640703EE29C5BB339 /* TVContentView+Routing.swift in Sources */,
 				90206919C36EA4A065B03A03 /* TVContentView.swift in Sources */,
 				FB3DD672CC51113502BC0E32 /* TVContinueListeningRow.swift in Sources */,
 				80B18FBB0452786FC26838E6 /* TVContinueWatchingRow.swift in Sources */,
@@ -6653,6 +6685,12 @@
 				70CDB0F21CAA5E31A45072E2 /* ActorPromoBannerView.swift in Sources */,
 				087CE362BF0DCE8BB5EBE13C /* ActorRepositoryProtocol.swift in Sources */,
 				873B98DC2D547872E187ED01 /* AddIPTVSourceSheet.swift in Sources */,
+				9A272E7B02464B04AB872596 /* BYOCProviderPickerView.swift in Sources */,
+				0380F3ADAFDD405F9A3BA325 /* BYOCPersonalizationStep.swift in Sources */,
+				EEF1A14D6736428CADA4C294 /* BYOCContentPruningStep.swift in Sources */,
+				6DC2DE7F05E84EEA88AF1F2A /* BYOCAnalysisSummaryStep.swift in Sources */,
+				33643917799243ECB86E4E34 /* BYOCOnboardingWizardView.swift in Sources */,
+				802C39C6143848CE952E9DC0 /* AddXtreamSourceSheet.swift in Sources */,
 				D0785AA439F0F9E565774A0F /* AddPodcastView.swift in Sources */,
 				216DF17F4B8C8FBA72DAEF6C /* AddProfileSheetView+Form.swift in Sources */,
 				B65A9A17C678846F3852F9AF /* AddProfileSheetView.swift in Sources */,

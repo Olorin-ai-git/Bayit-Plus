@@ -21,7 +21,9 @@
                     icon: "server.rack",
                     items: byocManager.plexItems,
                     maxItems: 10,
-                    seeAllAction: { showAll = true }
+                    seeAllAction: byocManager.plexItems.count > 1 ? { showAll = true } : nil,
+                    supplementaryAction: byocManager.plexItems.count == 1 ? { showAll = true } : nil,
+                    supplementaryLabel: byocManager.plexItems.count == 1 ? localization.t("byoc.browsePlexLibrary") : nil
                 ) { item in
                     plexCard(item)
                 }
@@ -47,12 +49,7 @@
                 aspectRatio: 16.0 / 9.0,
                 placeholderIcon: "server.rack"
             ) {
-                guard let url = item.streamURL else { return }
-                coordinator.presentPlayer(
-                    contentId: item.id,
-                    contentType: .vod,
-                    directUrl: url.absoluteString
-                )
+                coordinator.fullscreenRoute = .byocDetail(item: item)
             }
         }
 

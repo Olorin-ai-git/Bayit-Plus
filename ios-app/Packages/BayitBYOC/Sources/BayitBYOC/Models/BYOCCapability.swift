@@ -35,7 +35,7 @@ public struct BYOCCapabilities: Sendable, Equatable {
     /// Resolve capabilities for a source type.
     public static func capabilities(for sourceType: BYOCSourceType) -> BYOCCapabilities {
         switch sourceType {
-        case .iptv, .plex:
+        case .iptv, .xtream, .plex:
             return .full
         case .youtube:
             return .audioOnly

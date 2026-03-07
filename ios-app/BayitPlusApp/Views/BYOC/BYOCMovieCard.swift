@@ -120,6 +120,7 @@ struct BYOCMovieCard: View {
         case .plex: return "server.rack"
         case .youtube: return "play.rectangle.fill"
         case .iptv: return "antenna.radiowaves.left.and.right"
+        case .xtream: return "tv.and.mediabox"
         }
     }
 
@@ -128,6 +129,7 @@ struct BYOCMovieCard: View {
         case .plex: return Color.orange
         case .youtube: return Color.red
         case .iptv: return Color.blue
+        case .xtream: return Color.purple
         }
     }
 
