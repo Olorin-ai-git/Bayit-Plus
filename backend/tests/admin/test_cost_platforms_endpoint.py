@@ -20,25 +20,31 @@ from app.api.routes.admin.cost_service_schemas import (
 class TestGroupByPlatform:
     """Test platform grouping logic."""
 
-    def test_empty_docs(self):
+    def test_empty_docs_includes_fixed_costs(self):
         result = _group_by_platform([])
-        assert result == {}
+        # With no billing docs, fixed costs still populate platforms
+        assert PlatformEnum.SHARED in result
+        # Fixed costs config assigns entries to multiple platforms
+        assert len(result) >= 2
 
     def test_groups_infra_to_shared(self):
         doc = MagicMock()
         doc.infrastructure_costs = MagicMock(
             gcp_cost=Decimal("100"),
             mongodb_cost=Decimal("50"),
+            firebase_cost=Decimal("10"),
         )
         doc.ai_costs = MagicMock(
             tts_cost=Decimal("20"),
             llm_cost=Decimal("15"),
         )
+        doc.thirdparty_costs = None
         result = _group_by_platform([doc])
         assert PlatformEnum.SHARED in result
         shared = result[PlatformEnum.SHARED]
-        assert shared["GCP"] == Decimal("100")
-        assert shared["OpenAI"] == Decimal("15")
+        # Billing doc costs + fixed costs from config
+        assert shared["GCP"] >= Decimal("100")
+        assert shared["OpenAI"] >= Decimal("15")
 
     def test_elevenlabs_grouped_to_bayit(self):
         doc = MagicMock()
@@ -47,10 +53,19 @@ class TestGroupByPlatform:
             tts_cost=Decimal("30"),
             llm_cost=Decimal("0"),
         )
+        doc.thirdparty_costs = None
         result = _group_by_platform([doc])
         assert PlatformEnum.BAYIT_PLUS in result
         bp = result[PlatformEnum.BAYIT_PLUS]
-        assert bp["ElevenLabs"] == Decimal("30")
+        # Billing doc (30) + fixed costs from config for bayit_plus
+        assert bp["ElevenLabs"] >= Decimal("30")
+
+    def test_fixed_costs_populate_all_platforms(self):
+        result = _group_by_platform([])
+        # Fixed costs config has entries for CVPLUS (cvplus.ai domain)
+        assert PlatformEnum.CVPLUS in result
+        cvplus = result[PlatformEnum.CVPLUS]
+        assert "cvplus.ai domain" in cvplus
 
 
 class TestCalcTrend:

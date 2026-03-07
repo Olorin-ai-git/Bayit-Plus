@@ -11462,7 +11462,7 @@
     "title": "SharePlay",
     "viaFaceTime": "SharePlay via FaceTime",
     "watchTogether": "Regarder ensemble",
-    "watching": "{{count}} en train de regarder"
+    "watching": "en train de regarder"
   },
   "network": {
     "connectionLost": "Connexion perdue",
@@ -11522,6 +11522,7 @@
     "bannerTitle": "Apportez Votre Propre Contenu",
     "bannerSubtitle": "Connectez IPTV, Plex ou YouTube et ameliorez avec le doublage IA et les sous-titres",
     "bannerConnect": "Connecter Maintenant",
-    "bannerDismiss": "Ignorer"
+    "bannerDismiss": "Ignorer",
+    "itemsLoaded": "éléments chargés"
   }
 }

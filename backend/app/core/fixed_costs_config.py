@@ -6,6 +6,8 @@ from enum import Enum
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 
+from pydantic import ConfigDict
+
 
 class BillingCycle(str, Enum):
     """Billing cycle for fixed cost entries."""
@@ -137,5 +139,4 @@ class FixedCostsConfig(BaseSettings):
         description="List of fixed-cost service entries",
     )
 
-    class Config:
-        env_prefix = "FIXED_COSTS_"
+    model_config = ConfigDict(env_prefix="FIXED_COSTS_")

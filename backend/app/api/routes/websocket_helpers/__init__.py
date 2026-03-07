@@ -5,6 +5,9 @@ WebSocket helpers module - Modular helpers for WebSocket endpoints
 from app.api.routes.websocket_helpers.auth_helpers import (
     check_authentication_message, check_subscription_tier, get_user_from_token,
     validate_channel_for_dubbing)
+from app.api.routes.websocket_helpers.byoc_helpers import (
+    BYOC_CHANNEL_ID, BYOCChannelStub, create_byoc_channel_stub,
+    get_byoc_manager_key, validate_byoc_stream_url)
 from app.api.routes.websocket_helpers.quota_helpers import (
     check_and_start_quota_session, end_quota_session,
     update_quota_during_session)
@@ -21,6 +24,11 @@ __all__ = [
     "check_authentication_message",
     "check_subscription_tier",
     "validate_channel_for_dubbing",
+    "BYOC_CHANNEL_ID",
+    "BYOCChannelStub",
+    "validate_byoc_stream_url",
+    "create_byoc_channel_stub",
+    "get_byoc_manager_key",
     "check_and_start_quota_session",
     "update_quota_during_session",
     "end_quota_session",

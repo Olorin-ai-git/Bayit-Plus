@@ -10666,7 +10666,7 @@
     "title": "SharePlay",
     "viaFaceTime": "FaceTime வழியாக SharePlay",
     "watchTogether": "ஒன்றாகப் பாருங்கள்",
-    "watching": "{{count}} பேர் பார்க்கிறார்கள்"
+    "watching": "பார்க்கிறார்கள்"
   },
   "network": {
     "connectionLost": "இணைப்பு துண்டிக்கப்பட்டது",
@@ -10726,6 +10726,7 @@
     "bannerTitle": "உங்கள் சொந்த உள்ளடக்கத்தைக் கொண்டு வாருங்கள்",
     "bannerSubtitle": "IPTV, Plex அல்லது YouTube இணைத்து AI டப்பிங் மற்றும் வசனங்களுடன் மேம்படுத்துங்கள்",
     "bannerConnect": "இப்போது இணைக்கவும்",
-    "bannerDismiss": "நிராகரிக்கவும்"
+    "bannerDismiss": "நிராகரிக்கவும்",
+    "itemsLoaded": "உருப்படிகள் ஏற்றப்பட்டன"
   }
 }

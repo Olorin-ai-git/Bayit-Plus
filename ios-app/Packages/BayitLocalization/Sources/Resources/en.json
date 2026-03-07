@@ -9827,7 +9827,7 @@
     "faceTimeDescription": "Watch together with friends on FaceTime",
     "bayitParty": "Bayit+ Party",
     "bayitPartyDescription": "Invite friends to a Bayit+ watch party",
-    "watching": "{{count}} watching",
+    "watching": "watching",
     "synced": "All synced",
     "syncing": "Syncing...",
     "end": "End SharePlay",
@@ -9887,6 +9887,7 @@
     "bannerTitle": "Bring Your Own Content",
     "bannerSubtitle": "Connect IPTV, Plex, or YouTube and enhance with AI dubbing and subtitles",
     "bannerConnect": "Connect Now",
-    "bannerDismiss": "Dismiss"
+    "bannerDismiss": "Dismiss",
+    "itemsLoaded": "items loaded"
   }
 }

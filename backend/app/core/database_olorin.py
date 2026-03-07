@@ -6,6 +6,7 @@ Maintains access to Bayit+ Content model for metadata operations.
 """
 
 import logging
+import os
 from typing import Optional
 
 from beanie import init_beanie
@@ -47,14 +48,17 @@ async def connect_to_olorin_mongo() -> None:
     mongodb_url = settings.olorin.database.mongodb_url or settings.MONGODB_URI
 
     # Create Olorin database client with connection pool configuration
+    # Pool sizes read from env to respect M0 free-tier connection limits
+    olorin_pool_max = int(os.getenv("MONGODB_MAX_POOL_SIZE", "3"))
+    olorin_pool_min = int(os.getenv("MONGODB_MIN_POOL_SIZE", "0"))
     olorin_db.client = AsyncIOMotorClient(
         mongodb_url,
-        maxPoolSize=50,  # Maximum connections in pool
-        minPoolSize=10,  # Minimum connections to maintain
-        maxIdleTimeMS=30000,  # Close idle connections after 30s
-        waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-        connectTimeoutMS=10000,  # Connection timeout
-        serverSelectionTimeoutMS=10000,  # Server selection timeout
+        maxPoolSize=olorin_pool_max,
+        minPoolSize=olorin_pool_min,
+        maxIdleTimeMS=30000,
+        waitQueueTimeoutMS=5000,
+        connectTimeoutMS=10000,
+        serverSelectionTimeoutMS=10000,
     )
 
     # Initialize Beanie with Olorin models only
@@ -80,12 +84,12 @@ async def connect_to_olorin_mongo() -> None:
     if mongodb_url != settings.MONGODB_URI:
         olorin_db.bayit_client = AsyncIOMotorClient(
             settings.MONGODB_URI,
-            maxPoolSize=50,  # Maximum connections in pool
-            minPoolSize=10,  # Minimum connections to maintain
-            maxIdleTimeMS=30000,  # Close idle connections after 30s
-            waitQueueTimeoutMS=5000,  # Fail fast if pool exhausted
-            connectTimeoutMS=10000,  # Connection timeout
-            serverSelectionTimeoutMS=10000,  # Server selection timeout
+            maxPoolSize=olorin_pool_max,
+            minPoolSize=olorin_pool_min,
+            maxIdleTimeMS=30000,
+            waitQueueTimeoutMS=5000,
+            connectTimeoutMS=10000,
+            serverSelectionTimeoutMS=10000,
         )
         logger.info("Established Bayit+ database reference for Content metadata access")
     else:

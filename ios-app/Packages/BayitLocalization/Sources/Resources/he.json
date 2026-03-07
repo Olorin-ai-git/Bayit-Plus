@@ -10641,7 +10641,7 @@
     "title": "SharePlay",
     "viaFaceTime": "SharePlay דרך FaceTime",
     "watchTogether": "צפו יחד",
-    "watching": "{{count}} צופים"
+    "watching": "צופים"
   },
   "network": {
     "connectionLost": "החיבור אבד",
@@ -10701,6 +10701,7 @@
     "bannerTitle": "הביאו את התוכן שלכם",
     "bannerSubtitle": "חברו IPTV, Plex או YouTube ושפרו עם דיבוב AI וכתוביות",
     "bannerConnect": "התחבר עכשיו",
-    "bannerDismiss": "סגור"
+    "bannerDismiss": "סגור",
+    "itemsLoaded": "פריטים נטענו"
   }
 }

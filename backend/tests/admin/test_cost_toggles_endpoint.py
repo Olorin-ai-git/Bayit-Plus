@@ -1,6 +1,6 @@
 """Tests for /admin/costs/toggles endpoint logic."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -80,7 +80,7 @@ class TestProviderToggleSchemas:
         assert resp.updated_at is None
 
     def test_toggle_response_from_override(self):
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         resp = ProviderToggleResponse(
             provider_key="openai",
             display_name="OpenAI",

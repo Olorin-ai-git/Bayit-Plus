@@ -2,7 +2,6 @@ import XCTest
 
 @MainActor
 final class LocalizationScreenshotTests: XCTestCase {
-
     private let languages = ["en", "he", "es", "fr", "zh", "it", "hi", "ta", "bn", "ja"]
 
     // MARK: - Home Screenshots
@@ -40,14 +39,14 @@ final class LocalizationScreenshotTests: XCTestCase {
         }
     }
 
-    // MARK: - Radio Screenshots
+    // MARK: - Listen Screenshots
 
-    func testRadioScreenshots() {
+    func testListenScreenshots() {
         for language in languages {
             let app = AppLaunchHelper.launchApp(language: language)
             XCTAssertTrue(NavigationHelper.waitForTabBar(app))
-            NavigationHelper.switchToTab(app, tab: "Radio")
-            ScreenshotHelper.captureScreen(app, screen: "radio", language: language)
+            NavigationHelper.switchToTab(app, tab: "Listen")
+            ScreenshotHelper.captureScreen(app, screen: "listen", language: language)
             app.terminate()
         }
     }

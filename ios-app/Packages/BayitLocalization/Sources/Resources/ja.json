@@ -11500,7 +11500,7 @@
     "title": "SharePlay",
     "viaFaceTime": "FaceTime経由のSharePlay",
     "watchTogether": "一緒に視聴",
-    "watching": "{{count}} 人が視聴中"
+    "watching": "視聴中"
   },
   "network": {
     "connectionLost": "接続が切断されました",
@@ -11560,6 +11560,7 @@
     "bannerTitle": "自分のコンテンツを持ち込む",
     "bannerSubtitle": "IPTV、Plex、またはYouTubeを接続してAI吹き替えと字幕で強化",
     "bannerConnect": "今すぐ接続",
-    "bannerDismiss": "閉じる"
+    "bannerDismiss": "閉じる",
+    "itemsLoaded": "件読み込み済み"
   }
 }

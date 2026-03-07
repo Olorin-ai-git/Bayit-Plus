@@ -226,16 +226,35 @@ targets:
         DEVELOPMENT_TEAM: 963B7732N5
         CODE_SIGN_STYLE: Automatic
 
+  BayitPlusUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: BayitPlusUITests
+        type: group
+    dependencies:
+      - target: BayitPlusApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus.uitests
+        GENERATE_INFOPLIST_FILE: true
+        TEST_TARGET_NAME: BayitPlusApp
+        DEVELOPMENT_TEAM: 963B7732N5
+        CODE_SIGN_STYLE: Automatic
+
 schemes:
   BayitPlusApp:
     build:
       targets:
         BayitPlusApp: all
         BayitWidgets: all
+        BayitPlusUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
+      targets:
+        - BayitPlusUITests
     profile:
       config: Release
     archive:

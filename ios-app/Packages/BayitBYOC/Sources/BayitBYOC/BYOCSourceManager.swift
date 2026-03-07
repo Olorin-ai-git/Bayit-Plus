@@ -34,6 +34,9 @@ public final class BYOCSourceManager: @unchecked Sendable {
 
     public init() {
         sources = BYOCSourceStore.loadSources()
+        if !sources.isEmpty {
+            Task { await refreshAll() }
+        }
     }
 
     // MARK: - IPTV

@@ -6,11 +6,13 @@
     import SwiftUI
 
     /// Home screen shelf row displaying Plex library content.
-    /// Hides itself when no Plex sources are connected.
+    /// Uses compact landscape cards to avoid dominating the home screen.
     struct TVPlexRow: View {
         @Environment(BYOCSourceManager.self) private var byocManager
         @Environment(TVNavigationCoordinator.self) private var coordinator
         @Environment(LocalizationManager.self) private var localization
+
+        @State private var showAll = false
 
         var body: some View {
             if !byocManager.plexItems.isEmpty {
@@ -18,20 +20,31 @@
                     title: localization.t("byoc.fromPlex"),
                     icon: "server.rack",
                     items: byocManager.plexItems,
-                    maxItems: 20
+                    maxItems: 10,
+                    seeAllAction: { showAll = true }
                 ) { item in
                     plexCard(item)
+                }
+                .fullScreenCover(isPresented: $showAll) {
+                    TVBYOCBrowseGrid(
+                        title: localization.t("byoc.fromPlex"),
+                        icon: "server.rack",
+                        items: byocManager.plexItems,
+                        onDismiss: { showAll = false }
+                    ) { item in
+                        plexCard(item)
+                    }
                 }
             }
         }
 
         private func plexCard(_ item: BYOCContentItem) -> some View {
             TVContentCard(
-                imageURL: item.thumbnailURL?.absoluteString,
+                imageURL: (item.backdropURL ?? item.thumbnailURL)?.absoluteString,
                 title: item.title,
                 subtitle: subtitle(for: item),
                 badge: "PLEX",
-                aspectRatio: item.contentType == .movie ? 2.0 / 3.0 : 16.0 / 9.0,
+                aspectRatio: 16.0 / 9.0,
                 placeholderIcon: "server.rack"
             ) {
                 guard let url = item.streamURL else { return }

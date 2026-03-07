@@ -1,6 +1,6 @@
 """Cost provider toggle endpoints for iOS dashboard."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -14,6 +14,7 @@ from app.models.cost_provider_settings import (
 from app.models.user import User
 
 from .cost_admin_lock import require_costs_admin_uid
+from .cost_auth import require_cost_read_permission
 from .cost_service_schemas import (
     CostCategoryEnum,
     ProviderToggleListResponse,
@@ -66,7 +67,7 @@ def _get_config_enabled(provider_key: str) -> bool:
 @limiter.limit("60/hour")
 async def list_toggles(
     request: Request,
-    current_user: User = Depends(require_costs_admin_uid),
+    current_user: User = Depends(require_cost_read_permission),
 ) -> ProviderToggleListResponse:
     """List all providers with merged config + override state."""
     overrides = await CostProviderSettings.find_all().to_list()
@@ -126,7 +127,7 @@ async def update_toggle(
 
     if existing is not None:
         existing.enabled = body.enabled
-        existing.updated_at = datetime.utcnow()
+        existing.updated_at = datetime.now(UTC)
         existing.updated_by = admin_identity
         await existing.save()
         doc = existing

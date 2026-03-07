@@ -165,6 +165,13 @@ run_batch() {
 
     # Read from fd 3 to prevent source/subcommands from consuming loop stdin
     while IFS= read -r content_id <&3; do
+        # Check for graceful stop request
+        if [ -f "$BATCH_STATE_DIR/stop" ]; then
+            log "Stop requested — finishing after current movie"
+            rm -f "$BATCH_STATE_DIR/stop"
+            break
+        fi
+
         count=$((count + 1))
 
         # Skip if already done
@@ -224,6 +231,11 @@ case "${1:-}" in
         init_state
         echo "${2:?Content ID required}" >> "$SKIPPED_FILE"
         echo "Skipped: $2"
+        ;;
+    --stop)
+        init_state
+        touch "$BATCH_STATE_DIR/stop"
+        echo "Stop requested — batch will finish current movie then exit"
         ;;
     --retry)
         init_state

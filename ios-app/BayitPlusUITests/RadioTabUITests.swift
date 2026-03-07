@@ -2,7 +2,6 @@ import XCTest
 
 @MainActor
 final class RadioTabUITests: XCTestCase {
-
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
@@ -10,22 +9,22 @@ final class RadioTabUITests: XCTestCase {
         app = AppLaunchHelper.launchApp()
     }
 
-    // MARK: - Radio Content
+    // MARK: - Listen Content
 
-    func testRadioTabShowsContent() {
+    func testListenTabShowsContent() {
         XCTAssertTrue(NavigationHelper.waitForTabBar(app), "Tab bar not visible")
-        NavigationHelper.switchToTab(app, tab: "Radio")
+        NavigationHelper.switchToTab(app, tab: "Listen")
 
         let hasContent = NavigationHelper.verifyScreenHasContent(app)
-        XCTAssertTrue(hasContent, "Radio tab has no content")
+        XCTAssertTrue(hasContent, "Listen tab has no content")
     }
 
-    // MARK: - Radio Screenshot
+    // MARK: - Listen Screenshot
 
-    func testRadioScreenshot() {
+    func testListenScreenshot() {
         XCTAssertTrue(NavigationHelper.waitForTabBar(app), "Tab bar not visible")
-        NavigationHelper.switchToTab(app, tab: "Radio")
+        NavigationHelper.switchToTab(app, tab: "Listen")
 
-        ScreenshotHelper.captureScreen(app, screen: "radio")
+        ScreenshotHelper.captureScreen(app, screen: "listen")
     }
 }

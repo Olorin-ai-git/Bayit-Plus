@@ -15,30 +15,55 @@ from app.services.admin.cost_user_service import get_top_spenders, get_user_brea
 logger = get_logger(__name__)
 
 
+def _sum_doc_costs(doc: CostBreakdown) -> Decimal:
+    """Sum all cost leaf fields from a single CostBreakdown doc."""
+    ai = doc.ai_costs
+    inf = doc.infrastructure_costs
+    tp = doc.thirdparty_costs
+    return (
+        ai.stt_cost + ai.tts_cost + ai.translation_cost
+        + ai.llm_cost + ai.search_cost
+        + inf.gcp_cost + inf.mongodb_cost + inf.firebase_cost
+        + inf.sentry_cost + inf.cdn_cost
+        + tp.stripe_fees + tp.elevenlabs_cost + tp.tmdb_cost
+        + tp.twilio_cost + tp.sendgrid_cost + tp.other_api_cost
+    )
+
+
+def _sum_doc_ai(doc: CostBreakdown) -> Decimal:
+    """Sum AI cost leaf fields."""
+    ai = doc.ai_costs
+    return (
+        ai.stt_cost + ai.tts_cost + ai.translation_cost
+        + ai.llm_cost + ai.search_cost
+    )
+
+
+def _sum_doc_infra(doc: CostBreakdown) -> Decimal:
+    """Sum infrastructure cost leaf fields."""
+    inf = doc.infrastructure_costs
+    return (
+        inf.gcp_cost + inf.mongodb_cost + inf.firebase_cost
+        + inf.sentry_cost + inf.cdn_cost
+    )
+
+
 async def get_overview() -> CostOverviewResponse:
-    """Get P&L summary from monthly rollup, falling back to hourly."""
-    doc = await CostBreakdown.find(
-        {"period_type": "monthly"}
-    ).sort("-period_start").first_or_none()
-
-    if doc:
-        return CostOverviewResponse(
-            period_start=doc.period_start,
-            period_end=doc.period_end,
-            revenue=doc.revenue.net_revenue,
-            total_costs=doc.totals.platform_cost,
-            profit_loss=doc.metrics.profit_loss,
-            profit_margin=float(doc.metrics.profit_margin),
-            cost_per_minute=doc.metrics.cost_per_minute,
-            last_updated=doc.updated_at,
-        )
-
+    """Get P&L summary by aggregating current-month hourly docs."""
     now = datetime.now(UTC)
-    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    month_start = now.replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0,
+    )
+
     hourly_docs = await CostBreakdown.find(
-        {"period_type": "hourly"},
+        CostBreakdown.period_type == "hourly",
         CostBreakdown.period_start >= month_start,
     ).to_list()
+
+    logger.info(
+        "Overview query",
+        extra={"month_start": str(month_start), "doc_count": len(hourly_docs)},
+    )
 
     if not hourly_docs:
         return CostOverviewResponse(
@@ -56,11 +81,20 @@ async def get_overview() -> CostOverviewResponse:
         (d.revenue.net_revenue for d in hourly_docs), Decimal("0")
     )
     total_cost = sum(
-        (d.totals.platform_cost for d in hourly_docs), Decimal("0")
+        (_sum_doc_costs(d) for d in hourly_docs), Decimal("0")
     )
     pl = total_rev - total_cost
     margin = float(pl / total_rev * 100) if total_rev else 0.0
     latest = max(hourly_docs, key=lambda d: d.period_end)
+
+    logger.info(
+        "Overview result",
+        extra={
+            "revenue": str(total_rev),
+            "total_cost": str(total_cost),
+            "doc_count": len(hourly_docs),
+        },
+    )
 
     return CostOverviewResponse(
         period_start=month_start,
@@ -75,32 +109,14 @@ async def get_overview() -> CostOverviewResponse:
 
 
 async def get_timeline(params: CostQueryParams) -> list[TimelineDataPoint]:
-    """Get cost time-series, preferring daily rollups with hourly fallback."""
+    """Get cost time-series from hourly docs aggregated to daily."""
     docs = await CostBreakdown.find(
-        {"period_type": "daily"},
+        CostBreakdown.period_type == "hourly",
         CostBreakdown.period_start >= params.start_date,
         CostBreakdown.period_end <= params.end_date,
     ).sort("period_start").to_list()
 
-    if not docs:
-        docs = await CostBreakdown.find(
-            {"period_type": "hourly"},
-            CostBreakdown.period_start >= params.start_date,
-            CostBreakdown.period_end <= params.end_date,
-        ).sort("period_start").to_list()
-        return _aggregate_hourly_to_daily(docs)
-
-    return [
-        TimelineDataPoint(
-            date=doc.period_start,
-            revenue=doc.revenue.net_revenue,
-            total_cost=doc.totals.platform_cost,
-            profit_loss=doc.metrics.profit_loss,
-            ai_cost=doc.ai_costs.total,
-            infrastructure_cost=doc.infrastructure_costs.total,
-        )
-        for doc in docs
-    ]
+    return _aggregate_hourly_to_daily(docs)
 
 
 def _aggregate_hourly_to_daily(
@@ -117,49 +133,35 @@ def _aggregate_hourly_to_daily(
     points = []
     for day in sorted(daily):
         group = daily[day]
+        ai = sum((_sum_doc_ai(d) for d in group), Decimal("0"))
+        infra = sum((_sum_doc_infra(d) for d in group), Decimal("0"))
+        total = sum((_sum_doc_costs(d) for d in group), Decimal("0"))
+        rev = sum((d.revenue.net_revenue for d in group), Decimal("0"))
         points.append(
             TimelineDataPoint(
                 date=day,
-                revenue=sum(
-                    (d.revenue.net_revenue for d in group), Decimal("0")
-                ),
-                total_cost=sum(
-                    (d.totals.platform_cost for d in group), Decimal("0")
-                ),
-                profit_loss=sum(
-                    (d.metrics.profit_loss for d in group), Decimal("0")
-                ),
-                ai_cost=sum(
-                    (d.ai_costs.total for d in group), Decimal("0")
-                ),
-                infrastructure_cost=sum(
-                    (d.infrastructure_costs.total for d in group),
-                    Decimal("0"),
-                ),
+                revenue=rev,
+                total_cost=total,
+                profit_loss=rev - total,
+                ai_cost=ai,
+                infrastructure_cost=infra,
             )
         )
     return points
 
 
-async def _fetch_daily_docs(params: CostQueryParams) -> list:
-    """Fetch daily docs in range, falling back to hourly if none exist."""
-    docs = await CostBreakdown.find(
-        {"period_type": "daily"},
+async def _fetch_hourly_docs(params: CostQueryParams) -> list:
+    """Fetch hourly docs in date range."""
+    return await CostBreakdown.find(
+        CostBreakdown.period_type == "hourly",
         CostBreakdown.period_start >= params.start_date,
         CostBreakdown.period_end <= params.end_date,
     ).to_list()
-    if not docs:
-        docs = await CostBreakdown.find(
-            {"period_type": "hourly"},
-            CostBreakdown.period_start >= params.start_date,
-            CostBreakdown.period_end <= params.end_date,
-        ).to_list()
-    return docs
 
 
 async def get_breakdown(params: CostQueryParams) -> CostBreakdownResponse:
     """Aggregate AI/infra/third-party costs for date range."""
-    docs = await _fetch_daily_docs(params)
+    docs = await _fetch_hourly_docs(params)
 
     ai = {"stt": Decimal("0"), "tts": Decimal("0"), "translation": Decimal("0"),
           "llm": Decimal("0"), "search": Decimal("0")}
@@ -167,7 +169,7 @@ async def get_breakdown(params: CostQueryParams) -> CostBreakdownResponse:
              "sentry": Decimal("0"), "cdn": Decimal("0")}
     third = {"stripe": Decimal("0"), "elevenlabs": Decimal("0"), "tmdb": Decimal("0"),
              "twilio": Decimal("0"), "sendgrid": Decimal("0"), "other": Decimal("0")}
-    perm_total, trans_total, plat_total = Decimal("0"), Decimal("0"), Decimal("0")
+    perm_total, trans_total = Decimal("0"), Decimal("0")
 
     for doc in docs:
         ai["stt"] += doc.ai_costs.stt_cost
@@ -188,7 +190,8 @@ async def get_breakdown(params: CostQueryParams) -> CostBreakdownResponse:
         third["other"] += doc.thirdparty_costs.other_api_cost
         perm_total += doc.totals.permanent_cost
         trans_total += doc.totals.transient_cost
-        plat_total += doc.totals.platform_cost
+
+    plat_total = sum((_sum_doc_costs(d) for d in docs), Decimal("0"))
 
     return CostBreakdownResponse(
         ai_costs={k: str(v) for k, v in ai.items()},
@@ -202,14 +205,22 @@ async def get_breakdown(params: CostQueryParams) -> CostBreakdownResponse:
 
 async def get_balance_sheet(params: CostQueryParams) -> FinancialStatementResponse:
     """Build P&L statement from revenue + costs."""
-    docs = await _fetch_daily_docs(params)
+    docs = await _fetch_hourly_docs(params)
 
     rev_sub = sum((d.revenue.subscription_revenue for d in docs), Decimal("0"))
     rev_one = sum((d.revenue.onetime_revenue for d in docs), Decimal("0"))
     refunds = sum((d.revenue.refunds for d in docs), Decimal("0"))
-    ai_total = sum((d.ai_costs.total for d in docs), Decimal("0"))
-    infra_total = sum((d.infrastructure_costs.total for d in docs), Decimal("0"))
-    third_total = sum((d.thirdparty_costs.total for d in docs), Decimal("0"))
+    ai_total = sum((_sum_doc_ai(d) for d in docs), Decimal("0"))
+    infra_total = sum((_sum_doc_infra(d) for d in docs), Decimal("0"))
+    third_total = sum(
+        (
+            d.thirdparty_costs.stripe_fees + d.thirdparty_costs.elevenlabs_cost
+            + d.thirdparty_costs.tmdb_cost + d.thirdparty_costs.twilio_cost
+            + d.thirdparty_costs.sendgrid_cost + d.thirdparty_costs.other_api_cost
+            for d in docs
+        ),
+        Decimal("0"),
+    )
 
     net_rev = rev_sub + rev_one - refunds
     total_costs = ai_total + infra_total + third_total
@@ -233,8 +244,8 @@ async def get_balance_sheet(params: CostQueryParams) -> FinancialStatementRespon
 
 async def get_cost_per_minute(params: CostQueryParams) -> dict:
     """Calculate total cost / total minutes from LiveFeatureUsageSession."""
-    docs = await _fetch_daily_docs(params)
-    total_cost = sum((d.totals.platform_cost for d in docs), Decimal("0"))
+    docs = await _fetch_hourly_docs(params)
+    total_cost = sum((_sum_doc_costs(d) for d in docs), Decimal("0"))
 
     sessions = await LiveFeatureUsageSession.find(
         LiveFeatureUsageSession.started_at >= params.start_date,
@@ -254,7 +265,7 @@ async def get_cost_per_minute(params: CostQueryParams) -> dict:
 
 async def get_comparison(params: CostQueryParams) -> CostComparisonResponse:
     """Permanent vs transient costs from CostBreakdown.totals."""
-    docs = await _fetch_daily_docs(params)
+    docs = await _fetch_hourly_docs(params)
 
     perm = sum((d.totals.permanent_cost for d in docs), Decimal("0"))
     trans = sum((d.totals.transient_cost for d in docs), Decimal("0"))

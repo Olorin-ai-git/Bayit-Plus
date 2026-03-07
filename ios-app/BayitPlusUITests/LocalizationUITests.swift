@@ -2,7 +2,6 @@ import XCTest
 
 @MainActor
 final class LocalizationUITests: XCTestCase {
-
     private let languages = ["en", "he", "es", "fr", "zh", "it", "hi", "ta", "bn", "ja"]
 
     // MARK: - Language Rendering
@@ -52,10 +51,10 @@ final class LocalizationUITests: XCTestCase {
                 "Tab bar not found for language: \(language)"
             )
 
-            let hasAllTabs = app.buttons["tab_liveTV"].exists
-                && app.buttons["tab_vod"].exists
-                && app.buttons["tab_radio"].exists
+            let hasAllTabs = app.buttons["tab_home"].exists
+                && app.buttons["tab_liveTV"].exists
                 && app.buttons["tab_podcasts"].exists
+                && app.buttons["tab_search"].exists
 
             XCTAssertTrue(
                 hasAllTabs,

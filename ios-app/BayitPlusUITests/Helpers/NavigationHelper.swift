@@ -2,7 +2,6 @@ import XCTest
 
 @MainActor
 enum NavigationHelper {
-
     static let defaultTimeout: TimeInterval = 8
 
     // MARK: - Tab Navigation
@@ -17,8 +16,10 @@ enum NavigationHelper {
         "Live": "tab_liveTV",
         "Live TV": "tab_liveTV",
         "VOD": "tab_vod",
-        "Radio": "tab_radio",
+        "Listen": "tab_podcasts",
         "Podcasts": "tab_podcasts",
+        "Search": "tab_search",
+        "Downloads": "tab_downloads",
     ]
 
     static func switchToTab(_ app: XCUIApplication, tab: String, timeout: TimeInterval = defaultTimeout) {

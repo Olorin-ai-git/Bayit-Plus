@@ -20,7 +20,7 @@
 
         var body: some View {
             ZStack {
-                DesignTokens.Glass.bg.ignoresSafeArea()
+                DesignTokens.Background.primary.ignoresSafeArea()
 
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
                     headerSection
@@ -66,11 +66,11 @@
                     .foregroundStyle(DesignTokens.Text.secondary)
 
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
-                    ForEach(Array(code), id: \.self) { char in
+                    ForEach(Array(code.enumerated()), id: \.offset) { _, char in
                         Text(String(char))
-                            .font(.system(size: 64, weight: .bold, design: .monospaced))
+                            .font(.system(size: 72, weight: .bold, design: .monospaced))
                             .foregroundStyle(DesignTokens.Text.primary)
-                            .frame(width: 80, height: 100)
+                            .frame(width: 100, height: 120)
                             .background(DesignTokens.Background.elevated)
                             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                     }

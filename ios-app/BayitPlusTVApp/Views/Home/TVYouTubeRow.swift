@@ -11,23 +11,41 @@
         @Environment(BYOCSourceManager.self) private var byocManager
         @Environment(LocalizationManager.self) private var localization
 
+        @State private var showAll = false
+
         var body: some View {
             if byocManager.hasYouTube, !byocManager.youtubeItems.isEmpty {
                 TVContentSection(
                     title: localization.t("byoc.fromYouTube"),
                     icon: "play.rectangle.fill",
-                    items: byocManager.youtubeItems
+                    items: byocManager.youtubeItems,
+                    maxItems: 10,
+                    seeAllAction: { showAll = true }
                 ) { item in
-                    TVContentCard(
-                        imageURL: item.thumbnailURL?.absoluteString,
-                        title: item.title,
-                        subtitle: item.genre,
-                        badge: "YT",
-                        aspectRatio: 16 / 9
-                    ) {
-                        openInYouTube(item: item)
+                    youtubeCard(item)
+                }
+                .fullScreenCover(isPresented: $showAll) {
+                    TVBYOCBrowseGrid(
+                        title: localization.t("byoc.fromYouTube"),
+                        icon: "play.rectangle.fill",
+                        items: byocManager.youtubeItems,
+                        onDismiss: { showAll = false }
+                    ) { item in
+                        youtubeCard(item)
                     }
                 }
+            }
+        }
+
+        private func youtubeCard(_ item: BYOCContentItem) -> some View {
+            TVContentCard(
+                imageURL: item.thumbnailURL?.absoluteString,
+                title: item.title,
+                subtitle: item.genre,
+                badge: "YT",
+                aspectRatio: 16 / 9
+            ) {
+                openInYouTube(item: item)
             }
         }
 

@@ -10568,7 +10568,7 @@
     "title": "SharePlay",
     "viaFaceTime": "FaceTime-এর মাধ্যমে SharePlay",
     "watchTogether": "একসাথে দেখুন",
-    "watching": "{{count}} জন দেখছেন"
+    "watching": "দেখছেন"
   },
   "network": {
     "connectionLost": "সংযোগ বিচ্ছিন্ন",
@@ -10628,6 +10628,7 @@
     "bannerTitle": "আপনার নিজের কন্টেন্ট আনুন",
     "bannerSubtitle": "IPTV, Plex, বা YouTube সংযুক্ত করুন এবং AI ডাবিং ও সাবটাইটেল দিয়ে উন্নত করুন",
     "bannerConnect": "এখনই সংযুক্ত করুন",
-    "bannerDismiss": "বাতিল করুন"
+    "bannerDismiss": "বাতিল করুন",
+    "itemsLoaded": "আইটেম লোড হয়েছে"
   }
 }

@@ -23,7 +23,7 @@
 
         var body: some View {
             ZStack {
-                DesignTokens.Glass.bg.ignoresSafeArea()
+                DesignTokens.Background.primary.ignoresSafeArea()
 
                 VStack(spacing: TVDesignTokens.Spacing.xxl) {
                     headerView

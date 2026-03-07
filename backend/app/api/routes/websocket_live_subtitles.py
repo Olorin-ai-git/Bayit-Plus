@@ -13,10 +13,13 @@ from typing import Dict, Optional, Tuple
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
-from app.api.routes.websocket_helpers import (check_authentication_message,
+from app.api.routes.websocket_helpers import (BYOC_CHANNEL_ID,
+                                              check_authentication_message,
                                               check_subscription_tier,
+                                              create_byoc_channel_stub,
                                               end_quota_session,
-                                              get_user_from_token)
+                                              get_user_from_token,
+                                              validate_byoc_stream_url)
 from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
@@ -393,6 +396,7 @@ async def websocket_live_subtitles(
     ),
     audio_source: str = Query("client", description="Audio source: client (browser sends) or server (FFmpeg HLS)"),
     platform: str = Query("web", description="Client platform: web, ios, tvos, android"),
+    stream_url: str | None = Query(None, description="BYOC stream URL (required when channel_id is 'byoc')"),
 ):
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
@@ -505,15 +509,34 @@ async def websocket_live_subtitles(
     if not await check_subscription_tier(websocket, user, ["premium", "family"]):
         return
 
-    # Verify channel exists
-    try:
-        channel = await LiveChannel.get(PydanticObjectId(channel_id))
-    except Exception:
-        channel = None
+    # Verify channel (BYOC bypass or standard lookup)
+    is_byoc = channel_id == BYOC_CHANNEL_ID
+    if is_byoc:
+        if not stream_url:
+            await websocket.send_json(
+                {"type": "error", "message": "Stream URL required for BYOC", "recoverable": False}
+            )
+            await websocket.close(code=4002, reason="Stream URL required for BYOC")
+            return
+        valid, url_error = validate_byoc_stream_url(stream_url)
+        if not valid:
+            await websocket.send_json(
+                {"type": "error", "message": url_error, "recoverable": False}
+            )
+            await websocket.close(code=4002, reason=url_error)
+            return
+        channel = create_byoc_channel_stub(stream_url, source_lang)
+        audio_source = "server"
+    else:
+        try:
+            channel = await LiveChannel.get(PydanticObjectId(channel_id))
+        except Exception:
+            channel = None
+        if not channel:
+            await websocket.close(code=4004, reason="Channel not found")
+            return
 
-    if not channel:
-        await websocket.close(code=4004, reason="Channel not found")
-        return
+    effective_channel_id = channel.id if is_byoc else channel_id
 
     # Check quota and start session (try cache first)
     cached_result = get_cached_quota_check(str(user.id))
@@ -542,7 +565,7 @@ async def websocket_live_subtitles(
     try:
         session = await live_feature_quota_service.start_session(
             user_id=str(user.id),
-            channel_id=channel_id,
+            channel_id=effective_channel_id,
             feature_type=FeatureType.SUBTITLE,
             source_language=source_lang,
             target_language=target_lang,
@@ -553,8 +576,8 @@ async def websocket_live_subtitles(
         return
 
     logger.info(
-        f"Live subtitle connection: user={user.id}, channel={channel_id}, "
-        f"source_lang={source_lang}, target_lang={target_lang}"
+        f"Live subtitle connection: user={user.id}, channel={effective_channel_id}, "
+        f"source_lang={source_lang}, target_lang={target_lang}, byoc={is_byoc}"
     )
 
     # Initialize translation service
@@ -577,22 +600,23 @@ async def websocket_live_subtitles(
                 "type": "connected",
                 "source_lang": source_lang,
                 "target_lang": target_lang,
-                "channel_id": channel_id,
+                "channel_id": effective_channel_id,
+                "byoc": is_byoc,
                 "stt_provider": translation_service.stt_manager.provider,
                 "translation_provider": translation_service.translation_manager.provider,
                 "enable_predictive": enable_predictive,
             }
         )
         logger.info(
-            f"Translation service initialized for channel {channel_id} "
-            f"(predictive: {enable_predictive})"
+            f"Translation service initialized for channel {effective_channel_id} "
+            f"(predictive: {enable_predictive}, byoc: {is_byoc})"
         )
 
         # Select audio source: client-sent or server-captured
         audio_capture = None
         if audio_source == "server":
             audio_capture = StreamAudioCapture(
-                stream_url=channel.stream_url, channel_id=channel_id
+                stream_url=channel.stream_url, channel_id=effective_channel_id
             )
             await audio_capture.start()
             audio_stream = create_server_audio_stream(

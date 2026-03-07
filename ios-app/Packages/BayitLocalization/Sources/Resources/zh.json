@@ -10583,7 +10583,7 @@
     "title": "SharePlay",
     "viaFaceTime": "通过 FaceTime 进行 SharePlay",
     "watchTogether": "一起观看",
-    "watching": "{{count}} 人在看"
+    "watching": "在看"
   },
   "network": {
     "connectionLost": "连接丢失",
@@ -10643,6 +10643,7 @@
     "bannerTitle": "自带内容",
     "bannerSubtitle": "连接IPTV、Plex或YouTube，并通过AI配音和字幕增强",
     "bannerConnect": "立即连接",
-    "bannerDismiss": "关闭"
+    "bannerDismiss": "关闭",
+    "itemsLoaded": "项已加载"
   }
 }

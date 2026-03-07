@@ -31,7 +31,7 @@ public actor PlexAuthService {
         addClientHeaders(&request)
 
         request.httpBody = try JSONSerialization.data(
-            withJSONObject: ["strong": true]
+            withJSONObject: ["strong": false]
         )
         request.setValue(
             "application/json",

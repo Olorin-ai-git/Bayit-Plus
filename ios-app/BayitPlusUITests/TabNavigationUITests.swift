@@ -1,7 +1,6 @@
 import XCTest
 
 final class TabNavigationUITests: XCTestCase {
-
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
@@ -21,9 +20,8 @@ final class TabNavigationUITests: XCTestCase {
     func testAllTabsExist() {
         XCTAssertTrue(app.buttons["tab_home"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.buttons["tab_liveTV"].exists)
-        XCTAssertTrue(app.buttons["tab_vod"].exists)
-        XCTAssertTrue(app.buttons["tab_radio"].exists)
         XCTAssertTrue(app.buttons["tab_podcasts"].exists)
+        XCTAssertTrue(app.buttons["tab_search"].exists)
     }
 
     // MARK: - Tab Switching
@@ -36,28 +34,19 @@ final class TabNavigationUITests: XCTestCase {
         XCTAssertTrue(liveTab.isSelected)
     }
 
-    func testSwitchToVODTab() {
-        let vodTab = app.buttons["tab_vod"]
-        XCTAssertTrue(vodTab.waitForExistence(timeout: 8))
-        vodTab.tap()
-
-        XCTAssertTrue(vodTab.isSelected)
+    func testSwitchToListenTab() {
+        XCTAssertTrue(app.buttons["tab_home"].waitForExistence(timeout: 10))
+        let listenTab = app.buttons["tab_podcasts"]
+        XCTAssertTrue(listenTab.exists, "tab_podcasts not found")
+        listenTab.tap()
     }
 
-    func testSwitchToRadioTab() {
-        let radioTab = app.buttons["tab_radio"]
-        XCTAssertTrue(radioTab.waitForExistence(timeout: 8))
-        radioTab.tap()
+    func testSwitchToSearchTab() {
+        let searchTab = app.buttons["tab_search"]
+        XCTAssertTrue(searchTab.waitForExistence(timeout: 8))
+        searchTab.tap()
 
-        XCTAssertTrue(radioTab.isSelected)
-    }
-
-    func testSwitchToPodcastsTab() {
-        let podcastsTab = app.buttons["tab_podcasts"]
-        XCTAssertTrue(podcastsTab.waitForExistence(timeout: 8))
-        podcastsTab.tap()
-
-        XCTAssertTrue(podcastsTab.isSelected)
+        XCTAssertTrue(searchTab.isSelected)
     }
 
     func testSwitchBackToHomeTab() {

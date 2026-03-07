@@ -15,9 +15,9 @@ public enum PlexContentAdapter {
         let art: URL? = item.artPath.flatMap { path in
             imageURL(server: server, path: path, token: authToken)
         }
-        let stream: URL? = item.streamPath.flatMap { path in
-            mediaURL(server: server, path: path, token: authToken)
-        }
+        let stream = transcodeURL(
+            server: server, ratingKey: item.id, token: authToken
+        )
 
         return BYOCContentItem(
             id: "plex-\(sourceId)-\(item.id)",
@@ -68,12 +68,33 @@ public enum PlexContentAdapter {
         authenticatedURL(server: server, path: path, token: token)
     }
 
-    private static func mediaURL(
+    /// Build a universal transcode URL that serves HLS.
+    /// AVPlayer cannot stream raw media files (MKV/AVI) over HTTP,
+    /// so we use the Plex transcode endpoint which remuxes to HLS.
+    private static func transcodeURL(
         server: PlexServer,
-        path: String,
+        ratingKey: String,
         token: String
     ) -> URL? {
-        authenticatedURL(server: server, path: path, token: token)
+        var components = URLComponents(
+            string: "\(server.baseURL)/video/:/transcode/universal/start.m3u8"
+        )
+        components?.queryItems = [
+            URLQueryItem(name: "path", value: "/library/metadata/\(ratingKey)"),
+            URLQueryItem(name: "mediaIndex", value: "0"),
+            URLQueryItem(name: "partIndex", value: "0"),
+            URLQueryItem(name: "protocol", value: "hls"),
+            URLQueryItem(name: "fastSeek", value: "1"),
+            URLQueryItem(name: "directPlay", value: "0"),
+            URLQueryItem(name: "directStream", value: "1"),
+            URLQueryItem(name: "directStreamAudio", value: "1"),
+            URLQueryItem(name: "videoQuality", value: "100"),
+            URLQueryItem(name: "maxVideoBitrate", value: "20000"),
+            URLQueryItem(name: "session", value: UUID().uuidString),
+            URLQueryItem(name: "X-Plex-Token", value: token),
+            URLQueryItem(name: "X-Plex-Platform", value: "tvOS"),
+        ]
+        return components?.url
     }
 
     private static func authenticatedURL(

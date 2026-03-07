@@ -1,6 +1,6 @@
 """Cost platforms endpoint for iOS dashboard."""
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, Request
@@ -10,7 +10,7 @@ from app.core.rate_limiter import limiter
 from app.models.cost_breakdown import CostBreakdown
 from app.models.user import User
 
-from .cost_admin_lock import require_costs_admin_uid
+from .cost_auth import require_cost_read_permission
 from .cost_service_schemas import (
     PlatformCostResponse,
     PlatformEnum,
@@ -26,10 +26,10 @@ logger = get_logger(__name__)
 @limiter.limit("60/hour")
 async def get_cost_platforms(
     request: Request,
-    current_user: User = Depends(require_costs_admin_uid),
+    current_user: User = Depends(require_cost_read_permission),
 ) -> PlatformsCostListResponse:
     """Costs grouped by platform with totals and top services."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     month_start = now.replace(day=1, hour=0, minute=0, second=0)
     prev_start = (month_start - timedelta(days=1)).replace(day=1)
 
@@ -93,17 +93,19 @@ def _group_by_platform(
     result: dict[PlatformEnum, dict[str, Decimal]] = {}
 
     for doc in docs:
-        plat = PlatformEnum.SHARED
-        services = result.setdefault(plat, {})
+        shared = result.setdefault(PlatformEnum.SHARED, {})
 
         infra = doc.infrastructure_costs
         if infra:
-            services["GCP"] = services.get(
+            shared["GCP"] = shared.get(
                 "GCP", Decimal("0")
             ) + infra.gcp_cost
-            services["MongoDB Atlas"] = services.get(
+            shared["MongoDB Atlas"] = shared.get(
                 "MongoDB Atlas", Decimal("0")
             ) + infra.mongodb_cost
+            shared["Firebase"] = shared.get(
+                "Firebase", Decimal("0")
+            ) + infra.firebase_cost
 
         ai = doc.ai_costs
         if ai:
@@ -111,9 +113,38 @@ def _group_by_platform(
             bp["ElevenLabs"] = bp.get(
                 "ElevenLabs", Decimal("0")
             ) + ai.tts_cost
-            services["OpenAI"] = services.get(
+            shared["OpenAI"] = shared.get(
                 "OpenAI", Decimal("0")
             ) + ai.llm_cost
+
+        tp = doc.thirdparty_costs
+        if tp:
+            bp = result.setdefault(PlatformEnum.BAYIT_PLUS, {})
+            bp["Twilio"] = bp.get(
+                "Twilio", Decimal("0")
+            ) + tp.twilio_cost
+            shared["Stripe"] = shared.get(
+                "Stripe", Decimal("0")
+            ) + tp.stripe_fees
+
+    # Add fixed costs from config, properly assigned per platform
+    from app.core.fixed_costs_config import FixedCostsConfig, Platform
+
+    _PLATFORM_MAP = {
+        Platform.SHARED: PlatformEnum.SHARED,
+        Platform.BAYIT_PLUS: PlatformEnum.BAYIT_PLUS,
+        Platform.OLORIN_FRAUD: PlatformEnum.OLORIN_FRAUD,
+        Platform.CVPLUS: PlatformEnum.CVPLUS,
+        Platform.STATION_AI: PlatformEnum.STATION_AI,
+    }
+
+    fixed_cfg = FixedCostsConfig()
+    for entry in fixed_cfg.entries:
+        plat_enum = _PLATFORM_MAP.get(entry.platform, PlatformEnum.SHARED)
+        plat_services = result.setdefault(plat_enum, {})
+        plat_services[entry.service_name] = plat_services.get(
+            entry.service_name, Decimal("0")
+        ) + entry.monthly_cost
 
     return result
 

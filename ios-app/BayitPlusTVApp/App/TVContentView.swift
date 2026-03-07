@@ -103,6 +103,9 @@
             }
             .fullScreenCover(item: fullscreenBinding) { route in
                 fullscreenView(for: route)
+                    .environment(networkMonitor)
+                    .environment(onboardingPrefs)
+                    .environment(byocManager)
             }
             .fullScreenCover(isPresented: $showVoiceAssistant) {
                 TVVoiceAssistantSheet(

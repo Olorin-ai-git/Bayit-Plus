@@ -76,23 +76,36 @@ class CostQueryParams(BaseModel):
         return v
 
 
+def _ensure_utc(dt: datetime) -> datetime:
+    """Ensure datetime is UTC-aware for iOS iso8601 decoder."""
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt
+
+
+# Annotated datetime that always serializes with timezone for iOS
+UTCDatetime = Annotated[datetime, PlainSerializer(
+    lambda v: _ensure_utc(v).isoformat(), return_type=str,
+)]
+
+
 class CostOverviewResponse(BaseModel):
     """Current P&L summary."""
 
-    period_start: datetime
-    period_end: datetime
+    period_start: UTCDatetime
+    period_end: UTCDatetime
     revenue: JsonDecimal
     total_costs: JsonDecimal
     profit_loss: JsonDecimal
     profit_margin: float
     cost_per_minute: JsonDecimal
-    last_updated: datetime
+    last_updated: UTCDatetime
 
 
 class TimelineDataPoint(BaseModel):
     """Single data point in timeline."""
 
-    date: datetime
+    date: UTCDatetime
     revenue: JsonDecimal
     total_cost: JsonDecimal
     profit_loss: JsonDecimal

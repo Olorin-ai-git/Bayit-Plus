@@ -14,16 +14,19 @@ import time
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
-from app.api.routes.websocket_helpers import (check_and_start_quota_session,
+from app.api.routes.websocket_helpers import (BYOC_CHANNEL_ID,
+                                              check_and_start_quota_session,
                                               check_authentication_message,
                                               check_subscription_tier,
                                               cleanup_dubbing_session,
+                                              create_byoc_channel_stub,
                                               end_quota_session,
                                               get_active_session_count,
                                               get_user_from_token,
                                               get_user_session_count,
                                               initialize_dubbing_session,
                                               update_quota_during_session,
+                                              validate_byoc_stream_url,
                                               validate_channel_for_dubbing)
 from app.core.config import settings
 from app.models.content import LiveChannel
@@ -78,6 +81,7 @@ async def websocket_live_dubbing(
     voice_id: str | None = Query(None),
     platform: str = Query("web"),
     continuous_flow: bool = Query(True),
+    stream_url: str | None = Query(None),
 ):
     """
     WebSocket endpoint for live channel dubbing (Premium feature).
@@ -175,23 +179,41 @@ async def websocket_live_dubbing(
         )
         return
 
-    # Step 7: Verify channel exists and supports dubbing
-    channel, channel_error = await validate_channel_for_dubbing(
-        websocket, channel_id, target_lang
-    )
-    if channel_error:
-        return
+    # Step 7: Verify channel (BYOC bypass or standard validation)
+    is_byoc = channel_id == BYOC_CHANNEL_ID
+    if is_byoc:
+        if not stream_url:
+            await websocket.send_json(
+                {"type": "error", "message": "Stream URL required for BYOC", "recoverable": False}
+            )
+            await websocket.close(code=4002, reason="Stream URL required for BYOC")
+            return
+        valid, url_error = validate_byoc_stream_url(stream_url)
+        if not valid:
+            await websocket.send_json(
+                {"type": "error", "message": url_error, "recoverable": False}
+            )
+            await websocket.close(code=4002, reason=url_error)
+            return
+        channel = create_byoc_channel_stub(stream_url)
+    else:
+        channel, channel_error = await validate_channel_for_dubbing(
+            websocket, channel_id, target_lang
+        )
+        if channel_error:
+            return
 
+    effective_channel_id = channel.id if is_byoc else channel_id
     logger.info(
         f"Live dubbing session authenticated: user={user.id}, "
-        f"channel={channel_id}, target_lang={target_lang}"
+        f"channel={effective_channel_id}, target_lang={target_lang}, byoc={is_byoc}"
     )
 
     # Step 8: Check quota and start session tracking
     allowed, quota_session, _ = await check_and_start_quota_session(
         websocket,
         user,
-        channel_id,
+        effective_channel_id,
         FeatureType.DUBBING,
         channel.dubbing_source_language or "he",
         target_lang,
@@ -313,7 +335,7 @@ async def websocket_live_dubbing(
             pass
     finally:
         await cleanup_dubbing_session(
-            channel_id, dubbing_service, pipeline_task, latency_task, sender_task
+            effective_channel_id, dubbing_service, pipeline_task, latency_task, sender_task
         )
 
 

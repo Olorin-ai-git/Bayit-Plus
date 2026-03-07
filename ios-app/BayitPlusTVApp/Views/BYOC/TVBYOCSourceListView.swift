@@ -19,7 +19,7 @@
 
         var body: some View {
             ZStack {
-                DesignTokens.Glass.bg.ignoresSafeArea()
+                DesignTokens.Background.primary.ignoresSafeArea()
 
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
                     headerSection
@@ -45,8 +45,11 @@
             .fullScreenCover(isPresented: $showPlexAuth) {
                 TVPlexAuthSheet(
                     onAuthenticated: { token in
-                        plexAuthToken = token
                         showPlexAuth = false
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(600))
+                            plexAuthToken = token
+                        }
                     },
                     onDismiss: { showPlexAuth = false }
                 )
@@ -115,22 +118,42 @@
             ) { showAddIPTV = true }
         }
 
+        @ViewBuilder
         private var plexSection: some View {
-            addSourceRow(
-                icon: "server.rack",
-                title: localization.t("byoc.addPlex"),
-                subtitle: localization.t("byoc.plexConnectDesc"),
-                color: .orange
-            ) { showPlexAuth = true }
+            if byocManager.hasPlex {
+                connectedRow(
+                    icon: "server.rack",
+                    title: localization.t("byoc.addPlex"),
+                    subtitle: "\(byocManager.plexItems.count) \(localization.t("byoc.itemsLoaded"))",
+                    color: .orange
+                )
+            } else {
+                addSourceRow(
+                    icon: "server.rack",
+                    title: localization.t("byoc.addPlex"),
+                    subtitle: localization.t("byoc.plexConnectDesc"),
+                    color: .orange
+                ) { showPlexAuth = true }
+            }
         }
 
+        @ViewBuilder
         private var youtubeSection: some View {
-            addSourceRow(
-                icon: "play.rectangle.fill",
-                title: localization.t("byoc.addYouTube"),
-                subtitle: localization.t("byoc.youtubeConnectDesc"),
-                color: .red
-            ) { showAddYouTube = true }
+            if byocManager.hasYouTube {
+                connectedRow(
+                    icon: "play.rectangle.fill",
+                    title: localization.t("byoc.addYouTube"),
+                    subtitle: "\(byocManager.youtubeItems.count) \(localization.t("byoc.itemsLoaded"))",
+                    color: .red
+                )
+            } else {
+                addSourceRow(
+                    icon: "play.rectangle.fill",
+                    title: localization.t("byoc.addYouTube"),
+                    subtitle: localization.t("byoc.youtubeConnectDesc"),
+                    color: .red
+                ) { showAddYouTube = true }
+            }
         }
 
         @ViewBuilder
@@ -181,6 +204,35 @@
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
             }
             .tvCardStyle()
+        }
+
+        private func connectedRow(
+            icon: String,
+            title: String,
+            subtitle: String,
+            color: Color
+        ) -> some View {
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                Image(systemName: icon)
+                    .font(.system(size: 32))
+                    .foregroundStyle(color)
+                    .frame(width: 50)
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
+                    Text(title)
+                        .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    Text(subtitle)
+                        .font(.system(size: TVDesignTokens.FontSize.md))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                Spacer()
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 30))
+                    .foregroundStyle(.green)
+            }
+            .padding(TVDesignTokens.Spacing.lg)
+            .background(DesignTokens.Background.elevated)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
 
         private var closeButton: some View {
