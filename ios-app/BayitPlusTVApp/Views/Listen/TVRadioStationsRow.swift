@@ -29,7 +29,7 @@
                     .padding(.leading, TVDesignTokens.Spacing.xl)
 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    HStack(alignment: .top, spacing: TVDesignTokens.Spacing.focusGap) {
                         ForEach(stations) { station in
                             radioStationCard(station)
                         }
@@ -61,12 +61,10 @@
                         .foregroundStyle(DesignTokens.Text.primary)
                         .lineLimit(1)
 
-                    if let info = station.currentSong ?? station.currentShow {
-                        Text(info)
-                            .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                            .lineLimit(1)
-                    }
+                    Text(station.currentSong ?? station.currentShow ?? " ")
+                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .lineLimit(1)
                 }
                 .padding(TVDesignTokens.Spacing.lg)
                 .frame(width: TVDesignTokens.MinSize.posterWidth)

@@ -75,7 +75,12 @@
 
         private func categoryPill(_ item: AudioCategoryItem) -> some View {
             Button {
-                // Categories link to browse views (future navigation)
+                switch item.type {
+                case .podcast:
+                    coordinator.fullscreenRoute = .podcastBrowse
+                case .audiobook:
+                    coordinator.fullscreenRoute = .audiobookBrowse
+                }
             } label: {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
                     Image(systemName: item.icon)

@@ -28,6 +28,59 @@ struct SeriesDetail: Decodable, Sendable, Identifiable {
     let ageRating: String?
     let seasons: [SeasonSummary]?
     let related: [RelatedItem]?
+
+    private struct FlexRating: Decodable {
+        let value: String?
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let str = try? container.decode(String.self) {
+                value = str
+            } else if let num = try? container.decode(Double.self) {
+                value = String(format: "%.1f", num)
+            } else {
+                value = nil
+            }
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, description, thumbnail, backdrop, category, year
+        case rating, genre, cast, director
+        case totalSeasons, totalEpisodes
+        case trailerUrl, trailerStreamUrl, previewUrl
+        case tmdbId, imdbId
+        case availableSubtitleLanguages, hasSubtitles
+        case isKidsContent, ageRating, seasons, related
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        title = try c.decodeIfPresent(String.self, forKey: .title)
+        description = try c.decodeIfPresent(String.self, forKey: .description)
+        thumbnail = try c.decodeIfPresent(String.self, forKey: .thumbnail)
+        backdrop = try c.decodeIfPresent(String.self, forKey: .backdrop)
+        category = try c.decodeIfPresent(String.self, forKey: .category)
+        year = try c.decodeIfPresent(Int.self, forKey: .year)
+        genre = try c.decodeIfPresent(String.self, forKey: .genre)
+        cast = try c.decodeIfPresent([String].self, forKey: .cast)
+        director = try c.decodeIfPresent(String.self, forKey: .director)
+        totalSeasons = try c.decodeIfPresent(Int.self, forKey: .totalSeasons)
+        totalEpisodes = try c.decodeIfPresent(Int.self, forKey: .totalEpisodes)
+        trailerUrl = try c.decodeIfPresent(String.self, forKey: .trailerUrl)
+        trailerStreamUrl = try c.decodeIfPresent(String.self, forKey: .trailerStreamUrl)
+        previewUrl = try c.decodeIfPresent(String.self, forKey: .previewUrl)
+        tmdbId = try c.decodeIfPresent(String.self, forKey: .tmdbId)
+        imdbId = try c.decodeIfPresent(String.self, forKey: .imdbId)
+        availableSubtitleLanguages = try c.decodeIfPresent([String].self, forKey: .availableSubtitleLanguages)
+        hasSubtitles = try c.decodeIfPresent(Bool.self, forKey: .hasSubtitles)
+        isKidsContent = try c.decodeIfPresent(Bool.self, forKey: .isKidsContent)
+        ageRating = try c.decodeIfPresent(String.self, forKey: .ageRating)
+        seasons = try c.decodeIfPresent([SeasonSummary].self, forKey: .seasons)
+        related = try c.decodeIfPresent([RelatedItem].self, forKey: .related)
+        rating = try c.decodeIfPresent(FlexRating.self, forKey: .rating)?.value
+    }
 }
 
 /// Summary of a season within a series

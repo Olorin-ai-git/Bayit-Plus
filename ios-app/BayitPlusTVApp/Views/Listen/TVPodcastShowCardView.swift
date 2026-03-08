@@ -41,7 +41,10 @@
                 if let urlStr = show.cover, let url = URL(string: urlStr) {
                     CachedAsyncImage(url: url) { phase in
                         if case let .success(img) = phase {
-                            img.resizable().aspectRatio(contentMode: .fill)
+                            ZStack {
+                                DesignTokens.Background.primary
+                                img.resizable().aspectRatio(contentMode: .fit)
+                            }
                         } else {
                             coverPlaceholder
                         }
@@ -65,12 +68,10 @@
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(2)
 
-                if let author = show.author {
-                    Text(author)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .lineLimit(1)
-                }
+                Text(show.author ?? " ")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .lineLimit(1)
 
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
                     if let count = show.episodeCount {
@@ -87,6 +88,7 @@
                     }
                 }
             }
+            .frame(height: 100, alignment: .top)
         }
 
         private var coverPlaceholder: some View {

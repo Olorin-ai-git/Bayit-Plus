@@ -41,7 +41,10 @@
                     if let urlStr = audiobook.thumbnail, let url = URL(string: urlStr) {
                         CachedAsyncImage(url: url) { phase in
                             if case let .success(img) = phase {
-                                img.resizable().aspectRatio(contentMode: .fill)
+                                ZStack {
+                                    DesignTokens.Background.primary
+                                    img.resizable().aspectRatio(contentMode: .fit)
+                                }
                             } else {
                                 coverPlaceholder
                             }
@@ -77,13 +80,12 @@
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(2)
 
-                if let author = audiobook.author {
-                    Text(author)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .lineLimit(1)
-                }
+                Text(audiobook.author ?? " ")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .lineLimit(1)
             }
+            .frame(height: 80, alignment: .top)
         }
 
         private func progressBar(_ value: Double) -> some View {

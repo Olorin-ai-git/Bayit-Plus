@@ -53,21 +53,15 @@
 
         private var audiobooksScrollRow: some View {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                HStack(alignment: .top, spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(audiobooks.prefix(10)) { audiobook in
-                        GlassFocusPoster(
-                            thumbnailURL: audiobook.thumbnail,
-                            title: audiobook.title ?? localization.t("audiobooks.audiobook"),
-                            subtitle: audiobook.author,
-                            badge: audiobook.duration,
-                            aspectRatio: 2 / 3,
+                        TVAudiobookCardView(
+                            audiobook: audiobook,
                             onSelect: {
-                                coordinator.presentPlayer(
-                                    contentId: audiobook.id,
-                                    contentType: .audiobook
-                                )
+                                coordinator.fullscreenRoute = .audiobookDetail(audiobookId: audiobook.id)
                             }
                         )
+                        .frame(width: 200)
                         .contextMenu {
                             Button {
                                 coordinator.fullscreenRoute = .audiobookDetail(audiobookId: audiobook.id)

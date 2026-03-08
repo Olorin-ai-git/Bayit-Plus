@@ -72,28 +72,21 @@
 
         private var podcastsScrollRow: some View {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                HStack(alignment: .top, spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(shows.prefix(12)) { show in
-                        GlassFocusPoster(
-                            thumbnailURL: show.cover,
-                            title: show.title ?? localization.t("podcasts.title"),
-                            subtitle: show.author,
-                            metadata: show.latestEpisode,
-                            aspectRatio: 1.0,
+                        TVPodcastShowCardView(
+                            show: show,
                             onSelect: {
                                 audioManager.play(
                                     contentId: show.id,
                                     contentType: .podcast
                                 )
+                            },
+                            onShowDetail: {
+                                coordinator.fullscreenRoute = .podcastDetail(showId: show.id)
                             }
                         )
-                        .contextMenu {
-                            Button {
-                                coordinator.fullscreenRoute = .podcastDetail(showId: show.id)
-                            } label: {
-                                Label(localization.t("podcasts.episodes"), systemImage: "list.bullet")
-                            }
-                        }
+                        .frame(width: TVDesignTokens.MinSize.posterWidth)
                     }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)

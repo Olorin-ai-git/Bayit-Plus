@@ -92,6 +92,7 @@ struct TVContentSection<Item, CardContent: View>: View {
                     .tvCardStyle()
                 }
             }
+            .focusSection()
 
             // Horizontal scrolling cards — extra horizontal padding lets scaled cards
             // overflow without being clipped by the section's rounded rect boundary.

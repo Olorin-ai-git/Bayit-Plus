@@ -35,6 +35,9 @@
                     }
 
                     if prefs.showPodcasts {
+                        TVAudioCategoriesRow(
+                            podcastCategories: podcastsVM?.categories ?? []
+                        )
                         TVPodcastsDiscoveryRow(
                             shows: podcastsVM?.shows ?? [],
                             onAddPodcast: { showAddPodcastSheet = true }
@@ -44,12 +47,6 @@
                     if prefs.showAudiobooks {
                         TVAudiobooksDiscoveryRow(
                             audiobooks: audiobooksVM?.items ?? []
-                        )
-                    }
-
-                    if prefs.showPodcasts {
-                        TVAudioCategoriesRow(
-                            podcastCategories: podcastsVM?.categories ?? []
                         )
                     }
                 }

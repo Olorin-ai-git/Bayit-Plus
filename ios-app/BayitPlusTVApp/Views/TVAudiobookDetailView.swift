@@ -28,7 +28,8 @@ struct TVAudiobookDetailView: View {
                 loadingState
             }
         }
-        .background(DesignTokens.Background.primary)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(red: 13 / 255, green: 13 / 255, blue: 26 / 255))
         .ignoresSafeArea()
         .task {
             if viewModel == nil {
@@ -45,10 +46,13 @@ struct TVAudiobookDetailView: View {
     private func detailContent(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxl) {
             audiobookHeader(audiobook)
-            playbackControls(audiobook, vm: vm)
 
-            if let chapters = audiobook.chapters, !chapters.isEmpty {
-                chapterList(chapters, vm: vm)
+            playbackControls(audiobook, vm: vm)
+                .focusSection()
+
+            if !vm.effectiveChapters.isEmpty {
+                chapterList(vm.effectiveChapters, vm: vm)
+                    .focusSection()
             }
         }
         .padding(.top, TVDesignTokens.Spacing.xxl)
