@@ -30,8 +30,11 @@ from pydantic import ValidationError
 # ============================================
 
 
-def test_partner_api_config_defaults():
+def test_partner_api_config_defaults(monkeypatch):
     """Test PartnerAPIConfig default values."""
+    monkeypatch.delenv("PARTNER_API_KEY_SALT", raising=False)
+    monkeypatch.delenv("PARTNER_DEFAULT_RATE_LIMIT_RPM", raising=False)
+    monkeypatch.delenv("PARTNER_WEBHOOK_TIMEOUT_SECONDS", raising=False)
     config = PartnerAPIConfig()
     assert config.api_key_salt == ""
     assert config.default_rate_limit_rpm == 60

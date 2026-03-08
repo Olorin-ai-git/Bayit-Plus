@@ -259,14 +259,14 @@ class TestSecurityUtils:
         result = sanitize_for_prompt(None)
         assert result == "N/A"
 
-    def test_sanitize_ai_output_escapes_html(self):
-        """Test that HTML is escaped in AI output."""
+    def test_sanitize_ai_output_strips_html(self):
+        """Test that HTML tags are stripped from AI output."""
         from app.services.security_utils import sanitize_ai_output
 
         text = "<script>alert('xss')</script>"
         result = sanitize_ai_output(text)
         assert "<script>" not in result
-        assert "&lt;script&gt;" in result
+        assert "</script>" not in result
 
     def test_sanitize_ai_output_removes_javascript(self):
         """Test that javascript: URLs are removed."""
@@ -277,8 +277,8 @@ class TestSecurityUtils:
         assert "javascript:" not in result.lower()
 
 
-class TestTriviaGenerationService:
-    """Tests for TriviaGenerationService."""
+class TestTriviaFactGeneration:
+    """Tests for trivia fact generation functions."""
 
     @pytest.fixture
     def mock_content(self):
@@ -311,80 +311,71 @@ class TestTriviaGenerationService:
     @pytest.mark.asyncio
     async def test_fetch_tmdb_facts_creates_cast_facts(self, mock_content, mock_tmdb_response):
         """Test that TMDB facts include cast information."""
-        from app.services.trivia_generator import TriviaGenerationService
+        from app.services.trivia.fact_generators import fetch_tmdb_facts
 
-        service = TriviaGenerationService()
+        mock_tmdb_service = MagicMock()
+        mock_tmdb_service.get_movie_details = AsyncMock(return_value=mock_tmdb_response)
 
-        with patch.object(
-            service.tmdb_service, "get_movie_details", new_callable=AsyncMock
-        ) as mock_tmdb:
-            mock_tmdb.return_value = mock_tmdb_response
+        facts = await fetch_tmdb_facts(mock_content, mock_tmdb_service)
 
-            facts = await service._fetch_tmdb_facts(mock_content)
-
-            assert len(facts) > 0
-            cast_facts = [f for f in facts if f.category == "cast"]
-            assert len(cast_facts) > 0
+        assert len(facts) > 0
+        cast_facts = [f for f in facts if f.category == "cast"]
+        assert len(cast_facts) > 0
 
     @pytest.mark.asyncio
     async def test_fetch_tmdb_facts_creates_director_fact(self, mock_content, mock_tmdb_response):
         """Test that TMDB facts include director information."""
-        from app.services.trivia_generator import TriviaGenerationService
+        from app.services.trivia.fact_generators import fetch_tmdb_facts
 
-        service = TriviaGenerationService()
+        mock_tmdb_service = MagicMock()
+        mock_tmdb_service.get_movie_details = AsyncMock(return_value=mock_tmdb_response)
 
-        with patch.object(
-            service.tmdb_service, "get_movie_details", new_callable=AsyncMock
-        ) as mock_tmdb:
-            mock_tmdb.return_value = mock_tmdb_response
+        facts = await fetch_tmdb_facts(mock_content, mock_tmdb_service)
 
-            facts = await service._fetch_tmdb_facts(mock_content)
-
-            production_facts = [f for f in facts if f.category == "production"]
-            assert len(production_facts) > 0
+        production_facts = [f for f in facts if f.category == "production"]
+        assert len(production_facts) > 0
 
     @pytest.mark.asyncio
     async def test_fetch_tmdb_facts_handles_missing_tmdb_id(self):
         """Test graceful handling of content without TMDB ID."""
-        from app.services.trivia_generator import TriviaGenerationService
-
-        service = TriviaGenerationService()
+        from app.services.trivia.fact_generators import fetch_tmdb_facts
 
         content = MagicMock()
         content.id = "test_content_id"
         content.tmdb_id = None
 
-        facts = await service._fetch_tmdb_facts(content)
+        mock_tmdb_service = MagicMock()
+        facts = await fetch_tmdb_facts(content, mock_tmdb_service)
         assert facts == []
 
     @pytest.mark.asyncio
     async def test_generate_ai_facts_sanitizes_input(self, mock_content):
         """Test that AI fact generation sanitizes content input."""
-        from app.services.trivia_generator import TriviaGenerationService
+        from app.services.trivia.fact_generators import generate_ai_facts
 
-        service = TriviaGenerationService()
-
-        # Mock the Anthropic client
         mock_client = MagicMock()
         mock_response = MagicMock()
         mock_response.content = [
             MagicMock(
-                text='[{"text": "עובדה מעניינת", "text_en": "Interesting fact", "text_es": "Hecho interesante", "category": "production"}]'
+                text='[{"text": "Interesting fact", "category": "production"}]'
             )
         ]
         mock_client.messages.create = AsyncMock(return_value=mock_response)
 
-        with patch.object(service, "_anthropic_client", mock_client):
-            with patch("app.services.trivia_generator.settings") as mock_settings:
-                mock_settings.ANTHROPIC_API_KEY = "test-key"
-                mock_settings.CLAUDE_MODEL = "claude-3-haiku-20240307"
-                mock_settings.TRIVIA_MAX_FACTS_PER_CONTENT = 50
+        mock_content.title = "<script>bad</script> Movie"
 
-                mock_content.title = "<script>bad</script> Movie"
+        with patch("app.services.trivia.fact_generators.settings") as mock_settings:
+            mock_settings.TRIVIA_MAX_FACTS_PER_CONTENT = 50
+            mock_settings.CLAUDE_MODEL = "claude-3-haiku-20240307"
+            mock_settings.TRIVIA_AI_MAX_TOKENS = 1024
+            mock_settings.TRIVIA_SANITIZE_TITLE_MAX_LEN = 200
+            mock_settings.TRIVIA_SANITIZE_DESCRIPTION_MAX_LEN = 500
+            mock_settings.TRIVIA_SANITIZE_FIELD_MAX_LEN = 100
 
-                facts = await service._generate_ai_facts(mock_content, existing_count=0)
+            facts = await generate_ai_facts(
+                mock_content, mock_client, language="en", existing_count=0
+            )
 
-                # Verify sanitization was called (input should not contain script tags)
-                call_args = mock_client.messages.create.call_args
-                prompt = call_args[1]["messages"][0]["content"]
-                assert "<script>" not in prompt
+            call_args = mock_client.messages.create.call_args
+            prompt = call_args[1]["messages"][0]["content"]
+            assert "<script>" not in prompt

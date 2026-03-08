@@ -4,6 +4,7 @@ Tests for Email Templates Management API - Preview and Send Actions
 
 import pytest
 from httpx import AsyncClient
+from unittest.mock import AsyncMock, MagicMock
 
 pytestmark = pytest.mark.asyncio
 
@@ -65,11 +66,17 @@ class TestSendTestEmail:
     async def test_send_test_email_success(self, admin_client: AsyncClient, mocker):
         """Test sending test email."""
         # Mock BayitEmailService to avoid actual email sends
+        mock_result = MagicMock()
+        mock_result.success = True
+        mock_result.message_id = "test-123"
+
+        mock_email_svc = MagicMock()
+        mock_email_svc.send_generic_email = AsyncMock(return_value=mock_result)
+
         mock_send = mocker.patch(
-            "app.api.routes.admin.email_templates.get_bayit_email_service"
+            "app.api.routes.admin.email_templates.get_bayit_email_service",
+            return_value=mock_email_svc,
         )
-        mock_send.return_value.send_generic_email.return_value.success = True
-        mock_send.return_value.send_generic_email.return_value.message_id = "test-123"
 
         response = await admin_client.post(
             "/api/v1/admin/marketing/email-templates/platform_invitation/send-test",

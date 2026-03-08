@@ -18,6 +18,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 import pytest_asyncio
 from beanie import init_beanie
+
+pytestmark = pytest.mark.integration
 from fastapi.testclient import TestClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
