@@ -202,13 +202,18 @@ async def get_tag_status(
     response_model=List[InteractableMovie],
 )
 async def list_interactable_movies(
+    source: Optional[str] = None,
     user: User = Depends(get_current_user),
 ) -> List[InteractableMovie]:
-    """List all movies that have been tagged for interactions."""
-    contents = await Content.find(
+    """List movies tagged for interactions, optionally filtered by source."""
+    query_filters = [
         Content.supports_avatar_interaction == True,  # noqa: E712
         Content.interactive_characters != [],
-    ).to_list()
+    ]
+    if source:
+        query_filters.append(Content.source_provider == source)
+
+    contents = await Content.find(*query_filters).to_list()
 
     max_per_content = settings.MOVIE_INTERACTION_MAX_PER_CONTENT
     movies: List[InteractableMovie] = []
@@ -222,6 +227,7 @@ async def list_interactable_movies(
             interaction_count=len(c.interactive_moments),
             max_interactions=max_per_content,
             status="ready",
+            source_provider=c.source_provider,
         ))
     return movies
 

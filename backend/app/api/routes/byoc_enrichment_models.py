@@ -10,6 +10,9 @@ from pydantic import BaseModel, Field
 from app.core.logging_config import get_logger
 from app.models.content import Content
 from app.services.external_subtitle_service import ExternalSubtitleService
+from app.services.vod_interaction.character_extractor import (
+    character_extractor_service,
+)
 
 logger = get_logger(__name__)
 
@@ -75,6 +78,32 @@ def format_duration(seconds: int) -> str:
     return f"{hours}:{minutes:02d}:{secs:02d}"
 
 
+async def _run_byoc_extraction(content: Content) -> None:
+    """Extract characters from a BYOC content item (requires tmdb_id)."""
+    if not content.tmdb_id:
+        logger.warning(
+            "BYOC extraction skipped: no tmdb_id content_id=%s",
+            str(content.id),
+        )
+        return
+    try:
+        characters = await character_extractor_service.extract_characters(content)
+        if characters:
+            content.interactive_characters = characters
+            content.supports_avatar_interaction = True
+            await content.save()
+            logger.info(
+                "BYOC character extraction complete content_id=%s characters=%d",
+                str(content.id),
+                len(characters),
+            )
+    except Exception:
+        logger.exception(
+            "BYOC character extraction failed content_id=%s",
+            str(content.id),
+        )
+
+
 async def enrich_single_item(enrich_req: BYOCEnrichRequest) -> BYOCEnrichResponse:
     """Core enrichment logic for a single BYOC item."""
     existing = await Content.find_one(
@@ -98,10 +127,8 @@ async def enrich_single_item(enrich_req: BYOCEnrichRequest) -> BYOCEnrichRespons
     content_id = str(content.id)
     subtitle_details, fetched = await _fetch_subtitles(content_id, enrich_req)
     if enrich_req.generate_interaction_moments and not content.supports_avatar_interaction:
-        content.source_metadata = content.source_metadata or {}
-        content.source_metadata["pending_interaction_generation"] = True
-        await content.save()
-        logger.info("Flagged content_id=%s for interaction generation", content_id)
+        await _run_byoc_extraction(content)
+        logger.info("Triggered character extraction for BYOC content_id=%s", content_id)
     found, requested = len(fetched), len(enrich_req.subtitle_languages_requested)
     if found == requested:
         status = "full"

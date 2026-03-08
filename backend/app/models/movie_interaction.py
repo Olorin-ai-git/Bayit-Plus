@@ -56,6 +56,10 @@ class InteractableMovie(BaseModel):
         default="ready",
         description="ready or processing",
     )
+    source_provider: Optional[str] = Field(
+        default=None,
+        description="Content source: None for library, 'byoc' for user-imported",
+    )
 
 
 class InteractionSelectionRequest(BaseModel):
