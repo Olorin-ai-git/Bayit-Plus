@@ -13,6 +13,8 @@
         @State private var isLoading = true
         @State private var error: String?
         @State private var showStylePicker = false
+        @State private var showWardrobe = false
+        @State private var wardrobeAvatarId: String = ""
 
         var body: some View {
             ZStack {
@@ -34,6 +36,12 @@
                     loadAvatars()
                 }
             }
+            .sheet(isPresented: $showWardrobe) {
+                TVAvatarWardrobeView(
+                    avatarId: wardrobeAvatarId,
+                    profileId: profileId
+                )
+            }
         }
 
         private var avatarGrid: some View {
@@ -47,7 +55,11 @@
                             avatar: avatar,
                             canDelete: avatars.count > 1,
                             onSetActive: { setActive(avatar) },
-                            onDelete: { deleteAvatar(avatar) }
+                            onDelete: { deleteAvatar(avatar) },
+                            onWardrobe: {
+                                wardrobeAvatarId = avatar.avatarId
+                                showWardrobe = true
+                            }
                         )
                     }
 

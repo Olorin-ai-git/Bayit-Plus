@@ -2,7 +2,6 @@ import BayitNetworking
 import Foundation
 
 protocol AvatarOutfitRepository: Sendable {
-
     func getWardrobe(avatarId: String) async throws -> [Outfit]
 
     func getOwnedOutfits(profileId: String, avatarId: String) async throws -> [Outfit]
@@ -22,7 +21,6 @@ protocol AvatarOutfitRepository: Sendable {
 }
 
 final class APIAvatarOutfitRepository: AvatarOutfitRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -49,7 +47,7 @@ final class APIAvatarOutfitRepository: AvatarOutfitRepository, @unchecked Sendab
 
     func purchaseOutfit(
         profileId: String, avatarId: String,
-        outfitId: String, priceShekel: Int
+        outfitId: String, priceShekel _: Int
     ) async throws {
         struct PurchaseRequest: Encodable {
             let profileId: String
@@ -79,14 +77,15 @@ final class APIAvatarOutfitRepository: AvatarOutfitRepository, @unchecked Sendab
     }
 
     func unequipOutfit(
-        profileId: String, avatarId: String, outfitId: String
+        profileId: String, avatarId: String, outfitId _: String
     ) async throws {
         struct UnequipRequest: Encodable {
             let profileId: String
+            let outfitId: String?
         }
-        let request = UnequipRequest(profileId: profileId)
+        let request = UnequipRequest(profileId: profileId, outfitId: nil)
         let _: EmptyOutfitResponse = try await client.post(
-            "/api/v1/avatar-outfits/avatars/\(avatarId)/unequip",
+            "/api/v1/avatar-outfits/avatars/\(avatarId)/equip",
             body: request,
             as: EmptyOutfitResponse.self
         )

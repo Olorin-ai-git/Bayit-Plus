@@ -14,6 +14,9 @@ struct AvatarManagementView: View {
     @State private var isLoading = true
     @State private var error: String?
     @State private var showStylePicker = false
+    @State private var showWardrobe = false
+    @State private var wardrobeAvatarId: String = ""
+    @State private var shekelBalance: Int = 0
 
     var body: some View {
         NavigationStack {
@@ -54,6 +57,14 @@ struct AvatarManagementView: View {
                 loadAvatars()
             }
         }
+        .sheet(isPresented: $showWardrobe) {
+            AvatarWardrobeView(
+                avatarId: wardrobeAvatarId,
+                profileId: profileId,
+                shekelBalance: shekelBalance,
+                onBalanceChange: { fetchBalance() }
+            )
+        }
     }
 
     private var avatarList: some View {
@@ -67,7 +78,11 @@ struct AvatarManagementView: View {
                         avatar: avatar,
                         canDelete: avatars.count > 1,
                         onSetActive: { setActive(avatar) },
-                        onDelete: { deleteAvatar(avatar) }
+                        onDelete: { deleteAvatar(avatar) },
+                        onWardrobe: {
+                            wardrobeAvatarId = avatar.avatarId
+                            showWardrobe = true
+                        }
                     )
                 }
             }
@@ -86,11 +101,20 @@ struct AvatarManagementView: View {
                     avatars = response.avatars
                     isLoading = false
                 }
+                fetchBalance()
             } catch {
                 await MainActor.run {
                     self.error = error.localizedDescription
                     isLoading = false
                 }
+            }
+        }
+    }
+
+    private func fetchBalance() {
+        Task {
+            if let wallet = try? await repos.missions.fetchWalletBalance() {
+                await MainActor.run { shekelBalance = wallet.balance.balance }
             }
         }
     }

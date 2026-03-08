@@ -10,6 +10,7 @@
         let canDelete: Bool
         let onSetActive: () -> Void
         let onDelete: () -> Void
+        let onWardrobe: () -> Void
 
         var body: some View {
             VStack(spacing: TVDesignTokens.Spacing.md) {
@@ -46,6 +47,11 @@
                         }
                         .tvCardStyle()
                     }
+
+                    Button(localization.t("wardrobe.title")) {
+                        onWardrobe()
+                    }
+                    .tvCardStyle()
 
                     if canDelete {
                         Button(localization.t("zehAni.avatarManagement.delete")) {

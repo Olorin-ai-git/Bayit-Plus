@@ -54,6 +54,7 @@ final class TVRepositoryProvider {
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let zehAniRepository: any ZehAniRepository
     let movieInteraction: any MovieInteractionRepository
+    let avatarOutfitRepository: any AvatarOutfitRepository
     let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
@@ -109,6 +110,7 @@ final class TVRepositoryProvider {
         phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         zehAniRepository = APIZehAniRepository(client: client)
         movieInteraction = APIMovieInteractionRepository(client: client)
+        avatarOutfitRepository = APIAvatarOutfitRepository(client: client)
         self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration

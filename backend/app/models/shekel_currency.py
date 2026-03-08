@@ -57,6 +57,7 @@ class TransactionType(str, Enum):
     ADMIN_DEDUCT = "admin_deduct"
     TALK_BACK_REWARD = "talk_back_reward"
     PHRASE_LEARNING = "phrase_learning"
+    OUTFIT_PURCHASE = "outfit_purchase"
 
 
 class ShekelTransaction(Document):

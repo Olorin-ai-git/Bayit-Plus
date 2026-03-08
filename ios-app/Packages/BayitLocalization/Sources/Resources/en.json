@@ -6054,11 +6054,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -6070,10 +6066,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -9737,7 +9730,17 @@
     "subtitle": "Customize your avatar",
     "title": "Wardrobe",
     "unequip": "Unequip",
-    "unequip_error": "Failed to unequip item"
+    "unequip_error": "Failed to unequip item",
+    "equipped": "Equipped",
+    "empty": "No outfits available yet",
+    "price": "{{amount}} Shekels",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
   },
   "zine": {
     "archive": "Archive",

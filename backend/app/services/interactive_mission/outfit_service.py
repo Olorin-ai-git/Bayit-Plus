@@ -15,6 +15,7 @@ from app.models.avatar_outfit import (
     ProfileOutfitInventory,
 )
 from app.models.child_avatar import ChildAvatar
+from app.models.shekel_currency import TransactionType
 from app.services.mission.shekel_service import shekel_service
 
 logger = get_logger(__name__)
@@ -97,11 +98,14 @@ class OutfitService:
         if already_owned:
             raise ValueError("Outfit already owned")
 
-        await shekel_service.deduct_shekels(
+        await shekel_service.spend_shekels(
             user_id=user_id,
             profile_id=profile_id,
             amount=outfit.shekel_price,
-            reason=f"outfit_purchase:{outfit_id}",
+            transaction_type=TransactionType.OUTFIT_PURCHASE,
+            description=f"Purchased outfit: {outfit.name}",
+            description_he=f"רכישת תלבושת: {outfit.name_he}",
+            reference_id=outfit_id,
         )
 
         avatar.outfit_inventory.append(

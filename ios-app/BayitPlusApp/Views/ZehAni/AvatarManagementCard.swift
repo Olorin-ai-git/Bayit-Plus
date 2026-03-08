@@ -9,6 +9,7 @@ struct AvatarManagementCard: View {
     let canDelete: Bool
     let onSetActive: () -> Void
     let onDelete: () -> Void
+    let onWardrobe: () -> Void
 
     var body: some View {
         GlassCard {
@@ -48,6 +49,12 @@ struct AvatarManagementCard: View {
                             size: .small
                         ) { onSetActive() }
                     }
+
+                    GlassButton(
+                        localization.t("wardrobe.title"),
+                        variant: .secondary,
+                        size: .small
+                    ) { onWardrobe() }
 
                     if canDelete {
                         GlassButton(
