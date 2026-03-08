@@ -13,7 +13,7 @@ struct IPadMainView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var sidebarCollapsed = false
 
-    private let resolver = RouteDestinationResolver()
+    private let resolver = IPadRouteDestinationResolver()
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -95,6 +95,8 @@ struct IPadMainView: View {
             }
             await dockViewModel?.loadWidgets()
         }
+        .iPadKeyboardShortcuts()
+        .iPadSceneSupport()
         .sheet(isPresented: $isVoiceModalPresented) {
             VoiceAssistantSheet(
                 chatRepository: repos.chat,
@@ -106,7 +108,6 @@ struct IPadMainView: View {
         }
     }
 
-    @ViewBuilder
     private func detailContent(for tab: AppTab) -> some View {
         NavigationStack(path: binding(for: tab)) {
             VStack(spacing: 0) {
@@ -135,11 +136,11 @@ struct IPadMainView: View {
         case .zehAni:
             IPadZehAniHubView()
         case .podcasts:
-            IPadPodcastsView()
+            IPadListenView()
         case .search:
             IPadSearchView()
         case .downloads:
-            DownloadsView()
+            IPadDownloadsView()
         }
     }
 
