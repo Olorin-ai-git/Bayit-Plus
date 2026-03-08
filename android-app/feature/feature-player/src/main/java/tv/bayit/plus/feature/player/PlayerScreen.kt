@@ -172,6 +172,7 @@ fun PlayerRoute(
         onExtendSleepTimer = viewModel::extendSleepTimer,
         onCancelSleepTimer = viewModel::cancelSleepTimer,
         onToggleFullscreen = viewModel::toggleFullscreen,
+        onCastClick = viewModel::onCastClick,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()

@@ -31,30 +31,39 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
-# Keep OkHttp
+# OkHttp: keep only public suffix database and platform callbacks
 -dontwarn okhttp3.**
 -dontwarn okio.**
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
+-keep class okhttp3.internal.publicsuffix.PublicSuffixDatabase { *; }
+-keepnames class okhttp3.internal.platform.** { *; }
+-keep class okhttp3.Callback { *; }
+-keep class okhttp3.EventListener { *; }
 
 # Keep Timber
 -dontwarn org.jetbrains.annotations.**
 -keep class timber.log.** { *; }
 
-# Keep Firebase
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
+# Firebase: keep AutoValue-generated classes and @Keep-annotated
+-keep class com.google.firebase.** implements com.google.auto.value.AutoValue { *; }
+-keep @com.google.android.gms.common.annotation.KeepForSdk class com.google.firebase.** { *; }
+-keep @androidx.annotation.Keep class com.google.firebase.** { *; }
+-keep @androidx.annotation.Keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
 
-# Keep ExoPlayer
--keep class androidx.media3.** { *; }
+# ExoPlayer: keep extractors and DRM components
+-keep class androidx.media3.exoplayer.source.** { *; }
+-keep class androidx.media3.extractor.** { *; }
+-keep class androidx.media3.exoplayer.drm.** { *; }
 -dontwarn androidx.media3.**
 
-# Keep Compose
--keep class androidx.compose.** { *; }
+# Compose: keep runtime internals only (compiler handles rest)
+-keep class androidx.compose.runtime.** { *; }
 -dontwarn androidx.compose.**
 
-# Keep Coil
--keep class coil3.** { *; }
+# Coil: keep image decoders
+-keep class coil3.decode.** { *; }
+-keep class coil3.disk.** { *; }
 -dontwarn coil3.**
 
 # General Android

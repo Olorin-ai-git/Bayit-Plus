@@ -7,6 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import tv.bayit.plus.BuildConfig
+import tv.bayit.plus.core.common.CastReceiverAppId
+import tv.bayit.plus.core.common.CdnBaseUrl
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.i18n.JsonBayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
@@ -20,6 +22,16 @@ object AppModule {
 
     private const val I18N_PREFS_NAME = "bayit_i18n"
 
+
+    @Provides
+    @Singleton
+    @CdnBaseUrl
+    fun provideCdnBaseUrl(): String = BuildConfig.CDN_BASE_URL
+
+    @Provides
+    @Singleton
+    @CastReceiverAppId
+    fun provideCastReceiverAppId(): String = BuildConfig.CAST_RECEIVER_APP_ID
 
     @Provides
     @Singleton

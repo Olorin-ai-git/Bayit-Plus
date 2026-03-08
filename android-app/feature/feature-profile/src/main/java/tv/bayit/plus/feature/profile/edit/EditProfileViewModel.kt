@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.CdnBaseUrl
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ProfileRepository
+import tv.bayit.plus.core.model.AvatarOptions
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +20,10 @@ class EditProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val savedStateHandle: SavedStateHandle,
     private val logger: BayitLogger,
+    @CdnBaseUrl private val cdnBaseUrl: String,
 ) : ViewModel() {
+
+    val avatarUrls: List<String> = AvatarOptions.avatarUrls(cdnBaseUrl)
 
     private val profileId: String = checkNotNull(savedStateHandle["profileId"]) {
         "EditProfileViewModel requires profileId"

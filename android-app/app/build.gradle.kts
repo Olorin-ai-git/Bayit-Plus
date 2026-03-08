@@ -27,6 +27,8 @@ android {
 
         buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
         buildConfigField("String", "WS_BASE_URL", "\"${project.findProperty("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
+        buildConfigField("String", "CDN_BASE_URL", "\"${project.findProperty("bayit.cdn.baseUrl") ?: "https://cdn.bayit.tv"}\"")
+        buildConfigField("String", "CAST_RECEIVER_APP_ID", "\"${project.findProperty("bayit.cast.receiverAppId") ?: ""}\"")
         buildConfigField(
             "String",
             "GOOGLE_CLIENT_ID",
@@ -114,6 +116,8 @@ dependencies {
     implementation(project(":core:core-media"))
     implementation(project(":core:core-voice"))
     implementation(project(":core:core-analytics"))
+    implementation(project(":core:core-cast"))
+    implementation(project(":core:core-byoc"))
 
     // Design system
     implementation(project(":designsystem"))
@@ -143,6 +147,8 @@ dependencies {
     implementation(project(":feature:feature-missions"))
     implementation(project(":feature:feature-downloads"))
     implementation(project(":feature:feature-widgets"))
+    implementation(project(":feature:feature-byoc"))
+    implementation(project(":widget"))
 
     // AndroidX Core
     implementation(libs.core.ktx)

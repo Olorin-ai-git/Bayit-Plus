@@ -91,6 +91,35 @@ class PlayerSubtitleDelegate @Inject constructor(
         }
     }
 
+    fun translateWord(
+        word: String,
+        sourceLanguage: String,
+        targetLanguage: String,
+        scope: CoroutineScope,
+        update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
+    ) {
+        update { copy(isTranslating = true) }
+        scope.launch {
+            when (val result = subtitleRepository.translateWord(word, sourceLanguage, targetLanguage)) {
+                is BayitResult.Success -> {
+                    update { copy(translationResult = result.data, isTranslating = false) }
+                    logger.debug("Word translated", mapOf("word" to word, "target" to targetLanguage))
+                }
+                is BayitResult.Error -> {
+                    update { copy(isTranslating = false) }
+                    logger.error("Failed to translate word", result.exception)
+                }
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
+    fun dismissTranslation(
+        update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
+    ) {
+        update { copy(translationResult = null) }
+    }
+
     /** Pure function: finds the active cue at [positionSeconds] from [cues]. */
     fun findCueAtPosition(cues: List<SubtitleCue>, positionSeconds: Double): SubtitleCue? =
         cues.firstOrNull { cue ->

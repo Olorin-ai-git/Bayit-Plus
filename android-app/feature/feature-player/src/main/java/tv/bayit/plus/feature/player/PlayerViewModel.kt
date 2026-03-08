@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import tv.bayit.plus.core.cast.CastSessionManager
+import tv.bayit.plus.core.cast.MediaPlayerCastBridge
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.MediaRepository
@@ -33,6 +35,8 @@ class PlayerViewModel @Inject constructor(
     internal val sleepTimerManager: SleepTimerManager,
     internal val subtitleDelegate: PlayerSubtitleDelegate,
     internal val featuresDelegate: PlayerFeaturesDelegate,
+    private val castSessionManager: CastSessionManager,
+    private val castBridge: MediaPlayerCastBridge,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -62,8 +66,11 @@ class PlayerViewModel @Inject constructor(
 
     init {
         mediaPlayer.initialize()
+        castSessionManager.initialize()
+        castBridge.attach(mediaPlayer, viewModelScope)
         startPositionPolling()
         observeAuxState()
+        observeCastState()
     }
 
     fun loadContent(contentId: String, contentType: String, resumePositionMs: Long = 0L) {
@@ -93,6 +100,7 @@ class PlayerViewModel @Inject constructor(
                         featuresDelegate.loadAvatarInfo(viewModelScope) { t -> _extendedState.update(t) }
                         featuresDelegate.loadInteractiveMoments(contentId, viewModelScope) { t -> _extendedState.update(t) }
                     }
+                    castBridge.updateContent(contentId, metadata.first)
                     logger.info("Playback started", mapOf("contentId" to contentId))
                     startPeriodicProgressSave()
                 }
@@ -116,9 +124,18 @@ class PlayerViewModel @Inject constructor(
 
     fun release() { progressSaveJob?.cancel(); saveProgress() }
 
+    fun onCastClick() {
+        val state = castSessionManager.sessionState.value
+        when {
+            state.isConnected -> castSessionManager.endSession()
+            state.isAvailable -> castSessionManager.presentDevicePicker()
+        }
+    }
+
     override fun onCleared() {
         progressSaveJob?.cancel()
         saveProgress()
+        castBridge.detach()
         viewModelScope.launch { liveAICoordinator.cleanupAll() }
         sleepTimerManager.cancel()
         vodTriviaManager.cleanup()
@@ -130,6 +147,19 @@ class PlayerViewModel @Inject constructor(
     internal fun scheduleControlsHide() {
         controlsHideJob?.cancel()
         controlsHideJob = viewModelScope.launch { delay(CONTROLS_HIDE_DELAY_MS); _isControlsVisible.value = false }
+    }
+
+    private fun observeCastState() {
+        viewModelScope.launch {
+            castSessionManager.sessionState.collect { state ->
+                _extendedState.update {
+                    it.copy(
+                        isCastAvailable = state.isAvailable,
+                        isCastConnected = state.isConnected,
+                    )
+                }
+            }
+        }
     }
 
     private fun observeAuxState() {

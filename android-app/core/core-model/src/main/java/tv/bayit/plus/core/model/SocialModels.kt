@@ -4,6 +4,17 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class NewsHeadline(
+    val title: String = "",
+    val link: String? = null,
+    val published: String? = null,
+    val summary: String? = null,
+    val source: String? = null,
+    val category: String? = null,
+    val thumbnail: String? = null,
+)
+
+@Serializable
 data class Friend(
     @SerialName("user_id") val id: String,
     @SerialName("name") val displayName: String,

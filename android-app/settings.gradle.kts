@@ -36,6 +36,8 @@ include(":core:core-media")
 include(":core:core-voice")
 include(":core:core-analytics")
 include(":core:core-testing")
+include(":core:core-cast")
+include(":core:core-byoc")
 
 // Design system
 include(":designsystem")
@@ -65,3 +67,7 @@ include(":feature:feature-rewards")
 include(":feature:feature-missions")
 include(":feature:feature-downloads")
 include(":feature:feature-widgets")
+include(":feature:feature-byoc")
+
+// Widget module (app-level)
+include(":widget")

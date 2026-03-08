@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player
 
+import tv.bayit.plus.core.model.TranslationResult
 import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
 
@@ -60,4 +61,12 @@ data class PlayerExtendedState(
     val activeMoment: tv.bayit.plus.feature.player.dialogue.InteractiveMoment? = null,
     /** Timestamps of moments already triggered during this session to avoid re-triggering. */
     val triggeredMomentTimestamps: Set<Double> = emptySet(),
+    /** Word-tap translation result for subtitle overlay. */
+    val translationResult: TranslationResult? = null,
+    /** Whether a word translation request is in progress. */
+    val isTranslating: Boolean = false,
+    /** Whether cast devices are available on the network. */
+    val isCastAvailable: Boolean = false,
+    /** Whether currently connected to a cast device. */
+    val isCastConnected: Boolean = false,
 )

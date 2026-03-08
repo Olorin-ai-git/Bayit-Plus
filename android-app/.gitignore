@@ -43,6 +43,10 @@ proguard/
 # Android Profiling
 *.hprof
 
+# Locale backup files
+*.backup
+*.bak2
+
 # Kotlin
 .kotlin/
 
@@ -51,3 +55,4 @@ proguard/
 gradle-app.setting
 !gradle-wrapper.jar
 !gradle-wrapper.properties
+keystore/

@@ -52,6 +52,7 @@ fun AddProfileRoute(
         onCreateClick = viewModel::createProfile,
         onDismissError = viewModel::dismissError,
         modifier = modifier,
+        avatarUrls = viewModel.avatarUrls,
     )
 }
 
@@ -65,6 +66,7 @@ internal fun AddProfileScreen(
     onCreateClick: () -> Unit,
     onDismissError: () -> Unit,
     modifier: Modifier = Modifier,
+    avatarUrls: List<String> = emptyList(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val isLoading = uiState is AddProfileUiState.Loading
@@ -122,6 +124,7 @@ internal fun AddProfileScreen(
                     selectedUrl = input?.selectedAvatarUrl.orEmpty(),
                     onAvatarSelected = onAvatarSelected,
                     enabled = !isLoading,
+                    avatarOptions = avatarUrls,
                 )
 
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))

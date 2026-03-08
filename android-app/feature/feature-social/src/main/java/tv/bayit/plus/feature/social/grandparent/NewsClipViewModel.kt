@@ -48,14 +48,14 @@ class NewsClipViewModel @Inject constructor(
 
             when (val result = newsRepository.getNewsHeadlines()) {
                 is BayitResult.Success -> {
-                    val clips = result.data.mapIndexed { index, item ->
+                    val clips = result.data.mapIndexed { index, headline ->
                         NewsClipItem(
                             id = "clip_$index",
-                            title = "News Clip ${index + 1}",
-                            thumbnailUrl = "https://placeholder.com/150",
-                            duration = "2:30",
-                            source = "Bayit+ News",
-                            publishedAt = "2 hours ago",
+                            title = headline.title,
+                            thumbnailUrl = headline.thumbnail.orEmpty(),
+                            duration = "",
+                            source = headline.source.orEmpty(),
+                            publishedAt = headline.published.orEmpty(),
                         )
                     }
                     logger.info("News clips loaded", mapOf("count" to clips.size.toString()))

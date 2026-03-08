@@ -30,6 +30,7 @@ internal fun AvatarSelector(
     selectedUrl: String,
     onAvatarSelected: (String) -> Unit,
     enabled: Boolean,
+    avatarOptions: List<String> = emptyList(),
 ) {
     Text(
         "Choose Avatar",
@@ -41,7 +42,7 @@ internal fun AvatarSelector(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.xs),
     ) {
-        items(AVATAR_OPTIONS, key = { it }) { avatarUrl ->
+        items(avatarOptions, key = { it }) { avatarUrl ->
             val isSelected = avatarUrl == selectedUrl
             val borderColor = if (isSelected) DesignTokens.Colors.Primary.base else DesignTokens.Colors.Glass.bgLight
             Box(
@@ -94,11 +95,3 @@ internal fun AgeGroupPicker(
     }
 }
 
-internal val AVATAR_OPTIONS = listOf(
-    "https://cdn.bayit.tv/avatars/aleph.png",
-    "https://cdn.bayit.tv/avatars/bet.png",
-    "https://cdn.bayit.tv/avatars/gimel.png",
-    "https://cdn.bayit.tv/avatars/dalet.png",
-    "https://cdn.bayit.tv/avatars/hei.png",
-    "https://cdn.bayit.tv/avatars/vav.png",
-)

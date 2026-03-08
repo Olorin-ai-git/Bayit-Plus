@@ -8,15 +8,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.CdnBaseUrl
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.HouseholdRepository
+import tv.bayit.plus.core.model.AvatarOptions
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProfileViewModel @Inject constructor(
     private val householdRepository: HouseholdRepository,
     private val logger: BayitLogger,
+    @CdnBaseUrl private val cdnBaseUrl: String,
 ) : ViewModel() {
+
+    val avatarUrls: List<String> = AvatarOptions.avatarUrls(cdnBaseUrl)
 
     private val _uiState = MutableStateFlow<AddProfileUiState>(
         AddProfileUiState.Input(),

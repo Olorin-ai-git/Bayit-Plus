@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cast
+import androidx.compose.material.icons.filled.CastConnected
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
@@ -44,6 +46,9 @@ fun PlayerTopBar(
     onAIFeaturesClick: (() -> Unit)? = null,
     isVodTriviaEnabled: Boolean = false,
     onVodTriviaToggle: (() -> Unit)? = null,
+    isCastAvailable: Boolean = false,
+    isCastConnected: Boolean = false,
+    onCastClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
@@ -81,6 +86,13 @@ fun PlayerTopBar(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (isCastAvailable) {
+                tv.bayit.plus.core.cast.ui.CastButton(
+                    modifier = Modifier.size(36.dp),
+                )
+                Spacer(modifier = Modifier.width(DesignTokens.Spacing.xs))
+            }
+
             onSubtitlePickerClick?.let { onClick ->
                 IconButton(onClick = onClick) {
                     Icon(

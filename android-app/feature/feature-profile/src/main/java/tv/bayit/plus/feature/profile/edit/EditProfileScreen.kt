@@ -39,12 +39,6 @@ import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
-private val AVATARS = listOf(
-    "https://cdn.bayit.tv/avatars/aleph.png", "https://cdn.bayit.tv/avatars/bet.png",
-    "https://cdn.bayit.tv/avatars/gimel.png", "https://cdn.bayit.tv/avatars/dalet.png",
-    "https://cdn.bayit.tv/avatars/hei.png", "https://cdn.bayit.tv/avatars/vav.png",
-)
-
 @Composable
 fun EditProfileRoute(
     onNavigateBack: () -> Unit,
@@ -59,7 +53,7 @@ fun EditProfileRoute(
     }
 
     EditProfileScreen(uiState, onNavigateBack, viewModel::updateName, viewModel::updateAvatar,
-        viewModel::save, viewModel::dismissError, modifier)
+        viewModel::save, viewModel::dismissError, modifier, avatarUrls = viewModel.avatarUrls)
 }
 
 @Composable
@@ -71,6 +65,7 @@ internal fun EditProfileScreen(
     onSaveClick: () -> Unit,
     onDismissError: () -> Unit,
     modifier: Modifier = Modifier,
+    avatarUrls: List<String> = emptyList(),
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
@@ -97,7 +92,7 @@ internal fun EditProfileScreen(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                         contentPadding = PaddingValues(horizontal = DesignTokens.Spacing.xs),
                     ) {
-                        items(AVATARS, key = { it }) { url ->
+                        items(avatarUrls, key = { it }) { url ->
                             val border = if (url == uiState.avatarUrl) DesignTokens.Colors.Primary.base else DesignTokens.Colors.Glass.bgLight
                             Box(
                                 Modifier.size(64.dp).clip(CircleShape).background(border).padding(2.dp).clip(CircleShape).clickable { onAvatarSelected(url) },

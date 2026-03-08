@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core:core-model"))
     implementation(project(":core:core-data"))
     implementation(project(":core:core-media"))
+    implementation(project(":core:core-cast"))
     implementation(project(":core:core-network"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))

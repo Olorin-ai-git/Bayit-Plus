@@ -35,3 +35,14 @@ data class AccountProfile(
 data class ProfileSelectRequest(
     val pin: String? = null,
 )
+
+/**
+ * Centralized avatar options built from CDN base URL.
+ * Avatar slugs are the Hebrew letter names used as file identifiers.
+ */
+object AvatarOptions {
+    private val AVATAR_SLUGS = listOf("aleph", "bet", "gimel", "dalet", "hei", "vav")
+
+    fun avatarUrls(cdnBaseUrl: String): List<String> =
+        AVATAR_SLUGS.map { slug -> "$cdnBaseUrl/avatars/$slug.png" }
+}

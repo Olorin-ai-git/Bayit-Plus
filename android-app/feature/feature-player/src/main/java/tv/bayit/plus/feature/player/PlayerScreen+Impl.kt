@@ -94,6 +94,7 @@ internal fun PlayerScreen(
     onExtendSleepTimer: (Int) -> Unit,
     onCancelSleepTimer: () -> Unit,
     onToggleFullscreen: () -> Unit,
+    onCastClick: () -> Unit = {},
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -141,6 +142,9 @@ internal fun PlayerScreen(
                     onPreviousInteraction = onPreviousInteraction,
                     onNextInteraction = onNextInteraction,
                     hasInteractiveMoments = extendedState.interactiveMoments.isNotEmpty(),
+                    isCastAvailable = extendedState.isCastAvailable,
+                    isCastConnected = extendedState.isCastConnected,
+                    onCastClick = onCastClick,
                 )
 
                 PlayerScreenDialogueOverlays(

@@ -64,10 +64,15 @@ internal fun ReadyContent(
     onSpeedChange: (Float) -> Unit,
     onBack: () -> Unit,
     onToggleFullscreen: () -> Unit,
+    onWordTap: (String) -> Unit = {},
+    onDismissTranslation: () -> Unit = {},
     onInteract: (() -> Unit)? = null,
     onPreviousInteraction: (() -> Unit)? = null,
     onNextInteraction: (() -> Unit)? = null,
     hasInteractiveMoments: Boolean = false,
+    isCastAvailable: Boolean = false,
+    isCastConnected: Boolean = false,
+    onCastClick: () -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -122,6 +127,9 @@ internal fun ReadyContent(
                 onPreviousInteraction = if (!state.isLiveContent) onPreviousInteraction else null,
                 onNextInteraction = if (!state.isLiveContent) onNextInteraction else null,
                 hasInteractiveMoments = !state.isLiveContent && hasInteractiveMoments,
+                isCastAvailable = isCastAvailable,
+                isCastConnected = isCastConnected,
+                onCastClick = onCastClick,
                 subtitleOverlay = {
                     if (!state.isLiveContent && extendedState.isSubtitlesEnabled) {
                         if (extendedState.isSplitSubtitleMode) {
@@ -132,16 +140,16 @@ internal fun ReadyContent(
                                 primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
                                 secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
                                 layout = extendedState.splitSubtitleLayout,
-                                onWordTap = { /* TODO: Add word translation */ },
+                                onWordTap = onWordTap,
                             )
                         } else if (extendedState.activeCue != null) {
                             // Regular mode: single subtitle
                             tv.bayit.plus.feature.player.subtitles.SubtitleCueOverlay(
                                 activeCue = extendedState.activeCue,
                                 hebrewMode = tv.bayit.plus.core.model.SubtitleHebrewMode.STANDARD,
-                                translationResult = null,
-                                onWordTap = { /* TODO: Add word translation */ },
-                                onDismissTranslation = { /* TODO: Add dismiss handler */ },
+                                translationResult = extendedState.translationResult,
+                                onWordTap = onWordTap,
+                                onDismissTranslation = onDismissTranslation,
                             )
                         }
                     }

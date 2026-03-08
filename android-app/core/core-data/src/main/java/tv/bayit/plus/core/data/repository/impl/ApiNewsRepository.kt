@@ -5,25 +5,15 @@ import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.NewsRepository
 import tv.bayit.plus.core.model.MessageResponse
+import tv.bayit.plus.core.model.NewsHeadline
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Production implementation of [NewsRepository] backed by Retrofit.
- *
- * Delegates HTTP communication to [BayitApiClient], which handles auth headers,
- * correlation IDs, retry, rate limiting, and structured error mapping. Every
- * public method wraps the network call in [runCatchingResult] so callers receive
- * a [BayitResult] instead of raw exceptions.
- *
- * Endpoint paths mirror the iOS APINewsRepository and web api.js.
- */
 @Singleton
 class ApiNewsRepository @Inject constructor(
     private val client: BayitApiClient,
@@ -31,10 +21,10 @@ class ApiNewsRepository @Inject constructor(
 
     private val service: NewsService = client.createService()
 
-    override suspend fun getNewsHeadlines(): BayitResult<List<Any>> =
+    override suspend fun getNewsHeadlines(): BayitResult<List<NewsHeadline>> =
         runCatchingResult {
             val response = client.safeApiCall { service.getHeadlines() }
-            response.items
+            response.items.map { it.toHeadline() }
         }
 
     override suspend fun getNewsArticle(articleId: String): BayitResult<Any> =
@@ -44,17 +34,15 @@ class ApiNewsRepository @Inject constructor(
 
     override suspend fun getNewsByCategory(
         category: String,
-    ): BayitResult<List<Any>> = runCatchingResult {
-        val response = client.safeApiCall {
-            service.getByCategory(category)
-        }
-        response.items
+    ): BayitResult<List<NewsHeadline>> = runCatchingResult {
+        val response = client.safeApiCall { service.getByCategory(category) }
+        response.items.map { it.toHeadline() }
     }
 
-    override suspend fun getBreakingNews(): BayitResult<List<Any>> =
+    override suspend fun getBreakingNews(): BayitResult<List<NewsHeadline>> =
         runCatchingResult {
             val response = client.safeApiCall { service.getBreakingNews() }
-            response.items
+            response.items.map { it.toHeadline() }
         }
 
     override suspend fun bookmarkArticle(articleId: String): BayitResult<Unit> =
@@ -64,31 +52,33 @@ class ApiNewsRepository @Inject constructor(
         }
 }
 
-private interface NewsService {
+private fun NewsItem.toHeadline() = NewsHeadline(
+    title = title.orEmpty(),
+    link = link,
+    published = published,
+    summary = summary,
+    source = source,
+    category = category,
+    thumbnail = thumbnail,
+)
 
+private interface NewsService {
     @GET("api/v1/news/headlines")
     suspend fun getHeadlines(): NewsListResponse
 
     @GET("api/v1/news/article/{id}")
-    suspend fun getArticle(
-        @Path("id") articleId: String,
-    ): NewsArticleDetail
+    suspend fun getArticle(@Path("id") articleId: String): NewsArticleDetail
 
     @GET("api/v1/news/category/{category}")
-    suspend fun getByCategory(
-        @Path("category") category: String,
-    ): NewsListResponse
+    suspend fun getByCategory(@Path("category") category: String): NewsListResponse
 
     @GET("api/v1/news/mivzakim")
     suspend fun getBreakingNews(): NewsListResponse
 
     @POST("api/v1/news/bookmark/{id}")
-    suspend fun bookmarkArticle(
-        @Path("id") articleId: String,
-    ): MessageResponse
+    suspend fun bookmarkArticle(@Path("id") articleId: String): MessageResponse
 }
 
-/** Response wrapper for news list endpoints. */
 @Serializable
 private data class NewsListResponse(
     val items: List<NewsItem> = emptyList(),
@@ -96,7 +86,6 @@ private data class NewsListResponse(
     @SerialName("updated_at") val updatedAt: String? = null,
 )
 
-/** A news item in the list. */
 @Serializable
 private data class NewsItem(
     val title: String? = null,
@@ -108,7 +97,6 @@ private data class NewsItem(
     val thumbnail: String? = null,
 )
 
-/** Detailed news article returned from the article endpoint. */
 @Serializable
 private data class NewsArticleDetail(
     val id: String,
