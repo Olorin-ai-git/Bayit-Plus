@@ -44,7 +44,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>207</string>
+	<string>210</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>FEATURE_CARPLAY</key>
@@ -76,7 +76,7 @@
 		<string>_CC1AD845._googlecast._tcp</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Bayit+ uses the camera to record a video selfie for creating your 3D avatar</string>
+	<string>Bayit+ uses the camera to record video selfies for your Star Story profile</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Bayit+ uses Face ID to securely sign in to your account</string>
 	<key>NSLocalNetworkUsageDescription</key>
@@ -86,7 +86,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Bayit+ accesses your photo library to select a video selfie for creating your 3D avatar</string>
+	<string>Bayit+ accesses your photo library to select photos and videos for your profile</string>
 	<key>NSPrivacyPolicyURL</key>
 	<string>https://bayit.tv/privacy</string>
 	<key>NSSiriUsageDescription</key>
@@ -95,16 +95,12 @@
 	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>OWNER_MODE</key>
+	<string>$(OWNER_MODE)</string>
 	<key>PROGRESS_TRACKING_INTERVAL_SECONDS</key>
 	<string>$(PROGRESS_TRACKING_INTERVAL_SECONDS)</string>
 	<key>SUPPORT_EMAIL</key>
 	<string>$(SUPPORT_EMAIL)</string>
-	<key>OWNER_MODE</key>
-	<string>$(OWNER_MODE)</string>
-	<key>YOUTUBE_CLIENT_ID</key>
-	<string>$(YOUTUBE_CLIENT_ID)</string>
-	<key>YOUTUBE_CLIENT_SECRET</key>
-	<string>$(YOUTUBE_CLIENT_SECRET)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -149,5 +145,9 @@
 	<string>$(WEBSOCKET_BASE_URL)</string>
 	<key>WIDGET_APP_GROUP_ID</key>
 	<string>group.tv.bayit.plus</string>
+	<key>YOUTUBE_CLIENT_ID</key>
+	<string>$(YOUTUBE_CLIENT_ID)</string>
+	<key>YOUTUBE_CLIENT_SECRET</key>
+	<string>$(YOUTUBE_CLIENT_SECRET)</string>
 </dict>
 </plist>
