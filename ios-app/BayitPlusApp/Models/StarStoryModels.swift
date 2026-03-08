@@ -9,19 +9,33 @@ struct StarStoryAvatar: Codable, Sendable, Identifiable {
     let status: String
     let primaryAvatarUrl: String?
     let posesCount: Int
+    let isActive: Bool?
+    let creatifyAvatarImageUrl: String?
+    let creatifyAvatarStatus: String?
+    let outfitCount: Int?
     let createdAt: String
 
-    var id: String { avatarId }
+    var id: String {
+        avatarId
+    }
+
+    var isActiveAvatar: Bool {
+        isActive ?? true
+    }
 }
 
 enum AvatarStyle: String, Codable, Sendable, CaseIterable {
     case cartoon2d = "cartoon_2d"
     case pixar3d = "pixar_3d"
+    case disney3d = "disney_3d"
+    case anime3d = "anime_3d"
 
     var displayName: String {
         switch self {
         case .cartoon2d: return "Cartoon 2D"
         case .pixar3d: return "Pixar 3D"
+        case .disney3d: return "Disney 3D"
+        case .anime3d: return "Anime 3D"
         }
     }
 }
@@ -39,7 +53,9 @@ struct StarStoryEpisode: Codable, Sendable, Identifiable {
     let durationSeconds: Int
     let createdAt: String
 
-    var id: String { episodeId }
+    var id: String {
+        episodeId
+    }
 
     var formattedDuration: String {
         let mins = durationSeconds / 60
@@ -101,7 +117,9 @@ struct ConsentResponse: Decodable {
     let status: String
     let consentGranted: Bool
 
-    var success: Bool { consentGranted }
+    var success: Bool {
+        consentGranted
+    }
 }
 
 struct GenerateEpisodeRequest: Encodable {
@@ -118,6 +136,19 @@ struct GenerateEpisodeResponse: Decodable {
 struct VideoSelfieUploadResponse: Decodable {
     let avatarId: String
     let videoSelfieUploaded: Bool
+}
+
+struct CreateAvatarRequest: Encodable {
+    let profileId: String
+    let childFirstName: String
+    let style: String
+    let pin: String
+}
+
+struct CreateAvatarResponse: Decodable {
+    let avatarId: String
+    let status: String
+    let isActive: Bool
 }
 
 struct AvatarsResponse: Decodable {

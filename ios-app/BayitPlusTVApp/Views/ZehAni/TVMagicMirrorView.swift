@@ -17,6 +17,8 @@
         @State var avatarImageUrl: String?
         @State var isPlayingVideo = false
         @State var player: AVPlayer?
+        @State var avatars: [StarStoryAvatar] = []
+        @State var selectedAvatarId: String?
         @FocusState private var refreshButtonFocused: Bool
 
         var body: some View {
@@ -41,6 +43,10 @@
         private func greetingContent(_ greeting: MagicMirrorGreeting) -> some View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
+                    if avatars.count > 1 {
+                        avatarPickerStrip
+                    }
+
                     avatarDisplayView(greeting)
 
                     TVMagicMirrorGreetingCard(greeting: greeting)
@@ -53,6 +59,24 @@
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                 .padding(.vertical, TVDesignTokens.Spacing.xl)
+            }
+        }
+
+        private var avatarPickerStrip: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    ForEach(avatars) { avatar in
+                        TVAvatarPickerItem(
+                            avatar: avatar,
+                            isSelected: avatar.avatarId == selectedAvatarId
+                        ) {
+                            guard avatar.avatarId != selectedAvatarId else { return }
+                            selectedAvatarId = avatar.avatarId
+                            loadGreeting()
+                        }
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.md)
             }
         }
 
@@ -91,7 +115,7 @@
                     CachedAsyncImage(url: imageUrl) { phase in
                         switch phase {
                         case let .success(image):
-                            image.resizable().scaledToFill()
+                            image.resizable().scaledToFit()
                         case .failure:
                             avatarPlaceholder
                         default:

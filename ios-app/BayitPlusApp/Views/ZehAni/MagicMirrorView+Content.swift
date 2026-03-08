@@ -68,23 +68,38 @@ extension MagicMirrorView {
 
         Task {
             do {
-                async let greetingTask = repos.avatarMeshRepository.getMagicMirrorGreeting(
+                let avatarsResponse = try await repos.starStory.fetchAvatars(
                     profileId: profileId
                 )
-                async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
+                let loadedAvatars = avatarsResponse.avatars
 
-                let fetched = try await greetingTask
-                let avatarsResponse = try? await avatarsTask
-                let avatarId = avatarsResponse?.avatars.first?.avatarId
+                if loadedAvatars.isEmpty {
+                    await MainActor.run {
+                        noAvatar = true
+                        isLoading = false
+                    }
+                    return
+                }
+
+                let targetAvatarId = selectedAvatarId
+                    ?? loadedAvatars.first(where: { $0.isActiveAvatar })?.avatarId
+                    ?? loadedAvatars.first?.avatarId
+
+                let fetched = try await repos.avatarMeshRepository.getMagicMirrorGreeting(
+                    profileId: profileId,
+                    avatarId: targetAvatarId
+                )
 
                 await MainActor.run {
+                    avatars = loadedAvatars
+                    selectedAvatarId = targetAvatarId
+                    existingAvatarId = targetAvatarId
                     greeting = fetched
-                    existingAvatarId = avatarId
                     isLoading = false
                 }
 
-                if let avatarId {
-                    await loadAvatarImage(avatarId: avatarId)
+                if let targetAvatarId {
+                    await loadAvatarImage(avatarId: targetAvatarId)
                 }
             } catch let apiError as APIError {
                 await MainActor.run {
@@ -105,6 +120,12 @@ extension MagicMirrorView {
     }
 
     func loadAvatarImage(avatarId: String) async {
+        let selected = avatars.first(where: { $0.avatarId == avatarId })
+        if let imageUrl = selected?.creatifyAvatarImageUrl {
+            await MainActor.run { avatarImageUrl = imageUrl }
+            return
+        }
+
         do {
             let status = try await repos.avatarMeshRepository.fetchAvatarStatus(
                 avatarId: avatarId

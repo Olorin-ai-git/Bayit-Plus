@@ -145,11 +145,18 @@ extension TVHomeView {
             items: category.items,
             maxItems: 15,
             seeAllAction: {
-                coordinator.presentCategoryBrowse(
-                    title: section.localizedTitle(localization),
-                    icon: section.icon,
-                    categoryName: category.name
-                )
+                switch section {
+                case .podcasts:
+                    coordinator.fullscreenRoute = .podcastBrowse
+                case .audiobooks:
+                    coordinator.fullscreenRoute = .audiobookBrowse
+                default:
+                    coordinator.presentCategoryBrowse(
+                        title: section.localizedTitle(localization),
+                        icon: section.icon,
+                        categoryName: category.name
+                    )
+                }
             }
         ) { item in
             TVContentCard(

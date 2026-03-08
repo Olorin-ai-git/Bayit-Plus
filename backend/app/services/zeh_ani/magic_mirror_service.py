@@ -75,6 +75,7 @@ class MagicMirrorService:
         greeting = MagicMirrorGreeting(
             user_id=user_id,
             profile_id=profile_id,
+            avatar_id=avatar_id,
             greeting_text_he=greeting_he,
             greeting_text_en=greeting_en,
             greeting_audio_gcs_path=audio_path,
@@ -122,9 +123,10 @@ class MagicMirrorService:
         user: User | None = None,
     ) -> MagicMirrorGreeting:
         """Return cached greeting if not expired, else generate a new one."""
-        existing = await MagicMirrorGreeting.find_one(
-            {"user_id": user_id, "profile_id": profile_id}
-)
+        cache_query = {"user_id": user_id, "profile_id": profile_id}
+        if avatar_id:
+            cache_query["avatar_id"] = avatar_id
+        existing = await MagicMirrorGreeting.find_one(cache_query)
 
         if existing and not existing.is_expired:
             logger.info(

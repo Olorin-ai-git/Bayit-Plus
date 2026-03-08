@@ -1,6 +1,8 @@
 """Zeh Ani Magic Mirror REST API endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -53,10 +55,17 @@ async def _greeting_dict(greeting) -> dict:
     }
 
 
-async def _resolve_avatar(user: User, profile_id: str) -> ChildAvatar:
+async def _resolve_avatar(
+    user: User, profile_id: str, avatar_id: str | None = None,
+) -> ChildAvatar:
     """Find the avatar for a user+profile, raising 404 if not found."""
-    avatar = await ChildAvatar.find_one(
-        {"user_id": str(user.id), "profile_id": profile_id}
+    if avatar_id:
+        avatar = await ChildAvatar.get(avatar_id)
+        if avatar and avatar.user_id == str(user.id) and avatar.profile_id == profile_id:
+            return avatar
+
+    avatar = await ChildAvatar.get_active_for_profile(
+        user_id=str(user.id), profile_id=profile_id,
     )
     if not avatar:
         raise HTTPException(
@@ -68,10 +77,11 @@ async def _resolve_avatar(user: User, profile_id: str) -> ChildAvatar:
 @router.get("/{profile_id}")
 async def get_daily_greeting(
     profile_id: str,
+    avatar_id: Optional[str] = Query(default=None),
     user: User = Depends(get_current_user),
 ):
     """Get the daily Magic Mirror greeting for a child profile."""
-    avatar = await _resolve_avatar(user, profile_id)
+    avatar = await _resolve_avatar(user, profile_id, avatar_id)
 
     try:
         greeting = await magic_mirror_service.get_or_generate_greeting(
@@ -92,10 +102,11 @@ async def get_daily_greeting(
 @router.post("/{profile_id}/refresh")
 async def refresh_greeting(
     profile_id: str,
+    avatar_id: Optional[str] = Query(default=None),
     user: User = Depends(get_current_user),
 ):
     """Force-refresh the Magic Mirror greeting for a child profile."""
-    avatar = await _resolve_avatar(user, profile_id)
+    avatar = await _resolve_avatar(user, profile_id, avatar_id)
 
     try:
         greeting = await magic_mirror_service.generate_daily_greeting(

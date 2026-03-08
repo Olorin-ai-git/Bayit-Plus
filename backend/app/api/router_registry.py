@@ -109,7 +109,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Bilingual dubbing routes (progressive Hebrew/English)
     from app.api.routes import bilingual_dubbing
     # Star in Story routes (generative personalized episodes)
-    from app.api.routes.star_story import star_story_core, star_story_admin
+    from app.api.routes.star_story import star_story_core, star_story_admin, star_story_episodes
     # Interactive Mission routes (Atzmi Ba'Sipur)
     from app.api.routes.interactive_mission import mission_core as im_core
     from app.api.routes.interactive_mission import mission_play as im_play
@@ -124,6 +124,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.chameleon import style_routes as chameleon_routes
     # Zeh Ani routes (Creatify avatar, biometric consent, V2V, identity engine)
     from app.api.routes.zeh_ani import avatar_routes as za_avatar
+    from app.api.routes.zeh_ani import avatar_management_routes as za_avatar_mgmt
     from app.api.routes.zeh_ani import consent_routes as za_consent
     from app.api.routes.zeh_ani import v2v_routes as za_v2v
     # Zeh Ani Phase 3+4 routes (triggers, mirror, highlights, WhatsApp)
@@ -614,6 +615,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Star in Story Routes (Generative Personalized Episodes)
     # ============================================
     app.include_router(star_story_core.router, prefix=prefix, tags=["star-story"])
+    app.include_router(star_story_episodes.router, prefix=prefix, tags=["star-story"])
     app.include_router(star_story_admin.router, prefix=prefix, tags=["star-story-admin"])
     logger.debug("Registered Star in Story routes (consent, avatars, episodes, admin)")
 
@@ -654,6 +656,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Zeh Ani Routes (Creatify Avatar + Biometric Consent + V2V)
     # ============================================
     app.include_router(za_avatar.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_avatar_mgmt.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_consent.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_v2v.router, prefix=prefix, tags=["zeh-ani"])
     app.include_router(za_triggers.router, prefix=prefix, tags=["zeh-ani"])

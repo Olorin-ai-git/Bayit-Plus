@@ -18,9 +18,9 @@
                         ? TVDesignTokens.Focus.scaleAmount
                         : (configuration.isPressed ? 0.97 : 1.0)
                 )
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
                 .overlay(
-                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                        .inset(by: -TVDesignTokens.Focus.ringWidth)
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                         .stroke(
                             isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
                             lineWidth: TVDesignTokens.Focus.ringWidth

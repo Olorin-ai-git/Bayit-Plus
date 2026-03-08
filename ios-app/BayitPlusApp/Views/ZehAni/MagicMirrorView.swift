@@ -24,6 +24,9 @@ struct MagicMirrorView: View {
     @State var avatarImageUrl: String?
     @State var isPlayingVideo = false
     @State var player: AVPlayer?
+    @State var avatars: [StarStoryAvatar] = []
+    @State var selectedAvatarId: String?
+    @State var showAvatarManagement = false
 
     var body: some View {
         ZStack {
@@ -56,6 +59,11 @@ struct MagicMirrorView: View {
                 skipConsent: existingAvatarId != nil,
                 existingAvatarId: existingAvatarId
             )
+        }
+        .sheet(isPresented: $showAvatarManagement) {
+            AvatarManagementView(profileId: profileId) {
+                loadGreeting()
+            }
         }
         .onChange(of: showAvatarCreation) { _, isShowing in
             if !isShowing { loadGreeting() }

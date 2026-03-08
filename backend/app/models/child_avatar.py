@@ -10,6 +10,7 @@ from enum import Enum
 from typing import List, Optional
 
 from beanie import Document, Indexed
+from pymongo import DESCENDING
 from pydantic import BaseModel, Field
 
 # Extended pose names for interactive missions (12 total)
@@ -112,6 +113,9 @@ class ChildAvatar(Document):
         default=None, description="GCS URL of image used for Creatify",
     )
 
+    # Multi-avatar: which avatar is currently selected for this profile
+    is_active: bool = Field(default=True)
+
     # Outfit wardrobe
     outfit_inventory: List["ProfileOutfitInventory"] = Field(
         default_factory=list
@@ -150,6 +154,38 @@ class ChildAvatar(Document):
     @property
     def has_voice_clone(self) -> bool:
         return self.voice_clone_status == "ready" and self.elevenlabs_voice_id is not None
+
+    @classmethod
+    async def get_active_for_profile(
+        cls, user_id: str, profile_id: str,
+    ) -> Optional["ChildAvatar"]:
+        """Return the active avatar for a user+profile, or most recent."""
+        active = await cls.find_one(
+            {"user_id": user_id, "profile_id": profile_id, "is_active": True}
+        )
+        if active:
+            return active
+        return await cls.find_one(
+            {"user_id": user_id, "profile_id": profile_id},
+            sort=[("created_at", DESCENDING)],
+        )
+
+    @classmethod
+    async def set_active(
+        cls, user_id: str, profile_id: str, avatar_id: str,
+    ) -> Optional["ChildAvatar"]:
+        """Deactivate all avatars for profile, activate the target."""
+        await cls.find(
+            {"user_id": user_id, "profile_id": profile_id}
+        ).update_many({"$set": {"is_active": False}})
+
+        target = await cls.get(avatar_id)
+        if target and target.user_id == user_id and target.profile_id == profile_id:
+            target.is_active = True
+            target.updated_at = datetime.now(timezone.utc)
+            await target.save()
+            return target
+        return None
 
 
 # Deferred import to avoid circular dependency

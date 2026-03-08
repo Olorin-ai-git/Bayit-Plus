@@ -115,15 +115,13 @@
                 lastIntent = localResult.intent
                 lastAction = localResult.action
 
-                if let intent = lastIntent, let action = localResult.action {
-                    onIntentAction?(intent, action)
+                if let intent = lastIntent {
+                    onIntentAction?(intent, localResult.action)
                 }
 
-                if let spoken = localResult.spokenResponse,
-                   !spoken.isEmpty
-                {
-                    responseText = spoken
-                    speakResponse(spoken)
+                if !localResult.spokenResponse.isEmpty {
+                    responseText = localResult.spokenResponse
+                    speakResponse(localResult.spokenResponse)
                 } else {
                     transition(to: .idle)
                 }

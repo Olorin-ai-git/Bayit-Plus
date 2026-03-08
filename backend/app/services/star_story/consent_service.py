@@ -91,6 +91,67 @@ class ConsentService:
         )
         return avatar
 
+    async def create_additional_avatar(
+        self,
+        user_id: str,
+        profile_id: str,
+        child_first_name: str,
+        style: str,
+        pin: str,
+    ) -> ChildAvatar:
+        """
+        Create an additional avatar for a profile that already has consent.
+
+        Inherits consent from an existing avatar. Sets the new avatar as active.
+        """
+        existing = await ChildAvatar.find_one(
+            {"user_id": user_id, "profile_id": profile_id}
+        )
+        if not existing or not existing.has_consent:
+            raise ValueError(
+                "Existing consented avatar required to create additional avatars"
+            )
+
+        from app.services.family_controls_service import (
+            family_controls_service,
+        )
+
+        pin_valid = await family_controls_service.verify_pin(
+            user_id=user_id, pin=pin,
+        )
+        if not pin_valid:
+            raise ValueError("Invalid family PIN")
+
+        from app.models.child_avatar import AvatarStyle
+
+        new_avatar = ChildAvatar(
+            user_id=user_id,
+            profile_id=profile_id,
+            child_first_name=child_first_name,
+            style=AvatarStyle(style),
+            consent=existing.consent,
+            status=AvatarStatus.CONSENT_GRANTED,
+            is_active=False,
+        )
+        await new_avatar.insert()
+
+        await ChildAvatar.set_active(
+            user_id=user_id,
+            profile_id=profile_id,
+            avatar_id=str(new_avatar.id),
+        )
+
+        logger.info(
+            "Additional avatar created",
+            extra={
+                "user_id": user_id,
+                "profile_id": profile_id,
+                "avatar_id": str(new_avatar.id),
+                "style": style,
+            },
+        )
+        return new_avatar
+
     async def has_consent(self, user_id: str, profile_id: str) -> bool:
         """Check if valid consent exists for a child profile."""
         avatar = await ChildAvatar.find_one(

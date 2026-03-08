@@ -22,6 +22,7 @@ class MagicMirrorGreeting(Document):
 
     user_id: Indexed(str)
     profile_id: str
+    avatar_id: Optional[str] = None
 
     # Greeting content
     greeting_text_he: str = Field(
@@ -53,7 +54,7 @@ class MagicMirrorGreeting(Document):
     class Settings:
         name = "magic_mirror_greetings"
         indexes = [
-            [("user_id", 1), ("profile_id", 1)],
+            [("user_id", 1), ("profile_id", 1), ("avatar_id", 1)],
             [("expires_at", 1)],
         ]
 

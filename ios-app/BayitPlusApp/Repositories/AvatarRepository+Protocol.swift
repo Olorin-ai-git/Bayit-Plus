@@ -27,7 +27,8 @@ protocol AvatarRepository: Sendable {
     ) async throws -> Bool
 
     func getMagicMirrorGreeting(
-        profileId: String
+        profileId: String,
+        avatarId: String?
     ) async throws -> MagicMirrorGreeting
 
     // MARK: - VOD Interactions

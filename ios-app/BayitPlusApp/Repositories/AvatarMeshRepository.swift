@@ -91,10 +91,16 @@ final class APIAvatarRepository: AvatarRepository, @unchecked Sendable {
     }
 
     func getMagicMirrorGreeting(
-        profileId: String
+        profileId: String,
+        avatarId: String? = nil
     ) async throws -> MagicMirrorGreeting {
+        var queryItems: [URLQueryItem] = []
+        if let avatarId {
+            queryItems.append(URLQueryItem(name: "avatar_id", value: avatarId))
+        }
         return try await client.get(
             "/api/v1/zeh-ani/magic-mirror/\(profileId)",
+            queryItems: queryItems,
             as: MagicMirrorGreeting.self
         )
     }

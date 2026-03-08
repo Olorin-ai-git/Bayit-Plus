@@ -2,7 +2,6 @@ import BayitNetworking
 import Foundation
 
 protocol StarStoryRepository: Sendable {
-
     func fetchAvatars(profileId: String) async throws -> AvatarsResponse
 
     func grantConsent(
@@ -32,10 +31,20 @@ protocol StarStoryRepository: Sendable {
     ) async throws -> VideoSelfieUploadResponse
 
     func revokeConsent(profileId: String) async throws
+
+    func createAvatar(
+        profileId: String,
+        name: String,
+        style: String,
+        pin: String
+    ) async throws -> CreateAvatarResponse
+
+    func setActiveAvatar(avatarId: String) async throws
+
+    func deleteAvatar(avatarId: String) async throws
 }
 
 final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -44,7 +53,7 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
 
     func fetchAvatars(profileId: String) async throws -> AvatarsResponse {
         let queryItems = [
-            URLQueryItem(name: "profile_id", value: profileId)
+            URLQueryItem(name: "profile_id", value: profileId),
         ]
         return try await client.get(
             "/api/v1/star-story/avatars",
@@ -104,7 +113,7 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
         profileId: String
     ) async throws -> EpisodesResponse {
         let queryItems = [
-            URLQueryItem(name: "profile_id", value: profileId)
+            URLQueryItem(name: "profile_id", value: profileId),
         ]
         return try await client.get(
             "/api/v1/star-story/episodes",
@@ -139,6 +148,48 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
         let _: EmptyResponse = try await client.delete(
             "/api/v1/star-story/consent/\(profileId)",
             as: EmptyResponse.self
+        )
+    }
+
+    func createAvatar(
+        profileId: String,
+        name: String,
+        style: String,
+        pin: String
+    ) async throws -> CreateAvatarResponse {
+        let request = CreateAvatarRequest(
+            profileId: profileId,
+            childFirstName: name,
+            style: style,
+            pin: pin
+        )
+        return try await client.post(
+            "/api/v1/star-story/avatars/create",
+            body: request,
+            as: CreateAvatarResponse.self
+        )
+    }
+
+    func setActiveAvatar(avatarId: String) async throws {
+        struct SetActiveResponse: Decodable {
+            let avatarId: String
+            let isActive: Bool
+        }
+        let emptyBody: [String: String] = [:]
+        let _: SetActiveResponse = try await client.put(
+            "/api/v1/zeh-ani/avatar/\(avatarId)/set-active",
+            body: emptyBody,
+            as: SetActiveResponse.self
+        )
+    }
+
+    func deleteAvatar(avatarId: String) async throws {
+        struct DeleteResponse: Decodable {
+            let deleted: Bool
+        }
+        let _: DeleteResponse = try await client.delete(
+            "/api/v1/zeh-ani/avatar/\(avatarId)",
+            as: DeleteResponse.self
         )
     }
 }

@@ -143,14 +143,14 @@ class OlorinStorageService:
             )
         except AttributeError:
             sign_kwargs = _iam_sign_kwargs()
-            if not sign_kwargs:
-                raise
-            return blob.generate_signed_url(
-                version="v4",
-                expiration=timedelta(seconds=expiry_seconds),
-                method="GET",
-                **sign_kwargs,
-            )
+            if sign_kwargs:
+                return blob.generate_signed_url(
+                    version="v4",
+                    expiration=timedelta(seconds=expiry_seconds),
+                    method="GET",
+                    **sign_kwargs,
+                )
+            return self._unsigned_url(gcs, remote_path)
 
     async def delete_file(self, remote_path: str) -> bool:
         """Delete a single blob by path."""
@@ -220,6 +220,21 @@ class OlorinStorageService:
         return await self.upload_bytes(data, remote_path, detected_ct)
 
     # -- internal helpers --
+
+    @staticmethod
+    def _unsigned_url(gcs: GCSStorageProvider, remote_path: str) -> str:
+        """Construct a non-signed URL when signing credentials are unavailable.
+
+        Uses CDN base if configured, otherwise a direct GCS public URL.
+        This path is only reached in local development where ADC lacks
+        a private key and no metadata server is available for IAM signing.
+        """
+        if gcs.cdn_base:
+            return f"{gcs.cdn_base}/{remote_path}"
+        return (
+            f"https://storage.googleapis.com/"
+            f"{gcs.bucket_name}/{remote_path}"
+        )
 
     def _require_gcs(self) -> GCSStorageProvider:
         p = self.provider
