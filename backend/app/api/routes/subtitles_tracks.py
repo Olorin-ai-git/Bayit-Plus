@@ -260,94 +260,157 @@ async def fetch_external_subtitles(
             "failed": [],
         }
 
-    opensubtitles = get_opensubtitles_service()
-
-    quota = await opensubtitles.check_quota_available()
-    if not quota["available"]:
-        raise HTTPException(
-            status_code=429,
-            detail=f"OpenSubtitles quota exhausted",
-        )
-
     imported = []
     failed = []
 
-    for lang in languages_to_fetch:
-        try:
-            results = await opensubtitles.search_subtitles(
-                imdb_id=imdb_id,
-                language=lang,
-                content_id=content_id,
-            )
-
-            if not results:
-                failed.append({"language": lang, "reason": "Not found"})
-                continue
-
-            best_result = results[0]
-            file_id = best_result.get("file_id")
-
-            if not file_id:
-                failed.append({"language": lang, "reason": "No file ID"})
-                continue
-
-            subtitle_content = await opensubtitles.download_subtitle(
-                file_id=file_id,
-                content_id=content_id,
-                language=lang,
-            )
-
-            if not subtitle_content:
-                failed.append({"language": lang, "reason": "Download failed"})
-                continue
-
-            parsed = parse_srt(subtitle_content)
-
-            if not parsed.cues:
-                failed.append({"language": lang, "reason": "No cues"})
-                continue
-
-            track = SubtitleTrackDoc(
-                content_id=content_id,
-                content_type="vod",
-                language=lang,
-                language_name=get_language_name(lang),
-                format="srt",
-                source="opensubtitles",
-                external_id=file_id,
-                cues=[
-                    SubtitleCueModel(
-                        index=cue.index,
-                        start_time=cue.start_time,
-                        end_time=cue.end_time,
-                        text=cue.text,
+    # Try copying from library content with the same IMDB ID first
+    still_needed = []
+    if imdb_id:
+        donor = await Content.find_one(
+            {"imdb_id": imdb_id, "_id": {"$ne": content.id}}
+        )
+        if donor:
+            for lang in languages_to_fetch:
+                donor_track = await SubtitleTrackDoc.find_one(
+                    {"content_id": str(donor.id), "language": lang}
+                )
+                if donor_track and donor_track.cues:
+                    copied = SubtitleTrackDoc(
+                        content_id=content_id,
+                        content_type="vod",
+                        language=lang,
+                        language_name=get_language_name(lang),
+                        format=donor_track.format,
+                        source="library_copy",
+                        cues=[
+                            SubtitleCueModel(
+                                index=c.index,
+                                start_time=c.start_time,
+                                end_time=c.end_time,
+                                text=c.text,
+                            )
+                            for c in donor_track.cues
+                        ],
                     )
-                    for cue in parsed.cues
-                ],
-            )
-            await track.insert()
+                    await copied.insert()
+                    imported.append(
+                        {
+                            "language": lang,
+                            "language_name": get_language_name(lang),
+                            "cue_count": len(copied.cues),
+                            "track_id": str(copied.id),
+                        }
+                    )
+                    logger.info(
+                        "Copied %s subtitles from library %s",
+                        lang,
+                        str(donor.id),
+                        extra={"content_id": content_id},
+                    )
+                else:
+                    still_needed.append(lang)
+        else:
+            still_needed = languages_to_fetch
+    else:
+        still_needed = languages_to_fetch
 
-            imported.append(
-                {
-                    "language": lang,
-                    "language_name": get_language_name(lang),
-                    "cue_count": len(parsed.cues),
-                    "track_id": str(track.id),
-                }
-            )
+    # Fetch remaining from OpenSubtitles
+    if still_needed:
+        opensubtitles = get_opensubtitles_service()
 
-            logger.info(f"Imported {lang} subtitles", extra={"content_id": content_id})
-
-        except OpenSubtitlesQuotaError as e:
-            # Quota exceeded - stop processing and return error immediately
-            logger.error(f"OpenSubtitles quota exceeded: {e}")
+        quota = await opensubtitles.check_quota_available()
+        if not quota["available"] and not imported:
             raise HTTPException(
                 status_code=429,
-                detail=str(e),
+                detail="OpenSubtitles quota exhausted",
             )
-        except Exception as e:
-            logger.error(f"Error fetching {lang} subtitles", extra={"error": str(e)})
-            failed.append({"language": lang, "reason": str(e)})
+
+        for lang in still_needed:
+            if not quota.get("available", False):
+                failed.append({"language": lang, "reason": "Quota exhausted"})
+                continue
+
+            try:
+                results = await opensubtitles.search_subtitles(
+                    imdb_id=imdb_id,
+                    language=lang,
+                    content_id=content_id,
+                )
+
+                if not results:
+                    failed.append({"language": lang, "reason": "Not found"})
+                    continue
+
+                best_result = results[0]
+                file_id = best_result.get("file_id")
+
+                if not file_id:
+                    failed.append({"language": lang, "reason": "No file ID"})
+                    continue
+
+                subtitle_content = await opensubtitles.download_subtitle(
+                    file_id=file_id,
+                    content_id=content_id,
+                    language=lang,
+                )
+
+                if not subtitle_content:
+                    failed.append({"language": lang, "reason": "Download failed"})
+                    continue
+
+                parsed = parse_srt(subtitle_content)
+
+                if not parsed.cues:
+                    failed.append({"language": lang, "reason": "No cues"})
+                    continue
+
+                track = SubtitleTrackDoc(
+                    content_id=content_id,
+                    content_type="vod",
+                    language=lang,
+                    language_name=get_language_name(lang),
+                    format="srt",
+                    source="opensubtitles",
+                    external_id=file_id,
+                    cues=[
+                        SubtitleCueModel(
+                            index=cue.index,
+                            start_time=cue.start_time,
+                            end_time=cue.end_time,
+                            text=cue.text,
+                        )
+                        for cue in parsed.cues
+                    ],
+                )
+                await track.insert()
+
+                imported.append(
+                    {
+                        "language": lang,
+                        "language_name": get_language_name(lang),
+                        "cue_count": len(parsed.cues),
+                        "track_id": str(track.id),
+                    }
+                )
+
+                logger.info(
+                    "Imported %s subtitles from OpenSubtitles",
+                    lang,
+                    extra={"content_id": content_id},
+                )
+
+            except OpenSubtitlesQuotaError as e:
+                logger.error(f"OpenSubtitles quota exceeded: {e}")
+                raise HTTPException(
+                    status_code=429,
+                    detail=str(e),
+                )
+            except Exception as e:
+                logger.error(
+                    f"Error fetching {lang} subtitles",
+                    extra={"error": str(e)},
+                )
+                failed.append({"language": lang, "reason": str(e)})
 
     # Sync available_subtitle_languages with actual tracks
     if imported:

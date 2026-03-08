@@ -37,6 +37,7 @@ class ExternalSubtitleService:
         Fetch subtitle from external sources with priority fallback.
 
         Priority order:
+        0. Library copy (if matching IMDB ID has subtitles in another content)
         1. OpenSubtitles (if in sources and quota available)
         2. TMDB (if in sources)
         3. Return None if all fail
@@ -61,7 +62,12 @@ class ExternalSubtitleService:
             f"🔍 Fetching {language} subtitle for '{content.title}' from {sources}"
         )
 
-        # Try OpenSubtitles first
+        # Try copying from library content with same IMDB ID first
+        track = await self._try_library_copy(content, language)
+        if track:
+            return track
+
+        # Try OpenSubtitles
         if "opensubtitles" in sources:
             track = await self._try_opensubtitles(content, language)
             if track:
@@ -77,6 +83,66 @@ class ExternalSubtitleService:
             f"⚠️ No subtitles found for {content_id} ({language}) from any source"
         )
         return None
+
+    async def _try_library_copy(
+        self, content: Content, language: str
+    ) -> Optional[SubtitleTrackDoc]:
+        """Copy subtitles from an existing library content with the same IMDB ID."""
+        if not content.imdb_id:
+            return None
+
+        # Find another content doc with the same IMDB ID that already has this language
+        donor = await Content.find_one(
+            {
+                "imdb_id": content.imdb_id,
+                "_id": {"$ne": content.id},
+            }
+        )
+        if not donor:
+            return None
+
+        donor_track = await SubtitleTrackDoc.find_one(
+            {"content_id": str(donor.id), "language": language}
+        )
+        if not donor_track or not donor_track.cues:
+            return None
+
+        # Copy the track for the new content
+        copied = SubtitleTrackDoc(
+            content_id=str(content.id),
+            content_type=donor_track.content_type,
+            language=donor_track.language,
+            language_name=donor_track.language_name,
+            format=donor_track.format,
+            cues=[
+                SubtitleCueModel(
+                    index=cue.index,
+                    start_time=cue.start_time,
+                    end_time=cue.end_time,
+                    text=cue.text,
+                    text_nikud=cue.text_nikud,
+                )
+                for cue in donor_track.cues
+            ],
+            is_auto_generated=donor_track.is_auto_generated,
+            source="library_copy",
+            external_id=getattr(donor_track, "external_id", None),
+        )
+        await copied.insert()
+
+        # Update content metadata
+        if language not in content.available_subtitle_languages:
+            content.available_subtitle_languages.append(language)
+            await content.save()
+
+        logger.info(
+            "Copied %s subtitle from library content %s to %s (%d cues)",
+            language,
+            str(donor.id),
+            str(content.id),
+            len(copied.cues),
+        )
+        return copied
 
     async def _try_opensubtitles(
         self, content: Content, language: str
