@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - staging
     paths:
       - 'backend/app/services/beta/**'
       - 'backend/app/api/routes/beta/**'
@@ -17,7 +16,6 @@ on:
   pull_request:
     branches:
       - main
-      - staging
     paths:
       - 'backend/app/services/beta/**'
       - 'backend/app/api/routes/beta/**'
@@ -218,57 +216,6 @@ jobs:
           docker push ${{ env.FRONTEND_IMAGE }}:latest
 
   # ============================================================================
-  # DEPLOY TO STAGING
-  # ============================================================================
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: build-images
-    if: github.ref == 'refs/heads/staging'
-    environment:
-      name: staging
-      url: https://staging.bayitplus.com
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Sync GCloud Secrets to Staging
-        run: |
-          chmod +x ./scripts/sync-gcloud-secrets.sh
-          ./scripts/sync-gcloud-secrets.sh staging
-
-      - name: Deploy Backend to Cloud Run (Staging)
-        run: |
-          gcloud run deploy bayit-backend-production-staging \
-            --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
-            --platform managed \
-            --region ${{ env.GCP_REGION }} \
-            --allow-unauthenticated \
-            --set-env-vars APP_ENV=staging \
-            --set-secrets=MONGODB_URI=MONGODB_URI_STAGING:latest,\
-ELEVENLABS_API_KEY=ELEVENLABS_API_KEY:latest,\
-OPENAI_API_KEY=OPENAI_API_KEY:latest
-
-      - name: Deploy Frontend to Firebase Hosting (Staging)
-        run: |
-          npm install -g firebase-tools
-          cd web && npm ci && npm run build
-          firebase deploy --only hosting:staging --token ${{ secrets.FIREBASE_TOKEN }}
-
-      - name: Run Smoke Tests (Staging)
-        run: |
-          sleep 30  # Wait for deployment to stabilize
-          curl --fail https://staging-api.bayitplus.com/health || exit 1
-          curl --fail https://staging.bayitplus.com || exit 1
-
-  # ============================================================================
   # DEPLOY TO PRODUCTION (BLUE-GREEN)
   # ============================================================================
   deploy-production:
@@ -399,7 +346,7 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
   notify-success:
     name: Notify Deployment Success
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
+    needs: [deploy-production]
     if: success()
     steps:
       - name: Send Slack Notification
@@ -408,13 +355,13 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
           webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": "✅ Beta 500 Deployment Successful",
+              "text": "Beta 500 Deployment Successful",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Deployment Successful* ✅\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}"
+                    "text": "*Deployment Successful*\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* Production"
                   }
                 }
               ]
@@ -423,7 +370,7 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
   notify-failure:
     name: Notify Deployment Failure
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
+    needs: [deploy-production]
     if: failure()
     steps:
       - name: Send Slack Notification
@@ -432,13 +379,13 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
           webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": "❌ Beta 500 Deployment Failed",
+              "text": "Beta 500 Deployment Failed",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Deployment Failed* ❌\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}\n*Logs:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "*Deployment Failed*\n*Branch:* ${{ github.ref_name }}\n*Commit:* ${{ github.sha }}\n*Environment:* Production\n*Logs:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]

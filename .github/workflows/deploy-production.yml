@@ -3,11 +3,6 @@ name: Deploy to Production
 on:
   workflow_dispatch:
     inputs:
-      staging_verification:
-        description: "Confirm staging has been tested"
-        required: true
-        type: boolean
-        default: false
       rollback_revision:
         description: "Revision to rollback to (leave empty for new deploy)"
         required: false
@@ -26,12 +21,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check staging verification
-        if: github.event.inputs.rollback_revision == '' && github.event.inputs.staging_verification != 'true'
-        run: |
-          echo "ERROR: You must confirm staging has been tested before deploying to production"
-          exit 1
-
       - name: Validate rollback revision format
         if: github.event.inputs.rollback_revision != ''
         run: |
