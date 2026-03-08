@@ -85,8 +85,12 @@ def test_partner_api_config_rate_limit_bounds():
 # ============================================
 
 
-def test_pinecone_config_defaults():
+def test_pinecone_config_defaults(monkeypatch):
     """Test PineconeConfig default values."""
+    monkeypatch.delenv("PINECONE_API_KEY", raising=False)
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
+    monkeypatch.delenv("PINECONE_ENVIRONMENT", raising=False)
+    monkeypatch.delenv("PINECONE_INDEX_NAME", raising=False)
     config = PineconeConfig()
     assert config.api_key == ""
     assert config.environment == "us-east-1-aws"
@@ -95,6 +99,7 @@ def test_pinecone_config_defaults():
 
 def test_pinecone_config_from_env(monkeypatch):
     """Test PineconeConfig loading from environment variables."""
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     monkeypatch.setenv("PINECONE_API_KEY", "test-api-key")
     monkeypatch.setenv("PINECONE_ENVIRONMENT", "eu-west1-gcp")
     monkeypatch.setenv("PINECONE_INDEX_NAME", "custom-index")
@@ -309,7 +314,8 @@ def test_olorin_settings_from_env(monkeypatch):
     )
     monkeypatch.setenv("PARTNER_DEFAULT_RATE_LIMIT_RPM", "120")
 
-    # Pinecone config
+    # Pinecone config - clear alias env var first
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     monkeypatch.setenv("PINECONE_API_KEY", "test-pinecone-key")
     monkeypatch.setenv("PINECONE_INDEX_NAME", "custom-index")
 
@@ -329,14 +335,17 @@ def test_olorin_settings_from_env(monkeypatch):
     assert settings.pinecone.index_name == "custom-index"
 
 
-def test_olorin_settings_validate_enabled_features_no_errors():
+def test_olorin_settings_validate_enabled_features_no_errors(monkeypatch):
     """Test validate_enabled_features returns no errors when properly configured."""
+    monkeypatch.delenv("PARTNER_API_KEY_SALT", raising=False)
+    monkeypatch.setenv("PINECONE_API_KEY", "test-api-key")
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     settings = OlorinSettings(
         semantic_search_enabled=True,
         partner=PartnerAPIConfig(
             api_key_salt="test_salt_32_characters_minimum_length_required"
         ),
-        pinecone=PineconeConfig(api_key="test-api-key"),
+        pinecone=PineconeConfig(),
         embedding=EmbeddingConfig(model="text-embedding-3-small"),
     )
 
@@ -344,14 +353,17 @@ def test_olorin_settings_validate_enabled_features_no_errors():
     assert len(errors) == 0
 
 
-def test_olorin_settings_validate_semantic_search_missing_pinecone():
+def test_olorin_settings_validate_semantic_search_missing_pinecone(monkeypatch):
     """Test validate_enabled_features detects missing Pinecone configuration."""
+    monkeypatch.delenv("PARTNER_API_KEY_SALT", raising=False)
+    monkeypatch.setenv("PINECONE_API_KEY", "")
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     settings = OlorinSettings(
         semantic_search_enabled=True,
         partner=PartnerAPIConfig(
             api_key_salt="test_salt_32_characters_minimum_length_required"
         ),
-        pinecone=PineconeConfig(api_key=""),  # Missing API key
+        pinecone=PineconeConfig(),
     )
 
     errors = settings.validate_enabled_features()
@@ -426,6 +438,8 @@ def test_backward_compatible_properties_values():
 
 def test_full_config_integration(monkeypatch):
     """Test full Olorin configuration integration."""
+    # Clear conflicting env vars
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     # Set all environment variables
     monkeypatch.setenv("OLORIN_DUBBING_ENABLED", "true")
     monkeypatch.setenv("OLORIN_SEMANTIC_SEARCH_ENABLED", "true")
@@ -455,6 +469,8 @@ def test_full_config_integration(monkeypatch):
 
 def test_config_validation_with_missing_dependencies(monkeypatch):
     """Test configuration validation fails when dependencies are missing."""
+    # Clear conflicting env vars
+    monkeypatch.delenv("OLORIN_PINECONE_API_KEY", raising=False)
     # Enable semantic search without Pinecone configuration
     monkeypatch.setenv("OLORIN_SEMANTIC_SEARCH_ENABLED", "true")
     monkeypatch.setenv(

@@ -155,14 +155,17 @@ class TestCollectionDetectorService:
             mock_movie1 = MagicMock()
             mock_movie1.id = "m1"
             mock_movie1.tmdb_collection_id = 119
+            mock_movie1.tmdb_collection_name = "LOTR Collection"
             mock_movie1.title = "Fellowship"
             mock_movie1.year = 2001
+            mock_movie1.set = AsyncMock()
 
             mock_movie2 = MagicMock()
             mock_movie2.id = "m2"
             mock_movie2.tmdb_collection_id = 119
             mock_movie2.title = "Two Towers"
             mock_movie2.year = 2002
+            mock_movie2.set = AsyncMock()
 
             MockContent.get = AsyncMock(return_value=mock_movie1)
 
@@ -170,8 +173,14 @@ class TestCollectionDetectorService:
             mock_find.to_list = AsyncMock(return_value=[mock_movie1, mock_movie2])
             MockContent.find = MagicMock(return_value=mock_find)
 
-            mock_find_one = MagicMock()
-            MockContent.find_one = AsyncMock(return_value=None)  # No existing parent
+            MockContent.find_one = AsyncMock(return_value=None)
+
+            # Make Content() constructor return a mock parent
+            mock_parent = MagicMock()
+            mock_parent.id = "collection123"
+            mock_parent.title = "LOTR Collection"
+            mock_parent.insert = AsyncMock()
+            MockContent.return_value = mock_parent
 
             # Mock TMDB service
             mock_tmdb.enrich_collection_metadata = AsyncMock(
@@ -184,19 +193,8 @@ class TestCollectionDetectorService:
                 }
             )
 
-            # Mock collection parent creation
-            mock_parent = MagicMock()
-            mock_parent.id = "collection123"
-            mock_parent.title = "LOTR Collection"
-            mock_parent.insert = AsyncMock()
+            result = await service.detect_collections_for_movie("m1")
 
-            with patch("app.services.collection_detector_service.Content", return_value=mock_parent):
-                mock_movie1.save = AsyncMock()
-                mock_movie2.save = AsyncMock()
-
-                result = await service.detect_collections_for_movie("m1")
-
-            # Should create collection
             assert result is not None
             assert result["available_movies"] == 2
 
