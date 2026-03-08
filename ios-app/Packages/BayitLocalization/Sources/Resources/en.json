@@ -6886,7 +6886,11 @@
     "settingsDesc": "App settings and preferences",
     "widgets": "Widgets",
     "widgetsDesc": "Manage your widgets",
-    "socialSettings": "Social & Settings"
+    "socialSettings": "Social & Settings",
+    "myContent": "My Content",
+    "social": "Social",
+    "accountSettings": "Account & Settings",
+    "info": "Info"
   },
   "mfa": {
     "title": "Multi-Factor Authentication",
@@ -6908,6 +6912,7 @@
     "verifyPhone": "Verify Phone Number"
   },
   "verification": {
+    "title": "Verification",
     "phoneTitle": "Verify Phone Number",
     "phoneDescription": "Enter your phone number to receive a verification code",
     "enterCode": "Enter the verification code sent to your phone",
@@ -7544,8 +7549,18 @@
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
     "deleteAccountConfirm": "Delete Account",
+    "typeDeleteConfirm": "Type DELETE to confirm",
     "connectedAccounts": "Connected Accounts",
     "connectedAccountsDescription": "Manage how you sign in to Bayit+. You can link multiple accounts for easier access.",
+    "setPassword": "Set Password",
+    "setPasswordDesc": "Add a password to your account",
+    "linkAccount": "Link Another Account",
+    "linkAccountDesc": "Connect Google, Apple, or Facebook",
+    "addPhone": "Add Phone Number",
+    "addPhoneDesc": "Add a phone number for account recovery",
+    "exportData": "Export My Data",
+    "exportDataDesc": "Request a copy of all your data",
+    "deleteAccountDesc": "Permanently delete your account and data",
     "linkedAccounts": "Linked Accounts",
     "linkNewAccount": "Link New Account",
     "noLinkedAccounts": "No linked accounts",
