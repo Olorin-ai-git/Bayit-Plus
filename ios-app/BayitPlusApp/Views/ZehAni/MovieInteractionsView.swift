@@ -137,7 +137,7 @@ struct MovieInteractionsView: View {
         isLoading = true
         error = nil
         do {
-            movies = try await repos.movieInteraction.listInteractableMovies()
+            movies = try await repos.movieInteraction.listInteractableMovies(source: nil)
         } catch {
             self.error = error.localizedDescription
         }

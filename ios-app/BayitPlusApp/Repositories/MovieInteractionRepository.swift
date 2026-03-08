@@ -2,7 +2,7 @@ import BayitNetworking
 import Foundation
 
 protocol MovieInteractionRepository: Sendable {
-    func listInteractableMovies() async throws -> [InteractableMovieItem]
+    func listInteractableMovies(source: String?) async throws -> [InteractableMovieItem]
 
     func tagMovie(
         contentId: String,
@@ -36,9 +36,14 @@ final class APIMovieInteractionRepository: MovieInteractionRepository, @unchecke
         self.client = client
     }
 
-    func listInteractableMovies() async throws -> [InteractableMovieItem] {
+    func listInteractableMovies(source: String? = nil) async throws -> [InteractableMovieItem] {
+        var queryItems: [URLQueryItem] = []
+        if let source {
+            queryItems.append(URLQueryItem(name: "source", value: source))
+        }
         return try await client.get(
             "/api/v1/movie-interactions/movies",
+            queryItems: queryItems,
             as: [InteractableMovieItem].self
         )
     }

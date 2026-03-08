@@ -4,6 +4,7 @@ import Foundation
 /// Repository protocol for subtitle cues, translation, and preferences API operations.
 protocol SubtitleRepository: Sendable {
     func fetchCues(contentId: String, language: String?, hebrewMode: SubtitleHebrewMode?, englishMode: SubtitleEnglishMode?) async throws -> SubtitleCuesResponse
+    func fetchTracks(contentId: String) async throws -> SubtitleTracksResponse
     func fetchExternalSubtitles(contentId: String) async throws -> ExternalSubtitleImportResponse
     func translateWord(word: String, sourceLang: String?, targetLang: String?) async throws -> TranslationResult
     func translatePhrase(phrase: String, sourceLang: String?, targetLang: String?) async throws -> TranslationResult
@@ -15,8 +16,7 @@ protocol SubtitleRepository: Sendable {
 
 /// Production implementation of `SubtitleRepository` using `APIClient`.
 final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
-
-    internal let client: APIClient
+    let client: APIClient
 
     init(client: APIClient) {
         self.client = client
@@ -45,6 +45,13 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
         )
     }
 
+    func fetchTracks(contentId: String) async throws -> SubtitleTracksResponse {
+        return try await client.get(
+            "/api/v1/subtitles/\(contentId)",
+            as: SubtitleTracksResponse.self
+        )
+    }
+
     func fetchExternalSubtitles(contentId: String) async throws -> ExternalSubtitleImportResponse {
         return try await client.post(
             "/api/v1/subtitles/\(contentId)/fetch-external",
@@ -59,7 +66,7 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
         targetLang: String?
     ) async throws -> TranslationResult {
         var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "word", value: word)
+            URLQueryItem(name: "word", value: word),
         ]
         if let sourceLang {
             queryItems.append(URLQueryItem(name: "source_lang", value: sourceLang))
@@ -81,7 +88,7 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
         targetLang: String?
     ) async throws -> TranslationResult {
         var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "phrase", value: phrase)
+            URLQueryItem(name: "phrase", value: phrase),
         ]
         if let sourceLang {
             queryItems.append(URLQueryItem(name: "source_lang", value: sourceLang))
@@ -107,7 +114,7 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
     func updatePreferences(_ update: SubtitlePreferencesUpdate) async throws {
         let queryItems = [
             URLQueryItem(name: "language", value: update.language),
-            URLQueryItem(name: "hebrew_mode", value: "regular")
+            URLQueryItem(name: "hebrew_mode", value: "regular"),
         ]
         _ = try await client.post(
             "/api/v1/subtitles/preferences/\(update.contentId)",
@@ -116,6 +123,7 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
             as: MessageResponse.self
         )
     }
+
     func deletePreference(contentId: String) async throws -> MessageResponse {
         return try await client.delete(
             "/api/v1/subtitles/preferences/\(contentId)",

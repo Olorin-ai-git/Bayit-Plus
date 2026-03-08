@@ -16,7 +16,7 @@ public final class BYOCEnrichmentService: Sendable {
     public func enrich(
         _ request: BYOCEnrichmentRequest
     ) async throws -> BYOCEnrichmentResult {
-        let url = baseURL.appendingPathComponent("api/v1/byoc/enrich")
+        let url = baseURL.appendingPathComponent("byoc/enrich")
         let urlRequest = try buildPostRequest(url: url, body: request)
 
         let (data, response) = try await session.data(for: urlRequest)
@@ -42,7 +42,7 @@ public final class BYOCEnrichmentService: Sendable {
         _ items: [BYOCEnrichmentRequest]
     ) async throws -> String {
         let url = baseURL.appendingPathComponent(
-            "api/v1/byoc/enrich/batch"
+            "byoc/enrich/batch"
         )
         let body = BYOCBatchEnrichRequest(items: items)
         let urlRequest = try buildPostRequest(url: url, body: body)
@@ -78,7 +78,7 @@ public final class BYOCEnrichmentService: Sendable {
         jobId: String
     ) async throws -> BYOCBatchJobStatus {
         let url = baseURL.appendingPathComponent(
-            "api/v1/byoc/enrich/batch/\(jobId)/status"
+            "byoc/enrich/batch/\(jobId)/status"
         )
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"

@@ -8,9 +8,14 @@ struct InteractableMovieItem: Codable, Identifiable, Equatable, Hashable {
     let interactionCount: Int
     let maxInteractions: Int
     let status: String
+    let sourceProvider: String?
 
     var id: String {
         contentId
+    }
+
+    var isBYOC: Bool {
+        sourceProvider == "byoc"
     }
 
     init(from decoder: Decoder) throws {
@@ -22,6 +27,7 @@ struct InteractableMovieItem: Codable, Identifiable, Equatable, Hashable {
         interactionCount = try container.decodeIfPresent(Int.self, forKey: .interactionCount) ?? 0
         maxInteractions = try container.decodeIfPresent(Int.self, forKey: .maxInteractions) ?? 10
         status = try container.decode(String.self, forKey: .status)
+        sourceProvider = try container.decodeIfPresent(String.self, forKey: .sourceProvider)
     }
 }
 

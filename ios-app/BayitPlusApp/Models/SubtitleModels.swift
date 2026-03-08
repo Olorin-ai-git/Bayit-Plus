@@ -127,6 +127,24 @@ enum SubtitleEnglishMode: String, Sendable, CaseIterable {
     }
 }
 
+// MARK: - Subtitle Tracks
+
+/// Response from GET /api/v1/subtitles/{content_id}
+struct SubtitleTracksResponse: Decodable, Sendable {
+    let tracks: [SubtitleTrackInfo]
+}
+
+/// Summary info for a subtitle track (language, format, cue count).
+struct SubtitleTrackInfo: Decodable, Sendable {
+    let id: String
+    let contentId: String
+    let language: String
+    let languageName: String?
+    let format: String?
+    let cueCount: Int?
+    let isDefault: Bool?
+}
+
 // MARK: - External Subtitle Import
 
 /// Response from POST /api/v1/subtitles/{id}/fetch-external
