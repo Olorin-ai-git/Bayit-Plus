@@ -4105,7 +4105,9 @@
     "confirm_password": "पासवर्ड की पुष्टि करें",
     "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें",
     "tryAgain": "पुनः प्रयास करें",
-    "queued": "[HI] Queued"
+    "queued": "[HI] Queued",
+    "on": "चालू",
+    "off": "बंद"
   },
   "components": {
     "select": {
@@ -5271,7 +5273,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "मित्र ({{count}})"
   },
   "gate": {
     "contentLocked": "सामग्री लॉक है",
@@ -6211,7 +6214,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -6223,7 +6230,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -7238,7 +7248,7 @@
     "displayName": "Display Name",
     "edit": "Edit Profile",
     "kidsProfileHint": "Restricts content to kid-friendly selections",
-    "preferences": "Preferences"
+    "preferences": "प्राथमिकताएँ"
   },
   "quiz": {
     "title": "क्विज़ का समय",
@@ -7833,30 +7843,30 @@
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
     "deleteAccountConfirm": "Delete Account",
-    "autoplayDescription": "Automatically play the next episode when one finishes",
-    "autoplayNextEpisode": "Autoplay Next Episode",
-    "contentRating": "Content Rating",
-    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
-    "contentRestrictions": "Content Restrictions",
-    "languageSubtitles": "Language & Subtitles",
+    "autoplayDescription": "समाप्त होने पर अगला एपिसोड स्वचालित चलाएं",
+    "autoplayNextEpisode": "अगला एपिसोड ऑटोप्ले",
+    "contentRating": "सामग्री रेटिंग",
+    "contentRatingDescription": "इस रेटिंग से ऊपर की सामग्री सिफारिशों से फ़िल्टर होगी",
+    "contentRestrictions": "सामग्री प्रतिबंध",
+    "languageSubtitles": "भाषा और उपशीर्षक",
     "linkAppleAccount": "Link Apple Account",
     "linkGoogleAccount": "Link Google Account",
-    "notificationsDescription": "Receive updates about new content and features",
-    "playbackSettings": "Playback Settings",
-    "qualityAuto": "Auto (Recommended)",
-    "qualityHigh": "High (1080p)",
-    "qualityLow": "Low (480p)",
-    "qualityMedium": "Medium (720p)",
-    "ratingAdultsOnly": "Adults Only",
-    "ratingAllAges": "All Ages",
-    "ratingMature": "Mature (R)",
-    "ratingPG": "Parental Guidance (PG)",
+    "notificationsDescription": "नई सामग्री और सुविधाओं के बारे में अपडेट प्राप्त करें",
+    "playbackSettings": "प्लेबैक सेटिंग्स",
+    "qualityAuto": "ऑटो (अनुशंसित)",
+    "qualityHigh": "उच्च",
+    "qualityLow": "निम्न",
+    "qualityMedium": "मध्यम",
+    "ratingAdultsOnly": "केवल वयस्क",
+    "ratingAllAges": "सभी उम्र",
+    "ratingMature": "परिपक्व (R)",
+    "ratingPG": "अभिभावक मार्गदर्शन (PG)",
     "ratingPG13": "PG-13",
     "rtl": "RTL",
     "sensitivity": "Sensitivity",
-    "subtitleLanguage": "Subtitle Language",
+    "subtitleLanguage": "उपशीर्षक भाषा",
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
-    "videoQuality": "Video Quality",
+    "videoQuality": "वीडियो गुणवत्ता",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "audio": {

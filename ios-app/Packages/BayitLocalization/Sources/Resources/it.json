@@ -4346,7 +4346,9 @@
     "confirm_password": "Conferma Password",
     "confirm_password_placeholder": "Reinserisci la tua password",
     "tryAgain": "Riprova",
-    "queued": "[IT] Queued"
+    "queued": "[IT] Queued",
+    "on": "Attivo",
+    "off": "Disattivo"
   },
   "components": {
     "select": {
@@ -5523,7 +5525,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "Amici ({{count}})"
   },
   "gate": {
     "contentLocked": "Contenuto bloccato",
@@ -6463,7 +6466,11 @@
         "Guarda su 1 dispositivo",
         "Qualità SD"
       ],
-      "notIncluded": ["Canali in diretta", "Assistente AI", "Visione offline"]
+      "notIncluded": [
+        "Canali in diretta",
+        "Assistente AI",
+        "Visione offline"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6475,7 +6482,10 @@
         "Guarda su 2 dispositivi",
         "Qualità HD"
       ],
-      "notIncluded": ["Visione offline", "Profili familiari"]
+      "notIncluded": [
+        "Visione offline",
+        "Profili familiari"
+      ]
     },
     "family": {
       "name": "Famiglia",
@@ -7489,7 +7499,7 @@
     "displayName": "Display Name",
     "edit": "Edit Profile",
     "kidsProfileHint": "Restricts content to kid-friendly selections",
-    "preferences": "Preferences"
+    "preferences": "Preferenze"
   },
   "quiz": {
     "title": "Tempo di Quiz",
@@ -8076,30 +8086,30 @@
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
     "deleteAccountConfirm": "Delete Account",
-    "autoplayDescription": "Automatically play the next episode when one finishes",
-    "autoplayNextEpisode": "Autoplay Next Episode",
-    "contentRating": "Content Rating",
-    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
-    "contentRestrictions": "Content Restrictions",
-    "languageSubtitles": "Language & Subtitles",
+    "autoplayDescription": "Riproduci automaticamente l'episodio successivo al termine",
+    "autoplayNextEpisode": "Riproduzione Automatica",
+    "contentRating": "Classificazione Contenuto",
+    "contentRatingDescription": "I contenuti al di sopra di questa classificazione verranno filtrati dai consigli",
+    "contentRestrictions": "Restrizioni Contenuto",
+    "languageSubtitles": "Lingua e Sottotitoli",
     "linkAppleAccount": "Link Apple Account",
     "linkGoogleAccount": "Link Google Account",
-    "notificationsDescription": "Receive updates about new content and features",
-    "playbackSettings": "Playback Settings",
-    "qualityAuto": "Auto (Recommended)",
-    "qualityHigh": "High (1080p)",
-    "qualityLow": "Low (480p)",
-    "qualityMedium": "Medium (720p)",
-    "ratingAdultsOnly": "Adults Only",
-    "ratingAllAges": "All Ages",
-    "ratingMature": "Mature (R)",
-    "ratingPG": "Parental Guidance (PG)",
+    "notificationsDescription": "Ricevi aggiornamenti su nuovi contenuti e funzionalita",
+    "playbackSettings": "Impostazioni di Riproduzione",
+    "qualityAuto": "Automatica (Consigliata)",
+    "qualityHigh": "Alta",
+    "qualityLow": "Bassa",
+    "qualityMedium": "Media",
+    "ratingAdultsOnly": "Solo Adulti",
+    "ratingAllAges": "Tutte le Eta",
+    "ratingMature": "Maturo (R)",
+    "ratingPG": "Guida Genitori (PG)",
     "ratingPG13": "PG-13",
     "rtl": "RTL",
     "sensitivity": "Sensitivity",
-    "subtitleLanguage": "Subtitle Language",
+    "subtitleLanguage": "Lingua Sottotitoli",
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
-    "videoQuality": "Video Quality",
+    "videoQuality": "Qualita Video",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "audio": {

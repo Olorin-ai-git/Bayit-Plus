@@ -4221,7 +4221,9 @@
     "confirm_password": "Confirmer le Mot de Passe",
     "confirm_password_placeholder": "Saisissez à nouveau votre mot de passe",
     "tryAgain": "Réessayer",
-    "queued": "[FR] Queued"
+    "queued": "[FR] Queued",
+    "on": "Actif",
+    "off": "Inactif"
   },
   "components": {
     "loading": "Chargement...",
@@ -5499,7 +5501,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "Amis ({{count}})"
   },
   "gate": {
     "contentLocked": "Contenu verrouillé",
@@ -6617,7 +6620,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -8363,30 +8369,30 @@
       "subtitle": "Trouvez des reponses et obtenez de l'aide",
       "title": "Aide et support"
     },
-    "autoplayDescription": "Automatically play the next episode when one finishes",
-    "autoplayNextEpisode": "Autoplay Next Episode",
-    "contentRating": "Content Rating",
-    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
-    "contentRestrictions": "Content Restrictions",
-    "languageSubtitles": "Language & Subtitles",
+    "autoplayDescription": "Lire automatiquement l'episode suivant a la fin",
+    "autoplayNextEpisode": "Lecture Automatique",
+    "contentRating": "Classification du Contenu",
+    "contentRatingDescription": "Le contenu au-dessus de cette classification sera filtre des recommandations",
+    "contentRestrictions": "Restrictions de Contenu",
+    "languageSubtitles": "Langue et Sous-titres",
     "linkAppleAccount": "Link Apple Account",
     "linkGoogleAccount": "Link Google Account",
-    "notificationsDescription": "Receive updates about new content and features",
-    "playbackSettings": "Playback Settings",
-    "qualityAuto": "Auto (Recommended)",
-    "qualityHigh": "High (1080p)",
-    "qualityLow": "Low (480p)",
-    "qualityMedium": "Medium (720p)",
-    "ratingAdultsOnly": "Adults Only",
-    "ratingAllAges": "All Ages",
+    "notificationsDescription": "Recevoir des mises a jour sur les nouveaux contenus et fonctionnalites",
+    "playbackSettings": "Parametres de Lecture",
+    "qualityAuto": "Automatique (Recommande)",
+    "qualityHigh": "Haute",
+    "qualityLow": "Basse",
+    "qualityMedium": "Moyenne",
+    "ratingAdultsOnly": "Adultes Uniquement",
+    "ratingAllAges": "Tous Ages",
     "ratingMature": "Mature (R)",
-    "ratingPG": "Parental Guidance (PG)",
+    "ratingPG": "Accord Parental (PG)",
     "ratingPG13": "PG-13",
     "rtl": "RTL",
     "sensitivity": "Sensitivity",
-    "subtitleLanguage": "Subtitle Language",
+    "subtitleLanguage": "Langue des Sous-titres",
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
-    "videoQuality": "Video Quality",
+    "videoQuality": "Qualite Video",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "audio": {

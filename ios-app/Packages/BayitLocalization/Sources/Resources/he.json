@@ -4124,7 +4124,9 @@
     "new_password": "סיסמה חדשה",
     "confirm_password": "אימות סיסמה",
     "confirm_password_placeholder": "הזן שוב את הסיסמה",
-    "queued": "[HE] Queued"
+    "queued": "[HE] Queued",
+    "on": "מופעל",
+    "off": "כבוי"
   },
   "components": {
     "select": {
@@ -5317,7 +5319,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "חברים ({{count}})"
   },
   "gate": {
     "contentLocked": "תוכן נעול",
@@ -6267,7 +6270,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -6279,7 +6286,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",

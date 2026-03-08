@@ -4182,7 +4182,9 @@
     "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
     "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
     "tryAgain": "மீண்டும் முயற்சிக்கவும்",
-    "queued": "[TA] Queued"
+    "queued": "[TA] Queued",
+    "on": "இயக்கம்",
+    "off": "நிறுத்தம்"
   },
   "components": {
     "select": {
@@ -5348,7 +5350,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "நண்பர்கள் ({{count}})"
   },
   "gate": {
     "contentLocked": "உள்ளடக்கம் பூட்டப்பட்டது",
@@ -6288,7 +6291,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -6300,7 +6307,10 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
+      "notIncluded": [
+        "ஆஃப்லைன் பார்வை",
+        "குடும்ப சுயவிவரங்கள்"
+      ]
     },
     "family": {
       "name": "குடும்பம்",
@@ -7316,7 +7326,7 @@
     "displayName": "Display Name",
     "edit": "Edit Profile",
     "kidsProfileHint": "Restricts content to kid-friendly selections",
-    "preferences": "Preferences"
+    "preferences": "விருப்பங்கள்"
   },
   "quiz": {
     "title": "வினாடி வினா நேரம்",
@@ -7903,30 +7913,30 @@
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
     "deleteAccountConfirm": "Delete Account",
-    "autoplayDescription": "Automatically play the next episode when one finishes",
-    "autoplayNextEpisode": "Autoplay Next Episode",
-    "contentRating": "Content Rating",
-    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
-    "contentRestrictions": "Content Restrictions",
-    "languageSubtitles": "Language & Subtitles",
+    "autoplayDescription": "முடிந்ததும் அடுத்த தொடர் தானியங்கி இயக்கும்",
+    "autoplayNextEpisode": "அடுத்த தொடர் தானியங்கி இயக்கு",
+    "contentRating": "உள்ளடக்க மதிப்பீடு",
+    "contentRatingDescription": "இந்த மதிப்பீட்டிற்கு மேல் உள்ளடக்கம் பரிந்துரைகளிலிருந்து வடிகட்டப்படும்",
+    "contentRestrictions": "உள்ளடக்க கட்டுப்பாடுகள்",
+    "languageSubtitles": "மொழி மற்றும் உள்தலைல்",
     "linkAppleAccount": "Link Apple Account",
     "linkGoogleAccount": "Link Google Account",
-    "notificationsDescription": "Receive updates about new content and features",
-    "playbackSettings": "Playback Settings",
-    "qualityAuto": "Auto (Recommended)",
-    "qualityHigh": "High (1080p)",
-    "qualityLow": "Low (480p)",
-    "qualityMedium": "Medium (720p)",
-    "ratingAdultsOnly": "Adults Only",
-    "ratingAllAges": "All Ages",
-    "ratingMature": "Mature (R)",
-    "ratingPG": "Parental Guidance (PG)",
+    "notificationsDescription": "புதிய உள்ளடக்கம் மற்றும் அம்சங்கள் பற்றிய புதுப்பித்தல்கள் பெறுங்கள்",
+    "playbackSettings": "பிளேபேக் அமைப்புகள்",
+    "qualityAuto": "தானியங்கி (பரிந்துரைக்கப்பட்டது)",
+    "qualityHigh": "உயர்",
+    "qualityLow": "குறைவு",
+    "qualityMedium": "நடு",
+    "ratingAdultsOnly": "பெரியவர்கள் மட்டும்",
+    "ratingAllAges": "அனைத்து வயது",
+    "ratingMature": "முதிர்ந்த (R)",
+    "ratingPG": "பெற்றோர் வழிகாட்டல் (PG)",
     "ratingPG13": "PG-13",
     "rtl": "RTL",
     "sensitivity": "Sensitivity",
-    "subtitleLanguage": "Subtitle Language",
+    "subtitleLanguage": "உள்தலைல் மொழி",
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
-    "videoQuality": "Video Quality",
+    "videoQuality": "வீடியோ தரம்",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "audio": {

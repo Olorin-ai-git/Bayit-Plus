@@ -4125,7 +4125,9 @@
     "confirm_password": "Confirm Password",
     "confirm_password_placeholder": "Re-enter your password",
     "tryAgain": "Try Again",
-    "queued": "Queued"
+    "queued": "Queued",
+    "on": "On",
+    "off": "Off"
   },
   "components": {
     "select": {
@@ -5125,7 +5127,8 @@
     "pending": "Pending",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "Friends ({{count}})"
   },
   "gate": {
     "contentLocked": "Content Locked",
@@ -6051,7 +6054,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6063,7 +6070,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",

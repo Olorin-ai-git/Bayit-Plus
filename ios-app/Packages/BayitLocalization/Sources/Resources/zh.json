@@ -4099,7 +4099,9 @@
     "confirm_password": "确认密码",
     "confirm_password_placeholder": "重新输入您的密码",
     "tryAgain": "重试",
-    "queued": "[ZH] Queued"
+    "queued": "[ZH] Queued",
+    "on": "开启",
+    "off": "关闭"
   },
   "components": {
     "select": {
@@ -5270,7 +5272,8 @@
     "searchUsers": "Search users...",
     "empty": "No friends yet",
     "emptyHint": "Search for friends to connect",
-    "loading": "Loading Friends..."
+    "loading": "Loading Friends...",
+    "list": "好友 ({{count}})"
   },
   "gate": {
     "contentLocked": "内容已锁定",
@@ -6204,8 +6207,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -6217,7 +6229,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -7231,7 +7246,7 @@
     "displayName": "Display Name",
     "edit": "Edit Profile",
     "kidsProfileHint": "Restricts content to kid-friendly selections",
-    "preferences": "Preferences"
+    "preferences": "偏好设置"
   },
   "quiz": {
     "title": "答题时间",
@@ -7818,30 +7833,30 @@
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
     "deleteAccountConfirm": "Delete Account",
-    "autoplayDescription": "Automatically play the next episode when one finishes",
-    "autoplayNextEpisode": "Autoplay Next Episode",
-    "contentRating": "Content Rating",
-    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
-    "contentRestrictions": "Content Restrictions",
-    "languageSubtitles": "Language & Subtitles",
+    "autoplayDescription": "当前集结束后自动播放下一集",
+    "autoplayNextEpisode": "自动播放下一集",
+    "contentRating": "内容分级",
+    "contentRatingDescription": "超过此分级的内容将从推荐中过滤",
+    "contentRestrictions": "内容限制",
+    "languageSubtitles": "语言和字幕",
     "linkAppleAccount": "Link Apple Account",
     "linkGoogleAccount": "Link Google Account",
-    "notificationsDescription": "Receive updates about new content and features",
-    "playbackSettings": "Playback Settings",
-    "qualityAuto": "Auto (Recommended)",
-    "qualityHigh": "High (1080p)",
-    "qualityLow": "Low (480p)",
-    "qualityMedium": "Medium (720p)",
-    "ratingAdultsOnly": "Adults Only",
-    "ratingAllAges": "All Ages",
-    "ratingMature": "Mature (R)",
-    "ratingPG": "Parental Guidance (PG)",
+    "notificationsDescription": "接收新内容和功能的更新",
+    "playbackSettings": "播放设置",
+    "qualityAuto": "自动（推荐）",
+    "qualityHigh": "高",
+    "qualityLow": "低",
+    "qualityMedium": "中",
+    "ratingAdultsOnly": "仅成人",
+    "ratingAllAges": "所有年龄",
+    "ratingMature": "成熟 (R)",
+    "ratingPG": "家长指导 (PG)",
     "ratingPG13": "PG-13",
     "rtl": "RTL",
     "sensitivity": "Sensitivity",
-    "subtitleLanguage": "Subtitle Language",
+    "subtitleLanguage": "字幕语言",
     "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
-    "videoQuality": "Video Quality",
+    "videoQuality": "视频质量",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "audio": {
