@@ -12,4 +12,6 @@ DEFAULT_CULTURE_ID = israeli
 HIDDEN_CHANNEL_KEYWORDS = king 5,king5,cnn,abc
 SUPPORT_EMAIL = support@olorin.ai
 OWNER_MODE = YES
-YOUTUBE_CLIENT_ID = $(YOUTUBE_CLIENT_ID)
+IP_GEOLOCATION_URL = https:/$()/ipapi.co/json/
+YOUTUBE_CLIENT_ID = 624470113582-m0mk0hkv8pi1r7j740nm1vgtddjh8dvh.apps.googleusercontent.com
+YOUTUBE_CLIENT_SECRET = $(YOUTUBE_CLIENT_SECRET)

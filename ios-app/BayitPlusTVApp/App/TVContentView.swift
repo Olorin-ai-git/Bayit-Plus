@@ -1,6 +1,7 @@
 #if os(tvOS)
     import BayitAuth
     import BayitBYOC
+    import BayitCore
     import BayitDesignSystem
     import BayitMedia
     import BayitNetworking
@@ -22,6 +23,7 @@
         @State private var multiUserService = TVMultiUserService()
         @State private var onboardingPrefs = TVOnboardingPreferences(profileId: "")
         @State private var byocManager = BYOCSourceManager()
+        @Environment(\.appConfiguration) private var appConfig
         @Environment(\.scenePhase) private var scenePhase
 
         var body: some View {
@@ -126,7 +128,10 @@
             .onContinueUserActivity("tv.bayit.plus.resumeWatching") { coordinator.handleUserActivity($0) }
             .onChange(of: TVPendingIntentManager.shared.pendingRoute) { coordinator.handlePendingIntent() }
             .onChange(of: TVPendingIntentManager.shared.pendingTab) { coordinator.handlePendingIntent() }
-            .onAppear { registerRemoteVoiceTrigger() }
+            .onAppear {
+                byocManager.configureEnrichment(baseURL: appConfig.apiBaseURL)
+                registerRemoteVoiceTrigger()
+            }
             .onDisappear { unregisterRemoteVoiceTrigger() }
             .onChange(of: authManager.isAuthenticated) { _, isAuthenticated in
                 if isAuthenticated {

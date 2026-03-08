@@ -88,6 +88,11 @@ protocol UserRepository: Sendable {
     /// Get current verification status.
     func getVerificationStatus() async throws -> VerificationStatusResponse
 
+    // MARK: - Email Verification
+
+    /// Send email verification link to the current user's email address.
+    func sendEmailVerification() async throws -> MessageResponse
+
     // MARK: - Account Management
 
     /// Permanently delete the current user's account and all associated data.

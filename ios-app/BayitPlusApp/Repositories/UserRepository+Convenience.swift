@@ -94,6 +94,16 @@ extension APIUserRepository {
         )
     }
 
+    // MARK: - Email Verification
+
+    func sendEmailVerification() async throws -> MessageResponse {
+        return try await client.post(
+            "/api/v1/verification/email/send",
+            body: EmptyBody(),
+            as: MessageResponse.self
+        )
+    }
+
     // MARK: - Account Management
 
     func deleteAccount() async throws -> MessageResponse {

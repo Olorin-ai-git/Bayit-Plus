@@ -103,6 +103,8 @@
 	<string>$(OWNER_MODE)</string>
 	<key>YOUTUBE_CLIENT_ID</key>
 	<string>$(YOUTUBE_CLIENT_ID)</string>
+	<key>YOUTUBE_CLIENT_SECRET</key>
+	<string>$(YOUTUBE_CLIENT_SECRET)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

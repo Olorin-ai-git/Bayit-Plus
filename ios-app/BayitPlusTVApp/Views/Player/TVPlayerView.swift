@@ -24,6 +24,7 @@ struct TVPlayerView: View {
     let contentType: MediaContentType
     let channelId: String?
     let directUrl: String?
+    let byocSubtitleLanguages: [String]
 
     @State var state = TVPlayerStateContainer()
 
@@ -41,12 +42,14 @@ struct TVPlayerView: View {
         contentId: String,
         contentType: MediaContentType,
         channelId: String?,
-        directUrl: String? = nil
+        directUrl: String? = nil,
+        byocSubtitleLanguages: [String] = []
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.channelId = channelId
         self.directUrl = directUrl
+        self.byocSubtitleLanguages = byocSubtitleLanguages
     }
 
     var body: some View {

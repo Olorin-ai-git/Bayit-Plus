@@ -175,6 +175,7 @@ targets:
         HIDDEN_CHANNEL_KEYWORDS: "$(HIDDEN_CHANNEL_KEYWORDS)"
         OWNER_MODE: "$(OWNER_MODE)"
         YOUTUBE_CLIENT_ID: "$(YOUTUBE_CLIENT_ID)"
+        YOUTUBE_CLIENT_SECRET: "$(YOUTUBE_CLIENT_SECRET)"
         CFBundleDisplayName: "Bayit+"
         CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"

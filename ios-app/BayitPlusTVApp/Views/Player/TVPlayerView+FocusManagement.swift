@@ -18,10 +18,11 @@ extension TVPlayerView {
             let detail = try await repos.content.fetchContentDetail(
                 id: contentId
             )
-            state.availableSubtitleLanguages =
-                detail.availableSubtitleLanguages ?? []
+            let apiLanguages = detail.availableSubtitleLanguages ?? []
+            state.availableSubtitleLanguages = apiLanguages.isEmpty
+                ? byocSubtitleLanguages : apiLanguages
         } catch {
-            state.availableSubtitleLanguages = []
+            state.availableSubtitleLanguages = byocSubtitleLanguages
         }
         Task { await loadSplitSubtitleAvailability() }
     }
