@@ -21,10 +21,6 @@ struct TVWatchlistView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-                TVPageHeader(
-                    icon: "list.bullet.clipboard",
-                    title: localization.t("playlist.title")
-                )
                 filterChipsRow
                 if let vm = viewModel {
                     if vm.isLoading && vm.items.isEmpty {

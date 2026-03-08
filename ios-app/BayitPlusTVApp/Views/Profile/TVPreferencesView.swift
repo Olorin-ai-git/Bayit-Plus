@@ -5,7 +5,7 @@ import SwiftUI
 
 /// Preferences management screen for tvOS.
 struct TVPreferencesView: View {
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
 
     let preferences: ProfilePreferences?
     let viewModel: ProfileViewModel
@@ -19,6 +19,7 @@ struct TVPreferencesView: View {
     @State var quality: String
     @State var isSaving = false
     @State var hasChanges = false
+    @State var showSaved = false
 
     init(preferences: ProfilePreferences?, viewModel: ProfileViewModel, onDismiss: @escaping () -> Void) {
         self.preferences = preferences
@@ -34,35 +35,50 @@ struct TVPreferencesView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List {
-                languageSection
-                playbackSection
-                contentSection
-                notificationSection
-            }
-            .listStyle(.grouped)
-            .navigationTitle(localization.t("profiles.preferences"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localization.t("common.cancel")) {
-                        onDismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
+        VStack(spacing: 0) {
+            TVProfileSheetHeader(
+                title: localization.t("profiles.preferences"),
+                onDismiss: onDismiss
+            ) {
+                if hasChanges {
                     Button {
                         Task { await save() }
                     } label: {
-                        if isSaving {
-                            ProgressView()
-                        } else {
-                            Text(localization.t("common.save"))
-                                .bold()
+                        Group {
+                            if isSaving {
+                                ProgressView().tint(.white)
+                            } else {
+                                Text(localization.t("common.save"))
+                                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
                         }
+                        .frame(width: 140, height: 50)
                     }
-                    .disabled(!hasChanges || isSaving)
+                    .buttonStyle(.plain)
+                    .background(DesignTokens.Primary.p400)
+                    .clipShape(Capsule())
+                    .disabled(isSaving)
+                } else if showSaved {
+                    HStack(spacing: TVDesignTokens.Spacing.xs) {
+                        Image(systemName: "checkmark.circle.fill")
+                        Text(localization.t("common.done"))
+                    }
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Success.default)
+                    .frame(width: 140, height: 50)
                 }
+            }
+
+            ScrollView {
+                VStack(spacing: TVDesignTokens.Spacing.xl) {
+                    languageSection
+                    playbackSection
+                    contentSection
+                    notificationSection
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                .padding(.vertical, TVDesignTokens.Spacing.lg)
             }
         }
         .background(DesignTokens.Background.primary)
@@ -77,103 +93,120 @@ struct TVPreferencesView: View {
 
     // MARK: - Language Section
 
-    private var languageSection: some View {
-        Section {
-            Picker(localization.t("settings.appLanguage"), selection: $selectedLanguage) {
-                Text(localization.t("languages.english")).tag("en")
-                Text(localization.t("languages.hebrew")).tag("he")
-                Text(localization.t("languages.spanish")).tag("es")
-                Text(localization.t("languages.french")).tag("fr")
-                Text(localization.t("languages.russian")).tag("ru")
+    var languageSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            sectionHeader(localization.t("settings.languageSubtitles"))
+
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                pickerRow(
+                    icon: "globe",
+                    title: localization.t("settings.appLanguage"),
+                    selection: $selectedLanguage,
+                    options: languageOptions
+                )
+
+                pickerRow(
+                    icon: "captions.bubble",
+                    title: localization.t("settings.subtitleLanguage"),
+                    selection: $selectedSubtitleLanguage,
+                    options: languageOptions
+                )
             }
 
-            Picker(localization.t("settings.subtitleLanguage"), selection: $selectedSubtitleLanguage) {
-                Text(localization.t("languages.hebrew")).tag("he")
-                Text(localization.t("languages.english")).tag("en")
-                Text(localization.t("languages.spanish")).tag("es")
-                Text(localization.t("languages.french")).tag("fr")
-                Text(localization.t("languages.russian")).tag("ru")
-            }
-        } header: {
-            sectionHeader(localization.t("settings.languageSubtitles"))
-        } footer: {
             Text(localization.t("settings.languageDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
+                .padding(.leading, TVDesignTokens.Spacing.sm)
         }
     }
 
     // MARK: - Playback Section
 
-    private var playbackSection: some View {
-        Section {
-            Toggle(isOn: $autoplay) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(localization.t("settings.autoplayNextEpisode"))
-                        .font(.system(size: TVDesignTokens.FontSize.lg))
-
-                    Text(localization.t("settings.autoplayDescription"))
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-            }
-
-            Picker(localization.t("settings.videoQuality"), selection: $quality) {
-                Text(localization.t("settings.qualityAuto")).tag("auto")
-                Text(localization.t("settings.qualityHigh")).tag("high")
-                Text(localization.t("settings.qualityMedium")).tag("medium")
-                Text(localization.t("settings.qualityLow")).tag("low")
-            }
-        } header: {
+    var playbackSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             sectionHeader(localization.t("settings.playbackSettings"))
+
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                toggleRow(
+                    icon: "play.circle.fill",
+                    title: localization.t("settings.autoplayNextEpisode"),
+                    subtitle: localization.t("settings.autoplayDescription"),
+                    isOn: $autoplay,
+                    color: DesignTokens.Primary.p400
+                )
+
+                pickerRow(
+                    icon: "film.stack",
+                    title: localization.t("settings.videoQuality"),
+                    selection: $quality,
+                    options: qualityOptions
+                )
+            }
         }
     }
 
     // MARK: - Content Section
 
-    private var contentSection: some View {
-        Section {
-            Picker(localization.t("settings.contentRating"), selection: $contentRating) {
-                Text(localization.t("settings.ratingAllAges")).tag("g")
-                Text(localization.t("settings.ratingPG")).tag("pg")
-                Text(localization.t("settings.ratingPG13")).tag("pg13")
-                Text(localization.t("settings.ratingMature")).tag("r")
-                Text(localization.t("settings.ratingAdultsOnly")).tag("nc17")
-            }
-        } header: {
+    var contentSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             sectionHeader(localization.t("settings.contentRestrictions"))
-        } footer: {
+
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                pickerRow(
+                    icon: "eye.trianglebadge.exclamationmark",
+                    title: localization.t("settings.contentRating"),
+                    selection: $contentRating,
+                    options: ratingOptions
+                )
+            }
+
             Text(localization.t("settings.contentRatingDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
+                .padding(.leading, TVDesignTokens.Spacing.sm)
         }
     }
 
     // MARK: - Notifications Section
 
-    private var notificationSection: some View {
-        Section {
-            Toggle(isOn: $notifications) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(localization.t("settings.pushNotifications"))
-                        .font(.system(size: TVDesignTokens.FontSize.lg))
-
-                    Text(localization.t("settings.notificationsDescription"))
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-            }
-        } header: {
+    var notificationSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             sectionHeader(localization.t("settings.notifications"))
+
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                toggleRow(
+                    icon: "bell.fill",
+                    title: localization.t("settings.pushNotifications"),
+                    subtitle: localization.t("settings.notificationsDescription"),
+                    isOn: $notifications,
+                    color: DesignTokens.Warning.default
+                )
+            }
         }
     }
 
-    // MARK: - Helpers
+    // MARK: - Data
 
-    private func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
-            .foregroundStyle(DesignTokens.Text.primary)
-            .textCase(nil)
+    var languageOptions: [(String, String)] {
+        Language.allCases.map { ($0.rawValue, $0.displayName) }
+    }
+
+    var qualityOptions: [(String, String)] {
+        [
+            ("auto", localization.t("settings.qualityAuto")),
+            ("high", localization.t("settings.qualityHigh")),
+            ("medium", localization.t("settings.qualityMedium")),
+            ("low", localization.t("settings.qualityLow")),
+        ]
+    }
+
+    var ratingOptions: [(String, String)] {
+        [
+            ("g", localization.t("settings.ratingAllAges")),
+            ("pg", localization.t("settings.ratingPG")),
+            ("pg13", localization.t("settings.ratingPG13")),
+            ("r", localization.t("settings.ratingMature")),
+            ("nc17", localization.t("settings.ratingAdultsOnly")),
+        ]
     }
 }

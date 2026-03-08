@@ -5,9 +5,10 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-// MARK: - Account Management Section
+// MARK: - Account & Settings Section
 
 struct TVProfileAccountSection: View {
+    @Environment(BYOCSourceManager.self) private var byocManager
     let profile: ProfileResponse
     let localization: LocalizationManager
     let onAction: (ProfileSheet) -> Void
@@ -22,6 +23,13 @@ struct TVProfileAccountSection: View {
             ) { onAction(.preferences) }
 
             profileActionRow(
+                icon: "gear",
+                title: localization.t("nav.settings"),
+                subtitle: localization.t("profile.settingsDesc"),
+                color: DesignTokens.Text.secondary
+            ) { onAction(.settings) }
+
+            profileActionRow(
                 icon: "lock.fill",
                 title: localization.t("profile.accountSecurity"),
                 subtitle: localization.t("profile.accountSecurityDesc"),
@@ -34,36 +42,18 @@ struct TVProfileAccountSection: View {
                     title: localization.t("profile.verifyEmail"),
                     subtitle: localization.t("profile.verifyEmailDesc"),
                     color: DesignTokens.ErrorColor.e400
-                ) {
-                    // Trigger email verification
-                }
+                ) { onAction(.accountSettings) }
             }
 
-            if !(profile.phoneVerified ?? false) && profile.phoneNumber != nil {
+            if !(profile.phoneVerified ?? false) {
                 profileActionRow(
                     icon: "phone.badge.checkmark",
                     title: localization.t("profile.verifyPhone"),
                     subtitle: localization.t("profile.verifyPhoneDesc"),
                     color: DesignTokens.ErrorColor.e400
-                ) {
-                    // Trigger phone verification
-                }
+                ) { onAction(.phoneVerification) }
             }
-        } header: {
-            profileSectionHeader(localization.t("profile.accountManagement"))
-        }
-    }
-}
 
-// MARK: - Advanced Section
-
-struct TVProfileAdvancedSection: View {
-    @Environment(BYOCSourceManager.self) private var byocManager
-    let localization: LocalizationManager
-    let onAction: (ProfileSheet) -> Void
-
-    var body: some View {
-        Section {
             profileActionRow(
                 icon: "play.tv",
                 title: localization.t("byoc.connectedSources"),
@@ -78,19 +68,21 @@ struct TVProfileAdvancedSection: View {
                 title: localization.t("profile.householdProfiles"),
                 subtitle: localization.t("profile.householdProfilesDesc"),
                 color: DesignTokens.Secondary.s400
-            ) {
-                // Navigate to household management
-            }
+            ) { onAction(.householdProfiles) }
+        } header: {
+            profileSectionHeader(localization.t("profile.accountSettings"))
+        }
+    }
+}
 
-            profileActionRow(
-                icon: "bell.fill",
-                title: localization.t("profile.notifications"),
-                subtitle: localization.t("profile.notificationSettings"),
-                color: DesignTokens.Primary.p400
-            ) {
-                // Navigate to notification settings
-            }
+// MARK: - Info Section
 
+struct TVProfileInfoSection: View {
+    let localization: LocalizationManager
+    let onAction: (ProfileSheet) -> Void
+
+    var body: some View {
+        Section {
             profileActionRow(
                 icon: "questionmark.circle.fill",
                 title: localization.t("settings.help"),
@@ -99,22 +91,13 @@ struct TVProfileAdvancedSection: View {
             ) { onAction(.help) }
 
             profileActionRow(
-                icon: "link.circle.fill",
-                title: localization.t("settings.connectedAccounts"),
-                subtitle: localization.t("settings.connectedAccountsDescription"),
-                color: DesignTokens.Secondary.s400
-            ) { onAction(.connectedAccounts) }
-
-            profileActionRow(
                 icon: "info.circle.fill",
                 title: localization.t("settings.about"),
                 subtitle: localization.t("profile.aboutDesc"),
                 color: DesignTokens.Info.default
-            ) {
-                // Navigate to about screen
-            }
+            ) { onAction(.about) }
         } header: {
-            profileSectionHeader(localization.t("profile.advanced"))
+            profileSectionHeader(localization.t("profile.info"))
         }
     }
 }

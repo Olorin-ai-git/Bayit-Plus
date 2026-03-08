@@ -22,6 +22,14 @@ enum ProfileSheet: Identifiable {
     case connectedAccounts
     case contentSources
     case widgets
+    case householdProfiles
+    case about
+    case changePassword
+    case activeSessions
+    case passkeys
+    case linkAccount
+    case phoneVerification
+    case deleteAccount
 
     var id: String {
         String(describing: self)
@@ -32,7 +40,7 @@ enum ProfileSheet: Identifiable {
 /// Features: profile editing, stats, account management, quick actions, viewing history.
 struct TVProfileView: View {
     @Environment(AuthManager.self) private var authManager
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(LocalizationManager.self) var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) var coordinator
     @State var viewModel: ProfileViewModel?
@@ -87,14 +95,14 @@ struct TVProfileView: View {
                 TVProfileBetaSection(profile: profile, localization: localization)
             }
 
-            TVProfileQuickActionsSection(localization: localization, onAction: { activeSheet = $0 })
+            TVProfileMyContentSection(localization: localization, onAction: { activeSheet = $0 })
             TVProfileSocialSection(localization: localization, onAction: { activeSheet = $0 })
             TVProfileAccountSection(
                 profile: profile,
                 localization: localization,
                 onAction: { activeSheet = $0 }
             )
-            TVProfileAdvancedSection(localization: localization, onAction: { activeSheet = $0 })
+            TVProfileInfoSection(localization: localization, onAction: { activeSheet = $0 })
 
             if authManager.user?.role.isAdmin == true {
                 TVProfileAdminSection(authManager: authManager, localization: localization)

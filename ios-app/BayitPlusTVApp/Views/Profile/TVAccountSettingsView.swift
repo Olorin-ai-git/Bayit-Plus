@@ -6,29 +6,30 @@ import SwiftUI
 /// Account security and settings screen for tvOS.
 struct TVAccountSettingsView: View {
     @Environment(LocalizationManager.self) var localization
+    @Environment(TVRepositoryProvider.self) var repos
     let profile: ProfileResponse
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
+    let onNavigate: (ProfileSheet) -> Void
 
-    @State var showingChangePassword = false
-    @State var showingPhoneVerification = false
+    @State var emailVerificationSent = false
 
     var body: some View {
-        NavigationStack {
-            List {
-                securitySection
-                linkedAccountsSection
-                verificationSection
-                dangerZoneSection
-            }
-            .listStyle(.grouped)
-            .navigationTitle("Account Security")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
-                        onDismiss()
-                    }
+        VStack(spacing: 0) {
+            TVProfileSheetHeader(
+                title: localization.t("profile.accountSecurity"),
+                onDismiss: onDismiss
+            )
+
+            ScrollView {
+                VStack(spacing: TVDesignTokens.Spacing.xl) {
+                    securityGroup
+                    linkedAccountsGroup
+                    verificationGroup
+                    dangerZoneGroup
                 }
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                .padding(.vertical, TVDesignTokens.Spacing.lg)
             }
         }
         .background(DesignTokens.Background.primary)
@@ -37,53 +38,54 @@ struct TVAccountSettingsView: View {
 
     // MARK: - Security Section
 
-    var securitySection: some View {
-        Section {
-            if profile.hasPassword == true {
-                actionRow(
-                    icon: "key.fill",
-                    title: "Change Password",
-                    subtitle: "Update your account password",
-                    color: DesignTokens.Primary.p400
-                ) {
-                    showingChangePassword = true
-                }
-            } else {
-                actionRow(
-                    icon: "key.fill",
-                    title: "Set Password",
-                    subtitle: "Add password to your account",
-                    color: DesignTokens.Warning.default
-                ) {
-                    showingChangePassword = true
-                }
-            }
+    private var securityGroup: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            sectionHeader(localization.t("profile.security"))
 
-            actionRow(
-                icon: "lock.shield.fill",
-                title: "Two-Factor Authentication",
-                subtitle: "Add extra security to your account",
-                color: DesignTokens.Success.default
-            ) {
-                // Navigate to 2FA setup
-            }
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                if profile.hasPassword == true {
+                    settingsRow(
+                        icon: "key.fill",
+                        title: localization.t("profile.changePassword"),
+                        subtitle: localization.t("profile.updatePassword"),
+                        color: DesignTokens.Primary.p400
+                    ) { navigateTo(.changePassword) }
+                } else {
+                    settingsRow(
+                        icon: "key.fill",
+                        title: localization.t("settings.setPassword"),
+                        subtitle: localization.t("settings.setPasswordDesc"),
+                        color: DesignTokens.Warning.default
+                    ) { navigateTo(.changePassword) }
+                }
 
-            actionRow(
-                icon: "key.viewfinder",
-                title: "Active Sessions",
-                subtitle: "Manage devices signed into your account",
-                color: DesignTokens.Info.default
-            ) {
-                // Navigate to active sessions
+                settingsRow(
+                    icon: "lock.shield.fill",
+                    title: localization.t("profile.twoFactorAuth"),
+                    subtitle: localization.t("profile.addExtraSecurity"),
+                    color: DesignTokens.Success.default
+                ) { navigateTo(.passkeys) }
+
+                settingsRow(
+                    icon: "key.viewfinder",
+                    title: localization.t("profile.connectedDevices"),
+                    subtitle: localization.t("profile.manageDevices"),
+                    color: DesignTokens.Info.default
+                ) { navigateTo(.activeSessions) }
             }
-        } header: {
-            sectionHeader("Security")
         }
     }
 
     // MARK: - Helpers
 
-    func actionRow(
+    func navigateTo(_ sheet: ProfileSheet) {
+        onDismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            onNavigate(sheet)
+        }
+    }
+
+    func settingsRow(
         icon: String,
         title: String,
         subtitle: String,
@@ -112,14 +114,18 @@ struct TVAccountSettingsView: View {
                 Image(systemName: "chevron.right")
                     .foregroundStyle(DesignTokens.Text.muted)
             }
+            .padding(TVDesignTokens.Spacing.lg)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
+        .buttonStyle(.plain)
     }
 
     func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
             .foregroundStyle(DesignTokens.Text.primary)
-            .textCase(nil)
+            .padding(.leading, TVDesignTokens.Spacing.sm)
     }
 
     func providerIcon(_ provider: String) -> String {

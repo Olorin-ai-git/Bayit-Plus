@@ -20,10 +20,6 @@ struct TVDownloadsView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-                TVPageHeader(
-                    icon: "arrow.down.circle",
-                    title: localization.t("downloads.title")
-                )
                 if let vm = viewModel {
                     let all = vm.downloads
                     if all.isEmpty {

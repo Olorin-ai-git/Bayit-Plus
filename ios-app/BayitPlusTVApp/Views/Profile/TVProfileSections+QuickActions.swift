@@ -3,9 +3,9 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-// MARK: - Quick Actions Section
+// MARK: - My Content Section
 
-struct TVProfileQuickActionsSection: View {
+struct TVProfileMyContentSection: View {
     let localization: LocalizationManager
     let onAction: (ProfileSheet) -> Void
 
@@ -19,10 +19,6 @@ struct TVProfileQuickActionsSection: View {
                              subtitle: localization.t("profile.manageDvrRecordings"),
                              color: DesignTokens.Warning.default) { onAction(.recordings) }
 
-            profileActionRow(icon: "arrow.down.circle.fill", title: localization.t("profile.myDownloads"),
-                             subtitle: localization.t("profile.offlineContent"),
-                             color: DesignTokens.Success.default) { onAction(.downloads) }
-
             profileActionRow(icon: "list.bullet", title: localization.t("profile.myPlaylists"),
                              subtitle: localization.t("profile.organizeContent"),
                              color: DesignTokens.Secondary.s400) { onAction(.watchlist) }
@@ -30,8 +26,12 @@ struct TVProfileQuickActionsSection: View {
             profileActionRow(icon: "clock.arrow.circlepath", title: localization.t("profile.viewingHistory"),
                              subtitle: localization.t("profile.seeWhatYouWatched"),
                              color: DesignTokens.Info.default) { onAction(.viewingHistory) }
+
+            profileActionRow(icon: "square.grid.2x2", title: localization.t("nav.widgets"),
+                             subtitle: localization.t("profile.widgetsDesc"),
+                             color: DesignTokens.Secondary.s400) { onAction(.widgets) }
         } header: {
-            profileSectionHeader(localization.t("profile.quickActions"))
+            profileSectionHeader(localization.t("profile.myContent"))
         }
     }
 }
@@ -51,16 +51,8 @@ struct TVProfileSocialSection: View {
             profileActionRow(icon: "bubble.left.and.bubble.right", title: localization.t("profile.messages"),
                              subtitle: localization.t("profile.messagesDesc"),
                              color: DesignTokens.Info.default) { onAction(.messages) }
-
-            profileActionRow(icon: "gear", title: localization.t("nav.settings"),
-                             subtitle: localization.t("profile.settingsDesc"),
-                             color: DesignTokens.Text.secondary) { onAction(.settings) }
-
-            profileActionRow(icon: "square.grid.2x2", title: localization.t("nav.widgets"),
-                             subtitle: localization.t("profile.widgetsDesc"),
-                             color: DesignTokens.Secondary.s400) {}
         } header: {
-            profileSectionHeader(localization.t("profile.socialSettings"))
+            profileSectionHeader(localization.t("profile.social"))
         }
     }
 }

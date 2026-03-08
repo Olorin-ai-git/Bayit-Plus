@@ -1,6 +1,7 @@
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
+import BayitNetworking
 import SwiftUI
 
 /// Viewing history screen for tvOS - shows what user has watched.
@@ -15,7 +16,14 @@ struct TVViewingHistoryView: View {
     @State private var selectedFilter: HistoryFilter = .all
 
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            TVProfileSheetHeader(
+                title: localization.t("profile.viewingHistory"),
+                onDismiss: onDismiss
+            ) {
+                filterPicker
+            }
+
             Group {
                 if isLoading {
                     loadingView
@@ -27,27 +35,13 @@ struct TVViewingHistoryView: View {
                     historyList
                 }
             }
-            .background(DesignTokens.Background.primary)
-            .navigationTitle(localization.t("profile.viewingHistory"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localization.t("common.done")) {
-                        onDismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    filterMenu
-                }
-            }
         }
+        .background(DesignTokens.Background.primary)
         .onExitCommand { onDismiss() }
-        .task {
-            await loadHistory()
-        }
+        .task { await loadHistory() }
     }
 
-    private var filterMenu: some View {
+    private var filterPicker: some View {
         Menu {
             ForEach(HistoryFilter.allCases, id: \.self) { filter in
                 Button(filter.label(localization)) {
@@ -55,20 +49,30 @@ struct TVViewingHistoryView: View {
                 }
             }
         } label: {
-            HStack {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Text(selectedFilter.label(localization))
-                Image(systemName: "chevron.down")
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
+                Image(systemName: "line.3.horizontal.decrease")
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
             }
+            .foregroundStyle(DesignTokens.Text.secondary)
+            .padding(.horizontal, TVDesignTokens.Spacing.lg)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
+            .background(DesignTokens.Glass.bgMedium)
+            .clipShape(Capsule())
         }
     }
 
     private var historyList: some View {
-        List {
-            ForEach(filteredItems) { item in
-                historyRow(item)
+        ScrollView {
+            LazyVStack(spacing: TVDesignTokens.Spacing.sm) {
+                ForEach(filteredItems) { item in
+                    historyRow(item)
+                }
             }
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+            .padding(.vertical, TVDesignTokens.Spacing.lg)
         }
-        .listStyle(.grouped)
     }
 
     var filteredItems: [WatchHistoryItem] {
@@ -91,10 +95,21 @@ struct TVViewingHistoryView: View {
         error = nil
 
         do {
-            let response = try await repos.media.fetchWatchHistory(page: 1, limit: 50)
+            let response = try await repos.media.fetchWatchHistory(page: 1, limit: 20)
             historyItems = response.items
         } catch {
-            self.error = localization.t("profile.noViewingHistory")
+            if let apiError = error as? APIError {
+                switch apiError {
+                case .notFound, .unknown(statusCode: 422, _):
+                    historyItems = []
+                default:
+                    if let message = (error as Error).userFriendlyMessage {
+                        self.error = message
+                    }
+                }
+            } else if let message = error.userFriendlyMessage {
+                self.error = message
+            }
         }
 
         isLoading = false

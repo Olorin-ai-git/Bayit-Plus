@@ -8,33 +8,29 @@ struct TVDirectMessagesView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: DirectMessagesViewModel?
+    @State private var selectedFriendId: String?
 
     var body: some View {
-        NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                if let vm = viewModel {
-                    if vm.isLoading && vm.conversations.isEmpty {
-                        loadingState
-                    } else if let error = vm.error, vm.conversations.isEmpty {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                if vm.isLoading && vm.conversations.isEmpty {
+                    loadingState
+                } else if let error = vm.error, vm.conversations.isEmpty {
+                    if error.lowercased().contains("forbidden") || error.lowercased().contains("friends") {
+                        emptyState
+                    } else {
                         tvErrorState(error) {
                             Task { await vm.loadConversations() }
                         }
-                    } else if vm.filteredConversations.isEmpty && vm.searchQuery.isEmpty {
-                        emptyState
-                    } else {
-                        conversationList(vm)
                     }
+                } else if vm.filteredConversations.isEmpty && vm.searchQuery.isEmpty {
+                    emptyState
+                } else {
+                    conversationList(vm)
                 }
             }
-            .background(DesignTokens.Background.primary)
-            .navigationDestination(for: String.self) { friendId in
-                TVConversationView(friendId: friendId)
-                    .tvBreadcrumb(
-                        localization.t("profile.messages"),
-                        icon: "bubble.left.and.bubble.right"
-                    )
-            }
         }
+        .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
                 viewModel = DirectMessagesViewModel(
@@ -49,7 +45,6 @@ struct TVDirectMessagesView: View {
         }
     }
 
-    @ViewBuilder
     private func conversationList(_ vm: DirectMessagesViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.md) {
             @Bindable var bindableVM = vm
@@ -62,7 +57,9 @@ struct TVDirectMessagesView: View {
             .padding(.top, TVDesignTokens.Spacing.lg)
 
             ForEach(vm.filteredConversations) { conversation in
-                NavigationLink(value: conversation.friendId) {
+                Button {
+                    selectedFriendId = conversation.friendId
+                } label: {
                     TVConversationRowCard(conversation: conversation)
                 }
                 .tvCardStyle()
@@ -70,6 +67,18 @@ struct TVDirectMessagesView: View {
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
         .padding(.bottom, TVDesignTokens.Spacing.xl)
+        .fullScreenCover(isPresented: Binding(
+            get: { selectedFriendId != nil },
+            set: { if !$0 { selectedFriendId = nil } }
+        )) {
+            if let friendId = selectedFriendId {
+                TVConversationView(friendId: friendId)
+                    .tvBreadcrumb(
+                        localization.t("profile.messages"),
+                        icon: "bubble.left.and.bubble.right"
+                    )
+            }
+        }
     }
 
     private var emptyState: some View {

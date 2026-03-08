@@ -8,112 +8,80 @@ import SwiftUI
 extension TVAccountSettingsView {
     // MARK: - Linked Accounts
 
-    var linkedAccountsSection: some View {
-        Section {
-            if let provider = profile.authProvider {
-                HStack {
-                    Image(systemName: providerIcon(provider))
-                        .font(.system(size: 28))
-                        .foregroundStyle(providerColor(provider))
-                        .frame(width: 44)
+    var linkedAccountsGroup: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            sectionHeader(localization.t("settings.linkedAccounts"))
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(provider.capitalized)
-                            .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                            .foregroundStyle(DesignTokens.Text.primary)
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                if let provider = profile.authProvider {
+                    HStack {
+                        Image(systemName: providerIcon(provider))
+                            .font(.system(size: 28))
+                            .foregroundStyle(providerColor(provider))
+                            .frame(width: 44)
 
-                        Text(localization.t("profile.primarySignIn"))
-                            .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(provider.capitalized)
+                                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                                .foregroundStyle(DesignTokens.Text.primary)
+
+                            Text(localization.t("profile.primarySignIn"))
+                                .font(.system(size: TVDesignTokens.FontSize.sm))
+                                .foregroundStyle(DesignTokens.Text.secondary)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundStyle(DesignTokens.Success.default)
                     }
-
-                    Spacer()
-
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 24))
-                        .foregroundStyle(DesignTokens.Success.default)
+                    .padding(TVDesignTokens.Spacing.lg)
+                    .background(DesignTokens.Glass.bg)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
                 }
+
+                settingsRow(
+                    icon: "link.badge.plus",
+                    title: localization.t("settings.linkAccount"),
+                    subtitle: localization.t("settings.linkAccountDesc"),
+                    color: DesignTokens.Secondary.s400
+                ) { navigateTo(.linkAccount) }
             }
 
-            actionRow(
-                icon: "link.badge.plus",
-                title: "Link Another Account",
-                subtitle: "Connect Google, Apple ID, or Facebook",
-                color: DesignTokens.Secondary.s400
-            ) {
-                // Navigate to link account
-            }
-        } header: {
-            sectionHeader("Linked Accounts")
-        } footer: {
             Text(localization.t("profile.linkSignInMethods"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
+                .padding(.leading, TVDesignTokens.Spacing.sm)
         }
     }
 
     // MARK: - Verification Section
 
-    var verificationSection: some View {
-        Section {
-            HStack {
-                Image(systemName: "envelope.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                    .frame(width: 44)
+    var verificationGroup: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            sectionHeader(localization.t("verification.title"))
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(profile.email ?? "No email")
-                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-
-                    Text(localization.t("profile.emailAddress"))
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                }
-
-                Spacer()
-
-                if profile.emailVerified == true {
-                    HStack(spacing: 6) {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(.system(size: 20))
-                        Text(localization.t("profile.verified"))
-                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
-                    }
-                    .foregroundStyle(DesignTokens.Success.default)
-                } else {
-                    Button("Verify") {
-                        // Trigger email verification
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, TVDesignTokens.Spacing.md)
-                    .padding(.vertical, TVDesignTokens.Spacing.xs)
-                    .background(DesignTokens.Warning.default)
-                    .cornerRadius(TVDesignTokens.Radius.sm)
-                }
-            }
-
-            if let phone = profile.phoneNumber {
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
                 HStack {
-                    Image(systemName: "phone.fill")
+                    Image(systemName: "envelope.fill")
                         .font(.system(size: 28))
                         .foregroundStyle(DesignTokens.Primary.p400)
                         .frame(width: 44)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(phone)
+                        Text(profile.email ?? localization.t("profile.notSet"))
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        Text(localization.t("profile.phoneNumber"))
+                        Text(localization.t("profile.emailAddress"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
 
                     Spacer()
 
-                    if profile.phoneVerified == true {
+                    if profile.emailVerified == true {
                         HStack(spacing: 6) {
                             Image(systemName: "checkmark.seal.fill")
                                 .font(.system(size: 20))
@@ -122,54 +90,107 @@ extension TVAccountSettingsView {
                         }
                         .foregroundStyle(DesignTokens.Success.default)
                     } else {
-                        Button("Verify") {
-                            showingPhoneVerification = true
+                        Button(emailVerificationSent
+                            ? localization.t("common.done")
+                            : localization.t("verification.verify"))
+                        {
+                            Task {
+                                _ = try? await repos.user.sendEmailVerification()
+                                emailVerificationSent = true
+                            }
                         }
                         .buttonStyle(.plain)
+                        .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
+                        .foregroundStyle(.white)
                         .padding(.horizontal, TVDesignTokens.Spacing.md)
                         .padding(.vertical, TVDesignTokens.Spacing.xs)
-                        .background(DesignTokens.Warning.default)
+                        .background(emailVerificationSent
+                            ? DesignTokens.Success.default
+                            : DesignTokens.Warning.default)
                         .cornerRadius(TVDesignTokens.Radius.sm)
+                        .disabled(emailVerificationSent)
                     }
                 }
-            } else {
-                actionRow(
-                    icon: "phone.badge.plus",
-                    title: "Add Phone Number",
-                    subtitle: "Add a phone number for recovery",
-                    color: DesignTokens.Info.default
-                ) {
-                    // Add phone number
+                .padding(TVDesignTokens.Spacing.lg)
+                .background(DesignTokens.Glass.bg)
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+
+                if let phone = profile.phoneNumber {
+                    HStack {
+                        Image(systemName: "phone.fill")
+                            .font(.system(size: 28))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                            .frame(width: 44)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(phone)
+                                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                                .foregroundStyle(DesignTokens.Text.primary)
+
+                            Text(localization.t("profile.phoneNumber"))
+                                .font(.system(size: TVDesignTokens.FontSize.sm))
+                                .foregroundStyle(DesignTokens.Text.secondary)
+                        }
+
+                        Spacer()
+
+                        if profile.phoneVerified == true {
+                            HStack(spacing: 6) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.system(size: 20))
+                                Text(localization.t("profile.verified"))
+                                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
+                            }
+                            .foregroundStyle(DesignTokens.Success.default)
+                        } else {
+                            Button(localization.t("verification.verify")) {
+                                navigateTo(.phoneVerification)
+                            }
+                            .buttonStyle(.plain)
+                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, TVDesignTokens.Spacing.md)
+                            .padding(.vertical, TVDesignTokens.Spacing.xs)
+                            .background(DesignTokens.Warning.default)
+                            .cornerRadius(TVDesignTokens.Radius.sm)
+                        }
+                    }
+                    .padding(TVDesignTokens.Spacing.lg)
+                    .background(DesignTokens.Glass.bg)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+                } else {
+                    settingsRow(
+                        icon: "phone.badge.plus",
+                        title: localization.t("settings.addPhone"),
+                        subtitle: localization.t("settings.addPhoneDesc"),
+                        color: DesignTokens.Info.default
+                    ) { navigateTo(.phoneVerification) }
                 }
             }
-        } header: {
-            sectionHeader("Verification")
         }
     }
 
     // MARK: - Danger Zone
 
-    var dangerZoneSection: some View {
-        Section {
-            actionRow(
-                icon: "exclamationmark.triangle.fill",
-                title: "Export My Data",
-                subtitle: "Download all your data",
-                color: DesignTokens.Info.default
-            ) {
-                // Export data
-            }
+    var dangerZoneGroup: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            sectionHeader(localization.t("profile.dangerZone"))
 
-            actionRow(
-                icon: "trash.fill",
-                title: "Delete Account",
-                subtitle: "Permanently delete your account and data",
-                color: DesignTokens.Colors.Semantic.error
-            ) {
-                // Show delete confirmation
+            VStack(spacing: TVDesignTokens.Spacing.xs) {
+                settingsRow(
+                    icon: "exclamationmark.triangle.fill",
+                    title: localization.t("settings.exportData"),
+                    subtitle: localization.t("settings.exportDataDesc"),
+                    color: DesignTokens.Info.default
+                ) { navigateTo(.help) }
+
+                settingsRow(
+                    icon: "trash.fill",
+                    title: localization.t("settings.deleteAccount"),
+                    subtitle: localization.t("settings.deleteAccountDesc"),
+                    color: DesignTokens.Colors.Semantic.error
+                ) { navigateTo(.deleteAccount) }
             }
-        } header: {
-            sectionHeader("Danger Zone")
         }
     }
 }

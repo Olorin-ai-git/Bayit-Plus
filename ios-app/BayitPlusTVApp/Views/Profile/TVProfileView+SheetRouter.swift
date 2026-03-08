@@ -40,38 +40,104 @@ extension TVProfileView {
                 TVAccountSettingsView(
                     profile: profile,
                     viewModel: vm,
-                    onDismiss: { activeSheet = nil }
+                    onDismiss: { activeSheet = nil },
+                    onNavigate: { activeSheet = $0 }
                 )
             }
         case .viewingHistory:
             TVViewingHistoryView(onDismiss: { activeSheet = nil })
         case .favorites:
-            TVFavoritesView()
+            profileSheetWrapper(title: localization.t("profile.myFavorites")) {
+                TVFavoritesView()
+            }
         case .recordings:
-            TVRecordingsView()
+            profileSheetWrapper(title: localization.t("profile.myRecordings")) {
+                TVRecordingsView()
+            }
         case .watchlist:
-            TVWatchlistView()
+            profileSheetWrapper(title: localization.t("profile.myPlaylists")) {
+                TVWatchlistView()
+            }
         case .downloads:
-            TVDownloadsView()
+            profileSheetWrapper(title: localization.t("profile.myDownloads")) {
+                TVDownloadsView()
+            }
         case .friends:
-            TVFriendsView()
+            profileSheetWrapper(title: localization.t("nav.friends")) {
+                TVFriendsView()
+            }
         case .messages:
-            TVDirectMessagesView()
+            profileSheetWrapper(title: localization.t("profile.messages")) {
+                TVDirectMessagesView()
+            }
         case .settings:
-            TVSettingsView()
+            profileSheetWrapper(title: localization.t("nav.settings")) {
+                TVSettingsView()
+            }
         case .help:
-            TVHelpView()
+            profileSheetWrapper(title: localization.t("settings.help")) {
+                TVHelpView()
+            }
         case .connectedAccounts:
             TVConnectedAccountsView(onDismiss: { activeSheet = nil })
         case .contentSources:
             TVBYOCSourceListView(onDismiss: { activeSheet = nil })
         case .widgets:
-            // Handled via coordinator signal; dismiss immediately
-            Color.clear
-                .onAppear {
-                    coordinator.showWidgetDock = true
-                    activeSheet = nil
-                }
+            profileSheetWrapper(title: localization.t("nav.widgets")) {
+                TVWidgetsView()
+            }
+        case .householdProfiles:
+            TVHouseholdProfilesView(onDismiss: { activeSheet = nil })
+        case .about:
+            profileSheetWrapper(title: localization.t("settings.about")) {
+                TVAboutView()
+            }
+        case .changePassword:
+            if let profile = viewModel?.profile {
+                TVChangePasswordView(
+                    hasPassword: profile.hasPassword == true,
+                    onDismiss: { activeSheet = nil }
+                )
+            }
+        case .activeSessions:
+            TVActiveSessionsView(onDismiss: { activeSheet = nil })
+        case .passkeys:
+            TVPasskeysView(onDismiss: { activeSheet = nil })
+        case .linkAccount:
+            if let profile = viewModel?.profile {
+                TVLinkAccountView(
+                    currentProvider: profile.authProvider,
+                    onDismiss: { activeSheet = nil }
+                )
+            }
+        case .phoneVerification:
+            if let profile = viewModel?.profile {
+                TVPhoneVerificationView(
+                    existingPhone: profile.phoneNumber,
+                    onDismiss: { activeSheet = nil },
+                    onVerified: { Task { await viewModel?.load() } }
+                )
+            }
+        case .deleteAccount:
+            TVDeleteAccountView(onDismiss: { activeSheet = nil })
         }
+    }
+
+    /// Consistent wrapper for profile sub-views that lack their own header.
+    /// Provides TVProfileSheetHeader (X close + centered title) and onExitCommand.
+    private func profileSheetWrapper<Content: View>(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(spacing: 0) {
+            TVProfileSheetHeader(
+                title: title,
+                onDismiss: { activeSheet = nil }
+            )
+            content()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(DesignTokens.Background.primary)
+        .onExitCommand { activeSheet = nil }
     }
 }

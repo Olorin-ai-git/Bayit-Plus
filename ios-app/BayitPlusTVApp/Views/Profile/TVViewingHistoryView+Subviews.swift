@@ -59,7 +59,9 @@ extension TVViewingHistoryView {
                 }
             }
         }
-        .padding(.vertical, TVDesignTokens.Spacing.xs)
+        .padding(TVDesignTokens.Spacing.md)
+        .background(DesignTokens.Glass.bg)
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
     }
 
     private func progressBar(progress: Double) -> some View {
@@ -133,8 +135,8 @@ extension TVViewingHistoryView {
                 .foregroundStyle(DesignTokens.Text.muted)
 
             Text(localization.t("profile.noViewingHistory"))
-                .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.secondary)
+                .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
 
             Text(localization.t("profile.noViewingHistoryDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
