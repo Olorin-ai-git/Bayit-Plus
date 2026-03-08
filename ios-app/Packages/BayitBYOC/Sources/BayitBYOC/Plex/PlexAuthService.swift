@@ -127,3 +127,18 @@ public enum PlexAuthError: Error, Sendable {
     case networkError
     case httpError(statusCode: Int)
 }
+
+extension PlexAuthError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .invalidPINResponse:
+            return "Failed to request a PIN from Plex"
+        case .pinExpired:
+            return "PIN expired. Please try again"
+        case .networkError:
+            return "Network error. Check your connection"
+        case let .httpError(statusCode):
+            return "Plex returned status \(statusCode)"
+        }
+    }
+}

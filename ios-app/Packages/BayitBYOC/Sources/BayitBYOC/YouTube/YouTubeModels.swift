@@ -65,6 +65,7 @@ public struct YouTubePageResponse<T: Sendable>: Sendable {
 
 /// Errors from YouTube auth and API.
 public enum YouTubeError: Error, Sendable {
+    case missingClientId
     case invalidDeviceCodeResponse
     case authorizationPending
     case authorizationExpired
@@ -73,4 +74,29 @@ public enum YouTubeError: Error, Sendable {
     case httpError(statusCode: Int)
     case invalidResponse
     case quotaExceeded
+}
+
+extension YouTubeError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingClientId:
+            return "YouTube client ID is not configured"
+        case .invalidDeviceCodeResponse:
+            return "Failed to request a device code from Google"
+        case .authorizationPending:
+            return "Waiting for authorization"
+        case .authorizationExpired:
+            return "Authorization code expired. Please try again"
+        case .authorizationDenied:
+            return "Authorization was denied"
+        case .networkError:
+            return "Network error. Check your connection"
+        case let .httpError(statusCode):
+            return "Server returned status \(statusCode)"
+        case .invalidResponse:
+            return "Invalid response from YouTube"
+        case .quotaExceeded:
+            return "YouTube API quota exceeded. Try again later"
+        }
+    }
 }

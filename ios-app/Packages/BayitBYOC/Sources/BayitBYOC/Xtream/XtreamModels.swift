@@ -80,3 +80,20 @@ public enum XtreamError: Error, Sendable {
     case invalidResponse
     case httpError(statusCode: Int)
 }
+
+extension XtreamError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .invalidCredentials:
+            return "Invalid Xtream Codes credentials"
+        case .accountExpired:
+            return "Xtream Codes account has expired"
+        case .networkError:
+            return "Network error. Check your connection"
+        case .invalidResponse:
+            return "Invalid response from server"
+        case let .httpError(statusCode):
+            return "Server returned status \(statusCode)"
+        }
+    }
+}

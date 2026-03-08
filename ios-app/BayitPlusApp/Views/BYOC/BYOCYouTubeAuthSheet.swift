@@ -22,6 +22,10 @@ struct BYOCYouTubeAuthSheet: View {
         Bundle.main.infoDictionary?["YOUTUBE_CLIENT_ID"] as? String ?? ""
     }
 
+    private var clientSecret: String {
+        Bundle.main.infoDictionary?["YOUTUBE_CLIENT_SECRET"] as? String ?? ""
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: DesignTokens.Spacing.xl) {
@@ -125,7 +129,7 @@ struct BYOCYouTubeAuthSheet: View {
     }
 
     private func requestCode() async {
-        let authService = YouTubeAuthService(clientId: clientId)
+        let authService = YouTubeAuthService(clientId: clientId, clientSecret: clientSecret)
         do {
             let code = try await authService.requestDeviceCode()
             deviceCode = code

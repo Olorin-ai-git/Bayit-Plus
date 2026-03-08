@@ -21,6 +21,10 @@
             Bundle.main.infoDictionary?["YOUTUBE_CLIENT_ID"] as? String ?? ""
         }
 
+        private var youtubeClientSecret: String {
+            Bundle.main.infoDictionary?["YOUTUBE_CLIENT_SECRET"] as? String ?? ""
+        }
+
         var body: some View {
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
@@ -133,7 +137,7 @@
             error = nil
             pollTask?.cancel()
 
-            let authService = YouTubeAuthService(clientId: youtubeClientId)
+            let authService = YouTubeAuthService(clientId: youtubeClientId, clientSecret: youtubeClientSecret)
             do {
                 let code = try await authService.requestDeviceCode()
                 deviceCode = code

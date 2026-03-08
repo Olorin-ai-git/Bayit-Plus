@@ -5,17 +5,22 @@ import Foundation
 /// User visits google.com/device and enters a code to authorize.
 public actor YouTubeAuthService {
     private let clientId: String
+    private let clientSecret: String
     private let logger = BayitLogger(category: "YouTubeAuth")
     private static let deviceCodeURL = "https://oauth2.googleapis.com/device/code"
     private static let tokenURL = "https://oauth2.googleapis.com/token"
     private static let scope = "https://www.googleapis.com/auth/youtube.readonly"
 
-    public init(clientId: String) {
+    public init(clientId: String, clientSecret: String) {
         self.clientId = clientId
+        self.clientSecret = clientSecret
     }
 
     /// Request a device authorization code from Google.
     public func requestDeviceCode() async throws -> GoogleDeviceCode {
+        guard !clientId.isEmpty, !clientId.contains("$(") else {
+            throw YouTubeError.missingClientId
+        }
         let body = "client_id=\(clientId)&scope=\(Self.scope)"
         guard let url = URL(string: Self.deviceCodeURL) else {
             throw YouTubeError.invalidDeviceCodeResponse
@@ -88,6 +93,7 @@ public actor YouTubeAuthService {
 
         let body = [
             "client_id=\(clientId)",
+            "client_secret=\(clientSecret)",
             "device_code=\(code)",
             "grant_type=urn:ietf:params:oauth:grant-type:device_code",
         ].joined(separator: "&")

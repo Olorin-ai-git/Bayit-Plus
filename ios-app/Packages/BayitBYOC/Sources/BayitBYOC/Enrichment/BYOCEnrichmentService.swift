@@ -141,8 +141,16 @@ public final class BYOCEnrichmentService: Sendable {
 }
 
 /// Errors from the BYOC enrichment service.
-public enum BYOCEnrichmentError: Error, Sendable {
+public enum BYOCEnrichmentError: Error, LocalizedError, Sendable {
     case serverError
     case decodingError
     case batchTooLarge
+
+    public var errorDescription: String? {
+        switch self {
+        case .serverError: return "Enrichment server error"
+        case .decodingError: return "Failed to decode enrichment response"
+        case .batchTooLarge: return "Too many items in enrichment batch"
+        }
+    }
 }
