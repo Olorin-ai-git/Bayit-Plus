@@ -38,6 +38,7 @@ struct SettingsView: View {
                 viewModel = SettingsViewModel(
                     settingsRepository: repos.settings,
                     userRepository: repos.user,
+                    avatarRepository: repos.avatarMeshRepository,
                     uiPreferences: uiPreferences
                 )
             }
@@ -62,6 +63,7 @@ struct SettingsView: View {
                       isOn: vm.showWidgetsDock) { v in Task { await vm.updateShowWidgetsDock(v) } }
             toggleRow(icon: "waveform.circle", title: localization.t("settings.showVoiceControlFAB"),
                       isOn: vm.showVoiceControlFAB) { v in Task { await vm.updateShowVoiceControlFAB(v) } }
+            interactiveMomentsRow(vm)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
@@ -123,6 +125,33 @@ struct SettingsView: View {
             }.padding(DesignTokens.Spacing.md)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Interactive Moments
+
+    private func interactiveMomentsRow(_ vm: SettingsViewModel) -> some View {
+        VStack(spacing: 0) {
+            toggleRow(
+                icon: "bubble.left.and.bubble.right",
+                title: localization.t("settings.interactiveMoments"),
+                isOn: vm.interactiveMoments
+            ) { v in Task { await vm.updateInteractiveMoments(v) } }
+
+            if vm.interactiveMomentsBlocked,
+               let msgKey = vm.interactiveMomentsBlockedMessage
+            {
+                HStack(spacing: DesignTokens.Spacing.xs) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Warning.default)
+                    Text(localization.t(msgKey))
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.top, DesignTokens.Spacing.xs)
+            }
+        }
     }
 
     // MARK: - Shared Row Builders
