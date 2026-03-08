@@ -85,14 +85,14 @@ struct TVProfileInfoSection: View {
         Section {
             profileActionRow(
                 icon: "questionmark.circle.fill",
-                title: localization.t("settings.help"),
-                subtitle: localization.t("help.subtitle"),
+                title: localization.t("settings.help.title"),
+                subtitle: localization.t("settings.help.subtitle"),
                 color: DesignTokens.Info.default
             ) { onAction(.help) }
 
             profileActionRow(
                 icon: "info.circle.fill",
-                title: localization.t("settings.about"),
+                title: localization.t("settings.about.title"),
                 subtitle: localization.t("profile.aboutDesc"),
                 color: DesignTokens.Info.default
             ) { onAction(.about) }

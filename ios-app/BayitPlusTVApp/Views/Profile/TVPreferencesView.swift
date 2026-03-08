@@ -4,6 +4,7 @@ import BayitLocalization
 import SwiftUI
 
 /// Preferences management screen for tvOS.
+/// Changes apply immediately — no Save button needed.
 struct TVPreferencesView: View {
     @Environment(LocalizationManager.self) var localization
 
@@ -17,9 +18,6 @@ struct TVPreferencesView: View {
     @State var notifications: Bool
     @State var contentRating: String
     @State var quality: String
-    @State var isSaving = false
-    @State var hasChanges = false
-    @State var showSaved = false
 
     init(preferences: ProfilePreferences?, viewModel: ProfileViewModel, onDismiss: @escaping () -> Void) {
         self.preferences = preferences
@@ -40,34 +38,7 @@ struct TVPreferencesView: View {
                 title: localization.t("profiles.preferences"),
                 onDismiss: onDismiss
             ) {
-                if hasChanges {
-                    Button {
-                        Task { await save() }
-                    } label: {
-                        Group {
-                            if isSaving {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text(localization.t("common.save"))
-                                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .frame(width: 140, height: 50)
-                    }
-                    .buttonStyle(.plain)
-                    .background(DesignTokens.Primary.p400)
-                    .clipShape(Capsule())
-                    .disabled(isSaving)
-                } else if showSaved {
-                    HStack(spacing: TVDesignTokens.Spacing.xs) {
-                        Image(systemName: "checkmark.circle.fill")
-                        Text(localization.t("common.done"))
-                    }
-                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Success.default)
-                    .frame(width: 140, height: 50)
-                }
+                EmptyView()
             }
 
             ScrollView {
@@ -83,12 +54,12 @@ struct TVPreferencesView: View {
         }
         .background(DesignTokens.Background.primary)
         .onExitCommand { onDismiss() }
-        .onChange(of: selectedLanguage) { trackChanges() }
-        .onChange(of: selectedSubtitleLanguage) { trackChanges() }
-        .onChange(of: autoplay) { trackChanges() }
-        .onChange(of: notifications) { trackChanges() }
-        .onChange(of: contentRating) { trackChanges() }
-        .onChange(of: quality) { trackChanges() }
+        .onChange(of: selectedLanguage) { applyLanguage() }
+        .onChange(of: selectedSubtitleLanguage) { persistPreferences() }
+        .onChange(of: autoplay) { persistPreferences() }
+        .onChange(of: notifications) { persistPreferences() }
+        .onChange(of: contentRating) { persistPreferences() }
+        .onChange(of: quality) { persistPreferences() }
     }
 
     // MARK: - Language Section

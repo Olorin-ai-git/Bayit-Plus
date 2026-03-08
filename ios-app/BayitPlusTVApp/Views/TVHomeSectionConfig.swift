@@ -71,7 +71,9 @@ enum TVHomeSection: Int, CaseIterable {
     /// In public (non-owner) mode, these are hidden.
     var requiresOwnerMode: Bool {
         switch self {
-        case .continueWatching, .nearMe, .whatsHot, .jerusalem, .telAviv, .liveTV:
+        case .continueWatching:
+            return true
+        case .nearMe, .whatsHot, .jerusalem, .telAviv, .liveTV:
             return false
         case .israeliMovies, .movies, .kids, .youngsters, .music,
              .documentary, .israeliSeries, .series:

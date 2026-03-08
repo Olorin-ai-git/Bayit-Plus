@@ -9,6 +9,7 @@
     struct TVMovieInteractionsView: View {
         @Environment(TVRepositoryProvider.self) var repos
         @Environment(LocalizationManager.self) var localization
+        @Environment(\.appConfiguration) private var appConfiguration
         @State var movies: [InteractableMovieItem] = []
         @State var selectedMovie: InteractableMovieItem?
         @State var characters: [InteractiveCharacterItem] = []
@@ -99,7 +100,8 @@
         func loadMovies() async {
             isLoading = true; error = nil
             do {
-                let fetched = try await repos.movieInteraction.listInteractableMovies()
+                let source: String? = appConfiguration.ownerMode ? nil : "byoc"
+                let fetched = try await repos.movieInteraction.listInteractableMovies(source: source)
                 await MainActor.run { movies = fetched; isLoading = false }
             } catch {
                 await MainActor.run { self.error = error.localizedDescription; isLoading = false }

@@ -176,9 +176,8 @@ struct TVProfileView: View {
     // MARK: - Actions
 
     private func switchProfile() {
-        coordinator.profileSelected = false
         coordinator.selectedProfileId = nil
-        coordinator.selectedTab = .home
+        coordinator.profileSelected = false
     }
 
     private func signOut() {

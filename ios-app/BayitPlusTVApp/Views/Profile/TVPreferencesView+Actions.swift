@@ -3,22 +3,17 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-// MARK: - Track Changes, Save & UI Helpers
+// MARK: - Actions & UI Helpers
 
 extension TVPreferencesView {
-    func trackChanges() {
-        showSaved = false
-        hasChanges = selectedLanguage != (preferences?.language ?? "en")
-            || selectedSubtitleLanguage != (preferences?.subtitleLanguage ?? "he")
-            || autoplay != (preferences?.autoplay ?? true)
-            || notifications != (preferences?.notifications ?? true)
-            || contentRating != (preferences?.contentRating ?? "pg13")
-            || quality != (preferences?.quality ?? "auto")
+    func applyLanguage() {
+        if let language = Language(rawValue: selectedLanguage) {
+            localization.setLanguage(language)
+        }
+        persistPreferences()
     }
 
-    func save() async {
-        isSaving = true
-
+    func persistPreferences() {
         let update = ProfilePreferencesUpdate(
             language: selectedLanguage,
             subtitleLanguage: selectedSubtitleLanguage,
@@ -27,18 +22,7 @@ extension TVPreferencesView {
             contentRating: contentRating,
             quality: quality
         )
-
-        await viewModel.updatePreferences(update)
-        isSaving = false
-
-        if viewModel.error == nil {
-            hasChanges = false
-            showSaved = true
-
-            if let language = Language(rawValue: selectedLanguage) {
-                localization.setLanguage(language)
-            }
-        }
+        Task { await viewModel.updatePreferences(update) }
     }
 
     // MARK: - Row Components
@@ -57,31 +41,47 @@ extension TVPreferencesView {
         isOn: Binding<Bool>,
         color: Color
     ) -> some View {
-        HStack(spacing: TVDesignTokens.Spacing.md) {
-            Image(systemName: icon)
-                .font(.system(size: 28))
-                .foregroundStyle(color)
-                .frame(width: 44)
+        Button {
+            isOn.wrappedValue.toggle()
+        } label: {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: icon)
+                    .font(.system(size: 28))
+                    .foregroundStyle(color)
+                    .frame(width: 44)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
 
-                Text(subtitle)
-                    .font(.system(size: TVDesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.secondary)
+                    Text(subtitle)
+                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                }
+
+                Spacer()
+
+                Text(isOn.wrappedValue
+                    ? localization.t("common.on")
+                    : localization.t("common.off"))
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
+                    .foregroundStyle(isOn.wrappedValue
+                        ? DesignTokens.Primary.p400
+                        : DesignTokens.Text.muted)
+                    .frame(width: 60, alignment: .trailing)
+
+                Circle()
+                    .fill(isOn.wrappedValue
+                        ? DesignTokens.Primary.p400
+                        : DesignTokens.Text.muted.opacity(0.3))
+                    .frame(width: 20, height: 20)
             }
-
-            Spacer()
-
-            Toggle("", isOn: isOn)
-                .labelsHidden()
-                .tint(DesignTokens.Primary.p400)
+            .padding(TVDesignTokens.Spacing.lg)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
         }
-        .padding(TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Glass.bg)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+        .buttonStyle(TVInlineButtonStyle())
     }
 
     func pickerRow(
@@ -90,9 +90,7 @@ extension TVPreferencesView {
         selection: Binding<String>,
         options: [(String, String)]
     ) -> some View {
-        Button {
-            cycleSelection(selection, options: options)
-        } label: {
+        VStack(spacing: 0) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 Image(systemName: icon)
                     .font(.system(size: 28))
@@ -104,31 +102,56 @@ extension TVPreferencesView {
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 Spacer()
-
-                Text(displayName(for: selection.wrappedValue, in: options))
-                    .font(.system(size: TVDesignTokens.FontSize.md))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(DesignTokens.Text.muted)
             }
-            .padding(TVDesignTokens.Spacing.lg)
-            .background(DesignTokens.Glass.bg)
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
-        }
-        .buttonStyle(.plain)
-    }
+            .padding(.horizontal, TVDesignTokens.Spacing.lg)
+            .padding(.top, TVDesignTokens.Spacing.lg)
+            .padding(.bottom, TVDesignTokens.Spacing.sm)
 
-    private func displayName(for value: String, in options: [(String, String)]) -> String {
-        options.first(where: { $0.0 == value })?.1 ?? value
-    }
+            ForEach(options, id: \.0) { value, label in
+                Button {
+                    selection.wrappedValue = value
+                } label: {
+                    HStack {
+                        Text(label)
+                            .font(.system(size: TVDesignTokens.FontSize.md))
+                            .foregroundStyle(selection.wrappedValue == value
+                                ? DesignTokens.Primary.p400
+                                : DesignTokens.Text.secondary)
 
-    private func cycleSelection(_ selection: Binding<String>, options: [(String, String)]) {
-        guard let currentIndex = options.firstIndex(where: { $0.0 == selection.wrappedValue }) else {
-            if let first = options.first { selection.wrappedValue = first.0 }
-            return
+                        Spacer()
+
+                        if selection.wrappedValue == value {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(DesignTokens.Primary.p400)
+                        }
+                    }
+                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                    .padding(.vertical, TVDesignTokens.Spacing.sm)
+                }
+                .buttonStyle(TVInlineButtonStyle())
+            }
+
+            Spacer().frame(height: TVDesignTokens.Spacing.sm)
         }
-        let nextIndex = (currentIndex + 1) % options.count
-        selection.wrappedValue = options[nextIndex].0
+        .background(DesignTokens.Glass.bg)
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
+    }
+}
+
+// MARK: - Inline Button Style (no scale/lift on focus)
+
+private struct TVInlineButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                isFocused
+                    ? DesignTokens.Glass.bgMedium
+                    : Color.clear
+            )
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
     }
 }

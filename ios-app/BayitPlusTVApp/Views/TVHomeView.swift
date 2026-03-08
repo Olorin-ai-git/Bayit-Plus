@@ -101,11 +101,6 @@ struct TVHomeView: View {
                 }
             }
 
-            // Continue watching (owner mode only)
-            if appConfiguration.ownerMode {
-                TVContinueWatchingRow()
-            }
-
             // Featured collections carousel (owner mode only)
             if appConfiguration.ownerMode, !featuredCollections.isEmpty {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
@@ -139,14 +134,15 @@ struct TVHomeView: View {
                 radioStationsSection(vm.radioStations)
             }
 
-            // All content sections filtered by onboarding interests + owner mode
-            ForEach(TVHomeSection.allCases, id: \.rawValue) { section in
-                if section.hasData(in: vm),
-                   section.isVisible(given: prefs),
-                   !section.requiresOwnerMode || appConfiguration.ownerMode
-                {
-                    renderSection(section, vm: vm)
-                }
+            // All content sections filtered by onboarding interests + owner mode.
+            // Filter BEFORE ForEach so SwiftUI sees identity changes when data loads.
+            let visibleSections = TVHomeSection.allCases.filter { section in
+                section.hasData(in: vm)
+                    && section.isVisible(given: prefs)
+                    && (!section.requiresOwnerMode || appConfiguration.ownerMode)
+            }
+            ForEach(visibleSections, id: \.rawValue) { section in
+                renderSection(section, vm: vm)
             }
 
             // Personalized recommendations (owner mode only)
