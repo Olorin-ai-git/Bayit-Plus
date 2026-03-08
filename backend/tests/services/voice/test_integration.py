@@ -171,7 +171,7 @@ class TestWizardIntegration:
             })
 
             # Execute
-            response = await router.process_and_route("tell me about this platform")
+            response = await router.process_and_route("hello good morning")
 
             # Verify
             assert response.intent == "CHAT"

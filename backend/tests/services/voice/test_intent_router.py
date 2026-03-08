@@ -12,52 +12,61 @@ from app.services.voice.models import VoiceIntent
 class TestIntentClassification:
     """Test intent classification."""
 
-    def test_kids_intent_hebrew(self):
+    @pytest.mark.asyncio
+    async def test_kids_intent_hebrew(self):
         """Test kids intent classification with Hebrew keywords."""
         router = IntentRouter(language="he", user_id="test_user")
-        intent, confidence = router._classify_intent("תוכן לילדים")
+        intent, confidence = await router._classify_intent("תוכן לילדים")
         assert intent == VoiceIntent.KIDS
         assert confidence >= 0.9
 
-    def test_kids_intent_english(self):
+    @pytest.mark.asyncio
+    async def test_kids_intent_english(self):
         """Test kids intent classification with English keywords."""
         router = IntentRouter(language="en", user_id="test_user")
-        intent, confidence = router._classify_intent("kids cartoons")
+        intent, confidence = await router._classify_intent("kids cartoons")
         assert intent == VoiceIntent.KIDS
         assert confidence >= 0.9
 
-    def test_kids_intent_spanish(self):
+    @pytest.mark.asyncio
+    async def test_kids_intent_spanish(self):
         """Test kids intent classification with Spanish keywords."""
         router = IntentRouter(language="es", user_id="test_user")
-        intent, confidence = router._classify_intent("para niños")
+        intent, confidence = await router._classify_intent("para niños")
         assert intent == VoiceIntent.KIDS
         assert confidence >= 0.9
 
-    def test_search_intent(self):
+    @pytest.mark.asyncio
+    async def test_search_intent(self):
         """Test search intent classification."""
         router = IntentRouter(language="en", user_id="test_user")
-        intent, confidence = router._classify_intent("search for comedy")
+        intent, confidence = await router._classify_intent("search for comedy")
         assert intent == VoiceIntent.SEARCH
         assert confidence >= 0.8
 
-    def test_navigation_intent(self):
+    @pytest.mark.asyncio
+    async def test_navigation_intent(self):
         """Test navigation intent classification."""
         router = IntentRouter(language="he", user_id="test_user")
-        intent, confidence = router._classify_intent("בית")
+        intent, confidence = await router._classify_intent("בית")
         assert intent == VoiceIntent.NAVIGATION
         assert confidence >= 0.95
 
-    def test_playback_intent(self):
+    @pytest.mark.asyncio
+    async def test_playback_intent(self):
         """Test playback intent classification."""
         router = IntentRouter(language="en", user_id="test_user")
-        intent, confidence = router._classify_intent("play")
+        intent, confidence = await router._classify_intent("play")
         assert intent == VoiceIntent.PLAYBACK
         assert confidence >= 0.9
 
-    def test_chat_intent_default(self):
+    @pytest.mark.asyncio
+    async def test_chat_intent_default(self):
         """Test that unrecognized input defaults to CHAT."""
         router = IntentRouter(language="en", user_id="test_user")
-        intent, confidence = router._classify_intent("tell me about this movie")
+        intent, confidence = await router._classify_intent(
+            "hello good morning"
+        )
         assert intent == VoiceIntent.CHAT
         assert confidence == 0.5
 
@@ -91,6 +100,31 @@ class TestConversationId:
             conversation_id="custom-conv-id"
         )
         assert router.conversation_id == "custom-conv-id"
+
+
+class TestConversationContext:
+    """Test multi-turn conversation context."""
+
+    def test_turns_initialized_empty(self):
+        """Test that turns are initialized empty by default."""
+        router = IntentRouter(language="en", user_id="test_user")
+        assert len(router.context.turns) == 0
+
+    def test_turns_initialized_with_history(self):
+        """Test that turns can be initialized with history."""
+        from app.services.voice.models import TurnContext
+        turns = [
+            TurnContext(
+                transcript="play channel 12",
+                intent="PLAYBACK",
+                action_type="channel",
+                entity="Channel 12",
+                timestamp=1000.0,
+            )
+        ]
+        router = IntentRouter(language="en", user_id="test_user", turns=turns)
+        assert len(router.context.turns) == 1
+        assert router.context.turns[0].entity == "Channel 12"
 
 
 class TestIntentRouting:

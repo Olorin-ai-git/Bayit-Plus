@@ -264,10 +264,20 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"Background seeding: Failed to initialize default cultures: {e}")
 
+    async def _init_embedding_classifier():
+        """Initialize voice intent embedding classifier in background."""
+        try:
+            from app.services.voice.embedding_cache import embedding_classifier
+            await embedding_classifier.initialize()
+            logger.info("Voice intent embedding classifier initialized")
+        except Exception as e:
+            logger.warning(f"Embedding classifier initialization failed: {e}")
+
     # Launch background tasks without blocking startup
     asyncio.create_task(_background_seeding())
     asyncio.create_task(ensure_ttl_indexes_background())
     asyncio.create_task(_warm_content_caches())
+    asyncio.create_task(_init_embedding_classifier())
     logger.info("Background tasks scheduled: data seeding, TTL index creation, cache warm-up")
 
     # Upload queue processor is now manual-only (triggered from UI)

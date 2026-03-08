@@ -22,8 +22,13 @@ from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
 from app.services.elevenlabs_tts_streaming_service import \
     ElevenLabsTTSStreamingService
 from app.services.support_service import support_service
+from app.services.voice.conversation_memory import conversation_memory
 from app.services.voice.intent_router import IntentRouter
-from app.services.voice.models import VoiceIntent, VoiceResponse
+from app.services.voice.models import TurnContext, VoiceIntent, VoiceResponse
+from app.services.voice.tts_sentence_chunker import (
+    _ends_with_sentence,
+    chunk_sentences,
+)
 
 logger = get_logger(__name__)
 
@@ -345,12 +350,21 @@ class VoicePipelineService:
         Returns VoiceResponse for actionable intents, None for CHAT.
         """
         try:
+            turns = []
+            if self.conversation_id:
+                try:
+                    turns = conversation_memory.get_turns(
+                        self.conversation_id, str(self.user.id)
+                    )
+                except (PermissionError, Exception):
+                    turns = []
             router = IntentRouter(
                 language=language,
                 user_id=str(self.user.id),
                 conversation_id=self.conversation_id,
+                turns=turns,
             )
-            intent, confidence = router._classify_intent(transcript)
+            intent, confidence = await router._classify_intent(transcript)
 
             if intent != VoiceIntent.CHAT:
                 logger.info(
@@ -411,12 +425,13 @@ class VoicePipelineService:
             # Then stream TTS audio
             self.tts_service = ElevenLabsTTSStreamingService()
 
-            async def single_text_generator():
-                yield voice_response.spoken_response
+            async def sentence_text_generator():
+                for sentence in chunk_sentences(voice_response.spoken_response):
+                    yield sentence
 
             audio_chunk_count = 0
             async for audio_chunk in self.tts_service.synthesize_streaming(
-                single_text_generator(),
+                sentence_text_generator(),
                 voice_id=self.voice_id,
             ):
                 audio_chunk_count += 1
@@ -470,6 +485,23 @@ class VoicePipelineService:
         )
         if intent_response:
             try:
+                import time
+
+                conversation_memory.add_turn(
+                    self.conversation_id or "",
+                    TurnContext(
+                        transcript=transcript,
+                        intent=intent_response.intent,
+                        action_type=intent_response.action.type if intent_response.action else None,
+                        entity=None,
+                        timestamp=time.time(),
+                    ),
+                    str(self.user.id),
+                )
+            except Exception:
+                pass  # Turn recording is best-effort
+
+            try:
                 await self._send_intent_action(intent_response)
             except Exception as exc:
                 logger.error(
@@ -516,6 +548,7 @@ class VoicePipelineService:
             # Start LLM streaming with tools in background
             async def stream_llm():
                 full_response_text = ""
+                sentence_buffer = ""
                 try:
                     async for chunk in support_service.chat_streaming_with_tools(
                         message=transcript,
@@ -529,13 +562,18 @@ class VoicePipelineService:
                             text = chunk.get("text", "")
                             if text:
                                 full_response_text += text
-                                await llm_text_queue.put(text)
+                                sentence_buffer += text
+                                # Send llm_chunk for UI transcript display
                                 await self._output_queue.put(
                                     PipelineMessage(
                                         type="llm_chunk",
                                         text=text,
                                     )
                                 )
+                                # Buffer tokens until sentence boundary for better TTS prosody
+                                if _ends_with_sentence(sentence_buffer):
+                                    await llm_text_queue.put(sentence_buffer)
+                                    sentence_buffer = ""
 
                         elif chunk_type == "tool_action":
                             action = chunk.get("action", {})
@@ -562,6 +600,11 @@ class VoicePipelineService:
                                     message=chunk.get("message", "LLM error"),
                                 )
                             )
+
+                    # Flush remaining sentence buffer after stream ends
+                    if sentence_buffer:
+                        await llm_text_queue.put(sentence_buffer)
+                        sentence_buffer = ""
 
                 except Exception as e:
                     logger.error(f"LLM streaming error: {e}")

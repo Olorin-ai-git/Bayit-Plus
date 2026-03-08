@@ -65,10 +65,23 @@
 
             errorMessage = nil
             aiResponse = ""
-            isProcessing = true
             let userMessage = text
             inputText = ""
 
+            // On-device fast path for simple commands
+            if let localResult = onDeviceClassifier.classify(
+                userMessage, language: "en"
+            ) {
+                logger.info(
+                    "On-device intent matched",
+                    context: ["intent": localResult.intent.rawValue]
+                )
+                aiResponse = localResult.spokenResponse
+                onIntentAction?(localResult.intent, localResult.action)
+                return
+            }
+
+            isProcessing = true
             Task {
                 do {
                     let request = ChatRequest(

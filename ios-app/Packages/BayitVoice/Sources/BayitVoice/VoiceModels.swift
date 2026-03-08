@@ -34,6 +34,8 @@ public enum VoiceIntentType: String, Sendable, Codable {
     case subtitle = "SUBTITLE"
     case settings = "SETTINGS"
     case widget = "WIDGET"
+    case scroll = "SCROLL"
+    case control = "CONTROL"
     case unknown = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {
@@ -77,8 +79,8 @@ public struct VoiceRequest: Sendable, Encodable {
         self.transcript = transcript
         self.language = language
         self.conversationId = conversationId
-        self.platform = "ios"
-        self.triggerType = trigger.rawValue
+        platform = "ios"
+        triggerType = trigger.rawValue
     }
 }
 
@@ -136,7 +138,9 @@ public struct VoicePermissions: Sendable, Equatable {
     public let microphone: Bool
     public let speechRecognition: Bool
 
-    public var allGranted: Bool { microphone && speechRecognition }
+    public var allGranted: Bool {
+        microphone && speechRecognition
+    }
 
     public init(microphone: Bool, speechRecognition: Bool) {
         self.microphone = microphone

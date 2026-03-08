@@ -20,7 +20,11 @@
         @FocusState var isInputFocused: Bool
 
         let audioService = TVAudioRecordingService()
+        let onDeviceClassifier = OnDeviceIntentClassifier()
         let logger = BayitLogger(category: "TVVoiceAssistantSheet")
+
+        /// Callback when a local intent action should be executed
+        var onIntentAction: ((VoiceIntentType, VoiceAction) -> Void)?
 
         var body: some View {
             ZStack {
