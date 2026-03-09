@@ -15,6 +15,7 @@ struct ContentView: View {
     @Environment(\.appConfiguration) private var appConfiguration
 
     @State private var showingSplash = true
+    @State private var showingOnboarding = false
 
     var body: some View {
         @Bindable var coord = coordinator
@@ -27,12 +28,22 @@ struct ContentView: View {
                 SplashView {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         showingSplash = false
+                        if authManager.isAuthenticated {
+                            showingOnboarding = !OnboardingAIViewModel.hasCompletedOnboarding
+                        }
                     }
                 }
                 .transition(.opacity)
             } else if coordinator.showingAuth {
                 AuthFlowView()
                     .transition(.opacity)
+            } else if showingOnboarding {
+                OnboardingAIView {
+                    withAnimation {
+                        showingOnboarding = false
+                    }
+                }
+                .transition(.opacity)
             } else {
                 if UIDevice.current.userInterfaceIdiom == .pad {
                     IPadContentView()
@@ -72,9 +83,13 @@ struct ContentView: View {
         }
         .onChange(of: authManager.isAuthenticated) { _, isAuth in
             coordinator.showingAuth = !isAuth
+            if isAuth {
+                showingOnboarding = !OnboardingAIViewModel.hasCompletedOnboarding
+            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)
+        .animation(.easeInOut(duration: 0.3), value: showingOnboarding)
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.fullscreenRoute != nil)
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.pendingTVLogin != nil)
         .animation(.spring(duration: 0.4), value: ShabbatModeService.shared.isShabbatActive)

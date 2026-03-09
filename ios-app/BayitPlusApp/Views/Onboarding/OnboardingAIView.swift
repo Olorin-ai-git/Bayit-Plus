@@ -14,6 +14,8 @@ struct OnboardingAIView: View {
     @State private var tourViewModel: FeatureTourViewModel?
     @State private var showTour = false
 
+    var onComplete: (() -> Void)?
+
     var body: some View {
         ZStack {
             DesignTokens.Background.primary.ignoresSafeArea()

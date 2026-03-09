@@ -102,8 +102,8 @@ struct TVHomeView: View {
                 }
             }
 
-            // Featured collections carousel
-            if !featuredCollections.isEmpty {
+            // Featured collections carousel (owner-only private content)
+            if appConfiguration.ownerMode && !featuredCollections.isEmpty {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }

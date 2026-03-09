@@ -6,7 +6,6 @@ import Observation
 @MainActor
 @Observable
 final class OnboardingAIViewModel {
-
     enum Step: Int, CaseIterable {
         case welcome
         case contentTaste
@@ -39,15 +38,26 @@ final class OnboardingAIViewModel {
 
     private let userRepository: any UserRepository
 
+    private static let completedKey = "bayit.plus.onboarding.ai.completed"
+
+    /// Whether the user has previously completed onboarding.
+    static var hasCompletedOnboarding: Bool {
+        UserDefaults.standard.bool(forKey: completedKey)
+    }
+
     init(userRepository: any UserRepository) {
         self.userRepository = userRepository
     }
 
     // MARK: - Navigation
 
-    var totalSteps: Int { Step.allCases.count }
+    var totalSteps: Int {
+        Step.allCases.count
+    }
 
-    var currentStepIndex: Int { currentStep.rawValue }
+    var currentStepIndex: Int {
+        currentStep.rawValue
+    }
 
     var progress: Double {
         guard totalSteps > 0 else { return 0 }
@@ -70,7 +80,8 @@ final class OnboardingAIViewModel {
     func nextStep() {
         guard let nextIndex = Step.allCases.firstIndex(of: currentStep)
             .map({ Step.allCases.index(after: $0) }),
-              nextIndex < Step.allCases.endIndex else {
+            nextIndex < Step.allCases.endIndex
+        else {
             return
         }
         currentStep = Step.allCases[nextIndex]
@@ -103,6 +114,15 @@ final class OnboardingAIViewModel {
         dislikedContentIds.insert(contentId)
     }
 
+    func skipOnboarding() {
+        markCompleted()
+    }
+
+    private func markCompleted() {
+        isComplete = true
+        UserDefaults.standard.set(true, forKey: Self.completedKey)
+    }
+
     // MARK: - Completion
 
     @MainActor
@@ -129,11 +149,11 @@ final class OnboardingAIViewModel {
                     phoneNumber: nil
                 )
             )
-            isComplete = true
+            markCompleted()
         } catch {
             // Onboarding completes even if profile save fails;
             // user can update profile later from settings.
-            isComplete = true
+            markCompleted()
         }
     }
 }

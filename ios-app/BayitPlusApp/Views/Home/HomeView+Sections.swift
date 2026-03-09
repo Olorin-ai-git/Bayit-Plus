@@ -24,7 +24,7 @@ extension HomeView {
             ContinueWatchingRow(items: filteredContinueWatching, coordinator: coordinator)
         }
 
-        if !vm.featuredCollections.isEmpty {
+        if appConfiguration.ownerMode && !vm.featuredCollections.isEmpty {
             FeaturedCollectionsCarousel(collections: vm.featuredCollections)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
         }

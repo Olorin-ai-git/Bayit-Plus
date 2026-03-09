@@ -51,7 +51,20 @@ extension OnboardingAIView {
 
     func navigationButtons(_ vm: OnboardingAIViewModel) -> some View {
         HStack(spacing: DesignTokens.Spacing.md) {
-            if vm.currentStep != .welcome {
+            if vm.currentStep == .welcome {
+                GlassButton(
+                    localization.t("onboarding.skip"),
+                    variant: .ghost,
+                    size: .medium
+                ) {
+                    vm.skipOnboarding()
+                    if let onComplete {
+                        onComplete()
+                    } else {
+                        coordinator.pop()
+                    }
+                }
+            } else {
                 GlassButton(
                     localization.t("onboarding.back"),
                     variant: .ghost,
@@ -77,7 +90,11 @@ extension OnboardingAIView {
                     Task {
                         await vm.completeOnboarding()
                         if vm.isComplete {
-                            coordinator.pop()
+                            if let onComplete {
+                                onComplete()
+                            } else {
+                                coordinator.pop()
+                            }
                         }
                     }
                 }

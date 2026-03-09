@@ -28,7 +28,7 @@ public enum ContentType: String, Hashable, Codable, Sendable {
     static func isOwnerOnlyType(_ typeString: String?) -> Bool {
         guard let raw = typeString?.lowercased() else { return false }
         let ownerTypes = ["vod", "movie", "series", "episode", "film",
-                          "kids", "children", "music", "documentary"]
+                          "kids", "children", "music", "documentary", "collection"]
         return ownerTypes.contains(where: { raw.contains($0) })
     }
 
