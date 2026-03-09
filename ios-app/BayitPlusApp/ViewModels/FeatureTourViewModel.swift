@@ -22,7 +22,7 @@ final class FeatureTourViewModel {
 
     private(set) var cards: [FeatureCard] = []
     var currentIndex: Int = 0
-    private(set) var completionStatus: String = "not_started"
+    internal(set) var completionStatus: String = "not_started"
     private(set) var completedCards: Set<String> = []
     private(set) var demoCardsTapped: Set<String> = []
     private(set) var isLoading = false

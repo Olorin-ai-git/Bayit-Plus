@@ -43,6 +43,27 @@ public enum DesignTokens {
             public static let primary = DesignTokens.Background.primary
             public static let elevated = DesignTokens.Background.elevated
         }
+
+        // Flat convenience aliases used across Tour / Auth views
+        public static let textPrimary = DesignTokens.Text.primary
+        public static let textSecondary = DesignTokens.Text.secondary
+        public static let textMuted = DesignTokens.Text.muted
+        public static let textTertiary = DesignTokens.Text.disabled
+        public static let accentPrimary = DesignTokens.Primary.default
+    }
+
+    // MARK: - Typography Presets
+
+    public enum Typography {
+        public static let largeTitle: Font = .system(size: FontSize.display, weight: .bold)
+        public static let title: Font = .system(size: FontSize.xxxl, weight: .bold)
+        public static let title2: Font = .system(size: FontSize.xxl, weight: .bold)
+        public static let title3: Font = .system(size: FontSize.xl, weight: .semibold)
+        public static let headline: Font = .system(size: FontSize.lg, weight: .semibold)
+        public static let body: Font = .system(size: FontSize.base)
+        public static let callout: Font = .system(size: FontSize.md)
+        public static let caption: Font = .system(size: FontSize.sm)
+        public static let caption2: Font = .system(size: FontSize.xs)
     }
 
     public enum Primary {

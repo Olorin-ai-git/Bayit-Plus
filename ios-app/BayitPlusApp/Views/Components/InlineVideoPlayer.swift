@@ -9,7 +9,7 @@ struct InlineVideoPlayer: View {
     @State private var looper: AVPlayerLooper?
 
     var body: some View {
-        VideoPlayerView(player: player)
+        InlineVideoUIView(player: player)
             .onAppear { setupPlayer() }
             .onDisappear { teardownPlayer() }
     }
@@ -42,7 +42,7 @@ struct InlineVideoPlayer: View {
 
 // MARK: - UIKit Bridge
 
-private struct VideoPlayerView: UIViewRepresentable {
+private struct InlineVideoUIView: UIViewRepresentable {
     let player: AVQueuePlayer?
 
     func makeUIView(context _: Context) -> PlayerUIView {

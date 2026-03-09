@@ -41,7 +41,7 @@ struct ZehAniDemoView: View {
     private var cameraSection: some View {
         ZStack {
             if cameraReady {
-                CameraPreviewView()
+                ZehAniCameraPreview()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
                     .overlay(
@@ -124,7 +124,7 @@ struct ZehAniDemoView: View {
 }
 
 /// Simple camera preview using AVCaptureSession.
-private struct CameraPreviewView: UIViewRepresentable {
+private struct ZehAniCameraPreview: UIViewRepresentable {
     func makeUIView(context _: Context) -> CameraUIView {
         CameraUIView()
     }

@@ -9,11 +9,13 @@ struct SettingsView: View {
     @Environment(RepositoryProvider.self) var repos
     @Environment(NavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
-    @Environment(AuthManager.self) private var authManager
+    @Environment(AuthManager.self) var authManager
     @Environment(UserUIPreferencesStore.self) private var uiPreferences
     @Environment(TooltipManager.self) private var tooltipManager
     @State private var viewModel: SettingsViewModel?
     @State private var showDeleteAccountConfirmation = false
+    @State var tourViewModel: FeatureTourViewModel?
+    @State var showFeatureTour = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -80,8 +82,6 @@ struct SettingsView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Danger Zone
-
     private func dangerZoneSection(_ vm: SettingsViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             sectionHeader(localization.t("settings.dangerZone"))
@@ -113,8 +113,6 @@ struct SettingsView: View {
         } message: { Text(localization.t("settings.deleteAccountConfirmMessage")) }
     }
 
-    // MARK: - App Info
-
     private var appInfoSection: some View {
         GlassCard {
             HStack {
@@ -127,8 +125,6 @@ struct SettingsView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
-
-    // MARK: - Interactive Moments
 
     private func interactiveMomentsRow(_ vm: SettingsViewModel) -> some View {
         VStack(spacing: 0) {
@@ -154,8 +150,6 @@ struct SettingsView: View {
             }
         }
     }
-
-    // MARK: - Shared Row Builders
 
     func sectionHeader(_ title: String) -> some View {
         HStack {
