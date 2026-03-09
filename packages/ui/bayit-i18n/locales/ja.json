@@ -4827,6 +4827,55 @@
     "playlist": "プレイリスト",
     "flows": "Flows"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Bayit+へようこそ",
+      "subtitle": "イスラエルのテレビを、あなたの言語で",
+      "continue": "続ける"
+    },
+    "aiLanguage": {
+      "title": "{{language}}で視聴",
+      "subtitle": "AI吹き替え、リアルタイム字幕、ヘブライ語学習 -- すべて内蔵",
+      "dubbing": "ライブ吹き替え",
+      "subtitles": "スマート字幕",
+      "engrew": "Engrew"
+    },
+    "pauseAsk": {
+      "title": "一時停止して何でも質問",
+      "subtitle": "シーン、俳優、リファレンスについて気になりますか？聞くだけ -- AIはあなたが見ているものを知っています",
+      "pill": "一時停止して質問"
+    },
+    "interactive": {
+      "title": "テレビが応答する",
+      "subtitle": "キャラクターをタップし、モーメントを探索し、視聴中にライブトリビアをプレイ",
+      "moments": "インタラクティブモーメント",
+      "trivia": "ライブトリビア"
+    },
+    "neverMiss": {
+      "title": "あなたのコンテンツ、あなたのスタイルで",
+      "subtitle": "AI搭載のキャッチアップ要約、Plex、IPTV、YouTubeから自分のコンテンツを持ち込み",
+      "catchup": "AIキャッチアップ",
+      "byoc": "自分のコンテンツを持ち込む"
+    },
+    "zehAni": {
+      "title": "自然にヘブライ語を学ぶ",
+      "subtitle": "顔とジェスチャー認識が視聴中のパーソナライズされたヘブライ語学習を実現",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "声で操作",
+      "subtitle": "'Hey Bayit'と言ってチャンネル変更、検索、質問 -- ハンズフリー",
+      "enableVoice": "音声コントロールを有効にする",
+      "wakeWord": "ウェイクワード検出",
+      "continue": "続ける",
+      "later": "後で設定"
+    },
+    "launch": {
+      "title": "準備完了",
+      "hint": "上にスワイプでチャンネル表示、いつでも'Hey Bayit'と話しかけてください"
+    },
+    "skip": "スキップ"
+  },
   "notFound": {
     "title": "ページが見つかりません",
     "subtitle": "お探しのページは存在しないか、移動した可能性があります",
@@ -4855,7 +4904,11 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4868,7 +4921,10 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "features": [

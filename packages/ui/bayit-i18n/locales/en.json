@@ -5201,6 +5201,55 @@
     "more": "More",
     "playlist": "Playlist"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Bayit+",
+      "subtitle": "Israeli TV, in your language",
+      "continue": "Continue"
+    },
+    "aiLanguage": {
+      "title": "Watch in {{language}}",
+      "subtitle": "AI dubbing, real-time subtitles, and Hebrew learning -- all built in",
+      "dubbing": "Live Dubbing",
+      "subtitles": "Smart Subtitles",
+      "engrew": "Engrew"
+    },
+    "pauseAsk": {
+      "title": "Pause and ask anything",
+      "subtitle": "Curious about a scene, actor, or reference? Just ask -- AI knows what you're watching",
+      "pill": "Pause & Ask"
+    },
+    "interactive": {
+      "title": "Your TV talks back",
+      "subtitle": "Tap characters, explore moments, and play live trivia as you watch",
+      "moments": "Interactive Moments",
+      "trivia": "Live Trivia"
+    },
+    "neverMiss": {
+      "title": "Your content, your way",
+      "subtitle": "AI-powered catch-up summaries and bring your own content from Plex, IPTV, and YouTube",
+      "catchup": "AI Catchup",
+      "byoc": "Bring Your Own Content"
+    },
+    "zehAni": {
+      "title": "Learn Hebrew, naturally",
+      "subtitle": "Face and gesture recognition powers personalized Hebrew learning while you watch",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "Control with your voice",
+      "subtitle": "Say 'Hey Bayit' to change channels, search, or ask questions -- hands free",
+      "enableVoice": "Enable Voice Control",
+      "wakeWord": "Wake Word Detection",
+      "continue": "Continue",
+      "later": "Set up later"
+    },
+    "launch": {
+      "title": "You're all set",
+      "hint": "Swipe up for channels, say 'Hey Bayit' anytime"
+    },
+    "skip": "Skip"
+  },
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you're looking for doesn't exist or has been moved.",
@@ -5326,7 +5375,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -5338,7 +5391,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",

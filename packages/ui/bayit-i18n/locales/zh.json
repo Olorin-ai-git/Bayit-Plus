@@ -4360,6 +4360,55 @@
     "more": "更多",
     "playlist": "播放列表"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "欢迎来到 Bayit+",
+      "subtitle": "以色列电视，用你的语言",
+      "continue": "继续"
+    },
+    "aiLanguage": {
+      "title": "用{{language}}观看",
+      "subtitle": "AI配音、实时字幕和希伯来语学习 -- 全部内置",
+      "dubbing": "实时配音",
+      "subtitles": "智能字幕",
+      "engrew": "Engrew"
+    },
+    "pauseAsk": {
+      "title": "暂停并随时提问",
+      "subtitle": "对某个场景、演员或参考内容好奇？直接问 -- AI知道你在看什么",
+      "pill": "暂停提问"
+    },
+    "interactive": {
+      "title": "你的电视会回应",
+      "subtitle": "点击角色，探索精彩瞬间，边看边玩实时问答",
+      "moments": "互动时刻",
+      "trivia": "实时问答"
+    },
+    "neverMiss": {
+      "title": "你的内容，你做主",
+      "subtitle": "AI驱动的回顾摘要，从Plex、IPTV和YouTube带入你自己的内容",
+      "catchup": "AI回顾",
+      "byoc": "带入你的内容"
+    },
+    "zehAni": {
+      "title": "自然地学习希伯来语",
+      "subtitle": "面部和手势识别在你观看时驱动个性化的希伯来语学习",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "用语音控制",
+      "subtitle": "说'Hey Bayit'来切换频道、搜索或提问 -- 解放双手",
+      "enableVoice": "启用语音控制",
+      "wakeWord": "唤醒词检测",
+      "continue": "继续",
+      "later": "稍后设置"
+    },
+    "launch": {
+      "title": "一切就绪",
+      "hint": "上滑查看频道，随时说'Hey Bayit'"
+    },
+    "skip": "跳过"
+  },
   "notFound": {
     "title": "页面未找到",
     "description": "您查找的页面不存在或已被移动。",
@@ -4401,8 +4450,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -4414,7 +4472,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",

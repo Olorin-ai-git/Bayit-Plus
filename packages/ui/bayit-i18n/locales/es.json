@@ -5038,6 +5038,55 @@
     "more": "Más",
     "playlist": "Lista de reproducción"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Bayit+",
+      "subtitle": "TV israelí, en tu idioma",
+      "continue": "Continuar"
+    },
+    "aiLanguage": {
+      "title": "Mira en {{language}}",
+      "subtitle": "Doblaje con IA, subtítulos en tiempo real y aprendizaje de hebreo -- todo integrado",
+      "dubbing": "Doblaje en vivo",
+      "subtitles": "Subtítulos inteligentes",
+      "engrew": "Engrew"
+    },
+    "pauseAsk": {
+      "title": "Pausa y pregunta lo que quieras",
+      "subtitle": "¿Curiosidad sobre una escena, actor o referencia? Solo pregunta -- la IA sabe lo que estás viendo",
+      "pill": "Pausar y preguntar"
+    },
+    "interactive": {
+      "title": "Tu TV te responde",
+      "subtitle": "Toca personajes, explora momentos y juega trivia en vivo mientras miras",
+      "moments": "Momentos interactivos",
+      "trivia": "Trivia en vivo"
+    },
+    "neverMiss": {
+      "title": "Tu contenido, a tu manera",
+      "subtitle": "Resúmenes de puesta al día con IA y trae tu propio contenido de Plex, IPTV y YouTube",
+      "catchup": "Resumen con IA",
+      "byoc": "Trae tu propio contenido"
+    },
+    "zehAni": {
+      "title": "Aprende hebreo, naturalmente",
+      "subtitle": "Reconocimiento facial y de gestos impulsa el aprendizaje personalizado de hebreo mientras miras",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "Controla con tu voz",
+      "subtitle": "Di 'Hey Bayit' para cambiar canales, buscar o hacer preguntas -- manos libres",
+      "enableVoice": "Activar control por voz",
+      "wakeWord": "Detección de palabra de activación",
+      "continue": "Continuar",
+      "later": "Configurar después"
+    },
+    "launch": {
+      "title": "Todo listo",
+      "hint": "Desliza hacia arriba para ver canales, di 'Hey Bayit' en cualquier momento"
+    },
+    "skip": "Omitir"
+  },
   "notFound": {
     "title": "Página no encontrada",
     "description": "La página que buscas no existe o se ha movido.",
@@ -5155,7 +5204,11 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -5167,7 +5220,10 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
+      "notIncluded": [
+        "Ver sin conexión",
+        "Perfiles familiares"
+      ]
     },
     "family": {
       "name": "Familiar",

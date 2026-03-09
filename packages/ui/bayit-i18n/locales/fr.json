@@ -3978,6 +3978,55 @@
     "more": "Plus",
     "playlist": "Liste de lecture"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur Bayit+",
+      "subtitle": "La télé israélienne, dans votre langue",
+      "continue": "Continuer"
+    },
+    "aiLanguage": {
+      "title": "Regardez en {{language}}",
+      "subtitle": "Doublage IA, sous-titres en temps réel et apprentissage de l'hébreu -- tout est intégré",
+      "dubbing": "Doublage en direct",
+      "subtitles": "Sous-titres intelligents",
+      "engrew": "Engrew"
+    },
+    "pauseAsk": {
+      "title": "Pause et posez vos questions",
+      "subtitle": "Curieux à propos d'une scène, d'un acteur ou d'une référence ? Demandez -- l'IA sait ce que vous regardez",
+      "pill": "Pause et demander"
+    },
+    "interactive": {
+      "title": "Votre télé vous répond",
+      "subtitle": "Touchez les personnages, explorez les moments et jouez au trivia en direct pendant que vous regardez",
+      "moments": "Moments interactifs",
+      "trivia": "Trivia en direct"
+    },
+    "neverMiss": {
+      "title": "Votre contenu, à votre façon",
+      "subtitle": "Résumés de rattrapage par IA et importez votre propre contenu depuis Plex, IPTV et YouTube",
+      "catchup": "Rattrapage IA",
+      "byoc": "Importez votre contenu"
+    },
+    "zehAni": {
+      "title": "Apprenez l'hébreu, naturellement",
+      "subtitle": "La reconnaissance faciale et gestuelle alimente un apprentissage personnalisé de l'hébreu pendant que vous regardez",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "Contrôlez avec votre voix",
+      "subtitle": "Dites 'Hey Bayit' pour changer de chaîne, rechercher ou poser des questions -- mains libres",
+      "enableVoice": "Activer le contrôle vocal",
+      "wakeWord": "Détection du mot de réveil",
+      "continue": "Continuer",
+      "later": "Configurer plus tard"
+    },
+    "launch": {
+      "title": "Vous êtes prêt",
+      "hint": "Glissez vers le haut pour les chaînes, dites 'Hey Bayit' à tout moment"
+    },
+    "skip": "Passer"
+  },
   "plans": {
     "basic": {
       "name": "Basique",
@@ -4003,7 +4052,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
