@@ -6084,13 +6084,22 @@
       "enableVoice": "הפעל שליטה קולית",
       "wakeWord": "זיהוי מילת הערה",
       "continue": "המשך",
-      "later": "אגדיר מאוחר יותר"
+      "later": "אגדיר מאוחר יותר",
+      "orType": "או הקלד את שמך"
     },
     "launch": {
       "title": "הכל מוכן",
       "hint": "החליקו למעלה לערוצים, אמרו 'Hey Bayit' בכל רגע"
     },
-    "skip": "דלג"
+    "skip": "דלג",
+    "complete": {
+      "title": "הכל מוכן!",
+      "subtitle": "החוויה המותאמת אישית שלך מוכנה. תהנה מ-Bayit+!",
+      "language": "שפה",
+      "name": "שם",
+      "startWatching": "התחל לצפות",
+      "saving": "שומר..."
+    }
   },
   "pairing": {
     "codePlaceholder": "הכנס קוד התאמה",

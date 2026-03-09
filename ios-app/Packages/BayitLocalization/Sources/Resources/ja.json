@@ -6574,13 +6574,22 @@
       "enableVoice": "音声操作を有効にする",
       "wakeWord": "ウェイクワード検出",
       "continue": "次へ",
-      "later": "後で設定"
+      "later": "後で設定",
+      "orType": "または名前を入力してください"
     },
     "launch": {
       "title": "準備完了",
       "hint": "上にスワイプでチャンネル一覧、いつでも 'Hey Bayit'"
     },
-    "skip": "スキップ"
+    "skip": "スキップ",
+    "complete": {
+      "title": "準備完了!",
+      "subtitle": "パーソナライズされた体験の準備ができました。Bayit+をお楽しみください!",
+      "language": "言語",
+      "name": "名前",
+      "startWatching": "視聴を開始",
+      "saving": "保存中..."
+    }
   },
   "pairing": {
     "codePlaceholder": "ペアリングコードを入力",

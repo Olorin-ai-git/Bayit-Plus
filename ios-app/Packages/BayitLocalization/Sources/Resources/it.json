@@ -6288,13 +6288,22 @@
       "enableVoice": "Attiva controllo vocale",
       "wakeWord": "Rilevamento parola chiave",
       "continue": "Continua",
-      "later": "Configura dopo"
+      "later": "Configura dopo",
+      "orType": "O digita il tuo nome"
     },
     "launch": {
       "title": "Tutto pronto",
       "hint": "Scorri verso l'alto per i canali, di 'Hey Bayit' in qualsiasi momento"
     },
-    "skip": "Salta"
+    "skip": "Salta",
+    "complete": {
+      "title": "Tutto pronto!",
+      "subtitle": "La tua esperienza personalizzata e pronta. Goditi Bayit+!",
+      "language": "Lingua",
+      "name": "Nome",
+      "startWatching": "Inizia a guardare",
+      "saving": "Salvataggio..."
+    }
   },
   "pairing": {
     "codePlaceholder": "Inserisci codice di associazione",

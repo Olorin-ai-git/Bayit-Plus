@@ -5884,13 +5884,22 @@
       "enableVoice": "Enable Voice Control",
       "wakeWord": "Wake Word Detection",
       "continue": "Continue",
-      "later": "Set up later"
+      "later": "Set up later",
+      "orType": "Or type your name"
     },
     "launch": {
       "title": "You're all set",
       "hint": "Swipe up for channels, say 'Hey Bayit' anytime"
     },
-    "skip": "Skip"
+    "skip": "Skip",
+    "complete": {
+      "title": "You're All Set!",
+      "subtitle": "Your personalized experience is ready. Enjoy Bayit+!",
+      "language": "Language",
+      "name": "Name",
+      "startWatching": "Start Watching",
+      "saving": "Saving..."
+    }
   },
   "pairing": {
     "codePlaceholder": "Enter pairing code",

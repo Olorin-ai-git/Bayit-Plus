@@ -6375,13 +6375,22 @@
       "enableVoice": "Activer le contrôle vocal",
       "wakeWord": "Détection du mot clé",
       "continue": "Continuer",
-      "later": "Configurer plus tard"
+      "later": "Configurer plus tard",
+      "orType": "Ou tapez votre nom"
     },
     "launch": {
       "title": "Tout est prêt",
       "hint": "Glissez vers le haut pour les chaînes, dites 'Hey Bayit' à tout moment"
     },
-    "skip": "Passer"
+    "skip": "Passer",
+    "complete": {
+      "title": "Tout est pret !",
+      "subtitle": "Votre experience personnalisee est prete. Profitez de Bayit+ !",
+      "language": "Langue",
+      "name": "Nom",
+      "startWatching": "Commencer a regarder",
+      "saving": "Enregistrement..."
+    }
   },
   "pairing": {
     "codePlaceholder": "Entrez le code d'appairage",

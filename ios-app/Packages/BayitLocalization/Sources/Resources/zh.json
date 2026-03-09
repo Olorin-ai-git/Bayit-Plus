@@ -6035,13 +6035,22 @@
       "enableVoice": "启用语音控制",
       "wakeWord": "唤醒词检测",
       "continue": "继续",
-      "later": "稍后设置"
+      "later": "稍后设置",
+      "orType": "或输入你的名字"
     },
     "launch": {
       "title": "一切就绪",
       "hint": "向上滑动查看频道，随时说 'Hey Bayit'"
     },
-    "skip": "跳过"
+    "skip": "跳过",
+    "complete": {
+      "title": "一切就绪!",
+      "subtitle": "您的个性化体验已准备就绪。享受 Bayit+!",
+      "language": "语言",
+      "name": "姓名",
+      "startWatching": "开始观看",
+      "saving": "保存中..."
+    }
   },
   "pairing": {
     "codePlaceholder": "输入配对码",
