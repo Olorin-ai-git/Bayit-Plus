@@ -1,7 +1,5 @@
 package tv.bayit.plus.feature.player
 
-import tv.bayit.plus.core.model.SubtitleEnglishMode
-import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.core.model.TranslationResult
 import tv.bayit.plus.core.model.TriviaFact
 import tv.bayit.plus.feature.player.chapters.ChapterMarker
@@ -77,10 +75,6 @@ data class PlayerExtendedState(
     val byocBackendContentId: String? = null,
     /** Set to true when BYOC enrichment completes after a manual "Fetch Subtitles" tap; consumed by UI to dismiss the sheet. */
     val shouldDismissOpenSubtitles: Boolean = false,
-    /** Currently selected Hebrew subtitle AI mode (Nikud, Shoresh, Heblish). */
-    val hebrewMode: SubtitleHebrewMode = SubtitleHebrewMode.STANDARD,
-    /** Currently selected English subtitle AI mode (Engrew). */
-    val englishMode: SubtitleEnglishMode = SubtitleEnglishMode.STANDARD,
     /** Whether an AI subtitle generation job is in progress. */
     val isGeneratingAISubtitles: Boolean = false,
 )

@@ -5,19 +5,20 @@ import android.content.pm.ActivityInfo
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
-import tv.bayit.plus.core.model.SubtitleEnglishMode
-import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.designsystem.component.GlassModal
 import tv.bayit.plus.feature.player.live.AIFeaturesPanelState
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
-import tv.bayit.plus.feature.player.subtitles.AISubtitlesPicker
-import tv.bayit.plus.feature.player.subtitles.EnglishModePicker
-import tv.bayit.plus.feature.player.subtitles.HebrewModePicker
+import tv.bayit.plus.feature.player.subtitles.AIGenerationConfirmDialog
+import tv.bayit.plus.feature.player.subtitles.AIGenerationRequest
 import tv.bayit.plus.feature.player.subtitles.OpenSubtitlesDownload
 import tv.bayit.plus.feature.player.subtitles.SplitSubtitleLanguagePicker
 import tv.bayit.plus.feature.player.subtitles.SubtitleLanguagePicker
@@ -96,9 +97,11 @@ internal fun PlayerScreenPickerSheets(
     onFetchExternalSubtitles: () -> Unit,
     onSelectExternalSubtitle: (ImportedTrack) -> Unit,
     onHideOpenSubtitles: () -> Unit,
-    onSetHebrewMode: (SubtitleHebrewMode) -> Unit = {},
-    onSetEnglishMode: (SubtitleEnglishMode) -> Unit = {},
+    onRequestAIGeneration: (AIGenerationRequest) -> Unit = {},
+    onConfirmAIGeneration: (AIGenerationRequest) -> Unit = {},
 ) {
+    var pendingAIRequest by remember { mutableStateOf<AIGenerationRequest?>(null) }
+
     if (showLanguagePicker) {
         AILanguagePicker(
             selectedLanguage = aiPanelState.selectedLanguage,
@@ -123,27 +126,25 @@ internal fun PlayerScreenPickerSheets(
                 onSplitToggle = onToggleSplitMode,
                 onOpenSubtitlesClick = onShowOpenSubtitles,
                 onDismiss = onHideSubtitlePicker,
+                onRequestAIGeneration = { request ->
+                    pendingAIRequest = request
+                    onHideSubtitlePicker()
+                },
             )
-
-            val selectedLang = extendedState.selectedSubtitleLanguage
-            if (selectedLang == "he") {
-                HebrewModePicker(
-                    selectedMode = extendedState.hebrewMode,
-                    onModeSelected = { mode ->
-                        onSetHebrewMode(mode)
-                        onHideSubtitlePicker()
-                    },
-                )
-            } else if (selectedLang == "en") {
-                EnglishModePicker(
-                    selectedMode = extendedState.englishMode,
-                    onModeSelected = { mode ->
-                        onSetEnglishMode(mode)
-                        onHideSubtitlePicker()
-                    },
-                )
-            }
         }
+    }
+
+    pendingAIRequest?.let { request ->
+        AIGenerationConfirmDialog(
+            request = request,
+            isGenerating = extendedState.isGeneratingAISubtitles,
+            onConfirm = { onConfirmAIGeneration(request) },
+            onDismiss = {
+                if (!extendedState.isGeneratingAISubtitles) {
+                    pendingAIRequest = null
+                }
+            },
+        )
     }
 
     if (showSplitSubtitlePicker) {

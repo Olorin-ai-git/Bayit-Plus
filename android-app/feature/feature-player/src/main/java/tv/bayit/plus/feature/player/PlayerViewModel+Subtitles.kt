@@ -6,8 +6,7 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
-import tv.bayit.plus.core.model.SubtitleEnglishMode
-import tv.bayit.plus.core.model.SubtitleHebrewMode
+import tv.bayit.plus.feature.player.subtitles.AIGenerationRequest
 
 /** Returns the backend content ID for BYOC items, or the local content ID otherwise. */
 private val PlayerViewModel.subtitleContentId: String?
@@ -81,47 +80,44 @@ fun PlayerViewModel.selectExternalSubtitle(track: ImportedTrack) {
     _extendedState.update { it.copy(selectedSubtitleLanguage = track.language, isSubtitlesEnabled = true) }
 }
 
-fun PlayerViewModel.setHebrewSubtitleMode(mode: SubtitleHebrewMode) {
-    _extendedState.update { it.copy(hebrewMode = mode) }
+/**
+ * Generates AI subtitle variant after user confirmation.
+ * Sets progress state, calls the generation endpoint with the correct
+ * content ID (backend ID for BYOC), then reloads available subtitles.
+ */
+fun PlayerViewModel.generateAISubtitles(request: AIGenerationRequest) {
     val contentId = subtitleContentId ?: return
-    val lang = _extendedState.value.selectedSubtitleLanguage ?: "he"
-    if (mode != SubtitleHebrewMode.STANDARD) {
-        triggerAIGeneration(contentId, lang, mode, null)
-    }
-    subtitleDelegate.loadTrackWithMode(contentId, lang, mode, null, viewModelScope) { t -> _extendedState.update(t) }
-}
-
-fun PlayerViewModel.setEnglishSubtitleMode(mode: SubtitleEnglishMode) {
-    _extendedState.update { it.copy(englishMode = mode) }
-    val contentId = subtitleContentId ?: return
-    val lang = _extendedState.value.selectedSubtitleLanguage ?: "en"
-    if (mode != SubtitleEnglishMode.STANDARD) {
-        triggerAIGeneration(contentId, lang, null, mode)
-    }
-    subtitleDelegate.loadTrackWithMode(contentId, lang, null, mode, viewModelScope) { t -> _extendedState.update(t) }
-}
-
-private fun PlayerViewModel.triggerAIGeneration(
-    contentId: String,
-    language: String,
-    hebrewMode: SubtitleHebrewMode?,
-    englishMode: SubtitleEnglishMode?,
-) {
     _extendedState.update { it.copy(isGeneratingAISubtitles = true) }
     viewModelScope.launch {
         val repo = subtitleDelegate.subtitleRepository
-        val result: BayitResult<Any> = when {
-            hebrewMode == SubtitleHebrewMode.NIKUD -> repo.generateNikud(contentId, language, false)
-            hebrewMode == SubtitleHebrewMode.SHORESH -> repo.generateShoresh(contentId, language, false)
-            hebrewMode == SubtitleHebrewMode.HEBLISH -> repo.generateHeblish(contentId, language, false)
-            englishMode == SubtitleEnglishMode.ENGREW -> repo.generateEngrew(contentId, language, false)
-            else -> return@launch
+        val result: BayitResult<Any> = when (request.modeName) {
+            "nikud" -> repo.generateNikud(contentId, request.languageCode, false)
+            "shoresh" -> repo.generateShoresh(contentId, request.languageCode, false)
+            "heblish" -> repo.generateHeblish(contentId, request.languageCode, false)
+            "engrew" -> repo.generateEngrew(contentId, request.languageCode, false)
+            "grammar_flip" -> repo.generateGrammarFlip(contentId, request.languageCode, false)
+            "slang_synthesis" -> repo.generateSlangSynthesis(contentId, request.languageCode, false)
+            else -> {
+                _extendedState.update { it.copy(isGeneratingAISubtitles = false) }
+                return@launch
+            }
         }
         _extendedState.update { it.copy(isGeneratingAISubtitles = false) }
-        if (result is BayitResult.Success) {
-            subtitleDelegate.loadTrackWithMode(
-                contentId, language, hebrewMode, englishMode, viewModelScope,
-            ) { t -> _extendedState.update(t) }
+        when (result) {
+            is BayitResult.Success -> {
+                _extendedState.update {
+                    it.copy(
+                        subtitleBannerMessage = "AI ${request.modeName.replaceFirstChar { c -> c.uppercase() }} subtitles generated",
+                    )
+                }
+                subtitleDelegate.loadAvailableSubtitles(contentId, viewModelScope) { t -> _extendedState.update(t) }
+            }
+            is BayitResult.Error -> {
+                _extendedState.update {
+                    it.copy(subtitleBannerMessage = "Generation failed: ${result.message}")
+                }
+            }
+            is BayitResult.Loading -> Unit
         }
     }
 }

@@ -146,8 +146,7 @@ internal fun ReadyContent(
                             // Regular mode: single subtitle
                             tv.bayit.plus.feature.player.subtitles.SubtitleCueOverlay(
                                 activeCue = extendedState.activeCue,
-                                hebrewMode = extendedState.hebrewMode,
-                                englishMode = extendedState.englishMode,
+                                hebrewMode = tv.bayit.plus.core.model.SubtitleHebrewMode.STANDARD,
                                 translationResult = extendedState.translationResult,
                                 onWordTap = onWordTap,
                                 onDismissTranslation = onDismissTranslation,
