@@ -46,7 +46,7 @@ class PlexClient @Inject constructor(
     }
 
     suspend fun pollForToken(code: PlexDeviceCode): String {
-        while (true) {
+        repeat(MAX_POLL_ATTEMPTS) {
             delay(POLL_INTERVAL_MS)
             val response = plexTvApi.checkPin(
                 pinId = code.id,
@@ -57,6 +57,7 @@ class PlexClient @Inject constructor(
                 return token
             }
         }
+        throw PlexAuthException("PIN expired after $MAX_POLL_ATTEMPTS poll attempts")
     }
 
     suspend fun discoverServers(authToken: String, clientId: String): List<PlexServer> {
@@ -166,7 +167,10 @@ class PlexClient @Inject constructor(
         private const val JSON_MEDIA_TYPE = "application/json"
         private const val PRODUCT_NAME = "Bayit+"
         private const val POLL_INTERVAL_MS = 3000L
+        private const val MAX_POLL_ATTEMPTS = 100
         private const val DEFAULT_PLEX_PORT = 32400
         private const val MILLIS_PER_SECOND = 1000
     }
 }
+
+class PlexAuthException(message: String) : Exception(message)
