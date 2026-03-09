@@ -76,3 +76,9 @@ func settingsIconToggleRow(
         .padding(DesignTokens.Spacing.md)
     }
 }
+
+extension Bundle {
+    var shortVersion: String {
+        infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }
+}

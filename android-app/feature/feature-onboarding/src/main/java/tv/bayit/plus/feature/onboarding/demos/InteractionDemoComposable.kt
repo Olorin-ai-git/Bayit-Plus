@@ -128,6 +128,21 @@ fun InteractionDemoComposable(
             CuratedMomentsTooltip()
         }
 
+        AnimatedVisibility(
+            visible = revealedCount >= TOTAL_MESSAGES,
+            enter = fadeIn(),
+            modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base),
+        ) {
+            Text(
+                text = stringResource(R.string.demo_interaction_credit_info),
+                style = MaterialTheme.typography.bodySmall,
+                color = DesignTokens.Colors.Text.muted,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = DesignTokens.Spacing.sm),
+            )
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         GlassButton(

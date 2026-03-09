@@ -23,6 +23,7 @@ private val KEY_CURRENT_INDEX = intPreferencesKey("current_card_index")
 private val KEY_COMPLETED_CARDS = stringSetPreferencesKey("completed_cards")
 private val KEY_DEMO_TAPPED = stringSetPreferencesKey("demo_cards_tapped")
 private val KEY_PROMPT_DISMISS_COUNT = intPreferencesKey("prompt_dismiss_count")
+private val KEY_LAST_SEEN_VERSION = intPreferencesKey("last_seen_version")
 
 data class TourLocalState(
     val completionStatus: String,
@@ -101,5 +102,14 @@ class TourDataStore @Inject constructor(
             val current = prefs[KEY_PROMPT_DISMISS_COUNT] ?: 0
             prefs[KEY_PROMPT_DISMISS_COUNT] = current + 1
         }
+    }
+
+    suspend fun getLastSeenVersion(): Int {
+        val prefs = dataStore.data.first()
+        return prefs[KEY_LAST_SEEN_VERSION] ?: 0
+    }
+
+    suspend fun setLastSeenVersion(version: Int) {
+        dataStore.edit { prefs -> prefs[KEY_LAST_SEEN_VERSION] = version }
     }
 }

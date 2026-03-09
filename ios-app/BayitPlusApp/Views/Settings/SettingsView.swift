@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Environment(LocalizationManager.self) var localization
     @Environment(AuthManager.self) private var authManager
     @Environment(UserUIPreferencesStore.self) private var uiPreferences
+    @Environment(TooltipManager.self) private var tooltipManager
     @State private var viewModel: SettingsViewModel?
     @State private var showDeleteAccountConfirmation = false
 
@@ -64,11 +65,11 @@ struct SettingsView: View {
             toggleRow(icon: "waveform.circle", title: localization.t("settings.showVoiceControlFAB"),
                       isOn: vm.showVoiceControlFAB) { v in Task { await vm.updateShowVoiceControlFAB(v) } }
             interactiveMomentsRow(vm)
+            toggleRow(icon: "lightbulb.max", title: localization.t("settings.showFeatureTips"),
+                      isOn: !tooltipManager.tipsDisabled) { v in tooltipManager.tipsDisabled = !v }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
-
-    // MARK: - Privacy Links
 
     private var privacySection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
@@ -198,11 +199,5 @@ struct SettingsView: View {
                 }.padding(DesignTokens.Spacing.md)
             }
         }
-    }
-}
-
-private extension Bundle {
-    var shortVersion: String {
-        infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
     }
 }

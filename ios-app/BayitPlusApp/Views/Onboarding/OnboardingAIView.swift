@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -8,7 +9,10 @@ struct OnboardingAIView: View {
     @Environment(RepositoryProvider.self) var repos
     @Environment(LocalizationManager.self) var localization
     @Environment(NavigationCoordinator.self) var coordinator
+    @Environment(AuthManager.self) var authManager
     @State private var viewModel: OnboardingAIViewModel?
+    @State private var tourViewModel: FeatureTourViewModel?
+    @State private var showTour = false
 
     var body: some View {
         ZStack {
@@ -24,9 +28,28 @@ struct OnboardingAIView: View {
                 ScreenLoadingView()
             }
         }
+        .fullScreenCover(isPresented: $showTour) {
+            if let tourVM = tourViewModel {
+                FeatureTourView(viewModel: tourVM) {
+                    showTour = false
+                }
+                .environment(localization)
+            }
+        }
         .task {
             if viewModel == nil {
                 viewModel = OnboardingAIViewModel(userRepository: repos.user)
+            }
+            if tourViewModel == nil {
+                let userId = authManager.user?.id ?? "anonymous"
+                let tourVM = FeatureTourViewModel(
+                    apiClient: repos.apiClient,
+                    userId: userId
+                )
+                tourViewModel = tourVM
+                if tourVM.shouldShowTour {
+                    showTour = true
+                }
             }
         }
     }

@@ -15,6 +15,8 @@ struct TVOnboardingView: View {
 
     @State private var viewModel: TVOnboardingViewModel?
     @State private var showBYOCSources = false
+    @State private var tourViewModel: TVFeatureTourViewModel?
+    @State private var showTour = false
 
     var body: some View {
         ZStack {
@@ -31,6 +33,14 @@ struct TVOnboardingView: View {
                     .scaleEffect(2.0)
             }
         }
+        .fullScreenCover(isPresented: $showTour) {
+            if let tourVM = tourViewModel {
+                TVFeatureTourView(viewModel: tourVM) {
+                    showTour = false
+                }
+                .environment(localization)
+            }
+        }
         .task {
             if viewModel == nil {
                 let vm = TVOnboardingViewModel(
@@ -41,6 +51,16 @@ struct TVOnboardingView: View {
                 viewModel = vm
                 if vm.isComplete {
                     onComplete()
+                }
+            }
+            if tourViewModel == nil {
+                let tourVM = TVFeatureTourViewModel(
+                    apiClient: repos.apiClient,
+                    userId: profileId
+                )
+                tourViewModel = tourVM
+                if tourVM.shouldShowTour {
+                    showTour = true
                 }
             }
         }

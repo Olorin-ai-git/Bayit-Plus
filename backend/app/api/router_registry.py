@@ -58,7 +58,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
-                                onboarding, party, password_reset, payments,
+                                onboarding, onboarding_tour, party, password_reset, payments,
                                 playback_session, podcasts, profile_controls, profile_stats,
                                 profiles, profiles_me, profiles_preferences, user_settings,
                                 radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
@@ -399,6 +399,11 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(ritual.router, prefix=prefix, tags=["ritual"])
     app.include_router(
         onboarding.router, prefix=f"{prefix}/onboarding/ai", tags=["ai-onboarding"]
+    )
+    app.include_router(
+        onboarding_tour.router,
+        prefix=f"{prefix}/onboarding",
+        tags=["onboarding-tour"],
     )
     app.include_router(
         avatar_dialogue.router, prefix=prefix, tags=["avatar-dialogue"]

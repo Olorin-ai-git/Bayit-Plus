@@ -64,8 +64,10 @@ final class RepositoryProvider {
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
     let storeManager: StoreManager
+    let apiClient: APIClient
 
     init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration) {
+        apiClient = client
         actor = APIActorRepository(client: client)
         content = APIContentRepository(client: client)
         liveTV = APILiveTVRepository(client: client)

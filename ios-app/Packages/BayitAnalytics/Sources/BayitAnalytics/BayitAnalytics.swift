@@ -84,6 +84,14 @@ public enum BayitAnalyticsEvent {
     public static let dubbingEnabled = "dubbing_enabled"
     public static let castStarted = "cast_started"
     public static let downloadStarted = "download_started"
+    // Onboarding tour events
+    public static let onboardingTourStart = "onboarding_tour_start"
+    public static let onboardingCardView = "onboarding_card_view"
+    public static let onboardingDemoTap = "onboarding_demo_tap"
+    public static let onboardingDemoComplete = "onboarding_demo_complete"
+    public static let onboardingTourComplete = "onboarding_tour_complete"
+    public static let onboardingTourSkip = "onboarding_tour_skip"
+    public static let onboardingTourResume = "onboarding_tour_resume"
 }
 
 /// Standard parameter name constants.
@@ -100,4 +108,8 @@ public enum BayitAnalyticsParam {
     public static let quality = "quality"
     public static let duration = "duration"
     public static let position = "position"
+    public static let featureKey = "feature_key"
+    public static let cardIndex = "card_index"
+    public static let tourVersion = "tour_version"
+    public static let completionStatus = "completion_status"
 }

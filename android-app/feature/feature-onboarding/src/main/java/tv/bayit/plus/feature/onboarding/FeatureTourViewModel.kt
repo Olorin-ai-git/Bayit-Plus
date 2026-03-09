@@ -22,26 +22,24 @@ class FeatureTourViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val api: OnboardingTourApi = apiClient.createService()
-
     val cards: List<FeatureCard> = buildFeatureCards()
-
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex: StateFlow<Int> = _currentIndex.asStateFlow()
-
     private val _completionStatus = MutableStateFlow("not_started")
     val completionStatus: StateFlow<String> = _completionStatus.asStateFlow()
-
     private val _demoCardsTapped = MutableStateFlow<Set<String>>(emptySet())
     val demoCardsTapped: StateFlow<Set<String>> = _demoCardsTapped.asStateFlow()
-
     private val _showPersonalization = MutableStateFlow(false)
     val showPersonalization: StateFlow<Boolean> = _showPersonalization.asStateFlow()
+    private var lastSeenVersion: Int = 0
 
+    val hasNewCards: Boolean get() = lastSeenVersion < TOUR_VERSION
     val shouldShowTour: Boolean
         get() = _completionStatus.value == "not_started" || _completionStatus.value == "in_progress"
 
     init {
         loadLocalState()
+        syncWithServer()
     }
 
     fun startTour() {
@@ -113,48 +111,31 @@ class FeatureTourViewModel @Inject constructor(
         }
     }
 
-    fun showPersonalizationStep() {
-        _showPersonalization.value = true
-    }
+    fun showPersonalizationStep() { _showPersonalization.value = true }
 
-    fun completeTourWithPreferences(
-        languages: Set<String>,
-        genres: Set<String>,
-        hasChildren: Boolean,
-    ) {
-        viewModelScope.launch {
-            _completionStatus.value = "completed"
-            tourDataStore.setCompleted()
-            val preferences = buildMap {
-                put("content_languages", languages.joinToString(","))
-                put("genres", genres.joinToString(","))
-                put("has_children", hasChildren.toString())
-            }
-            runCatching {
-                apiClient.safeApiCall {
-                    api.completeTour(
-                        CompleteTourRequest(
-                            platform = PLATFORM,
-                            tourVersion = TOUR_VERSION,
-                            preferences = preferences,
-                        ),
-                    )
-                }
-            }.onFailure { e -> logger.error("Failed to sync tour completion", error = e) }
-            logger.info("Feature tour completed with preferences")
+    fun completeTourWithPreferences(languages: Set<String>, genres: Set<String>, hasChildren: Boolean) {
+        val preferences = buildMap {
+            put("content_languages", languages.joinToString(","))
+            put("genres", genres.joinToString(","))
+            put("has_children", hasChildren.toString())
         }
+        markTourCompleted(preferences, "Feature tour completed with preferences")
     }
 
-    fun finalizeTour() {
+    fun finalizeTour() { markTourCompleted(label = "Feature tour completed") }
+
+    private fun markTourCompleted(preferences: Map<String, String>? = null, label: String) {
         viewModelScope.launch {
             _completionStatus.value = "completed"
             tourDataStore.setCompleted()
+            lastSeenVersion = TOUR_VERSION
+            tourDataStore.setLastSeenVersion(TOUR_VERSION)
             runCatching {
                 apiClient.safeApiCall {
-                    api.completeTour(CompleteTourRequest(platform = PLATFORM, tourVersion = TOUR_VERSION))
+                    api.completeTour(CompleteTourRequest(PLATFORM, TOUR_VERSION, preferences))
                 }
             }.onFailure { e -> logger.error("Failed to sync tour completion", error = e) }
-            logger.info("Feature tour completed")
+            logger.info(label)
         }
     }
 
@@ -164,7 +145,27 @@ class FeatureTourViewModel @Inject constructor(
             _currentIndex.value = state.currentCardIndex
             _completionStatus.value = state.completionStatus
             _demoCardsTapped.value = state.demoCardsTapped
+            lastSeenVersion = tourDataStore.getLastSeenVersion()
             logger.debug("Tour local state loaded", mapOf("status" to state.completionStatus))
+        }
+    }
+
+    private fun syncWithServer() {
+        viewModelScope.launch {
+            runCatching {
+                val response = apiClient.safeApiCall { api.getTourState() }
+                if (response.completionStatus == "completed" && _completionStatus.value == "not_started") {
+                    _completionStatus.value = "completed"
+                    tourDataStore.setCompleted()
+                }
+                if (response.tourVersion > lastSeenVersion) {
+                    lastSeenVersion = response.tourVersion
+                    tourDataStore.setLastSeenVersion(response.tourVersion)
+                }
+                logger.debug("Tour state synced from server", mapOf("serverVersion" to response.tourVersion.toString()))
+            }.onFailure { e ->
+                logger.error("Failed to sync tour state from server", error = e)
+            }
         }
     }
 

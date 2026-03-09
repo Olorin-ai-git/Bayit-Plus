@@ -59,6 +59,7 @@ final class TVRepositoryProvider {
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
+    let apiClient: APIClient
 
     init(
         client: APIClient,
@@ -66,6 +67,7 @@ final class TVRepositoryProvider {
         authTokenProvider: AuthTokenProvider,
         configuration: any EnvironmentConfiguration
     ) {
+        apiClient = client
         actor = APIActorRepository(client: client)
         content = APIContentRepository(client: client)
         liveTV = APILiveTVRepository(client: client)

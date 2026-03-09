@@ -18,10 +18,18 @@ struct InteractionDemoView: View {
         ]
     }
 
+    private var allMessagesShown: Bool {
+        messageIndex >= messages.count
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             headerSection
             frameSection
+            if allMessagesShown {
+                curatedMomentsHint
+                creditInfoFooter
+            }
         }
         .background(DesignTokens.Background.primary)
     }
@@ -111,6 +119,33 @@ struct InteractionDemoView: View {
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         .padding(DesignTokens.Spacing.md)
+    }
+
+    private var curatedMomentsHint: some View {
+        HStack(spacing: DesignTokens.Spacing.sm) {
+            Image(systemName: "sparkles")
+                .foregroundStyle(DesignTokens.Colors.accentPrimary)
+            Text(localization.t("onboarding.tour.interaction.curatedMoments"))
+                .font(DesignTokens.Typography.callout)
+                .foregroundStyle(DesignTokens.Colors.textSecondary)
+                .multilineTextAlignment(.leading)
+        }
+        .padding(DesignTokens.Spacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(DesignTokens.Glass.bg)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .transition(.opacity)
+    }
+
+    private var creditInfoFooter: some View {
+        Text(localization.t("onboarding.tour.interaction.creditInfo"))
+            .font(DesignTokens.Typography.caption)
+            .foregroundStyle(DesignTokens.Colors.textTertiary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, DesignTokens.Spacing.xl)
+            .padding(.bottom, DesignTokens.Spacing.md)
+            .transition(.opacity)
     }
 
     private func advanceMessages() {

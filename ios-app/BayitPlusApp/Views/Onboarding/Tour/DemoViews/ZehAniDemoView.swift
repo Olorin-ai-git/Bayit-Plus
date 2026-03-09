@@ -15,6 +15,9 @@ struct ZehAniDemoView: View {
         VStack(spacing: 0) {
             headerSection
             cameraSection
+            if cameraReady {
+                vocabOverlay
+            }
             consentNote
         }
         .background(DesignTokens.Background.primary)
@@ -76,6 +79,28 @@ struct ZehAniDemoView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DesignTokens.Glass.bg)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+    }
+
+    private var vocabOverlay: some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                Text(localization.t("onboarding.tour.zehAni.vocabWord"))
+                    .font(DesignTokens.Typography.title3)
+                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                Text(localization.t("onboarding.tour.zehAni.vocabTransliteration"))
+                    .font(DesignTokens.Typography.caption)
+                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+            }
+            Spacer()
+            Text(localization.t("onboarding.tour.zehAni.vocabTranslation"))
+                .font(DesignTokens.Typography.body)
+                .foregroundStyle(DesignTokens.Colors.accentPrimary)
+        }
+        .padding(DesignTokens.Spacing.md)
+        .background(DesignTokens.Glass.bg)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
     }
 
     private var consentNote: some View {

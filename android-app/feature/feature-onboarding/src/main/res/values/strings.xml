@@ -101,8 +101,9 @@
     <string name="demo_close">Close</string>
     <string name="demo_banner_label"># DEMO-ONLY</string>
 
-    <!-- Demo: Interaction (T067) - curated moments tooltip -->
+    <!-- Demo: Interaction (T067) - curated moments tooltip + credit info -->
     <string name="demo_interaction_curated_moments">Look for the star icon during playback to find curated moments for character interactions.</string>
+    <string name="demo_interaction_credit_info">Interactions use AI credits. Free users get 5 per day.</string>
 
     <!-- Demo: Zeh Ani (T070) - vocabulary overlay -->
     <string name="demo_zeh_ani_vocab_word">\u05E9\u05DC\u05D5\u05DD</string>

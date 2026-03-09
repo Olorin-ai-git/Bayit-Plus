@@ -8,6 +8,25 @@ from pydantic import BaseModel, EmailStr, Field, validator
 from app.models.recording import RecordingQuota
 
 
+class OnboardingTour(BaseModel):
+    """Embedded document tracking feature discovery tour state."""
+
+    platform: Optional[str] = None
+    tour_version: int = 0
+    current_card_index: int = 0
+    completion_status: str = "not_started"
+    completed_cards: List[str] = Field(default_factory=list)
+    demo_cards_tapped: List[str] = Field(default_factory=list)
+    language: Optional[str] = None
+    preferences: Optional[dict] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    skipped_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class Device(BaseModel):
     """
     Represents a registered device for a user.
@@ -286,6 +305,9 @@ class User(Document):
     # Profile management
     active_profile_id: Optional[str] = None
     kids_pin: Optional[str] = None  # Master PIN for exiting kids profiles
+
+    # Onboarding tour state
+    onboarding_tour: Optional[OnboardingTour] = None
 
     # Ban info
     is_banned: bool = False

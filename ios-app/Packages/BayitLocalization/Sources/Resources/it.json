@@ -6328,6 +6328,83 @@
       "youtubeDesc": "Video dalle tue iscrizioni",
       "connectNow": "Connetti una Fonte",
       "skipForNow": "Configura Dopo"
+    },
+    "tour": {
+      "title": "Discover Bayit+",
+      "skipButton": "Skip Tour",
+      "getStarted": "Get Started",
+      "continuePrompt": "Continue where you left off?",
+      "replayLabel": "Replay Feature Tour",
+      "tryItNow": "Try It Now",
+      "cardProgress": "Card {current} of {total}",
+      "dubbing": {
+        "title": "Live AI Dubbing",
+        "tagline": "Watch Israeli TV in your language",
+        "description": "Every live channel dubbed in real time into English, French, Spanish, Italian, Bengali, Hindi, Japanese, Tamil, and Chinese."
+      },
+      "trivia": {
+        "title": "Live Trivia",
+        "tagline": "Learn while you watch",
+        "description": "AI-generated facts and trivia pop up during live TV, sourced from the web and matched to what's on screen."
+      },
+      "subtitles": {
+        "title": "Smart Subtitles",
+        "tagline": "Four subtitle modes",
+        "description": "Switch between Original Hebrew, Nikud (voweled), Engrew, and Heblish subtitles on any content.",
+        "mode": {
+          "original": "Original",
+          "nikud": "Nikud",
+          "engrew": "Engrew",
+          "heblish": "Heblish"
+        }
+      },
+      "engrewHeblish": {
+        "title": "Engrew and Heblish",
+        "tagline": "Bridge two languages",
+        "description": "Engrew writes English words in Hebrew letters. Heblish writes Hebrew words in Latin script. Both help you learn naturally."
+      },
+      "pauseAndAsk": {
+        "title": "Pause and Ask",
+        "tagline": "Talk to any scene",
+        "description": "Pause any moment and ask questions about what's happening. AI answers using the scene context."
+      },
+      "interaction": {
+        "title": "Movie Interactions",
+        "tagline": "Chat with characters",
+        "description": "Tap highlighted characters during curated moments to start a conversation. Look for the star icon during playback.",
+        "creditInfo": "Each exchange uses 1 AI credit. Premium subscribers get unlimited interactions.",
+        "tapCharacter": "Tap a character to start talking",
+        "curatedMoments": "Look for the star icon during playback for interactive moments"
+      },
+      "zehAni": {
+        "title": "Zeh Ani - Magic Mirror",
+        "tagline": "Your personal avatar",
+        "description": "Create a 3D avatar from a selfie. Use it for interactive features, vocabulary practice, and social connections.",
+        "consent": "Camera access is used only on-device. No photos are sent to our servers.",
+        "enableCamera": "Enable Camera",
+        "noDataSent": "All processing happens on your device",
+        "vocabWord": "Word of the day",
+        "vocabTransliteration": "Transliteration",
+        "vocabTranslation": "Translation"
+      },
+      "catchup": {
+        "title": "7-Day Catchup",
+        "tagline": "Never miss a moment",
+        "description": "Scroll back up to 7 days on any channel. AI summaries help you jump to the best moments. Programs up to 4 hours supported."
+      },
+      "byoc": {
+        "title": "Bring Your Own Content",
+        "tagline": "Your media, our AI",
+        "description": "Connect Plex, YouTube, IPTV, Xtream, USB, or cloud storage. All AI features work on your content too."
+      },
+      "personalization": {
+        "title": "Personalize Your Experience",
+        "subtitle": "Help us recommend the best content for you",
+        "languages": "Content Languages",
+        "genres": "Favorite Genres",
+        "hasChildren": "Do you have children?",
+        "done": "Done"
+      }
     }
   },
   "pairing": {
@@ -7925,6 +8002,7 @@
     "autoplay": "Riproduzione automatica",
     "showWidgetsDock": "Barra widget",
     "showVoiceControlFAB": "Pulsante controllo vocale",
+    "showFeatureTips": "Mostra suggerimenti",
     "appearance": "Aspetto",
     "darkMode": "Modalità scura",
     "privacy": {
