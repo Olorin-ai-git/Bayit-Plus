@@ -113,7 +113,7 @@ struct TVOnboardingWelcomeStep: View {
             }
             .frame(maxWidth: .infinity, minHeight: TVDesignTokens.MinSize.focusableHeight)
             .background(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                     .fill(
                         isSelected
                             ? DesignTokens.Primary.default
@@ -121,7 +121,7 @@ struct TVOnboardingWelcomeStep: View {
                     )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                     .strokeBorder(
                         isSelected
                             ? DesignTokens.Primary.p500
@@ -130,7 +130,6 @@ struct TVOnboardingWelcomeStep: View {
                     )
             )
         }
-        .buttonStyle(.plain)
         .tvCardStyle()
     }
 

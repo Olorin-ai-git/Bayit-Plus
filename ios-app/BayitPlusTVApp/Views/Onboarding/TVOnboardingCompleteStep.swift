@@ -76,21 +76,7 @@ struct TVOnboardingCompleteStep: View {
             summaryCard(
                 icon: "globe",
                 title: localization.t("onboarding.complete.language"),
-                value: viewModel.primaryLanguage.uppercased()
-            )
-
-            if let culture = viewModel.selectedCulture {
-                summaryCard(
-                    icon: "building.columns",
-                    title: localization.t("onboarding.complete.culture"),
-                    value: localization.t("onboarding.culture.\(culture)")
-                )
-            }
-
-            summaryCard(
-                icon: "heart.fill",
-                title: localization.t("onboarding.complete.interests"),
-                value: "\(viewModel.selectedInterests.count)"
+                value: localization.currentLanguage.displayName
             )
 
             if !viewModel.userName.isEmpty {

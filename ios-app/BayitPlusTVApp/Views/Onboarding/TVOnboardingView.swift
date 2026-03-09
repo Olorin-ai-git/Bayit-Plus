@@ -1,11 +1,9 @@
-import BayitBYOC
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Multi-step onboarding flow controller for first-run personalization.
-/// Steps: Welcome -> Language -> Culture -> Interests -> Voice Name -> Complete
+/// Multi-step onboarding flow matching iOS: Welcome -> Feature Cards -> Voice -> Complete
 struct TVOnboardingView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
@@ -14,19 +12,25 @@ struct TVOnboardingView: View {
     let onComplete: () -> Void
 
     @State private var viewModel: TVOnboardingViewModel?
-    @State private var showBYOCSources = false
     @State private var tourViewModel: TVFeatureTourViewModel?
     @State private var showTour = false
 
     var body: some View {
         ZStack {
-            backgroundGradient
+            DesignTokens.Colors.Background.primary.ignoresSafeArea()
 
             if let vm = viewModel {
                 VStack(spacing: 0) {
-                    stepIndicator(vm: vm)
+                    if vm.currentStep != .complete {
+                        topBar(vm: vm)
+                    }
                     stepContent(vm: vm)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 }
+                .animation(.easeInOut(duration: 0.4), value: vm.currentStep)
             } else {
                 ProgressView()
                     .tint(DesignTokens.Primary.default)
@@ -68,11 +72,33 @@ struct TVOnboardingView: View {
         }
     }
 
-    // MARK: - Step Indicator
+    // MARK: - Top Bar (Progress + Skip)
 
-    private func stepIndicator(vm: TVOnboardingViewModel) -> some View {
+    private func topBar(vm: TVOnboardingViewModel) -> some View {
+        HStack {
+            progressCapsules(vm: vm)
+            Spacer()
+            Button {
+                vm.skipOnboarding()
+                onComplete()
+            } label: {
+                Text(localization.t("onboarding.skip"))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxxxl)
+        .padding(.top, TVDesignTokens.Spacing.xl)
+        .padding(.bottom, TVDesignTokens.Spacing.sm)
+    }
+
+    private func progressCapsules(vm: TVOnboardingViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.xs) {
-            ForEach(TVOnboardingStep.allCases, id: \.rawValue) { step in
+            ForEach(
+                TVOnboardingStep.allCases.filter { $0 != .complete },
+                id: \.rawValue
+            ) { step in
                 Capsule()
                     .fill(
                         step.rawValue <= vm.currentStep.rawValue
@@ -80,11 +106,9 @@ struct TVOnboardingView: View {
                             : DesignTokens.Glass.bgMedium
                     )
                     .frame(height: 4)
-                    .animation(.easeInOut, value: vm.currentStep)
             }
         }
-        .padding(.horizontal, TVDesignTokens.Spacing.xxxxl)
-        .padding(.top, TVDesignTokens.Spacing.xl)
+        .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
     }
 
     // MARK: - Step Content
@@ -100,32 +124,60 @@ struct TVOnboardingView: View {
                     onComplete()
                 }
             )
-            .transition(.move(edge: .trailing))
 
-        case .language:
-            TVOnboardingLanguageStep(viewModel: vm)
-                .transition(.move(edge: .trailing))
+        case .aiLanguage:
+            TVOnboardingFeatureCard(
+                imageName: "onboarding_ai_language",
+                titleKey: "onboarding.aiLanguage.title",
+                titleArgs: ["language": localization.currentLanguage.displayName],
+                subtitleKey: "onboarding.aiLanguage.subtitle",
+                pills: [
+                    "onboarding.aiLanguage.dubbing",
+                    "onboarding.aiLanguage.subtitles",
+                    "onboarding.aiLanguage.engrew",
+                ]
+            ) { vm.nextStep() }
 
-        case .culture:
-            TVOnboardingCultureStep(viewModel: vm)
-                .transition(.move(edge: .trailing))
+        case .pauseAsk:
+            TVOnboardingFeatureCard(
+                imageName: "onboarding_pause_ask",
+                titleKey: "onboarding.pauseAsk.title",
+                subtitleKey: "onboarding.pauseAsk.subtitle",
+                pills: ["onboarding.pauseAsk.pill"]
+            ) { vm.nextStep() }
 
-        case .interests:
-            TVOnboardingInterestsStep(viewModel: vm)
-                .transition(.move(edge: .trailing))
+        case .interactive:
+            TVOnboardingFeatureCard(
+                imageName: "onboarding_interactive",
+                titleKey: "onboarding.interactive.title",
+                subtitleKey: "onboarding.interactive.subtitle",
+                pills: [
+                    "onboarding.interactive.moments",
+                    "onboarding.interactive.trivia",
+                ]
+            ) { vm.nextStep() }
 
-        case .byoc:
-            TVOnboardingBYOCStep(viewModel: vm) {
-                showBYOCSources = true
-            }
-            .transition(.move(edge: .trailing))
-            .fullScreenCover(isPresented: $showBYOCSources) {
-                TVBYOCSourceListView(onDismiss: { showBYOCSources = false })
-            }
+        case .neverMiss:
+            TVOnboardingFeatureCard(
+                imageName: "onboarding_catchup_byoc",
+                titleKey: "onboarding.neverMiss.title",
+                subtitleKey: "onboarding.neverMiss.subtitle",
+                pills: [
+                    "onboarding.neverMiss.catchup",
+                    "onboarding.neverMiss.byoc",
+                ]
+            ) { vm.nextStep() }
 
-        case .voiceName:
+        case .zehAni:
+            TVOnboardingFeatureCard(
+                imageName: "onboarding_zeh_ani",
+                titleKey: "onboarding.zehAni.title",
+                subtitleKey: "onboarding.zehAni.subtitle",
+                pills: ["onboarding.zehAni.pill"]
+            ) { vm.nextStep() }
+
+        case .voiceSetup:
             TVOnboardingVoiceStep(viewModel: vm)
-                .transition(.move(edge: .trailing))
 
         case .complete:
             TVOnboardingCompleteStep(viewModel: vm) {
@@ -134,21 +186,6 @@ struct TVOnboardingView: View {
                     onComplete()
                 }
             }
-            .transition(.move(edge: .trailing))
         }
-    }
-
-    // MARK: - Background
-
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [
-                DesignTokens.Colors.Background.primary,
-                Color.black,
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
     }
 }

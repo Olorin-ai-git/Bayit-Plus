@@ -4,58 +4,19 @@ import Observation
 
 enum TVOnboardingStep: Int, CaseIterable, Sendable {
     case welcome = 0
-    case language
-    case culture
-    case interests
-    case byoc
-    case voiceName
+    case aiLanguage
+    case pauseAsk
+    case interactive
+    case neverMiss
+    case zehAni
+    case voiceSetup
     case complete
-}
-
-enum TVContentInterest: String, CaseIterable, Identifiable, Sendable {
-    case movies
-    case series
-    case liveTV
-    case podcasts
-    case audiobooks
-    case radio
-    case kidsContent
-    case music
-    case news
-    case sports
-
-    var id: String {
-        rawValue
-    }
-
-    var iconName: String {
-        switch self {
-        case .movies: return "film"
-        case .series: return "tv"
-        case .liveTV: return "play.tv"
-        case .podcasts: return "headphones"
-        case .audiobooks: return "book.fill"
-        case .radio: return "radio"
-        case .kidsContent: return "figure.and.child.holdinghands"
-        case .music: return "music.note"
-        case .news: return "newspaper"
-        case .sports: return "sportscourt"
-        }
-    }
-
-    var localizationKey: String {
-        "onboarding.interest.\(rawValue)"
-    }
 }
 
 @MainActor
 @Observable
 final class TVOnboardingViewModel {
     var currentStep: TVOnboardingStep = .welcome
-    var selectedLanguages: Set<String> = []
-    var primaryLanguage: String = "en"
-    var selectedCulture: String?
-    var selectedInterests: Set<TVContentInterest> = []
     var userName: String = ""
     private(set) var isSaving = false
     private(set) var error: String?
@@ -83,11 +44,6 @@ final class TVOnboardingViewModel {
 
     var stepProgress: Double {
         Double(currentStep.rawValue) / Double(totalSteps - 1)
-    }
-
-    var canProceedFromInterests: Bool {
-        let minimumSelections = 3
-        return selectedInterests.count >= minimumSelections
     }
 
     init(
@@ -122,19 +78,11 @@ final class TVOnboardingViewModel {
         error = nil
 
         do {
-            let prefsUpdate = ProfilePreferencesUpdate(
-                language: primaryLanguage,
-                subtitleLanguage: selectedLanguages.first,
-                autoplay: true,
-                notifications: true,
-                contentRating: nil,
-                quality: nil
-            )
             let request = ProfileUpdateRequest(
                 displayName: userName.isEmpty ? nil : userName,
                 avatar: nil,
-                language: primaryLanguage,
-                preferences: prefsUpdate,
+                language: nil,
+                preferences: nil,
                 phoneNumber: nil
             )
             _ = try await userRepository.updateProfile(request: request)
@@ -155,22 +103,6 @@ final class TVOnboardingViewModel {
         logger.info("Onboarding skipped for profile: \(profileId)")
     }
 
-    func toggleInterest(_ interest: TVContentInterest) {
-        if selectedInterests.contains(interest) {
-            selectedInterests.remove(interest)
-        } else {
-            selectedInterests.insert(interest)
-        }
-    }
-
-    func toggleLanguage(_ languageCode: String) {
-        if selectedLanguages.contains(languageCode) {
-            selectedLanguages.remove(languageCode)
-        } else {
-            selectedLanguages.insert(languageCode)
-        }
-    }
-
     // MARK: - Private
 
     private func markComplete() {
@@ -179,15 +111,7 @@ final class TVOnboardingViewModel {
         if !userName.isEmpty {
             UserDefaults.standard.set(userName, forKey: "\(base).userName")
         }
-        if let culture = selectedCulture {
-            UserDefaults.standard.set(culture, forKey: "\(base).culture")
-        }
-        let interestStrings = selectedInterests.map(\.rawValue)
-        UserDefaults.standard.set(interestStrings, forKey: "\(base).interests")
-        let langArray = Array(selectedLanguages)
-        UserDefaults.standard.set(langArray, forKey: "\(base).contentLanguages")
-        UserDefaults.standard.set(primaryLanguage, forKey: "\(base).primaryLanguage")
-        logger.info("Persisted all onboarding preferences for \(profileId)")
+        logger.info("Persisted onboarding preferences for \(profileId)")
     }
 
     /// Read the persisted user name for a given profile.
