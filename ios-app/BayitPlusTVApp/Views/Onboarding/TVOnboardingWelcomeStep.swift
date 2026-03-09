@@ -1,120 +1,145 @@
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
-import UIKit
 
-/// Welcome step with language picker that immediately switches UI language.
+/// Welcome step with full-screen background image, language grid, and skip.
 struct TVOnboardingWelcomeStep: View {
     @Environment(LocalizationManager.self) private var localization
 
     let onNext: () -> Void
     let onSkip: () -> Void
 
+    @State private var imageScale: CGFloat = 1.0
+
+    private let languages = Language.allCases
+    private let columns = [
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+    ]
+
     var body: some View {
-        VStack(spacing: TVDesignTokens.Spacing.xl) {
-            Spacer()
-
-            logoSection
-            welcomeText
-            languagePicker
-            actionButtons
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, TVDesignTokens.Spacing.xxxxl)
-    }
-
-    // MARK: - Logo
-
-    private var logoSection: some View {
-        VStack(spacing: TVDesignTokens.Spacing.md) {
-            if let logoImage = UIImage(named: "logo") {
-                Image(uiImage: logoImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(
-                        width: TVDesignTokens.Logo.width * 1.5,
-                        height: TVDesignTokens.Logo.height * 1.5
-                    )
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                backgroundImage(size: geo.size)
+                contentOverlay
             }
-
-            (Text(localization.t("splash.bayit"))
-                .foregroundColor(.white)
-                + Text(localization.t("splash.plus"))
-                .foregroundColor(DesignTokens.Colors.Primary.base))
-                .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            withAnimation(
+                .easeInOut(duration: 30).repeatForever(autoreverses: true)
+            ) {
+                imageScale = 1.08
+            }
         }
     }
 
-    // MARK: - Text
+    // MARK: - Background
 
-    private var welcomeText: some View {
-        VStack(spacing: TVDesignTokens.Spacing.md) {
+    private func backgroundImage(size: CGSize) -> some View {
+        Image("onboarding_welcome")
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .scaleEffect(imageScale)
+            .frame(width: size.width, height: size.height)
+            .clipped()
+            .overlay(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .clear, location: 0.25),
+                        .init(color: .black.opacity(0.4), location: 0.40),
+                        .init(color: .black.opacity(0.85), location: 0.55),
+                        .init(color: .black, location: 0.65),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+    }
+
+    // MARK: - Content
+
+    private var contentOverlay: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
             Text(localization.t("onboarding.welcome.title"))
-                .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
+                .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
 
             Text(localization.t("onboarding.welcome.subtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundStyle(DesignTokens.Text.secondary)
+                .foregroundStyle(.white.opacity(0.65))
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: 700)
+
+            languageGrid
+                .padding(.top, TVDesignTokens.Spacing.sm)
+
+            actionButtons
         }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxxxl)
+        .padding(.bottom, TVDesignTokens.Spacing.xxl)
     }
 
-    // MARK: - Language Picker
+    // MARK: - Language Grid
 
-    private var languagePicker: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                ForEach(Language.allCases, id: \.rawValue) { lang in
-                    Button {
-                        localization.setLanguage(lang)
-                    } label: {
-                        Text(lang.displayName)
-                            .font(.system(
-                                size: TVDesignTokens.FontSize.base,
-                                weight: isSelected(lang) ? .bold : .medium
-                            ))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                            .padding(.horizontal, TVDesignTokens.Spacing.lg)
-                            .padding(.vertical, TVDesignTokens.Spacing.sm)
-                            .background(
-                                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-                                    .fill(
-                                        isSelected(lang)
-                                            ? DesignTokens.Primary.p400.opacity(0.25)
-                                            : DesignTokens.Glass.bgLight
-                                    )
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-                                    .stroke(
-                                        isSelected(lang)
-                                            ? DesignTokens.Primary.p400
-                                            : Color.clear,
-                                        lineWidth: 2
-                                    )
-                            )
-                    }
-                    .tvCardStyle()
-                }
+    private var languageGrid: some View {
+        LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.md) {
+            ForEach(languages, id: \.rawValue) { language in
+                languageButton(language)
             }
-            .padding(.horizontal, TVDesignTokens.Spacing.md)
         }
     }
 
-    private func isSelected(_ lang: Language) -> Bool {
-        localization.currentLanguage == lang
+    private func languageButton(_ language: Language) -> some View {
+        let isSelected = localization.currentLanguage == language
+
+        return Button {
+            localization.setLanguage(language)
+        } label: {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Text(Self.flag(for: language))
+                    .font(.system(size: TVDesignTokens.FontSize.md))
+                Text(language.displayName)
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.base,
+                        weight: isSelected ? .bold : .medium
+                    ))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, minHeight: TVDesignTokens.MinSize.focusableHeight)
+            .background(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
+                    .fill(
+                        isSelected
+                            ? DesignTokens.Primary.default
+                            : Color.white.opacity(0.10)
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
+                    .strokeBorder(
+                        isSelected
+                            ? DesignTokens.Primary.p500
+                            : Color.white.opacity(0.12),
+                        lineWidth: isSelected ? 3 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .tvCardStyle()
     }
 
     // MARK: - Actions
 
     private var actionButtons: some View {
-        VStack(spacing: TVDesignTokens.Spacing.lg) {
+        HStack(spacing: TVDesignTokens.Spacing.xl) {
             GlassButton(
-                localization.t("onboarding.welcome.getStarted"),
+                localization.t("onboarding.welcome.continue"),
                 variant: .primary,
                 size: .large,
                 icon: Image(systemName: "arrow.right")
@@ -130,6 +155,23 @@ struct TVOnboardingWelcomeStep: View {
                     .foregroundStyle(DesignTokens.Text.muted)
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: - Flags
+
+    private static func flag(for language: Language) -> String {
+        switch language {
+        case .english: return "\u{1F1FA}\u{1F1F8}"
+        case .hebrew: return "\u{1F1EE}\u{1F1F1}"
+        case .spanish: return "\u{1F1EA}\u{1F1F8}"
+        case .french: return "\u{1F1EB}\u{1F1F7}"
+        case .chinese: return "\u{1F1E8}\u{1F1F3}"
+        case .italian: return "\u{1F1EE}\u{1F1F9}"
+        case .hindi: return "\u{1F1EE}\u{1F1F3}"
+        case .tamil: return "\u{1F1EE}\u{1F1F3}"
+        case .bengali: return "\u{1F1E7}\u{1F1E9}"
+        case .japanese: return "\u{1F1EF}\u{1F1F5}"
         }
     }
 }

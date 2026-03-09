@@ -38,6 +38,18 @@ struct TopNavigationBar: View {
             .accessibilityLabel("Language")
 
             Button {
+                coordinator.navigate(to: .byocSources)
+            } label: {
+                Image(systemName: "play.tv")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+            .accessibilityLabel(localization.t("byoc.connectedSources"))
+
+            Button {
                 coordinator.navigate(to: .playlist)
             } label: {
                 Image(systemName: "music.note.list")

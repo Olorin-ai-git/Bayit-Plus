@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Authentication flow: Login -> Register -> Forgot Password -> Reset Password -> Profile Selection
@@ -7,6 +8,7 @@ struct AuthFlowView: View {
     @State private var authStep: AuthStep = .login
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     enum AuthStep {
         case login
@@ -71,7 +73,7 @@ struct AuthFlowView: View {
                     removal: .move(edge: .leading)
                 ))
 
-            case .resetPassword(let token):
+            case let .resetPassword(token):
                 ResetPasswordView(
                     token: token,
                     onSuccess: {
@@ -91,6 +93,47 @@ struct AuthFlowView: View {
                 )
                 .transition(.scale(scale: 0.9).combined(with: .opacity))
             }
+
+            languagePicker
+        }
+    }
+
+    private var languagePicker: some View {
+        VStack {
+            HStack {
+                Spacer()
+                Menu {
+                    ForEach(Language.allCases, id: \.rawValue) { language in
+                        Button {
+                            localization.setLanguage(language)
+                        } label: {
+                            HStack {
+                                Text(language.displayName)
+                                if localization.currentLanguage == language {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
+                        Image(systemName: "globe")
+                        Text(localization.currentLanguage.displayName)
+                            .font(.system(
+                                size: DesignTokens.FontSize.xs,
+                                weight: .medium
+                            ))
+                    }
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .padding(.horizontal, DesignTokens.Spacing.md)
+                    .padding(.vertical, DesignTokens.Spacing.sm)
+                    .background(DesignTokens.Glass.bgLight)
+                    .clipShape(Capsule())
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.top, DesignTokens.Spacing.sm)
+            Spacer()
         }
     }
 }

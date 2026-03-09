@@ -72,6 +72,7 @@
                     )
                 }
             }
+            .onExitCommand { onDismiss() }
             .alert(
                 localization.t("byoc.removeConfirm"),
                 isPresented: Binding(

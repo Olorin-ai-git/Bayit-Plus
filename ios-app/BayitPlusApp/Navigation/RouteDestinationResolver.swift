@@ -120,7 +120,7 @@ struct RouteDestinationResolver {
         case .radio:
             RadioView()
         case .onboardingAI:
-            OnboardingAIView()
+            OnboardingFlowView {}
         case .friends:
             FriendsView(repository: repos.friends)
         case .watchParty:

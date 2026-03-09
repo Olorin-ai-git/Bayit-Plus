@@ -84,7 +84,7 @@ struct ContentView: View {
         .onChange(of: authManager.isAuthenticated) { _, isAuth in
             coordinator.showingAuth = !isAuth
             if isAuth {
-                showingOnboarding = !OnboardingAIViewModel.hasCompletedOnboarding
+                showingOnboarding = !OnboardingFlowViewModel.hasCompletedOnboarding
             }
         }
         .animation(.easeInOut(duration: 0.3), value: showingSplash)

@@ -59,9 +59,11 @@ struct TVOnboardingView: View {
                     userId: profileId
                 )
                 tourViewModel = tourVM
-                if tourVM.shouldShowTour {
-                    showTour = true
-                }
+                #if !DEBUG
+                    if tourVM.shouldShowTour {
+                        showTour = true
+                    }
+                #endif
             }
         }
     }

@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -7,6 +8,8 @@ import SwiftUI
 extension TVSettingsView {
     var aboutSection: some View {
         Section {
+            replayOnboardingRow
+
             settingsNavRow(
                 icon: "info.circle",
                 title: localization.t("settings.about.title"),
@@ -35,5 +38,29 @@ extension TVSettingsView {
         } header: {
             sectionHeader(localization.t("settings.about"))
         }
+    }
+
+    private var replayOnboardingRow: some View {
+        Button {
+            replayOnboarding()
+        } label: {
+            HStack {
+                Image(systemName: "sparkles")
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 32)
+                Text(localization.t("settings.help.replayOnboarding"))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+        }
+    }
+
+    private func replayOnboarding() {
+        guard let profileId = authManager.activeProfile?.id else { return }
+        let key = "tv.bayit.plus.onboarding.\(profileId).completed"
+        UserDefaults.standard.set(false, forKey: key)
+        coordinator.showingOnboarding = true
     }
 }

@@ -10,6 +10,7 @@ struct TVSettingsView: View {
     @Environment(AuthManager.self) var authManager
     @Environment(LocalizationManager.self) var localization
     @Environment(TVRepositoryProvider.self) var repos
+    @Environment(TVNavigationCoordinator.self) var coordinator
     @State var viewModel: SettingsViewModel?
 
     var body: some View {

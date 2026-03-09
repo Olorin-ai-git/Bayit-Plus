@@ -11,13 +11,13 @@ extension SettingsView {
     var mediaNavigationSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             sectionHeader(localization.t("settings.mediaSection"))
-            navRow(icon: "play.rectangle", title: localization.t("settings.playback")) {
+            navRow(icon: "play.rectangle", title: localization.t("settings.playback.title")) {
                 coordinator.pushToCurrentTab(.playbackSettings)
             }
-            navRow(icon: "speaker.wave.3", title: localization.t("settings.audio")) {
+            navRow(icon: "speaker.wave.3", title: localization.t("settings.audio.title")) {
                 coordinator.pushToCurrentTab(.audioSettings)
             }
-            navRow(icon: "accessibility", title: localization.t("settings.accessibility")) {
+            navRow(icon: "accessibility", title: localization.t("settings.accessibility.title")) {
                 coordinator.pushToCurrentTab(.accessibilitySettings)
             }
             navRow(icon: "hand.raised", title: localization.t("settings.privacyData")) {

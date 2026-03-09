@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var showDeleteAccountConfirmation = false
     @State var tourViewModel: FeatureTourViewModel?
     @State var showFeatureTour = false
+    @State var showOnboardingReplay = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -27,6 +28,7 @@ struct SettingsView: View {
                         preferencesSection(vm)
                         mediaNavigationSection
                         accountNavigationSection
+                        helpSection
                         privacySection
                         dangerZoneSection(vm)
                         appInfoSection
@@ -36,6 +38,18 @@ struct SettingsView: View {
             } else { ScreenLoadingView() }
         }
         .background(DesignTokens.Background.primary)
+        .fullScreenCover(isPresented: $showOnboardingReplay) {
+            OnboardingFlowView {
+                showOnboardingReplay = false
+            }
+        }
+        .fullScreenCover(isPresented: $showFeatureTour) {
+            if let vm = tourViewModel {
+                FeatureTourView(viewModel: vm) {
+                    showFeatureTour = false
+                }
+            }
+        }
         .task {
             if viewModel == nil {
                 viewModel = SettingsViewModel(
@@ -75,7 +89,7 @@ struct SettingsView: View {
 
     private var privacySection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            sectionHeader(localization.t("settings.privacy"))
+            sectionHeader(localization.t("settings.privacySection"))
             navRow(icon: "doc.text", title: localization.t("settings.privacyPolicy")) {}
             navRow(icon: "doc.plaintext", title: localization.t("settings.termsOfService")) {}
         }

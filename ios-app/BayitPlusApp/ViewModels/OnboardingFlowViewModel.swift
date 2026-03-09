@@ -28,7 +28,11 @@ final class OnboardingFlowViewModel {
     private static let completedKey = "bayit.plus.onboarding.completed"
 
     static var hasCompletedOnboarding: Bool {
-        UserDefaults.standard.bool(forKey: completedKey)
+        #if DEBUG
+            return false
+        #else
+            return UserDefaults.standard.bool(forKey: completedKey)
+        #endif
     }
 
     init(

@@ -15,6 +15,7 @@
         @Environment(\.appConfiguration) private var appConfiguration
         @State var dockViewModel: WidgetDockViewModel?
         @State var showLanguagePicker = false
+        @State var showBYOCSources = false
         @State var widgetAutoHideTask: Task<Void, Never>?
         @State var isWidgetAreaFocused = false
         @State var hasAppeared = false
@@ -85,6 +86,7 @@
             // Overlays nested inside TabView are outside the focus scope and receive no focus.
             .overlay(alignment: .topTrailing) {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
+                    byocButton
                     if let vm = dockViewModel, !vm.widgets.isEmpty {
                         widgetsButton(viewModel: vm)
                     }
@@ -92,6 +94,9 @@
                 }
                 .padding(.top, TVDesignTokens.Spacing.md)
                 .padding(.trailing, TVDesignTokens.Spacing.xl)
+            }
+            .fullScreenCover(isPresented: $showBYOCSources) {
+                TVBYOCSourceListView(onDismiss: { showBYOCSources = false })
             }
             // Widget dock also on outer HStack for focus reachability.
             .overlay(alignment: .bottom) {

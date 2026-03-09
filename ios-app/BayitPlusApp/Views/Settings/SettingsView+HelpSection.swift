@@ -9,9 +9,30 @@ extension SettingsView {
     var helpSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             sectionHeader(localization.t("settings.help.title"))
+            replayOnboardingRow
             replayTourRow
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private var replayOnboardingRow: some View {
+        GlassCard {
+            Button(action: { showOnboardingReplay = true }) {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: DesignTokens.FontSize.lg))
+                        .foregroundStyle(DesignTokens.Primary.default)
+                        .frame(width: 32)
+                    Text(localization.t("settings.help.replayOnboarding"))
+                        .font(.system(size: DesignTokens.FontSize.md))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }.padding(DesignTokens.Spacing.md)
+            }
+        }
     }
 
     private var replayTourRow: some View {

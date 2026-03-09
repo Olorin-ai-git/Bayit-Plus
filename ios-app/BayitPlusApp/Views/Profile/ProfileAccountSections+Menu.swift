@@ -28,9 +28,6 @@ extension ProfileView {
             menuRow(icon: "record.circle", title: "profile.recordings") {
                 coordinator.pushToCurrentTab(.recordings)
             }
-            menuRow(icon: "star.fill", title: "profile.rewards") {
-                coordinator.pushToCurrentTab(.rewards)
-            }
             menuRow(icon: "house.lodge.fill", title: "profile.household") {
                 coordinator.pushToCurrentTab(.household)
             }

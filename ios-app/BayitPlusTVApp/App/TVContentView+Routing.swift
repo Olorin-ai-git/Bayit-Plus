@@ -59,8 +59,13 @@
 
         func checkOnboardingNeeded(profileId: String) {
             let key = "tv.bayit.plus.onboarding.\(profileId).completed"
-            let completed = UserDefaults.standard.bool(forKey: key)
-            coordinator.showingOnboarding = !completed
+            #if DEBUG
+                UserDefaults.standard.set(false, forKey: key)
+                coordinator.showingOnboarding = true
+            #else
+                let completed = UserDefaults.standard.bool(forKey: key)
+                coordinator.showingOnboarding = !completed
+            #endif
         }
 
         func handleSystemUserChange() {
