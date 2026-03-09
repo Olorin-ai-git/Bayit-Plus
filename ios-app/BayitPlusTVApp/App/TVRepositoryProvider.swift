@@ -59,6 +59,7 @@ final class TVRepositoryProvider {
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
+    let storeManager: StoreManager
     let apiClient: APIClient
 
     init(
@@ -117,5 +118,6 @@ final class TVRepositoryProvider {
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         offlineCache = OfflineCacheService()
+        storeManager = StoreManager(config: configuration, apiClient: client)
     }
 }

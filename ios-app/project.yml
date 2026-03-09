@@ -123,6 +123,7 @@ targets:
       - path: BayitPlusApp/Services/KeychainHelper.swift
       - path: BayitPlusApp/Services/AvatarStateMachine.swift
       - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
+      - path: BayitPlusApp/Services/StoreManager.swift
       - path: BayitPlusApp/Services/CatchUpPreferencesService.swift
       - path: BayitPlusApp/Services/PlayerPreferencesService.swift
       - path: BayitPlusApp/App/FeatureFlags.swift

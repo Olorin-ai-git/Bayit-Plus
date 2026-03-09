@@ -15,18 +15,18 @@ struct TVSubscriptionView: View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
                 LazyVStack(spacing: TVDesignTokens.Spacing.lg) {
-                    if vm.isLoading && vm.plans.isEmpty {
+                    if vm.isLoading && !hasProducts(vm) {
                         ProgressView()
                             .tint(.white)
                             .padding(.top, TVDesignTokens.Spacing.xxxxl)
-                    } else if let error = vm.error, vm.plans.isEmpty {
+                    } else if let error = vm.error, !hasProducts(vm) {
                         errorSection(message: error, viewModel: vm)
                     } else {
                         headerSection
                         billingPeriodPicker(vm)
                         planCards(vm)
                         if vm.isSubscribed {
-                            cancelSection(vm)
+                            manageSection
                         }
                     }
                 }
@@ -37,10 +37,14 @@ struct TVSubscriptionView: View {
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                viewModel = SubscriptionViewModel(repository: repos.settings)
+                viewModel = SubscriptionViewModel(storeManager: repos.storeManager)
             }
             await viewModel?.load()
         }
+    }
+
+    private func hasProducts(_ vm: SubscriptionViewModel) -> Bool {
+        vm.monthlyProduct != nil || vm.yearlyProduct != nil
     }
 
     // MARK: - Header
@@ -125,22 +129,24 @@ struct TVSubscriptionView: View {
     // MARK: - Plan Cards
 
     private func planCards(_ vm: SubscriptionViewModel) -> some View {
-        ForEach(vm.plans) { plan in
-            planCard(plan, viewModel: vm)
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            if let monthly = vm.monthlyProduct {
+                planCard(monthly, viewModel: vm)
+            }
+            if let yearly = vm.yearlyProduct {
+                planCard(yearly, viewModel: vm)
+            }
         }
     }
 
-    // MARK: - Cancel
+    // MARK: - Manage Subscription
 
-    private func cancelSection(
-        _ vm: SubscriptionViewModel
-    ) -> some View {
-        GlassButton(
-            localization.t("subscription.cancel"),
-            variant: .ghost,
-            isLoading: vm.isProcessing
-        ) {
-            Task { await vm.cancelSubscription() }
+    private var manageSection: some View {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
+            Text(localization.t("subscription.tvSubscribeMessage"))
+                .font(.system(size: TVDesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+                .multilineTextAlignment(.center)
         }
     }
 }
