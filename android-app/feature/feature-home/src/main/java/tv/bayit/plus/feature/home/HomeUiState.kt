@@ -1,5 +1,7 @@
 package tv.bayit.plus.feature.home
 
+import tv.bayit.plus.core.byoc.models.BYOCContentItem
+import tv.bayit.plus.core.byoc.models.BYOCSourceConfig
 import tv.bayit.plus.core.model.CityContentResponse
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.CultureTrendingItem
@@ -33,6 +35,9 @@ sealed interface HomeUiState {
         val isShabbatBannerDismissed: Boolean = false,
         val locationPermissionNeeded: Boolean = false,
         val locationPermissionPreviouslyDenied: Boolean = false,
+        val byocSources: List<BYOCSourceConfig> = emptyList(),
+        val byocContent: List<BYOCContentItem> = emptyList(),
+        val hasBYOCSources: Boolean = false,
         val isRefreshing: Boolean = false,
         val localTimezone: String = TimeZone.getDefault().id,
         val localLocationLabel: String = timezoneDisplayCity(TimeZone.getDefault().id),

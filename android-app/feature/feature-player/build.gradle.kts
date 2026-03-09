@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:core-media"))
     implementation(project(":core:core-cast"))
     implementation(project(":core:core-network"))
+    implementation(project(":feature:feature-onboarding"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
 

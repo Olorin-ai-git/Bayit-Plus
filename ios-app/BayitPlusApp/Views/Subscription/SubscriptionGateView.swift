@@ -1,15 +1,14 @@
 import BayitDesignSystem
 import BayitLocalization
+import StoreKit
 import SwiftUI
 
-/// Subscription gate screen shown when content requires a higher tier.
-/// Displays lock header, content preview, trial offer, plan comparison,
-/// and subscribe actions.
+/// Subscription gate shown when content requires Plus tier.
+/// Uses native StoreKit 2 for in-app purchases.
 struct SubscriptionGateView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SubscriptionGateViewModel?
-    @State private var selectedBillingPeriod: BillingPeriod = .monthly
 
     let contentId: String
     let requiredTier: String
@@ -18,17 +17,18 @@ struct SubscriptionGateView: View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
                 LazyVStack(spacing: DesignTokens.Spacing.lg) {
-                    if vm.isLoading && vm.plans.isEmpty {
+                    if vm.isLoading && !vm.hasProducts {
                         ProgressView().tint(.white)
                             .padding(.top, DesignTokens.Spacing.xxxxl)
-                    } else if let error = vm.error, vm.plans.isEmpty {
+                    } else if let error = vm.error, !vm.hasProducts {
                         ErrorStateView(message: error) {
                             Task { await vm.load() }
                         }
                     } else {
                         lockHeader
                         trialBanner
-                        planCards(vm)
+                        billingPicker(vm)
+                        purchaseCard(vm)
                     }
                 }
                 .padding(.vertical, DesignTokens.Spacing.lg)
@@ -38,7 +38,7 @@ struct SubscriptionGateView: View {
         .task {
             if viewModel == nil {
                 viewModel = SubscriptionGateViewModel(
-                    settingsRepository: repos.settings,
+                    storeManager: repos.storeManager,
                     contentId: contentId,
                     requiredTier: requiredTier
                 )
@@ -56,7 +56,9 @@ struct SubscriptionGateView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
 
             Text(localization.t("gate.contentLocked"))
-                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                .font(.system(
+                    size: DesignTokens.FontSize.xl, weight: .bold
+                ))
                 .foregroundStyle(DesignTokens.Text.primary)
 
             Text(localization.t("gate.upgradeRequired"))
@@ -78,7 +80,10 @@ struct SubscriptionGateView: View {
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
                     Text(localization.t("gate.trialTitle"))
-                        .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
+                        .font(.system(
+                            size: DesignTokens.FontSize.md,
+                            weight: .bold
+                        ))
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     Text(localization.t("gate.trialSubtitle"))
@@ -93,7 +98,10 @@ struct SubscriptionGateView: View {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                 .stroke(
                     LinearGradient(
-                        colors: [DesignTokens.Primary.p500, DesignTokens.Secondary.s500],
+                        colors: [
+                            DesignTokens.Primary.p500,
+                            DesignTokens.Secondary.s500,
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
@@ -103,94 +111,87 @@ struct SubscriptionGateView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Plan Cards
+    // MARK: - Billing Picker
 
-    private func planCards(_ vm: SubscriptionGateViewModel) -> some View {
-        ForEach(vm.plans) { plan in
-            planCard(plan, viewModel: vm)
+    private func billingPicker(
+        _ vm: SubscriptionGateViewModel
+    ) -> some View {
+        HStack(spacing: 0) {
+            ForEach(BillingPeriod.allCases, id: \.rawValue) { period in
+                let isSelected = vm.selectedBillingPeriod == period
+                Button {
+                    vm.selectedBillingPeriod = period
+                } label: {
+                    Text(period == .monthly
+                        ? localization.t("subscription.monthly")
+                        : localization.t("subscription.yearly"))
+                        .font(.system(
+                            size: DesignTokens.FontSize.sm,
+                            weight: .semibold
+                        ))
+                        .foregroundStyle(
+                            isSelected
+                                ? DesignTokens.Text.primary
+                                : DesignTokens.Text.muted
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DesignTokens.Spacing.sm)
+                        .background(
+                            isSelected
+                                ? DesignTokens.Glass.bgMedium
+                                : Color.clear
+                        )
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: DesignTokens.Radius.md
+                            )
+                        )
+                }
+            }
         }
+        .glassCard(
+            radius: DesignTokens.Radius.md,
+            padding: DesignTokens.Spacing.xs
+        )
+        .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    private func planCard(
-        _ plan: SubscriptionPlan,
-        viewModel vm: SubscriptionGateViewModel
+    // MARK: - Purchase Card
+
+    private func purchaseCard(
+        _ vm: SubscriptionGateViewModel
     ) -> some View {
-        let recommended = vm.isRecommended(plan)
-
+        let product = vm.selectedProduct
         return GlassCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                HStack {
-                    Text(plan.name)
-                        .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-
-                    Spacer()
-
-                    if recommended {
-                        GlassBadge(
-                            text: localization.t("gate.recommended"),
-                            variant: .primary
-                        )
-                    }
-                }
-
-                Text(formattedPrice(plan))
-                    .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Primary.default)
-
-                ForEach(plan.features, id: \.self) { feature in
-                    HStack(spacing: DesignTokens.Spacing.sm) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 14))
-                            .foregroundStyle(DesignTokens.Success.default)
-
-                        Text(feature)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
+            VStack(spacing: DesignTokens.Spacing.md) {
+                if let product {
+                    Text(product.displayPrice)
+                        .font(.system(
+                            size: DesignTokens.FontSize.hero,
+                            weight: .bold
+                        ))
+                        .foregroundStyle(DesignTokens.Primary.default)
                 }
 
                 GlassButton(
-                    recommended
-                        ? localization.t("gate.startTrial")
-                        : localization.t("gate.subscribe"),
-                    variant: recommended ? .primary : .secondary,
+                    localization.t("gate.startTrial"),
+                    variant: .primary,
                     isLoading: vm.isProcessing
                 ) {
                     Task {
                         guard !vm.isProcessing else { return }
                         HapticFeedbackService.impact(style: .medium)
-                        if let url = await vm.subscribe(
-                            to: plan,
-                            billingPeriod: selectedBillingPeriod
-                        ) {
-                            await UIApplication.shared.open(url)
-                        }
+                        _ = await vm.purchase()
                     }
                 }
-                .disabled(vm.isProcessing)
+                .disabled(vm.isProcessing || product == nil)
             }
-            .padding(DesignTokens.Spacing.md)
+            .padding(DesignTokens.Spacing.lg)
         }
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(
-                    recommended ? DesignTokens.Primary.default : Color.clear,
-                    lineWidth: 2
-                )
+                .stroke(DesignTokens.Primary.default, lineWidth: 2)
         )
         .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    // MARK: - Helpers
-
-    private func formattedPrice(_ plan: SubscriptionPlan) -> String {
-        switch selectedBillingPeriod {
-        case .monthly:
-            return String(format: "$%.2f/mo", plan.price)
-        case .yearly:
-            let yearly = plan.priceYearly ?? (plan.price * 10)
-            return String(format: "$%.2f/yr", yearly)
-        }
     }
 }

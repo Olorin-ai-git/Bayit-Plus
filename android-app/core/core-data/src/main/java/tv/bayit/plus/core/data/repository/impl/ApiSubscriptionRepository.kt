@@ -7,6 +7,8 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
+import tv.bayit.plus.core.data.billing.BillingVerificationService
+import tv.bayit.plus.core.data.billing.GoogleVerificationResponse
 import tv.bayit.plus.core.data.repository.SubscriptionRepository
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
@@ -23,6 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class ApiSubscriptionRepository @Inject constructor(
     private val client: BayitApiClient,
+    private val billingVerificationService: BillingVerificationService,
 ) : SubscriptionRepository {
 
     private val service: SubscriptionService = client.createService()
@@ -58,6 +61,12 @@ class ApiSubscriptionRepository @Inject constructor(
             val request = PaymentIntentRequestBody(planId = planId)
             client.safeApiCall { service.createPaymentIntent(request) }
         }
+
+    override suspend fun verifyGooglePurchase(
+        purchaseToken: String,
+        productId: String,
+    ): BayitResult<GoogleVerificationResponse> =
+        billingVerificationService.verifyPurchase(purchaseToken, productId)
 }
 
 private interface SubscriptionService {

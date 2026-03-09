@@ -13,3 +13,5 @@ OWNER_MODE = NO
 IP_GEOLOCATION_URL = https:/$()/ipapi.co/json/
 YOUTUBE_CLIENT_ID = 624470113582-m0mk0hkv8pi1r7j740nm1vgtddjh8dvh.apps.googleusercontent.com
 YOUTUBE_CLIENT_SECRET = $(YOUTUBE_CLIENT_SECRET)
+IAP_PLUS_MONTHLY_PRODUCT_ID = tv.bayit.plus.monthly
+IAP_PLUS_YEARLY_PRODUCT_ID = tv.bayit.plus.yearly

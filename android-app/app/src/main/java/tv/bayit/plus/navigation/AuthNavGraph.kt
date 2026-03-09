@@ -32,7 +32,6 @@ import tv.bayit.plus.feature.profile.edit.EditProfileRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.rewards.beta.BetaCreditsRoute
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -149,11 +148,11 @@ fun NavGraphBuilder.authNavGraph(
         )
     }
     composable<Route.Subscribe> {
-        val context = androidx.compose.ui.platform.LocalContext.current
         SubscribeRoute(
-            onNavigateToCheckout = { checkoutUrl ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(checkoutUrl))
-                context.startActivity(intent)
+            onSubscriptionComplete = {
+                navController.navigate(Route.Home) {
+                    popUpTo(Route.Subscribe) { inclusive = true }
+                }
             },
             onNavigateBack = { navController.popBackStack() },
         )

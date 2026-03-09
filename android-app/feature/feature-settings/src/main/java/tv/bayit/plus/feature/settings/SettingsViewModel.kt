@@ -12,20 +12,28 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.UserRepository
 import tv.bayit.plus.core.model.ProfileResponse
+import tv.bayit.plus.feature.onboarding.TooltipManager
+import tv.bayit.plus.feature.onboarding.TourDataStore
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val olorinAuthService: OlorinAuthService,
+    private val tourDataStore: TourDataStore,
+    private val tooltipManager: TooltipManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
+    private val _tipsEnabled = MutableStateFlow(true)
+    val tipsEnabled: StateFlow<Boolean> = _tipsEnabled.asStateFlow()
+
     init {
         loadUserInfo()
+        loadTipsState()
     }
 
     private fun loadUserInfo() {
@@ -53,6 +61,28 @@ class SettingsViewModel @Inject constructor(
                 }
                 is BayitResult.Loading -> Unit
             }
+        }
+    }
+
+    private fun loadTipsState() {
+        viewModelScope.launch {
+            tooltipManager.syncDisabledState()
+            _tipsEnabled.value = !tooltipManager.tipsDisabled.value
+        }
+    }
+
+    fun setTipsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            tooltipManager.setTipsDisabled(!enabled)
+            _tipsEnabled.value = enabled
+            logger.info("Feature tips toggled", mapOf("enabled" to enabled.toString()))
+        }
+    }
+
+    fun resetTourState() {
+        viewModelScope.launch {
+            tourDataStore.reset()
+            logger.info("Feature tour state reset from settings")
         }
     }
 

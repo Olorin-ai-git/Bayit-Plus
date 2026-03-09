@@ -1,23 +1,41 @@
 import Foundation
 import Observation
+import StoreKit
 
-/// ViewModel for the Subscription screen - manages plan selection and
-/// current subscription state.
+/// ViewModel for the Subscription screen - manages StoreKit 2 purchases
+/// and current subscription state.
 @MainActor
 @Observable
 final class SubscriptionViewModel {
-    private(set) var plans: [SubscriptionPlan] = []
-    private(set) var currentSubscription: SubscriptionDetail?
     private(set) var isLoading = false
     private(set) var error: String?
     private(set) var isProcessing = false
 
     var selectedBillingPeriod: BillingPeriod = .monthly
 
-    private let repository: any SettingsRepository
+    private let storeManager: StoreManager
 
-    init(repository: any SettingsRepository) {
-        self.repository = repository
+    init(storeManager: StoreManager) {
+        self.storeManager = storeManager
+    }
+
+    var monthlyProduct: Product? {
+        storeManager.monthlyProduct
+    }
+
+    var yearlyProduct: Product? {
+        storeManager.yearlyProduct
+    }
+
+    var isSubscribed: Bool {
+        storeManager.isPlusSubscribed
+    }
+
+    var selectedProduct: Product? {
+        switch selectedBillingPeriod {
+        case .monthly: return monthlyProduct
+        case .yearly: return yearlyProduct
+        }
     }
 
     @MainActor
@@ -25,60 +43,38 @@ final class SubscriptionViewModel {
         guard !isLoading else { return }
         isLoading = true
         error = nil
-
-        do {
-            async let plansResult = repository.fetchPlans()
-            async let subResult = repository.fetchCurrentSubscription()
-            plans = try await plansResult.plans
-            currentSubscription = try await subResult.subscription
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
+        await storeManager.loadProducts()
+        if let storeError = storeManager.error {
+            error = storeError
         }
-
         isLoading = false
     }
 
     @MainActor
-    func subscribe(to plan: SubscriptionPlan) async -> URL? {
+    func purchase() async -> Bool {
+        guard let product = selectedProduct else {
+            error = "No product selected"
+            return false
+        }
         isProcessing = true
         error = nil
-
         defer { isProcessing = false }
 
-        do {
-            let request = CheckoutRequest(
-                planId: plan.id,
-                billingPeriod: selectedBillingPeriod.rawValue
-            )
-            let response = try await repository.createCheckout(request: request)
-            if let urlString = response.checkoutUrl {
-                return URL(string: urlString)
-            }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
+        let success = await storeManager.purchase(product)
+        if let storeError = storeManager.error {
+            error = storeError
         }
-
-        return nil
+        return success
     }
 
     @MainActor
-    func cancelSubscription() async {
+    func restorePurchases() async {
         isProcessing = true
         error = nil
-
-        do {
-            _ = try await repository.cancelSubscription()
-            await load()
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
+        await storeManager.restorePurchases()
+        if let storeError = storeManager.error {
+            error = storeError
         }
-
         isProcessing = false
     }
 
@@ -90,10 +86,6 @@ final class SubscriptionViewModel {
         case .yearly:
             return "subscription.yearlyPlan"
         }
-    }
-
-    var isSubscribed: Bool {
-        currentSubscription?.status == "active"
     }
 
     func setError(_ message: String) {

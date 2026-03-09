@@ -37,6 +37,7 @@ struct BayitPlusApp: App {
     @State var audioPlaybackManager: AudioPlaybackManager
     @State var downloadManager: DownloadManager
     @State var byocManager = BYOCSourceManager()
+    @State var tooltipManager = TooltipManager(userId: "anonymous")
 
     init() {
         if FirebaseApp.app() == nil {
@@ -139,17 +140,15 @@ struct BayitPlusApp: App {
                 .environment(audioPlaybackManager)
                 .environment(downloadManager)
                 .environment(byocManager)
+                .environment(tooltipManager)
                 .task {
                     initializeWidgetBridge()
                     initializeCrashlyticsContext()
                     initializePushNotifications()
                     initializeCastSystem()
                     await downloadManager.initialize()
-
-                    // Process pending intents from widgets
                     await pendingIntentHandler?.processPendingIntents()
-
-                    // Sync auth token for widgets on launch (covers session restore)
+                    tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
                     let helper = SharedKeychainHelper()
                     if let token = authManager.token {
                         helper.writeAuthToken(token)
@@ -181,6 +180,7 @@ struct BayitPlusApp: App {
                         helper.deleteAuthToken()
                     }
                     WidgetCenter.shared.reloadAllTimelines()
+                    tooltipManager.updateUserId(authManager.user?.id ?? "anonymous")
                 }
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)

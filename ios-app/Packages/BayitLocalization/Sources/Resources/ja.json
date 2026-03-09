@@ -3161,6 +3161,9 @@
     "upgradeTitle": "プラスにアップグレード",
     "usage": "使用量",
     "creditsLabel": "Credits",
+    "getPlusTitle": "Bayit+ Plusを取得",
+    "getPlusMessage": "AI クレジット無制限、",
+    "getPlusButton": "Plusを取得",
     "insufficient": {
       "title": "クレジット不足",
       "message": "この機能に必要なクレジットが不足しています"
@@ -8803,7 +8806,23 @@
     "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
     "monthlyPlan": "月額プラン",
     "yearlyPlan": "年額プラン",
-    "subscribeError": "サブスクリプションを開始できませんでした。後でもう一度お試しください。"
+    "subscribeError": "サブスクリプションを開始できませんでした。後でもう一度お試しください。",
+    "activePlus": "Plus 有効",
+    "manageInSettings": "デバイスの設定でサブスクリプションを管理",
+    "restorePurchases": "購入を復元",
+    "subscribePlus": "Plus に登録",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/月",
+    "perYear": "/年",
+    "feature": {
+      "allChannels": "全てのライブTVチャンネル",
+      "aiAssistant": "AI アシスタント",
+      "liveDubbing": "リアルタイムAI吹き替え",
+      "fourDevices": "4台のデバイスで視聴",
+      "4kQuality": "4K画質",
+      "500Credits": "500 AIクレジット/月",
+      "offlineDownload": "オフライン用にダウンロード"
+    }
   },
   "subtitles": {
     "nikud": "ニクド",

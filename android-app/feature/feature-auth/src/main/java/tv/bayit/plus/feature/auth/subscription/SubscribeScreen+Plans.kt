@@ -18,23 +18,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import tv.bayit.plus.core.data.billing.SubscriptionProduct
+import tv.bayit.plus.core.data.billing.billingPeriodLabel
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
+/**
+ * Card displaying a Google Play subscription product with price and period.
+ */
 @Composable
-internal fun SubscribePlanCard(
-    planText: String,
-    planId: String,
+internal fun SubscriptionProductCard(
+    product: SubscriptionProduct,
     isSelected: Boolean,
-    onSelectPlan: (String) -> Unit,
+    onSelect: () -> Unit,
 ) {
     GlassCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSelectPlan(planId) },
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -43,39 +45,34 @@ internal fun SubscribePlanCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = planText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (isSelected) DesignTokens.Colors.Primary.light else DesignTokens.Colors.Text.primary,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    text = product.billingPeriodLabel(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (isSelected) DesignTokens.Colors.Primary.light
+                    else DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Spacer(Modifier.height(DesignTokens.Spacing.xs))
+                Text(
+                    text = product.formattedPrice,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = if (isSelected) DesignTokens.Colors.Primary.base
+                    else DesignTokens.Colors.Text.secondary,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = product.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.Colors.Text.muted,
                 )
             }
             RadioButton(
                 selected = isSelected,
-                onClick = { onSelectPlan(planId) },
+                onClick = onSelect,
                 colors = RadioButtonDefaults.colors(
                     selectedColor = DesignTokens.Colors.Primary.base,
                 ),
             )
         }
-    }
-}
-
-@Composable
-internal fun BillingPeriodChip(
-    label: String,
-    period: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    GlassCard(
-        modifier = Modifier.clickable(onClick = onClick),
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (isSelected) DesignTokens.Colors.Primary.light else DesignTokens.Colors.Text.secondary,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-        )
     }
 }
 
@@ -93,12 +90,11 @@ internal fun SubscribeCheckoutFooter(
             style = MaterialTheme.typography.bodyMedium,
         )
     }
-
     if (isProcessingCheckout) {
         GlassSpinner(size = SpinnerSize.MEDIUM, modifier = Modifier.padding(DesignTokens.Spacing.lg))
     } else {
         GlassButton(
-            text = "Continue to Checkout",
+            text = "Subscribe",
             onClick = onStartCheckout,
             enabled = selectedPlanId != null,
             modifier = Modifier.fillMaxWidth(),
@@ -113,7 +109,11 @@ internal fun SubscribeErrorContent(message: String, onRetry: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = message,
+                color = DesignTokens.Colors.Semantic.error,
+                style = MaterialTheme.typography.bodyLarge,
+            )
             GlassButton(text = "Retry", onClick = onRetry)
         }
     }

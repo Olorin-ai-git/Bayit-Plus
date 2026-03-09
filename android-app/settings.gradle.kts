@@ -68,6 +68,7 @@ include(":feature:feature-missions")
 include(":feature:feature-downloads")
 include(":feature:feature-widgets")
 include(":feature:feature-byoc")
+include(":feature:feature-onboarding")
 include(":feature:feature-tv")
 
 // Widget module (app-level)

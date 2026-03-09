@@ -12,12 +12,14 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ProfileRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.feature.onboarding.TooltipManager
 import javax.inject.Inject
 
 @HiltViewModel
 class ZehAniDashboardViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val zehAniRepository: ZehAniRepository,
+    internal val tooltipManager: TooltipManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 

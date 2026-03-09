@@ -137,6 +137,20 @@ struct CreateTicketRequest: Encodable, Sendable {
     let language: String
 }
 
+// MARK: - IAP Verification
+
+/// Request body for POST /api/v1/subscriptions/verify-apple
+struct AppleVerifyRequest: Encodable, Sendable {
+    let transactionId: String
+    let signedTransaction: String
+}
+
+/// Response from POST /api/v1/subscriptions/verify-apple
+struct AppleVerifyResponse: Decodable, Sendable {
+    let status: String
+    let tier: String?
+}
+
 // MARK: - User Preferences Update
 
 /// Request body for PATCH /api/v1/users/me/preferences

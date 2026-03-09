@@ -17,14 +17,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.designsystem.component.ArrowDirection
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.onboarding.FeatureTooltipOverlay
+import tv.bayit.plus.feature.onboarding.TooltipManager
 
 @Composable
 fun EPGRoute(
@@ -46,9 +50,12 @@ fun EPGRoute(
         onRefresh = viewModel::refresh,
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
+        tooltipManager = viewModel.tooltipManager,
         modifier = modifier,
     )
 }
+
+private const val EPG_CATCHUP_KEY = "epg_catchup"
 
 @Composable
 internal fun EPGScreen(
@@ -58,10 +65,21 @@ internal fun EPGScreen(
     onRefresh: () -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
+    tooltipManager: TooltipManager? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(title = "TV Guide")
+        if (tooltipManager != null) {
+            FeatureTooltipOverlay(
+                tooltipManager = tooltipManager,
+                featureKey = EPG_CATCHUP_KEY,
+                message = stringResource(
+                    tv.bayit.plus.feature.onboarding.R.string.tooltip_catchup,
+                ),
+                arrowDirection = ArrowDirection.Top,
+            )
+        }
         when (uiState) {
             is EPGUiState.Loading -> GlassLoadingIndicator()
             is EPGUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)

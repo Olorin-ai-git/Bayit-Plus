@@ -42,6 +42,13 @@
                 state: dubbingControlState,
                 onTap: onDubbingTap
             )
+            .featureTooltip(
+                featureKey: "live_dubbing",
+                titleKey: "tooltip.dubbing.title",
+                descriptionKey: "tooltip.dubbing.description",
+                arrowDirection: .bottom,
+                tooltipManager: tooltipManager
+            )
         }
 
         var liveTriviaButton: some View {

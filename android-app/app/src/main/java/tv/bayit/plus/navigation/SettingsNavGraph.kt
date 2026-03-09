@@ -53,6 +53,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                     popUpTo(Route.Home) { inclusive = true }
                 }
             },
+            onReplayTour = { navController.navigate(Route.FeatureTour) },
         )
     }
     composable<Route.LanguageSettings> {

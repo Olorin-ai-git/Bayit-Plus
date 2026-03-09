@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Subscriptions
@@ -51,5 +52,6 @@ fun settingsMenuItems(): List<SettingsMenuItem> = listOf(
     SettingsMenuItem(titleKey = "Connected Accounts", icon = Icons.Default.Link, route = "accounts"),
     SettingsMenuItem(titleKey = "Family Controls", icon = Icons.Default.FamilyRestroom, route = "family"),
     SettingsMenuItem(titleKey = "Household", icon = Icons.Default.Group, route = "household"),
+    SettingsMenuItem(titleKey = "Replay Feature Tour", icon = Icons.Default.Refresh, route = "replay_tour"),
     SettingsMenuItem(titleKey = "Help", icon = Icons.AutoMirrored.Filled.Help, route = "help"),
 )

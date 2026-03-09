@@ -267,6 +267,30 @@ typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
 
 [[package]]
+name = "app-store-server-library"
+version = "1.9.0"
+description = "The App Store Server Library"
+optional = false
+python-versions = "<4,>=3.7"
+groups = ["main"]
+files = [
+    {file = "app_store_server_library-1.9.0-py3-none-any.whl", hash = "sha256:69710a805a8b2f66d9ab23bd4cd406e9dd27364032077caeb314d2fa7e0c61be"},
+    {file = "app_store_server_library-1.9.0.tar.gz", hash = "sha256:55b68f6ae5349ccb6fbdceaa09409d77b865f5e9081a8b97b48bcdde4acc9a90"},
+]
+
+[package.dependencies]
+asn1 = "2.8.0"
+attrs = ">=21.3.0"
+cattrs = ">=23.1.2"
+cryptography = ">=40.0.0"
+PyJWT = ">=2.6.0,<3"
+pyOpenSSL = ">=23.1.1"
+requests = ">=2.28.0,<3"
+
+[package.extras]
+async = ["httpx"]
+
+[[package]]
 name = "apscheduler"
 version = "3.11.2"
 description = "In-process task scheduler with Cron-like capabilities"
@@ -293,6 +317,21 @@ test = ["APScheduler[etcd,mongodb,redis,rethinkdb,sqlalchemy,tornado,zookeeper]"
 tornado = ["tornado (>=4.3)"]
 twisted = ["twisted"]
 zookeeper = ["kazoo"]
+
+[[package]]
+name = "asn1"
+version = "2.8.0"
+description = "Python-ASN1 is a simple ASN.1 encoder and decoder for Python 2.7+ and 3.5+."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "asn1-2.8.0-py2.py3-none-any.whl", hash = "sha256:1438ac9a53cbc4064330af43b054ae042374f7c8ab46c55358241c15e29f1461"},
+    {file = "asn1-2.8.0.tar.gz", hash = "sha256:adf77ddc2707cf420c0eae3b99ee30e913afcf0936467d42669820ce6b7d150a"},
+]
+
+[package.dependencies]
+enum-compat = "*"
 
 [[package]]
 name = "asn1crypto"
@@ -560,6 +599,33 @@ requests = ">=2.16.0"
 dev = ["cachecontrol[filecache,redis]", "cheroot (>=11.1.2)", "cherrypy", "codespell", "furo", "mypy", "pytest", "pytest-cov", "ruff", "sphinx", "sphinx-copybutton", "types-redis", "types-requests"]
 filecache = ["filelock (>=3.8.0)"]
 redis = ["redis (>=2.10.5)"]
+
+[[package]]
+name = "cattrs"
+version = "26.1.0"
+description = "Composable complex class support for attrs and dataclasses."
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "cattrs-26.1.0-py3-none-any.whl", hash = "sha256:d1e0804c42639494d469d08d4f26d6b9de9b8ab26b446db7b5f8c2e97f7c3096"},
+    {file = "cattrs-26.1.0.tar.gz", hash = "sha256:fa239e0f0ec0715ba34852ce813986dfed1e12117e209b816ab87401271cdd40"},
+]
+
+[package.dependencies]
+attrs = ">=25.4.0"
+typing-extensions = ">=4.14.0"
+
+[package.extras]
+bson = ["pymongo (>=4.4.0)"]
+cbor2 = ["cbor2 (>=5.4.6)"]
+msgpack = ["msgpack (>=1.0.5)"]
+msgspec = ["msgspec (>=0.19.0) ; implementation_name == \"cpython\""]
+orjson = ["orjson (>=3.11.3) ; implementation_name == \"cpython\""]
+pyyaml = ["pyyaml (>=6.0)"]
+tomlkit = ["tomlkit (>=0.11.8)"]
+tomllib = ["tomli (>=1.1.0) ; python_version < \"3.11\"", "tomli-w (>=1.1.0)"]
+ujson = ["ujson (>=5.10.0)"]
 
 [[package]]
 name = "cbor2"
@@ -1408,6 +1474,18 @@ files = [
 
 [package.dependencies]
 numpy = "*"
+
+[[package]]
+name = "enum-compat"
+version = "0.0.3"
+description = "enum/enum34 compatibility package"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "enum-compat-0.0.3.tar.gz", hash = "sha256:3677daabed56a6f724451d585662253d8fb4e5569845aafa8bb0da36b1a8751e"},
+    {file = "enum_compat-0.0.3-py3-none-any.whl", hash = "sha256:88091b617c7fc3bbbceae50db5958023c48dc40b50520005aa3bf27f8f7ea157"},
+]
 
 [[package]]
 name = "exa-py"
@@ -7489,4 +7567,4 @@ test = ["pytest (>=8.1,<9.0)", "pytest-rerunfailures (>=14.0,<15.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "7aac66bbf1b8b9cda237a000a5c8c8fd3e05a2c08d525981e8fbe6b505f97f6b"
+content-hash = "239f394445ae3302fd8bf37891ab06232820fddfbe3e47c6b03453d8b9bb3a3a"

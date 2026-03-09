@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.onboarding.TooltipManager
 import tv.bayit.plus.feature.player.dialogue.AvatarPlacement
 import tv.bayit.plus.feature.player.dialogue.ContentCharacter
 import tv.bayit.plus.feature.player.dialogue.DialogueExchange
@@ -20,7 +21,6 @@ import tv.bayit.plus.feature.player.live.LiveDubbingUiState
 import tv.bayit.plus.feature.player.live.LiveSubtitleUiState
 import tv.bayit.plus.feature.player.live.LiveTriviaUiState
 
-/** Stateless player screen layout. Dispatches to [ReadyContent], overlays, pickers, or [ErrorContent]. */
 @Composable
 internal fun PlayerScreen(
     uiState: PlayerUiState,
@@ -96,13 +96,11 @@ internal fun PlayerScreen(
     onToggleFullscreen: () -> Unit,
     onCastClick: () -> Unit = {},
     onBack: () -> Unit,
+    tooltipManager: TooltipManager? = null,
+    isPlaying: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(DesignTokens.Colors.Background.primary),
-    ) {
+    Box(modifier = modifier.fillMaxSize().background(DesignTokens.Colors.Background.primary)) {
         when (uiState) {
             is PlayerUiState.Loading -> GlassLoadingIndicator()
             is PlayerUiState.Ready -> {
@@ -140,13 +138,11 @@ internal fun PlayerScreen(
                     onToggleFullscreen = onToggleFullscreen,
                     onInteract = onInteract,
                     onPreviousInteraction = onPreviousInteraction,
-                    onNextInteraction = onNextInteraction,
-                    hasInteractiveMoments = extendedState.interactiveMoments.isNotEmpty(),
+                    onNextInteraction = onNextInteraction, hasInteractiveMoments = extendedState.interactiveMoments.isNotEmpty(),
                     isCastAvailable = extendedState.isCastAvailable,
                     isCastConnected = extendedState.isCastConnected,
                     onCastClick = onCastClick,
                 )
-
                 PlayerScreenDialogueOverlays(
                     state = uiState,
                     extendedState = extendedState,
@@ -173,8 +169,9 @@ internal fun PlayerScreen(
                     onCancelSleepTimer = onCancelSleepTimer,
                     onStartSleepTimer = onStartSleepTimer,
                     onHideSleepTimerPicker = onHideSleepTimerPicker,
+                    tooltipManager = tooltipManager,
+                    isPlaying = isPlaying,
                 )
-
                 PlayerScreenPickerSheets(
                     extendedState = extendedState,
                     aiPanelState = aiPanelState,

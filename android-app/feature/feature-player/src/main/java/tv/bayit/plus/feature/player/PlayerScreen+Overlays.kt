@@ -1,9 +1,12 @@
 package tv.bayit.plus.feature.player
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.SleepTimerBanner
 import tv.bayit.plus.designsystem.component.SleepTimerPickerSheet
+import tv.bayit.plus.feature.onboarding.TooltipManager
 import tv.bayit.plus.feature.player.dialogue.AvatarDialogueOverlay
 import tv.bayit.plus.feature.player.dialogue.CharacterSelectionSheet
 import tv.bayit.plus.feature.player.dialogue.ContentCharacter
@@ -47,7 +50,20 @@ internal fun PlayerScreenDialogueOverlays(
     onCancelSleepTimer: () -> Unit,
     onStartSleepTimer: (Int) -> Unit,
     onHideSleepTimerPicker: () -> Unit,
+    tooltipManager: TooltipManager? = null,
+    isPlaying: Boolean = false,
 ) {
+    if (tooltipManager != null) {
+        LiveDubbingTooltipOverlay(
+            tooltipManager = tooltipManager,
+            isLiveContent = state.isLiveContent,
+        )
+        VodPauseAskTooltipOverlay(
+            tooltipManager = tooltipManager,
+            isPlaying = isPlaying,
+            isLiveContent = state.isLiveContent,
+        )
+    }
     if (extendedState.showVodInteractionSheet) {
         CharacterSelectionSheet(
             characters = extendedState.vodInteractionCharacters,

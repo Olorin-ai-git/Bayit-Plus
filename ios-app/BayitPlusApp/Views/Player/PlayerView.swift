@@ -87,6 +87,7 @@ struct PlayerView: View {
     // AI panel state
     @State var showAIPanel = false
     @State var selectedAILanguage: String = "en"
+    @Environment(TooltipManager.self) var tooltipManager
 
     let interactionRewindThreshold: TimeInterval = 3
     let interactionSeekOffset: TimeInterval = 5

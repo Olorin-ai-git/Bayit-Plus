@@ -137,6 +137,9 @@ sealed class Route {
     // Onboarding AI
     @Serializable data object OnboardingAI : Route()
 
+    // Feature Tour
+    @Serializable data object FeatureTour : Route()
+
     // Social
     @Serializable data object Friends : Route()
     @Serializable data object WatchParty : Route()

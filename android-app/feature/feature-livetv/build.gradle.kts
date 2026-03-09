@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":core:core-common"))
     implementation(project(":core:core-model"))
     implementation(project(":core:core-data"))
+    implementation(project(":feature:feature-onboarding"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
 

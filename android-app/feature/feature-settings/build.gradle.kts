@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":core:core-data"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
+    implementation(project(":feature:feature-onboarding"))
 
     implementation(libs.core.ktx)
 

@@ -3641,6 +3641,9 @@
     "upgradeTitle": "Passa a Plus",
     "usage": "Utilizzo",
     "creditsLabel": "Credits",
+    "getPlusTitle": "Ottieni Bayit+ Plus",
+    "getPlusMessage": "Crediti AI illimitati a partire da",
+    "getPlusButton": "Ottieni Plus",
     "insufficient": {
       "title": "Crediti Insufficienti",
       "message": "Non hai abbastanza crediti per questa funzionalita"
@@ -8233,7 +8236,23 @@
     "upgradeRequired": "Aggiorna il tuo abbonamento per accedere a questo contenuto",
     "monthlyPlan": "Piano Mensile",
     "yearlyPlan": "Piano Annuale",
-    "subscribeError": "Impossibile avviare l'abbonamento. Riprova piu tardi."
+    "subscribeError": "Impossibile avviare l'abbonamento. Riprova piu tardi.",
+    "activePlus": "Plus Attivo",
+    "manageInSettings": "Gestisci il tuo abbonamento nelle Impostazioni del dispositivo",
+    "restorePurchases": "Ripristina Acquisti",
+    "subscribePlus": "Abbonati a Plus",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/mese",
+    "perYear": "/anno",
+    "feature": {
+      "allChannels": "Tutti i canali TV in diretta",
+      "aiAssistant": "Assistente AI",
+      "liveDubbing": "Doppiaggio AI in tempo reale",
+      "fourDevices": "Guarda su 4 dispositivi",
+      "4kQuality": "Qualita 4K",
+      "500Credits": "500 crediti AI/mese",
+      "offlineDownload": "Scarica per offline"
+    }
   },
   "subtitles": {
     "nikud": "Nikud",

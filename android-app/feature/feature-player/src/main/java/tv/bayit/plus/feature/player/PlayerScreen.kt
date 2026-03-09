@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.feature.player.dialogue.AvatarDialogueViewModel
+import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.feature.player.dialogue.PauseAskPhase
 import tv.bayit.plus.feature.player.dialogue.endSession
 import tv.bayit.plus.feature.player.dialogue.sendMessage
@@ -173,6 +174,8 @@ fun PlayerRoute(
         onCancelSleepTimer = viewModel::cancelSleepTimer,
         onToggleFullscreen = viewModel::toggleFullscreen,
         onCastClick = viewModel::onCastClick,
+        tooltipManager = viewModel.tooltipManager,
+        isPlaying = playerState is PlayerState.Playing,
         onBack = {
             viewModel.saveProgress()
             onNavigateBack()

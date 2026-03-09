@@ -7,6 +7,7 @@ struct EPGView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(TooltipManager.self) private var tooltipManager
     @State private var viewModel: EPGViewModel?
     @State private var searchQuery = ""
 
@@ -51,6 +52,13 @@ struct EPGView: View {
             .padding(.horizontal, DesignTokens.Spacing.lg)
         }
         .padding(.bottom, DesignTokens.Spacing.sm)
+        .featureTooltip(
+            featureKey: "epg_catchup",
+            titleKey: "tooltip.catchup.title",
+            descriptionKey: "tooltip.catchup.description",
+            arrowDirection: .bottom,
+            tooltipManager: tooltipManager
+        )
     }
 
     private var epgContent: some View {

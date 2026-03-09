@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Feature Tour Card Titles -->
+    <string name="tour_card_live_dubbing_title">Live Dubbing</string>
+    <string name="tour_card_live_trivia_title">Live Trivia</string>
+    <string name="tour_card_subtitles_split_title">Split-Screen Subtitles</string>
+    <string name="tour_card_engrew_heblish_title">Engrew / Heblish</string>
+    <string name="tour_card_pause_and_ask_title">Pause and Ask</string>
+    <string name="tour_card_movie_interaction_title">Movie Interaction</string>
+    <string name="tour_card_zeh_ani_title">Zeh Ani</string>
+    <string name="tour_card_catchup_title">Catch Up</string>
+    <string name="tour_card_byoc_title">Bring Your Own Content</string>
+
+    <!-- Feature Tour Card Taglines -->
+    <string name="tour_card_live_dubbing_tagline">Watch Israeli TV dubbed live in your language</string>
+    <string name="tour_card_live_trivia_tagline">Play along with live trivia during broadcasts</string>
+    <string name="tour_card_subtitles_split_tagline">See original and translated subtitles side by side</string>
+    <string name="tour_card_engrew_heblish_tagline">Learn Hebrew naturally with blended subtitles</string>
+    <string name="tour_card_pause_and_ask_tagline">Pause any scene and ask questions about it</string>
+    <string name="tour_card_movie_interaction_tagline">Chat with movie characters using AI</string>
+    <string name="tour_card_zeh_ani_tagline">See yourself in the story with face mapping</string>
+    <string name="tour_card_catchup_tagline">Missed something? Catch up on live shows</string>
+    <string name="tour_card_byoc_tagline">Add your own Plex and YouTube content</string>
+
+    <!-- Tour UI Strings -->
+    <string name="tour_skip">Skip Tour</string>
+    <string name="tour_try_it_now">Try It Now</string>
+    <string name="tour_get_started">Get Started</string>
+    <string name="tour_next">Next</string>
+    <string name="tour_progress_description">Card %1$d of %2$d</string>
+
+    <!-- Demo: Dubbing (T042) -->
+    <string name="demo_dubbing_original">Original</string>
+    <string name="demo_dubbing_dubbed">Dubbed</string>
+    <string name="demo_dubbing_label_original">Original Audio</string>
+    <string name="demo_dubbing_label_dubbed">Dubbed Audio</string>
+
+    <!-- Demo: Trivia (T043) -->
+    <string name="demo_trivia_question">Which city is this scene set in?</string>
+    <string name="demo_trivia_answer_a">Jerusalem</string>
+    <string name="demo_trivia_answer_b">Tel Aviv</string>
+    <string name="demo_trivia_answer_c">Haifa</string>
+    <string name="demo_trivia_answer_d">Eilat</string>
+    <string name="demo_trivia_correct">Correct!</string>
+    <string name="demo_trivia_wrong">Not quite -- try again</string>
+    <string name="demo_trivia_label">Live Trivia</string>
+
+    <!-- Demo: Subtitles (T044) -->
+    <string name="demo_subtitle_mode_original">Original</string>
+    <string name="demo_subtitle_mode_nikud">Nikud</string>
+    <string name="demo_subtitle_mode_engrew">Engrew</string>
+    <string name="demo_subtitle_mode_heblish">Heblish</string>
+    <string name="demo_subtitle_original_text">\u05D0\u05E0\u05D9 \u05E8\u05D5\u05E6\u05D4 \u05DC\u05DC\u05DB\u05EA \u05D4\u05D1\u05D9\u05EA\u05D4</string>
+    <string name="demo_subtitle_nikud_text">\u05D0\u05B2\u05E0\u05B4\u05D9 \u05E8\u05D5\u05B9\u05E6\u05B6\u05D4 \u05DC\u05B8\u05DC\u05B6\u05DB\u05B6\u05EA \u05D4\u05B7\u05D1\u05B7\u05BC\u05D9\u05B4\u05EA\u05B8\u05D4</string>
+    <string name="demo_subtitle_engrew_text">Ani rotzeh lalechet ha-BAYTA</string>
+    <string name="demo_subtitle_heblish_text">The shomer watched the mishpacha from the mirpeset</string>
+
+    <!-- Demo: Interaction (T045) -->
+    <string name="demo_interaction_tap_hint">Tap the highlighted character</string>
+    <string name="demo_interaction_msg_1">Hi! I am Yael from the show.</string>
+    <string name="demo_interaction_msg_2">Ask me anything about this scene.</string>
+    <string name="demo_interaction_msg_3">I can explain what just happened.</string>
+    <string name="demo_interaction_character_name">Yael</string>
+
+    <!-- Demo: Zeh Ani (T046) -->
+    <string name="demo_zeh_ani_grant_camera">Grant Camera Access</string>
+    <string name="demo_zeh_ani_camera_needed">Camera access is needed to map your face into the story</string>
+    <string name="demo_zeh_ani_preview_label">Front Camera Preview</string>
+    <string name="demo_zeh_ani_face_detected">Face detected -- ready for mapping</string>
+    <string name="demo_zeh_ani_no_face">Position your face in the frame</string>
+
+    <!-- Demo: Catchup (T047) -->
+    <string name="demo_catchup_timeline_label">Earlier Today</string>
+    <string name="demo_catchup_program_1">Morning News</string>
+    <string name="demo_catchup_program_2">Cooking Show</string>
+    <string name="demo_catchup_program_3">Drama Series</string>
+    <string name="demo_catchup_program_4">Sports Roundup</string>
+    <string name="demo_catchup_program_5">Evening Talk</string>
+    <string name="demo_catchup_time_1">06:00</string>
+    <string name="demo_catchup_time_2">08:30</string>
+    <string name="demo_catchup_time_3">10:00</string>
+    <string name="demo_catchup_time_4">12:00</string>
+    <string name="demo_catchup_time_5">14:00</string>
+    <string name="demo_catchup_summary_title">AI Summary</string>
+    <string name="demo_catchup_summary_1">Top stories covered the latest government coalition talks and regional weather updates.</string>
+    <string name="demo_catchup_summary_2">Chef Amir prepared shakshuka with a modern twist using roasted peppers and za\'atar.</string>
+    <string name="demo_catchup_summary_3">Noa discovered the truth about her sister\'s disappearance. Major cliffhanger ending.</string>
+    <string name="demo_catchup_summary_4">Maccabi Tel Aviv won 3-1. Highlights from the basketball league final round.</string>
+    <string name="demo_catchup_summary_5">Interview with award-winning author on her new novel about immigration stories.</string>
+
+    <!-- Demo: BYOC (T048) -->
+    <string name="demo_byoc_step_1_title">Add Source</string>
+    <string name="demo_byoc_step_1_desc">Connect your Plex or YouTube library</string>
+    <string name="demo_byoc_step_2_title">AI Classification</string>
+    <string name="demo_byoc_step_2_desc">Our AI categorizes and enriches your content</string>
+    <string name="demo_byoc_step_3_title">Library Integration</string>
+    <string name="demo_byoc_step_3_desc">Your content appears alongside Bayit+ originals</string>
+    <string name="demo_byoc_step_indicator">Step %1$d of %2$d</string>
+
+    <!-- Demo: Common -->
+    <string name="demo_close">Close</string>
+    <string name="demo_banner_label"># DEMO-ONLY</string>
+
+    <!-- Demo: Interaction (T067) - curated moments tooltip -->
+    <string name="demo_interaction_curated_moments">Look for the star icon during playback to find curated moments for character interactions.</string>
+
+    <!-- Demo: Zeh Ani (T070) - vocabulary overlay -->
+    <string name="demo_zeh_ani_vocab_word">\u05E9\u05DC\u05D5\u05DD</string>
+    <string name="demo_zeh_ani_vocab_transliteration">Shalom</string>
+    <string name="demo_zeh_ani_vocab_translation">Hello / Peace</string>
+    <string name="demo_zeh_ani_vocab_label">Vocabulary Highlight</string>
+
+    <!-- Personalization Step (T072) -->
+    <string name="personalization_title">Personalize Your Experience</string>
+    <string name="personalization_subtitle">Tell us what you like so we can tailor your feed</string>
+    <string name="personalization_languages_label">Content Languages</string>
+    <string name="personalization_genres_label">Favorite Genres</string>
+    <string name="personalization_children_label">Do you have children?</string>
+    <string name="personalization_done">Done</string>
+    <string name="personalization_lang_en">English</string>
+    <string name="personalization_lang_he">Hebrew</string>
+    <string name="personalization_lang_fr">French</string>
+    <string name="personalization_lang_es">Spanish</string>
+    <string name="personalization_lang_it">Italian</string>
+    <string name="personalization_lang_bn">Bengali</string>
+    <string name="personalization_lang_hi">Hindi</string>
+    <string name="personalization_lang_ja">Japanese</string>
+    <string name="personalization_lang_ta">Tamil</string>
+    <string name="personalization_lang_zh">Chinese</string>
+    <string name="personalization_genre_drama">Drama</string>
+    <string name="personalization_genre_comedy">Comedy</string>
+    <string name="personalization_genre_action">Action</string>
+    <string name="personalization_genre_documentary">Documentary</string>
+    <string name="personalization_genre_kids">Kids</string>
+    <string name="personalization_genre_thriller">Thriller</string>
+    <string name="personalization_genre_romance">Romance</string>
+    <string name="personalization_genre_scifi">Sci-Fi</string>
+    <string name="personalization_genre_horror">Horror</string>
+    <string name="personalization_genre_music">Music</string>
+    <string name="personalization_genre_sports">Sports</string>
+    <string name="personalization_genre_news">News</string>
+
+    <!-- Continue Tour Banner (T078) -->
+    <string name="continue_tour_title">Continue Your Tour</string>
+    <string name="continue_tour_prompt">Pick up where you left off and discover more features</string>
+    <string name="continue_tour_button">Continue</string>
+    <string name="continue_tour_dismiss_description">Dismiss tour banner</string>
+
+    <!-- Feature Tooltips (T087) -->
+    <string name="tooltip_live_dubbing">Tap the globe icon to switch between original and dubbed audio in real time</string>
+    <string name="tooltip_pause_and_ask">Pause any scene and tap Ask to chat with characters about what is happening</string>
+    <string name="tooltip_zeh_ani">Use the front camera to map your face into the story with Zeh Ani</string>
+    <string name="tooltip_catchup">Scroll the timeline to catch up on earlier programs with AI summaries</string>
+
+    <!-- Settings: Feature Tour (T027, T089) -->
+    <string name="settings_replay_tour">Replay Feature Tour</string>
+    <string name="settings_tips_label">Show Feature Tips</string>
+
+    <!-- Accessibility / TalkBack Descriptions (T091) -->
+    <string name="a11y_feature_card_title">Feature: %1$s</string>
+    <string name="a11y_feature_card_tagline">%1$s</string>
+    <string name="a11y_try_it_now_button">Try interactive demo for %1$s</string>
+    <string name="a11y_skip_tour_button">Skip the feature tour</string>
+    <string name="a11y_get_started_button">Finish tour and get started</string>
+    <string name="a11y_demo_close_button">Close the demo and return to tour</string>
+</resources>

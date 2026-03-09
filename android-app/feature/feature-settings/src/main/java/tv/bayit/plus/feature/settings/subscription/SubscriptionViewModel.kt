@@ -1,5 +1,8 @@
 package tv.bayit.plus.feature.settings.subscription
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,9 +56,26 @@ class SubscriptionViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Opens the Google Play subscription management page for Bayit+.
+     */
+    fun manageSubscription(context: Context) {
+        val uri = Uri.parse(PLAY_SUBSCRIPTION_DEEPLINK)
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(intent)
+        logger.info("Opened Play Store subscription management")
+    }
+
     fun retry() {
         _uiState.value = SubscriptionUiState.Loading
         loadSubscription()
+    }
+
+    companion object {
+        private const val PLAY_SUBSCRIPTION_DEEPLINK =
+            "https://play.google.com/store/account/subscriptions?package=tv.bayit.plus"
     }
 }
 

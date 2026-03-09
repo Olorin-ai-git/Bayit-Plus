@@ -9,6 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import tv.bayit.plus.core.byoc.BYOCSourceManager
+import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -41,6 +43,11 @@ internal fun HomeScreen(
     isLocationPermissionPermanentlyDenied: Boolean,
     onRequestLocationPermission: () -> Unit,
     onOpenLocationSettings: () -> Unit,
+    onConnectBYOCSources: () -> Unit = {},
+    onBYOCItemClick: (BYOCContentItem) -> Unit = {},
+    onBYOCSourceShowAll: (String) -> Unit = {},
+    ownerMode: Boolean = false,
+    sourceManager: BYOCSourceManager? = null,
     onRefresh: () -> Unit,
     onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -71,6 +78,11 @@ internal fun HomeScreen(
             isLocationPermissionPermanentlyDenied = isLocationPermissionPermanentlyDenied,
             onRequestLocationPermission = onRequestLocationPermission,
             onOpenLocationSettings = onOpenLocationSettings,
+            onConnectBYOCSources = onConnectBYOCSources,
+            onBYOCItemClick = onBYOCItemClick,
+            onBYOCSourceShowAll = onBYOCSourceShowAll,
+            ownerMode = ownerMode,
+            sourceManager = sourceManager,
             onRefresh = onRefresh,
             onDismissShabbatBanner = onDismissShabbatBanner,
             modifier = modifier,

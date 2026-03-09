@@ -18,7 +18,9 @@ import tv.bayit.plus.core.data.repository.RadioRepository
 import tv.bayit.plus.core.data.repository.ShabbatRepository
 import tv.bayit.plus.core.location.LocationManager
 import tv.bayit.plus.core.location.wasPermissionRequested
+import tv.bayit.plus.core.byoc.BYOCSourceManager
 import tv.bayit.plus.core.model.FeaturedResponse
+import tv.bayit.plus.feature.onboarding.TourDataStore
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +32,8 @@ class HomeViewModel @Inject constructor(
     internal val shabbatRepository: ShabbatRepository,
     internal val locationRepository: LocationRepository,
     internal val locationManager: LocationManager,
+    internal val sourceManager: BYOCSourceManager,
+    internal val tourDataStore: TourDataStore,
     internal val logger: BayitLogger,
     @OwnerMode internal val ownerMode: Boolean,
 ) : ViewModel() {
@@ -105,6 +109,7 @@ class HomeViewModel @Inject constructor(
         launchSection { loadTelAvivContent().let { data -> updateState { copy(telAvivContent = data) } } }
         launchSection { loadJerusalemContent().let { data -> updateState { copy(jerusalemContent = data) } } }
         launchSection { loadShabbatInfo().let { data -> updateState { copy(shabbatInfo = data) } } }
+        launchSection { loadBYOCState() }
 
         if (locationManager.hasLocationPermission()) {
             launchSection { loadIsraelisInCity().let { data -> updateState { copy(israelisInCity = data) } } }

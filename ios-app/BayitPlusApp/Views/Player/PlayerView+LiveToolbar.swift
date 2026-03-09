@@ -50,6 +50,13 @@
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel("Catch up")
+                    .featureTooltip(
+                        featureKey: "catchup",
+                        titleKey: "tooltip.catchup.title",
+                        descriptionKey: "tooltip.catchup.description",
+                        arrowDirection: .top,
+                        tooltipManager: resolvedTooltipManager
+                    )
                 }
 
                 Button {

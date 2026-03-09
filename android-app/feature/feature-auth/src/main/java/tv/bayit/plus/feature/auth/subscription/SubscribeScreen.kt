@@ -1,8 +1,8 @@
 package tv.bayit.plus.feature.auth.subscription
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,37 +15,40 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.core.data.billing.SubscriptionProduct
+import tv.bayit.plus.core.data.billing.billingPeriodLabel
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
 fun SubscribeRoute(
-    onNavigateToCheckout: (String) -> Unit,
+    onSubscriptionComplete: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SubscribeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val selectedPlanId by viewModel.selectedPlanId.collectAsStateWithLifecycle()
-    val selectedBillingPeriod by viewModel.selectedBillingPeriod.collectAsStateWithLifecycle()
+    val products by viewModel.products.collectAsStateWithLifecycle()
+    val selectedProduct by viewModel.selectedProduct.collectAsStateWithLifecycle()
 
     val success = uiState as? SubscribeUiState.Success
-    if (success?.checkoutUrl != null) {
-        onNavigateToCheckout(success.checkoutUrl)
+    if (success?.purchaseComplete == true) {
+        onSubscriptionComplete()
     }
+
+    val activity = LocalContext.current as? Activity
 
     SubscribeScreen(
         uiState = uiState,
-        selectedPlanId = selectedPlanId,
-        selectedBillingPeriod = selectedBillingPeriod,
-        onSelectPlan = viewModel::selectPlan,
-        onSelectBillingPeriod = viewModel::selectBillingPeriod,
-        onStartCheckout = viewModel::startCheckout,
+        products = products,
+        selectedProduct = selectedProduct,
+        onSelectProduct = viewModel::selectProduct,
+        onStartPurchase = { activity?.let { viewModel.startPurchase(it) } },
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -55,11 +58,10 @@ fun SubscribeRoute(
 @Composable
 internal fun SubscribeScreen(
     uiState: SubscribeUiState,
-    selectedPlanId: String?,
-    selectedBillingPeriod: String,
-    onSelectPlan: (String) -> Unit,
-    onSelectBillingPeriod: (String) -> Unit,
-    onStartCheckout: () -> Unit,
+    products: List<SubscriptionProduct>,
+    selectedProduct: SubscriptionProduct?,
+    onSelectProduct: (SubscriptionProduct) -> Unit,
+    onStartPurchase: () -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -68,14 +70,15 @@ internal fun SubscribeScreen(
         GlassTopBar(title = "Subscribe to Bayit+")
         when (uiState) {
             is SubscribeUiState.Loading -> GlassLoadingIndicator()
-            is SubscribeUiState.Error -> SubscribeErrorContent(message = uiState.message, onRetry = onRetry)
+            is SubscribeUiState.Error -> SubscribeErrorContent(
+                message = uiState.message, onRetry = onRetry,
+            )
             is SubscribeUiState.Success -> SubscribeContent(
                 state = uiState,
-                selectedPlanId = selectedPlanId,
-                selectedBillingPeriod = selectedBillingPeriod,
-                onSelectPlan = onSelectPlan,
-                onSelectBillingPeriod = onSelectBillingPeriod,
-                onStartCheckout = onStartCheckout,
+                products = products,
+                selectedProduct = selectedProduct,
+                onSelectProduct = onSelectProduct,
+                onStartPurchase = onStartPurchase,
             )
         }
     }
@@ -84,46 +87,18 @@ internal fun SubscribeScreen(
 @Composable
 private fun SubscribeContent(
     state: SubscribeUiState.Success,
-    selectedPlanId: String?,
-    selectedBillingPeriod: String,
-    onSelectPlan: (String) -> Unit,
-    onSelectBillingPeriod: (String) -> Unit,
-    onStartCheckout: () -> Unit,
+    products: List<SubscriptionProduct>,
+    selectedProduct: SubscriptionProduct?,
+    onSelectProduct: (SubscriptionProduct) -> Unit,
+    onStartPurchase: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
-
-        item {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Column {
-                    Text(
-                        text = "Billing Period",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = DesignTokens.Colors.Text.primary,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Spacer(Modifier.height(DesignTokens.Spacing.sm))
-                    Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-                        BillingPeriodChip(
-                            label = "Monthly",
-                            period = "monthly",
-                            isSelected = selectedBillingPeriod == "monthly",
-                            onClick = { onSelectBillingPeriod("monthly") },
-                        )
-                        BillingPeriodChip(
-                            label = "Yearly (Save 20%)",
-                            period = "yearly",
-                            isSelected = selectedBillingPeriod == "yearly",
-                            onClick = { onSelectBillingPeriod("yearly") },
-                        )
-                    }
-                }
-            }
-        }
-
         item {
             Text(
                 text = "Choose Your Plan",
@@ -132,26 +107,30 @@ private fun SubscribeContent(
                 fontWeight = FontWeight.Bold,
             )
         }
-
-        items(state.plans, key = { it.hashCode() }) { plan ->
-            val planId = plan.hashCode().toString()
-            SubscribePlanCard(
-                planText = plan.toString(),
-                planId = planId,
-                isSelected = planId == selectedPlanId,
-                onSelectPlan = onSelectPlan,
+        items(products, key = { it.productId }) { product ->
+            SubscriptionProductCard(
+                product = product,
+                isSelected = product.productId == selectedProduct?.productId,
+                onSelect = { onSelectProduct(product) },
             )
         }
-
+        if (products.isEmpty()) {
+            item {
+                Text(
+                    text = "Loading available plans...",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DesignTokens.Colors.Text.muted,
+                )
+            }
+        }
         item {
             SubscribeCheckoutFooter(
-                checkoutError = state.checkoutError,
-                isProcessingCheckout = state.isProcessingCheckout,
-                selectedPlanId = selectedPlanId,
-                onStartCheckout = onStartCheckout,
+                checkoutError = state.purchaseError,
+                isProcessingCheckout = state.isProcessingPurchase,
+                selectedPlanId = selectedProduct?.productId,
+                onStartCheckout = onStartPurchase,
             )
         }
-
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }

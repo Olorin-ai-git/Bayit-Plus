@@ -76,6 +76,9 @@ jacoco = "0.8.12"
 # Accompanist
 accompanist = "0.36.0"
 
+# Google Play Billing
+billing = "7.1.1"
+
 # Stripe
 stripe = "20.48.6"
 
@@ -187,6 +190,9 @@ glance-material3 = { module = "androidx.glance:glance-material3", version.ref = 
 # Accompanist
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+
+# Google Play Billing
+billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 
 # Stripe
 stripe-android = { module = "com.stripe:stripe-android", version.ref = "stripe" }

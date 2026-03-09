@@ -73,6 +73,11 @@ public protocol EnvironmentConfiguration: Sendable {
     /// When false (App Store release), VOD content is hidden — only radio, podcasts,
     /// and AI features are available.
     var ownerMode: Bool { get }
+
+    // MARK: - In-App Purchase Configuration
+
+    var iapPlusMonthlyProductId: String { get }
+    var iapPlusYearlyProductId: String { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -99,6 +104,8 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let defaultCultureId: String
     public let hiddenChannelKeywords: [String]
     public let ownerMode: Bool
+    public let iapPlusMonthlyProductId: String
+    public let iapPlusYearlyProductId: String
 }
 
 // MARK: - SwiftUI Environment Key

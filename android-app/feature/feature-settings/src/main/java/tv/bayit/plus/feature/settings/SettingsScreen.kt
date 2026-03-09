@@ -19,11 +19,14 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,19 +41,30 @@ fun SettingsRoute(
     onNavigateBack: () -> Unit,
     onNavigateToMenuItem: (String) -> Unit,
     onLoggedOut: () -> Unit,
+    onReplayTour: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tipsEnabled by viewModel.tipsEnabled.collectAsStateWithLifecycle()
     SettingsScreen(
         uiState = uiState,
         onNavigateBack = onNavigateBack,
-        onMenuItemClick = onNavigateToMenuItem,
+        onMenuItemClick = { route ->
+            if (route == "replay_tour") {
+                viewModel.resetTourState()
+                onReplayTour()
+            } else {
+                onNavigateToMenuItem(route)
+            }
+        },
         onLogout = {
             viewModel.logout()
             onLoggedOut()
         },
         onRetry = viewModel::retry,
+        tipsEnabled = tipsEnabled,
+        onTipsToggled = viewModel::setTipsEnabled,
         modifier = modifier,
     )
 }
@@ -62,6 +76,8 @@ internal fun SettingsScreen(
     onMenuItemClick: (String) -> Unit,
     onLogout: () -> Unit,
     onRetry: () -> Unit,
+    tipsEnabled: Boolean = true,
+    onTipsToggled: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -81,6 +97,8 @@ internal fun SettingsScreen(
                 email = uiState.email,
                 onMenuItemClick = onMenuItemClick,
                 onLogout = onLogout,
+                tipsEnabled = tipsEnabled,
+                onTipsToggled = onTipsToggled,
             )
         }
     }
@@ -92,6 +110,8 @@ private fun SettingsContent(
     email: String,
     onMenuItemClick: (String) -> Unit,
     onLogout: () -> Unit,
+    tipsEnabled: Boolean,
+    onTipsToggled: (Boolean) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
@@ -110,10 +130,31 @@ private fun SettingsContent(
         items(items = settingsMenuItems(), key = { it.route }) { item ->
             SettingsMenuRow(item = item, onClick = { onMenuItemClick(item.route) })
         }
+        item(key = "tips_toggle") {
+            TipsToggleRow(tipsEnabled = tipsEnabled, onToggle = onTipsToggled)
+        }
         item(key = "logout") {
             Spacer(Modifier.height(DesignTokens.Spacing.base))
             GlassButton(text = "Sign Out", onClick = onLogout, isPrimary = false, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
+        }
+    }
+}
+
+@Composable
+private fun TipsToggleRow(tipsEnabled: Boolean, onToggle: (Boolean) -> Unit) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(tv.bayit.plus.feature.onboarding.R.string.settings_tips_label),
+                color = DesignTokens.Colors.Text.primary,
+                modifier = Modifier.weight(1f),
+            )
+            Switch(
+                checked = tipsEnabled,
+                onCheckedChange = onToggle,
+                colors = SwitchDefaults.colors(checkedTrackColor = DesignTokens.Colors.Primary.base),
+            )
         }
     }
 }

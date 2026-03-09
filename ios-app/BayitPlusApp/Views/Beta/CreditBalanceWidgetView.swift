@@ -7,6 +7,7 @@ import SwiftUI
 struct CreditBalanceWidgetView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
+    @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: BetaCreditsViewModel?
 
     var body: some View {
@@ -26,6 +27,8 @@ struct CreditBalanceWidgetView: View {
                         warningSection(vm)
                         if vm.isDepleted {
                             upgradeSection
+                        } else if vm.isLowOrCritical {
+                            getPlusBanner
                         }
                     }
                 }
@@ -72,8 +75,6 @@ struct CreditBalanceWidgetView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
-
-    // MARK: - Status Dot
 
     private func statusDot(_ vm: BetaCreditsViewModel) -> some View {
         Circle()
@@ -122,8 +123,6 @@ struct CreditBalanceWidgetView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Warning Banners
-
     @ViewBuilder
     private func warningSection(_ vm: BetaCreditsViewModel) -> some View {
         if vm.balance?.isCritical == true {
@@ -166,32 +165,36 @@ struct CreditBalanceWidgetView: View {
                     variant: .primary
                 ) {
                     HapticFeedbackService.impact(style: .medium)
+                    coordinator.navigate(to: .subscription)
                 }
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Helpers
+    private var getPlusBanner: some View {
+        UpgradePaywallBannerView(
+            storeManager: repos.storeManager,
+            onSubscribe: {
+                coordinator.navigate(to: .subscription)
+            }
+        )
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
 
-    private func statusColor(_ status: BetaCreditsViewModel.StatusColor) -> Color {
-        switch status {
-        case .green: return DesignTokens.Success.default
-        case .amber: return DesignTokens.Warning.default
-        case .red: return DesignTokens.ErrorColor.default
+    private func statusColor(_ s: BetaCreditsViewModel.StatusColor) -> Color {
+        switch s {
+        case .green: DesignTokens.Success.default
+        case .amber: DesignTokens.Warning.default
+        case .red: DesignTokens.ErrorColor.default
         }
     }
 
-    private func progressGradientColors(
-        _ status: BetaCreditsViewModel.StatusColor
-    ) -> [Color] {
-        switch status {
-        case .green:
-            return [DesignTokens.Success.s400, DesignTokens.Success.default]
-        case .amber:
-            return [DesignTokens.Warning.w400, DesignTokens.Warning.default]
-        case .red:
-            return [DesignTokens.ErrorColor.e400, DesignTokens.ErrorColor.default]
+    private func progressGradientColors(_ s: BetaCreditsViewModel.StatusColor) -> [Color] {
+        switch s {
+        case .green: [DesignTokens.Success.s400, DesignTokens.Success.default]
+        case .amber: [DesignTokens.Warning.w400, DesignTokens.Warning.default]
+        case .red: [DesignTokens.ErrorColor.e400, DesignTokens.ErrorColor.default]
         }
     }
 }

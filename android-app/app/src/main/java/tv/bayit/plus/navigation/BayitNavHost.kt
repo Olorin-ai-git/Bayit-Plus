@@ -93,6 +93,7 @@ internal fun NavController.navigateToSettingsSubScreen(item: String) {
         SettingsMenuItem.DEVICES -> Route.DevicePairing
         SettingsMenuItem.VOICE -> Route.VoiceSettings
         SettingsMenuItem.BYOC -> Route.BYOCSettings
+        SettingsMenuItem.REPLAY_TOUR -> Route.FeatureTour
         else -> null
     }
     route?.let { navigate(it) }
@@ -121,4 +122,5 @@ object SettingsMenuItem {
     const val DEVICES = "devices"
     const val VOICE = "voice"
     const val BYOC = "byoc"
+    const val REPLAY_TOUR = "replay_tour"
 }

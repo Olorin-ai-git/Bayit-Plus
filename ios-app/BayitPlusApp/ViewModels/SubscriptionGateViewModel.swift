@@ -1,31 +1,50 @@
 import Foundation
 import Observation
+import StoreKit
 
-/// ViewModel for the Subscription Gate - fetches plans and manages
-/// gating state for content requiring a subscription tier.
+/// ViewModel for the Subscription Gate - manages StoreKit 2 purchases
+/// for content requiring a Plus subscription.
 @MainActor
 @Observable
 final class SubscriptionGateViewModel {
-    private(set) var plans: [SubscriptionPlan] = []
-    private(set) var gateInfo: SubscriptionGateInfo?
     private(set) var isLoading = false
     private(set) var error: String?
     private(set) var isProcessing = false
+    private(set) var gateInfo: SubscriptionGateInfo?
 
-    var selectedPlan: SubscriptionPlan?
+    var selectedBillingPeriod: BillingPeriod = .monthly
 
-    private let settingsRepository: any SettingsRepository
+    private let storeManager: StoreManager
     private let contentId: String
     private let requiredTier: String
 
     init(
-        settingsRepository: any SettingsRepository,
+        storeManager: StoreManager,
         contentId: String,
         requiredTier: String
     ) {
-        self.settingsRepository = settingsRepository
+        self.storeManager = storeManager
         self.contentId = contentId
         self.requiredTier = requiredTier
+    }
+
+    var monthlyProduct: Product? {
+        storeManager.monthlyProduct
+    }
+
+    var yearlyProduct: Product? {
+        storeManager.yearlyProduct
+    }
+
+    var selectedProduct: Product? {
+        switch selectedBillingPeriod {
+        case .monthly: return monthlyProduct
+        case .yearly: return yearlyProduct
+        }
+    }
+
+    var hasProducts: Bool {
+        monthlyProduct != nil || yearlyProduct != nil
     }
 
     @MainActor
@@ -34,55 +53,33 @@ final class SubscriptionGateViewModel {
         isLoading = true
         error = nil
 
-        do {
-            let plansResponse = try await settingsRepository.fetchPlans()
-            plans = plansResponse.plans
-            gateInfo = SubscriptionGateInfo(
-                contentId: contentId,
-                requiredTier: requiredTier
-            )
-            if selectedPlan == nil {
-                selectedPlan = plans.first(where: { $0.name.lowercased().contains("premium") })
-                    ?? plans.last
-            }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
+        await storeManager.loadProducts()
+        gateInfo = SubscriptionGateInfo(
+            contentId: contentId,
+            requiredTier: requiredTier
+        )
 
+        if let storeError = storeManager.error {
+            error = storeError
+        }
         isLoading = false
     }
 
     @MainActor
-    func subscribe(to plan: SubscriptionPlan, billingPeriod: BillingPeriod) async -> URL? {
+    func purchase() async -> Bool {
+        guard let product = selectedProduct else {
+            error = "No product selected"
+            return false
+        }
         isProcessing = true
         error = nil
-
         defer { isProcessing = false }
 
-        do {
-            let request = CheckoutRequest(
-                planId: plan.id,
-                billingPeriod: billingPeriod.rawValue
-            )
-            let response = try await settingsRepository.createCheckout(request: request)
-            if let urlString = response.checkoutUrl {
-                return URL(string: urlString)
-            }
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
+        let success = await storeManager.purchase(product)
+        if let storeError = storeManager.error {
+            error = storeError
         }
-
-        return nil
-    }
-
-    var isRecommended: (SubscriptionPlan) -> Bool {
-        { plan in
-            plan.name.lowercased().contains("premium")
-        }
+        return success
     }
 }
 

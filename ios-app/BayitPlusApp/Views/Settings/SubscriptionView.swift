@@ -1,33 +1,38 @@
 import BayitDesignSystem
 import BayitLocalization
+import StoreKit
 import SwiftUI
 
-/// Subscription management screen with plan selection cards
-/// and billing period toggle.
+/// Subscription management screen with native StoreKit 2 purchases.
 struct SubscriptionView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) var localization
     @State var viewModel: SubscriptionViewModel?
-    @State var showDisclosure = false
-    @State var pendingCheckoutURL: URL?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
                 LazyVStack(spacing: DesignTokens.Spacing.lg) {
-                    if vm.isLoading && vm.plans.isEmpty {
-                        ProgressView().tint(.white).padding(.top, DesignTokens.Spacing.xxxxl)
-                    } else if let error = vm.error, vm.plans.isEmpty {
-                        ErrorStateView(message: error) { Task { await vm.load() } }
+                    if vm.isLoading {
+                        ProgressView().tint(.white)
+                            .padding(.top, DesignTokens.Spacing.xxxxl)
+                    } else if let error = vm.error,
+                              vm.monthlyProduct == nil
+                    {
+                        ErrorStateView(message: error) {
+                            Task { await vm.load() }
+                        }
                     } else {
                         headerSection
                         if let error = vm.error {
                             errorBanner(error, vm)
                         }
-                        billingPeriodPicker(vm)
-                        planCards(vm)
                         if vm.isSubscribed {
-                            cancelSection(vm)
+                            subscribedBanner
+                        } else {
+                            billingPeriodPicker(vm)
+                            plusProductCard(vm)
+                            restoreButton(vm)
                         }
                     }
                 }
@@ -35,12 +40,11 @@ struct SubscriptionView: View {
             }
         }
         .background(DesignTokens.Background.primary)
-        .sheet(isPresented: $showDisclosure) {
-            externalPaymentDisclosure
-        }
         .task {
             if viewModel == nil {
-                viewModel = SubscriptionViewModel(repository: repos.settings)
+                viewModel = SubscriptionViewModel(
+                    storeManager: repos.storeManager
+                )
             }
             await viewModel?.load()
         }
@@ -60,9 +64,40 @@ struct SubscriptionView: View {
         }
     }
 
+    // MARK: - Subscribed Banner
+
+    private var subscribedBanner: some View {
+        GlassCard {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 32))
+                    .foregroundStyle(DesignTokens.Success.default)
+
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                    Text(localization.t("subscription.activePlus"))
+                        .font(.system(
+                            size: DesignTokens.FontSize.lg,
+                            weight: .bold
+                        ))
+                        .foregroundStyle(DesignTokens.Text.primary)
+
+                    Text(localization.t("subscription.manageInSettings"))
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(DesignTokens.Spacing.lg)
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
     // MARK: - Error Banner
 
-    private func errorBanner(_ message: String, _ vm: SubscriptionViewModel) -> some View {
+    private func errorBanner(
+        _ message: String, _ vm: SubscriptionViewModel
+    ) -> some View {
         GlassCard {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Image(systemName: "exclamationmark.triangle.fill")
@@ -88,7 +123,9 @@ struct SubscriptionView: View {
 
     // MARK: - Billing Period
 
-    private func billingPeriodPicker(_ vm: SubscriptionViewModel) -> some View {
+    private func billingPeriodPicker(
+        _ vm: SubscriptionViewModel
+    ) -> some View {
         HStack(spacing: 0) {
             ForEach(BillingPeriod.allCases, id: \.rawValue) { period in
                 let isSelected = vm.selectedBillingPeriod == period
@@ -98,9 +135,14 @@ struct SubscriptionView: View {
                     Text(period == .monthly
                         ? localization.t("subscription.monthly")
                         : localization.t("subscription.yearly"))
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                        .font(.system(
+                            size: DesignTokens.FontSize.sm,
+                            weight: .semibold
+                        ))
                         .foregroundStyle(
-                            isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
+                            isSelected
+                                ? DesignTokens.Text.primary
+                                : DesignTokens.Text.muted
                         )
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DesignTokens.Spacing.sm)
@@ -110,24 +152,31 @@ struct SubscriptionView: View {
                                 : Color.clear
                         )
                         .clipShape(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                            RoundedRectangle(
+                                cornerRadius: DesignTokens.Radius.md
+                            )
                         )
                 }
             }
         }
-        .glassCard(radius: DesignTokens.Radius.md, padding: DesignTokens.Spacing.xs)
+        .glassCard(
+            radius: DesignTokens.Radius.md,
+            padding: DesignTokens.Spacing.xs
+        )
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
-    // MARK: - Cancel
+    // MARK: - Restore
 
-    private func cancelSection(_ vm: SubscriptionViewModel) -> some View {
+    private func restoreButton(
+        _ vm: SubscriptionViewModel
+    ) -> some View {
         GlassButton(
-            localization.t("subscription.cancel"),
+            localization.t("subscription.restorePurchases"),
             variant: .ghost,
             isLoading: vm.isProcessing
         ) {
-            Task { await vm.cancelSubscription() }
+            Task { await vm.restorePurchases() }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

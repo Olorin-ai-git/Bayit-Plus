@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,8 +27,10 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.onboarding.FeatureTooltipOverlay
 
 private const val GRID_COLUMNS = 2
+private const val ZEH_ANI_AVATAR_KEY = "zeh_ani_avatar"
 
 private val menuCards = listOf(
     ZehAniMenuCard(ZehAniFeature.MAGIC_MIRROR, "Magic Mirror", "Daily greetings and face ID"),
@@ -73,6 +76,7 @@ fun ZehAniDashboardRoute(
             }
         },
         onRetry = viewModel::retry,
+        tooltipManager = viewModel.tooltipManager,
         modifier = modifier,
     )
 }
@@ -82,10 +86,18 @@ internal fun ZehAniDashboardScreen(
     uiState: ZehAniDashboardUiState,
     onFeatureSelected: (ZehAniFeature) -> Unit,
     onRetry: () -> Unit,
+    tooltipManager: tv.bayit.plus.feature.onboarding.TooltipManager? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(title = "Zeh Ani")
+        if (tooltipManager != null) {
+            FeatureTooltipOverlay(
+                tooltipManager = tooltipManager,
+                featureKey = ZEH_ANI_AVATAR_KEY,
+                message = stringResource(tv.bayit.plus.feature.onboarding.R.string.tooltip_zeh_ani),
+            )
+        }
         when (uiState) {
             is ZehAniDashboardUiState.Loading -> GlassLoadingIndicator()
             is ZehAniDashboardUiState.Success -> DashboardContent(

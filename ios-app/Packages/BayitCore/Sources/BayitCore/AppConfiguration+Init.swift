@@ -89,6 +89,20 @@ extension AppConfiguration {
 
         let ownerModeStr = info["OWNER_MODE"] as? String ?? processEnv["OWNER_MODE"]
         ownerMode = ownerModeStr?.uppercased() == "YES"
+
+        let monthlyProductId = info["IAP_PLUS_MONTHLY_PRODUCT_ID"] as? String
+            ?? processEnv["IAP_PLUS_MONTHLY_PRODUCT_ID"]
+        guard let monthlyProductId, !monthlyProductId.isEmpty else {
+            fatalError("IAP_PLUS_MONTHLY_PRODUCT_ID must be set in Info.plist or env var")
+        }
+        iapPlusMonthlyProductId = monthlyProductId
+
+        let yearlyProductId = info["IAP_PLUS_YEARLY_PRODUCT_ID"] as? String
+            ?? processEnv["IAP_PLUS_YEARLY_PRODUCT_ID"]
+        guard let yearlyProductId, !yearlyProductId.isEmpty else {
+            fatalError("IAP_PLUS_YEARLY_PRODUCT_ID must be set in Info.plist or env var")
+        }
+        iapPlusYearlyProductId = yearlyProductId
     }
 
     private static func defaultAPIBaseURL(for _: AppEnvironment) -> String {

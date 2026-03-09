@@ -1,20 +1,17 @@
 import BayitDesignSystem
 import BayitLocalization
+import StoreKit
 import SwiftUI
 
-/// Individual subscription plan card displaying plan name, price,
-/// features, and subscribe/current-plan state.
+/// Individual subscription plan card for StoreKit 2 product display.
 struct SubscriptionPlanCard: View {
     @Environment(LocalizationManager.self) private var localization
 
-    let plan: SubscriptionPlan
+    let product: Product
     let isCurrent: Bool
-    let displayPrice: String
     let isProcessing: Bool
-    @Binding var pendingCheckoutURL: URL?
-    @Binding var showDisclosure: Bool
-    let onSubscribe: (SubscriptionPlan) async -> URL?
-    let onError: (String) -> Void
+    let features: [String]
+    let onPurchase: () async -> Void
 
     var body: some View {
         GlassCard {
@@ -31,7 +28,9 @@ struct SubscriptionPlanCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                 .stroke(
-                    isCurrent ? DesignTokens.Primary.default : Color.clear,
+                    isCurrent
+                        ? DesignTokens.Primary.default
+                        : Color.clear,
                     lineWidth: 2
                 )
         )
@@ -42,14 +41,19 @@ struct SubscriptionPlanCard: View {
 
     private var header: some View {
         HStack {
-            Text(plan.name)
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+            Text(product.displayName)
+                .font(.system(
+                    size: DesignTokens.FontSize.lg, weight: .bold
+                ))
                 .foregroundStyle(DesignTokens.Text.primary)
 
             Spacer()
 
             if isCurrent {
-                GlassBadge(text: localization.t("subscription.current"), variant: .success)
+                GlassBadge(
+                    text: localization.t("subscription.current"),
+                    variant: .success
+                )
             }
         }
     }
@@ -57,15 +61,17 @@ struct SubscriptionPlanCard: View {
     // MARK: - Price
 
     private var priceText: some View {
-        Text(displayPrice)
-            .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
+        Text(product.displayPrice)
+            .font(.system(
+                size: DesignTokens.FontSize.xxl, weight: .bold
+            ))
             .foregroundStyle(DesignTokens.Primary.default)
     }
 
     // MARK: - Features
 
     private var featureList: some View {
-        ForEach(plan.features, id: \.self) { feature in
+        ForEach(features, id: \.self) { feature in
             HStack(spacing: DesignTokens.Spacing.sm) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 14))
@@ -86,14 +92,10 @@ struct SubscriptionPlanCard: View {
             variant: .primary,
             isLoading: isProcessing
         ) {
-            Task { @MainActor in
+            Task {
                 guard !isProcessing else { return }
-                if let url = await onSubscribe(plan) {
-                    pendingCheckoutURL = url
-                    showDisclosure = true
-                } else {
-                    onError(localization.t("subscription.subscribeError"))
-                }
+                HapticFeedbackService.impact(style: .medium)
+                await onPurchase()
             }
         }
         .disabled(isProcessing)

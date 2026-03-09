@@ -2,6 +2,7 @@ import BayitCore
 import BayitNetworking
 import BayitVoice
 import Foundation
+import StoreKit
 
 /// Provides all repository instances for dependency injection via SwiftUI Environment.
 /// Initialized once in BayitPlusApp with the shared APIClient.
@@ -62,6 +63,7 @@ final class RepositoryProvider {
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
+    let storeManager: StoreManager
 
     init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration) {
         actor = APIActorRepository(client: client)
@@ -119,5 +121,6 @@ final class RepositoryProvider {
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         offlineCache = OfflineCacheService()
+        storeManager = StoreManager(config: configuration, apiClient: client)
     }
 }

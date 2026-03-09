@@ -1,40 +1,56 @@
 import BayitDesignSystem
 import BayitLocalization
+import StoreKit
 import SwiftUI
 
-// MARK: - Plan Cards
+// MARK: - Plus Product Card
 
 extension SubscriptionView {
-    func planCards(_ vm: SubscriptionViewModel) -> some View {
-        ForEach(vm.plans) { plan in
-            planCard(plan, viewModel: vm)
-        }
-    }
-
-    func planCard(
-        _ plan: SubscriptionPlan, viewModel vm: SubscriptionViewModel
-    ) -> some View {
-        let isCurrent = vm.currentSubscription?.plan == plan.id
+    func plusProductCard(_ vm: SubscriptionViewModel) -> some View {
+        let product = vm.selectedProduct
+        let features = [
+            localization.t("subscription.feature.allChannels"),
+            localization.t("subscription.feature.aiAssistant"),
+            localization.t("subscription.feature.liveDubbing"),
+            localization.t("subscription.feature.fourDevices"),
+            localization.t("subscription.feature.4kQuality"),
+            localization.t("subscription.feature.500Credits"),
+            localization.t("subscription.feature.offlineDownload"),
+        ]
 
         return GlassCard {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
                 HStack {
-                    Text(plan.name)
-                        .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    Text(localization.t("subscription.plusPlan"))
+                        .font(.system(
+                            size: DesignTokens.FontSize.lg,
+                            weight: .bold
+                        ))
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     Spacer()
 
-                    if isCurrent {
-                        GlassBadge(text: localization.t("subscription.current"), variant: .success)
-                    }
+                    GlassBadge(
+                        text: localization.t("gate.recommended"),
+                        variant: .primary
+                    )
                 }
 
-                Text(localization.t(vm.billingPeriodKey))
-                    .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Primary.default)
+                if let product {
+                    Text(product.displayPrice)
+                        .font(.system(
+                            size: DesignTokens.FontSize.xxl,
+                            weight: .bold
+                        ))
+                        .foregroundStyle(DesignTokens.Primary.default)
+                        + Text(vm.selectedBillingPeriod == .monthly
+                            ? localization.t("subscription.perMonth")
+                            : localization.t("subscription.perYear"))
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
 
-                ForEach(plan.features, id: \.self) { feature in
+                ForEach(features, id: \.self) { feature in
                     HStack(spacing: DesignTokens.Spacing.sm) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 14))
@@ -46,33 +62,24 @@ extension SubscriptionView {
                     }
                 }
 
-                if !isCurrent {
-                    GlassButton(
-                        localization.t("subscription.subscribe"),
-                        variant: .primary,
-                        isLoading: vm.isProcessing
-                    ) {
-                        Task { @MainActor in
-                            guard !vm.isProcessing else { return }
-                            if let url = await vm.subscribe(to: plan) {
-                                pendingCheckoutURL = url
-                                showDisclosure = true
-                            } else if vm.error == nil {
-                                vm.setError(localization.t("subscription.subscribeError"))
-                            }
-                        }
+                GlassButton(
+                    localization.t("subscription.subscribePlus"),
+                    variant: .primary,
+                    isLoading: vm.isProcessing
+                ) {
+                    Task {
+                        guard !vm.isProcessing else { return }
+                        HapticFeedbackService.impact(style: .medium)
+                        _ = await vm.purchase()
                     }
-                    .disabled(vm.isProcessing)
                 }
+                .disabled(vm.isProcessing || product == nil)
             }
             .padding(DesignTokens.Spacing.lg)
         }
         .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(
-                    isCurrent ? DesignTokens.Primary.default : Color.clear,
-                    lineWidth: 2
-                )
+                .stroke(DesignTokens.Primary.default, lineWidth: 2)
         )
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

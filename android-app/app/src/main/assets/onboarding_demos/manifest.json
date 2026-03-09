@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "feature_key": "live_dubbing",
+      "video_asset": "demo_live_dubbing.mp4",
+      "video_duration_ms": 8000,
+      "thumbnail_asset": "thumb_live_dubbing.jpg"
+    },
+    {
+      "feature_key": "live_trivia",
+      "video_asset": "demo_live_trivia.mp4",
+      "video_duration_ms": 10000,
+      "thumbnail_asset": "thumb_live_trivia.jpg"
+    },
+    {
+      "feature_key": "subtitles_split",
+      "video_asset": "demo_subtitles_split.mp4",
+      "video_duration_ms": 8000,
+      "thumbnail_asset": "thumb_subtitles_split.jpg"
+    },
+    {
+      "feature_key": "engrew_heblish",
+      "video_asset": "demo_engrew_heblish.mp4",
+      "video_duration_ms": 8000,
+      "thumbnail_asset": "thumb_engrew_heblish.jpg"
+    },
+    {
+      "feature_key": "pause_and_ask",
+      "video_asset": "demo_pause_and_ask.mp4",
+      "video_duration_ms": 10000,
+      "thumbnail_asset": "thumb_pause_and_ask.jpg"
+    },
+    {
+      "feature_key": "movie_interaction",
+      "video_asset": "demo_movie_interaction.mp4",
+      "video_duration_ms": 12000,
+      "thumbnail_asset": "thumb_movie_interaction.jpg"
+    },
+    {
+      "feature_key": "zeh_ani",
+      "video_asset": "demo_zeh_ani.mp4",
+      "video_duration_ms": 10000,
+      "thumbnail_asset": "thumb_zeh_ani.jpg"
+    },
+    {
+      "feature_key": "catchup",
+      "video_asset": "demo_catchup.mp4",
+      "video_duration_ms": 8000,
+      "thumbnail_asset": "thumb_catchup.jpg"
+    },
+    {
+      "feature_key": "byoc",
+      "video_asset": "demo_byoc.mp4",
+      "video_duration_ms": 10000,
+      "thumbnail_asset": "thumb_byoc.jpg"
+    }
+  ]
+}

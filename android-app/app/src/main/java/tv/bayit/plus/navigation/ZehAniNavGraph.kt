@@ -1,8 +1,10 @@
 package tv.bayit.plus.navigation
 
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import tv.bayit.plus.feature.onboarding.R as OnboardingR
 import tv.bayit.plus.feature.missions.MissionsDashboardRoute
 import tv.bayit.plus.feature.missions.interactive.InteractiveMissionRoute
 import tv.bayit.plus.feature.missions.story.StarStoryRoute
@@ -25,6 +27,7 @@ import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 
 fun NavGraphBuilder.zehAniNavGraph(navController: NavController) {
     composable<Route.ZehAni> {
+        WithFeatureTooltip(featureKey = "zeh_ani", message = stringResource(OnboardingR.string.tooltip_zeh_ani)) {
         ZehAniDashboardRoute(
             onNavigateToMagicMirror = { profileId -> navController.navigate(Route.ZehAniMagicMirror(profileId = profileId)) },
             onNavigateToV2V = { profileId -> navController.navigate(Route.ZehAniV2V(avatarId = "", profileId = profileId)) },
@@ -36,6 +39,7 @@ fun NavGraphBuilder.zehAniNavGraph(navController: NavController) {
             onNavigateToChess = { navController.navigate(Route.Chess()) },
             onNavigateBack = { navController.popBackStack() },
         )
+        }
     }
     composable<Route.ZehAniMagicMirror> {
         MagicMirrorRoute(

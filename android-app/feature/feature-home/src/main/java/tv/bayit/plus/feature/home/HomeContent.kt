@@ -15,6 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import tv.bayit.plus.core.byoc.BYOCSourceManager
+import tv.bayit.plus.core.byoc.models.BYOCContentItem
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.SpotlightItem
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -48,6 +50,11 @@ internal fun HomeSuccessContent(
     onRequestLocationPermission: () -> Unit,
     onOpenLocationSettings: () -> Unit,
     isLocationPermissionPermanentlyDenied: Boolean,
+    onConnectBYOCSources: () -> Unit = {},
+    onBYOCItemClick: (BYOCContentItem) -> Unit = {},
+    onBYOCSourceShowAll: (String) -> Unit = {},
+    ownerMode: Boolean = false,
+    sourceManager: BYOCSourceManager? = null,
     onRefresh: () -> Unit,
     onDismissShabbatBanner: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -108,6 +115,10 @@ internal fun HomeSuccessContent(
                 }
             }
 
+            if (!ownerMode) {
+                byocHomeItems(uiState, sourceManager, onConnectBYOCSources, onBYOCItemClick, onBYOCSourceShowAll)
+            }
+
             if (uiState.spotlight.isNotEmpty()) {
                 item(key = "carousel") {
                     HeroCarousel(
@@ -144,6 +155,10 @@ internal fun HomeSuccessContent(
                         onDismiss = { isBannerDismissed = true },
                     )
                 }
+            }
+
+            if (ownerMode) {
+                byocHomeItems(uiState, sourceManager, onConnectBYOCSources, onBYOCItemClick, onBYOCSourceShowAll)
             }
 
             if (uiState.liveChannels.isNotEmpty()) {

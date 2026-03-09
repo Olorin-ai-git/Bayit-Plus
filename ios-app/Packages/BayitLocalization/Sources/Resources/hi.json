@@ -3398,6 +3398,9 @@
     "upgradeTitle": "प्लस में अपग्रेड",
     "usage": "उपयोग",
     "creditsLabel": "Credits",
+    "getPlusTitle": "Bayit+ Plus पाएं",
+    "getPlusMessage": "असीमित AI क्रेडिट, शुरू से",
+    "getPlusButton": "Plus पाएं",
     "insufficient": {
       "title": "अपर्याप्त क्रेडिट",
       "message": "इस सुविधा के लिए आपके पास पर्याप्त क्रेडिट नहीं हैं"
@@ -7990,7 +7993,23 @@
     "upgradeRequired": "इस सामग्री तक पहुंचने के लिए अपनी सदस्यता अपग्रेड करें",
     "monthlyPlan": "मासिक योजना",
     "yearlyPlan": "वार्षिक योजना",
-    "subscribeError": "सदस्यता शुरू करने में असमर्थ। कृपया बाद में पुनः प्रयास करें।"
+    "subscribeError": "सदस्यता शुरू करने में असमर्थ। कृपया बाद में पुनः प्रयास करें।",
+    "activePlus": "Plus सक्रिय",
+    "manageInSettings": "डिवाइस सेटिंग्स में अपनी सदस्यता प्रबंधित करें",
+    "restorePurchases": "खरीदारी पुनर्स्थापित करें",
+    "subscribePlus": "Plus की सदस्यता लें",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/माह",
+    "perYear": "/वर्ष",
+    "feature": {
+      "allChannels": "सभी लाइव TV चैनल",
+      "aiAssistant": "AI सहायक",
+      "liveDubbing": "रियल-टाइम AI डबिंग",
+      "fourDevices": "4 डिवाइस पर देखें",
+      "4kQuality": "4K गुणवत्ता",
+      "500Credits": "500 AI क्रेडिट/माह",
+      "offlineDownload": "ऑफ़लाइन के लिए डाउनलोड करें"
+    }
   },
   "subtitles": {
     "off": "बंद",

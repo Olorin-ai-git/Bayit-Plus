@@ -3486,6 +3486,9 @@
     "upgradeTitle": "பிரீமியத்திற்கு மேம்படுத்து",
     "usage": "பயன்பாடு",
     "creditsLabel": "Credits",
+    "getPlusTitle": "Bayit+ Plus பெறுங்கள்",
+    "getPlusMessage": "அன்லிமிட்டெட் AI கிரெடிட்கள், தொடக்கம்",
+    "getPlusButton": "Plus பெறுங்கள்",
     "insufficient": {
       "title": "போதுமான கிரெடிட்கள் இல்லை",
       "message": "இந்த அம்சத்திற்கு உங்களிடம் போதுமான கிரெடிட்கள் இல்லை"
@@ -8063,7 +8066,23 @@
     "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
     "monthlyPlan": "மாதாந்திர திட்டம்",
     "yearlyPlan": "ஆண்டு திட்டம்",
-    "subscribeError": "சந்தாவைத் தொடங்க முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்."
+    "subscribeError": "சந்தாவைத் தொடங்க முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+    "activePlus": "Plus செயலில்",
+    "manageInSettings": "சாதன அமைப்புகளில் உங்கள் சந்தாவை நிர்வகிக்கவும்",
+    "restorePurchases": "வாங்கியவற்றை மீட்டெடுக்கவும்",
+    "subscribePlus": "Plus-ல் சந்தா செலுத்தவும்",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/மாதம்",
+    "perYear": "/வருடம்",
+    "feature": {
+      "allChannels": "அனைத்து நேரடி TV சேனல்கள்",
+      "aiAssistant": "AI உதவியாளர்",
+      "liveDubbing": "நிகழ்நேர AI டப்பிங்",
+      "fourDevices": "4 சாதனங்களில் பாருங்கள்",
+      "4kQuality": "4K தரம்",
+      "500Credits": "500 AI கிரெடிட்கள்/மாதம்",
+      "offlineDownload": "ஆஃப்லைனில் பார்க்க பதிவிறக்கவும்"
+    }
   },
   "subtitles": {
     "nikud": "நிகுத்",

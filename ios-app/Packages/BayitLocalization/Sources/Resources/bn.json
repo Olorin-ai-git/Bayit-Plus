@@ -3398,6 +3398,9 @@
     "upgradeTitle": "প্লাসে আপগ্রেড",
     "usage": "ব্যবহার",
     "creditsLabel": "Credits",
+    "getPlusTitle": "Bayit+ Plus পান",
+    "getPlusMessage": "সীমাহীন AI ক্রেডিট, শুরু",
+    "getPlusButton": "Plus পান",
     "insufficient": {
       "title": "অপর্যাপ্ত ক্রেডিট",
       "message": "এই বৈশিষ্ট্যের জন্য আপনার পর্যাপ্ত ক্রেডিট নেই"
@@ -7971,7 +7974,23 @@
     "upgradeRequired": "এই কন্টেন্ট অ্যাক্সেস করতে আপনার সাবস্ক্রিপশন আপগ্রেড করুন",
     "monthlyPlan": "মাসিক পরিকল্পনা",
     "yearlyPlan": "বার্ষিক পরিকল্পনা",
-    "subscribeError": "সাবস্ক্রিপশন শুরু করা যায়নি। পরে আবার চেষ্টা করুন।"
+    "subscribeError": "সাবস্ক্রিপশন শুরু করা যায়নি। পরে আবার চেষ্টা করুন।",
+    "activePlus": "Plus সক্রিয়",
+    "manageInSettings": "ডিভাইস সেটিংসে আপনার সাবস্ক্রিপশন পরিচালনা করুন",
+    "restorePurchases": "ক্রয় পুনরুদ্ধার করুন",
+    "subscribePlus": "Plus-এ সাবস্ক্রাইব করুন",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/মাস",
+    "perYear": "/বছর",
+    "feature": {
+      "allChannels": "সমস্ত লাইভ TV চ্যানেল",
+      "aiAssistant": "AI সহকারী",
+      "liveDubbing": "রিয়েল-টাইম AI ডাবিং",
+      "fourDevices": "4টি ডিভাইসে দেখুন",
+      "4kQuality": "4K মানের",
+      "500Credits": "500 AI ক্রেডিট/মাস",
+      "offlineDownload": "অফলাইনে দেখতে ডাউনলোড করুন"
+    }
   },
   "subtitles": {
     "nikud": "নিকুদ",

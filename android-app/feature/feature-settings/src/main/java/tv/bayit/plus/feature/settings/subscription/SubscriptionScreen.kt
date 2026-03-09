@@ -37,10 +37,12 @@ fun SubscriptionRoute(
     viewModel: SubscriptionViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
     SubscriptionScreen(
         uiState = uiState,
         onNavigateBack = onNavigateBack,
         onUpgrade = onNavigateToUpgrade,
+        onManageSubscription = { viewModel.manageSubscription(context) },
         onRetry = viewModel::retry,
         modifier = modifier,
     )
@@ -51,6 +53,7 @@ internal fun SubscriptionScreen(
     uiState: SubscriptionUiState,
     onNavigateBack: () -> Unit,
     onUpgrade: () -> Unit,
+    onManageSubscription: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -66,13 +69,19 @@ internal fun SubscriptionScreen(
         when (uiState) {
             is SubscriptionUiState.Loading -> GlassLoadingIndicator()
             is SubscriptionUiState.Error -> SubscriptionErrorContent(message = uiState.message, onRetry = onRetry)
-            is SubscriptionUiState.Success -> SubscriptionContent(state = uiState, onUpgrade = onUpgrade)
+            is SubscriptionUiState.Success -> SubscriptionContent(
+                state = uiState, onUpgrade = onUpgrade, onManageSubscription = onManageSubscription,
+            )
         }
     }
 }
 
 @Composable
-private fun SubscriptionContent(state: SubscriptionUiState.Success, onUpgrade: () -> Unit) {
+private fun SubscriptionContent(
+    state: SubscriptionUiState.Success,
+    onUpgrade: () -> Unit,
+    onManageSubscription: () -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
@@ -121,6 +130,8 @@ private fun SubscriptionContent(state: SubscriptionUiState.Success, onUpgrade: (
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
             GlassButton(text = "Upgrade Plan", onClick = onUpgrade, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(DesignTokens.Spacing.sm))
+            GlassButton(text = "Manage on Google Play", onClick = onManageSubscription, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
         }
     }

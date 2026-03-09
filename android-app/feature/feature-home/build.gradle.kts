@@ -36,10 +36,12 @@ dependencies {
     implementation(project(":core:core-common"))
     implementation(project(":core:core-model"))
     implementation(project(":core:core-data"))
+    implementation(project(":core:core-byoc"))
     implementation(project(":core:core-location"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
     implementation(project(":feature:feature-vod"))
+    implementation(project(":feature:feature-onboarding"))
 
     implementation(libs.core.ktx)
 

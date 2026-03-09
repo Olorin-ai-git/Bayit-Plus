@@ -3404,6 +3404,9 @@
     "upgradeTitle": "升级到Plus",
     "usage": "使用量",
     "creditsLabel": "Credits",
+    "getPlusTitle": "获取 Bayit+ Plus",
+    "getPlusMessage": "无限 AI 积分，起价",
+    "getPlusButton": "获取 Plus",
     "insufficient": {
       "title": "积分不足",
       "message": "您没有足够的积分使用此功能"
@@ -7975,7 +7978,23 @@
     "upgradeRequired": "升级您的订阅以访问此内容",
     "monthlyPlan": "月度计划",
     "yearlyPlan": "年度计划",
-    "subscribeError": "无法开始订阅。请稍后再试。"
+    "subscribeError": "无法开始订阅。请稍后再试。",
+    "activePlus": "Plus 已激活",
+    "manageInSettings": "在设备设置中管理您的订阅",
+    "restorePurchases": "恢复购买",
+    "subscribePlus": "订阅 Plus",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/月",
+    "perYear": "/年",
+    "feature": {
+      "allChannels": "所有直播电视频道",
+      "aiAssistant": "AI 助手",
+      "liveDubbing": "实时AI配音",
+      "fourDevices": "在4台设备上观看",
+      "4kQuality": "4K画质",
+      "500Credits": "每月500 AI积分",
+      "offlineDownload": "下载离线观看"
+    }
   },
   "subtitles": {
     "nikud": "希伯来语标点",

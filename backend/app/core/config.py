@@ -125,6 +125,20 @@ class Settings(BaseSettings):
     STRIPE_PRICE_PLUS_MONTHLY: str = ""
     STRIPE_PRICE_PLUS_YEARLY: str = ""
 
+    # Apple App Store Server API (IAP verification)
+    APPLE_APP_STORE_ISSUER_ID: str = ""
+    APPLE_APP_STORE_KEY_ID: str = ""
+    APPLE_APP_STORE_PRIVATE_KEY: str = ""
+
+    # Google Play Developer API (IAP verification)
+    GOOGLE_PLAY_PACKAGE_NAME: str = ""
+
+    # IAP Plus product identifiers (comma-separated)
+    IAP_PLUS_PRODUCT_IDS: str = "tv.bayit.plus.monthly,tv.bayit.plus.yearly"
+
+    # App Store environment: Production or Sandbox
+    APPLE_APP_STORE_ENVIRONMENT: str = "Production"
+
     # Freemium credit allocations (monthly)
     FREE_MONTHLY_CREDITS: int = Field(
         default=50,
@@ -135,6 +149,13 @@ class Settings(BaseSettings):
         default=500,
         env="PLUS_MONTHLY_CREDITS",
         description="Monthly AI credits for Plus tier users"
+    )
+
+    # Internal API key for Cloud Scheduler-triggered endpoints
+    INTERNAL_CRON_API_KEY: str = Field(
+        default="",
+        env="INTERNAL_CRON_API_KEY",
+        description="API key for internal cron/scheduler endpoints"
     )
 
     # ==========================================

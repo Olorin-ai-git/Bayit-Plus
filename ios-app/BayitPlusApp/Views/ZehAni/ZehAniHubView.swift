@@ -6,6 +6,7 @@ struct ZehAniHubView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(TooltipManager.self) private var tooltipManager
 
     @State private var profileId: String?
     @State private var isLoading = true
@@ -40,6 +41,13 @@ struct ZehAniHubView: View {
                     titleKey: "zehAni.hub.magicMirror",
                     descKey: "zehAni.hub.magicMirrorDesc",
                     destination: .zehAniMagicMirror(profileId: profileId)
+                )
+                .featureTooltip(
+                    featureKey: "zeh_ani_avatar",
+                    titleKey: "tooltip.zehAni.title",
+                    descriptionKey: "tooltip.zehAni.description",
+                    arrowDirection: .top,
+                    tooltipManager: tooltipManager
                 )
 
                 featureCard(

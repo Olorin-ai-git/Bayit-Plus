@@ -112,6 +112,13 @@ extension PlayerView {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel(localization.t("player.pauseAsk.title"))
+                .featureTooltip(
+                    featureKey: "pause_and_ask",
+                    titleKey: "tooltip.pauseAndAsk.title",
+                    descriptionKey: "tooltip.pauseAndAsk.description",
+                    arrowDirection: .top,
+                    tooltipManager: resolvedTooltipManager
+                )
             }
 
             // Next Interaction button (VOD only, when interactions enabled)

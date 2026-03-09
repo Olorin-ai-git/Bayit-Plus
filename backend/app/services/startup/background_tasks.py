@@ -220,6 +220,76 @@ async def _cleanup_stale_playback_sessions_task() -> None:
         await asyncio.sleep(300)
 
 
+async def _monthly_credit_refill_task() -> None:
+    """
+    Refill AI credits on the 1st of each month (local dev only).
+
+    On Cloud Run, Cloud Scheduler triggers the
+    POST /api/v1/internal/credit-refill endpoint instead.
+    """
+    from datetime import datetime as dt
+
+    from app.core.database import get_database
+    from app.models.user import User
+    from app.services.beta.credit_service import BetaCreditService
+    from app.services.olorin.metering.service import MeteringService
+
+    # Wait for server to initialize
+    await asyncio.sleep(30)
+
+    while True:
+        try:
+            now = dt.utcnow()
+            # Calculate seconds until the 1st of next month at 00:00 UTC
+            if now.month == 12:
+                next_first = dt(now.year + 1, 1, 1)
+            else:
+                next_first = dt(now.year, now.month + 1, 1)
+            wait_seconds = (next_first - now).total_seconds()
+
+            logger.info(
+                "Credit refill task sleeping until next month",
+                extra={"next_run": next_first.isoformat()},
+            )
+            await asyncio.sleep(wait_seconds)
+
+            # Build credit service with injected dependencies
+            db = get_database()
+            metering = MeteringService(settings)
+            credit_service = BetaCreditService(
+                settings=settings, metering_service=metering, db=db,
+            )
+
+            users = await User.find_all().to_list()
+            refilled = 0
+            for user in users:
+                user_id = str(user.id)
+                is_plus = user.subscription_tier == "plus"
+                try:
+                    await credit_service.refill_monthly_credits(
+                        user_id=user_id, is_plus=is_plus,
+                    )
+                    refilled += 1
+                except Exception as exc:
+                    logger.error(
+                        "Credit refill failed for user",
+                        extra={"user_id": user_id, "error": str(exc)},
+                    )
+
+            logger.info(
+                "Monthly credit refill complete (local)",
+                extra={"refilled_count": refilled, "total_users": len(users)},
+            )
+
+        except asyncio.CancelledError:
+            logger.info("Monthly credit refill task cancelled")
+            break
+        except Exception as e:
+            logger.error(f"Monthly credit refill task error: {e}", exc_info=True)
+            # Wait 1 hour before retrying on error
+            await asyncio.sleep(3600)
+
+
 async def _sync_youtube_epg_task() -> None:
     """
     Sync EPG schedules for YouTube playlist channels.
@@ -335,6 +405,17 @@ def start_background_tasks() -> None:
     task = asyncio.create_task(_sync_youtube_epg_task())
     _running_tasks.append(task)
     logger.info("Started YouTube EPG sync background task")
+
+    # Monthly credit refill (only runs locally; Cloud Run uses Cloud Scheduler)
+    if _is_running_locally():
+        task = asyncio.create_task(_monthly_credit_refill_task())
+        _running_tasks.append(task)
+        logger.info("Started monthly credit refill background task (local only)")
+    else:
+        logger.info(
+            "Monthly credit refill disabled on Cloud Run "
+            "(use Cloud Scheduler POST /api/v1/internal/credit-refill)"
+        )
 
 
 async def stop_background_tasks() -> None:

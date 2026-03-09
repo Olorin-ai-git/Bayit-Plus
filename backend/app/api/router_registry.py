@@ -54,7 +54,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 extension_config,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
-                                history, household, jerusalem, judaism, librarian, live,
+                                history, household, iap_verification,
+                                jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset, payments,
@@ -136,6 +137,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import movie_interactions
     # Device code authentication routes (TV login - RFC 8628)
     from app.api.routes import device_code
+    # Internal cron endpoints (Cloud Scheduler)
+    from app.api.routes import credit_refill
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -267,6 +270,9 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(
         subscriptions.router, prefix=f"{prefix}/subscriptions", tags=["subscriptions"]
+    )
+    app.include_router(
+        iap_verification.router, prefix=f"{prefix}/subscriptions", tags=["subscriptions"]
     )
     app.include_router(
         extension_config.router, prefix=prefix, tags=["extension-config"]
@@ -675,6 +681,16 @@ def register_all_routers(app: FastAPI) -> None:
         movie_interactions.router, prefix=prefix, tags=["movie-interactions"]
     )
     logger.debug("Registered Zeh Ani routes (mesh, consent, v2v, triggers, mirror, highlights, whatsapp, movie-interactions)")
+
+    # ============================================
+    # Internal / Cron Routes (Cloud Scheduler)
+    # ============================================
+    app.include_router(
+        credit_refill.router,
+        prefix=prefix,
+        tags=["internal"],
+    )
+    logger.debug("Registered internal cron routes (credit-refill)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

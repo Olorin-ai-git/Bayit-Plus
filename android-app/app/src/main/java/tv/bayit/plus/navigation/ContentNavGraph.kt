@@ -1,5 +1,6 @@
 package tv.bayit.plus.navigation
 
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -19,6 +20,8 @@ import tv.bayit.plus.feature.search.SearchRoute
 import tv.bayit.plus.feature.search.llm.LLMSearchRoute
 import tv.bayit.plus.feature.vod.VodRoute
 import tv.bayit.plus.feature.vod.collection.CollectionDetailRoute
+import tv.bayit.plus.feature.onboarding.FeatureTourRoute
+import tv.bayit.plus.feature.onboarding.R as OnboardingR
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
 import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
@@ -44,6 +47,9 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
             onNavigateToCategoryBrowse = { categoryId -> navController.navigate(Route.CategoryBrowse(categoryId = categoryId)) },
             onNavigateToIsraelisCity = { navController.navigate(Route.Culture) },
             onNavigateToIsraeliBusinesses = { navController.navigate(Route.Culture) },
+            onNavigateToBYOCSettings = { navController.navigate(Route.BYOCSettings) },
+            onNavigateToBYOCPlayer = { id, _ -> navController.navigate(Route.Player(contentId = id, contentType = "byoc")) },
+            onNavigateToFeatureTour = { navController.navigate(Route.FeatureTour) },
         )
     }
     composable<Route.LiveTV> {
@@ -72,12 +78,20 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.Player> { entry ->
         val route = entry.toRoute<Route.Player>()
-        PlayerRoute(
-            contentId = route.contentId,
-            contentType = route.contentType,
-            resumePositionMs = route.resumePositionMs,
-            onNavigateBack = { navController.popBackStack() },
-        )
+        val tooltipKey = if (route.contentType == "live") "live_dubbing" else "pause_and_ask"
+        val tooltipMsg = if (route.contentType == "live") {
+            stringResource(OnboardingR.string.tooltip_live_dubbing)
+        } else {
+            stringResource(OnboardingR.string.tooltip_pause_and_ask)
+        }
+        WithFeatureTooltip(featureKey = tooltipKey, message = tooltipMsg) {
+            PlayerRoute(
+                contentId = route.contentId,
+                contentType = route.contentType,
+                resumePositionMs = route.resumePositionMs,
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
     }
     composable<Route.MovieDetail> {
         MovieDetailRoute(
@@ -116,10 +130,12 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
         AudiobooksRoute(onNavigateToAudiobook = { id -> navController.navigate(Route.AudiobookDetail(audiobookId = id)) })
     }
     composable<Route.Epg> {
-        EPGRoute(
-            onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
-            onNavigateBack = { navController.popBackStack() },
-        )
+        WithFeatureTooltip(featureKey = "catchup", message = stringResource(OnboardingR.string.tooltip_catchup)) {
+            EPGRoute(
+                onNavigateToChannel = { channelId -> navController.navigate(Route.Player(contentId = channelId, contentType = "live")) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
     }
     composable<Route.Trending> {
         TrendingRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
@@ -150,5 +166,8 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.Chapters> {
         ChaptersRoute(onNavigateBack = { navController.popBackStack() })
+    }
+    composable<Route.FeatureTour> {
+        FeatureTourRoute(onComplete = { navController.popBackStack() })
     }
 }

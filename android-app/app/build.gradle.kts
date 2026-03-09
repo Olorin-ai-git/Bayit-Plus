@@ -55,6 +55,16 @@ android {
             "GOOGLE_CLIENT_SECRET",
             "\"${project.findProperty("bayit.google.clientSecret")?.toString() ?: ""}\""
         )
+        buildConfigField(
+            "String",
+            "BILLING_PRODUCT_MONTHLY",
+            "\"${project.findProperty("bayit.billing.monthlyProductId") ?: "tv.bayit.plus.monthly"}\""
+        )
+        buildConfigField(
+            "String",
+            "BILLING_PRODUCT_YEARLY",
+            "\"${project.findProperty("bayit.billing.yearlyProductId") ?: "tv.bayit.plus.yearly"}\""
+        )
 
     }
 
@@ -165,6 +175,7 @@ dependencies {
     implementation(project(":feature:feature-downloads"))
     implementation(project(":feature:feature-widgets"))
     implementation(project(":feature:feature-byoc"))
+    implementation(project(":feature:feature-onboarding"))
     implementation(project(":feature:feature-tv"))
     implementation(project(":widget"))
 

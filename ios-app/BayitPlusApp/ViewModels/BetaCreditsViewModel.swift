@@ -14,7 +14,7 @@ final class BetaCreditsViewModel {
     private let repository: any BetaCreditsRepository
 
     @ObservationIgnored
-    nonisolated(unsafe) private var refreshTimer: Timer?
+    private nonisolated(unsafe) var refreshTimer: Timer?
 
     private static let refreshIntervalSeconds: TimeInterval = 30
 
@@ -90,7 +90,8 @@ final class BetaCreditsViewModel {
     var progressPercentage: Double {
         guard let balance,
               let total = balance.totalCredits, total > 0,
-              let remaining = balance.remainingCredits else {
+              let remaining = balance.remainingCredits
+        else {
             return 0
         }
         return Double(remaining) / Double(total)
@@ -105,6 +106,10 @@ final class BetaCreditsViewModel {
 
     var isDepleted: Bool {
         balance?.remainingCredits == 0
+    }
+
+    var isLowOrCritical: Bool {
+        balance?.isLow == true || balance?.isCritical == true
     }
 
     enum StatusColor {

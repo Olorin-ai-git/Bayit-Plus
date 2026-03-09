@@ -3424,6 +3424,9 @@
     "upgradeTitle": "שדרג לפלוס",
     "usage": "שימוש",
     "creditsLabel": "Credits",
+    "getPlusTitle": "קבל בית+ פלוס",
+    "getPlusMessage": "קרדיטי AI ללא הגבלה החל מ",
+    "getPlusButton": "קבל פלוס",
     "insufficient": {
       "title": "קרדיטים לא מספיקים",
       "message": "אין לך מספיק קרדיטים לתכונה זו"
@@ -8057,7 +8060,23 @@
     "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה",
     "monthlyPlan": "תוכנית חודשית",
     "yearlyPlan": "תוכנית שנתית",
-    "subscribeError": "לא ניתן להתחיל מנוי. אנא נסו שוב מאוחר יותר."
+    "subscribeError": "לא ניתן להתחיל מנוי. אנא נסו שוב מאוחר יותר.",
+    "activePlus": "פלוס פעיל",
+    "manageInSettings": "ניהול המנוי בהגדרות המכשיר",
+    "restorePurchases": "שחזור רכישות",
+    "subscribePlus": "הרשמה לפלוס",
+    "plusPlan": "בית+ פלוס",
+    "perMonth": "/חודש",
+    "perYear": "/שנה",
+    "feature": {
+      "allChannels": "כל ערוצי השידור החי",
+      "aiAssistant": "עוזר AI חכם",
+      "liveDubbing": "דיבוב AI בזמן אמת",
+      "fourDevices": "צפייה על 4 מכשירים",
+      "4kQuality": "איכות 4K",
+      "500Credits": "500 קרדיטי AI בחודש",
+      "offlineDownload": "הורדה לצפייה אופליין"
+    }
   },
   "subtitles": {
     "nikud": "ניקוד",

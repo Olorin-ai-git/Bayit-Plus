@@ -78,7 +78,10 @@
                             Task { await viewModel.player.seek(to: time) }
                         },
                         onDismiss: { showCatchUp = false },
-                        onUpgrade: { showCatchUp = false }
+                        onUpgrade: {
+                            showCatchUp = false
+                            coordinator.navigate(to: .subscription)
+                        }
                     )
                     .transition(
                         .move(edge: .trailing).combined(with: .opacity)

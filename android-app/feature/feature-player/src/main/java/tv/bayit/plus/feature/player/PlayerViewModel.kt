@@ -21,6 +21,7 @@ import tv.bayit.plus.core.media.BayitMediaPlayer
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.core.media.SleepTimerManager
 import tv.bayit.plus.core.model.MediaPlayback
+import tv.bayit.plus.feature.onboarding.TooltipManager
 import tv.bayit.plus.feature.player.live.LiveAICoordinator
 import tv.bayit.plus.feature.player.trivia.VodTriviaManager
 import javax.inject.Inject
@@ -37,6 +38,7 @@ class PlayerViewModel @Inject constructor(
     internal val featuresDelegate: PlayerFeaturesDelegate,
     private val castSessionManager: CastSessionManager,
     private val castBridge: MediaPlayerCastBridge,
+    internal val tooltipManager: TooltipManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 

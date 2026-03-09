@@ -8,6 +8,7 @@
     /// Users select which character to talk to during a Pause & Ask interaction.
     struct PauseAskCharacterOverlayView: View {
         @Environment(LocalizationManager.self) private var localization
+        @Environment(TooltipManager.self) private var tooltipManager
 
         let characters: [ContentCharacter]
         let onSelectCharacter: (ContentCharacter) -> Void
@@ -24,6 +25,13 @@
                         size: DesignTokens.FontSize.md, weight: .semibold
                     ))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .featureTooltip(
+                        featureKey: "vod_pause_ask",
+                        titleKey: "tooltip.pauseAndAsk.title",
+                        descriptionKey: "tooltip.pauseAndAsk.description",
+                        arrowDirection: .bottom,
+                        tooltipManager: tooltipManager
+                    )
 
                 characterGrid
 

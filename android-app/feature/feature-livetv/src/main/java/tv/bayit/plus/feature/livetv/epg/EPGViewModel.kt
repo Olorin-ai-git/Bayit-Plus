@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.EPGRepository
+import tv.bayit.plus.feature.onboarding.TooltipManager
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EPGViewModel @Inject constructor(
     private val epgRepository: EPGRepository,
+    internal val tooltipManager: TooltipManager,
     private val logger: BayitLogger,
 ) : ViewModel() {
 

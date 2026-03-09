@@ -3,11 +3,7 @@
     import BayitDesignSystem
     import SwiftUI
 
-    /// Extension on PlayerView providing the AI features panel and mutual exclusivity logic.
-    ///
-    /// Dubbing and live subtitles are mutually exclusive: enabling one disables the other.
-    /// Trivia is independent and can coexist with either dubbing or subtitles.
-    /// A unified `selectedAILanguage` flows to live translate, dubbing, and trivia.
+    /// AI features panel, mutual exclusivity (dubbing vs subtitles), and language propagation.
     extension PlayerView {
         // MARK: - AI Features Panel View
 
@@ -36,7 +32,8 @@
                 onSubtitlesTap: { toggleLiveTranslation() },
                 onSplitSubtitlesTap: { toggleSplitSubtitles() },
                 onDubbingTap: { toggleLiveDubbing() },
-                onTriviaTap: { toggleLiveTrivia() }
+                onTriviaTap: { toggleLiveTrivia() },
+                tooltipManager: resolvedTooltipManager
             )
         }
 

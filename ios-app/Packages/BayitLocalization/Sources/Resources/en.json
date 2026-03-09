@@ -3428,7 +3428,10 @@
     "upgradeMessage": "Upgrade to Plus for unlimited AI credits and exclusive features.",
     "upgradeTitle": "Upgrade to Plus",
     "usage": "Usage",
-    "creditsLabel": "Credits"
+    "creditsLabel": "Credits",
+    "getPlusTitle": "Get Bayit+ Plus",
+    "getPlusMessage": "Unlimited AI credits from",
+    "getPlusButton": "Get Plus"
   },
   "billing": {
     "currentPlan": "Current Plan",
@@ -7735,7 +7738,23 @@
     "upgradeRequired": "Upgrade your subscription to access this content",
     "monthlyPlan": "Monthly Plan",
     "yearlyPlan": "Yearly Plan",
-    "subscribeError": "Unable to start subscription. Please try again later."
+    "subscribeError": "Unable to start subscription. Please try again later.",
+    "activePlus": "Plus Active",
+    "manageInSettings": "Manage your subscription in device Settings",
+    "restorePurchases": "Restore Purchases",
+    "subscribePlus": "Subscribe to Plus",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "feature": {
+      "allChannels": "All live TV channels",
+      "aiAssistant": "AI assistant",
+      "liveDubbing": "Real-time AI dubbing",
+      "fourDevices": "Watch on 4 devices",
+      "4kQuality": "4K quality",
+      "500Credits": "500 AI credits/month",
+      "offlineDownload": "Download for offline"
+    }
   },
   "subtitles": {
     "nikud": "Nikud",
