@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.consent
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,9 +17,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BiometricConsentViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
+
+    private val profileId: String = checkNotNull(savedStateHandle["profileId"])
 
     private val _uiState = MutableStateFlow<ConsentUiState>(ConsentUiState.Loading)
     val uiState: StateFlow<ConsentUiState> = _uiState.asStateFlow()
@@ -43,7 +47,7 @@ class BiometricConsentViewModel @Inject constructor(
 
         viewModelScope.launch {
             logger.debug("Granting biometric consent", mapOf("type" to consentType))
-            when (val result = zehAniRepository.grantBiometricConsent("current", consentType, pin)) {
+            when (val result = zehAniRepository.grantBiometricConsent(profileId, consentType, pin)) {
                 is BayitResult.Success -> {
                     logger.info("Biometric consent granted", mapOf("type" to consentType))
                     _pinInput.value = ""
@@ -68,7 +72,7 @@ class BiometricConsentViewModel @Inject constructor(
     private fun loadConsentStatus() {
         viewModelScope.launch {
             logger.debug("Loading biometric consent status")
-            when (val result = zehAniRepository.checkBiometricConsent("current")) {
+            when (val result = zehAniRepository.checkBiometricConsent(profileId)) {
                 is BayitResult.Success -> {
                     logger.info("Consent status loaded")
                     _uiState.value = ConsentUiState.Success(

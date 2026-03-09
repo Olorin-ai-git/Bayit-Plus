@@ -157,12 +157,18 @@ sealed class Route {
     @Serializable data object ZehAni : Route()
     @Serializable data class ZehAniMagicMirror(val profileId: String, val avatarId: String = "") : Route()
     @Serializable data class ZehAniV2V(val avatarId: String, val profileId: String) : Route()
-    @Serializable data class ZehAniAvatar3D(val avatarId: String) : Route()
+    @Serializable data class ZehAniAvatar3D(val profileId: String) : Route()
     @Serializable data class ZehAniHighlights(val profileId: String) : Route()
+    @Serializable data class ZehAniMovieInteractions(val profileId: String) : Route()
     @Serializable data class ZehAniContacts(val profileId: String) : Route()
     @Serializable data class ZehAniFeedback(val profileId: String) : Route()
     @Serializable data class ZehAniAvatarSettings(val profileId: String, val avatarId: String) : Route()
-    @Serializable data object ZehAniConsent : Route()
+    @Serializable data class ZehAniConsent(val profileId: String) : Route()
+
+    // TV-specific routes
+    @Serializable data object TVHome : Route()
+    @Serializable data object TVAuth : Route()
+    @Serializable data object TVSearch : Route()
 
     // Auth
     @Serializable data object Splash : Route()

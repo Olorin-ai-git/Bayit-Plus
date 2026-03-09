@@ -48,7 +48,7 @@ fun ZehAniDashboardRoute(
     onNavigateToMovieInteractions: (profileId: String) -> Unit,
     onNavigateToContacts: (profileId: String) -> Unit,
     onNavigateToFeedback: (profileId: String) -> Unit,
-    onNavigateToConsent: () -> Unit,
+    onNavigateToConsent: (profileId: String) -> Unit,
     onNavigateToChess: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -67,7 +67,7 @@ fun ZehAniDashboardRoute(
                     ZehAniFeature.MOVIE_INTERACTIONS -> onNavigateToMovieInteractions(profileId)
                     ZehAniFeature.CONTACTS -> onNavigateToContacts(profileId)
                     ZehAniFeature.FEEDBACK -> onNavigateToFeedback(profileId)
-                    ZehAniFeature.CONSENT -> onNavigateToConsent()
+                    ZehAniFeature.CONSENT -> onNavigateToConsent(profileId)
                     ZehAniFeature.CHESS -> onNavigateToChess()
                 }
             }

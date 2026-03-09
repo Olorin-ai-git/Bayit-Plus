@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.StarStoryRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import tv.bayit.plus.core.model.zehani.AvatarMesh
 import javax.inject.Inject
@@ -18,16 +19,17 @@ import javax.inject.Inject
 class Avatar3DViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
+    private val starStoryRepository: StarStoryRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
-    val avatarId: String = checkNotNull(savedStateHandle["avatarId"])
+    val profileId: String = checkNotNull(savedStateHandle["profileId"])
 
     private val _uiState = MutableStateFlow<Avatar3DUiState>(Avatar3DUiState.Loading)
     val uiState: StateFlow<Avatar3DUiState> = _uiState.asStateFlow()
 
     init {
-        loadAvatar3D()
+        resolveAvatarAndLoad()
     }
 
     fun rotate(x: Float, y: Float) {
@@ -47,31 +49,52 @@ class Avatar3DViewModel @Inject constructor(
 
     fun retry() {
         _uiState.value = Avatar3DUiState.Loading
-        loadAvatar3D()
+        resolveAvatarAndLoad()
     }
 
-    private fun loadAvatar3D() {
+    private fun resolveAvatarAndLoad() {
         viewModelScope.launch {
-            logger.debug("Loading 3D avatar mesh", mapOf("avatarId" to avatarId))
-            when (val result = zehAniRepository.getMeshStatus(avatarId)) {
+            logger.debug("Resolving avatar for profile", mapOf("profileId" to profileId))
+            when (val result = starStoryRepository.listAvatarsForProfile(profileId)) {
                 is BayitResult.Success -> {
-                    logger.info("3D avatar mesh loaded", mapOf("avatarId" to avatarId))
-                    _uiState.value = Avatar3DUiState.Success(
-                        mesh = result.data,
-                        rotationX = 0f,
-                        rotationY = 0f,
-                        zoomLevel = 1f,
-                        isAnimating = false,
-                    )
+                    val avatarId = result.data.firstOrNull()?.avatarId
+                    if (avatarId == null) {
+                        _uiState.value = Avatar3DUiState.Error("No avatar found for this profile")
+                        return@launch
+                    }
+                    loadAvatar3D(avatarId)
                 }
                 is BayitResult.Error -> {
-                    logger.error("3D avatar mesh load failed", result.exception)
+                    logger.error("Avatar resolution failed", result.exception)
                     _uiState.value = Avatar3DUiState.Error(
                         message = result.message ?: result.exception.message.orEmpty(),
                     )
                 }
                 is BayitResult.Loading -> Unit
             }
+        }
+    }
+
+    private suspend fun loadAvatar3D(avatarId: String) {
+        logger.debug("Loading 3D avatar mesh", mapOf("avatarId" to avatarId))
+        when (val result = zehAniRepository.getMeshStatus(avatarId)) {
+            is BayitResult.Success -> {
+                logger.info("3D avatar mesh loaded", mapOf("avatarId" to avatarId))
+                _uiState.value = Avatar3DUiState.Success(
+                    mesh = result.data,
+                    rotationX = 0f,
+                    rotationY = 0f,
+                    zoomLevel = 1f,
+                    isAnimating = false,
+                )
+            }
+            is BayitResult.Error -> {
+                logger.error("3D avatar mesh load failed", result.exception)
+                _uiState.value = Avatar3DUiState.Error(
+                    message = result.message ?: result.exception.message.orEmpty(),
+                )
+            }
+            is BayitResult.Loading -> Unit
         }
     }
 }

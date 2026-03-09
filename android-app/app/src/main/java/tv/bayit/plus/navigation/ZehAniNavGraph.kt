@@ -18,19 +18,21 @@ import tv.bayit.plus.feature.zehani.feedback.FeedbackInboxRoute
 import tv.bayit.plus.feature.zehani.highlights.HighlightsRoute
 import tv.bayit.plus.feature.zehani.mirror.MagicMirrorRoute
 import tv.bayit.plus.feature.zehani.consent.BiometricConsentRoute
+import tv.bayit.plus.feature.zehani.movieinteractions.MovieInteractionsRoute
+import tv.bayit.plus.feature.zehani.movieinteractions.MovieCharactersRoute
 import tv.bayit.plus.feature.zehani.settings.AvatarSettingsRoute
 import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 
 fun NavGraphBuilder.zehAniNavGraph(navController: NavController) {
     composable<Route.ZehAni> {
         ZehAniDashboardRoute(
-            onNavigateToMagicMirror = { profileId -> navController.navigate(Route.ZehAniMagicMirror(profileId = profileId, avatarId = "")) },
+            onNavigateToMagicMirror = { profileId -> navController.navigate(Route.ZehAniMagicMirror(profileId = profileId)) },
             onNavigateToV2V = { profileId -> navController.navigate(Route.ZehAniV2V(avatarId = "", profileId = profileId)) },
-            onNavigateToAvatar3D = { profileId -> navController.navigate(Route.ZehAniAvatar3D(avatarId = profileId)) },
-            onNavigateToMovieInteractions = { profileId -> navController.navigate(Route.ZehAniHighlights(profileId = profileId)) },
+            onNavigateToAvatar3D = { profileId -> navController.navigate(Route.ZehAniAvatar3D(profileId = profileId)) },
+            onNavigateToMovieInteractions = { profileId -> navController.navigate(Route.ZehAniMovieInteractions(profileId = profileId)) },
             onNavigateToContacts = { profileId -> navController.navigate(Route.ZehAniContacts(profileId = profileId)) },
             onNavigateToFeedback = { profileId -> navController.navigate(Route.ZehAniFeedback(profileId = profileId)) },
-            onNavigateToConsent = { navController.navigate(Route.ZehAniConsent) },
+            onNavigateToConsent = { profileId -> navController.navigate(Route.ZehAniConsent(profileId = profileId)) },
             onNavigateToChess = { navController.navigate(Route.Chess()) },
             onNavigateBack = { navController.popBackStack() },
         )
@@ -58,6 +60,14 @@ fun NavGraphBuilder.zehAniNavGraph(navController: NavController) {
     }
     composable<Route.ZehAniAvatarSettings> {
         AvatarSettingsRoute(onNavigateBack = { navController.popBackStack() })
+    }
+    composable<Route.ZehAniMovieInteractions> {
+        MovieInteractionsRoute(
+            onNavigateToCharacters = { contentId ->
+                // Characters sub-screen uses movie tag status route
+            },
+            onNavigateBack = { navController.popBackStack() },
+        )
     }
     composable<Route.ZehAniConsent> {
         BiometricConsentRoute(onNavigateBack = { navController.popBackStack() })

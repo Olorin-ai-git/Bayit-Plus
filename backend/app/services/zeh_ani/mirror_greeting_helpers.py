@@ -110,16 +110,15 @@ async def generate_greeting_lipsync(
     if not audio_path:
         return None
 
-    if not avatar.primary_avatar_gcs_path:
+    if not avatar.creatify_persona_id:
+        logger.warning(
+            "Avatar missing creatify_persona_id, skipping lipsync",
+            extra={"avatar_id": str(avatar.id)},
+        )
         return None
 
     from app.core.creatify_client import creatify_client
     from app.services.olorin.storage_service import storage_service
-
-    image_signed_url = await storage_service.generate_signed_url(
-        avatar.primary_avatar_gcs_path,
-        expiry_seconds=settings.CREATIFY_SIGNED_URL_EXPIRY_SECONDS,
-    )
 
     audio_signed_url = await storage_service.generate_signed_url(
         audio_path,
@@ -127,8 +126,8 @@ async def generate_greeting_lipsync(
     )
 
     gcs_url = await creatify_client.create_lipsync(
-        image_url=image_signed_url,
         audio_url=audio_signed_url,
+        creator_id=avatar.creatify_persona_id,
     )
 
     return gcs_url

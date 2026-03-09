@@ -13,6 +13,7 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
 import tv.bayit.plus.core.data.repository.PracticePhrase
+import tv.bayit.plus.core.data.repository.StarStoryRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
 import tv.bayit.plus.core.model.zehani.V2VSession
 import tv.bayit.plus.core.model.zehani.V2VTransformResult
@@ -23,11 +24,13 @@ class V2VPracticeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val phoneticMirrorRepository: PhoneticMirrorRepository,
+    private val starStoryRepository: StarStoryRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
-    val avatarId: String = checkNotNull(savedStateHandle["avatarId"])
+    private val avatarIdFromRoute: String = savedStateHandle["avatarId"] ?: ""
     val profileId: String = checkNotNull(savedStateHandle["profileId"])
+    private var resolvedAvatarId: String = avatarIdFromRoute
 
     private val _uiState = MutableStateFlow<V2VPracticeUiState>(V2VPracticeUiState.Ready)
     val uiState: StateFlow<V2VPracticeUiState> = _uiState.asStateFlow()
@@ -42,6 +45,7 @@ class V2VPracticeViewModel @Inject constructor(
     private var phraseIndex = 0
 
     init {
+        resolveAvatarId()
         loadPhrases()
     }
 
@@ -98,12 +102,33 @@ class V2VPracticeViewModel @Inject constructor(
         }
     }
 
+    private fun resolveAvatarId() {
+        if (avatarIdFromRoute.isNotBlank()) return
+        viewModelScope.launch {
+            logger.debug("Resolving avatar for V2V", mapOf("profileId" to profileId))
+            when (val result = starStoryRepository.listAvatarsForProfile(profileId)) {
+                is BayitResult.Success -> {
+                    resolvedAvatarId = result.data.firstOrNull()?.avatarId.orEmpty()
+                    if (resolvedAvatarId.isBlank()) {
+                        logger.warning("No avatar found for V2V practice", mapOf("profileId" to profileId))
+                    }
+                }
+                is BayitResult.Error -> logger.error("Avatar resolution failed for V2V", result.exception)
+                is BayitResult.Loading -> Unit
+            }
+        }
+    }
+
     private fun submitAttempt(text: String, audioData: ByteArray) {
         viewModelScope.launch {
+            if (resolvedAvatarId.isBlank()) {
+                _uiState.value = V2VPracticeUiState.Error("No avatar available for voice transform")
+                return@launch
+            }
             _uiState.value = V2VPracticeUiState.Analyzing
             logger.debug("Submitting pronunciation attempt")
             val audioBase64 = Base64.encodeToString(audioData, Base64.NO_WRAP)
-            when (val result = zehAniRepository.transformVoice(avatarId, profileId, audioBase64, text)) {
+            when (val result = zehAniRepository.transformVoice(resolvedAvatarId, profileId, audioBase64, text)) {
                 is BayitResult.Success -> {
                     logger.info("Pronunciation feedback received")
                     _uiState.value = V2VPracticeUiState.FeedbackReady(result.data)
