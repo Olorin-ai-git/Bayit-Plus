@@ -58,6 +58,12 @@ class DeepLinkHandler @Inject constructor(
             "watchparty" -> segments.firstOrNull()?.let { Route.WatchPartyDetail(it) } ?: Route.WatchParty
             "zehani" -> Route.ZehAni
             "byoc" -> Route.BYOCSettings
+            "onboarding" -> when (segments.firstOrNull()) {
+                "ai" -> Route.OnboardingAI
+                "voice" -> Route.VoiceOnboarding
+                else -> Route.FeatureTour
+            }
+            "feature-tour" -> Route.FeatureTour
             else -> null
         }
     }
@@ -76,6 +82,12 @@ class DeepLinkHandler @Inject constructor(
             "rewards" -> Route.Rewards
             "trivia" -> segments.getOrNull(1)?.let { Route.Trivia(it) }
             "chess" -> Route.Chess(segments.getOrNull(1))
+            "onboarding" -> when (segments.getOrNull(1)) {
+                "ai" -> Route.OnboardingAI
+                "voice" -> Route.VoiceOnboarding
+                else -> Route.FeatureTour
+            }
+            "feature-tour" -> Route.FeatureTour
             else -> null
         }
     }

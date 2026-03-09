@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.http.Body
+import retrofit2.http.POST
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.voice.di.VoiceScope
 import javax.inject.Inject
@@ -15,7 +17,8 @@ import javax.inject.Singleton
 
 /** Network interface for POST /api/v1/voice/unified. */
 interface VoiceApiService {
-    suspend fun processVoice(request: VoiceRequest): VoiceResponse
+    @POST("voice/unified")
+    suspend fun processVoice(@Body request: VoiceRequest): VoiceResponse
 }
 
 /**

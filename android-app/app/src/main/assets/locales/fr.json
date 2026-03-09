@@ -2875,10 +2875,24 @@
   "voiceAssistant": {
     "fabLabel": "Assistant Vocal",
     "modal": {
+      "title": "Assistant Vocal",
       "setupRequired": "Configuration de l'Assistant Vocal Requise",
       "setupMessage": "Complétez la configuration de l'Assistant IA pour utiliser les fonctionnalités vocales.",
       "startSetup": "Démarrer la Configuration",
       "cancel": "Annuler"
+    },
+    "state": {
+      "idle": "Appuyez pour parler",
+      "listening": "Écoute en cours...",
+      "processing": "Traitement en cours...",
+      "speaking": "En train de parler...",
+      "error": "Une erreur est survenue"
+    },
+    "a11y": {
+      "startListening": "Démarrer la saisie vocale",
+      "stopListening": "Arrêter l'écoute et traiter",
+      "processing": "Traitement de la saisie vocale",
+      "interrupt": "Arrêter de parler"
     }
   },
   "aiChat": {

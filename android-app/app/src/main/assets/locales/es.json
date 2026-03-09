@@ -3970,10 +3970,24 @@
   "voiceAssistant": {
     "fabLabel": "Asistente de Voz",
     "modal": {
+      "title": "Asistente de Voz",
       "setupRequired": "Se Requiere Configuración del Asistente de Voz",
       "setupMessage": "Completa la configuración del Asistente IA para usar funciones de voz.",
       "startSetup": "Iniciar Configuración",
       "cancel": "Cancelar"
+    },
+    "state": {
+      "idle": "Toca para hablar",
+      "listening": "Escuchando...",
+      "processing": "Procesando...",
+      "speaking": "Hablando...",
+      "error": "Algo salió mal"
+    },
+    "a11y": {
+      "startListening": "Iniciar entrada de voz",
+      "stopListening": "Dejar de escuchar y procesar",
+      "processing": "Procesando entrada de voz",
+      "interrupt": "Dejar de hablar"
     }
   },
   "aiChat": {

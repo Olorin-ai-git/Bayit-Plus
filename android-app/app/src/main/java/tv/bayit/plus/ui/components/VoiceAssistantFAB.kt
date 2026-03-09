@@ -17,9 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
@@ -55,8 +54,11 @@ fun VoiceAssistantFAB(
     Box(
         modifier = modifier
             .size(64.dp)
-            .scale(pulseScale)
-            .alpha(pulseAlpha)
+            .graphicsLayer {
+                scaleX = pulseScale
+                scaleY = pulseScale
+                alpha = pulseAlpha
+            }
             .clip(CircleShape)
             .glassMorphism(
                 cornerRadius = DesignTokens.Radius.full,

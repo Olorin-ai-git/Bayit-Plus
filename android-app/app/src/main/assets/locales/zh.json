@@ -3835,10 +3835,24 @@
   "voiceAssistant": {
     "fabLabel": "语音助手",
     "modal": {
+      "title": "语音助手",
       "setupRequired": "需要设置语音助手",
       "setupMessage": "完成AI助手设置以使用语音功能。",
       "startSetup": "开始设置",
       "cancel": "取消"
+    },
+    "state": {
+      "idle": "点击说话",
+      "listening": "正在聆听...",
+      "processing": "正在处理...",
+      "speaking": "正在播放...",
+      "error": "出了点问题"
+    },
+    "a11y": {
+      "startListening": "开始语音输入",
+      "stopListening": "停止聆听并处理",
+      "processing": "正在处理语音输入",
+      "interrupt": "停止播放"
     }
   },
   "aiChat": {

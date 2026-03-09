@@ -4055,10 +4055,24 @@
   "voiceAssistant": {
     "fabLabel": "עוזר קולי",
     "modal": {
+      "title": "עוזר קולי",
       "setupRequired": "נדרשת הגדרת עוזר קולי",
       "setupMessage": "השלם את הגדרת עוזר ה-AI כדי להשתמש בתכונות קוליות.",
       "startSetup": "התחל הגדרה",
       "cancel": "ביטול"
+    },
+    "state": {
+      "idle": "הקש כדי לדבר",
+      "listening": "מאזין...",
+      "processing": "מעבד...",
+      "speaking": "מדבר...",
+      "error": "משהו השתבש"
+    },
+    "a11y": {
+      "startListening": "התחל קלט קולי",
+      "stopListening": "הפסק להאזין ועבד",
+      "processing": "מעבד קלט קולי",
+      "interrupt": "הפסק לדבר"
     }
   },
   "aiChat": {

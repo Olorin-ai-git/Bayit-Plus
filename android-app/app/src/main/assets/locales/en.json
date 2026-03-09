@@ -4056,10 +4056,24 @@
   "voiceAssistant": {
     "fabLabel": "Voice Assistant",
     "modal": {
+      "title": "Voice Assistant",
       "setupRequired": "Voice Assistant Setup Required",
       "setupMessage": "Complete the AI Assistant setup to use voice features.",
       "startSetup": "Start Setup",
       "cancel": "Cancel"
+    },
+    "state": {
+      "idle": "Tap to speak",
+      "listening": "Listening...",
+      "processing": "Processing...",
+      "speaking": "Speaking...",
+      "error": "Something went wrong"
+    },
+    "a11y": {
+      "startListening": "Start voice input",
+      "stopListening": "Stop listening and process",
+      "processing": "Processing voice input",
+      "interrupt": "Stop speaking"
     }
   },
   "aiChat": {

@@ -2697,10 +2697,24 @@
   "voiceAssistant": {
     "fabLabel": "Assistente Vocale",
     "modal": {
+      "title": "Assistente Vocale",
       "setupRequired": "Configurazione Assistente Vocale Richiesta",
       "setupMessage": "Completa la configurazione dell'Assistente IA per utilizzare le funzionalità vocali.",
       "startSetup": "Avvia Configurazione",
       "cancel": "Annulla"
+    },
+    "state": {
+      "idle": "Tocca per parlare",
+      "listening": "In ascolto...",
+      "processing": "Elaborazione...",
+      "speaking": "Sta parlando...",
+      "error": "Qualcosa è andato storto"
+    },
+    "a11y": {
+      "startListening": "Avvia input vocale",
+      "stopListening": "Interrompi ascolto ed elabora",
+      "processing": "Elaborazione input vocale",
+      "interrupt": "Interrompi parlato"
     }
   },
   "aiChat": {

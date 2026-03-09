@@ -24,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -117,6 +119,14 @@ private fun VoiceAssistantContent(
             text = bayitString(voiceStateLabel(voiceState)),
             color = DesignTokens.Colors.Text.muted,
         )
+        val micButtonA11y = bayitString(
+            when (voiceState) {
+                VoiceState.LISTENING -> "voiceAssistant.a11y.stopListening"
+                VoiceState.PROCESSING -> "voiceAssistant.a11y.processing"
+                VoiceState.SPEAKING -> "voiceAssistant.a11y.interrupt"
+                else -> "voiceAssistant.a11y.startListening"
+            },
+        )
         Box(
             modifier = Modifier.size(80.dp).clip(CircleShape).glassMorphism(
                 cornerRadius = DesignTokens.Radius.full,
@@ -126,7 +136,7 @@ private fun VoiceAssistantContent(
                     VoiceState.SPEAKING -> DesignTokens.Colors.Primary.dark
                     else -> DesignTokens.Colors.Primary.base
                 },
-            ).clickable {
+            ).semantics { contentDescription = micButtonA11y }.clickable {
                 when (voiceState) {
                     VoiceState.IDLE, VoiceState.ERROR -> onStartListening()
                     VoiceState.LISTENING -> onCommit()

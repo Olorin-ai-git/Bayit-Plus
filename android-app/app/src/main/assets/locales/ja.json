@@ -3593,10 +3593,24 @@
   "voiceAssistant": {
     "fabLabel": "音声アシスタント",
     "modal": {
+      "title": "音声アシスタント",
       "setupRequired": "音声アシスタントのセットアップが必要",
       "setupMessage": "音声機能を使用するにはAIアシスタントのセットアップを完了してください。",
       "startSetup": "セットアップを開始",
       "cancel": "キャンセル"
+    },
+    "state": {
+      "idle": "タップして話す",
+      "listening": "聞き取り中...",
+      "processing": "処理中...",
+      "speaking": "再生中...",
+      "error": "エラーが発生しました"
+    },
+    "a11y": {
+      "startListening": "音声入力を開始",
+      "stopListening": "聞き取りを停止して処理",
+      "processing": "音声入力を処理中",
+      "interrupt": "再生を停止"
     }
   },
   "aiChat": {

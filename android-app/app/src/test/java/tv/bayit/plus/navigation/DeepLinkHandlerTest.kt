@@ -124,6 +124,26 @@ class DeepLinkHandlerTest {
     }
 
     @Test
+    fun `custom scheme onboarding ai - routes to OnboardingAI`() {
+        assertThat(handler.parseUri(Uri.parse("bayitplus://onboarding/ai"))).isEqualTo(Route.OnboardingAI)
+    }
+
+    @Test
+    fun `custom scheme onboarding voice - routes to VoiceOnboarding`() {
+        assertThat(handler.parseUri(Uri.parse("bayitplus://onboarding/voice"))).isEqualTo(Route.VoiceOnboarding)
+    }
+
+    @Test
+    fun `custom scheme onboarding no segment - routes to FeatureTour`() {
+        assertThat(handler.parseUri(Uri.parse("bayitplus://onboarding"))).isEqualTo(Route.FeatureTour)
+    }
+
+    @Test
+    fun `custom scheme feature-tour - routes to FeatureTour`() {
+        assertThat(handler.parseUri(Uri.parse("bayitplus://feature-tour"))).isEqualTo(Route.FeatureTour)
+    }
+
+    @Test
     fun `custom scheme unknown host - returns null`() {
         assertThat(handler.parseUri(Uri.parse("bayitplus://unknown/path"))).isNull()
     }
@@ -180,6 +200,16 @@ class DeepLinkHandlerTest {
     @Test
     fun `universal link trivia - routes to Trivia`() {
         assertThat(handler.parseUri(Uri.parse("https://bayit.tv/trivia/ch-7"))).isEqualTo(Route.Trivia("ch-7"))
+    }
+
+    @Test
+    fun `universal link onboarding ai - routes to OnboardingAI`() {
+        assertThat(handler.parseUri(Uri.parse("https://bayit.tv/onboarding/ai"))).isEqualTo(Route.OnboardingAI)
+    }
+
+    @Test
+    fun `universal link feature-tour - routes to FeatureTour`() {
+        assertThat(handler.parseUri(Uri.parse("https://bayit.tv/feature-tour"))).isEqualTo(Route.FeatureTour)
     }
 
     @Test
