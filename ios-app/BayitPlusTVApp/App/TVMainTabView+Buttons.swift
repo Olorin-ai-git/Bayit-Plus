@@ -6,27 +6,6 @@
     // MARK: - TVMainTabView + Button & Sheet Helpers
 
     extension TVMainTabView {
-        var byocButton: some View {
-            Button {
-                showBYOCSources = true
-            } label: {
-                HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Image(systemName: "play.tv")
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                }
-                .foregroundStyle(DesignTokens.Text.primary)
-                .padding(.horizontal, TVDesignTokens.Spacing.md)
-                .padding(.vertical, TVDesignTokens.Spacing.sm)
-                .background(DesignTokens.Glass.bgMedium)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
-                )
-            }
-            .tvCardStyle()
-            .accessibilityLabel(localization.t("byoc.connectedSources"))
-        }
-
         var languageButton: some View {
             Button {
                 showLanguagePicker = true

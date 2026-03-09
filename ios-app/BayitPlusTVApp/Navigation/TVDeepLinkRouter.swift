@@ -95,6 +95,7 @@ enum TVDeepLinkRouter {
         case "zeh-ani", "avatar", "chess", "chatbot", "ai-chat": return .zehAni
         case "podcasts", "audiobooks": return .podcasts
         case "kids", "children", "youngsters": return .home
+        case "byoc", "iptv", "plex", "xtream": return .byoc
         case "search": return .search
         case "profile", "settings", "favorites", "messages", "friends",
              "help", "accounts", "credits", "subscribe": return .profile

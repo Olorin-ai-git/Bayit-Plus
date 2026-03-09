@@ -4,18 +4,20 @@ import Foundation
 import Observation
 import SwiftUI
 
-/// tvOS tab definitions - 7 primary tabs for 10-foot UI clarity.
+/// tvOS tab definitions - 8 primary tabs for 10-foot UI clarity.
 /// Secondary features are accessible as sub-sections within hub tabs:
 /// - Zeh Ani: Avatar, Rewards, Beta Credits, Watch Party, Trivia, Chess, AI Chat
 /// - Podcasts: includes Audiobooks section
 /// - Profile: Friends, Messages, Settings, Favorites, Recordings, Widgets
 /// - Home: Judaism, Flows, Culture, Household as content rows
+/// - BYOC: Bring Your Own Content (IPTV, Xtream, Plex, YouTube)
 enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case home
     case liveTV
     case vod
     case zehAni
     case podcasts
+    case byoc
     case search
     case profile
     case widgets
@@ -31,6 +33,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return "Movies"
         case .zehAni: return "Zeh Ani"
         case .podcasts: return "Podcasts"
+        case .byoc: return "BYOC"
         case .search: return "Search"
         case .profile: return "Profile"
         case .widgets: return "Widgets"
@@ -44,6 +47,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return "film"
         case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
+        case .byoc: return "play.tv"
         case .search: return "magnifyingglass"
         case .profile: return "person.crop.circle"
         case .widgets: return "square.grid.2x2"

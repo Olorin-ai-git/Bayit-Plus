@@ -9,6 +9,7 @@
         @Environment(BYOCSourceManager.self) var byocManager
         @Environment(LocalizationManager.self) var localization
 
+        var isEmbedded: Bool = false
         let onDismiss: () -> Void
 
         @State private var showAddIPTV = false
@@ -34,7 +35,9 @@
                         }
                         .padding(TVDesignTokens.Spacing.md)
                     }
-                    closeButton
+                    if !isEmbedded {
+                        closeButton
+                    }
                 }
                 .padding(TVDesignTokens.Spacing.xl)
             }
@@ -72,7 +75,9 @@
                     )
                 }
             }
-            .onExitCommand { onDismiss() }
+            .onExitCommand {
+                if !isEmbedded { onDismiss() }
+            }
             .alert(
                 localization.t("byoc.removeConfirm"),
                 isPresented: Binding(
@@ -106,12 +111,14 @@
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
                 Spacer()
-                Button { onDismiss() } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(DesignTokens.Text.secondary)
+                if !isEmbedded {
+                    Button { onDismiss() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
+                    .tvCardStyle()
                 }
-                .tvCardStyle()
             }
         }
 
