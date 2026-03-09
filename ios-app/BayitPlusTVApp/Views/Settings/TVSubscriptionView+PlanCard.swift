@@ -35,7 +35,7 @@ extension TVSubscriptionView {
                 }
             }
 
-            Text(vm.displayPrice(for: plan))
+            Text(localization.t(vm.billingPeriodKey))
                 .font(.system(
                     size: TVDesignTokens.FontSize.xxl,
                     weight: .bold

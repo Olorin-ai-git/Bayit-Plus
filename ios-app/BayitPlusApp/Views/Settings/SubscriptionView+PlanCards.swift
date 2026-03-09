@@ -30,7 +30,7 @@ extension SubscriptionView {
                     }
                 }
 
-                Text(vm.displayPrice(for: plan))
+                Text(localization.t(vm.billingPeriodKey))
                     .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Primary.default)
 
@@ -58,7 +58,7 @@ extension SubscriptionView {
                                 pendingCheckoutURL = url
                                 showDisclosure = true
                             } else if vm.error == nil {
-                                vm.setError("Unable to start subscription. Please try again later.")
+                                vm.setError(localization.t("subscription.subscribeError"))
                             }
                         }
                     }

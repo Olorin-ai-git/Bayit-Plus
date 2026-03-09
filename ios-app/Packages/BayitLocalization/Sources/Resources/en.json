@@ -3386,8 +3386,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -6054,7 +6052,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -6066,7 +6068,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -7749,7 +7754,10 @@
     "premiumContent": "Premium Content",
     "recommended": "Recommended",
     "restorePurchase": "Restore Purchase",
-    "upgradeRequired": "Upgrade your subscription to access this content"
+    "upgradeRequired": "Upgrade your subscription to access this content",
+    "monthlyPlan": "Monthly Plan",
+    "yearlyPlan": "Yearly Plan",
+    "subscribeError": "Unable to start subscription. Please try again later."
   },
   "subtitles": {
     "nikud": "Nikud",

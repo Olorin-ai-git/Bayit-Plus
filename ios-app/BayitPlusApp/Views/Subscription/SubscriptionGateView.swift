@@ -158,6 +158,7 @@ struct SubscriptionGateView: View {
                     isLoading: vm.isProcessing
                 ) {
                     Task {
+                        guard !vm.isProcessing else { return }
                         HapticFeedbackService.impact(style: .medium)
                         if let url = await vm.subscribe(
                             to: plan,
@@ -167,6 +168,7 @@ struct SubscriptionGateView: View {
                         }
                     }
                 }
+                .disabled(vm.isProcessing)
             }
             .padding(DesignTokens.Spacing.md)
         }

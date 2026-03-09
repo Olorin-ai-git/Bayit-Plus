@@ -3130,8 +3130,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -8805,7 +8803,10 @@
     "premiumContent": "プレミアムコンテンツ",
     "recommended": "おすすめ",
     "restorePurchase": "購入を復元",
-    "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください"
+    "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
+    "monthlyPlan": "月額プラン",
+    "yearlyPlan": "年額プラン",
+    "subscribeError": "サブスクリプションを開始できませんでした。後でもう一度お試しください。"
   },
   "subtitles": {
     "nikud": "ニクド",

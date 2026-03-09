@@ -3399,8 +3399,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -8110,7 +8108,10 @@
     "premiumContent": "Contenido Premium",
     "recommended": "Recomendado",
     "restorePurchase": "Restaurar Compra",
-    "upgradeRequired": "Actualiza tu suscripcion para acceder a este contenido"
+    "upgradeRequired": "Actualiza tu suscripcion para acceder a este contenido",
+    "monthlyPlan": "Plan Mensual",
+    "yearlyPlan": "Plan Anual",
+    "subscribeError": "No se pudo iniciar la suscripcion. Intentalo de nuevo mas tarde."
   },
   "subtitles": {
     "nikud": "Nikud",

@@ -3373,8 +3373,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -8001,7 +7999,10 @@
     "premiumContent": "高级内容",
     "recommended": "推荐",
     "restorePurchase": "恢复购买",
-    "upgradeRequired": "升级您的订阅以访问此内容"
+    "upgradeRequired": "升级您的订阅以访问此内容",
+    "monthlyPlan": "月度计划",
+    "yearlyPlan": "年度计划",
+    "subscribeError": "无法开始订阅。请稍后再试。"
   },
   "subtitles": {
     "nikud": "希伯来语标点",

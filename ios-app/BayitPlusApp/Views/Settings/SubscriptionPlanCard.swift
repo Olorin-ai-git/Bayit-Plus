@@ -92,7 +92,7 @@ struct SubscriptionPlanCard: View {
                     pendingCheckoutURL = url
                     showDisclosure = true
                 } else {
-                    onError("Unable to start subscription. Please try again later.")
+                    onError(localization.t("subscription.subscribeError"))
                 }
             }
         }

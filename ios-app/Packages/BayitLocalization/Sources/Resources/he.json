@@ -3389,8 +3389,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -6270,7 +6268,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -6282,7 +6284,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",
@@ -8071,7 +8076,10 @@
     "premiumContent": "תוכן פרימיום",
     "recommended": "מומלץ",
     "restorePurchase": "שחזור רכישה",
-    "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה"
+    "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה",
+    "monthlyPlan": "תוכנית חודשית",
+    "yearlyPlan": "תוכנית שנתית",
+    "subscribeError": "לא ניתן להתחיל מנוי. אנא נסו שוב מאוחר יותר."
   },
   "subtitles": {
     "nikud": "ניקוד",

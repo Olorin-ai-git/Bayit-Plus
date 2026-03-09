@@ -82,13 +82,13 @@ final class SubscriptionViewModel {
         isProcessing = false
     }
 
-    /// Display text for the selected billing period (no pricing per Apple guidelines).
-    func displayPrice(for plan: SubscriptionPlan) -> String {
+    /// Localization key for the selected billing period label.
+    var billingPeriodKey: String {
         switch selectedBillingPeriod {
         case .monthly:
-            return "Monthly Plan"
+            return "subscription.monthlyPlan"
         case .yearly:
-            return "Yearly Plan"
+            return "subscription.yearlyPlan"
         }
     }
 

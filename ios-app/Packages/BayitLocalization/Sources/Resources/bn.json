@@ -3367,8 +3367,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -7989,7 +7987,10 @@
     "premiumContent": "প্রিমিয়াম কন্টেন্ট",
     "recommended": "প্রস্তাবিত",
     "restorePurchase": "ক্রয় পুনরুদ্ধার করুন",
-    "upgradeRequired": "এই কন্টেন্ট অ্যাক্সেস করতে আপনার সাবস্ক্রিপশন আপগ্রেড করুন"
+    "upgradeRequired": "এই কন্টেন্ট অ্যাক্সেস করতে আপনার সাবস্ক্রিপশন আপগ্রেড করুন",
+    "monthlyPlan": "মাসিক পরিকল্পনা",
+    "yearlyPlan": "বার্ষিক পরিকল্পনা",
+    "subscribeError": "সাবস্ক্রিপশন শুরু করা যায়নি। পরে আবার চেষ্টা করুন।"
   },
   "subtitles": {
     "nikud": "নিকুদ",

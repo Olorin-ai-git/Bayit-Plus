@@ -3455,8 +3455,6 @@
     "photoUploadSoon": "Photo upload coming soon",
     "preferences": "Avatar Preferences",
     "save": "Save Avatar",
-    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
-    "simulatorUnavailable": "Simulator: ARKit unavailable",
     "subtle": "Subtle",
     "type": "Avatar Type",
     "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
@@ -8081,7 +8079,10 @@
     "premiumContent": "பிரீமியம் உள்ளடக்கம்",
     "recommended": "பரிந்துரைக்கப்பட்டது",
     "restorePurchase": "கொள்முதலை மீட்டெடுக்கவும்",
-    "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்"
+    "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
+    "monthlyPlan": "மாதாந்திர திட்டம்",
+    "yearlyPlan": "ஆண்டு திட்டம்",
+    "subscribeError": "சந்தாவைத் தொடங்க முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்."
   },
   "subtitles": {
     "nikud": "நிகுத்",
