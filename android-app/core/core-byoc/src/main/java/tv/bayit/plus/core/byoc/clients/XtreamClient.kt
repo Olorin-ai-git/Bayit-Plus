@@ -117,6 +117,9 @@ class XtreamClient @Inject constructor(
     private fun fetchJson(url: String): String {
         val request = Request.Builder().url(url).build()
         val response = okHttpClient.newCall(request).execute()
+        if (!response.isSuccessful) {
+            throw IllegalStateException("Xtream API returned ${response.code}")
+        }
         return response.body?.string()
             ?: throw IllegalStateException("Empty response body from Xtream API")
     }

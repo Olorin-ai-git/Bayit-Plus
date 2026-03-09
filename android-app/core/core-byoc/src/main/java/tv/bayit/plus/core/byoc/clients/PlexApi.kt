@@ -10,21 +10,24 @@ import retrofit2.http.Query
 
 interface PlexApi {
 
-    @POST("pins.json")
+    @POST("api/v2/pins")
     suspend fun requestPin(
         @Query("strong") strong: Boolean = true,
+        @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Product") product: String,
         @Header("X-Plex-Client-Identifier") clientId: String,
     ): PlexPinResponse
 
-    @GET("pins/{id}.json")
+    @GET("api/v2/pins/{id}")
     suspend fun checkPin(
         @Path("id") pinId: Long,
+        @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Client-Identifier") clientId: String,
     ): PlexPinResponse
 
-    @GET("resources")
+    @GET("api/v2/resources")
     suspend fun discoverServers(
+        @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Token") token: String,
         @Header("X-Plex-Client-Identifier") clientId: String,
     ): List<PlexResourceResponse>

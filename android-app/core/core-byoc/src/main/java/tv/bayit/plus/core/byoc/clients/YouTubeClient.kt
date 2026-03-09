@@ -31,6 +31,9 @@ class YouTubeClient @Inject constructor(
             .build()
         val response = okHttpClient.newCall(request).execute()
         val responseBody = response.body?.string() ?: throw IllegalStateException("Empty response from Google")
+        if (!response.isSuccessful) {
+            throw IllegalStateException("Google device code request failed (${response.code}): $responseBody")
+        }
         val parsed = json.decodeFromString<GoogleDeviceCodeResponse>(responseBody)
         GoogleDeviceCode(
             deviceCode = parsed.deviceCode,
@@ -62,6 +65,9 @@ class YouTubeClient @Inject constructor(
             .build()
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string() ?: return@withContext emptyList()
+        if (!response.isSuccessful) {
+            throw IllegalStateException("YouTube subscriptions fetch failed (${response.code}): $body")
+        }
         val parsed = json.decodeFromString<YouTubeSubscriptionListResponse>(body)
         parsed.items.mapNotNull { item ->
             val snippet = item.snippet ?: return@mapNotNull null
@@ -91,6 +97,9 @@ class YouTubeClient @Inject constructor(
             .build()
         val response = okHttpClient.newCall(request).execute()
         val body = response.body?.string() ?: return@withContext emptyList()
+        if (!response.isSuccessful) {
+            throw IllegalStateException("YouTube channel videos fetch failed (${response.code}): $body")
+        }
         val parsed = json.decodeFromString<YouTubeVideoListResponse>(body)
         parsed.items.mapNotNull { item ->
             val snippet = item.snippet ?: return@mapNotNull null
@@ -126,6 +135,9 @@ class YouTubeClient @Inject constructor(
         val response = okHttpClient.newCall(request).execute()
         val responseBody = response.body?.string() ?: return@withContext null
         val parsed = json.decodeFromString<GoogleTokenResponse>(responseBody)
+        if (parsed.error != null && parsed.error != "authorization_pending" && parsed.error != "slow_down") {
+            throw IllegalStateException("Token exchange failed: ${parsed.error}")
+        }
         parsed.accessToken
     }
 

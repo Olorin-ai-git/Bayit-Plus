@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.GoogleSignInHelper
@@ -80,13 +81,15 @@ class MainActivity : ComponentActivity() {
                     }
 
                     LaunchedEffect(Unit) {
-                        networkMonitor.isOnline.collect { online ->
-                            if (!online && authState is AuthState.Authenticated) {
-                                navController.navigate(Route.Downloads) {
-                                    launchSingleTop = true
+                        networkMonitor.isOnline
+                            .drop(1) // skip initial emission to avoid racing the splash flow
+                            .collect { online ->
+                                if (!online && authState is AuthState.Authenticated) {
+                                    navController.navigate(Route.Downloads) {
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
-                        }
                     }
 
                     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
