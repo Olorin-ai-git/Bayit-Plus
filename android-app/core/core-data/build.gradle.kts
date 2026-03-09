@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
 
-    implementation(libs.billing.ktx)
+    api(libs.billing.ktx)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
