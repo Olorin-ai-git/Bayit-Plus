@@ -100,11 +100,14 @@ steps:
       # Voice & Avatar AI Features (v1.1.0) - consolidated
       - '--update-secrets=VOICE_PROACTIVE_SUGGESTIONS_ENABLED=VOICE_PROACTIVE_SUGGESTIONS_ENABLED:latest,VOICE_MULTI_LANGUAGE_ENABLED=VOICE_MULTI_LANGUAGE_ENABLED:latest,VOICE_SHORTCUTS_ENABLED=VOICE_SHORTCUTS_ENABLED:latest,AVATAR_ANIMATIONS_ENABLED=AVATAR_ANIMATIONS_ENABLED:latest,VOICE_ANALYTICS_ENABLED=VOICE_ANALYTICS_ENABLED:latest,VOICE_ANALYTICS_SAMPLE_RATE=VOICE_ANALYTICS_SAMPLE_RATE:latest,AVATAR_CACHE_TTL=AVATAR_CACHE_TTL:latest,VOICE_WEB_MICROPHONE_REQUIRED=VOICE_WEB_MICROPHONE_REQUIRED:latest,VOICE_MOBILE_BACKGROUND_LISTENING=VOICE_MOBILE_BACKGROUND_LISTENING:latest,VOICE_TVOS_SIRI_REMOTE_INTEGRATION=VOICE_TVOS_SIRI_REMOTE_INTEGRATION:latest,FERNET_ENCRYPTION_KEY=FERNET_ENCRYPTION_KEY:latest'
 
+      # IAP Verification (Apple App Store Server API + Google Play)
+      - '--update-secrets=APPLE_APP_STORE_ISSUER_ID=bayit-apple-app-store-issuer-id:latest,APPLE_APP_STORE_KEY_ID=bayit-apple-app-store-key-id:latest,APPLE_APP_STORE_PRIVATE_KEY=bayit-apple-app-store-private-key:latest,GOOGLE_PLAY_PACKAGE_NAME=bayit-google-play-package-name:latest,INTERNAL_CRON_API_KEY=bayit-internal-cron-api-key:latest'
+
       # Audible Integration Feature Flag
-      # Audible OAuth secrets are optional and handled separately by deploy_server.sh
-      # If Audible secrets exist in Secret Manager, they will be passed at deployment time
-      # Backend auto-detects if all credentials are present and enables/disables feature
       - '--set-env-vars=AUDIBLE_INTEGRATION_ENABLED=true'
+
+      # Freemium Configuration
+      - '--set-env-vars=REQUIRE_PAYMENT_ON_SIGNUP=false'
 
       # Casting Feature Configuration
       - '--set-env-vars=CAST_ENABLE_AIRPLAY=true'

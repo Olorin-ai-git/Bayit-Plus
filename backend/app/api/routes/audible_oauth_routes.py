@@ -9,7 +9,7 @@ from app.models.user_audible_account import UserAudibleAccount
 from app.services.audible_service import audible_service, AudibleAPIError
 from app.services.audible_oauth_helpers import generate_pkce_pair, generate_state_token
 from app.services.audible_state_manager import store_state_token, validate_state_token
-from app.api.dependencies.premium_features import require_premium_or_family, require_audible_configured
+from app.api.dependencies.premium_features import require_plus, require_audible_configured
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -44,7 +44,7 @@ router = APIRouter(prefix="/user/audible", tags=["audible_oauth"])
 async def get_audible_oauth_url(
     request: Request,
     req: AudibleOAuthRequest,
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(require_plus),
     _: bool = Depends(require_audible_configured),
 ):
     """Generate Audible OAuth authorization URL with PKCE support."""
@@ -80,7 +80,7 @@ async def get_audible_oauth_url(
 async def handle_audible_oauth_callback(
     request: Request,
     callback: AudibleOAuthCallback,
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(require_plus),
     _: bool = Depends(require_audible_configured),
 ):
     """Handle Audible OAuth callback with PKCE validation."""
@@ -160,7 +160,7 @@ async def handle_audible_oauth_callback(
 
 @router.get("/connected", response_model=AudibleConnectionResponse)
 async def check_audible_connection(
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(require_plus),
 ):
     """Check if user has connected their Audible account."""
     user_id = current_user.id
@@ -181,7 +181,7 @@ async def check_audible_connection(
 
 @router.post("/disconnect")
 async def disconnect_audible_account(
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(require_plus),
 ):
     """Disconnect user's Audible account from Bayit+."""
     user_id = current_user.id
