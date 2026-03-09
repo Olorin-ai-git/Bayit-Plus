@@ -29,7 +29,7 @@ struct ContentView: View {
                     withAnimation(.easeInOut(duration: 0.5)) {
                         showingSplash = false
                         if authManager.isAuthenticated {
-                            showingOnboarding = !OnboardingAIViewModel.hasCompletedOnboarding
+                            showingOnboarding = !OnboardingFlowViewModel.hasCompletedOnboarding
                         }
                     }
                 }
@@ -38,7 +38,7 @@ struct ContentView: View {
                 AuthFlowView()
                     .transition(.opacity)
             } else if showingOnboarding {
-                OnboardingAIView {
+                OnboardingFlowView {
                     withAnimation {
                         showingOnboarding = false
                     }
