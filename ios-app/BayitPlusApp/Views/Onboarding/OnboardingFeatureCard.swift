@@ -16,12 +16,13 @@ struct OnboardingFeatureCard: View {
     @State private var appeared = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            featureImage
-            glassOverlay
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                featureImage(size: geo.size)
+                contentOverlay
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea(edges: .bottom)
+        .ignoresSafeArea()
         .contentShape(Rectangle())
         .gesture(
             DragGesture(minimumDistance: 50)
@@ -44,66 +45,65 @@ struct OnboardingFeatureCard: View {
         .onDisappear { appeared = false }
     }
 
-    private var featureImage: some View {
+    private func featureImage(size: CGSize) -> some View {
         Image(imageName)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .scaleEffect(imageScale)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(width: size.width, height: size.height, alignment: .top)
             .clipped()
             .overlay(
                 LinearGradient(
-                    colors: [.clear, .clear, .black.opacity(0.8)],
+                    stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .clear, location: 0.45),
+                        .init(color: .black.opacity(0.4), location: 0.58),
+                        .init(color: .black.opacity(0.85), location: 0.70),
+                        .init(color: .black.opacity(0.96), location: 0.80),
+                        .init(color: .black, location: 0.88),
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
             )
     }
 
-    private var glassOverlay: some View {
+    private var contentOverlay: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             title
 
             Text(localization.t(subtitleKey))
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.secondary)
+                .font(.system(size: DesignTokens.FontSize.base))
+                .foregroundStyle(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             pillRow
 
             GlassButton(
                 localization.t("onboarding.welcome.continue"),
                 variant: .primary,
-                size: .medium
+                size: .large
             ) { onContinue() }
+                .padding(.top, 4)
         }
-        .padding(DesignTokens.Spacing.xl)
-        .padding(.bottom, DesignTokens.Spacing.lg)
+        .padding(.horizontal, DesignTokens.Spacing.xl)
+        .padding(.bottom, 50)
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial)
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 30)
     }
 
     @ViewBuilder
     private var title: some View {
-        if titleArgs.isEmpty {
-            Text(localization.t(titleKey))
-                .font(.system(
-                    size: DesignTokens.FontSize.xl,
-                    weight: .bold
-                ))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .multilineTextAlignment(.center)
-        } else {
-            Text(localization.t(titleKey, titleArgs))
-                .font(.system(
-                    size: DesignTokens.FontSize.xl,
-                    weight: .bold
-                ))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .multilineTextAlignment(.center)
-        }
+        let text = titleArgs.isEmpty
+            ? localization.t(titleKey)
+            : localization.t(titleKey, titleArgs)
+
+        Text(text)
+            .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.center)
     }
 
     private var pillRow: some View {
@@ -111,13 +111,15 @@ struct OnboardingFeatureCard: View {
             ForEach(pills, id: \.self) { pillKey in
                 Text(localization.t(pillKey))
                     .font(.system(
-                        size: DesignTokens.FontSize.xs,
+                        size: DesignTokens.FontSize.sm,
                         weight: .medium
                     ))
-                    .foregroundStyle(DesignTokens.Text.primary)
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .padding(.horizontal, DesignTokens.Spacing.md)
                     .padding(.vertical, DesignTokens.Spacing.sm)
-                    .background(DesignTokens.Glass.bgLight)
+                    .background(.white.opacity(0.15))
                     .clipShape(Capsule())
             }
         }

@@ -24,6 +24,7 @@ struct OnboardingFlowView: View {
             }
         }
         .animation(.easeInOut(duration: 0.4), value: viewModel.currentStepIndex)
+        .preferredColorScheme(.dark)
     }
 
     private var topBar: some View {
