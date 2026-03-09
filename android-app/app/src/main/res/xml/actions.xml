@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions>
+    <action intentName="actions.intent.PLAY_MEDIA">
+        <fulfillment urlTemplate="bayitplus://play/{contentId}?type={contentType}">
+            <parameter-mapping
+                intentParameter="mediaObject.name"
+                urlParameter="contentId" />
+            <parameter-mapping
+                intentParameter="mediaObject.contentUrl"
+                urlParameter="contentType" />
+        </fulfillment>
+    </action>
+
+    <action intentName="actions.intent.OPEN_APP_FEATURE">
+        <fulfillment urlTemplate="bayitplus://{feature}">
+            <parameter-mapping
+                intentParameter="feature"
+                entitySetId="features"
+                urlParameter="feature" />
+        </fulfillment>
+    </action>
+
+    <action intentName="actions.intent.RESUME_MEDIA">
+        <fulfillment urlTemplate="bayitplus://resume" />
+    </action>
+
+    <entity-set entitySetId="features">
+        <entity name="Live TV" identifier="live" />
+        <entity name="Radio" identifier="radio" />
+        <entity name="Podcasts" identifier="podcasts" />
+        <entity name="Search" identifier="search" />
+    </entity-set>
+</actions>

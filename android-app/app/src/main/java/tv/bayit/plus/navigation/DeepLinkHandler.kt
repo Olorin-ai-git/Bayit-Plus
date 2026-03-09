@@ -35,11 +35,14 @@ class DeepLinkHandler @Inject constructor(
         )
         return when (host) {
             "player" -> segments.firstOrNull()?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }
+            "play" -> segments.firstOrNull()?.let { Route.Player(it, uri.getQueryParameter("type") ?: "movie") }
             "movie" -> segments.firstOrNull()?.let { Route.MovieDetail(it) }
             "series" -> segments.firstOrNull()?.let { Route.SeriesDetail(it) }
-            "livetv" -> Route.LiveTV
+            "livetv", "live" -> Route.LiveTV
             "radio" -> Route.Radio
+            "podcasts" -> Route.Podcasts
             "search" -> Route.Search
+            "resume" -> Route.Home
             "profile" -> Route.Profile
             "settings" -> Route.Settings
             "rewards" -> Route.Rewards
@@ -54,6 +57,7 @@ class DeepLinkHandler @Inject constructor(
             "messages" -> Route.DirectMessages
             "watchparty" -> segments.firstOrNull()?.let { Route.WatchPartyDetail(it) } ?: Route.WatchParty
             "zehani" -> Route.ZehAni
+            "byoc" -> Route.BYOCSettings
             else -> null
         }
     }

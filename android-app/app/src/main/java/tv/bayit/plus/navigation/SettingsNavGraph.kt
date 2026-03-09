@@ -27,6 +27,10 @@ import tv.bayit.plus.feature.settings.audio.AudioSettingsRoute
 import tv.bayit.plus.feature.settings.playback.PlaybackSettingsRoute
 import tv.bayit.plus.feature.settings.subtitles.SubtitleSettingsRoute
 import tv.bayit.plus.feature.settings.subscription.SubscriptionRoute
+import tv.bayit.plus.feature.byoc.AddSourceRoute
+import tv.bayit.plus.feature.byoc.BYOCSettingsRoute
+import tv.bayit.plus.feature.byoc.PlexAuthRoute
+import tv.bayit.plus.feature.byoc.YouTubeAuthRoute
 import tv.bayit.plus.feature.widgets.WidgetGalleryRoute
 
 fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
@@ -134,5 +138,31 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
     }
     composable<Route.WidgetGallery> {
         WidgetGalleryRoute(onNavigateBack = { navController.popBackStack() })
+    }
+    composable<Route.BYOCSettings> {
+        BYOCSettingsRoute(
+            onNavigateBack = { navController.popBackStack() },
+            onAddPlex = { navController.navigate(Route.PlexAuth) },
+            onAddYouTube = { navController.navigate(Route.YouTubeAuth) },
+            onAddSource = { navController.navigate(Route.AddSource) },
+        )
+    }
+    composable<Route.PlexAuth> {
+        PlexAuthRoute(
+            onNavigateBack = { navController.popBackStack() },
+            onSuccess = { navController.popBackStack() },
+        )
+    }
+    composable<Route.YouTubeAuth> {
+        YouTubeAuthRoute(
+            onNavigateBack = { navController.popBackStack() },
+            onSuccess = { navController.popBackStack() },
+        )
+    }
+    composable<Route.AddSource> {
+        AddSourceRoute(
+            onNavigateBack = { navController.popBackStack() },
+            onSuccess = { navController.popBackStack() },
+        )
     }
 }

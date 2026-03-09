@@ -2,6 +2,8 @@ package tv.bayit.plus.feature.home
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -9,6 +11,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.NoOpBayitLogger
+import tv.bayit.plus.core.data.repository.LocationRepository
+import tv.bayit.plus.core.data.repository.ShabbatRepository
+import tv.bayit.plus.core.location.LocationManager
 import tv.bayit.plus.core.model.FeaturedResponse
 import tv.bayit.plus.core.model.LiveChannelItem
 import tv.bayit.plus.core.model.RadioStationItem
@@ -31,6 +36,11 @@ class HomeViewModelTest {
     private lateinit var liveTVRepository: FakeLiveTVRepository
     private lateinit var radioRepository: FakeRadioRepository
     private lateinit var categoryRepository: FakeCategoryRepository
+    private val shabbatRepository: ShabbatRepository = mockk(relaxed = true)
+    private val locationRepository: LocationRepository = mockk(relaxed = true)
+    private val locationManager: LocationManager = mockk(relaxed = true) {
+        every { hasLocationPermission() } returns false
+    }
     private val logger = NoOpBayitLogger()
 
     private lateinit var viewModel: HomeViewModel
@@ -61,7 +71,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -95,7 +108,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -122,7 +138,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -148,7 +167,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -186,7 +208,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -210,7 +235,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -236,7 +264,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {
@@ -267,7 +298,10 @@ class HomeViewModelTest {
             liveTVRepository,
             radioRepository,
             categoryRepository,
-            logger
+            shabbatRepository,
+            locationRepository,
+            locationManager,
+            logger,
         )
 
         viewModel.uiState.test {

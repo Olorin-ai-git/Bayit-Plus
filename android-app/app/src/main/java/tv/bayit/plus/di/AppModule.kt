@@ -9,6 +9,8 @@ import dagger.hilt.components.SingletonComponent
 import tv.bayit.plus.BuildConfig
 import tv.bayit.plus.core.common.CastReceiverAppId
 import tv.bayit.plus.core.common.CdnBaseUrl
+import tv.bayit.plus.core.common.GoogleClientId
+import tv.bayit.plus.core.common.GoogleClientSecret
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.i18n.JsonBayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
@@ -32,6 +34,16 @@ object AppModule {
     @Singleton
     @CastReceiverAppId
     fun provideCastReceiverAppId(): String = BuildConfig.CAST_RECEIVER_APP_ID
+
+    @Provides
+    @Singleton
+    @GoogleClientId
+    fun provideGoogleClientId(): String = BuildConfig.GOOGLE_CLIENT_ID
+
+    @Provides
+    @Singleton
+    @GoogleClientSecret
+    fun provideGoogleClientSecret(): String = BuildConfig.GOOGLE_CLIENT_SECRET
 
     @Provides
     @Singleton

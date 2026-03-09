@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">Watch Live TV</string>
+    <string name="shortcut_search">Search Content</string>
+    <string name="shortcut_resume">Continue Watching</string>
+    <string name="shortcut_radio">Listen to Radio</string>
+    <string name="shortcut_podcasts">Browse Podcasts</string>
+    <string name="widget_now_playing_description">Shows what is currently playing in Bayit+</string>
+    <string name="widget_continue_watching_description">Shows your in-progress content with progress bars</string>
+    <string name="widget_live_channels_description">Shows your favorite live channels with current programs</string>
 </resources>

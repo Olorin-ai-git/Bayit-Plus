@@ -274,13 +274,13 @@ class VodViewModelTest {
             ContentItem(id = "1", type = "movie"),
             ContentItem(id = "2", type = "series", isSeries = true),
         )
-        val result = VodViewModel.applyLocalFilter(items, VodFilter.ALL)
+        val result = applyLocalFilter(items, VodFilter.ALL)
         assertThat(result).hasSize(2)
     }
 
     @Test
     fun `applyLocalFilter - empty list returns empty`() {
-        val result = VodViewModel.applyLocalFilter(emptyList(), VodFilter.MOVIES)
+        val result = applyLocalFilter(emptyList(), VodFilter.MOVIES)
         assertThat(result).isEmpty()
     }
 }

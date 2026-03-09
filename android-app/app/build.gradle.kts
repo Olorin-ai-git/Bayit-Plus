@@ -45,6 +45,11 @@ android {
                     """.trimIndent()
                 )}\""
         )
+        buildConfigField(
+            "String",
+            "GOOGLE_CLIENT_SECRET",
+            "\"${project.findProperty("bayit.google.clientSecret")?.toString() ?: ""}\""
+        )
 
     }
 

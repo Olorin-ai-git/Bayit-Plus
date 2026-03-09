@@ -125,6 +125,12 @@ sealed class Route {
     // Widgets
     @Serializable data object Widgets : Route()
 
+    // BYOC (Bring Your Own Content)
+    @Serializable data object BYOCSettings : Route()
+    @Serializable data object PlexAuth : Route()
+    @Serializable data object YouTubeAuth : Route()
+    @Serializable data object AddSource : Route()
+
     // Passkey Management
     @Serializable data object PasskeyManagement : Route()
 
@@ -176,7 +182,6 @@ sealed class Route {
     // Activity
     @Serializable data object ActivityFeed : Route()
 
-    // Additional screens
     @Serializable data object Culture : Route()
     @Serializable data object Glossary : Route()
     @Serializable data class GlossaryDetail(val termId: String) : Route()

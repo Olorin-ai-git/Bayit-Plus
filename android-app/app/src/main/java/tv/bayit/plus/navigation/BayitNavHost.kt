@@ -92,6 +92,7 @@ internal fun NavController.navigateToSettingsSubScreen(item: String) {
         SettingsMenuItem.PHONE -> Route.PhoneVerification
         SettingsMenuItem.DEVICES -> Route.DevicePairing
         SettingsMenuItem.VOICE -> Route.VoiceSettings
+        SettingsMenuItem.BYOC -> Route.BYOCSettings
         else -> null
     }
     route?.let { navigate(it) }
@@ -119,4 +120,5 @@ object SettingsMenuItem {
     const val PHONE = "phone"
     const val DEVICES = "devices"
     const val VOICE = "voice"
+    const val BYOC = "byoc"
 }

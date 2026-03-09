@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:name=".BayitPlusApplication"
@@ -54,7 +55,56 @@
                 <data android:scheme="https" android:host="bayit.tv" />
                 <data android:scheme="https" android:host="www.bayit.tv" />
             </intent-filter>
+
+            <meta-data
+                android:name="com.google.android.actions"
+                android:resource="@xml/actions" />
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
+
+        <receiver
+            android:name="tv.bayit.plus.feature.culture.shabbat.ShabbatAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="tv.bayit.plus.SHABBAT_CANDLE_LIGHTING" />
+                <action android:name="tv.bayit.plus.SHABBAT_HAVDALAH" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="tv.bayit.plus.feature.widgets.NowPlayingWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/now_playing_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="tv.bayit.plus.feature.widgets.ContinueWatchingWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/continue_watching_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="tv.bayit.plus.feature.widgets.LiveChannelsWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/live_channels_widget_info" />
+        </receiver>
 
     </application>
 

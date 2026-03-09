@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="watch_live_tv"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_live_tv"
+        android:icon="@drawable/ic_live_tv">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="bayitplus://live" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="search"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_search"
+        android:icon="@drawable/ic_search">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="bayitplus://search" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="resume_watching"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_resume"
+        android:icon="@drawable/ic_play">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="bayitplus://resume" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="listen_radio"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_radio"
+        android:icon="@drawable/ic_radio">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="bayitplus://radio" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="listen_podcasts"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_podcasts"
+        android:icon="@drawable/ic_podcasts">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="bayitplus://podcasts" />
+    </shortcut>
+</shortcuts>

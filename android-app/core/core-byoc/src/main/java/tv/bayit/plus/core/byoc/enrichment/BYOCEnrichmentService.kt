@@ -42,7 +42,7 @@ class BYOCEnrichmentService @Inject constructor(
             BayitResult.Success(result)
         } catch (e: Exception) {
             logger.error("BYOC enrichment failed", error = e, metadata = mapOf("externalId" to externalId))
-            BayitResult.Error(e.message ?: "Enrichment failed", e)
+            BayitResult.Error(e, e.message ?: "Enrichment failed")
         }
     }
 }

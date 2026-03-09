@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    testImplementation(project(":core:core-testing"))
     testImplementation(libs.bundles.testing)
     testImplementation(libs.hilt.testing)
     kspTest(libs.hilt.compiler)

@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    testImplementation(project(":core:core-testing"))
     testImplementation(libs.bundles.testing)
     testImplementation(libs.mockwebserver)
     testImplementation(libs.hilt.testing)

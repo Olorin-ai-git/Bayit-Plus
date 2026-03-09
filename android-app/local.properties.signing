@@ -1,0 +1,4 @@
+bayit.keystore.path=keystore/upload-keystore.jks
+bayit.keystore.password=bayitplus2026
+bayit.key.alias=bayit-upload
+bayit.key.password=bayitplus2026

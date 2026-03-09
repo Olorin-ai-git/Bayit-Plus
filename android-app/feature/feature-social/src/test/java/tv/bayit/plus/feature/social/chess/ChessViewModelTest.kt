@@ -21,7 +21,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.data.repository.ChessRepository
+import tv.bayit.plus.core.data.repository.FriendsRepository
+import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.model.ChessGame
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +34,9 @@ class ChessViewModelTest {
     private val chessRepository: ChessRepository = mockk()
     private val chessWebSocketHandler: ChessWebSocketHandler = mockk(relaxed = true)
     private val logger: BayitLogger = mockk(relaxed = true)
+    private val stringProvider: BayitStringProvider = mockk(relaxed = true)
+    private val friendsRepository: FriendsRepository = mockk(relaxed = true)
+    private val authService: OlorinAuthService = mockk(relaxed = true)
 
     private fun buildGame(
         code: String = "ABCD12",
@@ -47,6 +53,9 @@ class ChessViewModelTest {
         chessRepository = chessRepository,
         chessWebSocketHandler = chessWebSocketHandler,
         logger = logger,
+        stringProvider = stringProvider,
+        friendsRepository = friendsRepository,
+        authService = authService,
         savedStateHandle = SavedStateHandle(),
     )
 

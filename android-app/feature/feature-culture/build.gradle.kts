@@ -60,6 +60,12 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
+    // WorkManager
+    implementation(libs.work.runtime)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
+
     // Logging
     implementation(libs.timber)
 

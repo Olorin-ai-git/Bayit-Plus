@@ -5,6 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import okhttp3.Protocol
 import okhttp3.Request
@@ -111,7 +112,7 @@ class TokenAuthenticatorTest {
         coEvery { authTokenProvider.refreshToken() } returns "valid-token"
 
         var sessionExpiredEmitted = false
-        val collectJob = kotlinx.coroutines.launch {
+        val collectJob = launch {
             SessionEventBus.sessionExpired.collect { sessionExpiredEmitted = true }
         }
 
