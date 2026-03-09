@@ -147,7 +147,7 @@ final class APISettingsRepository: SettingsRepository, @unchecked Sendable {
 
     func fetchDevices() async throws -> DevicesResponse {
         try await client.get(
-            "/api/v1/auth/devices",
+            "/api/v1/devices",
             as: DevicesResponse.self
         )
     }
@@ -156,7 +156,7 @@ final class APISettingsRepository: SettingsRepository, @unchecked Sendable {
         request: ChangePasswordRequest
     ) async throws -> MessageResponse {
         try await client.post(
-            "/api/v1/auth/change-password",
+            "/api/v1/auth/password-reset/change",
             body: request,
             as: MessageResponse.self
         )
@@ -164,7 +164,7 @@ final class APISettingsRepository: SettingsRepository, @unchecked Sendable {
 
     func removeDevice(deviceId: String) async throws -> MessageResponse {
         try await client.delete(
-            "/api/v1/auth/devices/\(deviceId)",
+            "/api/v1/devices/\(deviceId)",
             as: MessageResponse.self
         )
     }

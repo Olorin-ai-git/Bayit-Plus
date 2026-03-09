@@ -25,7 +25,6 @@ private struct MFAVerifyRequest: Encodable, Sendable {
 
 /// Production implementation of `SecurityRepository` using `APIClient`.
 final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
-
     private let client: APIClient
 
     init(client: APIClient) {
@@ -41,7 +40,7 @@ final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
 
     func fetchDevices() async throws -> [ConnectedDevice] {
         return try await client.get(
-            "/api/v1/auth/devices",
+            "/api/v1/devices",
             as: [ConnectedDevice].self
         )
     }
@@ -79,7 +78,7 @@ final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
 
     func changePassword(_ request: PasswordChangeRequest) async throws {
         _ = try await client.post(
-            "/api/v1/auth/change-password",
+            "/api/v1/auth/password-reset/change",
             body: request,
             as: MessageResponse.self
         )
@@ -87,14 +86,14 @@ final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
 
     func removeDevice(id: String) async throws {
         _ = try await client.delete(
-            "/api/v1/auth/devices/\(id)",
+            "/api/v1/devices/\(id)",
             as: MessageResponse.self
         )
     }
 
     func signOutAll() async throws {
         _ = try await client.post(
-            "/api/v1/auth/sign-out-all",
+            "/api/v1/webauthn/session/revoke-all",
             body: EmptyBody(),
             as: MessageResponse.self
         )
