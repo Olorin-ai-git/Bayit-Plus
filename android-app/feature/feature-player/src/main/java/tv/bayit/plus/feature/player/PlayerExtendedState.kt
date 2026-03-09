@@ -69,4 +69,10 @@ data class PlayerExtendedState(
     val isCastAvailable: Boolean = false,
     /** Whether currently connected to a cast device. */
     val isCastConnected: Boolean = false,
+    /** Banner message for subtitle enrichment notifications (e.g. "Added English subtitles to The Karate Kid"). */
+    val subtitleBannerMessage: String? = null,
+    /** Backend content ID for BYOC items (returned by enrichment endpoint). Used for subtitle cue loading. */
+    val byocBackendContentId: String? = null,
+    /** Set to true when BYOC enrichment completes after a manual "Fetch Subtitles" tap; consumed by UI to dismiss the sheet. */
+    val shouldDismissOpenSubtitles: Boolean = false,
 )

@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
+import tv.bayit.plus.designsystem.component.GlassModal
 import tv.bayit.plus.feature.player.live.AIFeaturesPanelState
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
 import tv.bayit.plus.feature.player.subtitles.OpenSubtitlesDownload
@@ -103,43 +104,49 @@ internal fun PlayerScreenPickerSheets(
     }
 
     if (showSubtitlePicker) {
-        SubtitleLanguagePicker(
-            selectedLanguage = extendedState.selectedSubtitleLanguage.orEmpty(),
-            availableLanguages = extendedState.availableSubtitleLanguages,
-            isSplitMode = extendedState.isSplitSubtitleMode,
-            onLanguageSelected = { lang ->
-                onSelectSubtitleLanguage(lang)
-                onHideSubtitlePicker()
-            },
-            onSplitToggle = onToggleSplitMode,
-            onOpenSubtitlesClick = onShowOpenSubtitles,
-            onDismiss = onHideSubtitlePicker,
-        )
+        GlassModal(onDismissRequest = onHideSubtitlePicker) {
+            SubtitleLanguagePicker(
+                selectedLanguage = extendedState.selectedSubtitleLanguage.orEmpty(),
+                availableLanguages = extendedState.availableSubtitleLanguages,
+                isSplitMode = extendedState.isSplitSubtitleMode,
+                onLanguageSelected = { lang ->
+                    onSelectSubtitleLanguage(lang)
+                    onHideSubtitlePicker()
+                },
+                onSplitToggle = onToggleSplitMode,
+                onOpenSubtitlesClick = onShowOpenSubtitles,
+                onDismiss = onHideSubtitlePicker,
+            )
+        }
     }
 
     if (showSplitSubtitlePicker) {
-        SplitSubtitleLanguagePicker(
-            primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
-            secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
-            availableLanguages = extendedState.availableSubtitleLanguages,
-            layout = extendedState.splitSubtitleLayout,
-            onPrimarySelected = onSelectPrimaryLanguage,
-            onSecondarySelected = onSelectSecondaryLanguage,
-            onLayoutSelected = onSelectSplitLayout,
-            onDismiss = onHideSplitSubtitlePicker,
-        )
+        GlassModal(onDismissRequest = onHideSplitSubtitlePicker) {
+            SplitSubtitleLanguagePicker(
+                primaryLanguage = extendedState.primarySubtitleLanguage.orEmpty(),
+                secondaryLanguage = extendedState.secondarySubtitleLanguage.orEmpty(),
+                availableLanguages = extendedState.availableSubtitleLanguages,
+                layout = extendedState.splitSubtitleLayout,
+                onPrimarySelected = onSelectPrimaryLanguage,
+                onSecondarySelected = onSelectSecondaryLanguage,
+                onLayoutSelected = onSelectSplitLayout,
+                onDismiss = onHideSplitSubtitlePicker,
+            )
+        }
     }
 
     if (showOpenSubtitles) {
-        OpenSubtitlesDownload(
-            tracks = extendedState.externalSubtitleTracks,
-            isLoading = extendedState.isLoadingExternalSubtitles,
-            onFetchExternal = onFetchExternalSubtitles,
-            onTrackSelected = { track ->
-                onSelectExternalSubtitle(track)
-                onHideOpenSubtitles()
-            },
-            onDismiss = onHideOpenSubtitles,
-        )
+        GlassModal(onDismissRequest = onHideOpenSubtitles) {
+            OpenSubtitlesDownload(
+                tracks = extendedState.externalSubtitleTracks,
+                isLoading = extendedState.isLoadingExternalSubtitles,
+                onFetchExternal = onFetchExternalSubtitles,
+                onTrackSelected = { track ->
+                    onSelectExternalSubtitle(track)
+                    onHideOpenSubtitles()
+                },
+                onDismiss = onHideOpenSubtitles,
+            )
+        }
     }
 }

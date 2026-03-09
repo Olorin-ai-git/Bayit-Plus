@@ -37,12 +37,14 @@ interface PlexServerApi {
 
     @GET("library/sections")
     suspend fun fetchLibraries(
+        @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Token") token: String,
     ): PlexLibrariesContainer
 
     @GET("library/sections/{libraryId}/all")
     suspend fun fetchLibraryItems(
         @Path("libraryId") libraryId: String,
+        @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Token") token: String,
     ): PlexItemsContainer
 }
@@ -51,7 +53,7 @@ interface PlexServerApi {
 data class PlexPinResponse(
     val id: Long,
     val code: String,
-    @SerialName("auth_token") val authToken: String? = null,
+    val authToken: String? = null,
     @SerialName("product") val product: String? = null,
     @SerialName("client_identifier") val clientIdentifier: String? = null,
 )
@@ -109,6 +111,12 @@ data class PlexMetadataItem(
     val year: Int? = null,
     val type: String = "",
     @SerialName("Media") val media: List<PlexMediaItem> = emptyList(),
+    @SerialName("Guid") val guids: List<PlexGuid> = emptyList(),
+)
+
+@Serializable
+data class PlexGuid(
+    val id: String,
 )
 
 @Serializable

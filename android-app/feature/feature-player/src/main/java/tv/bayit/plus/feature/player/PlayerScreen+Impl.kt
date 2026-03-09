@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.feature.player.subtitles.SubtitleBanner
 import tv.bayit.plus.feature.onboarding.TooltipManager
 import tv.bayit.plus.feature.player.dialogue.AvatarPlacement
 import tv.bayit.plus.feature.player.dialogue.ContentCharacter
@@ -95,6 +96,7 @@ internal fun PlayerScreen(
     onCancelSleepTimer: () -> Unit,
     onToggleFullscreen: () -> Unit,
     onCastClick: () -> Unit = {},
+    onDismissSubtitleBanner: () -> Unit = {},
     onBack: () -> Unit,
     tooltipManager: TooltipManager? = null,
     isPlaying: Boolean = false,
@@ -192,6 +194,11 @@ internal fun PlayerScreen(
                     onFetchExternalSubtitles = onFetchExternalSubtitles,
                     onSelectExternalSubtitle = onSelectExternalSubtitle,
                     onHideOpenSubtitles = onHideOpenSubtitles,
+                )
+                SubtitleBanner(
+                    message = extendedState.subtitleBannerMessage,
+                    onDismiss = onDismissSubtitleBanner,
+                    modifier = Modifier.align(Alignment.TopCenter).padding(top = DesignTokens.Spacing.xxl),
                 )
             }
             is PlayerUiState.Error -> ErrorContent(uiState.message, onBack)

@@ -39,6 +39,7 @@ class PlayerViewModel @Inject constructor(
     private val castSessionManager: CastSessionManager,
     private val castBridge: MediaPlayerCastBridge,
     internal val tooltipManager: TooltipManager,
+    internal val byocSubtitleEnricher: BYOCSubtitleEnricher,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -97,10 +98,27 @@ class PlayerViewModel @Inject constructor(
                     if (!isLive) {
                         subtitleDelegate.loadAvailableSubtitles(contentId, viewModelScope) { t -> _extendedState.update(t) }
                         vodTriviaManager.loadFacts(contentId, _extendedState.value.vodTriviaLanguage, viewModelScope)
-                        // Load avatar info first so the overlay can display the user's avatar
-                        // image immediately when a moment triggers (iOS parity).
                         featuresDelegate.loadAvatarInfo(viewModelScope) { t -> _extendedState.update(t) }
                         featuresDelegate.loadInteractiveMoments(contentId, viewModelScope) { t -> _extendedState.update(t) }
+                        if (contentType == PlayerContentResolver.CONTENT_TYPE_BYOC) {
+                            byocSubtitleEnricher.enrichSubtitles(
+                                contentId = contentId,
+                                contentTitle = metadata.first,
+                                scope = viewModelScope,
+                                onSubtitleAdded = { event ->
+                                    _extendedState.update {
+                                        it.copy(subtitleBannerMessage = "Added ${event.languageName} subtitles to ${event.contentTitle}")
+                                    }
+                                },
+                                onLanguagesUpdated = { langs ->
+                                    _extendedState.update { it.copy(availableSubtitleLanguages = langs) }
+                                },
+                                onBackendContentId = { backendId ->
+                                    _extendedState.update { it.copy(byocBackendContentId = backendId) }
+                                    subtitleDelegate.loadAvailableSubtitles(backendId, viewModelScope) { t -> _extendedState.update(t) }
+                                },
+                            )
+                        }
                     }
                     castBridge.updateContent(contentId, metadata.first)
                     logger.info("Playback started", mapOf("contentId" to contentId))

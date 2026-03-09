@@ -43,7 +43,7 @@ object BYOCProvidesModule {
         context,
         BYOCDatabase::class.java,
         DB_NAME,
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     @Provides
     @Singleton

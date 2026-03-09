@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "byoc_enrichment")
 data class BYOCEnrichmentEntity(
     @PrimaryKey val externalId: String,
+    val backendContentId: String = "",
     val subtitleLanguages: String,
     val enrichmentStatus: String,
     val updatedAt: Long,

@@ -2,6 +2,7 @@ package tv.bayit.plus.feature.player
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.update
 import tv.bayit.plus.feature.player.dialogue.AvatarDialogueViewModel
 import tv.bayit.plus.core.media.PlayerState
 import tv.bayit.plus.feature.player.dialogue.PauseAskPhase
@@ -57,6 +59,14 @@ fun PlayerRoute(
     var showSplitSubtitlePicker by remember { mutableStateOf(false) }
     var showOpenSubtitles by remember { mutableStateOf(false) }
     var showSleepTimerPicker by remember { mutableStateOf(false) }
+
+    LaunchedEffect(extendedState.shouldDismissOpenSubtitles) {
+        if (extendedState.shouldDismissOpenSubtitles) {
+            showOpenSubtitles = false
+            showSubtitlePicker = true
+            viewModel._extendedState.update { it.copy(shouldDismissOpenSubtitles = false) }
+        }
+    }
 
     val context = LocalContext.current
 
@@ -174,6 +184,7 @@ fun PlayerRoute(
         onCancelSleepTimer = viewModel::cancelSleepTimer,
         onToggleFullscreen = viewModel::toggleFullscreen,
         onCastClick = viewModel::onCastClick,
+        onDismissSubtitleBanner = viewModel::dismissSubtitleBanner,
         tooltipManager = viewModel.tooltipManager,
         isPlaying = playerState is PlayerState.Playing,
         onBack = {

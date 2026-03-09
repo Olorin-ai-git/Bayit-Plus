@@ -16,6 +16,8 @@ data class BYOCContentItem(
     val sourceId: String,
     val streamUrl: String?,
     val contentType: BYOCContentType,
+    val imdbId: String? = null,
+    val tmdbId: Int? = null,
 )
 
 enum class BYOCContentType {

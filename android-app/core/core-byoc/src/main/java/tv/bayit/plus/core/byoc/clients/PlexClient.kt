@@ -68,7 +68,9 @@ class PlexClient @Inject constructor(
         return resources
             .filter { it.provides.contains("server") }
             .mapNotNull { resource ->
-                val connection = resource.connections.firstOrNull() ?: return@mapNotNull null
+                val connection = resource.connections
+                    .sortedByDescending { it.uri.startsWith("https") }
+                    .firstOrNull() ?: return@mapNotNull null
                 val uri = java.net.URI(connection.uri)
                 PlexServer(
                     id = resource.clientId,
@@ -108,10 +110,14 @@ class PlexClient @Inject constructor(
         return container.container.metadata.map { item ->
             val partKey = item.media.firstOrNull()?.parts?.firstOrNull()?.key
             val streamUrl = if (partKey != null) {
-                buildTranscodeUrl(baseUrl, partKey, authToken)
+                buildDirectStreamUrl(baseUrl, partKey, authToken)
             } else {
                 null
             }
+            val imdbId = item.guids.firstOrNull { it.id.startsWith("imdb://") }
+                ?.id?.removePrefix("imdb://")
+            val tmdbId = item.guids.firstOrNull { it.id.startsWith("tmdb://") }
+                ?.id?.removePrefix("tmdb://")?.toIntOrNull()
             BYOCContentItem(
                 id = "${sourceId}_${item.ratingKey}",
                 title = item.title,
@@ -125,6 +131,8 @@ class PlexClient @Inject constructor(
                 sourceId = sourceId,
                 streamUrl = streamUrl,
                 contentType = mapPlexType(item.type),
+                imdbId = imdbId,
+                tmdbId = tmdbId,
             )
         }
     }
@@ -144,13 +152,8 @@ class PlexClient @Inject constructor(
         return "$scheme://${server.host}:${server.port}"
     }
 
-    private fun buildTranscodeUrl(baseUrl: String, partKey: String, token: String): String {
-        return "$baseUrl/video/:/transcode/universal/start.m3u8" +
-            "?path=$partKey" +
-            "&mediaIndex=0" +
-            "&partIndex=0" +
-            "&protocol=hls" +
-            "&X-Plex-Token=$token"
+    private fun buildDirectStreamUrl(baseUrl: String, partKey: String, token: String): String {
+        return "$baseUrl$partKey?X-Plex-Token=$token"
     }
 
     private fun mapPlexType(type: String): BYOCContentType {

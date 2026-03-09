@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:core-byoc"))
     implementation(project(":core:core-common"))
     implementation(project(":core:core-model"))
     implementation(project(":core:core-data"))

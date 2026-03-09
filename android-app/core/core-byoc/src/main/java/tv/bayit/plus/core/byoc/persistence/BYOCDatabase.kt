@@ -6,7 +6,7 @@ import tv.bayit.plus.core.byoc.enrichment.BYOCEnrichmentEntity
 
 @Database(
     entities = [BYOCSourceEntity::class, BYOCEnrichmentEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class BYOCDatabase : RoomDatabase() {

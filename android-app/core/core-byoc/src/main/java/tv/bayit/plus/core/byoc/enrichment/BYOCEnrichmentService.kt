@@ -15,25 +15,39 @@ class BYOCEnrichmentService @Inject constructor(
 ) {
     private val api: BYOCEnrichmentApi by lazy { apiClient.createService() }
 
-    suspend fun enrich(externalId: String, title: String, sourceType: String): BayitResult<BYOCEnrichmentResult> {
+    suspend fun enrich(
+        externalId: String,
+        title: String,
+        sourceType: String,
+        year: Int? = null,
+        durationSeconds: Int? = null,
+        imdbId: String? = null,
+        tmdbId: Int? = null,
+    ): BayitResult<BYOCEnrichmentResult> {
         val cached = enrichmentDao.getByExternalId(externalId)
-        if (cached != null) {
-            return BayitResult.Success(
-                BYOCEnrichmentResult(
-                    contentId = cached.externalId,
-                    availableSubtitleLanguages = cached.subtitleLanguages.split(",").filter { it.isNotBlank() },
-                    enrichmentStatus = cached.enrichmentStatus,
+        if (cached != null && cached.backendContentId.isNotBlank()) {
+            val cachedLangs = cached.subtitleLanguages.split(",").filter { it.isNotBlank() }
+            val hasNewMetadata = imdbId != null || tmdbId != null
+            if (cachedLangs.isNotEmpty() || !hasNewMetadata) {
+                return BayitResult.Success(
+                    BYOCEnrichmentResult(
+                        contentId = cached.backendContentId,
+                        availableSubtitleLanguages = cachedLangs,
+                        enrichmentStatus = cached.enrichmentStatus,
+                    )
                 )
-            )
+            }
+            logger.info("BYOC enrichment cache bypass: have new metadata", mapOf("externalId" to externalId))
         }
 
         return try {
             val result = apiClient.safeApiCall {
-                api.enrich(EnrichRequest(externalId, title, sourceType))
+                api.enrich(EnrichRequest(externalId, title, sourceType, year, durationSeconds, imdbId, tmdbId))
             }
             enrichmentDao.upsert(
                 BYOCEnrichmentEntity(
                     externalId = externalId,
+                    backendContentId = result.contentId,
                     subtitleLanguages = result.availableSubtitleLanguages.joinToString(","),
                     enrichmentStatus = result.enrichmentStatus,
                     updatedAt = System.currentTimeMillis(),

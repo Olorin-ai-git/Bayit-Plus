@@ -80,9 +80,11 @@ fun SubtitleLanguagePicker(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
+            val hasSplitCapableLanguages = availableLanguages.size >= 2
             GlassButton(
                 text = if (isSplitMode) bayitString("subtitles.singleMode") else bayitString("subtitles.splitMode"),
                 onClick = onSplitToggle,
+                enabled = hasSplitCapableLanguages,
             )
             GlassButton(
                 text = bayitString("subtitles.opensubtitles"),
