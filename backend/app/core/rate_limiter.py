@@ -81,6 +81,10 @@ try:
         "subtitle_import": _dev_limit("10/hour"),  # Database writes for subtitle import
         "subtitle_delete": _dev_limit("20/hour"),  # Destructive operations
         "subtitle_general": _dev_limit("30/minute"),  # Other endpoints (languages, cache stats)
+        # Device Code Auth (RFC 8628 - TV Login)
+        "device_code_initiate": _dev_limit("10/minute"),  # Device code requests
+        "device_code_poll": _dev_limit("60/minute"),  # Polling at 5s interval
+        "device_code_verify": _dev_limit("30/minute"),  # Code verification
         # Trivia - Protection for AI-generated content and playback endpoints
         "trivia_get": _dev_limit("60/minute"),  # Standard trivia fetch during playback
         "trivia_enriched": _dev_limit("3/hour"),  # AI-enriched bundle (expensive operation)

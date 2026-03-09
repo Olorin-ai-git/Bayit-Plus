@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import tv.bayit.plus.BuildConfig
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.navigation.AppTab
 import tv.bayit.plus.navigation.Route
@@ -57,6 +58,7 @@ fun BayitMainScaffold(
             }
         }
     }
+    val visibleTabs = remember { AppTab.visibleTabs(BuildConfig.OWNER_MODE) }
     var selectedTab by remember { mutableStateOf(AppTab.HOME) }
     var showVoiceModal by remember { mutableStateOf(false) }
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -68,7 +70,7 @@ fun BayitMainScaffold(
     val currentLanguage by navBarViewModel.currentLanguage.collectAsStateWithLifecycle()
     val audioState by miniPlayerViewModel.audioState.collectAsStateWithLifecycle()
 
-    val isRootTab = AppTab.entries.any { tab ->
+    val isRootTab = visibleTabs.any { tab ->
         tab.route::class.qualifiedName == currentRoute
     }
 
@@ -149,6 +151,7 @@ fun BayitMainScaffold(
                                     restoreState = true
                                 }
                             },
+                            visibleTabs = visibleTabs,
                         )
                     }
                 }

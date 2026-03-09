@@ -31,6 +31,7 @@ import tv.bayit.plus.navigation.AppTab
 fun GlassBottomNavBar(
     selectedTab: AppTab,
     onTabSelected: (AppTab) -> Unit,
+    visibleTabs: List<AppTab>,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -47,7 +48,7 @@ fun GlassBottomNavBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AppTab.entries.filter { it != AppTab.ZEH_ANI }.forEach { tab ->
+        visibleTabs.filter { it != AppTab.ZEH_ANI }.forEach { tab ->
             BottomNavItem(
                 label = bayitString(tab.labelKey),
                 icon = getTabIcon(tab),

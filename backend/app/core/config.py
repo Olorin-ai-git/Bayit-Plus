@@ -187,6 +187,21 @@ class Settings(BaseSettings):
     )
 
     # ==========================================
+    # DEVICE CODE AUTH (RFC 8628 - TV Login)
+    # ==========================================
+    DEVICE_CODE_EXPIRY_SECONDS: int = Field(
+        default=600,
+        env="DEVICE_CODE_EXPIRY_SECONDS",
+        description="Device code TTL in seconds (default 10 minutes)"
+    )
+
+    DEVICE_CODE_POLL_INTERVAL_SECONDS: int = Field(
+        default=5,
+        env="DEVICE_CODE_POLL_INTERVAL_SECONDS",
+        description="Minimum poll interval for device code auth (seconds)"
+    )
+
+    # ==========================================
     # MIGRATION CONFIGURATION
     # ==========================================
     VIEWER_MIGRATION_BATCH_SIZE: int = Field(

@@ -9,4 +9,24 @@
     <string name="widget_now_playing_description">Shows what is currently playing in Bayit+</string>
     <string name="widget_continue_watching_description">Shows your in-progress content with progress bars</string>
     <string name="widget_live_channels_description">Shows your favorite live channels with current programs</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">Home</string>
+    <string name="tv_continue_watching">Continue Watching</string>
+    <string name="tv_live_channels">Live TV</string>
+    <string name="tv_vod_title">Movies and Shows</string>
+    <string name="tv_radio_title">Radio</string>
+    <string name="tv_podcasts_title">Podcasts</string>
+    <string name="tv_featured_title">Featured</string>
+    <string name="tv_login_title">Sign In to Bayit+</string>
+    <string name="tv_scan_qr">Scan the QR code with your phone to sign in</string>
+    <string name="tv_enter_code">Or visit %1$s and enter code:</string>
+    <string name="tv_code_expires">Code expires in %1$s</string>
+    <string name="tv_manual_login">Sign in with email</string>
+    <string name="tv_search_hint">Search for channels, shows, movies...</string>
+    <string name="tv_connection_lost">Connection lost. Retrying...</string>
+    <string name="tv_subscribe_prompt">Subscribe to watch this content</string>
+    <string name="tv_subscribe_on_phone">Visit bayit.tv or use the Bayit+ phone app to subscribe</string>
+    <string name="tv_byoc_title">Your Content</string>
 </resources>

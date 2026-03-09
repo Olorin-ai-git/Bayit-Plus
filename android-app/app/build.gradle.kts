@@ -25,6 +25,11 @@ android {
             useSupportLibrary = true
         }
 
+        // 64-bit only for Google TV compliance (August 2026 mandate)
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
+
         buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
         buildConfigField("String", "WS_BASE_URL", "\"${project.findProperty("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
         buildConfigField("String", "CDN_BASE_URL", "\"${project.findProperty("bayit.cdn.baseUrl") ?: "https://cdn.bayit.tv"}\"")
@@ -68,8 +73,10 @@ android {
         debug {
             isDebuggable = true
             versionNameSuffix = "-debug"
+            buildConfigField("Boolean", "OWNER_MODE", "true")
         }
         release {
+            buildConfigField("Boolean", "OWNER_MODE", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -101,6 +108,11 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    lint {
+        enable += listOf("TvLeanback")
+        warningsAsErrors = false
     }
 
     packaging {
@@ -153,7 +165,12 @@ dependencies {
     implementation(project(":feature:feature-downloads"))
     implementation(project(":feature:feature-widgets"))
     implementation(project(":feature:feature-byoc"))
+    implementation(project(":feature:feature-tv"))
     implementation(project(":widget"))
+
+    // Compose for TV
+    implementation(libs.tv.material)
+    implementation(libs.tv.foundation)
 
     // AndroidX Core
     implementation(libs.core.ktx)

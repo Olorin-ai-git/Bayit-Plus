@@ -54,6 +54,11 @@ play-services-location = "21.3.0"
 # Logging
 timber = "5.0.1"
 
+# Compose for TV
+tv-material = "1.0.0"
+tv-foundation = "1.0.0-alpha12"
+tv-provider = "1.0.0"
+
 # Glance (Widgets)
 glance = "1.1.1"
 
@@ -111,6 +116,7 @@ navigation-compose = { module = "androidx.navigation:navigation-compose", versio
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-navigation-compose" }
 
 # Networking
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
@@ -168,6 +174,11 @@ work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work"
 # Paging
 paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+
+# Compose for TV
+tv-material = { module = "androidx.tv:tv-material", version.ref = "tv-material" }
+tv-foundation = { module = "androidx.tv:tv-foundation", version.ref = "tv-foundation" }
+tv-provider = { module = "androidx.tvprovider:tvprovider", version.ref = "tv-provider" }
 
 # Glance
 glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }

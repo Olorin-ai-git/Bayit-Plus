@@ -68,7 +68,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 subtitle_preferences, support,
                                 synced_streams,
                                 tel_aviv, trending, trivia,
-                                user_system_widgets, users, verification,
+                                user_account, user_system_widgets, users, verification,
                                 playlist, voice, watchlist, webauthn,
                                 widget_toggle, widgets, youngsters, zman,
                                 vod_interactions, vod_interaction_reels,
@@ -134,6 +134,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.zeh_ani import whatsapp_routes as za_whatsapp
     # Movie Interactions Hub (Zeh Ani Phase 4)
     from app.api.routes import movie_interactions
+    # Device code authentication routes (TV login - RFC 8628)
+    from app.api.routes import device_code
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -191,6 +193,11 @@ def register_all_routers(app: FastAPI) -> None:
         account_linking.router,
         prefix=f"{prefix}/auth",
         tags=["account-linking"],
+    )
+    app.include_router(
+        device_code.router,
+        prefix=f"{prefix}/auth/device-code",
+        tags=["device-code"],
     )
     logger.debug("Registered auth routes")
 
@@ -309,6 +316,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(profiles_preferences.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(user_settings.router, prefix=f"{prefix}/profiles", tags=["user-settings"])
+    app.include_router(user_account.router, prefix=f"{prefix}/user", tags=["user-account"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])
     app.include_router(
         youngsters.router, prefix=f"{prefix}/youngsters", tags=["youngsters"]

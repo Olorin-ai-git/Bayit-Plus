@@ -11,6 +11,7 @@ import tv.bayit.plus.core.common.CastReceiverAppId
 import tv.bayit.plus.core.common.CdnBaseUrl
 import tv.bayit.plus.core.common.GoogleClientId
 import tv.bayit.plus.core.common.GoogleClientSecret
+import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.i18n.JsonBayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
@@ -24,6 +25,11 @@ object AppModule {
 
     private const val I18N_PREFS_NAME = "bayit_i18n"
 
+
+    @Provides
+    @Singleton
+    @OwnerMode
+    fun provideOwnerMode(): Boolean = BuildConfig.OWNER_MODE
 
     @Provides
     @Singleton
