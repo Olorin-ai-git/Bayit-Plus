@@ -27,6 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -161,9 +163,9 @@ private fun TipsToggleRow(tipsEnabled: Boolean, onToggle: (Boolean) -> Unit) {
 
 @Composable
 private fun SettingsMenuRow(item: SettingsMenuItem, onClick: () -> Unit) {
-    GlassCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    GlassCard(modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.titleKey }.clickable(onClick = onClick)) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Icon(item.icon, contentDescription = null, tint = DesignTokens.Colors.Primary.light, modifier = Modifier.size(24.dp))
+            Icon(item.icon, contentDescription = item.titleKey, tint = DesignTokens.Colors.Primary.light, modifier = Modifier.size(24.dp))
             Text(text = item.titleKey, color = DesignTokens.Colors.Text.primary, modifier = Modifier.weight(1f).padding(start = DesignTokens.Spacing.md))
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = DesignTokens.Colors.Text.muted)
         }

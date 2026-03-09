@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -125,7 +127,10 @@ internal fun ChapterRow(chapter: AudiobookChapter, onPlay: () -> Unit, modifier:
         modifier = modifier.fillMaxWidth().padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.xs),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onPlay).padding(DesignTokens.Spacing.sm),
+            modifier = Modifier.fillMaxWidth()
+                .semantics { contentDescription = "Play ${chapter.title ?: "chapter"}" }
+                .clickable(onClick = onPlay)
+                .padding(DesignTokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

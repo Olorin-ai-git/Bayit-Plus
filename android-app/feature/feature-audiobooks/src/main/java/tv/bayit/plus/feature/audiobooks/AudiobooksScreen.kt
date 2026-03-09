@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -107,7 +109,8 @@ private fun AudiobookGridItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GlassCard(modifier = modifier.clickable(onClick = onClick)) {
+    val label = listOfNotNull(audiobook.title, audiobook.author?.let { "by $it" }).joinToString(", ")
+    GlassCard(modifier = modifier.semantics { contentDescription = label }.clickable(onClick = onClick)) {
         Column {
             CachedAsyncImage(
                 url = audiobook.thumbnail ?: audiobook.backdrop,
