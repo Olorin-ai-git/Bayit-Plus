@@ -22,6 +22,8 @@ import tv.bayit.plus.core.testing.FakeCategoryRepository
 import tv.bayit.plus.core.testing.FakeContentRepository
 import tv.bayit.plus.core.testing.FakeLiveTVRepository
 import tv.bayit.plus.core.testing.FakeRadioRepository
+import tv.bayit.plus.core.byoc.BYOCSourceManager
+import tv.bayit.plus.feature.onboarding.TourDataStore
 
 /**
  * Comprehensive test suite for HomeViewModel.
@@ -41,6 +43,8 @@ class HomeViewModelTest {
     private val locationManager: LocationManager = mockk(relaxed = true) {
         every { hasLocationPermission() } returns false
     }
+    private val sourceManager: BYOCSourceManager = mockk(relaxed = true)
+    private val tourDataStore: TourDataStore = mockk(relaxed = true)
     private val logger = NoOpBayitLogger()
 
     private lateinit var viewModel: HomeViewModel
@@ -74,7 +78,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -111,7 +118,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -141,7 +151,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -170,7 +183,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -211,7 +227,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -238,7 +257,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -267,7 +289,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
@@ -301,7 +326,10 @@ class HomeViewModelTest {
             shabbatRepository,
             locationRepository,
             locationManager,
+            sourceManager,
+            tourDataStore,
             logger,
+            ownerMode = false,
         )
 
         viewModel.uiState.test {
