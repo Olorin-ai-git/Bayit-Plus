@@ -122,9 +122,20 @@ class Settings(BaseSettings):
     STRIPE_API_KEY: str = ""
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
-    STRIPE_PRICE_BASIC: str = ""
-    STRIPE_PRICE_PREMIUM: str = ""
-    STRIPE_PRICE_FAMILY: str = ""
+    STRIPE_PRICE_PLUS_MONTHLY: str = ""
+    STRIPE_PRICE_PLUS_YEARLY: str = ""
+
+    # Freemium credit allocations (monthly)
+    FREE_MONTHLY_CREDITS: int = Field(
+        default=50,
+        env="FREE_MONTHLY_CREDITS",
+        description="Monthly AI credits for free tier users"
+    )
+    PLUS_MONTHLY_CREDITS: int = Field(
+        default=500,
+        env="PLUS_MONTHLY_CREDITS",
+        description="Monthly AI credits for Plus tier users"
+    )
 
     # ==========================================
     # PAYMENT FLOW FEATURE FLAGS

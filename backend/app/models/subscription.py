@@ -19,54 +19,41 @@ class SubscriptionPlan(BaseModel):
 
 
 SUBSCRIPTION_PLANS = {
-    "basic": SubscriptionPlan(
-        id="basic",
-        name="בסיסי",
-        price=9.99,
-        price_yearly=99.90,
+    "free": SubscriptionPlan(
+        id="free",
+        name="חינם",
+        price=0,
+        price_yearly=0,
         features=[
+            "כל ערוצי השידור החי",
             "רדיו ופודקאסטים",
+            "ספרי שמע",
+            "חיבור תוכן BYOC",
             "צפייה על מכשיר אחד",
-            "איכות SD",
+            "איכות HD",
+            "50 קרדיטי AI בחודש",
         ],
         max_streams=1,
-        quality="sd",
-        includes_live=False,
+        quality="hd",
+        includes_live=True,
         includes_ai=False,
         includes_downloads=False,
     ),
-    "premium": SubscriptionPlan(
-        id="premium",
-        name="פרימיום",
-        price=14.99,
-        price_yearly=149.90,
+    "plus": SubscriptionPlan(
+        id="plus",
+        name="פלוס",
+        price=6.99,
+        price_yearly=49.99,
         features=[
-            "כל תוכן ה-VOD",
-            "ערוצי שידור חי",
+            "כל ערוצי השידור החי",
             "רדיו ופודקאסטים",
+            "ספרי שמע",
+            "חיבור תוכן BYOC",
             "עוזר AI חכם",
-            "צפייה על 2 מכשירים",
-            "איכות HD",
-        ],
-        max_streams=2,
-        quality="hd",
-        includes_live=True,
-        includes_ai=True,
-        includes_downloads=False,
-    ),
-    "family": SubscriptionPlan(
-        id="family",
-        name="משפחתי",
-        price=19.99,
-        price_yearly=199.90,
-        features=[
-            "כל תוכן ה-VOD",
-            "ערוצי שידור חי",
-            "רדיו ופודקאסטים",
-            "עוזר AI חכם",
+            "דיבוב AI בזמן אמת",
             "צפייה על 4 מכשירים",
             "איכות 4K",
-            "5 פרופילים משפחתיים",
+            "500 קרדיטי AI בחודש",
             "הורדה לצפייה אופליין",
         ],
         max_streams=4,
@@ -80,7 +67,7 @@ SUBSCRIPTION_PLANS = {
 
 class Subscription(Document):
     user_id: str
-    plan_id: str  # basic, premium, family
+    plan_id: str  # free, plus
     status: str = "active"  # active, canceled, past_due, trialing
 
     # Stripe

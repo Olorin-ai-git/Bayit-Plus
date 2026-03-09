@@ -24,7 +24,7 @@ import javax.inject.Singleton
  * a [BayitResult] instead of raw exceptions.
  *
  * Endpoint paths mirror the iOS APILLMSearchRepository and web api.js.
- * LLM search requires Premium, Family, or Beta 500 access.
+ * LLM search requires Plus or Beta 500 access.
  */
 @Singleton
 class ApiLLMSearchRepository @Inject constructor(

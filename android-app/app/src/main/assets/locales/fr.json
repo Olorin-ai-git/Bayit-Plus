@@ -600,8 +600,8 @@
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
-      "premiumTitle": "Premium Feature",
+      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
+      "premiumTitle": "Bayit+ Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "Paramètres de Doublage en Direct",

@@ -36,9 +36,7 @@ class PaymentIntentResponse(BaseModel):
 
 # Plan configuration (prices in cents)
 PLAN_PRICES = {
-    "basic": 999,     # $9.99/month
-    "premium": 1499,  # $14.99/month
-    "family": 1999,   # $19.99/month
+    "plus": 699,  # $6.99/month
 }
 
 

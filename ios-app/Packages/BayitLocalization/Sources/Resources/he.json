@@ -14,8 +14,8 @@
     "password": "סיסמה",
     "name": "שם",
     "guest": "אורח",
-    "premium": "פרימיום",
-    "basic": "בסיסי",
+    "premium": "פלוס",
+    "basic": "חינם",
     "tapToLogin": "הקש להתחברות"
   },
   "admin": {
@@ -134,7 +134,7 @@
       "interval": "מחזור חיוב",
       "loadError": "טעינת מסלולי המנוי נכשלה. נסה שוב.",
       "name": "שם המסלול",
-      "namePlaceholder": "לדוגמה, פרימיום",
+      "namePlaceholder": "לדוגמה, פלוס",
       "price": "מחיר ($)",
       "requiredFields": "שם ומחיר הם שדות חובה",
       "saveError": "שמירת המסלול נכשלה",
@@ -698,9 +698,8 @@
           "logoPlaceholder": "כתובת לוגו"
         },
         "subscriptionTiers": {
-          "basic": "בסיסי",
-          "premium": "פרימיום",
-          "family": "משפחתי"
+          "basic": "חינם",
+          "premium": "פלוס"
         },
         "actions": {
           "save": "שמור",
@@ -3012,9 +3011,8 @@
     },
     "subscriptions": {
       "free": "חינם",
-      "basic": "בסיסי",
-      "premium": "פרימיום",
-      "family": "משפחה"
+      "basic": "חינם",
+      "premium": "פלוס"
     },
     "sortBy": "מיין לפי",
     "sortOptions": {
@@ -3422,8 +3420,8 @@
     "remaining": "נותרו",
     "required": "נדרש",
     "upgrade": "שדרג",
-    "upgradeMessage": "שדרג לפרימיום לקרדיטי AI ללא הגבלה.",
-    "upgradeTitle": "שדרג לפרימיום",
+    "upgradeMessage": "שדרג לפלוס לקרדיטי AI ללא הגבלה.",
+    "upgradeTitle": "שדרג לפלוס",
     "usage": "שימוש",
     "creditsLabel": "Credits",
     "insufficient": {
@@ -3496,8 +3494,8 @@
       "cached": "שמור במטמון",
       "remaining": "נותר",
       "window": "חלון זמן",
-      "loading": "[HE] Loading summary...",
-      "noContent": "[HE] No summary available"
+      "loading": "טוען סיכום...",
+      "noContent": "אין סיכום זמין"
     },
     "error": {
       "failed": "לא ניתן לייצר סיכום",
@@ -4038,7 +4036,7 @@
     "clearSelection": "נקה",
     "expand": "הרחב",
     "collapse": "כווץ",
-    "upgrade": "שדרג לפרימיום",
+    "upgrade": "שדרג לפלוס",
     "skip": "דלג",
     "dismiss": "סגור",
     "refresh": "רענן",
@@ -4054,7 +4052,7 @@
     "watch": "צפה",
     "share": "שתף",
     "noContent": "אין תוכן להצגה",
-    "premium": "פרימיום",
+    "premium": "פלוס",
     "poweredBy": "מופעל על ידי",
     "filters": "מסננים",
     "active": "פעיל",
@@ -4122,7 +4120,7 @@
     "new_password": "סיסמה חדשה",
     "confirm_password": "אימות סיסמה",
     "confirm_password_placeholder": "הזן שוב את הסיסמה",
-    "queued": "[HE] Queued",
+    "queued": "בתור",
     "on": "מופעל",
     "off": "כבוי"
   },
@@ -4179,7 +4177,7 @@
       "seasons": "{{count}} Seasons"
     },
     "related": "Related",
-    "untitled": "[HE] Untitled"
+    "untitled": "ללא שם"
   },
   "cultureCities": {
     "connectionTo": "חיבור ל{{city}}",
@@ -4284,7 +4282,7 @@
       "3": "הבורר",
       "4": "עבודה ערבית"
     },
-    "premium_plan": "פרימיום",
+    "premium_plan": "פלוס",
     "assistant_response": "אני ממליץ על פאודה - סדרת מתח מעולה!",
     "morning_greeting": "בוקר טוב! היום מזג האוויר נעים, יש כמה חדשות חשובות מישראל, ובחרתי לך תוכן שיתאים לך במיוחד."
   },
@@ -4332,7 +4330,7 @@
     "deleteConfirm": "הסר הורדה",
     "size": "{{size}} MB",
     "clearAll": "נקה הכל",
-    "active": "[HE] Active Downloads"
+    "active": "הורדות פעילות"
   },
   "dubbing": {
     "title": "דיבוב חי",
@@ -4374,9 +4372,9 @@
       "notAuthenticated": "לא מאומת",
       "notAuthenticatedMessage": "אנא התחבר שוב",
       "notAuthenticatedAction": "היכנס כדי להשתמש בדיבוב חי",
-      "premiumRequired": "תכונת Premium",
-      "premiumRequiredMessage": "דיבוב חי דורש מנוי Premium",
-      "premiumRequiredAction": "שדרג ל-Premium כדי לגשת לתכונה זו",
+      "premiumRequired": "תכונת Plus",
+      "premiumRequiredMessage": "דיבוב חי דורש מנוי Plus",
+      "premiumRequiredAction": "שדרג ל-Plus כדי לגשת לתכונה זו",
       "channelUnavailable": "לא זמין",
       "channelUnavailableMessage": "דיבוב אינו זמין לערוץ זה",
       "audioCaptureError": "שגיאת מיקרופון",
@@ -4414,7 +4412,7 @@
       "gimel": "גימל (מתקדם)",
       "active": "עברית קלה פעילה",
       "clickToEnable": "לחץ להפעלת שמע עברית קלה",
-      "premiumRequired": "נדרש מנוי פרימיום"
+      "premiumRequired": "נדרש מנוי פלוס"
     },
     "active": "דיבוב חי פעיל",
     "clickToEnable": "לחץ להפעלת דיבוב חי",
@@ -4490,10 +4488,10 @@
       }
     },
     "noVoicesAvailable": "אין קולות זמינים",
-    "premiumRequired": "נדרש מנוי פרימיום",
+    "premiumRequired": "נדרש מנוי פלוס",
     "selectInputLanguage": "בחר שפת קלט",
     "maybeLater": "Maybe Later",
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing",
     "liveOnly": "Live dubbing is only available for live channels"
   },
   "email": {
@@ -4713,8 +4711,8 @@
     "smartSearchSubtitle": "שאל שאלות בשפה טבעית",
     "smartSearchPlaceholder": "למשל: הצג לי את כל התוכניות עם השחקנית טלי שרון הערב",
     "searchPlaceholder": "חפש תוכניות, ערוצים, שחקנים...",
-    "premiumRequired": "תכונה פרימיום",
-    "premiumRequiredMessage": "חיפוש חכם משתמש בבינה מלאכותית כדי להבין את השאלות שלך. שדרג לפרימיום כדי לגשת לתכונה זו.",
+    "premiumRequired": "תכונת פלוס",
+    "premiumRequiredMessage": "חיפוש חכם משתמש בבינה מלאכותית כדי להבין את השאלות שלך. שדרג לפלוס כדי לגשת לתכונה זו.",
     "searchWithAI": "חפש עם AI",
     "searching": "מחפש...",
     "tryThese": "נסה את הדוגמאות האלה",
@@ -5325,7 +5323,7 @@
     "recommended": "מומלץ",
     "startTrial": "התחל תקופת ניסיון",
     "subscribe": "הירשם למנוי",
-    "trialSubtitle": "נסה את כל תכונות הפרימיום בחינם ל-7 ימים",
+    "trialSubtitle": "נסה את כל תכונות הפלוס בחינם ל-7 ימים",
     "trialTitle": "תקופת ניסיון זמינה",
     "upgradeRequired": "נדרש שדרוג כדי לגשת לתוכן זה"
   },
@@ -5582,7 +5580,7 @@
     "userIdPlaceholder": "הכנס אימייל או מזהה משתמש",
     "loadingHousehold": "Loading Household...",
     "loading": "Loading Household...",
-    "createTitle": "[HE] Create Household"
+    "createTitle": "צור משק בית"
   },
   "jerusalem": {
     "title": "חיבור לירושלים",
@@ -5633,10 +5631,10 @@
       "parashaStudy": "פרשה",
       "shabbatRecipes": "מתכונים",
       "prayers": "תפילות",
-      "candlesIn": "[HE] Candles in {{minutes}} minutes",
-      "songs": "[HE] Songs",
-      "parasha": "[HE] Parasha",
-      "recipes": "[HE] Recipes"
+      "candlesIn": "הדלקת נרות בעוד {{minutes}} דקות",
+      "songs": "שירים",
+      "parasha": "פרשה",
+      "recipes": "מתכונים"
     },
     "calendar": "לוח שנה יהודי",
     "community": {
@@ -5864,7 +5862,7 @@
       "documentary": "דוקומנטרי"
     },
     "loadingChannels": "טוען ערוצים...",
-    "channel": "[HE] Channel"
+    "channel": "ערוץ"
   },
   "location": {
     "consentModal": {
@@ -5964,7 +5962,7 @@
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
     "signInWithTouchId": "Sign in with Touch ID",
-    "newToBayitPlus": "[HE] New to Bayit+?"
+    "newToBayitPlus": "חדש ב-Bayit+?"
   },
   "nav": {
     "home": "ראשי",
@@ -6261,36 +6259,17 @@
       "description": "צור חשבון לתכונות בחינם"
     },
     "basic": {
-      "name": "בסיסי",
+      "name": "חינם",
       "features": [
         "כל תוכן ה-VOD",
         "רדיו ופודקאסטים",
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
-      "name": "פרימיום",
-      "features": [
-        "כל תוכן ה-VOD",
-        "ערוצי שידור חי",
-        "רדיו ופודקאסטים",
-        "עוזר AI חכם",
-        "צפייה על 2 מכשירים",
-        "איכות HD"
-      ],
-      "notIncluded": [
-        "צפייה אופליין",
-        "פרופילים משפחתיים"
-      ]
-    },
-    "family": {
-      "name": "משפחתי",
+      "name": "פלוס",
       "features": [
         "כל תוכן ה-VOD",
         "ערוצי שידור חי",
@@ -6310,7 +6289,7 @@
         "content": "גישה לתוכן",
         "quality": "איכות וביצועים",
         "devices": "מכשירים ושידור",
-        "features": "תכונות פרימיום",
+        "features": "תכונות פלוס",
         "support": "תמיכת לקוחות"
       },
       "features": {
@@ -6365,7 +6344,7 @@
     "recordingError": "שגיאת הקלטה",
     "startRecording": "התחל הקלטה",
     "stopRecording": "עצור הקלטה",
-    "premiumRequired": "Premium Required",
+    "premiumRequired": "Plus Required",
     "recordingLiveOnly": "הקלטה זמינה רק עבור ערוצים חיים",
     "selectQuality": "בחר איכות וידאו",
     "quality4k": "4K Ultra HD",
@@ -6376,7 +6355,7 @@
     "subscription": {
       "requiredTitle": "נדרשת הנתקה",
       "requiredMessage": "דורש מנוי בתשלום",
-      "upgradeInfo": "שדרג את המנוי שלך כדי לגשת לתוכן פרימיום",
+      "upgradeInfo": "שדרג את המנוי שלך כדי לגשת לתוכן פלוס",
       "upgrade": "שדרג כעת"
     },
     "chapters": "פרקים",
@@ -6461,8 +6440,8 @@
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Premium",
-    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeToPremium": "Upgrade to Plus",
+    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
     "videoQuality": "Video Quality",
     "audio": "שמע",
     "catchUp": "צפייה חוזרת",
@@ -6488,8 +6467,8 @@
       "characterSpeaking": "הדמות מדברת...",
       "endDialogue": "סיים שיחה",
       "noCharactersAvailable": "אין דמויות זמינות לשיחה",
-      "voiceMode": "[HE] Voice Mode",
-      "holdToSpeak": "[HE] Hold to Speak"
+      "voiceMode": "מצב קולי",
+      "holdToSpeak": "לחץ והחזק לדיבור"
     },
     "interaction": {
       "previous": "אינטראקציה קודמת",
@@ -6543,7 +6522,7 @@
         "credits": "אין מספיק קרדיטים"
       }
     },
-    "premiumRequiredRecording": "נדרש מנוי פרימיום",
+    "premiumRequiredRecording": "נדרש מנוי פלוס",
     "sleepTimer": {
       "title": "טיימר שינה",
       "setTimer": "הגדר טיימר שינה",
@@ -6558,15 +6537,15 @@
     },
     "startOver": "התחל מחדש",
     "multiCharacter": {
-      "selectCharacter": "[HE] Select Character",
-      "talkingTo": "[HE] Talking to"
+      "selectCharacter": "בחר דמות",
+      "talkingTo": "מדבר עם"
     },
     "shared": {
-      "participants": "[HE] Participants",
-      "yourTurn": "[HE] Your Turn",
-      "waitingForTurn": "[HE] Waiting for your turn..."
+      "participants": "משתתפים",
+      "yourTurn": "תורך",
+      "waitingForTurn": "ממתין לתורך..."
     },
-    "streamLoadFailed": "[HE] Failed to load stream"
+    "streamLoadFailed": "נכשל to load stream"
   },
   "playlist": {
     "title": "הרשימה שלי",
@@ -6596,7 +6575,7 @@
   "podcast": {
     "selectLanguage": "בחר שפה",
     "switchToLanguage": "עבור ל{{language}}",
-    "premiumRequiredForTranslation": "נדרש מנוי פרימיום לתרגום פודקאסטים",
+    "premiumRequiredForTranslation": "נדרש מנוי פלוס לתרגום פודקאסטים",
     "player": {
       "switchingLanguage": "מחליף..."
     },
@@ -6944,8 +6923,7 @@
       "line2": "תל אביב, ישראל 6100000"
     },
     "free": "חינם",
-    "premiumPrice": "₪29.90/חודש",
-    "familyPrice": "₪49.90/חודש",
+    "plusPrice": "₪29.90/חודש",
     "remaining": "נותרו",
     "tabs": {
       "personal": "אישי",
@@ -7155,9 +7133,9 @@
     "minutes": "דקות",
     "hours": "שעות",
     "logout": "התנתק",
-    "premium": "פרימיום",
-    "basic": "בסיסי",
-    "upgrade": "שדרג לפרימיום",
+    "premium": "פלוס",
+    "basic": "חינם",
+    "upgrade": "שדרג לפלוס",
     "memberSince": "חבר מאז",
     "aiAssistant": "עוזר AI",
     "voiceSettings": "קול",
@@ -7177,13 +7155,13 @@
     "imageTooLarge": "התמונה גדולה מדי. גודל מקסימלי הוא 5MB.",
     "uploadSuccess": "התמונה עודכנה בהצלחה!",
     "uploadFailed": "העלאת התמונה נכשלה. אנא נסה שוב.",
-    "complimentaryPremium": "גישת פרימיום בחינם",
+    "complimentaryPremium": "גישת פלוס בחינם",
     "emailVerified": "האימייל אומת",
     "emailUnverified": "האימייל לא אומת",
     "phoneVerified": "הטלפון אומת",
     "phoneUnverified": "הטלפון לא אומת",
     "completeVerification": "השלם אימות כדי לפתוח את כל התכונות",
-    "unlockPremium": "פתח תכונות פרימיום",
+    "unlockPremium": "פתח תכונות פלוס",
     "unlockPremiumDescription": "שדרג כדי ליהנות מתוכן ותכונות בלעדיות",
     "devices": {
       "registeredDevices": "מכשירים רשומים",
@@ -7594,7 +7572,7 @@
       "collections": "אוספים",
       "audiobooks": "ספרי שמע"
     },
-    "suggestions": "[HE] Suggestions",
+    "suggestions": "הצעות",
     "controls": {
       "placeholder": "חפש תוכן...",
       "hints": {
@@ -7655,11 +7633,11 @@
     "kids": "👶 ילדים",
     "readAloud": "קרא בקול",
     "smartSearch": "חיפוש חכם",
-    "premiumRequired": "נדרש מנוי פרמיום לחיפוש חכם",
+    "premiumRequired": "נדרש מנוי פלוס לחיפוש חכם",
     "searchFailed": "החיפוש נכשל",
-    "premiumFeature": "תכונת פרמיום",
+    "premiumFeature": "תכונת פלוס",
     "smartSearchDescription": "חיפוש חכם משתמש בבינה מלאכותית כדי להבין שאילתות בשפה טבעית ולמצוא בדיוק מה שאתה מחפש.",
-    "upgradeToPremium": "שדרג לפרמיום",
+    "upgradeToPremium": "שדרג לפלוס",
     "maybeLater": "אולי מאוחר יותר",
     "smartSearchHint": "שאל בשפה טבעית והבינה המלאכותית תמצא מה שאתה מחפש",
     "smartSearchPlaceholder": "לדוגמה: 'קומדיות ישראליות משנות ה-90 עם כתוביות'",
@@ -7689,20 +7667,20 @@
       "popularity": "הפופולריים ביותר"
     },
     "filter": {
-      "title": "[HE] Filter",
-      "reset": "[HE] Reset",
-      "language": "[HE] Language",
-      "accessibility": "[HE] Accessibility",
-      "subtitles": "[HE] Subtitles",
-      "dubbing": "[HE] Dubbing",
-      "yearRange": "[HE] Year Range",
-      "yearFrom": "[HE] From year",
-      "yearTo": "[HE] To year",
-      "duration": "[HE] Duration",
-      "apply": "[HE] Apply Filters"
+      "title": "סינון",
+      "reset": "איפוס",
+      "language": "שפה",
+      "accessibility": "נגישות",
+      "subtitles": "כתוביות",
+      "dubbing": "דיבוב",
+      "yearRange": "טווח שנים",
+      "yearFrom": "מאת year",
+      "yearTo": "עד שנת",
+      "duration": "משך",
+      "apply": "החל מסננים"
     },
-    "previousPage": "[HE] Previous Page",
-    "nextPage": "[HE] Next Page"
+    "previousPage": "עמוד קודם",
+    "nextPage": "עמוד הבא"
   },
   "security": {
     "changePassword": "שנה סיסמה",
@@ -7746,19 +7724,19 @@
     "notifications": "התראות",
     "pushNotifications": "התראות פוש",
     "playback": {
-      "title": "[HE] Playback",
-      "videoQuality": "[HE] Video Quality",
-      "autoplaySection": "[HE] Autoplay",
-      "autoplay": "[HE] Autoplay",
-      "autoplayNext": "[HE] Autoplay Next Episode",
-      "countdown": "[HE] Countdown before next episode",
-      "controls": "[HE] Controls",
-      "skipIntro": "[HE] Skip Intro",
-      "skipCredits": "[HE] Skip Credits",
-      "continueWatching": "[HE] Continue Watching",
-      "speed": "[HE] Playback Speed",
-      "liveTV": "[HE] Live TV",
-      "bufferSize": "[HE] Buffer Size"
+      "title": "הפעלה",
+      "videoQuality": "איכות וידאו",
+      "autoplaySection": "הפעלה אוטומטית",
+      "autoplay": "הפעלה אוטומטית",
+      "autoplayNext": "הפעלה אוטומטית Next Episode",
+      "countdown": "ספירה לאחור לפני הפרק הבא",
+      "controls": "בקרות",
+      "skipIntro": "דלג Intro",
+      "skipCredits": "דלג Credits",
+      "continueWatching": "המשך Watching",
+      "speed": "הפעלה Speed",
+      "liveTV": "שידור חי",
+      "bufferSize": "גודל מאגר"
     },
     "quality": "איכות",
     "subtitles": "כתוביות",
@@ -7771,43 +7749,43 @@
     "appearance": "מראה",
     "darkMode": "מצב כהה",
     "privacy": {
-      "clearWatchHistoryTitle": "[HE] Clear Watch History",
-      "clear": "[HE] Clear",
-      "clearWatchHistoryMessage": "[HE] This will permanently delete your watch history.",
-      "clearSearchHistoryTitle": "[HE] Clear Search History",
-      "clearSearchHistoryMessage": "[HE] This will permanently delete your search history.",
-      "title": "[HE] Privacy",
-      "description": "[HE] Control your data collection and privacy preferences",
-      "dataCollection": "[HE] Data Collection",
-      "analytics": "[HE] Usage Analytics",
-      "analyticsDesc": "[HE] Help improve Bayit+ by sharing anonymous usage data",
-      "crashReports": "[HE] Crash Reports",
-      "crashReportsDesc": "[HE] Automatically send crash reports to help fix issues",
-      "personalization": "[HE] Personalization",
-      "personalizationDesc": "[HE] Allow Bayit+ to personalize your experience",
-      "history": "[HE] History",
-      "watchHistory": "[HE] Watch History",
-      "clearWatchHistory": "[HE] Clear Watch History",
-      "searchHistory": "[HE] Search History",
-      "clearSearchHistory": "[HE] Clear Search History"
+      "clearWatchHistoryTitle": "נקה Watch History",
+      "clear": "נקה",
+      "clearWatchHistoryMessage": "פעולה זו תמחק לצמיתות את היסטוריית הצפייה שלך.",
+      "clearSearchHistoryTitle": "נקה Search History",
+      "clearSearchHistoryMessage": "פעולה זו תמחק לצמיתות את היסטוריית החיפוש שלך.",
+      "title": "פרטיות",
+      "description": "שלוט בהעדפות איסוף הנתונים והפרטיות שלך",
+      "dataCollection": "איסוף נתונים",
+      "analytics": "ניתוח שימוש",
+      "analyticsDesc": "עזור לשפר את Bayit+ על ידי שיתוף נתוני שימוש אנונימיים",
+      "crashReports": "דוחות קריסה",
+      "crashReportsDesc": "שלח אוטומטית דוחות קריסה כדי לסייע בתיקון בעיות",
+      "personalization": "התאמה אישית",
+      "personalizationDesc": "אפשר ל-Bayit+ להתאים אישית את החוויה שלך",
+      "history": "היסטוריה",
+      "watchHistory": "היסטוריית צפייה",
+      "clearWatchHistory": "נקה Watch History",
+      "searchHistory": "היסטוריית חיפוש",
+      "clearSearchHistory": "נקה Search History"
     },
     "privacyPolicy": "מדיניות פרטיות",
     "termsOfService": "תנאי שימוש",
     "about": {
-      "title": "[HE] About",
-      "appInfo": "[HE] App Info",
-      "version": "[HE] Version",
-      "build": "[HE] Build",
-      "environment": "[HE] Environment",
-      "legal": "[HE] Legal",
-      "privacyPolicy": "[HE] Privacy Policy",
-      "termsOfService": "[HE] Terms of Service",
-      "cookiePolicy": "[HE] Cookie Policy",
-      "licenses": "[HE] Open Source Licenses",
-      "deviceInfo": "[HE] Device Info",
-      "model": "[HE] Model",
-      "osVersion": "[HE] OS Version",
-      "locale": "[HE] Locale"
+      "title": "אודות",
+      "appInfo": "מידע על האפליקציה",
+      "version": "גרסה",
+      "build": "גרסה",
+      "environment": "סביבה",
+      "legal": "משפטי",
+      "privacyPolicy": "פרטיות Policy",
+      "termsOfService": "תנאי שימוש",
+      "cookiePolicy": "מדיניות עוגיות",
+      "licenses": "רישיונות קוד פתוח",
+      "deviceInfo": "מידע על המכשיר",
+      "model": "דגם",
+      "osVersion": "גרסת מערכת הפעלה",
+      "locale": "אזור"
     },
     "display": "תצוגה",
     "homePageSections": "סעיפי דף הבית",
@@ -7946,13 +7924,13 @@
       "volumeNormDesc": "נרמל עוצמת שמע בין תכנים",
       "volumeNormalization": "נרמול עוצמה"
     },
-    "mediaSection": "[HE] Media",
-    "privacyData": "[HE] Privacy & Data",
-    "general": "[HE] General",
-    "children": "[HE] Children",
-    "loading": "[HE] Loading settings...",
-    "not_connected": "[HE] Not connected",
-    "privacySecurity": "[HE] Privacy & Security"
+    "mediaSection": "מדיה",
+    "privacyData": "פרטיות & Data",
+    "general": "כללי",
+    "children": "ילדים",
+    "loading": "טוען הגדרות...",
+    "not_connected": "לא מחובר",
+    "privacySecurity": "פרטיות & Security"
   },
   "shabbat": {
     "activate": "הפעל",
@@ -8000,7 +7978,7 @@
   },
   "status": {
     "pleaseLogin": "אנא התחבר כדי להשתמש ב-Bayit+ Companion",
-    "quotaExhausted": "מכסת {{limit}} הדקות היומית מוצתה. שדרג לפרימיום.",
+    "quotaExhausted": "מכסת {{limit}} הדקות היומית מוצתה. שדרג לפלוס.",
     "connected": "מחובר",
     "dubbingFailed": "הפעלת הדיבוב נכשלה. אנא נסה שוב.",
     "dubbingError": "שגיאת דיבוב: {{error}}"
@@ -8022,7 +8000,7 @@
     "viewComparison": "הצג השוואה מלאה",
     "viewCards": "הצג מסלולים",
     "premiumShowcase": {
-      "title": "חווה אינטליגנציה פרימיום",
+      "title": "חווה אינטליגנציה פלוס",
       "subtitle": "תכונות מבוססות בינה מלאכותית שמתאימות את עצמן לאופן הצפייה שלך",
       "videoTitle": "ראה ווידג'טים בפעולה",
       "videoDescription": "צפה במבוא של דקותיים לווידג'טים צפים",
@@ -8073,7 +8051,7 @@
     "continueToWebsite": "המשך לאתר",
     "loading": "טוען תוכניות...",
     "noPlans": "אין תוכניות מנוי זמינות",
-    "premiumContent": "תוכן פרימיום",
+    "premiumContent": "תוכן פלוס",
     "recommended": "מומלץ",
     "restorePurchase": "שחזור רכישה",
     "upgradeRequired": "שדרג את המנוי שלך כדי לגשת לתוכן זה",
@@ -8114,7 +8092,7 @@
     "clickToEnable": "לחץ להפעלת תרגום חי",
     "connectionError": "שגיאת תרגום חי",
     "inputLanguageTooltip": "בדוק שפת קלט",
-    "premiumRequired": "נדרש מנוי פרימיום",
+    "premiumRequired": "נדרש מנוי פלוס",
     "selectInputLanguage": "בחר שפת קלט",
     "translateActive": "תרגום חי פעיל",
     "noEnglishSubtitles": "אין כתוביות באנגלית לתוכן זה.",
@@ -8543,15 +8521,15 @@
     "quiz": {
       "title": "חידון טריוויה"
     },
-    "question": "[HE] Question",
+    "question": "שאלה",
     "results": {
       "title": "החידון הושלם!",
       "playAgain": "שחק שוב",
       "shekelsEarned": "{{amount}} שקלים הרווחת"
     },
-    "explanation": "[HE] Explanation",
-    "submit": "[HE] Submit",
-    "tryAgain": "[HE] Try Again"
+    "explanation": "הסבר",
+    "submit": "שלח",
+    "tryAgain": "נסה שוב"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -9013,21 +8991,21 @@
     "voicesAvailable": "voices available",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "calibration": {
-      "levelLabel": "[HE] Level"
+      "levelLabel": "רמה"
     },
     "diagnostics": {
-      "micPermission": "[HE] Microphone Permission",
-      "speechRecognition": "[HE] Speech Recognition",
-      "currentState": "[HE] Current State",
-      "transcript": "[HE] Transcript",
-      "title": "[HE] Voice Diagnostics",
-      "audioSession": "[HE] Audio Session",
-      "runDiagnostics": "[HE] Run Diagnostics",
-      "copyReport": "[HE] Copy Report"
+      "micPermission": "הרשאת מיקרופון",
+      "speechRecognition": "זיהוי דיבור",
+      "currentState": "מצב נוכחי",
+      "transcript": "תמליל",
+      "title": "אבחון קול",
+      "audioSession": "הפעלת אודיו",
+      "runDiagnostics": "הפעל אבחון",
+      "copyReport": "העתק דוח"
     },
-    "stopListening": "[HE] Stop Listening",
-    "startListening": "[HE] Start Listening",
-    "searchPrompt": "[HE] What are you looking for?"
+    "stopListening": "הפסק להאזין",
+    "startListening": "התחל להאזין",
+    "searchPrompt": "מה אתה מחפש?"
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -9486,10 +9464,10 @@
       "empty": "אין סרטים אינטראקטיביים זמינים עדיין",
       "characterCount": "{{count}} דמויות",
       "selectCharacter": "בחרו דמות לאינטראקציה",
-      "quotaLabel": "[HE] Interactions remaining",
-      "generationTitle": "[HE] Generating interaction...",
-      "selectedCount": "[HE] {{count}} selected",
-      "confirmButton": "[HE] Confirm"
+      "quotaLabel": "אינטראקציות נותרו",
+      "generationTitle": "יוצר אינטראקציה...",
+      "selectedCount": "{{count}} נבחרו",
+      "confirmButton": "אשר"
     },
     "dialogue": {
       "specificQuestions": "שאלות לדמות",
@@ -9510,111 +9488,111 @@
       "contactsDesc": "נהלו אנשי קשר משפחתיים לשיתוף",
       "feedback": "משוב",
       "feedbackDesc": "הודעות מהמשפחה וחברים",
-      "title": "[HE] Me in the Story",
-      "consent": "[HE] Consent Required",
-      "consentDesc": "[HE] Enable biometric features to personalize your experience",
+      "title": "אני בסיפור",
+      "consent": "נדרשת הסכמה",
+      "consentDesc": "הפעל תכונות ביומטריות כדי להתאים אישית את החוויה שלך",
       "chess": "שחמט",
       "chessDesc": "שחקו שחמט עם משפחה וחברים"
     },
     "arCapture": {
-      "processing": "[HE] Processing..."
+      "processing": "מעבד..."
     },
     "preview": {
-      "title": "[HE] 3D Preview",
-      "loading": "[HE] Loading your avatar...",
-      "error": "[HE] Could not load 3D preview"
+      "title": "תצוגה מקדימה תלת-ממדית",
+      "loading": "טוען את האווטאר שלך...",
+      "error": "לא ניתן לטעון תצוגה מקדימה תלת-ממדית"
     },
     "consent": {
       "biometric": {
-        "explanation": "[HE] Bayit+ uses biometric data to power personalized avatar and voice features.",
-        "privacy": "[HE] Your biometric data is encrypted and never shared with third parties.",
-        "pinLabel": "[HE] PIN",
-        "pinPlaceholder": "[HE] Enter your PIN",
-        "consentTypes": "[HE] I consent to the following",
-        "meshGeneration": "[HE] 3D Mesh Generation",
-        "voiceV2V": "[HE] Voice-to-Voice Practice",
-        "latentFeatures": "[HE] AI Feature Personalization",
-        "currentStatus": "[HE] Current Consent Status",
-        "submit": "[HE] Grant Consent",
-        "title": "[HE] Biometric Consent",
-        "familyControlsRequired": "[HE] Family Controls Required",
-        "familyControlsExplain": "[HE] A parent or guardian must approve biometric features for this profile.",
-        "goToFamilyControls": "[HE] Go to Family Controls"
+        "explanation": "Bayit+ משתמש בנתונים ביומטריים לתכונות אווטאר וקול מותאמות אישית.",
+        "privacy": "הנתונים הביומטריים שלך מוצפנים ולעולם לא משותפים עם צדדים שלישיים.",
+        "pinLabel": "קוד PIN",
+        "pinPlaceholder": "הזן את הקוד שלך",
+        "consentTypes": "אני מסכים/ה לדברים הבאים",
+        "meshGeneration": "יצירת רשת תלת-ממדית",
+        "voiceV2V": "תרגול קול-לקול",
+        "latentFeatures": "התאמה אישית של תכונות AI",
+        "currentStatus": "מצב הסכמה נוכחי",
+        "submit": "הענק הסכמה",
+        "title": "הסכמה ביומטרית",
+        "familyControlsRequired": "נדרשות בקרות הוריות",
+        "familyControlsExplain": "הורה או אפוטרופוס חייב לאשר תכונות ביומטריות עבור פרופיל זה.",
+        "goToFamilyControls": "עבור לבקרות הוריות"
       }
     },
     "contacts": {
-      "title": "[HE] My Contacts",
-      "add": "[HE] Add Contact",
-      "empty": "[HE] No contacts yet",
-      "delete": "[HE] Delete Contact",
-      "name": "[HE] Display Name",
-      "phone": "[HE] Phone Number",
-      "pin": "[HE] PIN"
+      "title": "אנשי הקשר שלי",
+      "add": "הוסף איש קשר",
+      "empty": "אין עדיין אנשי קשר",
+      "delete": "מחק איש קשר",
+      "name": "שם תצוגה",
+      "phone": "מספר טלפון",
+      "pin": "קוד PIN"
     },
     "feedback": {
-      "title": "[HE] Feedback",
-      "empty": "[HE] No feedback yet",
-      "from": "[HE] From",
-      "voiceMessage": "[HE] Voice Message",
-      "textMessage": "[HE] Text Message"
+      "title": "משוב",
+      "empty": "אין עדיין משוב",
+      "from": "מאת",
+      "voiceMessage": "הודעה קולית",
+      "textMessage": "הודעת טקסט"
     },
     "highlights": {
-      "title": "[HE] Highlights",
-      "generate": "[HE] Generate Highlight Reel",
-      "empty": "[HE] No highlights yet",
-      "share": "[HE] Share",
-      "sendToFamily": "[HE] Send to Family",
-      "generating": "[HE] Generating highlights..."
+      "title": "הדגשות",
+      "generate": "צור סרטון הדגשות",
+      "empty": "אין עדיין הדגשות",
+      "share": "שתף",
+      "sendToFamily": "שלח to Family",
+      "generating": "יוצר הדגשות..."
     },
     "magicMirror": {
-      "vocabOfDay": "[HE] Word of the Day",
-      "noAvatar": "[HE] No Avatar",
-      "noAvatarDesc": "[HE] Create your 3D avatar to unlock Magic Mirror",
-      "createAvatar": "[HE] Create Avatar",
-      "noCreditsTitle": "[HE] Out of Credits",
-      "noCreditsDesc": "[HE] You need Beta credits to use Magic Mirror",
-      "playGreeting": "[HE] Play Greeting",
-      "refresh": "[HE] Refresh",
-      "meshUnavailable": "[HE] 3D mesh unavailable"
+      "vocabOfDay": "מילה של היום",
+      "noAvatar": "אין אווטאר",
+      "noAvatarDesc": "צור את האווטאר התלת-ממדי שלך כדי לפתוח את המראה הקסומה",
+      "createAvatar": "צור אווטאר",
+      "noCreditsTitle": "נגמרו הקרדיטים",
+      "noCreditsDesc": "אתה צריך קרדיטים של Beta כדי להשתמש במראה הקסומה",
+      "playGreeting": "השמע ברכה",
+      "refresh": "רענן",
+      "meshUnavailable": "רשת תלת-ממדית אינה זמינה"
     },
     "mesh": {
-      "title": "[HE] Generate 3D Mesh",
-      "viewPreview": "[HE] View Preview",
-      "statusIdle": "[HE] Ready",
-      "statusGenerating": "[HE] Generating...",
-      "statusReady": "[HE] Complete",
-      "statusFailed": "[HE] Failed"
+      "title": "צור רשת תלת-ממדית",
+      "viewPreview": "צפה בתצוגה מקדימה",
+      "statusIdle": "מוכן",
+      "statusGenerating": "מייצר...",
+      "statusReady": "הושלם",
+      "statusFailed": "נכשל"
     },
     "movieCharacters": {
-      "title": "[HE] Characters",
-      "empty": "[HE] No characters available"
+      "title": "דמויות",
+      "empty": "אין דמויות זמינות"
     },
     "trigger": {
-      "prompt": "[HE] Say the phrase",
-      "dismiss": "[HE] Dismiss",
-      "success": "[HE] Excellent!",
-      "continue": "[HE] Continue",
-      "incorrect": "[HE] Not quite",
-      "correct": "[HE] Correct answer",
-      "tryAgain": "[HE] Try Again",
-      "skip": "[HE] Skip",
+      "prompt": "אמור את הביטוי",
+      "dismiss": "סגור",
+      "success": "מצוין!",
+      "continue": "המשך",
+      "incorrect": "לא בדיוק",
+      "correct": "תשובה נכונה",
+      "tryAgain": "נסה שוב",
+      "skip": "דלג",
       "errors": {
-        "microphoneFailed": "[HE] Microphone access failed"
+        "microphoneFailed": "הגישה למיקרופון נכשלה"
       }
     },
     "v2v": {
-      "transforming": "[HE] Transforming voice...",
-      "latency": "[HE] Latency",
-      "retry": "[HE] Retry",
-      "nextPhrase": "[HE] Next Phrase",
-      "beforeAfter": "[HE] Before / After",
-      "before": "[HE] Before",
-      "after": "[HE] After",
-      "improvement": "[HE] Improvement"
+      "transforming": "ממיר קול...",
+      "latency": "השהיה",
+      "retry": "נסה שוב",
+      "nextPhrase": "הביטוי הבא",
+      "beforeAfter": "לפני / After",
+      "before": "לפני",
+      "after": "אחרי",
+      "improvement": "שיפור"
     },
     "avatar3d": {
-      "title": "[HE] 3D Avatar",
-      "errorTitle": "[HE] Avatar Error"
+      "title": "אווטאר תלת-ממדי",
+      "errorTitle": "שגיאת אווטאר"
     }
   },
   "starStory": {
@@ -9888,7 +9866,7 @@
       "recordingError": "שגיאת הקלטה",
       "startRecording": "התחל הקלטה",
       "stopRecording": "עצור הקלטה",
-      "premiumRequired": "נדרש מנוי פרימיום",
+      "premiumRequired": "נדרש מנוי פלוס",
       "recordingLiveOnly": "הקלטה זמינה רק עבור ערוצים חיים"
     },
     "aiSearch": {
@@ -10577,18 +10555,18 @@
     "back_to_login": "חזרה להתחברות"
   },
   "voiceFallback": {
-    "title": "[HE] Voice Unavailable",
-    "subtitle": "[HE] Type your message instead",
-    "micUnavailable": "[HE] Microphone unavailable",
-    "inputPlaceholder": "[HE] Type a message...",
-    "send": "[HE] Send",
-    "suggestions": "[HE] Suggestions"
+    "title": "קול אינו זמין",
+    "subtitle": "הקלד את ההודעה שלך במקום",
+    "micUnavailable": "מיקרופון אינו זמין",
+    "inputPlaceholder": "הקלד הודעה...",
+    "send": "שלח",
+    "suggestions": "הצעות"
   },
   "voiceSearch": {
     "settings": {
-      "title": "[HE] Voice Search Settings",
-      "language": "[HE] Recognition Language",
-      "sensitivity": "[HE] Sensitivity"
+      "title": "הגדרות חיפוש קולי",
+      "language": "שפת זיהוי",
+      "sensitivity": "רגישות"
     }
   },
   "cvplus": {
@@ -10760,5 +10738,23 @@
     "onboarding.languagePriority": "עדיפות שפה",
     "onboarding.homeCategories": "קטגוריות מסך הבית",
     "onboarding.ready": "התוכן שלך מוכן"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "דיבוב AI חי",
+      "description": "שמעו ערוצים ישראליים מדובבים לשפה שלכם בזמן אמת באמצעות קולות AI."
+    },
+    "pauseAndAsk": {
+      "title": "עצרו ושאלו דמות",
+      "description": "עצרו כל סצנה ונהלו שיחה עם הדמויות באמצעות האווטאר שלכם."
+    },
+    "zehAni": {
+      "title": "מראה קסם",
+      "description": "צרו אווטאר תלת-ממדי מותאם אישית מסלפי והשתמשו בו בכל הפיצ'רים האינטראקטיביים."
+    },
+    "catchup": {
+      "title": "השלמת צפייה",
+      "description": "פיספסתם את ההתחלה? קבלו סיכום שנוצר על ידי AI של מה שקרה עד כה."
+    }
   }
 }

@@ -37,7 +37,7 @@ final class LiveSubtitlesViewModel {
     @MainActor
     func toggleSubtitles(channelId: String) {
         if let tier = authManager?.user?.subscriptionTier {
-            let isPremium = tier == .premium || tier == .family
+            let isPremium = tier == .plus
             if !isPremium {
                 isPremiumRequired = true
                 return

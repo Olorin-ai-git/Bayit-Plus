@@ -76,7 +76,7 @@ public struct BayitUser: Codable, Sendable, Identifiable {
 
     /// Subscription tier derived from the subscription, defaulting to registered free.
     public var subscriptionTier: SubscriptionTier {
-        subscription?.plan ?? .registeredFree
+        subscription?.plan ?? .free
     }
 
     /// Whether the user can watch VOD content.

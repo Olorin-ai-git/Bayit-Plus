@@ -17,54 +17,50 @@ logger = get_logger(__name__)
 class UserState(Enum):
     """Explicit user lifecycle states.
 
-    This enum replaces implicit role-based state logic with explicit
-    state tracking based on multiple user fields.
+    Freemium model: all users start as FREE with full content access.
+    Plus subscribers get expanded AI credits and premium features.
     """
-    # Signup flow states
-    REGISTRATION_INCOMPLETE = "registration_incomplete"  # Account created, no payment started
+    # Free tier (default for all new users)
+    FREE = "free"
+
+    # Payment flow states
     PAYMENT_PENDING = "payment_pending"  # Checkout session created, awaiting payment
 
-    # Active states
-    TRIAL = "trial"  # Paid, in trial period
-    ACTIVE = "active"  # Fully subscribed
+    # Plus subscriber states
+    TRIAL = "trial"  # Plus trial period
+    ACTIVE = "active"  # Active Plus subscriber
     PAST_DUE = "past_due"  # Payment failed, grace period
 
     # Terminal states
-    CANCELED = "canceled"  # Subscription ended
+    CANCELED = "canceled"  # Plus subscription ended, reverts to free
     SUSPENDED = "suspended"  # Admin action
 
 
 def compute_user_state(user: "User") -> UserState:
     """Compute user state from multiple fields.
 
-    This function is the single source of truth for determining
-    user lifecycle state.
+    Freemium model: users without a paid subscription are FREE (not blocked).
+    Only Plus subscribers go through TRIAL/ACTIVE/PAST_DUE/CANCELED states.
 
     Args:
         user: User model instance
 
     Returns:
         UserState enum value
-
-    Example:
-        >>> from app.models.user import User
-        >>> user = User(payment_pending=True)
-        >>> compute_user_state(user)
-        UserState.PAYMENT_PENDING
     """
     # Admins always have full access
     if user.role == "admin" or user.role == "super_admin":
         return UserState.ACTIVE
 
-    # Payment pending takes priority (blocks access)
+    # Payment pending (upgrading to Plus)
     if user.payment_pending:
         return UserState.PAYMENT_PENDING
 
-    # No subscription tier = incomplete registration
-    if not user.subscription_tier:
-        return UserState.REGISTRATION_INCOMPLETE
+    # Free tier: no subscription or explicit "free" tier
+    if not user.subscription_tier or user.subscription_tier == "free":
+        return UserState.FREE
 
-    # Check subscription status
+    # Plus subscriber states
     if user.subscription_status == "trialing":
         return UserState.TRIAL
 
@@ -77,9 +73,9 @@ def compute_user_state(user: "User") -> UserState:
     if user.subscription_status == "canceled":
         return UserState.CANCELED
 
-    # Default to canceled for safety
+    # Default to free for safety (not blocked)
     logger.warning(
-        "User in unexpected state",
+        "User in unexpected state, defaulting to free",
         extra={
             "user_id": str(user.id),
             "role": user.role,
@@ -88,11 +84,14 @@ def compute_user_state(user: "User") -> UserState:
             "payment_pending": user.payment_pending,
         }
     )
-    return UserState.CANCELED
+    return UserState.FREE
 
 
 def can_access_content(user: "User") -> bool:
-    """Check if user can access protected content.
+    """Check if user can access content (streaming, radio, podcasts, BYOC).
+
+    Freemium model: all registered users can access content.
+    Only PAYMENT_PENDING and SUSPENDED states block access.
 
     Args:
         user: User model instance
@@ -102,11 +101,33 @@ def can_access_content(user: "User") -> bool:
     """
     state = compute_user_state(user)
 
-    # Only these states allow content access
-    allowed_states = {
-        UserState.ACTIVE,
-        UserState.TRIAL,
-        UserState.PAST_DUE,  # Grace period
+    blocked_states = {
+        UserState.PAYMENT_PENDING,
+        UserState.SUSPENDED,
     }
 
-    return state in allowed_states
+    return state not in blocked_states
+
+
+def can_access_ai(user: "User") -> bool:
+    """Check if user can access AI features.
+
+    Plus subscribers and admins get unlimited AI access.
+    Free users can access AI if they have remaining credits.
+    Credit balance check is done separately by the credit service.
+
+    Args:
+        user: User model instance
+
+    Returns:
+        True if user has AI access (tier-level check, not credit balance)
+    """
+    if user.is_admin_role():
+        return True
+
+    if user.subscription_tier == "plus":
+        state = compute_user_state(user)
+        return state in {UserState.ACTIVE, UserState.TRIAL, UserState.PAST_DUE}
+
+    # Free users: allowed (credit balance checked at deduction time)
+    return True

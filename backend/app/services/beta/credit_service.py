@@ -338,11 +338,11 @@ class BetaCreditService:
         total_credits: Optional[int] = None
     ) -> BetaCredit:
         """
-        Allocate credits to a new beta user.
+        Allocate credits to a user. For new signups, uses tier-based defaults.
 
         Args:
             user_id: User ID
-            total_credits: Credits to allocate (defaults to BETA_AI_CREDITS setting)
+            total_credits: Credits to allocate (defaults to FREE_MONTHLY_CREDITS)
 
         Returns:
             BetaCredit document
@@ -350,16 +350,13 @@ class BetaCreditService:
         Raises:
             ValueError: If user already has credits allocated
         """
-        # Check if credits already exist
         existing = await BetaCredit.find_one({"user_id": user_id})
         if existing:
             raise ValueError(f"Credits already allocated for user {user_id}")
 
-        # Use default from settings if not specified
         if total_credits is None:
-            total_credits = self.settings.BETA_AI_CREDITS
+            total_credits = self.settings.FREE_MONTHLY_CREDITS
 
-        # Create credit allocation
         credit = BetaCredit(
             user_id=user_id,
             total_credits=total_credits,
@@ -371,7 +368,6 @@ class BetaCreditService:
         )
         await credit.insert()
 
-        # Create initial transaction record
         transaction = BetaCreditTransaction(
             user_id=user_id,
             credit_id=str(credit.id),
@@ -388,6 +384,68 @@ class BetaCreditService:
             extra={
                 "user_id": user_id,
                 "total_credits": total_credits
+            }
+        )
+
+        return credit
+
+    async def refill_monthly_credits(
+        self,
+        user_id: str,
+        is_plus: bool = False
+    ) -> Optional[BetaCredit]:
+        """
+        Refill monthly credits based on subscription tier.
+
+        Free users: FREE_MONTHLY_CREDITS (50)
+        Plus users: PLUS_MONTHLY_CREDITS (500)
+
+        Args:
+            user_id: User ID
+            is_plus: Whether user is a Plus subscriber
+
+        Returns:
+            Updated BetaCredit document or None if not found
+        """
+        refill_amount = (
+            self.settings.PLUS_MONTHLY_CREDITS if is_plus
+            else self.settings.FREE_MONTHLY_CREDITS
+        )
+
+        credit = await BetaCredit.find_one(
+            {"user_id": user_id}
+        )
+
+        if not credit:
+            return await self.allocate_credits(user_id, refill_amount)
+
+        credit.total_credits = refill_amount
+        credit.used_credits = 0
+        credit.remaining_credits = refill_amount
+        credit.is_expired = False
+        credit.updated_at = datetime.utcnow()
+        await credit.save()
+
+        transaction = BetaCreditTransaction(
+            user_id=user_id,
+            credit_id=str(credit.id),
+            transaction_type="credit",
+            amount=refill_amount,
+            balance_after=refill_amount,
+            metadata={
+                "event": "monthly_refill",
+                "tier": "plus" if is_plus else "free",
+            },
+            created_at=datetime.utcnow()
+        )
+        await transaction.insert()
+
+        logger.info(
+            "Monthly credits refilled",
+            extra={
+                "user_id": user_id,
+                "tier": "plus" if is_plus else "free",
+                "credits": refill_amount,
             }
         )
 

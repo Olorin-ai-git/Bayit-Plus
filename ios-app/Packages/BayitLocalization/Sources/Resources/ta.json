@@ -7,8 +7,8 @@
     "logout": "வெளியேறு",
     "login": "உள்நுழை",
     "guest": "விருந்தினர்",
-    "premium": "பிரீமியம்",
-    "basic": "அடிப்படை",
+    "premium": "பிளஸ்",
+    "basic": "இலவசம்",
     "manageSubscription": "சந்தாவை நிர்வகி",
     "personalDetails": "தனிப்பட்ட விவரங்கள்",
     "billing": "பில்லிங் & கட்டணம்",
@@ -280,9 +280,8 @@
           "logoPlaceholder": "லோகோ URL"
         },
         "subscriptionTiers": {
-          "basic": "அடிப்படை",
-          "premium": "பிரீமியம்",
-          "family": "குடும்பம்"
+          "basic": "இலவசம்",
+          "premium": "பிளஸ்"
         },
         "actions": {
           "save": "சேமி",
@@ -828,7 +827,7 @@
       "interval": "பில்லிங் இடைவெளி",
       "loadError": "சந்தா திட்டங்களை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
       "name": "திட்டத்தின் பெயர்",
-      "namePlaceholder": "எ.கா., பிரீமியம்",
+      "namePlaceholder": "எ.கா., பிளஸ்",
       "price": "விலை ($)",
       "requiredFields": "பெயர் மற்றும் விலை தேவை",
       "saveError": "திட்டத்தைச் சேமிக்க முடியவில்லை",
@@ -3179,10 +3178,9 @@
     },
     "speed": "Speed:",
     "subscriptions": {
-      "basic": "Basic",
-      "family": "Family",
-      "free": "Free",
-      "premium": "Premium"
+      "basic": "இலவசம்",
+      "free": "இலவசம்",
+      "premium": "பிளஸ்"
     }
   },
   "auth": {
@@ -3558,8 +3556,8 @@
       "cached": "தற்காலிகமாக சேமிக்கப்பட்டது",
       "remaining": "மீதம்",
       "window": "சாளரம்",
-      "loading": "[TA] Loading summary...",
-      "noContent": "[TA] No summary available"
+      "loading": "சுருக்கத்தை ஏற்றுகிறது...",
+      "noContent": "சுருக்கம் இல்லை"
     },
     "error": {
       "failed": "சுருக்கத்தை உருவாக்க முடியவில்லை",
@@ -4105,7 +4103,7 @@
     "watch": "பார்",
     "share": "பகிர்",
     "noContent": "உள்ளடக்கம் இல்லை",
-    "premium": "பிரீமியம்",
+    "premium": "பிளஸ்",
     "poweredBy": "மூலம் இயக்கப்படுகிறது",
     "active": "செயலில்",
     "copy": "URL நகலெடு",
@@ -4180,7 +4178,7 @@
     "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
     "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
     "tryAgain": "மீண்டும் முயற்சிக்கவும்",
-    "queued": "[TA] Queued",
+    "queued": "வரிசையில்",
     "on": "இயக்கம்",
     "off": "நிறுத்தம்"
   },
@@ -4237,7 +4235,7 @@
       "seasons": "{{count}} Seasons"
     },
     "related": "Related",
-    "untitled": "[TA] Untitled"
+    "untitled": "தலைப்பிடாத"
   },
   "cultureCities": {
     "connectionTo": "{{city}} இணைப்பு",
@@ -4334,7 +4332,7 @@
     },
     "shabbat": "ஷப்பத்",
     "until_shabbat": "ஷப்பத் வரை",
-    "premium_plan": "பிரீமியம்",
+    "premium_plan": "பிளஸ்",
     "search_interpretation": "\"{{query}}\" தேடு",
     "suggestions": {
       "0": "ஃபவுடா",
@@ -4390,7 +4388,7 @@
     "deleteConfirm": "பதிவிறக்கத்தை அகற்று",
     "size": "{{size}} MB",
     "clearAll": "அனைத்தையும் அழி",
-    "active": "[TA] Active Downloads"
+    "active": "செயலில் உள்ள பதிவிறக்கங்கள்"
   },
   "dubbing": {
     "title": "நேரடி டப்பிங்",
@@ -4435,9 +4433,9 @@
       "notAuthenticatedMessage": "மீண்டும் உள்நுழையவும்",
       "notAuthenticatedAction": "நேரடி டப்பிங்கைப் பயன்படுத்த உள்நுழையவும்",
       "premiumRequired": {
-        "title": "பிரீமியம் அம்சம்"
+        "title": "பிளஸ் அம்சம்"
       },
-      "premiumRequiredMessage": "நேரடி டப்பிங்கிற்கு பிரீமியம் சந்தா தேவை",
+      "premiumRequiredMessage": "நேரடி டப்பிங்கிற்கு பிளஸ் சந்தா தேவை",
       "premiumRequiredAction": "இந்த அம்சத்தை அணுக பிரீமியத்திற்கு மேம்படுத்தவும்",
       "channelUnavailable": {
         "title": "சேனல் கிடைக்கவில்லை"
@@ -4543,7 +4541,7 @@
       }
     },
     "noVoicesAvailable": "குரல்கள் கிடைக்கவில்லை",
-    "premiumRequired": "பிரீமியம் சந்தா தேவை",
+    "premiumRequired": "பிளஸ் சந்தா தேவை",
     "selectInputLanguage": "உள்ளீட்டு மொழியைத் தேர்வுசெய்",
     "maybeLater": "Maybe Later",
     "simplifiedHebrew": {
@@ -4553,11 +4551,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing",
     "liveOnly": "Live dubbing is only available for live channels"
   },
   "email": {
@@ -4783,7 +4781,7 @@
     "smartSearchSubtitle": "இயற்கையான மொழியில் கேள்விகள் கேளுங்கள்",
     "smartSearchPlaceholder": "எ.கா., இன்று இரவு நடிகை தலி ஷரோன் உள்ள அனைத்து நிகழ்ச்சிகளையும் காட்டு",
     "searchPlaceholder": "நிகழ்ச்சிகள், சேனல்கள், நடிகர்களைத் தேடு...",
-    "premiumRequired": "பிரீமியம் அம்சம்",
+    "premiumRequired": "பிளஸ் அம்சம்",
     "premiumRequiredMessage": "ஸ்மார்ட் தேடல் உங்கள் கேள்விகளைப் புரிந்துகொள்ள AI-ஐப் பயன்படுத்துகிறது. இந்த அம்சத்தை அணுக பிரீமியத்திற்கு மேம்படுத்தவும்.",
     "searchWithAI": "AI உடன் தேடு",
     "searching": "தேடுகிறது...",
@@ -5356,7 +5354,7 @@
     "recommended": "பரிந்துரைக்கப்பட்டது",
     "startTrial": "இலவச சோதனை தொடங்கு",
     "subscribe": "சந்தா செலுத்து",
-    "trialSubtitle": "7 நாட்களுக்கு பிரீமியம் அம்சங்கள் இலவசம்",
+    "trialSubtitle": "7 நாட்களுக்கு பிளஸ் அம்சங்கள் இலவசம்",
     "trialTitle": "இலவச சோதனை கிடைக்கிறது",
     "upgradeRequired": "இந்த உள்ளடக்கத்திற்கு மேம்படுத்தல் தேவை"
   },
@@ -5614,7 +5612,7 @@
     "userIdPlaceholder": "பயனர் மின்னஞ்சல் அல்லது ID உள்ளிடவும்",
     "loadingHousehold": "Loading Household...",
     "loading": "Loading Household...",
-    "createTitle": "[TA] Create Household"
+    "createTitle": "குடும்பத்தை உருவாக்கு"
   },
   "jerusalem": {
     "title": "ஜெருசலேம் இணைப்பு",
@@ -5665,10 +5663,10 @@
       "parashaStudy": "பராஷா",
       "shabbatRecipes": "சமையல் குறிப்புகள்",
       "prayers": "பிரார்த்தனைகள்",
-      "candlesIn": "[TA] Candles in {{minutes}} minutes",
-      "songs": "[TA] Songs",
-      "parasha": "[TA] Parasha",
-      "recipes": "[TA] Recipes"
+      "candlesIn": "{{minutes}} நிமிடங்களில் மெழுகுவர்த்திகள்",
+      "songs": "பாடல்கள்",
+      "parasha": "பராஷா",
+      "recipes": "சமையல் குறிப்புகள்"
     },
     "calendar": "யூத நாட்காட்டி",
     "community": {
@@ -5893,7 +5891,7 @@
       "documentary": "ஆவணப்படம்"
     },
     "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன...",
-    "channel": "[TA] Channel"
+    "channel": "சேனல்"
   },
   "location": {
     "consentModal": {
@@ -5993,7 +5991,7 @@
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
     "signInWithTouchId": "Sign in with Touch ID",
-    "newToBayitPlus": "[TA] New to Bayit+?"
+    "newToBayitPlus": "Bayit+ இல் புதியவரா?"
   },
   "nav": {
     "home": "முகப்பு",
@@ -6282,42 +6280,26 @@
   },
   "plans": {
     "basic": {
-      "name": "அடிப்படை",
+      "name": "இலவசம்",
       "features": [
         "அனைத்து VOD உள்ளடக்கம்",
         "வானொலி & பாட்காஸ்ட்கள்",
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": [
-        "நேரலை சேனல்கள்",
-        "AI உதவியாளர்",
-        "ஆஃப்லைன் பார்வை"
-      ]
+      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
     },
     "premium": {
-      "name": "பிரீமியம்",
+      "name": "பிளஸ்",
       "features": [
         "அனைத்து VOD உள்ளடக்கம்",
         "நேரலை சேனல்கள்",
         "வானொலி & பாட்காஸ்ட்கள்",
         "ஸ்மார்ட் AI உதவியாளர்",
-        "2 சாதனங்களில் பார்",
-        "HD தரம்"
-      ],
-      "notIncluded": [
-        "ஆஃப்லைன் பார்வை",
-        "குடும்ப சுயவிவரங்கள்"
-      ]
-    },
-    "family": {
-      "name": "குடும்பம்",
-      "features": [
-        "அனைத்து VOD உள்ளடக்கம்",
-        "நேரலை சேனல்கள்",
         "4 சாதனங்களில் பார்",
         "4K தரம்",
-        "5 குடும்ப சுயவிவரங்கள்"
+        "5 குடும்ப சுயவிவரங்கள்",
+        "ஆஃப்லைன் பதிவிறக்கம்"
       ],
       "notIncluded": []
     },
@@ -6336,7 +6318,7 @@
         "content": "உள்ளடக்க அணுகல்",
         "quality": "தரம் மற்றும் செயல்திறன்",
         "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
-        "features": "பிரீமியம் அம்சங்கள்",
+        "features": "பிளஸ் அம்சங்கள்",
         "support": "வாடிக்கையாளர் ஆதரவு"
       },
       "features": {
@@ -6405,7 +6387,7 @@
     "subscription": {
       "requiredTitle": "சந்தா தேவை",
       "requiredMessage": "கட்டணச் சந்தா தேவை",
-      "upgradeInfo": "பிரீமியம் உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
+      "upgradeInfo": "பிளஸ் உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
       "upgrade": "இப்போது மேம்படுத்து"
     },
     "chapters": "அத்தியாயங்கள்",
@@ -6469,12 +6451,12 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "மீடியா ஏற்றப்படுகிறது",
     "preparingStream": "ஸ்ட்ரீம் தயாராகிறது...",
-    "premiumRequired": "Premium Required",
+    "premiumRequired": "Plus Required",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Premium",
-    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeToPremium": "Upgrade to Plus",
+    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Catch Up",
@@ -6548,19 +6530,19 @@
     },
     "startOver": "மீண்டும் தொடங்கு",
     "dialogue": {
-      "voiceMode": "[TA] Voice Mode",
-      "holdToSpeak": "[TA] Hold to Speak"
+      "voiceMode": "குரல் பயன்முறை",
+      "holdToSpeak": "பேச அழுத்திப் பிடிக்கவும்"
     },
     "multiCharacter": {
-      "selectCharacter": "[TA] Select Character",
-      "talkingTo": "[TA] Talking to"
+      "selectCharacter": "கதாபாத்திரத்தை தேர்ந்தெடு",
+      "talkingTo": "உரையாடுகிறது"
     },
     "shared": {
-      "participants": "[TA] Participants",
-      "yourTurn": "[TA] Your Turn",
-      "waitingForTurn": "[TA] Waiting for your turn..."
+      "participants": "பங்கேற்பாளர்கள்",
+      "yourTurn": "உங்கள் முறை",
+      "waitingForTurn": "உங்கள் முறைக்காக காத்திருக்கிறது..."
     },
-    "streamLoadFailed": "[TA] Failed to load stream",
+    "streamLoadFailed": "தோல்வி to load stream",
     "interactive": {
       "addToGlossary": "சொற்களஞ்சியத்தில் சேர்",
       "close": "மூடு",
@@ -6597,7 +6579,7 @@
   "podcast": {
     "selectLanguage": "மொழியைத் தேர்ந்தெடு",
     "switchToLanguage": "{{language}} க்கு மாறு",
-    "premiumRequiredForTranslation": "பாட்காஸ்ட் மொழிபெயர்ப்புக்கு பிரீமியம் சந்தா தேவை",
+    "premiumRequiredForTranslation": "பாட்காஸ்ட் மொழிபெயர்ப்புக்கு பிளஸ் சந்தா தேவை",
     "player": {
       "switchingLanguage": "மாறுகிறது..."
     },
@@ -6936,16 +6918,16 @@
     "email": "மின்னஞ்சல்",
     "editProfile": "சுயவிவரத்தை திருத்து",
     "logout": "வெளியேறு",
-    "premium": "பிரீமியம்",
-    "basic": "அடிப்படை",
+    "premium": "பிளஸ்",
+    "basic": "இலவசம்",
     "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
-    "complimentaryPremium": "இலவச பிரீமியம் அணுகல்",
+    "complimentaryPremium": "இலவச பிளஸ் அணுகல்",
     "emailVerified": "மின்னஞ்சல் சரிபார்க்கப்பட்டது",
     "emailUnverified": "மின்னஞ்சல் சரிபார்க்கப்படவில்லை",
     "phoneVerified": "தொலைபேசி சரிபார்க்கப்பட்டது",
     "phoneUnverified": "தொலைபேசி சரிபார்க்கப்படவில்லை",
     "completeVerification": "அனைத்து அம்சங்களையும் திறக்க சரிபார்ப்பை நிறைவு செய்யுங்கள்",
-    "unlockPremium": "பிரீமியம் அம்சங்களைத் திறக்கவும்",
+    "unlockPremium": "பிளஸ் அம்சங்களைத் திறக்கவும்",
     "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்",
     "tabs": {
       "devices": "சாதனங்கள்",
@@ -6996,8 +6978,7 @@
       "line2": "டெல் அவிவ், இஸ்ரேல் 6100000"
     },
     "free": "இலவசம்",
-    "premiumPrice": "$7.99/மாதம்",
-    "familyPrice": "$12.99/மாதம்",
+    "plusPrice": "$7.99/மாதம்",
     "remaining": "மீதமுள்ளது",
     "subscription": {
       "currentPlan": "தற்போதைய திட்டம்",
@@ -7613,7 +7594,7 @@
       "infoTitle": "AI-Powered Search",
       "info": "AI search understands context and finds exact moments in videos by analyzing scenes, dialogue, and visual content."
     },
-    "suggestions": "[TA] Suggestions",
+    "suggestions": "பரிந்துரைகள்",
     "empty": {
       "clearSearch": "Clear search",
       "checkSpelling": "எழுத்துப்பிழையை சரிபார்",
@@ -7661,11 +7642,11 @@
     "kids": "👶 குழந்தைகள்",
     "readAloud": "சத்தமாக வாசி",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Smart Search க்கு Premium சந்தா தேவை",
+    "premiumRequired": "Smart Search க்கு Plus சந்தா தேவை",
     "searchFailed": "தேடல் தோல்வியடைந்தது",
-    "premiumFeature": "Premium அம்சம்",
+    "premiumFeature": "Plus அம்சம்",
     "smartSearchDescription": "Smart Search இயற்கை மொழி வினவல்களைப் புரிந்துகொள்ளவும், நீங்கள் தேடுவதைத் துல்லியமாகக் கண்டறியவும் AI ஐப் பயன்படுத்துகிறது.",
-    "upgradeToPremium": "Premium இற்கு மேம்படுத்துங்கள்",
+    "upgradeToPremium": "Plus இற்கு மேம்படுத்துங்கள்",
     "maybeLater": "பின்னர் பார்க்கலாம்",
     "smartSearchHint": "இயற்கை மொழியில் கேளுங்கள், AI உங்களுக்காக கண்டுபிடிக்கும்",
     "smartSearchPlaceholder": "எ.கா., '90களின் இஸ்ரேலிய காமெடிகள் துணைத்தலைப்புகளுடன்'",
@@ -7695,20 +7676,20 @@
       "popularity": "மிகவும் பிரபலமானது"
     },
     "filter": {
-      "title": "[TA] Filter",
-      "reset": "[TA] Reset",
-      "language": "[TA] Language",
-      "accessibility": "[TA] Accessibility",
-      "subtitles": "[TA] Subtitles",
-      "dubbing": "[TA] Dubbing",
-      "yearRange": "[TA] Year Range",
-      "yearFrom": "[TA] From year",
-      "yearTo": "[TA] To year",
-      "duration": "[TA] Duration",
-      "apply": "[TA] Apply Filters"
+      "title": "வடிகட்டி",
+      "reset": "மீட்டமை",
+      "language": "மொழி",
+      "accessibility": "அணுகல்தன்மை",
+      "subtitles": "வசன வரிகள்",
+      "dubbing": "டப்பிங்",
+      "yearRange": "ஆண்டு வரம்பு",
+      "yearFrom": "இருந்து year",
+      "yearTo": "ஆண்டு வரை",
+      "duration": "கால அளவு",
+      "apply": "வடிகட்டிகளை பயன்படுத்து"
     },
-    "previousPage": "[TA] Previous Page",
-    "nextPage": "[TA] Next Page"
+    "previousPage": "முந்தைய பக்கம்",
+    "nextPage": "அடுத்த பக்கம்"
   },
   "security": {
     "changePassword": "கடவுச்சொல்லை மாற்று",
@@ -7748,19 +7729,19 @@
     },
     "notifications": "அறிவிப்புகள்",
     "playback": {
-      "title": "[TA] Playback",
-      "videoQuality": "[TA] Video Quality",
-      "autoplaySection": "[TA] Autoplay",
-      "autoplay": "[TA] Autoplay",
-      "autoplayNext": "[TA] Autoplay Next Episode",
-      "countdown": "[TA] Countdown before next episode",
-      "controls": "[TA] Controls",
-      "skipIntro": "[TA] Skip Intro",
-      "skipCredits": "[TA] Skip Credits",
-      "continueWatching": "[TA] Continue Watching",
-      "speed": "[TA] Playback Speed",
-      "liveTV": "[TA] Live TV",
-      "bufferSize": "[TA] Buffer Size"
+      "title": "இயக்கம்",
+      "videoQuality": "வீடியோ தரம்",
+      "autoplaySection": "தானியங்கி இயக்கம்",
+      "autoplay": "தானியங்கி இயக்கம்",
+      "autoplayNext": "தானியங்கி இயக்கம் Next Episode",
+      "countdown": "அடுத்த அத்தியாயத்திற்கு முன் கவுண்ட்டவுன்",
+      "controls": "கட்டுப்பாடுகள்",
+      "skipIntro": "தவிர் Intro",
+      "skipCredits": "தவிர் Credits",
+      "continueWatching": "தொடரவும் Watching",
+      "speed": "இயக்கம் Speed",
+      "liveTV": "நேரலை டிவி",
+      "bufferSize": "இடையக அளவு"
     },
     "quality": "தரம்",
     "subtitles": "வசனங்கள்",
@@ -7770,43 +7751,43 @@
     "appearance": "தோற்றம்",
     "darkMode": "இருள் பயன்முறை",
     "privacy": {
-      "clearWatchHistoryTitle": "[TA] Clear Watch History",
-      "clear": "[TA] Clear",
-      "clearWatchHistoryMessage": "[TA] This will permanently delete your watch history.",
-      "clearSearchHistoryTitle": "[TA] Clear Search History",
-      "clearSearchHistoryMessage": "[TA] This will permanently delete your search history.",
-      "title": "[TA] Privacy",
-      "description": "[TA] Control your data collection and privacy preferences",
-      "dataCollection": "[TA] Data Collection",
-      "analytics": "[TA] Usage Analytics",
-      "analyticsDesc": "[TA] Help improve Bayit+ by sharing anonymous usage data",
-      "crashReports": "[TA] Crash Reports",
-      "crashReportsDesc": "[TA] Automatically send crash reports to help fix issues",
-      "personalization": "[TA] Personalization",
-      "personalizationDesc": "[TA] Allow Bayit+ to personalize your experience",
-      "history": "[TA] History",
-      "watchHistory": "[TA] Watch History",
-      "clearWatchHistory": "[TA] Clear Watch History",
-      "searchHistory": "[TA] Search History",
-      "clearSearchHistory": "[TA] Clear Search History"
+      "clearWatchHistoryTitle": "அழி Watch History",
+      "clear": "அழி",
+      "clearWatchHistoryMessage": "இது உங்கள் பார்வை வரலாற்றை நிரந்தரமாக நீக்கும்.",
+      "clearSearchHistoryTitle": "அழி Search History",
+      "clearSearchHistoryMessage": "இது உங்கள் தேடல் வரலாற்றை நிரந்தரமாக நீக்கும்.",
+      "title": "தனியுரிமை",
+      "description": "உங்கள் தரவு சேகரிப்பு மற்றும் தனியுரிமை விருப்பங்களை கட்டுப்படுத்தவும்",
+      "dataCollection": "தரவு சேகரிப்பு",
+      "analytics": "பயன்பாட்டு பகுப்பாய்வு",
+      "analyticsDesc": "அநாமதேய பயன்பாட்டு தரவைப் பகிர்ந்து Bayit+ ஐ மேம்படுத்த உதவுங்கள்",
+      "crashReports": "செயலிழப்பு அறிக்கைகள்",
+      "crashReportsDesc": "சிக்கல்களை சரிசெய்ய உதவ தானாக செயலிழப்பு அறிக்கைகளை அனுப்பவும்",
+      "personalization": "தனிப்பயனாக்கம்",
+      "personalizationDesc": "உங்கள் அனுபவத்தை தனிப்பயனாக்க Bayit+ ஐ அனுமதிக்கவும்",
+      "history": "வரலாறு",
+      "watchHistory": "பார்வை வரலாறு",
+      "clearWatchHistory": "அழி Watch History",
+      "searchHistory": "தேடல் வரலாறு",
+      "clearSearchHistory": "அழி Search History"
     },
     "privacyPolicy": "தனியுரிமைக் கொள்கை",
     "termsOfService": "சேவை விதிமுறைகள்",
     "about": {
-      "title": "[TA] About",
-      "appInfo": "[TA] App Info",
-      "version": "[TA] Version",
-      "build": "[TA] Build",
-      "environment": "[TA] Environment",
-      "legal": "[TA] Legal",
-      "privacyPolicy": "[TA] Privacy Policy",
-      "termsOfService": "[TA] Terms of Service",
-      "cookiePolicy": "[TA] Cookie Policy",
-      "licenses": "[TA] Open Source Licenses",
-      "deviceInfo": "[TA] Device Info",
-      "model": "[TA] Model",
-      "osVersion": "[TA] OS Version",
-      "locale": "[TA] Locale"
+      "title": "பற்றி",
+      "appInfo": "ஆப் தகவல்",
+      "version": "பதிப்பு",
+      "build": "பில்ட்",
+      "environment": "சூழல்",
+      "legal": "சட்டம்",
+      "privacyPolicy": "தனியுரிமை Policy",
+      "termsOfService": "சேவை விதிமுறைகள்",
+      "cookiePolicy": "குக்கீ கொள்கை",
+      "licenses": "திறந்த மூல உரிமங்கள்",
+      "deviceInfo": "சாதன தகவல்",
+      "model": "மாடல்",
+      "osVersion": "OS பதிப்பு",
+      "locale": "மொழி அமைப்பு"
     },
     "chatTranslation": "அரட்டை மொழிபெயர்ப்பு",
     "autoTranslate": "செய்திகளை தானாக மொழிபெயர்",
@@ -7949,13 +7930,13 @@
       "volumeNormDesc": "உள்ளடக்கங்கள் முழுவதும் ஒலி அளவை சீராக்கவும்",
       "volumeNormalization": "ஒலி அளவு சீரமைப்பு"
     },
-    "mediaSection": "[TA] Media",
-    "privacyData": "[TA] Privacy & Data",
-    "general": "[TA] General",
-    "children": "[TA] Children",
-    "loading": "[TA] Loading settings...",
-    "not_connected": "[TA] Not connected",
-    "privacySecurity": "[TA] Privacy & Security"
+    "mediaSection": "ஊடகம்",
+    "privacyData": "தனியுரிமை & Data",
+    "general": "பொது",
+    "children": "குழந்தைகள்",
+    "loading": "அமைப்புகளை ஏற்றுகிறது...",
+    "not_connected": "இணைக்கப்படவில்லை",
+    "privacySecurity": "தனியுரிமை & Security"
   },
   "shabbat": {
     "activate": "செயல்படுத்து",
@@ -8020,7 +8001,7 @@
     "viewComparison": "முழு ஒப்பீட்டைக் காண்க",
     "viewCards": "திட்டங்களைக் காண்க",
     "premiumShowcase": {
-      "title": "பிரீமியம் நுண்ணறிவை அனுபவிக்கவும்",
+      "title": "பிளஸ் நுண்ணறிவை அனுபவிக்கவும்",
       "subtitle": "நீங்கள் பார்க்கும் விதத்திற்கு ஏற்ப AI-இயக்கப்படும் அம்சங்கள்",
       "videoTitle": "செயலில் விட்ஜெட்களைப் பார்க்கவும்",
       "videoDescription": "மிதக்கும் விட்ஜெட்களுக்கான எங்கள் 2-நிமிட அறிமுகத்தைப் பார்க்கவும்",
@@ -8076,7 +8057,7 @@
     "continueToWebsite": "இணையதளத்தில் தொடரவும்",
     "loading": "திட்டங்கள் ஏற்றப்படுகின்றன...",
     "noPlans": "சந்தா திட்டங்கள் எதுவும் இல்லை",
-    "premiumContent": "பிரீமியம் உள்ளடக்கம்",
+    "premiumContent": "பிளஸ் உள்ளடக்கம்",
     "recommended": "பரிந்துரைக்கப்பட்டது",
     "restorePurchase": "கொள்முதலை மீட்டெடுக்கவும்",
     "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
@@ -8117,7 +8098,7 @@
     "clickToEnable": "நேரடி மொழிபெயர்ப்பை இயக்க கிளிக் செய்",
     "connectionError": "நேரடி மொழிபெயர்ப்பு பிழை",
     "inputLanguageTooltip": "உள்ளீட்டு மொழியைச் சரிபார்",
-    "premiumRequired": "பிரீமியம் சந்தா தேவை",
+    "premiumRequired": "பிளஸ் சந்தா தேவை",
     "selectInputLanguage": "உள்ளீட்டு மொழியைத் தேர்வுசெய்",
     "translateActive": "நேரடி மொழிபெயர்ப்பு செயலில்",
     "hebrewMode": {
@@ -8546,15 +8527,15 @@
     "quiz": {
       "title": "ட்ரிவியா வினாடி வினா"
     },
-    "question": "[TA] Question",
+    "question": "கேள்வி",
     "results": {
       "title": "வினாடி வினா முடிந்தது!",
       "playAgain": "மீண்டும் விளையாடு",
       "shekelsEarned": "{{amount}} ஷெக்கல்கள் சம்பாதித்தீர்கள்"
     },
-    "explanation": "[TA] Explanation",
-    "submit": "[TA] Submit",
-    "tryAgain": "[TA] Try Again"
+    "explanation": "விளக்கம்",
+    "submit": "சமர்ப்பி",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
   },
   "tvLogin": {
     "invalidQR": "தவறான QR குறியீடு. உங்கள் TV-யில் இருந்து மீண்டும் ஸ்கேன் செய்யவும்.",
@@ -9013,21 +8994,21 @@
     "voicesAvailable": "voices available",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "calibration": {
-      "levelLabel": "[TA] Level"
+      "levelLabel": "நிலை"
     },
     "diagnostics": {
-      "micPermission": "[TA] Microphone Permission",
-      "speechRecognition": "[TA] Speech Recognition",
-      "currentState": "[TA] Current State",
-      "transcript": "[TA] Transcript",
-      "title": "[TA] Voice Diagnostics",
-      "audioSession": "[TA] Audio Session",
-      "runDiagnostics": "[TA] Run Diagnostics",
-      "copyReport": "[TA] Copy Report"
+      "micPermission": "ஒலிவாங்கி அனுமதி",
+      "speechRecognition": "பேச்சு அங்கீகாரம்",
+      "currentState": "தற்போதைய நிலை",
+      "transcript": "படியெடுப்பு",
+      "title": "குரல் கண்டறிதல்",
+      "audioSession": "ஆடியோ அமர்வு",
+      "runDiagnostics": "கண்டறிதலை இயக்கு",
+      "copyReport": "அறிக்கையை நகலெடு"
     },
-    "stopListening": "[TA] Stop Listening",
-    "startListening": "[TA] Start Listening",
-    "searchPrompt": "[TA] What are you looking for?"
+    "stopListening": "கேட்பதை நிறுத்து",
+    "startListening": "கேட்கத் தொடங்கு",
+    "searchPrompt": "நீங்கள் என்ன தேடுகிறீர்கள்?"
   },
   "voiceMode": {
     "voiceOnly": "குரல் மட்டும்",
@@ -9492,10 +9473,10 @@
       "empty": "இன்னும் இடையொழிப்பு திரைப்படங்கள் இல்லை",
       "characterCount": "{{count}} கதாபாத்திரங்கள்",
       "selectCharacter": "தொடர்பு கொள்ள ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்",
-      "quotaLabel": "[TA] Interactions remaining",
-      "generationTitle": "[TA] Generating interaction...",
-      "selectedCount": "[TA] {{count}} selected",
-      "confirmButton": "[TA] Confirm"
+      "quotaLabel": "மீதமுள்ள தொடர்புகள்",
+      "generationTitle": "தொடர்பு உருவாக்கப்படுகிறது...",
+      "selectedCount": "{{count}} தேர்ந்தெடுக்கப்பட்டது",
+      "confirmButton": "உறுதிப்படுத்து"
     },
     "dialogue": {
       "specificQuestions": "கதாபாத்திர கேள்விகள்",
@@ -9516,111 +9497,111 @@
       "contactsDesc": "பகிர்வதற்கான குடும்ப தொடர்புகளை நிர்வகிக்கவும்",
       "feedback": "கருத்து",
       "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்",
-      "title": "[TA] Me in the Story",
-      "consent": "[TA] Consent Required",
-      "consentDesc": "[TA] Enable biometric features to personalize your experience",
+      "title": "கதையில் நான்",
+      "consent": "ஒப்புதல் தேவை",
+      "consentDesc": "உங்கள் அனுபவத்தை தனிப்பயனாக்க உயிரியல் அளவீட்டு அம்சங்களை இயக்கவும்",
       "chess": "சதுரங்கம்",
       "chessDesc": "குடும்பம் மற்றும் நண்பர்களுடன் சதுரங்கம் விளையாடுங்கள்"
     },
     "arCapture": {
-      "processing": "[TA] Processing..."
+      "processing": "செயலாக்குகிறது..."
     },
     "preview": {
-      "title": "[TA] 3D Preview",
-      "loading": "[TA] Loading your avatar...",
-      "error": "[TA] Could not load 3D preview"
+      "title": "3D முன்னோட்டம்",
+      "loading": "உங்கள் அவதாரத்தை ஏற்றுகிறது...",
+      "error": "3D முன்னோட்டத்தை ஏற்ற முடியவில்லை"
     },
     "consent": {
       "biometric": {
-        "explanation": "[TA] Bayit+ uses biometric data to power personalized avatar and voice features.",
-        "privacy": "[TA] Your biometric data is encrypted and never shared with third parties.",
-        "pinLabel": "[TA] PIN",
-        "pinPlaceholder": "[TA] Enter your PIN",
-        "consentTypes": "[TA] I consent to the following",
-        "meshGeneration": "[TA] 3D Mesh Generation",
-        "voiceV2V": "[TA] Voice-to-Voice Practice",
-        "latentFeatures": "[TA] AI Feature Personalization",
-        "currentStatus": "[TA] Current Consent Status",
-        "submit": "[TA] Grant Consent",
-        "title": "[TA] Biometric Consent",
-        "familyControlsRequired": "[TA] Family Controls Required",
-        "familyControlsExplain": "[TA] A parent or guardian must approve biometric features for this profile.",
-        "goToFamilyControls": "[TA] Go to Family Controls"
+        "explanation": "Bayit+ தனிப்பயனாக்கப்பட்ட அவதார மற்றும் குரல் அம்சங்களுக்கு உயிரியல் அளவீட்டு தரவைப் பயன்படுத்துகிறது.",
+        "privacy": "உங்கள் உயிரியல் அளவீட்டு தரவு குறியாக்கம் செய்யப்பட்டது மற்றும் மூன்றாம் தரப்பினருடன் ஒருபோதும் பகிரப்படாது.",
+        "pinLabel": "பின்",
+        "pinPlaceholder": "உங்கள் பின்னை உள்ளிடவும்",
+        "consentTypes": "பின்வருவனவற்றுக்கு ஒப்புக்கொள்கிறேன்",
+        "meshGeneration": "3D மெஷ் உருவாக்கம்",
+        "voiceV2V": "குரல்-க்கு-குரல் பயிற்சி",
+        "latentFeatures": "AI அம்ச தனிப்பயனாக்கம்",
+        "currentStatus": "தற்போதைய ஒப்புதல் நிலை",
+        "submit": "ஒப்புதல் வழங்கு",
+        "title": "உயிரியல் அளவீட்டு ஒப்புதல்",
+        "familyControlsRequired": "குடும்ப கட்டுப்பாடுகள் தேவை",
+        "familyControlsExplain": "இந்த சுயவிவரத்திற்கான உயிரியல் அளவீட்டு அம்சங்களை பெற்றோர் அல்லது பாதுகாவலர் அனுமதிக்க வேண்டும்.",
+        "goToFamilyControls": "குடும்ப கட்டுப்பாடுகளுக்கு செல்"
       }
     },
     "contacts": {
-      "title": "[TA] My Contacts",
-      "add": "[TA] Add Contact",
-      "empty": "[TA] No contacts yet",
-      "delete": "[TA] Delete Contact",
-      "name": "[TA] Display Name",
-      "phone": "[TA] Phone Number",
-      "pin": "[TA] PIN"
+      "title": "எனது தொடர்புகள்",
+      "add": "தொடர்பை சேர்",
+      "empty": "இன்னும் தொடர்புகள் இல்லை",
+      "delete": "தொடர்பை நீக்கு",
+      "name": "காட்சி பெயர்",
+      "phone": "தொலைபேசி எண்",
+      "pin": "பின்"
     },
     "feedback": {
-      "title": "[TA] Feedback",
-      "empty": "[TA] No feedback yet",
-      "from": "[TA] From",
-      "voiceMessage": "[TA] Voice Message",
-      "textMessage": "[TA] Text Message"
+      "title": "கருத்து",
+      "empty": "இன்னும் கருத்துகள் இல்லை",
+      "from": "இருந்து",
+      "voiceMessage": "குரல் செய்தி",
+      "textMessage": "குறுஞ்செய்தி"
     },
     "highlights": {
-      "title": "[TA] Highlights",
-      "generate": "[TA] Generate Highlight Reel",
-      "empty": "[TA] No highlights yet",
-      "share": "[TA] Share",
-      "sendToFamily": "[TA] Send to Family",
-      "generating": "[TA] Generating highlights..."
+      "title": "சிறப்பம்சங்கள்",
+      "generate": "சிறப்பம்ச தொகுப்பை உருவாக்கு",
+      "empty": "இன்னும் சிறப்பம்சங்கள் இல்லை",
+      "share": "பகிர்",
+      "sendToFamily": "அனுப்பு to Family",
+      "generating": "சிறப்பம்சங்களை உருவாக்குகிறது..."
     },
     "magicMirror": {
-      "vocabOfDay": "[TA] Word of the Day",
-      "noAvatar": "[TA] No Avatar",
-      "noAvatarDesc": "[TA] Create your 3D avatar to unlock Magic Mirror",
-      "createAvatar": "[TA] Create Avatar",
-      "noCreditsTitle": "[TA] Out of Credits",
-      "noCreditsDesc": "[TA] You need Beta credits to use Magic Mirror",
-      "playGreeting": "[TA] Play Greeting",
-      "refresh": "[TA] Refresh",
-      "meshUnavailable": "[TA] 3D mesh unavailable"
+      "vocabOfDay": "இன்றைய வார்த்தை",
+      "noAvatar": "அவதாரம் இல்லை",
+      "noAvatarDesc": "மேஜிக் மிரர் திறக்க உங்கள் 3D அவதாரத்தை உருவாக்கவும்",
+      "createAvatar": "அவதாரத்தை உருவாக்கு",
+      "noCreditsTitle": "கிரெடிட்கள் தீர்ந்தன",
+      "noCreditsDesc": "மேஜிக் மிரர் பயன்படுத்த உங்களுக்கு Beta கிரெடிட்கள் தேவை",
+      "playGreeting": "வாழ்த்தை இயக்கு",
+      "refresh": "புதுப்பி",
+      "meshUnavailable": "3D மெஷ் கிடைக்கவில்லை"
     },
     "mesh": {
-      "title": "[TA] Generate 3D Mesh",
-      "viewPreview": "[TA] View Preview",
-      "statusIdle": "[TA] Ready",
-      "statusGenerating": "[TA] Generating...",
-      "statusReady": "[TA] Complete",
-      "statusFailed": "[TA] Failed"
+      "title": "3D மெஷ் உருவாக்கு",
+      "viewPreview": "முன்னோட்டத்தைக் காண்",
+      "statusIdle": "தயார்",
+      "statusGenerating": "உருவாக்குகிறது...",
+      "statusReady": "முடிந்தது",
+      "statusFailed": "தோல்வி"
     },
     "movieCharacters": {
-      "title": "[TA] Characters",
-      "empty": "[TA] No characters available"
+      "title": "கதாபாத்திரங்கள்",
+      "empty": "கதாபாத்திரங்கள் இல்லை"
     },
     "trigger": {
-      "prompt": "[TA] Say the phrase",
-      "dismiss": "[TA] Dismiss",
-      "success": "[TA] Excellent!",
-      "continue": "[TA] Continue",
-      "incorrect": "[TA] Not quite",
-      "correct": "[TA] Correct answer",
-      "tryAgain": "[TA] Try Again",
-      "skip": "[TA] Skip",
+      "prompt": "சொற்றொடரைச் சொல்லுங்கள்",
+      "dismiss": "நிராகரி",
+      "success": "அருமை!",
+      "continue": "தொடரவும்",
+      "incorrect": "சரியில்லை",
+      "correct": "சரியான பதில்",
+      "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+      "skip": "தவிர்",
       "errors": {
-        "microphoneFailed": "[TA] Microphone access failed"
+        "microphoneFailed": "ஒலிவாங்கி அணுகல் தோல்வி"
       }
     },
     "v2v": {
-      "transforming": "[TA] Transforming voice...",
-      "latency": "[TA] Latency",
-      "retry": "[TA] Retry",
-      "nextPhrase": "[TA] Next Phrase",
-      "beforeAfter": "[TA] Before / After",
-      "before": "[TA] Before",
-      "after": "[TA] After",
-      "improvement": "[TA] Improvement"
+      "transforming": "குரல் மாற்றம் செய்கிறது...",
+      "latency": "தாமதம்",
+      "retry": "மீண்டும் முயற்சி",
+      "nextPhrase": "அடுத்த சொற்றொடர்",
+      "beforeAfter": "முன் / After",
+      "before": "முன்",
+      "after": "பிறகு",
+      "improvement": "மேம்பாடு"
     },
     "avatar3d": {
-      "title": "[TA] 3D Avatar",
-      "errorTitle": "[TA] Avatar Error"
+      "title": "3D அவதாரம்",
+      "errorTitle": "அவதார பிழை"
     }
   },
   "starStory": {
@@ -10592,18 +10573,18 @@
     "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
   },
   "voiceFallback": {
-    "title": "[TA] Voice Unavailable",
-    "subtitle": "[TA] Type your message instead",
-    "micUnavailable": "[TA] Microphone unavailable",
-    "inputPlaceholder": "[TA] Type a message...",
-    "send": "[TA] Send",
-    "suggestions": "[TA] Suggestions"
+    "title": "குரல் கிடைக்கவில்லை",
+    "subtitle": "அதற்கு பதிலாக உங்கள் செய்தியை தட்டச்சு செய்யுங்கள்",
+    "micUnavailable": "ஒலிவாங்கி கிடைக்கவில்லை",
+    "inputPlaceholder": "செய்தியை தட்டச்சு செய்யுங்கள்...",
+    "send": "அனுப்பு",
+    "suggestions": "பரிந்துரைகள்"
   },
   "voiceSearch": {
     "settings": {
-      "title": "[TA] Voice Search Settings",
-      "language": "[TA] Recognition Language",
-      "sensitivity": "[TA] Sensitivity"
+      "title": "குரல் தேடல் அமைப்புகள்",
+      "language": "அங்கீகார மொழி",
+      "sensitivity": "உணர்திறன்"
     }
   },
   "cvplus": {
@@ -10775,5 +10756,23 @@
     "onboarding.languagePriority": "Language Priority",
     "onboarding.homeCategories": "Home Screen Categories",
     "onboarding.ready": "Your Content is Ready"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "Live AI Dubbing",
+      "description": "Hear Israeli channels dubbed into your language in real time using AI voices."
+    },
+    "pauseAndAsk": {
+      "title": "Pause and Ask a Character",
+      "description": "Pause any scene and have a conversation with the characters using your avatar."
+    },
+    "zehAni": {
+      "title": "Magic Mirror",
+      "description": "Create a personalized 3D avatar from a selfie and use it across interactive features."
+    },
+    "catchup": {
+      "title": "Catch Up",
+      "description": "Missed the beginning? Get an AI-generated summary of what happened so far."
+    }
   }
 }

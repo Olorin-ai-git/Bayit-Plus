@@ -50,7 +50,7 @@ internal fun SubscriptionGateScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Premium Feature")
+        GlassTopBar(title = "Bayit+ Feature")
         when (uiState) {
             is SubscriptionGateUiState.Loading -> GlassLoadingIndicator()
             is SubscriptionGateUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -96,7 +96,7 @@ private fun GateContent(
                     fontSize = DesignTokens.FontSize.xxxl,
                 )
                 Text(
-                    text = "Premium Feature",
+                    text = "Bayit+ Feature",
                     style = MaterialTheme.typography.titleLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Bold,

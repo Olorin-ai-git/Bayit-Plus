@@ -398,7 +398,8 @@ class AuthServiceClient:
             auth_service_user_id=auth_service_user_id,
             email_verified=True,  # Auth service handles verification
             is_verified=True,
-            payment_pending=False,  # Will be set later if needed
+            payment_pending=False,
+            subscription_tier="free",
             avatar=avatar,  # Profile picture from OAuth provider
         )
 
@@ -408,6 +409,19 @@ class AuthServiceClient:
             user.is_beta_user = True
 
         await user.insert()
+
+        # Allocate free tier AI credits
+        try:
+            from app.services.beta.credit_service import credit_service
+            if credit_service._service is not None:
+                await credit_service._service.allocate_credits(str(user.id))
+        except ValueError:
+            pass  # Credits already allocated
+        except Exception as e:
+            logger.warning(
+                "Failed to allocate initial credits",
+                extra={"user_id": str(user.id), "error": str(e)}
+            )
 
         logger.info(
             "bayit_user_synced_from_auth_service",

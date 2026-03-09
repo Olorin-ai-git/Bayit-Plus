@@ -38,7 +38,7 @@ class SubscriptionGateViewModel @Inject constructor(
                     val subscription = result.data
                     logger.info("Subscription status retrieved", mapOf("hasSubscription" to (subscription != null).toString()))
                     _uiState.value = SubscriptionGateUiState.GateRequired(
-                        featureName = "Premium Content",
+                        featureName = "Bayit+ Content",
                         requiresSubscription = subscription == null,
                     )
                 }

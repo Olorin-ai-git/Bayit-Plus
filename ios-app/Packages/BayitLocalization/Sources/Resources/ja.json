@@ -49,7 +49,7 @@
     "password": "パスワード",
     "name": "名前",
     "guest": "ゲスト",
-    "premium": "プレミアム",
+    "premium": "プラス",
     "basic": "ベーシック",
     "settings": "設定",
     "tapToLogin": "タップしてログイン"
@@ -287,9 +287,8 @@
           "logoPlaceholder": "ロゴURL"
         },
         "subscriptionTiers": {
-          "basic": "ベーシック",
-          "premium": "プレミアム",
-          "family": "ファミリー"
+          "basic": "無料",
+          "premium": "プラス"
         },
         "actions": {
           "save": "保存",
@@ -884,7 +883,7 @@
       "deleteConfirm": "プランを削除",
       "featurePlaceholder": "機能を入力...",
       "loadError": "サブスクリプションプランの読み込みに失敗しました。再度お試しください。",
-      "namePlaceholder": "例：プレミアム",
+      "namePlaceholder": "例：プラス",
       "requiredFields": "名前と価格は必須です",
       "saveError": "プランの保存に失敗しました",
       "updated": "プランが正常に更新されました"
@@ -2854,10 +2853,9 @@
     },
     "speed": "Speed:",
     "subscriptions": {
-      "basic": "Basic",
-      "family": "Family",
-      "free": "Free",
-      "premium": "Premium"
+      "basic": "無料",
+      "free": "無料",
+      "premium": "プラス"
     }
   },
   "auth": {
@@ -3159,8 +3157,8 @@
     "remaining": "残り",
     "required": "必要",
     "upgrade": "アップグレード",
-    "upgradeMessage": "プレミアムにアップグレードして無制限のAIクレジットを。",
-    "upgradeTitle": "プレミアムにアップグレード",
+    "upgradeMessage": "プラスにアップグレードして無制限のAIクレジットを。",
+    "upgradeTitle": "プラスにアップグレード",
     "usage": "使用量",
     "creditsLabel": "Credits",
     "insufficient": {
@@ -3233,8 +3231,8 @@
       "cached": "キャッシュ済み",
       "remaining": "残り",
       "window": "ウィンドウ",
-      "loading": "[JA] Loading summary...",
-      "noContent": "[JA] No summary available"
+      "loading": "要約を読み込み中...",
+      "noContent": "要約がありません"
     },
     "error": {
       "failed": "要約を生成できませんでした",
@@ -3840,7 +3838,7 @@
     "trending": "トレンド",
     "live": "ライブ",
     "free": "無料",
-    "premium": "プレミアム",
+    "premium": "プラス",
     "exclusive": "限定",
     "share": "共有",
     "copy": "コピー",
@@ -3946,7 +3944,7 @@
     "default": "デフォルト",
     "auto": "自動",
     "manual": "手動",
-    "basic": "基本",
+    "basic": "無料",
     "advanced": "詳細",
     "simple": "シンプル",
     "complex": "複雑",
@@ -4311,7 +4309,7 @@
     "or": "or",
     "saveChanges": "Save Changes",
     "anonymous": "Anonymous",
-    "queued": "[JA] Queued"
+    "queued": "キュー待ち"
   },
   "components": {
     "select": {
@@ -4428,7 +4426,7 @@
       "seasons": "{{count}} Seasons"
     },
     "related": "Related",
-    "untitled": "[JA] Untitled"
+    "untitled": "無題"
   },
   "cultureCities": {
     "connectionTo": "{{city}}コネクション",
@@ -4540,7 +4538,7 @@
       "3": "アービトレーター",
       "4": "レイバー"
     },
-    "premium_plan": "プレミアム",
+    "premium_plan": "プラス",
     "assistant_response": "ファウダをおすすめします - 素晴らしいスリラーシリーズです！",
     "morning_greeting": "おはようございます！今日は天気が良く、イスラエルからの重要なニュースがあり、あなたのために特別にコンテンツを選びました。"
   },
@@ -4611,7 +4609,7 @@
     "deleteConfirm": "ダウンロードを削除",
     "size": "{{size}} MB",
     "clearAll": "すべて削除",
-    "active": "[JA] Active Downloads"
+    "active": "アクティブなダウンロード"
   },
   "dubbing": {
     "title": "ライブ吹き替え",
@@ -4656,10 +4654,10 @@
       "notAuthenticatedMessage": "再度サインインしてください",
       "notAuthenticatedAction": "ライブ吹き替えを使用するにはサインイン",
       "premiumRequired": {
-        "title": "プレミアム機能"
+        "title": "プラス機能"
       },
-      "premiumRequiredMessage": "ライブ吹き替えにはプレミアムサブスクリプションが必要です",
-      "premiumRequiredAction": "この機能を利用するにはプレミアムにアップグレード",
+      "premiumRequiredMessage": "ライブ吹き替えにはプラスサブスクリプションが必要です",
+      "premiumRequiredAction": "この機能を利用するにはプラスにアップグレード",
       "channelUnavailable": {
         "title": "チャンネルは利用できません"
       },
@@ -4764,7 +4762,7 @@
       }
     },
     "noVoicesAvailable": "利用可能な音声がありません",
-    "premiumRequired": "プレミアムサブスクリプションが必要です",
+    "premiumRequired": "プラスサブスクリプションが必要です",
     "selectInputLanguage": "入力言語を選択",
     "maybeLater": "Maybe Later",
     "simplifiedHebrew": {
@@ -4774,11 +4772,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing",
     "liveOnly": "Live dubbing is only available for live channels"
   },
   "email": {
@@ -5042,8 +5040,8 @@
     "smartSearchSubtitle": "自然言語で質問",
     "smartSearchPlaceholder": "例：今夜のタリ・シャロン出演番組を表示",
     "searchPlaceholder": "番組、チャンネル、俳優を検索...",
-    "premiumRequired": "プレミアム機能",
-    "premiumRequiredMessage": "スマート検索はAIを使用して質問を理解します。プレミアムにアップグレードしてこの機能を利用してください。",
+    "premiumRequired": "プラス機能",
+    "premiumRequiredMessage": "スマート検索はAIを使用して質問を理解します。プラスにアップグレードしてこの機能を利用してください。",
     "searchWithAI": "AIで検索",
     "searching": "検索中...",
     "tryThese": "これらの例を試してください",
@@ -5698,7 +5696,7 @@
     "recommended": "おすすめ",
     "startTrial": "無料トライアル開始",
     "subscribe": "登録する",
-    "trialSubtitle": "7日間プレミアム機能を無料でお試し",
+    "trialSubtitle": "7日間プラス機能を無料でお試し",
     "trialTitle": "無料トライアル利用可能",
     "upgradeRequired": "アップグレードが必要です"
   },
@@ -5985,7 +5983,7 @@
     "userIdPlaceholder": "メールまたはIDを入力",
     "loadingHousehold": "Loading Household...",
     "loading": "Loading Household...",
-    "createTitle": "[JA] Create Household"
+    "createTitle": "世帯を作成"
   },
   "jerusalem": {
     "title": "エルサレムコネクション",
@@ -6046,10 +6044,10 @@
       "parashaStudy": "パラシャ",
       "shabbatRecipes": "レシピ",
       "prayers": "祈り",
-      "candlesIn": "[JA] Candles in {{minutes}} minutes",
-      "songs": "[JA] Songs",
-      "parasha": "[JA] Parasha",
-      "recipes": "[JA] Recipes"
+      "candlesIn": "{{minutes}}分後にキャンドル",
+      "songs": "曲",
+      "parasha": "パラシャ",
+      "recipes": "レシピ"
     },
     "items": "アイテム",
     "empty": "コンテンツがありません",
@@ -6305,7 +6303,7 @@
     },
     "channels": "ライブTVチャンネル",
     "loadingChannels": "チャンネルを読み込み中...",
-    "channel": "[JA] Channel"
+    "channel": "チャンネル"
   },
   "location": {
     "consentModal": {
@@ -6425,7 +6423,7 @@
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
     "signInWithTouchId": "Sign in with Touch ID",
-    "newToBayitPlus": "[JA] New to Bayit+?"
+    "newToBayitPlus": "Bayit+は初めてですか？"
   },
   "nav": {
     "home": "ホーム",
@@ -6749,7 +6747,7 @@
     "free": "無料",
     "basic": "ベーシック",
     "standard": "スタンダード",
-    "premium": "プレミアム",
+    "premium": "プラス",
     "family": "ファミリー",
     "student": "学生",
     "features": "機能",
@@ -6787,7 +6785,7 @@
         "content": "コンテンツアクセス",
         "quality": "品質とパフォーマンス",
         "devices": "デバイスとストリーミング",
-        "features": "プレミアム機能",
+        "features": "プラス機能",
         "support": "カスタマーサポート"
       },
       "features": {
@@ -6904,7 +6902,7 @@
     "subscription": {
       "requiredTitle": "サブスクリプションが必要です",
       "requiredMessage": "は有料サブスクリプションが必要です",
-      "upgradeInfo": "プレミアムコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
+      "upgradeInfo": "プラスコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
       "upgrade": "今すぐアップグレード"
     },
     "chapters": "チャプター",
@@ -6966,11 +6964,11 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "メディアを読み込み中",
     "preparingStream": "ストリームを準備中...",
-    "premiumRequired": "Premium Required",
+    "premiumRequired": "Plus Required",
     "season": "Season",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Premium",
-    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeToPremium": "Upgrade to Plus",
+    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
     "videoQuality": "Video Quality",
     "catchUp": "Catch Up",
     "scenes": "Scenes",
@@ -7042,19 +7040,19 @@
       "timerCancelled": "スリープタイマーがキャンセルされました"
     },
     "dialogue": {
-      "voiceMode": "[JA] Voice Mode",
-      "holdToSpeak": "[JA] Hold to Speak"
+      "voiceMode": "ボイスモード",
+      "holdToSpeak": "押し続けて話す"
     },
     "multiCharacter": {
-      "selectCharacter": "[JA] Select Character",
-      "talkingTo": "[JA] Talking to"
+      "selectCharacter": "キャラクターを選択",
+      "talkingTo": "話し相手"
     },
     "shared": {
-      "participants": "[JA] Participants",
-      "yourTurn": "[JA] Your Turn",
-      "waitingForTurn": "[JA] Waiting for your turn..."
+      "participants": "参加者",
+      "yourTurn": "あなたの番",
+      "waitingForTurn": "あなたの番を待っています..."
     },
-    "streamLoadFailed": "[JA] Failed to load stream",
+    "streamLoadFailed": "失敗 to load stream",
     "interactive": {
       "addToGlossary": "用語集に追加",
       "close": "閉じる",
@@ -7103,7 +7101,7 @@
   "podcast": {
     "selectLanguage": "言語を選択",
     "switchToLanguage": "{{language}}に切り替え",
-    "premiumRequiredForTranslation": "ポッドキャストの翻訳にはプレミアムサブスクリプションが必要です",
+    "premiumRequiredForTranslation": "ポッドキャストの翻訳にはプラスサブスクリプションが必要です",
     "player": {
       "switchingLanguage": "切り替え中..."
     },
@@ -7506,13 +7504,13 @@
     "setPin": "PINを設定",
     "changePin": "PINを変更",
     "removePin": "PINを削除",
-    "complimentaryPremium": "無料プレミアムアクセス",
+    "complimentaryPremium": "無料プラスアクセス",
     "emailVerified": "メール認証済み",
     "emailUnverified": "メール未認証",
     "phoneVerified": "電話認証済み",
     "phoneUnverified": "電話未認証",
     "completeVerification": "すべての機能をアンロックするには認証を完了してください",
-    "unlockPremium": "プレミアム機能をアンロック",
+    "unlockPremium": "プラス機能をアンロック",
     "unlockPremiumDescription": "限定コンテンツと機能を楽しむためにアップグレード",
     "tabs": {
       "devices": "デバイス",
@@ -7565,8 +7563,7 @@
       "line2": "テルアビブ、イスラエル 6100000"
     },
     "free": "無料",
-    "premiumPrice": "$7.99/月",
-    "familyPrice": "$12.99/月",
+    "plusPrice": "$7.99/月",
     "remaining": "残り",
     "subscription": {
       "currentPlan": "現在のプラン",
@@ -7768,9 +7765,9 @@
     "minutes": "分",
     "hours": "時間",
     "logout": "ログアウト",
-    "premium": "プレミアム",
-    "basic": "ベーシック",
-    "upgrade": "プレミアムにアップグレード",
+    "premium": "プラス",
+    "basic": "無料",
+    "upgrade": "プラスにアップグレード",
     "memberSince": "登録日",
     "aiAssistant": "AIアシスタント",
     "voiceSettings": "音声",
@@ -8183,7 +8180,7 @@
     "clearHistory": "履歴をクリア",
     "noResults": "結果が見つかりません",
     "tryDifferent": "別のキーワードをお試しください",
-    "suggestions": "[JA] Suggestions",
+    "suggestions": "提案",
     "trending": "トレンドの検索",
     "popular": "人気の検索",
     "searchIn": "検索対象",
@@ -8308,11 +8305,11 @@
     "kids": "👶 キッズ",
     "readAloud": "読み上げ",
     "smartSearch": "スマート検索",
-    "premiumRequired": "スマート検索にはプレミアムサブスクリプションが必要です",
+    "premiumRequired": "スマート検索にはプラスサブスクリプションが必要です",
     "searchFailed": "検索に失敗しました",
-    "premiumFeature": "プレミアム機能",
+    "premiumFeature": "プラス機能",
     "smartSearchDescription": "スマート検索はAIを使用して自然言語クエリを理解し、お探しのものを正確に見つけます。",
-    "upgradeToPremium": "プレミアムにアップグレード",
+    "upgradeToPremium": "プラスにアップグレード",
     "maybeLater": "後で",
     "smartSearchHint": "自然言語で質問すると、AIが探しているものを見つけます",
     "smartSearchPlaceholder": "例：「字幕付きの90年代のイスラエルコメディ」",
@@ -8342,20 +8339,20 @@
       "popularity": "人気順"
     },
     "filter": {
-      "title": "[JA] Filter",
-      "reset": "[JA] Reset",
-      "language": "[JA] Language",
-      "accessibility": "[JA] Accessibility",
-      "subtitles": "[JA] Subtitles",
-      "dubbing": "[JA] Dubbing",
-      "yearRange": "[JA] Year Range",
-      "yearFrom": "[JA] From year",
-      "yearTo": "[JA] To year",
-      "duration": "[JA] Duration",
-      "apply": "[JA] Apply Filters"
+      "title": "フィルター",
+      "reset": "リセット",
+      "language": "言語",
+      "accessibility": "アクセシビリティ",
+      "subtitles": "字幕",
+      "dubbing": "吹き替え",
+      "yearRange": "年の範囲",
+      "yearFrom": "から year",
+      "yearTo": "終了年",
+      "duration": "再生時間",
+      "apply": "フィルターを適用"
     },
-    "previousPage": "[JA] Previous Page",
-    "nextPage": "[JA] Next Page"
+    "previousPage": "前のページ",
+    "nextPage": "次のページ"
   },
   "security": {
     "changePassword": "パスワードを変更",
@@ -8379,31 +8376,31 @@
     "general": "一般",
     "appearance": "外観",
     "playback": {
-      "title": "[JA] Playback",
-      "videoQuality": "[JA] Video Quality",
-      "autoplaySection": "[JA] Autoplay",
-      "autoplay": "[JA] Autoplay",
-      "autoplayNext": "[JA] Autoplay Next Episode",
-      "countdown": "[JA] Countdown before next episode",
-      "controls": "[JA] Controls",
-      "skipIntro": "[JA] Skip Intro",
-      "skipCredits": "[JA] Skip Credits",
-      "continueWatching": "[JA] Continue Watching",
-      "speed": "[JA] Playback Speed",
-      "liveTV": "[JA] Live TV",
-      "bufferSize": "[JA] Buffer Size"
+      "title": "再生",
+      "videoQuality": "画質",
+      "autoplaySection": "自動再生",
+      "autoplay": "自動再生",
+      "autoplayNext": "自動再生 Next Episode",
+      "countdown": "次のエピソードまでのカウントダウン",
+      "controls": "コントロール",
+      "skipIntro": "スキップ Intro",
+      "skipCredits": "スキップ Credits",
+      "continueWatching": "続ける Watching",
+      "speed": "再生 Speed",
+      "liveTV": "ライブTV",
+      "bufferSize": "バッファサイズ"
     },
     "audio": {
-      "title": "[JA] Audio",
-      "description": "[JA] Configure audio output, dubbing, and language preferences",
-      "preferredLanguage": "[JA] Preferred Language",
-      "quality": "[JA] Audio Quality",
-      "processing": "[JA] Audio Processing",
-      "volumeNormalization": "[JA] Volume Normalization",
-      "volumeNormDesc": "[JA] Automatically balance audio levels",
-      "dubbing": "[JA] Dubbing",
-      "preferDubbed": "[JA] Prefer Dubbed Content",
-      "dubbingLanguage": "[JA] Dubbing Language"
+      "title": "オーディオ",
+      "description": "オーディオ出力、吹き替え、言語設定を構成する",
+      "preferredLanguage": "優先言語",
+      "quality": "オーディオ品質",
+      "processing": "オーディオ処理",
+      "volumeNormalization": "音量正規化",
+      "volumeNormDesc": "オーディオレベルを自動的にバランス調整する",
+      "dubbing": "吹き替え",
+      "preferDubbed": "吹き替えコンテンツを優先",
+      "dubbingLanguage": "吹き替え Language"
     },
     "video": "映像",
     "subtitles": "字幕",
@@ -8411,25 +8408,25 @@
     "storage": "ストレージ",
     "notifications": "通知",
     "privacy": {
-      "clearWatchHistoryTitle": "[JA] Clear Watch History",
-      "clear": "[JA] Clear",
-      "clearWatchHistoryMessage": "[JA] This will permanently delete your watch history.",
-      "clearSearchHistoryTitle": "[JA] Clear Search History",
-      "clearSearchHistoryMessage": "[JA] This will permanently delete your search history.",
-      "title": "[JA] Privacy",
-      "description": "[JA] Control your data collection and privacy preferences",
-      "dataCollection": "[JA] Data Collection",
-      "analytics": "[JA] Usage Analytics",
-      "analyticsDesc": "[JA] Help improve Bayit+ by sharing anonymous usage data",
-      "crashReports": "[JA] Crash Reports",
-      "crashReportsDesc": "[JA] Automatically send crash reports to help fix issues",
-      "personalization": "[JA] Personalization",
-      "personalizationDesc": "[JA] Allow Bayit+ to personalize your experience",
-      "history": "[JA] History",
-      "watchHistory": "[JA] Watch History",
-      "clearWatchHistory": "[JA] Clear Watch History",
-      "searchHistory": "[JA] Search History",
-      "clearSearchHistory": "[JA] Clear Search History"
+      "clearWatchHistoryTitle": "クリア Watch History",
+      "clear": "クリア",
+      "clearWatchHistoryMessage": "視聴履歴が完全に削除されます。",
+      "clearSearchHistoryTitle": "クリア Search History",
+      "clearSearchHistoryMessage": "検索履歴が完全に削除されます。",
+      "title": "プライバシー",
+      "description": "データ収集とプライバシーの設定を管理する",
+      "dataCollection": "データ収集",
+      "analytics": "使用状況分析",
+      "analyticsDesc": "匿名の使用データを共有してBayit+の改善にご協力ください",
+      "crashReports": "クラッシュレポート",
+      "crashReportsDesc": "問題の修正に役立つクラッシュレポートを自動的に送信する",
+      "personalization": "パーソナライズ",
+      "personalizationDesc": "Bayit+があなたの体験をパーソナライズすることを許可する",
+      "history": "履歴",
+      "watchHistory": "視聴履歴",
+      "clearWatchHistory": "クリア Watch History",
+      "searchHistory": "検索履歴",
+      "clearSearchHistory": "クリア Search History"
     },
     "security": "セキュリティ",
     "accessibility": {
@@ -8447,20 +8444,20 @@
     },
     "advanced": "詳細設定",
     "about": {
-      "title": "[JA] About",
-      "appInfo": "[JA] App Info",
-      "version": "[JA] Version",
-      "build": "[JA] Build",
-      "environment": "[JA] Environment",
-      "legal": "[JA] Legal",
-      "privacyPolicy": "[JA] Privacy Policy",
-      "termsOfService": "[JA] Terms of Service",
-      "cookiePolicy": "[JA] Cookie Policy",
-      "licenses": "[JA] Open Source Licenses",
-      "deviceInfo": "[JA] Device Info",
-      "model": "[JA] Model",
-      "osVersion": "[JA] OS Version",
-      "locale": "[JA] Locale"
+      "title": "について",
+      "appInfo": "アプリ情報",
+      "version": "バージョン",
+      "build": "ビルド",
+      "environment": "環境",
+      "legal": "法的情報",
+      "privacyPolicy": "プライバシー Policy",
+      "termsOfService": "利用規約",
+      "cookiePolicy": "Cookieポリシー",
+      "licenses": "オープンソースライセンス",
+      "deviceInfo": "デバイス情報",
+      "model": "モデル",
+      "osVersion": "OSバージョン",
+      "locale": "ロケール"
     },
     "language": "言語",
     "region": "地域",
@@ -8641,12 +8638,12 @@
     "videoQuality": "動画品質",
     "wakeWord": "Hey Bayit",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
-    "mediaSection": "[JA] Media",
-    "privacyData": "[JA] Privacy & Data",
-    "children": "[JA] Children",
-    "loading": "[JA] Loading settings...",
-    "not_connected": "[JA] Not connected",
-    "privacySecurity": "[JA] Privacy & Security"
+    "mediaSection": "メディア",
+    "privacyData": "プライバシー & Data",
+    "children": "子供",
+    "loading": "設定を読み込み中...",
+    "not_connected": "未接続",
+    "privacySecurity": "プライバシー & Security"
   },
   "shabbat": {
     "activate": "有効にする",
@@ -8694,7 +8691,7 @@
   },
   "status": {
     "pleaseLogin": "Bayit+ Companionを使用するにはログインしてください",
-    "quotaExhausted": "{{limit}}分の1日あたりのクォータを使い切りました。プレミアムにアップグレードしてください。",
+    "quotaExhausted": "{{limit}}分の1日あたりのクォータを使い切りました。プラスにアップグレードしてください。",
     "connected": "接続済み",
     "dubbingFailed": "吹き替えの開始に失敗しました。もう一度お試しください。",
     "dubbingError": "吹き替えエラー: {{error}}"
@@ -8743,7 +8740,7 @@
     "viewComparison": "完全な比較を表示",
     "viewCards": "プランを表示",
     "premiumShowcase": {
-      "title": "プレミアムインテリジェンスを体験",
+      "title": "プラスインテリジェンスを体験",
       "subtitle": "視聴方法に適応するAI駆動機能",
       "videoTitle": "ウィジェットの実際の動作を見る",
       "videoDescription": "フローティングウィジェットの2分間の紹介をご覧ください",
@@ -8800,7 +8797,7 @@
     "continueToWebsite": "ウェブサイトに進む",
     "loading": "プランを読み込み中...",
     "noPlans": "利用可能なサブスクリプションプランはありません",
-    "premiumContent": "プレミアムコンテンツ",
+    "premiumContent": "プラスコンテンツ",
     "recommended": "おすすめ",
     "restorePurchase": "購入を復元",
     "upgradeRequired": "このコンテンツにアクセスするにはサブスクリプションをアップグレードしてください",
@@ -8841,7 +8838,7 @@
     "clickToEnable": "クリックしてライブ翻訳を有効にする",
     "connectionError": "ライブ翻訳エラー",
     "inputLanguageTooltip": "入力言語を確認",
-    "premiumRequired": "プレミアムサブスクリプションが必要です",
+    "premiumRequired": "プラスサブスクリプションが必要です",
     "selectInputLanguage": "入力言語を選択",
     "translateActive": "ライブ翻訳が有効です",
     "hebrewMode": {
@@ -9304,15 +9301,15 @@
     "quiz": {
       "title": "トリビアクイズ"
     },
-    "question": "[JA] Question",
+    "question": "質問",
     "results": {
       "title": "クイズ完了!",
       "playAgain": "もう一度プレイ",
       "shekelsEarned": "{{amount}} シェケル獲得"
     },
-    "explanation": "[JA] Explanation",
-    "submit": "[JA] Submit",
-    "tryAgain": "[JA] Try Again"
+    "explanation": "説明",
+    "submit": "送信",
+    "tryAgain": "もう一度試す"
   },
   "tvLogin": {
     "invalidQR": "無効なQRコードです。TVから再度スキャンしてください。",
@@ -9851,21 +9848,21 @@
     "voicesAvailable": "voices available",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "calibration": {
-      "levelLabel": "[JA] Level"
+      "levelLabel": "レベル"
     },
     "diagnostics": {
-      "micPermission": "[JA] Microphone Permission",
-      "speechRecognition": "[JA] Speech Recognition",
-      "currentState": "[JA] Current State",
-      "transcript": "[JA] Transcript",
-      "title": "[JA] Voice Diagnostics",
-      "audioSession": "[JA] Audio Session",
-      "runDiagnostics": "[JA] Run Diagnostics",
-      "copyReport": "[JA] Copy Report"
+      "micPermission": "マイクの権限",
+      "speechRecognition": "音声認識",
+      "currentState": "現在の状態",
+      "transcript": "トランスクリプト",
+      "title": "音声診断",
+      "audioSession": "オーディオセッション",
+      "runDiagnostics": "診断を実行",
+      "copyReport": "レポートをコピー"
     },
-    "stopListening": "[JA] Stop Listening",
-    "startListening": "[JA] Start Listening",
-    "searchPrompt": "[JA] What are you looking for?"
+    "stopListening": "リスニングを停止",
+    "startListening": "リスニングを開始",
+    "searchPrompt": "何をお探しですか？"
   },
   "voiceMode": {
     "voiceOnly": "音声のみ",
@@ -10324,10 +10321,10 @@
       "empty": "インタラクティブな映画はまだありません",
       "characterCount": "{{count}}人のキャラクター",
       "selectCharacter": "対話するキャラクターを選択",
-      "quotaLabel": "[JA] Interactions remaining",
-      "generationTitle": "[JA] Generating interaction...",
-      "selectedCount": "[JA] {{count}} selected",
-      "confirmButton": "[JA] Confirm"
+      "quotaLabel": "残りのインタラクション",
+      "generationTitle": "インタラクションを生成中...",
+      "selectedCount": "{{count}}件選択済み",
+      "confirmButton": "確認"
     },
     "dialogue": {
       "specificQuestions": "キャラクターの質問",
@@ -10348,111 +10345,111 @@
       "contactsDesc": "共有用の家族連絡先を管理",
       "feedback": "フィードバック",
       "feedbackDesc": "家族や友人からのメッセージ",
-      "title": "[JA] Me in the Story",
-      "consent": "[JA] Consent Required",
-      "consentDesc": "[JA] Enable biometric features to personalize your experience",
+      "title": "物語の中の私",
+      "consent": "同意が必要です",
+      "consentDesc": "体験をパーソナライズするために生体認証機能を有効にする",
       "chess": "チェス",
       "chessDesc": "家族や友人とチェスをする"
     },
     "arCapture": {
-      "processing": "[JA] Processing..."
+      "processing": "処理中..."
     },
     "preview": {
-      "title": "[JA] 3D Preview",
-      "loading": "[JA] Loading your avatar...",
-      "error": "[JA] Could not load 3D preview"
+      "title": "3Dプレビュー",
+      "loading": "アバターを読み込み中...",
+      "error": "3Dプレビューを読み込めませんでした"
     },
     "consent": {
       "biometric": {
-        "explanation": "[JA] Bayit+ uses biometric data to power personalized avatar and voice features.",
-        "privacy": "[JA] Your biometric data is encrypted and never shared with third parties.",
-        "pinLabel": "[JA] PIN",
-        "pinPlaceholder": "[JA] Enter your PIN",
-        "consentTypes": "[JA] I consent to the following",
-        "meshGeneration": "[JA] 3D Mesh Generation",
-        "voiceV2V": "[JA] Voice-to-Voice Practice",
-        "latentFeatures": "[JA] AI Feature Personalization",
-        "currentStatus": "[JA] Current Consent Status",
-        "submit": "[JA] Grant Consent",
-        "title": "[JA] Biometric Consent",
-        "familyControlsRequired": "[JA] Family Controls Required",
-        "familyControlsExplain": "[JA] A parent or guardian must approve biometric features for this profile.",
-        "goToFamilyControls": "[JA] Go to Family Controls"
+        "explanation": "Bayit+はパーソナライズされたアバターと音声機能のために生体認証データを使用します。",
+        "privacy": "あなたの生体認証データは暗号化されており、第三者と共有されることはありません。",
+        "pinLabel": "PIN",
+        "pinPlaceholder": "PINを入力してください",
+        "consentTypes": "以下に同意します",
+        "meshGeneration": "3Dメッシュ生成",
+        "voiceV2V": "ボイス・トゥ・ボイス練習",
+        "latentFeatures": "AI機能のパーソナライズ",
+        "currentStatus": "現在の同意状況",
+        "submit": "同意を付与",
+        "title": "生体認証の同意",
+        "familyControlsRequired": "ファミリーコントロールが必要です",
+        "familyControlsExplain": "このプロフィールの生体認証機能を承認するには、保護者の許可が必要です。",
+        "goToFamilyControls": "ファミリーコントロールに移動"
       }
     },
     "contacts": {
-      "title": "[JA] My Contacts",
-      "add": "[JA] Add Contact",
-      "empty": "[JA] No contacts yet",
-      "delete": "[JA] Delete Contact",
-      "name": "[JA] Display Name",
-      "phone": "[JA] Phone Number",
-      "pin": "[JA] PIN"
+      "title": "マイ連絡先",
+      "add": "連絡先を追加",
+      "empty": "まだ連絡先がありません",
+      "delete": "連絡先を削除",
+      "name": "表示名",
+      "phone": "電話番号",
+      "pin": "PIN"
     },
     "feedback": {
-      "title": "[JA] Feedback",
-      "empty": "[JA] No feedback yet",
-      "from": "[JA] From",
-      "voiceMessage": "[JA] Voice Message",
-      "textMessage": "[JA] Text Message"
+      "title": "フィードバック",
+      "empty": "まだフィードバックがありません",
+      "from": "から",
+      "voiceMessage": "音声メッセージ",
+      "textMessage": "テキストメッセージ"
     },
     "highlights": {
-      "title": "[JA] Highlights",
-      "generate": "[JA] Generate Highlight Reel",
-      "empty": "[JA] No highlights yet",
-      "share": "[JA] Share",
-      "sendToFamily": "[JA] Send to Family",
-      "generating": "[JA] Generating highlights..."
+      "title": "ハイライト",
+      "generate": "ハイライトリールを生成",
+      "empty": "まだハイライトがありません",
+      "share": "共有",
+      "sendToFamily": "送信 to Family",
+      "generating": "ハイライトを生成中..."
     },
     "magicMirror": {
-      "vocabOfDay": "[JA] Word of the Day",
-      "noAvatar": "[JA] No Avatar",
-      "noAvatarDesc": "[JA] Create your 3D avatar to unlock Magic Mirror",
-      "createAvatar": "[JA] Create Avatar",
-      "noCreditsTitle": "[JA] Out of Credits",
-      "noCreditsDesc": "[JA] You need Beta credits to use Magic Mirror",
-      "playGreeting": "[JA] Play Greeting",
-      "refresh": "[JA] Refresh",
-      "meshUnavailable": "[JA] 3D mesh unavailable"
+      "vocabOfDay": "今日の言葉",
+      "noAvatar": "アバターなし",
+      "noAvatarDesc": "マジックミラーをアンロックするために3Dアバターを作成してください",
+      "createAvatar": "アバターを作成",
+      "noCreditsTitle": "クレジット不足",
+      "noCreditsDesc": "マジックミラーを使用するにはBetaクレジットが必要です",
+      "playGreeting": "挨拶を再生",
+      "refresh": "更新",
+      "meshUnavailable": "3Dメッシュが利用できません"
     },
     "mesh": {
-      "title": "[JA] Generate 3D Mesh",
-      "viewPreview": "[JA] View Preview",
-      "statusIdle": "[JA] Ready",
-      "statusGenerating": "[JA] Generating...",
-      "statusReady": "[JA] Complete",
-      "statusFailed": "[JA] Failed"
+      "title": "3Dメッシュを生成",
+      "viewPreview": "プレビューを表示",
+      "statusIdle": "準備完了",
+      "statusGenerating": "生成中...",
+      "statusReady": "完了",
+      "statusFailed": "失敗"
     },
     "movieCharacters": {
-      "title": "[JA] Characters",
-      "empty": "[JA] No characters available"
+      "title": "キャラクター",
+      "empty": "利用可能なキャラクターがありません"
     },
     "trigger": {
-      "prompt": "[JA] Say the phrase",
-      "dismiss": "[JA] Dismiss",
-      "success": "[JA] Excellent!",
-      "continue": "[JA] Continue",
-      "incorrect": "[JA] Not quite",
-      "correct": "[JA] Correct answer",
-      "tryAgain": "[JA] Try Again",
-      "skip": "[JA] Skip",
+      "prompt": "フレーズを言ってください",
+      "dismiss": "閉じる",
+      "success": "素晴らしい！",
+      "continue": "続ける",
+      "incorrect": "惜しい",
+      "correct": "正解",
+      "tryAgain": "もう一度試す",
+      "skip": "スキップ",
       "errors": {
-        "microphoneFailed": "[JA] Microphone access failed"
+        "microphoneFailed": "マイクへのアクセスに失敗しました"
       }
     },
     "v2v": {
-      "transforming": "[JA] Transforming voice...",
-      "latency": "[JA] Latency",
-      "retry": "[JA] Retry",
-      "nextPhrase": "[JA] Next Phrase",
-      "beforeAfter": "[JA] Before / After",
-      "before": "[JA] Before",
-      "after": "[JA] After",
-      "improvement": "[JA] Improvement"
+      "transforming": "音声を変換中...",
+      "latency": "レイテンシ",
+      "retry": "再試行",
+      "nextPhrase": "次のフレーズ",
+      "beforeAfter": "前 / After",
+      "before": "前",
+      "after": "後",
+      "improvement": "改善"
     },
     "avatar3d": {
-      "title": "[JA] 3D Avatar",
-      "errorTitle": "[JA] Avatar Error"
+      "title": "3Dアバター",
+      "errorTitle": "アバターエラー"
     }
   },
   "starStory": {
@@ -11424,18 +11421,18 @@
     "back_to_login": "ログインに戻る"
   },
   "voiceFallback": {
-    "title": "[JA] Voice Unavailable",
-    "subtitle": "[JA] Type your message instead",
-    "micUnavailable": "[JA] Microphone unavailable",
-    "inputPlaceholder": "[JA] Type a message...",
-    "send": "[JA] Send",
-    "suggestions": "[JA] Suggestions"
+    "title": "音声が利用できません",
+    "subtitle": "代わりにメッセージを入力してください",
+    "micUnavailable": "マイクが利用できません",
+    "inputPlaceholder": "メッセージを入力...",
+    "send": "送信",
+    "suggestions": "提案"
   },
   "voiceSearch": {
     "settings": {
-      "title": "[JA] Voice Search Settings",
-      "language": "[JA] Recognition Language",
-      "sensitivity": "[JA] Sensitivity"
+      "title": "音声検索設定",
+      "language": "認識言語",
+      "sensitivity": "感度"
     }
   },
   "cvplus": {
@@ -11607,5 +11604,23 @@
     "onboarding.languagePriority": "Language Priority",
     "onboarding.homeCategories": "Home Screen Categories",
     "onboarding.ready": "Your Content is Ready"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "Live AI Dubbing",
+      "description": "Hear Israeli channels dubbed into your language in real time using AI voices."
+    },
+    "pauseAndAsk": {
+      "title": "Pause and Ask a Character",
+      "description": "Pause any scene and have a conversation with the characters using your avatar."
+    },
+    "zehAni": {
+      "title": "Magic Mirror",
+      "description": "Create a personalized 3D avatar from a selfie and use it across interactive features."
+    },
+    "catchup": {
+      "title": "Catch Up",
+      "description": "Missed the beginning? Get an AI-generated summary of what happened so far."
+    }
   }
 }

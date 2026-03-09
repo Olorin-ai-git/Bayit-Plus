@@ -23,7 +23,7 @@ import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
- * Premium gate displayed when a user tries to access dubbing without a subscription.
+ * Plus gate displayed when a user tries to access dubbing without a subscription.
  */
 @Composable
 fun DubbingPremiumGate(

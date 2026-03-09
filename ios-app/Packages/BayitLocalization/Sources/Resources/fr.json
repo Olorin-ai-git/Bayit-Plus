@@ -14,8 +14,8 @@
     "password": "Mot de passe",
     "name": "Nom",
     "guest": "Invité",
-    "premium": "Premium",
-    "basic": "Basique",
+    "premium": "Plus",
+    "basic": "Gratuit",
     "tapToLogin": "Appuyez pour vous connecter"
   },
   "admin": {
@@ -280,9 +280,8 @@
           "logoPlaceholder": "URL du logo"
         },
         "subscriptionTiers": {
-          "basic": "Basique",
-          "premium": "Premium",
-          "family": "Famille"
+          "basic": "Gratuit",
+          "premium": "Plus"
         },
         "actions": {
           "save": "Enregistrer",
@@ -801,7 +800,7 @@
       "interval": "Intervalle de facturation",
       "loadError": "Impossible de charger les forfaits d'abonnement. Veuillez réessayer.",
       "name": "Nom du forfait",
-      "namePlaceholder": "ex. Premium",
+      "namePlaceholder": "ex. Plus",
       "price": "Prix ($)",
       "requiredFields": "Le nom et le prix sont requis",
       "saveError": "Échec de l'enregistrement du forfait",
@@ -3091,10 +3090,9 @@
     },
     "speed": "Speed:",
     "subscriptions": {
-      "basic": "Basic",
-      "family": "Family",
-      "free": "Free",
-      "premium": "Premium"
+      "basic": "Gratuit",
+      "free": "Gratuit",
+      "premium": "Plus"
     }
   },
   "auth": {
@@ -3396,8 +3394,8 @@
     "remaining": "restants",
     "required": "Requis",
     "upgrade": "Mettre à niveau",
-    "upgradeMessage": "Passez à Premium pour des crédits illimités.",
-    "upgradeTitle": "Passer à Premium",
+    "upgradeMessage": "Passez à Plus pour des crédits illimités.",
+    "upgradeTitle": "Passer à Plus",
     "usage": "Utilisation",
     "creditsLabel": "Credits",
     "insufficient": {
@@ -3478,8 +3476,8 @@
       "cached": "En cache",
       "remaining": "Restant",
       "window": "Fenêtre",
-      "loading": "[FR] Loading summary...",
-      "noContent": "[FR] No summary available"
+      "loading": "Chargement du resume...",
+      "noContent": "Aucun resume disponible"
     },
     "error": {
       "failed": "Impossible de générer le résumé",
@@ -4122,7 +4120,7 @@
     "clearSelection": "Effacer",
     "expand": "Développer",
     "collapse": "Réduire",
-    "upgrade": "Passer à Premium",
+    "upgrade": "Passer à Plus",
     "skip": "Passer",
     "disconnect": "Déconnecter",
     "viewAll": "Voir tout",
@@ -4148,7 +4146,7 @@
     "loadingArticle": "Chargement de l'article...",
     "watch": "Regarder",
     "noContent": "Aucun contenu disponible",
-    "premium": "PREMIUM",
+    "premium": "PLUS",
     "poweredBy": "Propulsé par",
     "active": "Actif",
     "email": "E-mail",
@@ -4219,7 +4217,7 @@
     "confirm_password": "Confirmer le Mot de Passe",
     "confirm_password_placeholder": "Saisissez à nouveau votre mot de passe",
     "tryAgain": "Réessayer",
-    "queued": "[FR] Queued",
+    "queued": "En file d'attente",
     "on": "Actif",
     "off": "Inactif"
   },
@@ -4277,7 +4275,7 @@
       "seasons": "{{count}} Seasons"
     },
     "related": "Related",
-    "untitled": "[FR] Untitled"
+    "untitled": "Sans titre"
   },
   "cultureCities": {
     "connectionTo": "Connexion {{city}}",
@@ -4405,7 +4403,7 @@
       "3": "L'Arbitre",
       "4": "Labour"
     },
-    "premium_plan": "Premium",
+    "premium_plan": "Plus",
     "assistant_response": "Je recommande Fauda - une excellente série à suspense !",
     "morning_greeting": "Bonjour ! Le temps est agréable aujourd'hui, il y a des nouvelles importantes d'Israël, et j'ai sélectionné du contenu spécialement pour vous."
   },
@@ -4453,7 +4451,7 @@
     "deleteConfirm": "Supprimer le téléchargement",
     "size": "{{size}} Mo",
     "clearAll": "Tout effacer",
-    "active": "[FR] Active Downloads"
+    "active": "Telechargements actifs"
   },
   "dubbing": {
     "title": "Doublage en direct",
@@ -4474,7 +4472,7 @@
     "retry": "Réessayer",
     "notAvailable": "Doublage non disponible pour ce contenu",
     "quotaExceeded": "Quota de doublage dépassé",
-    "premium": "Fonctionnalité premium",
+    "premium": "Plus",
     "settings": {
       "title": "Paramètres de doublage",
       "autoEnable": "Activer automatiquement",
@@ -4537,10 +4535,10 @@
       "notAuthenticatedMessage": "Veuillez vous reconnecter",
       "notAuthenticatedAction": "Connectez-vous pour utiliser le doublage en direct",
       "premiumRequired": {
-        "title": "Fonctionnalité premium"
+        "title": "Fonctionnalité Plus"
       },
-      "premiumRequiredMessage": "Le doublage en direct nécessite un abonnement Premium",
-      "premiumRequiredAction": "Passez à Premium pour accéder à cette fonctionnalité",
+      "premiumRequiredMessage": "Le doublage en direct nécessite un abonnement Plus",
+      "premiumRequiredAction": "Passez à Plus pour accéder à cette fonctionnalité",
       "channelUnavailable": {
         "title": "Chaîne non disponible"
       },
@@ -4645,7 +4643,7 @@
       }
     },
     "noVoicesAvailable": "Aucune voix disponible",
-    "premiumRequired": "Abonnement premium requis",
+    "premiumRequired": "Abonnement Plus requis",
     "selectInputLanguage": "Sélectionner la langue source",
     "maybeLater": "Maybe Later",
     "simplifiedHebrew": {
@@ -4655,11 +4653,11 @@
       "clickToEnable": "Click to enable simplified Hebrew audio",
       "description": "Slower, clearer Hebrew with simplified vocabulary",
       "gimel": "Gimel (Advanced)",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "title": "Simplified Hebrew",
       "vocabularyLevel": "Vocabulary Level"
     },
-    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeForDubbing": "Upgrade to Plus to access live dubbing",
     "liveOnly": "Live dubbing is only available for live channels"
   },
   "email": {
@@ -4887,8 +4885,8 @@
     "smartSearchSubtitle": "Posez des questions en langage naturel",
     "smartSearchPlaceholder": "ex: Montrez-moi tous les programmes avec l'actrice Tali Sharon ce soir",
     "searchPlaceholder": "Rechercher des programmes, chaînes, acteurs...",
-    "premiumRequired": "Fonctionnalité Premium",
-    "premiumRequiredMessage": "La recherche intelligente utilise l'IA pour comprendre vos questions. Passez à Premium pour accéder à cette fonctionnalité.",
+    "premiumRequired": "Fonctionnalité Plus",
+    "premiumRequiredMessage": "La recherche intelligente utilise l'IA pour comprendre vos questions. Passez à Plus pour accéder à cette fonctionnalité.",
     "searchWithAI": "Rechercher avec l'IA",
     "searching": "Recherche en cours...",
     "tryThese": "Essayez ces exemples",
@@ -5507,7 +5505,7 @@
     "recommended": "Recommandé",
     "startTrial": "Commencer l'essai gratuit",
     "subscribe": "S'abonner",
-    "trialSubtitle": "Essayez toutes les fonctionnalités premium pendant 7 jours",
+    "trialSubtitle": "Essayez toutes les fonctionnalités Plus pendant 7 jours",
     "trialTitle": "Essai gratuit disponible",
     "upgradeRequired": "Mise à niveau requise"
   },
@@ -5810,7 +5808,7 @@
     "userIdPlaceholder": "Entrez email ou ID",
     "loadingHousehold": "Loading Household...",
     "loading": "Loading Household...",
-    "createTitle": "[FR] Create Household"
+    "createTitle": "Creer un foyer"
   },
   "jerusalem": {
     "title": "Connexion Jérusalem",
@@ -5884,10 +5882,10 @@
       "parashaStudy": "Parasha",
       "shabbatRecipes": "Recettes",
       "prayers": "Prières",
-      "candlesIn": "[FR] Candles in {{minutes}} minutes",
-      "songs": "[FR] Songs",
-      "parasha": "[FR] Parasha",
-      "recipes": "[FR] Recipes"
+      "candlesIn": "Bougies dans {{minutes}} minutes",
+      "songs": "Chansons",
+      "parasha": "Paracha",
+      "recipes": "Recettes"
     },
     "community": {
       "empty": "Aucune organisation trouvée",
@@ -6121,7 +6119,7 @@
       "documentary": "Documentaire"
     },
     "loadingChannels": "Chargement des chaînes...",
-    "channel": "[FR] Channel"
+    "channel": "Chaine"
   },
   "location": {
     "consentModal": {
@@ -6221,7 +6219,7 @@
     "signInWithBiometric": "Sign in with Biometric",
     "signInWithFaceId": "Sign in with Face ID",
     "signInWithTouchId": "Sign in with Touch ID",
-    "newToBayitPlus": "[FR] New to Bayit+?"
+    "newToBayitPlus": "Nouveau sur Bayit+ ?"
   },
   "nav": {
     "home": "Accueil",
@@ -6595,7 +6593,7 @@
   },
   "plans": {
     "basic": {
-      "name": "Basique",
+      "name": "Gratuit",
       "features": [
         "Tout le contenu VOD",
         "Radio et Podcasts",
@@ -6609,22 +6607,7 @@
       ]
     },
     "premium": {
-      "name": "Premium",
-      "features": [
-        "Tout le contenu VOD",
-        "Chaînes en direct",
-        "Radio et Podcasts",
-        "Assistant IA intelligent",
-        "Regarder sur 2 appareils",
-        "Qualité HD"
-      ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
-    },
-    "family": {
-      "name": "Famille",
+      "name": "Plus",
       "features": [
         "Tout le contenu VOD",
         "Chaînes en direct",
@@ -6652,7 +6635,7 @@
         "content": "Accès au contenu",
         "quality": "Qualité et performance",
         "devices": "Appareils et streaming",
-        "features": "Fonctionnalités premium",
+        "features": "Fonctionnalités Plus",
         "support": "Support client"
       },
       "features": {
@@ -6692,7 +6675,7 @@
     "subscription": {
       "requiredTitle": "Abonnement requis",
       "requiredMessage": "nécessite un abonnement payant",
-      "upgradeInfo": "Mettez à niveau votre abonnement pour accéder au contenu premium",
+      "upgradeInfo": "Mettez à niveau votre abonnement pour accéder au contenu Plus",
       "upgrade": "Mettre à niveau"
     },
     "streamLimit": {
@@ -6800,12 +6783,12 @@
     "loadingStream": "Loading stream...",
     "loadingMedia": "Chargement des medias",
     "preparingStream": "Preparation du flux...",
-    "premiumRequired": "Premium Required",
+    "premiumRequired": "Plus Required",
     "season": "Season",
     "seasons": "Seasons",
     "streamLimitReached": "Stream Limit Reached",
-    "upgradeToPremium": "Upgrade to Premium",
-    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
+    "upgradeToPremium": "Upgrade to Plus",
+    "upgradeToPremiumDubbing": "Upgrade to Plus to access live dubbing",
     "videoQuality": "Video Quality",
     "audio": "Audio",
     "catchUp": "Catch Up",
@@ -6879,19 +6862,19 @@
     },
     "startOver": "Recommencer",
     "dialogue": {
-      "voiceMode": "[FR] Voice Mode",
-      "holdToSpeak": "[FR] Hold to Speak"
+      "voiceMode": "Mode vocal",
+      "holdToSpeak": "Maintenez pour parler"
     },
     "multiCharacter": {
-      "selectCharacter": "[FR] Select Character",
-      "talkingTo": "[FR] Talking to"
+      "selectCharacter": "Selectionner un personnage",
+      "talkingTo": "En conversation avec"
     },
     "shared": {
-      "participants": "[FR] Participants",
-      "yourTurn": "[FR] Your Turn",
-      "waitingForTurn": "[FR] Waiting for your turn..."
+      "participants": "Participants",
+      "yourTurn": "Votre tour",
+      "waitingForTurn": "En attente de votre tour..."
     },
-    "streamLoadFailed": "[FR] Failed to load stream",
+    "streamLoadFailed": "Echoue to load stream",
     "interactive": {
       "addToGlossary": "Ajouter au glossaire",
       "close": "Fermer",
@@ -6930,7 +6913,7 @@
     "subscribe": "S'abonner",
     "selectLanguage": "Sélectionner la langue",
     "switchToLanguage": "Passer à {{language}}",
-    "premiumRequiredForTranslation": "Abonnement premium requis pour la traduction",
+    "premiumRequiredForTranslation": "Abonnement Plus requis pour la traduction",
     "player": {
       "switchingLanguage": "Changement..."
     },
@@ -7292,13 +7275,13 @@
   },
   "profile": {
     "zehAni": "Zeh Ani",
-    "complimentaryPremium": "ACCÈS PREMIUM GRATUIT",
+    "complimentaryPremium": "ACCÈS PLUS GRATUIT",
     "emailVerified": "Email vérifié",
     "emailUnverified": "Email non vérifié",
     "phoneVerified": "Téléphone vérifié",
     "phoneUnverified": "Téléphone non vérifié",
     "completeVerification": "Complétez la vérification pour débloquer toutes les fonctionnalités",
-    "unlockPremium": "Débloquer les Fonctionnalités Premium",
+    "unlockPremium": "Débloquer les Fonctionnalités Plus",
     "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives",
     "tabs": {
       "devices": "Appareils",
@@ -7604,8 +7587,7 @@
       "line2": "Tel Aviv, Israël 6100000"
     },
     "free": "Gratuit",
-    "premiumPrice": "7,99 $/mois",
-    "familyPrice": "12,99 $/mois",
+    "plusPrice": "7,99 $/mois",
     "remaining": "restant",
     "guest": "Invité",
     "morningRitual": "Rituel matinal",
@@ -7617,9 +7599,9 @@
     "minutes": "minutes",
     "hours": "heures",
     "logout": "Se déconnecter",
-    "premium": "Premium",
-    "basic": "Basic",
-    "upgrade": "Passer à Premium",
+    "premium": "Plus",
+    "basic": "Gratuit",
+    "upgrade": "Passer à Plus",
     "memberSince": "Membre depuis",
     "aiAssistant": "Assistant IA",
     "voiceSettings": "Voix",
@@ -8055,7 +8037,7 @@
       "collections": "Collections",
       "audiobooks": "Livres audio"
     },
-    "suggestions": "[FR] Suggestions",
+    "suggestions": "Suggestions",
     "controls": {
       "placeholder": "Search for content...",
       "hints": {
@@ -8117,11 +8099,11 @@
     "kids": "👶 Enfants",
     "readAloud": "Lire à Voix Haute",
     "smartSearch": "Recherche Intelligente",
-    "premiumRequired": "Abonnement Premium requis pour la Recherche Intelligente",
+    "premiumRequired": "Abonnement Plus requis pour la Recherche Intelligente",
     "searchFailed": "La recherche a échoué",
-    "premiumFeature": "Fonctionnalité Premium",
+    "premiumFeature": "Fonctionnalité Plus",
     "smartSearchDescription": "La Recherche Intelligente utilise l'IA pour comprendre les requêtes en langage naturel et trouver exactement ce que vous cherchez.",
-    "upgradeToPremium": "Passer à Premium",
+    "upgradeToPremium": "Passer à Plus",
     "maybeLater": "Peut-être Plus Tard",
     "smartSearchHint": "Posez votre question en langage naturel et l'IA trouvera ce que vous cherchez",
     "smartSearchPlaceholder": "ex., 'Comédies israéliennes des années 90 avec sous-titres'",
@@ -8151,20 +8133,20 @@
       "popularity": "Plus populaire"
     },
     "filter": {
-      "title": "[FR] Filter",
-      "reset": "[FR] Reset",
-      "language": "[FR] Language",
-      "accessibility": "[FR] Accessibility",
-      "subtitles": "[FR] Subtitles",
-      "dubbing": "[FR] Dubbing",
-      "yearRange": "[FR] Year Range",
-      "yearFrom": "[FR] From year",
-      "yearTo": "[FR] To year",
-      "duration": "[FR] Duration",
-      "apply": "[FR] Apply Filters"
+      "title": "Filtre",
+      "reset": "Reinitialiser",
+      "language": "Langue",
+      "accessibility": "Accessibilite",
+      "subtitles": "Sous-titres",
+      "dubbing": "Doublage",
+      "yearRange": "Plage d'annees",
+      "yearFrom": "De year",
+      "yearTo": "Jusqu'a l'annee",
+      "duration": "Duree",
+      "apply": "Appliquer les filtres"
     },
-    "previousPage": "[FR] Previous Page",
-    "nextPage": "[FR] Next Page"
+    "previousPage": "Page precedente",
+    "nextPage": "Page suivante"
   },
   "security": {
     "changePassword": "Changer le mot de passe",
@@ -8208,19 +8190,19 @@
     "notifications": "Notifications",
     "pushNotifications": "Notifications push",
     "playback": {
-      "title": "[FR] Playback",
-      "videoQuality": "[FR] Video Quality",
-      "autoplaySection": "[FR] Autoplay",
-      "autoplay": "[FR] Autoplay",
-      "autoplayNext": "[FR] Autoplay Next Episode",
-      "countdown": "[FR] Countdown before next episode",
-      "controls": "[FR] Controls",
-      "skipIntro": "[FR] Skip Intro",
-      "skipCredits": "[FR] Skip Credits",
-      "continueWatching": "[FR] Continue Watching",
-      "speed": "[FR] Playback Speed",
-      "liveTV": "[FR] Live TV",
-      "bufferSize": "[FR] Buffer Size"
+      "title": "Lecture",
+      "videoQuality": "Qualite video",
+      "autoplaySection": "Lecture automatique",
+      "autoplay": "Lecture automatique",
+      "autoplayNext": "Lecture automatique Next Episode",
+      "countdown": "Compte a rebours avant le prochain episode",
+      "controls": "Controles",
+      "skipIntro": "Passer Intro",
+      "skipCredits": "Passer Credits",
+      "continueWatching": "Continuer Watching",
+      "speed": "Lecture Speed",
+      "liveTV": "TV en direct",
+      "bufferSize": "Taille du tampon"
     },
     "quality": "Qualité",
     "subtitles": "Sous-titres",
@@ -8230,43 +8212,43 @@
     "appearance": "Apparence",
     "darkMode": "Mode sombre",
     "privacy": {
-      "clearWatchHistoryTitle": "[FR] Clear Watch History",
-      "clear": "[FR] Clear",
-      "clearWatchHistoryMessage": "[FR] This will permanently delete your watch history.",
-      "clearSearchHistoryTitle": "[FR] Clear Search History",
-      "clearSearchHistoryMessage": "[FR] This will permanently delete your search history.",
-      "title": "[FR] Privacy",
-      "description": "[FR] Control your data collection and privacy preferences",
-      "dataCollection": "[FR] Data Collection",
-      "analytics": "[FR] Usage Analytics",
-      "analyticsDesc": "[FR] Help improve Bayit+ by sharing anonymous usage data",
-      "crashReports": "[FR] Crash Reports",
-      "crashReportsDesc": "[FR] Automatically send crash reports to help fix issues",
-      "personalization": "[FR] Personalization",
-      "personalizationDesc": "[FR] Allow Bayit+ to personalize your experience",
-      "history": "[FR] History",
-      "watchHistory": "[FR] Watch History",
-      "clearWatchHistory": "[FR] Clear Watch History",
-      "searchHistory": "[FR] Search History",
-      "clearSearchHistory": "[FR] Clear Search History"
+      "clearWatchHistoryTitle": "Effacer Watch History",
+      "clear": "Effacer",
+      "clearWatchHistoryMessage": "Cela supprimera definitivement votre historique de visionnage.",
+      "clearSearchHistoryTitle": "Effacer Search History",
+      "clearSearchHistoryMessage": "Cela supprimera definitivement votre historique de recherche.",
+      "title": "Confidentialite",
+      "description": "Controlez vos preferences de collecte de donnees et de confidentialite",
+      "dataCollection": "Collecte de donnees",
+      "analytics": "Analyse d'utilisation",
+      "analyticsDesc": "Aidez a ameliorer Bayit+ en partageant des donnees d'utilisation anonymes",
+      "crashReports": "Rapports de plantage",
+      "crashReportsDesc": "Envoyer automatiquement les rapports de plantage pour aider a corriger les problemes",
+      "personalization": "Personnalisation",
+      "personalizationDesc": "Autoriser Bayit+ a personnaliser votre experience",
+      "history": "Historique",
+      "watchHistory": "Historique de visionnage",
+      "clearWatchHistory": "Effacer Watch History",
+      "searchHistory": "Historique de recherche",
+      "clearSearchHistory": "Effacer Search History"
     },
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
     "about": {
-      "title": "[FR] About",
-      "appInfo": "[FR] App Info",
-      "version": "[FR] Version",
-      "build": "[FR] Build",
-      "environment": "[FR] Environment",
-      "legal": "[FR] Legal",
-      "privacyPolicy": "[FR] Privacy Policy",
-      "termsOfService": "[FR] Terms of Service",
-      "cookiePolicy": "[FR] Cookie Policy",
-      "licenses": "[FR] Open Source Licenses",
-      "deviceInfo": "[FR] Device Info",
-      "model": "[FR] Model",
-      "osVersion": "[FR] OS Version",
-      "locale": "[FR] Locale"
+      "title": "A propos",
+      "appInfo": "Informations sur l'application",
+      "version": "Version",
+      "build": "Version",
+      "environment": "Environnement",
+      "legal": "Mentions legales",
+      "privacyPolicy": "Confidentialite Policy",
+      "termsOfService": "Conditions d'utilisation",
+      "cookiePolicy": "Politique de cookies",
+      "licenses": "Licences open source",
+      "deviceInfo": "Informations sur l'appareil",
+      "model": "Modele",
+      "osVersion": "Version du systeme d'exploitation",
+      "locale": "Parametres regionaux"
     },
     "display": "Affichage",
     "homePageSections": "Sections de la page d'accueil",
@@ -8405,13 +8387,13 @@
       "volumeNormDesc": "Normaliser le volume entre les contenus",
       "volumeNormalization": "Normalisation du volume"
     },
-    "mediaSection": "[FR] Media",
-    "privacyData": "[FR] Privacy & Data",
-    "general": "[FR] General",
-    "children": "[FR] Children",
-    "loading": "[FR] Loading settings...",
-    "not_connected": "[FR] Not connected",
-    "privacySecurity": "[FR] Privacy & Security"
+    "mediaSection": "Medias",
+    "privacyData": "Confidentialite & Data",
+    "general": "General",
+    "children": "Enfants",
+    "loading": "Chargement des parametres...",
+    "not_connected": "Non connecte",
+    "privacySecurity": "Confidentialite & Security"
   },
   "shabbat": {
     "activate": "Activer",
@@ -8506,7 +8488,7 @@
   },
   "status": {
     "pleaseLogin": "Veuillez vous connecter pour utiliser Bayit+ Companion",
-    "quotaExhausted": "Quota quotidien de {{limit}} minutes épuisé. Passez à la version premium.",
+    "quotaExhausted": "Quota quotidien de {{limit}} minutes épuisé. Passez à la version Plus.",
     "connected": "Connecté",
     "dubbingFailed": "Échec du démarrage du doublage. Veuillez réessayer.",
     "dubbingError": "Erreur de doublage : {{error}}"
@@ -8528,7 +8510,7 @@
     "viewComparison": "Voir la comparaison complète",
     "viewCards": "Voir les forfaits",
     "premiumShowcase": {
-      "title": "Découvrez l'Intelligence Premium",
+      "title": "Découvrez l'Intelligence Plus",
       "subtitle": "Fonctionnalités alimentées par l'IA qui s'adaptent à votre façon de regarder",
       "videoTitle": "Voir les Widgets en Action",
       "videoDescription": "Regardez notre introduction de 2 minutes aux widgets flottants",
@@ -8579,7 +8561,7 @@
     "continueToWebsite": "Continuer vers le site web",
     "loading": "Chargement des Plans...",
     "noPlans": "Aucun plan d'abonnement disponible",
-    "premiumContent": "Contenu Premium",
+    "premiumContent": "Contenu Plus",
     "recommended": "Recommande",
     "restorePurchase": "Restaurer l'Achat",
     "upgradeRequired": "Mettez a niveau votre abonnement pour acceder a ce contenu",
@@ -8630,7 +8612,7 @@
     "clickToEnable": "Cliquez pour activer la traduction en direct",
     "connectionError": "Erreur de traduction en direct",
     "inputLanguageTooltip": "Vérifier la langue source",
-    "premiumRequired": "Abonnement premium requis",
+    "premiumRequired": "Abonnement Plus requis",
     "selectInputLanguage": "Sélectionner la langue source",
     "translateActive": "Traduction en direct active",
     "hebrewMode": {
@@ -8931,7 +8913,7 @@
     "recommended": "Recommandé",
     "featured": "À la une",
     "exclusive": "Exclusif",
-    "premium": "Premium",
+    "premium": "Plus",
     "free": "Gratuit",
     "live": "En direct",
     "upcoming": "À venir",
@@ -9197,15 +9179,15 @@
     "quiz": {
       "title": "Quiz de Trivia"
     },
-    "question": "[FR] Question",
+    "question": "Question",
     "results": {
       "title": "Quiz Termine!",
       "playAgain": "Rejouer",
       "shekelsEarned": "{{amount}} Shekels Gagnes"
     },
-    "explanation": "[FR] Explanation",
-    "submit": "[FR] Submit",
-    "tryAgain": "[FR] Try Again"
+    "explanation": "Explication",
+    "submit": "Soumettre",
+    "tryAgain": "Reessayer"
   },
   "tvLogin": {
     "invalidQR": "Code QR invalide. Veuillez scanner à nouveau depuis votre TV.",
@@ -9677,21 +9659,21 @@
     "voicesAvailable": "voices available",
     "wakeWordDescription": "Activate voice control by saying the wake word.",
     "calibration": {
-      "levelLabel": "[FR] Level"
+      "levelLabel": "Niveau"
     },
     "diagnostics": {
-      "micPermission": "[FR] Microphone Permission",
-      "speechRecognition": "[FR] Speech Recognition",
-      "currentState": "[FR] Current State",
-      "transcript": "[FR] Transcript",
-      "title": "[FR] Voice Diagnostics",
-      "audioSession": "[FR] Audio Session",
-      "runDiagnostics": "[FR] Run Diagnostics",
-      "copyReport": "[FR] Copy Report"
+      "micPermission": "Autorisation du microphone",
+      "speechRecognition": "Reconnaissance vocale",
+      "currentState": "Etat actuel",
+      "transcript": "Transcription",
+      "title": "Diagnostics vocaux",
+      "audioSession": "Session audio",
+      "runDiagnostics": "Executer les diagnostics",
+      "copyReport": "Copier le rapport"
     },
-    "stopListening": "[FR] Stop Listening",
-    "startListening": "[FR] Start Listening",
-    "searchPrompt": "[FR] What are you looking for?"
+    "stopListening": "Arreter d'ecouter",
+    "startListening": "Commencer a ecouter",
+    "searchPrompt": "Que recherchez-vous ?"
   },
   "voiceMode": {
     "title": "Mode vocal",
@@ -10288,10 +10270,10 @@
       "empty": "Aucun film interactif disponible pour le moment",
       "characterCount": "{{count}} personnages",
       "selectCharacter": "Sélectionnez un personnage avec lequel interagir",
-      "quotaLabel": "[FR] Interactions remaining",
-      "generationTitle": "[FR] Generating interaction...",
-      "selectedCount": "[FR] {{count}} selected",
-      "confirmButton": "[FR] Confirm"
+      "quotaLabel": "Interactions restantes",
+      "generationTitle": "Generation de l'interaction...",
+      "selectedCount": "{{count}} selectionnes",
+      "confirmButton": "Confirmer"
     },
     "dialogue": {
       "specificQuestions": "Questions du personnage",
@@ -10312,111 +10294,111 @@
       "contactsDesc": "Gerez les contacts familiaux pour le partage",
       "feedback": "Retours",
       "feedbackDesc": "Messages de la famille et des amis",
-      "title": "[FR] Me in the Story",
-      "consent": "[FR] Consent Required",
-      "consentDesc": "[FR] Enable biometric features to personalize your experience",
+      "title": "Moi dans l'histoire",
+      "consent": "Consentement requis",
+      "consentDesc": "Activez les fonctions biometriques pour personnaliser votre experience",
       "chess": "Échecs",
       "chessDesc": "Jouez aux échecs avec famille et amis"
     },
     "arCapture": {
-      "processing": "[FR] Processing..."
+      "processing": "Traitement en cours..."
     },
     "preview": {
-      "title": "[FR] 3D Preview",
-      "loading": "[FR] Loading your avatar...",
-      "error": "[FR] Could not load 3D preview"
+      "title": "Apercu 3D",
+      "loading": "Chargement de votre avatar...",
+      "error": "Impossible de charger l'apercu 3D"
     },
     "consent": {
       "biometric": {
-        "explanation": "[FR] Bayit+ uses biometric data to power personalized avatar and voice features.",
-        "privacy": "[FR] Your biometric data is encrypted and never shared with third parties.",
-        "pinLabel": "[FR] PIN",
-        "pinPlaceholder": "[FR] Enter your PIN",
-        "consentTypes": "[FR] I consent to the following",
-        "meshGeneration": "[FR] 3D Mesh Generation",
-        "voiceV2V": "[FR] Voice-to-Voice Practice",
-        "latentFeatures": "[FR] AI Feature Personalization",
-        "currentStatus": "[FR] Current Consent Status",
-        "submit": "[FR] Grant Consent",
-        "title": "[FR] Biometric Consent",
-        "familyControlsRequired": "[FR] Family Controls Required",
-        "familyControlsExplain": "[FR] A parent or guardian must approve biometric features for this profile.",
-        "goToFamilyControls": "[FR] Go to Family Controls"
+        "explanation": "Bayit+ utilise des donnees biometriques pour les fonctions personnalisees d'avatar et de voix.",
+        "privacy": "Vos donnees biometriques sont chiffrees et ne sont jamais partagees avec des tiers.",
+        "pinLabel": "Code PIN",
+        "pinPlaceholder": "Entrez votre code PIN",
+        "consentTypes": "Je consens a ce qui suit",
+        "meshGeneration": "Generation de maillage 3D",
+        "voiceV2V": "Pratique voix a voix",
+        "latentFeatures": "Personnalisation des fonctions IA",
+        "currentStatus": "Etat actuel du consentement",
+        "submit": "Accorder le consentement",
+        "title": "Consentement biometrique",
+        "familyControlsRequired": "Controles parentaux requis",
+        "familyControlsExplain": "Un parent ou tuteur doit approuver les fonctions biometriques pour ce profil.",
+        "goToFamilyControls": "Acceder aux controles parentaux"
       }
     },
     "contacts": {
-      "title": "[FR] My Contacts",
-      "add": "[FR] Add Contact",
-      "empty": "[FR] No contacts yet",
-      "delete": "[FR] Delete Contact",
-      "name": "[FR] Display Name",
-      "phone": "[FR] Phone Number",
-      "pin": "[FR] PIN"
+      "title": "Mes contacts",
+      "add": "Ajouter un contact",
+      "empty": "Aucun contact pour le moment",
+      "delete": "Supprimer le contact",
+      "name": "Nom d'affichage",
+      "phone": "Numero de telephone",
+      "pin": "Code PIN"
     },
     "feedback": {
-      "title": "[FR] Feedback",
-      "empty": "[FR] No feedback yet",
-      "from": "[FR] From",
-      "voiceMessage": "[FR] Voice Message",
-      "textMessage": "[FR] Text Message"
+      "title": "Commentaires",
+      "empty": "Aucun commentaire pour le moment",
+      "from": "De",
+      "voiceMessage": "Message vocal",
+      "textMessage": "Message texte"
     },
     "highlights": {
-      "title": "[FR] Highlights",
-      "generate": "[FR] Generate Highlight Reel",
-      "empty": "[FR] No highlights yet",
-      "share": "[FR] Share",
-      "sendToFamily": "[FR] Send to Family",
-      "generating": "[FR] Generating highlights..."
+      "title": "Moments forts",
+      "generate": "Generer la bande de moments forts",
+      "empty": "Aucun moment fort pour le moment",
+      "share": "Partager",
+      "sendToFamily": "Envoyer to Family",
+      "generating": "Generation des moments forts..."
     },
     "magicMirror": {
-      "vocabOfDay": "[FR] Word of the Day",
-      "noAvatar": "[FR] No Avatar",
-      "noAvatarDesc": "[FR] Create your 3D avatar to unlock Magic Mirror",
-      "createAvatar": "[FR] Create Avatar",
-      "noCreditsTitle": "[FR] Out of Credits",
-      "noCreditsDesc": "[FR] You need Beta credits to use Magic Mirror",
-      "playGreeting": "[FR] Play Greeting",
-      "refresh": "[FR] Refresh",
-      "meshUnavailable": "[FR] 3D mesh unavailable"
+      "vocabOfDay": "Mot du jour",
+      "noAvatar": "Pas d'avatar",
+      "noAvatarDesc": "Creez votre avatar 3D pour debloquer le Miroir Magique",
+      "createAvatar": "Creer un avatar",
+      "noCreditsTitle": "Plus de credits",
+      "noCreditsDesc": "Vous avez besoin de credits Beta pour utiliser le Miroir Magique",
+      "playGreeting": "Jouer le message d'accueil",
+      "refresh": "Actualiser",
+      "meshUnavailable": "Maillage 3D indisponible"
     },
     "mesh": {
-      "title": "[FR] Generate 3D Mesh",
-      "viewPreview": "[FR] View Preview",
-      "statusIdle": "[FR] Ready",
-      "statusGenerating": "[FR] Generating...",
-      "statusReady": "[FR] Complete",
-      "statusFailed": "[FR] Failed"
+      "title": "Generer le maillage 3D",
+      "viewPreview": "Voir l'apercu",
+      "statusIdle": "Pret",
+      "statusGenerating": "Generation en cours...",
+      "statusReady": "Termine",
+      "statusFailed": "Echoue"
     },
     "movieCharacters": {
-      "title": "[FR] Characters",
-      "empty": "[FR] No characters available"
+      "title": "Personnages",
+      "empty": "Aucun personnage disponible"
     },
     "trigger": {
-      "prompt": "[FR] Say the phrase",
-      "dismiss": "[FR] Dismiss",
-      "success": "[FR] Excellent!",
-      "continue": "[FR] Continue",
-      "incorrect": "[FR] Not quite",
-      "correct": "[FR] Correct answer",
-      "tryAgain": "[FR] Try Again",
-      "skip": "[FR] Skip",
+      "prompt": "Dites la phrase",
+      "dismiss": "Fermer",
+      "success": "Excellent !",
+      "continue": "Continuer",
+      "incorrect": "Pas tout a fait",
+      "correct": "Bonne reponse",
+      "tryAgain": "Reessayer",
+      "skip": "Passer",
       "errors": {
-        "microphoneFailed": "[FR] Microphone access failed"
+        "microphoneFailed": "Echec de l'acces au microphone"
       }
     },
     "v2v": {
-      "transforming": "[FR] Transforming voice...",
-      "latency": "[FR] Latency",
-      "retry": "[FR] Retry",
-      "nextPhrase": "[FR] Next Phrase",
-      "beforeAfter": "[FR] Before / After",
-      "before": "[FR] Before",
-      "after": "[FR] After",
-      "improvement": "[FR] Improvement"
+      "transforming": "Transformation de la voix...",
+      "latency": "Latence",
+      "retry": "Reessayer",
+      "nextPhrase": "Phrase suivante",
+      "beforeAfter": "Avant / After",
+      "before": "Avant",
+      "after": "Apres",
+      "improvement": "Amelioration"
     },
     "avatar3d": {
-      "title": "[FR] 3D Avatar",
-      "errorTitle": "[FR] Avatar Error"
+      "title": "Avatar 3D",
+      "errorTitle": "Erreur d'avatar"
     }
   },
   "starStory": {
@@ -11388,18 +11370,18 @@
     "back_to_login": "Retour à la Connexion"
   },
   "voiceFallback": {
-    "title": "[FR] Voice Unavailable",
-    "subtitle": "[FR] Type your message instead",
-    "micUnavailable": "[FR] Microphone unavailable",
-    "inputPlaceholder": "[FR] Type a message...",
-    "send": "[FR] Send",
-    "suggestions": "[FR] Suggestions"
+    "title": "Voix indisponible",
+    "subtitle": "Tapez votre message a la place",
+    "micUnavailable": "Microphone indisponible",
+    "inputPlaceholder": "Tapez un message...",
+    "send": "Envoyer",
+    "suggestions": "Suggestions"
   },
   "voiceSearch": {
     "settings": {
-      "title": "[FR] Voice Search Settings",
-      "language": "[FR] Recognition Language",
-      "sensitivity": "[FR] Sensitivity"
+      "title": "Parametres de recherche vocale",
+      "language": "Langue de reconnaissance",
+      "sensitivity": "Sensibilite"
     }
   },
   "cvplus": {
@@ -11571,5 +11553,23 @@
     "onboarding.languagePriority": "Language Priority",
     "onboarding.homeCategories": "Home Screen Categories",
     "onboarding.ready": "Your Content is Ready"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "Doublage AI en direct",
+      "description": "Ecoutez les chaines israeliennes doublees dans votre langue en temps reel avec des voix AI."
+    },
+    "pauseAndAsk": {
+      "title": "Pause et posez une question",
+      "description": "Mettez en pause n importe quelle scene et discutez avec les personnages via votre avatar."
+    },
+    "zehAni": {
+      "title": "Miroir Magique",
+      "description": "Creez un avatar 3D personnalise a partir d un selfie et utilisez-le dans toutes les fonctions interactives."
+    },
+    "catchup": {
+      "title": "Rattrapage",
+      "description": "Vous avez manque le debut? Obtenez un resume genere par AI de ce qui s est passe."
+    }
   }
 }

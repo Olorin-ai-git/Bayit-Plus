@@ -1,6 +1,6 @@
-"""Premium feature authorization dependencies.
+"""Plus-tier feature authorization dependencies.
 
-Ensures only premium/family tier users can access premium features like Audible integration.
+Gates features exclusive to Plus subscribers: downloads, 4K quality.
 """
 
 from fastapi import Depends, HTTPException, status
@@ -9,25 +9,23 @@ from app.models.user import User
 from app.api.dependencies.verification import get_current_active_user
 
 
-async def require_premium_or_family(
+async def require_plus(
     current_user: User = Depends(get_current_active_user),
 ) -> User:
     """
-    Require Premium or Family subscription for premium features.
+    Require Plus subscription for premium-only features (downloads, 4K).
 
     Raises:
-        HTTPException: 403 if user doesn't have premium/family subscription.
+        HTTPException: 403 if user doesn't have Plus subscription.
                       Admin users always have access.
     """
-    # Admins always have access to premium features
     if current_user.is_admin_role():
         return current_user
 
-    # Check subscription tier
-    if current_user.subscription_tier not in ["premium", "family"]:
+    if current_user.subscription_tier != "plus":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="audible_requires_premium"
+            detail="feature_requires_plus"
         )
 
     return current_user
@@ -37,13 +35,8 @@ async def require_audible_configured() -> bool:
     """
     Check if Audible integration is configured.
 
-    Verifies that all required Audible OAuth credentials are present in configuration.
-
     Raises:
         HTTPException: 503 if Audible is not properly configured.
-
-    Returns:
-        bool: True if configured (checked for dependency validation).
     """
     if not settings.is_audible_configured:
         raise HTTPException(

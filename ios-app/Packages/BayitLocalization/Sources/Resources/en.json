@@ -14,8 +14,8 @@
     "password": "Password",
     "name": "Name",
     "guest": "Guest",
-    "premium": "Premium",
-    "basic": "Basic",
+    "premium": "Plus",
+    "basic": "Free",
     "tapToLogin": "Tap to login"
   },
   "admin": {
@@ -134,7 +134,7 @@
       "interval": "Billing Interval",
       "loadError": "Failed to load subscription plans. Please try again.",
       "name": "Plan Name",
-      "namePlaceholder": "e.g., Premium",
+      "namePlaceholder": "e.g., Plus",
       "price": "Price ($)",
       "requiredFields": "Name and price are required",
       "saveError": "Failed to save plan",
@@ -701,9 +701,8 @@
           "logoPlaceholder": "Logo URL"
         },
         "subscriptionTiers": {
-          "basic": "Basic",
-          "premium": "Premium",
-          "family": "Family"
+          "basic": "Free",
+          "premium": "Plus"
         },
         "actions": {
           "save": "Save",
@@ -3012,9 +3011,8 @@
     },
     "subscriptions": {
       "free": "Free",
-      "basic": "Basic",
-      "premium": "Premium",
-      "family": "Family"
+      "basic": "Free",
+      "premium": "Plus"
     },
     "sortBy": "Sort By",
     "sortOptions": {
@@ -3427,8 +3425,8 @@
     "remaining": "remaining",
     "required": "Required",
     "upgrade": "Upgrade",
-    "upgradeMessage": "Upgrade to Premium for unlimited AI credits and exclusive features.",
-    "upgradeTitle": "Upgrade to Premium",
+    "upgradeMessage": "Upgrade to Plus for unlimited AI credits and exclusive features.",
+    "upgradeTitle": "Upgrade to Plus",
     "usage": "Usage",
     "creditsLabel": "Credits"
   },
@@ -4040,7 +4038,7 @@
     "clearSelection": "Clear",
     "expand": "Expand",
     "collapse": "Collapse",
-    "upgrade": "Upgrade to Premium",
+    "upgrade": "Upgrade to Plus",
     "skip": "Skip",
     "dismiss": "Dismiss",
     "refresh": "Refresh",
@@ -4056,7 +4054,7 @@
     "watch": "Watch",
     "share": "Share",
     "noContent": "No content available",
-    "premium": "PREMIUM",
+    "premium": "PLUS",
     "poweredBy": "Powered by",
     "active": "Active",
     "copy": "Copy URL",
@@ -4317,7 +4315,7 @@
       "3": "The Arbitrator",
       "4": "Labour"
     },
-    "premium_plan": "Premium",
+    "premium_plan": "Plus",
     "assistant_response": "I recommend Fauda - an excellent thriller series!",
     "morning_greeting": "Good morning! Today the weather is nice, there are some important news from Israel, and I've selected content especially for you."
   },
@@ -4591,8 +4589,8 @@
     "smartSearchSubtitle": "Ask questions in natural language",
     "smartSearchPlaceholder": "e.g., Show me all shows with actress Tali Sharon tonight",
     "searchPlaceholder": "Search programs, channels, actors...",
-    "premiumRequired": "Premium Feature",
-    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "premiumRequired": "Plus Feature",
+    "premiumRequiredMessage": "Smart Search uses AI to understand your questions. Upgrade to Plus to access this feature.",
     "searchWithAI": "Search with AI",
     "searching": "Searching...",
     "tryThese": "Try these examples",
@@ -5133,7 +5131,7 @@
     "recommended": "Recommended",
     "startTrial": "Start Free Trial",
     "subscribe": "Subscribe",
-    "trialSubtitle": "Try all premium features free for 7 days",
+    "trialSubtitle": "Try all Plus features free for 7 days",
     "trialTitle": "Free Trial Available",
     "upgradeRequired": "Upgrade required to access this content"
   },
@@ -6045,36 +6043,17 @@
       "description": "Create an account for free features"
     },
     "basic": {
-      "name": "Basic",
+      "name": "Free",
       "features": [
         "All VOD content",
         "Radio & Podcasts",
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
-      "name": "Premium",
-      "features": [
-        "All VOD content",
-        "Live channels",
-        "Radio & Podcasts",
-        "Smart AI Assistant",
-        "Watch on 2 devices",
-        "HD quality"
-      ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
-    },
-    "family": {
-      "name": "Family",
+      "name": "Plus",
       "features": [
         "All VOD content",
         "Live channels",
@@ -6094,7 +6073,7 @@
         "content": "Content Access",
         "quality": "Quality & Performance",
         "devices": "Devices & Streaming",
-        "features": "Premium Features",
+        "features": "Plus Features",
         "support": "Customer Support"
       },
       "features": {
@@ -6206,7 +6185,7 @@
   "podcast": {
     "selectLanguage": "Select Language",
     "switchToLanguage": "Switch to {{language}}",
-    "premiumRequiredForTranslation": "Premium subscription required for podcast translation",
+    "premiumRequiredForTranslation": "Plus subscription required for podcast translation",
     "player": {
       "switchingLanguage": "Switching..."
     },
@@ -6563,8 +6542,7 @@
       "line2": "Tel Aviv, Israel 6100000"
     },
     "free": "Free",
-    "premiumPrice": "$7.99/month",
-    "familyPrice": "$12.99/month",
+    "plusPrice": "$7.99/month",
     "remaining": "remaining",
     "tabs": {
       "personal": "Personal",
@@ -6799,9 +6777,9 @@
     "minutes": "minutes",
     "hours": "hours",
     "logout": "Log Out",
-    "premium": "Premium",
-    "basic": "Basic",
-    "upgrade": "Upgrade to Premium",
+    "premium": "Plus",
+    "basic": "Free",
+    "upgrade": "Upgrade to Plus",
     "memberSince": "Member since {{date}}",
     "aiAssistant": "AI Assistant",
     "voiceSettings": "Voice",
@@ -6821,13 +6799,13 @@
     "imageTooLarge": "Image is too large. Maximum size is 5MB.",
     "uploadSuccess": "Avatar updated successfully!",
     "uploadFailed": "Failed to upload avatar. Please try again.",
-    "complimentaryPremium": "COMPLIMENTARY PREMIUM ACCESS",
+    "complimentaryPremium": "COMPLIMENTARY PLUS ACCESS",
     "emailVerified": "Email verified",
     "emailUnverified": "Email not verified",
     "phoneVerified": "Phone verified",
     "phoneUnverified": "Phone not verified",
     "completeVerification": "Complete verification to unlock all features",
-    "unlockPremium": "Unlock Premium Features",
+    "unlockPremium": "Unlock Plus Features",
     "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features",
     "unknown": "Unknown Player",
     "betaCredits": "Beta Credits",
@@ -7323,11 +7301,11 @@
     "kids": "👶 Kids",
     "readAloud": "Read Aloud",
     "smartSearch": "Smart Search",
-    "premiumRequired": "Premium subscription required for Smart Search",
+    "premiumRequired": "Plus subscription required for Smart Search",
     "searchFailed": "Search failed",
-    "premiumFeature": "Premium Feature",
+    "premiumFeature": "Plus Feature",
     "smartSearchDescription": "Smart Search uses AI to understand natural language queries and find exactly what you're looking for.",
-    "upgradeToPremium": "Upgrade to Premium",
+    "upgradeToPremium": "Upgrade to Plus",
     "maybeLater": "Maybe Later",
     "smartSearchHint": "Ask in natural language and AI will find what you're looking for",
     "smartSearchPlaceholder": "e.g., 'Israeli comedies from the 90s with subtitles'",
@@ -7678,7 +7656,7 @@
   },
   "status": {
     "pleaseLogin": "Please log in to use Bayit+ Companion",
-    "quotaExhausted": "Daily quota of {{limit}} minutes exhausted. Upgrade to premium.",
+    "quotaExhausted": "Daily quota of {{limit}} minutes exhausted. Upgrade to Plus.",
     "connected": "Connected",
     "dubbingFailed": "Failed to start dubbing. Please try again.",
     "dubbingError": "Dubbing error: {{error}}"
@@ -7700,7 +7678,7 @@
     "viewComparison": "View Full Comparison",
     "viewCards": "View Plans",
     "premiumShowcase": {
-      "title": "Experience Premium Intelligence",
+      "title": "Experience Plus Intelligence",
       "subtitle": "AI-powered features that adapt to how you watch",
       "videoTitle": "See Widgets in Action",
       "videoDescription": "Watch our 2-minute intro to floating widgets",
@@ -7792,7 +7770,7 @@
     "clickToEnable": "Click to enable live translation",
     "connectionError": "Live Translation Error",
     "inputLanguageTooltip": "Check Input Language",
-    "premiumRequired": "Premium subscription required",
+    "premiumRequired": "Plus subscription required",
     "selectInputLanguage": "Select input language",
     "translateActive": "Live Translation Active",
     "noEnglishSubtitles": "No English subtitles available for this content.",
@@ -9211,7 +9189,7 @@
       "recordingError": "Recording Error",
       "startRecording": "Start recording",
       "stopRecording": "Stop recording",
-      "premiumRequired": "Premium subscription required",
+      "premiumRequired": "Plus subscription required",
       "recordingLiveOnly": "Recording is only available for live channels"
     },
     "aiSearch": {
@@ -9957,5 +9935,23 @@
     "onboarding.languagePriority": "Language Priority",
     "onboarding.homeCategories": "Home Screen Categories",
     "onboarding.ready": "Your Content is Ready"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "Live AI Dubbing",
+      "description": "Hear Israeli channels dubbed into your language in real time using AI voices."
+    },
+    "pauseAndAsk": {
+      "title": "Pause and Ask a Character",
+      "description": "Pause any scene and have a conversation with the characters using your avatar."
+    },
+    "zehAni": {
+      "title": "Magic Mirror",
+      "description": "Create a personalized 3D avatar from a selfie and use it across interactive features."
+    },
+    "catchup": {
+      "title": "Catch Up",
+      "description": "Missed the beginning? Get an AI-generated summary of what happened so far."
+    }
   }
 }

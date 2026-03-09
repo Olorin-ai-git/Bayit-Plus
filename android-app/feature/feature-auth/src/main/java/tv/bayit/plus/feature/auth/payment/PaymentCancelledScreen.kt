@@ -74,7 +74,7 @@ internal fun PaymentCancelledScreen(
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "You can try again anytime to unlock all Bayit+ premium features.",
+                        text = "You can try again anytime to unlock all Bayit+ Plus features.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.muted,
                         textAlign = TextAlign.Center,

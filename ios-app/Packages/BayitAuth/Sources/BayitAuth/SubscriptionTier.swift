@@ -1,21 +1,19 @@
 import Foundation
 
-/// Subscription plan tiers matching the backend PlanTier enum.
+/// Subscription plan tiers matching the backend freemium model.
 ///
-/// Maps to: non_registered, registered_free, basic, premium, family
+/// Maps to: non_registered, free, plus
 public enum SubscriptionTier: String, Codable, Sendable, CaseIterable {
     case nonRegistered = "non_registered"
-    case registeredFree = "registered_free"
-    case basic = "basic"
-    case premium = "premium"
-    case family = "family"
+    case free
+    case plus
 
-    /// Whether this tier grants premium content access.
+    /// Whether this tier grants Plus-level features (AI, downloads, 4K).
     public var isPremium: Bool {
         switch self {
-        case .premium, .family:
+        case .plus:
             return true
-        case .nonRegistered, .registeredFree, .basic:
+        case .nonRegistered, .free:
             return false
         }
     }
@@ -23,9 +21,9 @@ public enum SubscriptionTier: String, Codable, Sendable, CaseIterable {
     /// Whether this tier is a paid subscription.
     public var isPaid: Bool {
         switch self {
-        case .basic, .premium, .family:
+        case .plus:
             return true
-        case .nonRegistered, .registeredFree:
+        case .nonRegistered, .free:
             return false
         }
     }

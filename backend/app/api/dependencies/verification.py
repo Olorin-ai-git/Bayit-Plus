@@ -67,12 +67,12 @@ async def can_create_widgets(
     if current_user.is_admin_role():
         return current_user
 
-    if current_user.subscription_tier not in ["premium", "family"]:
+    if current_user.subscription_tier != "plus":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
-                "error": "premium_required",
-                "message": "Upgrade to Premium to create widgets",
+                "error": "plus_required",
+                "message": "Upgrade to Plus to create widgets",
             },
         )
 

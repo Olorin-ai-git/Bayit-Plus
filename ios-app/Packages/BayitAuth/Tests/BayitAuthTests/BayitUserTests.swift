@@ -1,8 +1,7 @@
-import XCTest
 @testable import BayitAuth
+import XCTest
 
 final class BayitUserTests: XCTestCase {
-
     // MARK: - Initialization Tests
 
     func testUserInitialization() {
@@ -35,7 +34,7 @@ final class BayitUserTests: XCTestCase {
 
     // MARK: - Subscription Tier Tests
 
-    func testSubscriptionTierDefaultsToRegisteredFree() {
+    func testSubscriptionTierDefaultsToFree() {
         let user = BayitUser(
             id: "user-123",
             email: "test@bayit.tv",
@@ -50,14 +49,16 @@ final class BayitUserTests: XCTestCase {
             lastLogin: nil
         )
 
-        XCTAssertEqual(user.subscriptionTier, .registeredFree)
+        XCTAssertEqual(user.subscriptionTier, .free)
     }
 
     func testSubscriptionTierFromSubscription() {
         let subscription = UserSubscription(
-            plan: .premium,
-            status: "active",
-            validUntil: "2024-12-31T23:59:59Z"
+            plan: .plus,
+            status: .active,
+            startDate: nil,
+            endDate: "2024-12-31T23:59:59Z",
+            autoRenew: nil
         )
 
         let user = BayitUser(
@@ -74,16 +75,18 @@ final class BayitUserTests: XCTestCase {
             lastLogin: nil
         )
 
-        XCTAssertEqual(user.subscriptionTier, .premium)
+        XCTAssertEqual(user.subscriptionTier, .plus)
     }
 
     // MARK: - VOD Access Tests
 
     func testCanWatchVODForVerifiedUserWithSubscription() {
         let subscription = UserSubscription(
-            plan: .basic,
-            status: "active",
-            validUntil: "2024-12-31T23:59:59Z"
+            plan: .free,
+            status: .active,
+            startDate: nil,
+            endDate: "2024-12-31T23:59:59Z",
+            autoRenew: nil
         )
 
         let user = BayitUser(
@@ -105,9 +108,11 @@ final class BayitUserTests: XCTestCase {
 
     func testCannotWatchVODForUnverifiedUser() {
         let subscription = UserSubscription(
-            plan: .basic,
-            status: "active",
-            validUntil: "2024-12-31T23:59:59Z"
+            plan: .free,
+            status: .active,
+            startDate: nil,
+            endDate: "2024-12-31T23:59:59Z",
+            autoRenew: nil
         )
 
         let user = BayitUser(
@@ -165,11 +170,13 @@ final class BayitUserTests: XCTestCase {
 
     // MARK: - Premium Access Tests
 
-    func testIsPremiumForPremiumSubscription() {
+    func testIsPremiumForPlusSubscription() {
         let subscription = UserSubscription(
-            plan: .premium,
-            status: "active",
-            validUntil: "2024-12-31T23:59:59Z"
+            plan: .plus,
+            status: .active,
+            startDate: nil,
+            endDate: "2024-12-31T23:59:59Z",
+            autoRenew: nil
         )
 
         let user = BayitUser(
@@ -189,17 +196,19 @@ final class BayitUserTests: XCTestCase {
         XCTAssertTrue(user.isPremium)
     }
 
-    func testIsNotPremiumForBasicSubscription() {
+    func testIsNotPremiumForFreeSubscription() {
         let subscription = UserSubscription(
-            plan: .basic,
-            status: "active",
-            validUntil: "2024-12-31T23:59:59Z"
+            plan: .free,
+            status: .active,
+            startDate: nil,
+            endDate: "2024-12-31T23:59:59Z",
+            autoRenew: nil
         )
 
         let user = BayitUser(
             id: "user-123",
-            email: "basic@bayit.tv",
-            displayName: "Basic User",
+            email: "free@bayit.tv",
+            displayName: "Free User",
             photoURL: nil,
             role: .user,
             isActive: true,
@@ -242,9 +251,11 @@ final class BayitUserTests: XCTestCase {
             role: .user,
             isActive: true,
             subscription: UserSubscription(
-                plan: .premium,
-                status: "active",
-                validUntil: "2024-12-31T23:59:59Z"
+                plan: .plus,
+                status: .active,
+                startDate: nil,
+                endDate: "2024-12-31T23:59:59Z",
+                autoRenew: nil
             ),
             isBetaUser: true,
             isVerified: true,

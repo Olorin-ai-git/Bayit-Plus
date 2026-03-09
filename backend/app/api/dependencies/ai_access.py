@@ -1,10 +1,10 @@
 """AI feature access authorization dependencies.
 
-Enforces the AI access tier logic:
+Freemium model:
   Admin          -> pass (unlimited, no credits deducted)
-  Premium/Family -> pass (unlimited, no credits deducted)
-  Beta-500       -> pass (caller deducts credits per use)
-  Basic/Free     -> 403 Forbidden
+  Plus (active)  -> pass (generous credits, deducted per use)
+  Free           -> pass (limited credits, deducted per use)
+  Credit check is done at deduction time, not here.
 """
 
 from fastapi import Depends, HTTPException, status
@@ -12,6 +12,7 @@ from fastapi import Depends, HTTPException, status
 from app.core.config import Settings, get_settings
 from app.core.database import get_database
 from app.models.user import User
+from app.models.user_state import can_access_ai
 from app.api.dependencies.verification import get_current_active_user
 from app.services.beta.credit_service import BetaCreditService
 from app.services.olorin.metering.service import MeteringService
@@ -21,27 +22,23 @@ async def require_ai_access(
     current_user: User = Depends(get_current_active_user),
 ) -> User:
     """
-    Require Admin, Premium/Family subscription, or Beta-500 enrollment.
+    Require that the user can access AI features.
 
-    Does NOT check credit balance -- route handlers deduct credits
-    for Beta users after this check passes.
+    Admins: unlimited access.
+    Plus subscribers: access with generous monthly credits.
+    Free users: access with limited monthly credits.
+    Credit balance enforcement happens at deduction time.
 
     Raises:
-        HTTPException: 403 if user lacks AI feature access.
+        HTTPException: 403 if user is suspended or otherwise blocked.
     """
-    if current_user.is_admin_role():
-        return current_user
+    if not can_access_ai(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ai_access_blocked",
+        )
 
-    if current_user.subscription_tier in ["premium", "family"]:
-        return current_user
-
-    if current_user.is_beta_user:
-        return current_user
-
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="ai_feature_requires_premium",
-    )
+    return current_user
 
 
 async def get_credit_service(

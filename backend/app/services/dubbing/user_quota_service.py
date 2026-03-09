@@ -20,7 +20,7 @@ class UserQuotaService:
     User quota enforcement service
 
     Free tier: 5 minutes per day (configurable via settings)
-    Premium/Family: Unlimited
+    Plus: Unlimited
     """
 
     @property
@@ -58,7 +58,7 @@ class UserQuotaService:
                 user, "role", "free"
             )
 
-            if subscription_tier in ["premium", "family", "admin"]:
+            if subscription_tier in ["plus", "admin"]:
                 logger.info(f"Premium user {user_id}, unlimited quota")
                 return True
 
@@ -173,7 +173,7 @@ class UserQuotaService:
             subscription_tier = getattr(user, "subscription_tier", None) or getattr(
                 user, "role", "free"
             )
-            is_premium = subscription_tier in ["premium", "family", "admin"]
+            is_premium = subscription_tier in ["plus", "admin"]
 
             # Get or create quota record
             quota = await UserQuota.find_one({"user_id": user_id})

@@ -142,10 +142,8 @@
             }
             if user.isBetaUser { return "Beta Tester" }
             switch user.subscriptionTier {
-            case .premium: return "Premium"
-            case .family: return "Family"
-            case .basic: return "Basic"
-            case .registeredFree, .nonRegistered: return "Free"
+            case .plus: return "Plus"
+            case .free, .nonRegistered: return "Free"
             }
         }
 
@@ -155,9 +153,8 @@
             }
             if user.isBetaUser { return DesignTokens.Primary.p400 }
             switch user.subscriptionTier {
-            case .premium: return DesignTokens.Subscription.premium
-            case .family: return DesignTokens.Subscription.family
-            case .basic, .registeredFree, .nonRegistered: return DesignTokens.Text.muted
+            case .plus: return DesignTokens.Subscription.premium
+            case .free, .nonRegistered: return DesignTokens.Text.muted
             }
         }
     }

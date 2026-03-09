@@ -84,7 +84,7 @@ final class LiveDubbingViewModel {
     func toggleDubbing(channelId: String) {
         // Check premium subscription
         if let tier = authManager?.user?.subscriptionTier {
-            let isPremium = tier == .premium || tier == .family
+            let isPremium = tier == .plus
             if !isPremium {
                 isPremiumRequired = true
                 return

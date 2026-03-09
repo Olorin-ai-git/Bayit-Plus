@@ -207,7 +207,7 @@ class User(Document):
 
     # Subscription info
     subscription_id: Optional[str] = None
-    subscription_tier: Optional[str] = None  # basic, premium, family
+    subscription_tier: Optional[str] = "free"  # free, plus
     subscription_status: Optional[str] = None  # active, canceled, past_due
     subscription_end_date: Optional[datetime] = None
     subscription_start_date: Optional[datetime] = None
@@ -319,12 +319,20 @@ class User(Document):
         ]
 
     def to_response(self) -> UserResponse:
-        subscription = None
-        if self.subscription_tier:
+        if self.is_admin_user():
+            subscription = {
+                "id": None,
+                "plan": "admin",
+                "status": "active",
+                "start_date": None,
+                "end_date": None,
+            }
+        else:
+            tier = self.subscription_tier or "free"
             subscription = {
                 "id": self.subscription_id,
-                "plan": self.subscription_tier,
-                "status": self.subscription_status,
+                "plan": tier,
+                "status": self.subscription_status or "active",
                 "start_date": (
                     self.subscription_start_date.isoformat()
                     if self.subscription_start_date
@@ -335,15 +343,6 @@ class User(Document):
                     if self.subscription_end_date
                     else None
                 ),
-            }
-        elif self.is_admin_user():
-            # Admin users get full access without explicit subscription
-            subscription = {
-                "id": None,
-                "plan": "admin",
-                "status": "active",
-                "start_date": None,
-                "end_date": None,
             }
         return UserResponse(
             id=str(self.id),
@@ -362,12 +361,20 @@ class User(Document):
         )
 
     def to_admin_response(self) -> UserAdminResponse:
-        subscription = None
-        if self.subscription_tier:
+        if self.is_admin_user():
+            subscription = {
+                "id": None,
+                "plan": "admin",
+                "status": "active",
+                "start_date": None,
+                "end_date": None,
+            }
+        else:
+            tier = self.subscription_tier or "free"
             subscription = {
                 "id": self.subscription_id,
-                "plan": self.subscription_tier,
-                "status": self.subscription_status,
+                "plan": tier,
+                "status": self.subscription_status or "active",
                 "start_date": (
                     self.subscription_start_date.isoformat()
                     if self.subscription_start_date
@@ -378,15 +385,6 @@ class User(Document):
                     if self.subscription_end_date
                     else None
                 ),
-            }
-        elif self.is_admin_user():
-            # Admin users get full access without explicit subscription
-            subscription = {
-                "id": None,
-                "plan": "admin",
-                "status": "active",
-                "start_date": None,
-                "end_date": None,
             }
         return UserAdminResponse(
             id=str(self.id),
@@ -421,10 +419,10 @@ class User(Document):
         return not self.is_admin_role() and not self.is_verified
 
     def can_access_premium_features(self) -> bool:
-        """Check if user can access premium features."""
+        """Check if user can access Plus-tier features (downloads, 4K)."""
         if self.is_admin_role():
             return True
-        return self.subscription_tier in ["premium", "family"]
+        return self.subscription_tier == "plus"
 
     def update_verification_status(self) -> None:
         """Update is_verified based on email_verified AND phone_verified."""
@@ -441,21 +439,17 @@ class User(Document):
 
         Returns:
             Maximum number of concurrent streams allowed for user's subscription.
-            Defaults to 1 (basic plan) if no subscription tier is set.
+            Defaults to 1 (free plan) if no subscription tier is set.
         """
-        # Import here to avoid circular dependency
         from app.models.subscription import SUBSCRIPTION_PLANS
 
-        # Admin users get unlimited streams (family plan limit)
         if self.is_admin_role():
-            return SUBSCRIPTION_PLANS["family"].max_streams
+            return SUBSCRIPTION_PLANS["plus"].max_streams
 
-        # Return limit based on subscription tier
         if self.subscription_tier and self.subscription_tier in SUBSCRIPTION_PLANS:
             return SUBSCRIPTION_PLANS[self.subscription_tier].max_streams
 
-        # Default to basic plan limit
-        return SUBSCRIPTION_PLANS["basic"].max_streams
+        return SUBSCRIPTION_PLANS["free"].max_streams
 
 
 class TokenResponse(BaseModel):

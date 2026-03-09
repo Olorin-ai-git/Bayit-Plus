@@ -219,7 +219,7 @@ def validate_premium_feature(
     Validate premium feature access (Live Dubbing, Audiobooks).
 
     Requirements:
-    - User must have premium or family subscription tier
+    - User must have plus subscription tier
     - OR user must be admin
 
     Returns:
@@ -235,14 +235,14 @@ def validate_premium_feature(
             )
 
         # Check subscription tier
-        if current_user.subscription_tier not in ["premium", "family"]:
+        if current_user.subscription_tier != "plus":
             return ValidationResult(
                 feature=feature_name,
                 enabled=False,
                 reason="requires_premium_subscription",
                 metadata={
                     "current_tier": current_user.subscription_tier or "free",
-                    "required_tiers": ["premium", "family"]
+                    "required_tiers": ["plus"]
                 }
             )
 
@@ -274,9 +274,9 @@ async def validate_ai_feature(
 
     Access tiers:
     - Admin: unlimited
-    - Premium/Family: unlimited
+    - Plus: unlimited
     - Beta-500: requires positive credit balance
-    - Basic/Free: denied
+    - Free: denied
 
     Returns:
         ValidationResult with enabled=True if user meets requirements
@@ -289,7 +289,7 @@ async def validate_ai_feature(
                 reason="admin_access"
             )
 
-        if current_user.subscription_tier in ["premium", "family"]:
+        if current_user.subscription_tier == "plus":
             return ValidationResult(
                 feature=feature_name,
                 enabled=True,

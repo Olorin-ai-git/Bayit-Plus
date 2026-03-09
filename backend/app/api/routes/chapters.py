@@ -32,7 +32,7 @@ async def get_chapters(
     """
     Get chapters for a specific content item.
     Returns cached chapters if available, or generates new ones.
-    Generation requires Admin, Premium/Family, or Beta-500 access.
+    Generation requires Admin, Plus, or Beta-500 access.
     """
     # Check for existing chapters
     existing = await VideoChapters.get_for_content(content_id)
@@ -44,7 +44,7 @@ async def get_chapters(
         raise HTTPException(status_code=401, detail="Authentication required for chapter generation")
 
     if not current_user.is_admin_role():
-        if current_user.subscription_tier not in ["premium", "family"]:
+        if current_user.subscription_tier != "plus":
             if not current_user.is_beta_user:
                 raise HTTPException(status_code=403, detail="ai_feature_requires_premium")
 

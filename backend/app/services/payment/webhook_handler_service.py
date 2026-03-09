@@ -81,20 +81,23 @@ class WebhookHandlerService:
             }
         )
 
-        # ATOMIC STATE TRANSITION (prevents race conditions)
-        # Only updates if user is still in payment_pending state with viewer role
+        # ATOMIC STATE TRANSITION: upgrade from free to plus
+        # Matches users in free tier OR payment_pending state
         result = await User.get_pymongo_collection().update_one(
             {
                 "_id": ObjectId(user_id),
-                "payment_pending": True,  # Only update if still pending
-                "role": "viewer"  # Only update if still viewer
+                "$or": [
+                    {"payment_pending": True},
+                    {"subscription_tier": "free"},
+                    {"subscription_tier": None},
+                ],
             },
             {
                 "$set": {
-                    "role": "user",  # Upgrade to full user
-                    "payment_pending": False,  # Clear pending flag
-                    "pending_plan_id": None,  # Clear pending plan
-                    "subscription_tier": plan_id,
+                    "role": "user",
+                    "payment_pending": False,
+                    "pending_plan_id": None,
+                    "subscription_tier": "plus",
                     "subscription_status": "active",
                     "subscription_id": subscription_id,
                     "stripe_customer_id": customer_id,
@@ -196,7 +199,7 @@ class WebhookHandlerService:
             }
         )
 
-        # Update user to canceled status (keep data for grace period)
+        # Revert user to free tier on subscription cancellation
         result = await User.get_pymongo_collection().update_one(
             {
                 "stripe_customer_id": customer_id,
@@ -204,8 +207,10 @@ class WebhookHandlerService:
             },
             {
                 "$set": {
-                    "subscription_status": "canceled",
+                    "subscription_tier": "free",
+                    "subscription_status": None,
                     "subscription_end_date": datetime.now(timezone.utc),
+                    "max_concurrent_streams": 1,
                     "updated_at": datetime.now(timezone.utc),
                 }
             }

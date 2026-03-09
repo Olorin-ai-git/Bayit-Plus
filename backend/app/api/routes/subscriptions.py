@@ -101,8 +101,8 @@ async def create_checkout(
             },
         )
 
-    if request.plan_id not in SUBSCRIPTION_PLANS:
-        raise HTTPException(status_code=400, detail="Invalid plan")
+    if request.plan_id != "plus":
+        raise HTTPException(status_code=400, detail="Only 'plus' plan is available for checkout")
 
     # Get or create Stripe customer
     if not current_user.stripe_customer_id:
@@ -114,13 +114,12 @@ async def create_checkout(
         current_user.stripe_customer_id = customer.id
         await current_user.save()
 
-    # Get price ID based on plan and billing period
+    # Get price ID based on billing period
     price_map = {
-        "basic": settings.STRIPE_PRICE_BASIC,
-        "premium": settings.STRIPE_PRICE_PREMIUM,
-        "family": settings.STRIPE_PRICE_FAMILY,
+        "monthly": settings.STRIPE_PRICE_PLUS_MONTHLY,
+        "yearly": settings.STRIPE_PRICE_PLUS_YEARLY,
     }
-    price_id = price_map.get(request.plan_id)
+    price_id = price_map.get(request.billing_period)
 
     if not price_id:
         raise HTTPException(status_code=400, detail="Price not configured")
@@ -338,7 +337,7 @@ async def handle_subscription_updated(stripe_sub: dict):
 
 
 async def handle_subscription_deleted(stripe_sub: dict):
-    """Handle subscription cancellation."""
+    """Handle subscription cancellation — revert user to free tier."""
     subscription = await Subscription.find_one(
         {"stripe_subscription_id": stripe_sub["id"]}
 )
@@ -349,10 +348,10 @@ async def handle_subscription_deleted(stripe_sub: dict):
     subscription.updated_at = datetime.utcnow()
     await subscription.save()
 
-    # Update user
+    # Revert user to free tier
     user = await User.get(subscription.user_id)
     if user:
-        user.subscription_tier = None
-        user.subscription_status = "canceled"
-        user.max_concurrent_streams = 1
+        user.subscription_tier = "free"
+        user.subscription_status = None
+        user.max_concurrent_streams = SUBSCRIPTION_PLANS["free"].max_streams
         await user.save()

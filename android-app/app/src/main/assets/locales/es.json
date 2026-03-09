@@ -969,8 +969,8 @@
     },
     "dubbing": {
       "notNow": "Ahora no",
-      "premiumMessage": "El doblaje en vivo requiere una suscripcion Premium o Beta 500",
-      "premiumTitle": "Funcion Premium",
+      "premiumMessage": "El doblaje en vivo requiere una suscripcion Plus o Beta 500",
+      "premiumTitle": "Funcion Bayit+",
       "upgrade": "Mejorar",
       "voiceTitle": "Voz de doblaje",
       "settings_title": "Configuración de Doblaje en Vivo",
