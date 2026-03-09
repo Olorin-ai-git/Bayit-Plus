@@ -38,7 +38,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>1</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>GOOGLE_CLIENT_ID</key>
@@ -49,10 +49,6 @@
 	<string>$(HIDDEN_CHANNEL_KEYWORDS)</string>
 	<key>HOME_CONTENT_ROW_LIMIT</key>
 	<string>$(HOME_CONTENT_ROW_LIMIT)</string>
-	<key>IAP_PLUS_MONTHLY_PRODUCT_ID</key>
-	<string>$(IAP_PLUS_MONTHLY_PRODUCT_ID)</string>
-	<key>IAP_PLUS_YEARLY_PRODUCT_ID</key>
-	<string>$(IAP_PLUS_YEARLY_PRODUCT_ID)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
