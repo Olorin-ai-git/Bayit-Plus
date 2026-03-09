@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.SearchRepository
 import tv.bayit.plus.core.model.ContentItem
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val searchRepository: SearchRepository,
+    @OwnerMode private val ownerMode: Boolean,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -86,6 +88,7 @@ class SearchViewModel @Inject constructor(
             is BayitResult.Success -> {
                 @Suppress("UNCHECKED_CAST")
                 val items = (result.data as List<Any>).filterIsInstance<ContentItem>()
+                    .let { filterByOwnerMode(it) }
 
                 logger.info(
                     "Search completed",
@@ -145,8 +148,17 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun filterByOwnerMode(items: List<ContentItem>): List<ContentItem> {
+        if (ownerMode) return items
+        return items.filter { item ->
+            val type = (item.contentType ?: item.type)?.lowercase() ?: return@filter true
+            !OWNER_ONLY_CONTENT_TYPES.any { type.contains(it) }
+        }
+    }
+
     companion object {
         private const val DEBOUNCE_DELAY_MS = 500L
+        private val OWNER_ONLY_CONTENT_TYPES = listOf("movie", "series", "film", "vod", "collection")
     }
 }
 

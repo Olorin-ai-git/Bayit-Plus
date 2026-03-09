@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.model.FavoriteItem
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val contentRepository: ContentRepository,
+    @OwnerMode private val ownerMode: Boolean,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -64,6 +66,7 @@ class FavoritesViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     @Suppress("UNCHECKED_CAST")
                     val items = (result.data as List<Any>).filterIsInstance<FavoriteItem>()
+                        .let { filterByOwnerMode(it) }
 
                     logger.info(
                         "Favorites loaded",
@@ -89,6 +92,18 @@ class FavoritesViewModel @Inject constructor(
                 is BayitResult.Loading -> Unit
             }
         }
+    }
+
+    private fun filterByOwnerMode(items: List<FavoriteItem>): List<FavoriteItem> {
+        if (ownerMode) return items
+        return items.filter { item ->
+            val type = item.type?.lowercase() ?: return@filter true
+            !OWNER_ONLY_CONTENT_TYPES.any { type.contains(it) }
+        }
+    }
+
+    companion object {
+        private val OWNER_ONLY_CONTENT_TYPES = listOf("movie", "series", "film", "vod", "collection")
     }
 }
 

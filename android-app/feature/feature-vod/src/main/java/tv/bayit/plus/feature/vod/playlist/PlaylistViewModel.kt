@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.OwnerMode
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.PlaylistRepository
 import tv.bayit.plus.core.model.PlaylistItem
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
+    @OwnerMode private val ownerMode: Boolean,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -48,6 +50,7 @@ class PlaylistViewModel @Inject constructor(
                     val items = (result.data as? List<*>)
                         ?.filterIsInstance<PlaylistItem>()
                         .orEmpty()
+                        .let { filterByOwnerMode(it) }
 
                     logger.info(
                         "Playlists loaded",
@@ -76,6 +79,18 @@ class PlaylistViewModel @Inject constructor(
                 is BayitResult.Loading -> Unit
             }
         }
+    }
+
+    private fun filterByOwnerMode(items: List<PlaylistItem>): List<PlaylistItem> {
+        if (ownerMode) return items
+        return items.filter { item ->
+            val type = item.contentType?.lowercase() ?: return@filter true
+            !OWNER_ONLY_CONTENT_TYPES.any { type.contains(it) }
+        }
+    }
+
+    companion object {
+        private val OWNER_ONLY_CONTENT_TYPES = listOf("movie", "series", "film", "vod", "collection")
     }
 }
 
