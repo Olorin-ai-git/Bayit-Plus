@@ -1,9 +1,11 @@
 # Bayit+ Android ProGuard Rules
 
-# Keep Hilt classes
+# Keep Hilt classes and ViewModel keys (prevents duplicate key crash with R8)
 -keep class dagger.hilt.** { *; }
 -keep class javax.inject.** { *; }
 -keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+-keepnames class * extends androidx.lifecycle.ViewModel
 
 # Keep Retrofit
 -keepattributes Signature
