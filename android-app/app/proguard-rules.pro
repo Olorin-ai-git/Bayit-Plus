@@ -68,6 +68,19 @@
 -keep class coil3.disk.** { *; }
 -dontwarn coil3.**
 
+# Navigation: keep Route class names used by type-safe nav and runtime route matching
+-keepnames class tv.bayit.plus.navigation.Route
+-keepnames class tv.bayit.plus.navigation.Route$* {
+    public static ** INSTANCE;
+}
+-keep,includedescriptorclasses class tv.bayit.plus.navigation.**$$serializer { *; }
+-keepclassmembers class tv.bayit.plus.navigation.** {
+    *** Companion;
+}
+-keepclasseswithmembers class tv.bayit.plus.navigation.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
 # General Android
 -keepclassmembers class * extends android.app.Activity {
    public void *(android.view.View);
