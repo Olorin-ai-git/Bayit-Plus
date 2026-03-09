@@ -33,7 +33,7 @@ def _verify_internal_key(api_key: str) -> None:
 def _build_credit_service() -> BetaCreditService:
     """Construct BetaCreditService with injected dependencies."""
     db = get_database()
-    metering = MeteringService(settings)
+    metering = MeteringService()
     return BetaCreditService(
         settings=settings,
         metering_service=metering,
