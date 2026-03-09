@@ -10,9 +10,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
+import tv.bayit.plus.core.model.SubtitleEnglishMode
+import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.designsystem.component.GlassModal
 import tv.bayit.plus.feature.player.live.AIFeaturesPanelState
 import tv.bayit.plus.feature.player.live.ui.AILanguagePicker
+import tv.bayit.plus.feature.player.subtitles.AISubtitlesPicker
+import tv.bayit.plus.feature.player.subtitles.EnglishModePicker
+import tv.bayit.plus.feature.player.subtitles.HebrewModePicker
 import tv.bayit.plus.feature.player.subtitles.OpenSubtitlesDownload
 import tv.bayit.plus.feature.player.subtitles.SplitSubtitleLanguagePicker
 import tv.bayit.plus.feature.player.subtitles.SubtitleLanguagePicker
@@ -91,6 +96,8 @@ internal fun PlayerScreenPickerSheets(
     onFetchExternalSubtitles: () -> Unit,
     onSelectExternalSubtitle: (ImportedTrack) -> Unit,
     onHideOpenSubtitles: () -> Unit,
+    onSetHebrewMode: (SubtitleHebrewMode) -> Unit = {},
+    onSetEnglishMode: (SubtitleEnglishMode) -> Unit = {},
 ) {
     if (showLanguagePicker) {
         AILanguagePicker(
@@ -117,6 +124,25 @@ internal fun PlayerScreenPickerSheets(
                 onOpenSubtitlesClick = onShowOpenSubtitles,
                 onDismiss = onHideSubtitlePicker,
             )
+
+            val selectedLang = extendedState.selectedSubtitleLanguage
+            if (selectedLang == "he") {
+                HebrewModePicker(
+                    selectedMode = extendedState.hebrewMode,
+                    onModeSelected = { mode ->
+                        onSetHebrewMode(mode)
+                        onHideSubtitlePicker()
+                    },
+                )
+            } else if (selectedLang == "en") {
+                EnglishModePicker(
+                    selectedMode = extendedState.englishMode,
+                    onModeSelected = { mode ->
+                        onSetEnglishMode(mode)
+                        onHideSubtitlePicker()
+                    },
+                )
+            }
         }
     }
 

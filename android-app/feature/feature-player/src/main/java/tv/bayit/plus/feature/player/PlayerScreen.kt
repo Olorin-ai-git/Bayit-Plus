@@ -185,6 +185,8 @@ fun PlayerRoute(
         onToggleFullscreen = viewModel::toggleFullscreen,
         onCastClick = viewModel::onCastClick,
         onDismissSubtitleBanner = viewModel::dismissSubtitleBanner,
+        onSetHebrewMode = viewModel::setHebrewSubtitleMode,
+        onSetEnglishMode = viewModel::setEnglishSubtitleMode,
         tooltipManager = viewModel.tooltipManager,
         isPlaying = playerState is PlayerState.Playing,
         onBack = {

@@ -45,15 +45,29 @@ class BYOCSourceRefresher @Inject constructor(
     }
 
     private suspend fun refreshPlex(entity: BYOCSourceEntity): List<BYOCContentItem> {
-        val token = keychainStore.getToken(entity.id) ?: return emptyList()
+        val token = keychainStore.getToken(entity.id)
+        if (token == null) {
+            logger.warning("Plex refresh: no token found", metadata = mapOf("sourceId" to entity.id))
+            return emptyList()
+        }
         val servers = plexClient.discoverServers(token, entity.id)
-        val server = servers.firstOrNull() ?: return emptyList()
+        logger.info("Plex refresh: discovered servers", metadata = mapOf("count" to servers.size.toString()))
+        val server = servers.firstOrNull()
+        if (server == null) {
+            logger.warning("Plex refresh: no reachable server", metadata = mapOf("sourceId" to entity.id))
+            return emptyList()
+        }
         val libraries = plexClient.fetchLibraries(server, token)
+        logger.info(
+            "Plex refresh: fetched libraries",
+            metadata = mapOf("count" to libraries.size.toString(), "server" to server.name),
+        )
         val allItems = mutableListOf<BYOCContentItem>()
         for (library in libraries) {
             val items = plexClient.fetchLibraryItems(server, library.id, token, entity.id)
             allItems.addAll(plexAdapter.filterPlayable(items))
         }
+        logger.info("Plex refresh: total content items", metadata = mapOf("count" to allItems.size.toString()))
         return allItems
     }
 

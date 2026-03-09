@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.SettingsInputAntenna
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -52,6 +53,7 @@ fun settingsMenuItems(): List<SettingsMenuItem> = listOf(
     SettingsMenuItem(titleKey = "Connected Accounts", icon = Icons.Default.Link, route = "accounts"),
     SettingsMenuItem(titleKey = "Family Controls", icon = Icons.Default.FamilyRestroom, route = "family"),
     SettingsMenuItem(titleKey = "Household", icon = Icons.Default.Group, route = "household"),
+    SettingsMenuItem(titleKey = "Your Content (BYOC)", icon = Icons.Default.SettingsInputAntenna, route = "byoc"),
     SettingsMenuItem(titleKey = "Replay Feature Tour", icon = Icons.Default.Refresh, route = "replay_tour"),
     SettingsMenuItem(titleKey = "Help", icon = Icons.AutoMirrored.Filled.Help, route = "help"),
 )

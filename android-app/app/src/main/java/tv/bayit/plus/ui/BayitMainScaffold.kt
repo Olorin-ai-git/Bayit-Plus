@@ -104,6 +104,8 @@ fun BayitMainScaffold(
                     userName = userName,
                     currentLanguage = currentLanguage,
                     onProfileClick = { navigateWithAuthGuard(Route.Profile) },
+                    onSettingsClick = { navigateWithAuthGuard(Route.Settings) },
+                    onBYOCClick = { navigateWithAuthGuard(Route.BYOCSettings) },
                     onLanguageSelected = { code -> navBarViewModel.setLanguage(code) },
                     onHomeClick = {
                         selectedTab = AppTab.HOME

@@ -22,8 +22,9 @@ internal fun LazyListScope.byocHomeItems(
             val sourceItems = contentBySource[source.id].orEmpty()
             if (sourceItems.isNotEmpty()) {
                 item(key = "byoc_content_${source.id}") {
+                    val displayPrefix = "${source.type.name} - "
                     BYOCContentRow(
-                        sourceName = source.name,
+                        sourceName = "$displayPrefix${source.name}",
                         items = sourceItems,
                         capabilities = sourceManager?.getCapabilities(source.id),
                         onItemClick = onBYOCItemClick,

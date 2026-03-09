@@ -2,8 +2,12 @@ package tv.bayit.plus.feature.player
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.model.ImportedTrack
 import tv.bayit.plus.core.model.SplitSubtitleLayout
+import tv.bayit.plus.core.model.SubtitleEnglishMode
+import tv.bayit.plus.core.model.SubtitleHebrewMode
 
 /** Returns the backend content ID for BYOC items, or the local content ID otherwise. */
 private val PlayerViewModel.subtitleContentId: String?
@@ -75,6 +79,51 @@ private fun PlayerViewModel.fetchBYOCExternalSubtitles() {
 
 fun PlayerViewModel.selectExternalSubtitle(track: ImportedTrack) {
     _extendedState.update { it.copy(selectedSubtitleLanguage = track.language, isSubtitlesEnabled = true) }
+}
+
+fun PlayerViewModel.setHebrewSubtitleMode(mode: SubtitleHebrewMode) {
+    _extendedState.update { it.copy(hebrewMode = mode) }
+    val contentId = subtitleContentId ?: return
+    val lang = _extendedState.value.selectedSubtitleLanguage ?: "he"
+    if (mode != SubtitleHebrewMode.STANDARD) {
+        triggerAIGeneration(contentId, lang, mode, null)
+    }
+    subtitleDelegate.loadTrackWithMode(contentId, lang, mode, null, viewModelScope) { t -> _extendedState.update(t) }
+}
+
+fun PlayerViewModel.setEnglishSubtitleMode(mode: SubtitleEnglishMode) {
+    _extendedState.update { it.copy(englishMode = mode) }
+    val contentId = subtitleContentId ?: return
+    val lang = _extendedState.value.selectedSubtitleLanguage ?: "en"
+    if (mode != SubtitleEnglishMode.STANDARD) {
+        triggerAIGeneration(contentId, lang, null, mode)
+    }
+    subtitleDelegate.loadTrackWithMode(contentId, lang, null, mode, viewModelScope) { t -> _extendedState.update(t) }
+}
+
+private fun PlayerViewModel.triggerAIGeneration(
+    contentId: String,
+    language: String,
+    hebrewMode: SubtitleHebrewMode?,
+    englishMode: SubtitleEnglishMode?,
+) {
+    _extendedState.update { it.copy(isGeneratingAISubtitles = true) }
+    viewModelScope.launch {
+        val repo = subtitleDelegate.subtitleRepository
+        val result: BayitResult<Any> = when {
+            hebrewMode == SubtitleHebrewMode.NIKUD -> repo.generateNikud(contentId, language, false)
+            hebrewMode == SubtitleHebrewMode.SHORESH -> repo.generateShoresh(contentId, language, false)
+            hebrewMode == SubtitleHebrewMode.HEBLISH -> repo.generateHeblish(contentId, language, false)
+            englishMode == SubtitleEnglishMode.ENGREW -> repo.generateEngrew(contentId, language, false)
+            else -> return@launch
+        }
+        _extendedState.update { it.copy(isGeneratingAISubtitles = false) }
+        if (result is BayitResult.Success) {
+            subtitleDelegate.loadTrackWithMode(
+                contentId, language, hebrewMode, englishMode, viewModelScope,
+            ) { t -> _extendedState.update(t) }
+        }
+    }
 }
 
 fun PlayerViewModel.dismissSubtitleBanner() {

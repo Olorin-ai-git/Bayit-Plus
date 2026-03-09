@@ -1,27 +1,26 @@
 package tv.bayit.plus.feature.home
 
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
 
 internal suspend fun HomeViewModel.loadBYOCState() {
     try {
-        val sources = sourceManager.sources.first()
-        val content = sourceManager.contentItems.first()
-        val hasSources = sources.isNotEmpty()
-
-        logger.debug(
-            "BYOC state loaded",
-            mapOf(
-                "sourceCount" to sources.size.toString(),
-                "contentCount" to content.size.toString(),
-            ),
-        )
-
-        updateState {
-            copy(
-                byocSources = sources,
-                byocContent = content,
-                hasBYOCSources = hasSources,
+        sourceManager.sources.combine(sourceManager.contentItems) { sources, content ->
+            sources to content
+        }.collect { (sources, content) ->
+            logger.debug(
+                "BYOC state updated",
+                mapOf(
+                    "sourceCount" to sources.size.toString(),
+                    "contentCount" to content.size.toString(),
+                ),
             )
+            updateState {
+                copy(
+                    byocSources = sources,
+                    byocContent = content,
+                    hasBYOCSources = sources.isNotEmpty(),
+                )
+            }
         }
     } catch (e: Exception) {
         logger.debug(

@@ -33,6 +33,22 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
+# Keep BYOC serialization models (Plex, YouTube, Xtream response classes)
+-keep,includedescriptorclasses class tv.bayit.plus.core.byoc.clients.**$$serializer { *; }
+-keepclassmembers class tv.bayit.plus.core.byoc.clients.** {
+    *** Companion;
+}
+-keepclasseswithmembers class tv.bayit.plus.core.byoc.clients.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep,includedescriptorclasses class tv.bayit.plus.core.byoc.models.**$$serializer { *; }
+-keepclassmembers class tv.bayit.plus.core.byoc.models.** {
+    *** Companion;
+}
+-keepclasseswithmembers class tv.bayit.plus.core.byoc.models.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
 # OkHttp: keep only public suffix database and platform callbacks
 -dontwarn okhttp3.**
 -dontwarn okio.**

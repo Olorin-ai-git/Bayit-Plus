@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.player
 
+import tv.bayit.plus.core.byoc.BYOCSourceManager
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.download.BayitDownloadManager
@@ -26,6 +27,7 @@ class PlayerContentResolver @Inject constructor(
     private val radioRepository: RadioRepository,
     private val podcastRepository: PodcastRepository,
     private val downloadManager: BayitDownloadManager,
+    private val byocSourceManager: BYOCSourceManager,
     private val logger: BayitLogger,
 ) {
     suspend fun resolveStreamUrl(
@@ -51,6 +53,7 @@ class PlayerContentResolver @Inject constructor(
         }
 
         return when {
+            contentType == CONTENT_TYPE_BYOC -> resolveBYOCStreamUrl(contentId)
             contentType in LIVE_CONTENT_TYPES -> liveTVRepository.getStreamUrl(contentId)
             contentType == CONTENT_TYPE_RADIO -> radioRepository.getStreamUrl(contentId)
             contentType in PODCAST_CONTENT_TYPES -> resolvePodcastAudioUrl(contentId)
@@ -62,6 +65,7 @@ class PlayerContentResolver @Inject constructor(
         contentId: String,
         contentType: String,
     ): Pair<String, String?> = when {
+        contentType == CONTENT_TYPE_BYOC -> resolveBYOCMetadata(contentId)
         contentType in LIVE_CONTENT_TYPES -> resolveLiveMetadata(contentId)
         contentType == CONTENT_TYPE_RADIO -> resolveRadioMetadata(contentId)
         contentType in PODCAST_CONTENT_TYPES -> resolvePodcastMetadata(contentId)
@@ -121,9 +125,26 @@ class PlayerContentResolver @Inject constructor(
             else -> "" to null
         }
 
+    private fun resolveBYOCStreamUrl(contentId: String): BayitResult<String> {
+        val item = byocSourceManager.contentItems.value.find { it.id == contentId }
+        val url = item?.streamUrl
+        logger.info("BYOC stream resolve", mapOf("contentId" to contentId, "streamUrl" to url.orEmpty()))
+        return if (!url.isNullOrBlank()) {
+            BayitResult.Success(url)
+        } else {
+            BayitResult.Error(IllegalStateException("BYOC stream URL not found for: $contentId"))
+        }
+    }
+
+    private fun resolveBYOCMetadata(contentId: String): Pair<String, String?> {
+        val item = byocSourceManager.contentItems.value.find { it.id == contentId }
+        return (item?.title.orEmpty()) to item?.description
+    }
+
     companion object {
         val LIVE_CONTENT_TYPES = setOf("live", "live_tv", "channel")
         val PODCAST_CONTENT_TYPES = setOf("podcast", "podcast_episode")
         const val CONTENT_TYPE_RADIO = "radio"
+        const val CONTENT_TYPE_BYOC = "byoc"
     }
 }

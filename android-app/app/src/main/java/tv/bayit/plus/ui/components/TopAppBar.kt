@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SettingsInputAntenna
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -35,6 +37,8 @@ fun TopAppBar(
     userName: String?,
     currentLanguage: String,
     onProfileClick: () -> Unit,
+    onSettingsClick: () -> Unit = {},
+    onBYOCClick: () -> Unit = {},
     onLanguageSelected: (String) -> Unit,
     onPlaylistClick: () -> Unit,
     onZehAniClick: () -> Unit,
@@ -90,6 +94,24 @@ fun TopAppBar(
                     contentDescription = "Zeh Ani",
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(28.dp),
+                )
+            }
+
+            IconButton(onClick = onBYOCClick) {
+                Icon(
+                    imageVector = Icons.Default.SettingsInputAntenna,
+                    contentDescription = "Your Content",
+                    tint = DesignTokens.Colors.Text.primary,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = DesignTokens.Colors.Text.primary,
+                    modifier = Modifier.size(24.dp),
                 )
             }
 

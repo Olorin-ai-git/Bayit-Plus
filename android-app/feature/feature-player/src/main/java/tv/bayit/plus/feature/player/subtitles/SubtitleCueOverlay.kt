@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import tv.bayit.plus.core.model.SubtitleCue
+import tv.bayit.plus.core.model.SubtitleEnglishMode
 import tv.bayit.plus.core.model.SubtitleHebrewMode
 import tv.bayit.plus.core.model.TranslationResult
 import tv.bayit.plus.designsystem.modifier.glassMorphism
@@ -32,6 +33,7 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 fun SubtitleCueOverlay(
     activeCue: SubtitleCue?,
     hebrewMode: SubtitleHebrewMode,
+    englishMode: SubtitleEnglishMode = SubtitleEnglishMode.STANDARD,
     translationResult: TranslationResult?,
     onWordTap: (String) -> Unit,
     onDismissTranslation: () -> Unit,
@@ -63,6 +65,7 @@ fun SubtitleCueOverlay(
                     CueContent(
                         cue = cue,
                         hebrewMode = hebrewMode,
+                        englishMode = englishMode,
                         onWordTap = onWordTap,
                     )
                 }
@@ -76,9 +79,10 @@ fun SubtitleCueOverlay(
 private fun CueContent(
     cue: SubtitleCue,
     hebrewMode: SubtitleHebrewMode,
+    englishMode: SubtitleEnglishMode = SubtitleEnglishMode.STANDARD,
     onWordTap: (String) -> Unit,
 ) {
-    val displayText = resolveDisplayText(cue, hebrewMode)
+    val displayText = resolveDisplayText(cue, hebrewMode, englishMode)
     val words = cue.words
 
     Box(
@@ -113,10 +117,18 @@ private fun CueContent(
     }
 }
 
-private fun resolveDisplayText(cue: SubtitleCue, mode: SubtitleHebrewMode): String? =
-    when (mode) {
+private fun resolveDisplayText(
+    cue: SubtitleCue,
+    hebrewMode: SubtitleHebrewMode,
+    englishMode: SubtitleEnglishMode = SubtitleEnglishMode.STANDARD,
+): String? {
+    if (englishMode == SubtitleEnglishMode.ENGREW) {
+        return cue.textEngrew ?: cue.text
+    }
+    return when (hebrewMode) {
         SubtitleHebrewMode.NIKUD -> cue.textNikud ?: cue.text
         SubtitleHebrewMode.SHORESH -> cue.textShoresh ?: cue.text
         SubtitleHebrewMode.HEBLISH -> cue.textHeblish ?: cue.text
         SubtitleHebrewMode.STANDARD -> cue.text
     }
+}

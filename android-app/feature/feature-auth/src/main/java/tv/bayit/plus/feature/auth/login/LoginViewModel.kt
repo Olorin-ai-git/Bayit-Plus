@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.BiometricAuthService
 import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.auth.SecureStorageService
+import tv.bayit.plus.core.common.DebugLoginConfig
+import tv.bayit.plus.core.common.IsDebug
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
@@ -20,6 +22,8 @@ class LoginViewModel @Inject constructor(
     private val biometricAuthService: BiometricAuthService,
     private val secureStorage: SecureStorageService,
     private val logger: BayitLogger,
+    @IsDebug private val isDebug: Boolean,
+    private val debugLoginConfig: DebugLoginConfig,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(
@@ -35,6 +39,13 @@ class LoginViewModel @Inject constructor(
             email = "", password = "",
             showBiometricSignIn = capable && enrolled && hasToken,
         )
+        if (isDebug && debugLoginConfig.isEnabled) {
+            _uiState.value = LoginUiState.Input(
+                email = debugLoginConfig.email,
+                password = debugLoginConfig.password,
+            )
+            loginWithEmail()
+        }
     }
 
     fun updateEmail(email: String) {

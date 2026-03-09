@@ -43,7 +43,24 @@ class BYOCSourceManagerImpl @Inject constructor(
     override val contentItems: StateFlow<List<BYOCContentItem>> = _contentItems.asStateFlow()
 
     init {
-        externalScope.launch { loadSources() }
+        externalScope.launch {
+            loadSources()
+            logger.info(
+                "BYOC init: sources loaded",
+                mapOf("count" to _sources.value.size.toString()),
+            )
+            if (_sources.value.isNotEmpty()) {
+                try {
+                    refreshAll()
+                } catch (e: Exception) {
+                    logger.error(
+                        "BYOC init: refreshAll failed",
+                        error = e,
+                        metadata = mapOf("sourceCount" to _sources.value.size.toString()),
+                    )
+                }
+            }
+        }
     }
 
     override suspend fun addPlexSource(authToken: String, serverName: String): BYOCSourceConfig {

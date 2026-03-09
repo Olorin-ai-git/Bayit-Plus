@@ -94,9 +94,13 @@ android {
             isDebuggable = true
             versionNameSuffix = "-debug"
             buildConfigField("Boolean", "OWNER_MODE", "true")
+            buildConfigField("String", "DEBUG_LOGIN_EMAIL", "\"${localOrProject("bayit.debug.loginEmail") ?: ""}\"")
+            buildConfigField("String", "DEBUG_LOGIN_PASSWORD", "\"${localOrProject("bayit.debug.loginPassword") ?: ""}\"")
         }
         release {
             buildConfigField("Boolean", "OWNER_MODE", "false")
+            buildConfigField("String", "DEBUG_LOGIN_EMAIL", "\"\"")
+            buildConfigField("String", "DEBUG_LOGIN_PASSWORD", "\"\"")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

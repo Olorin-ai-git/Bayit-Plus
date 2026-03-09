@@ -6,6 +6,8 @@ import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.SubtitleRepository
 import tv.bayit.plus.core.model.SubtitleCue
+import tv.bayit.plus.core.model.SubtitleEnglishMode
+import tv.bayit.plus.core.model.SubtitleHebrewMode
 import javax.inject.Inject
 
 /**
@@ -16,7 +18,7 @@ import javax.inject.Inject
  * transformers so the caller can apply them atomically to its StateFlow.
  */
 class PlayerSubtitleDelegate @Inject constructor(
-    private val subtitleRepository: SubtitleRepository,
+    internal val subtitleRepository: SubtitleRepository,
     private val logger: BayitLogger,
 ) {
     fun loadAvailableSubtitles(
@@ -148,15 +150,28 @@ class PlayerSubtitleDelegate @Inject constructor(
         }
     }
 
+    fun loadTrackWithMode(
+        contentId: String,
+        languageCode: String,
+        hebrewMode: SubtitleHebrewMode?,
+        englishMode: SubtitleEnglishMode?,
+        scope: CoroutineScope,
+        update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
+    ) {
+        loadTrack(contentId, languageCode, scope, update, primary = null, hebrewMode = hebrewMode, englishMode = englishMode)
+    }
+
     private fun loadTrack(
         contentId: String,
         languageCode: String,
         scope: CoroutineScope,
         update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
         primary: Boolean?,
+        hebrewMode: SubtitleHebrewMode? = null,
+        englishMode: SubtitleEnglishMode? = null,
     ) {
         scope.launch {
-            when (val result = subtitleRepository.fetchCues(contentId, languageCode, null, null)) {
+            when (val result = subtitleRepository.fetchCues(contentId, languageCode, hebrewMode, englishMode)) {
                 is BayitResult.Success -> {
                     val cues = result.data.cues ?: emptyList()
                     when (primary) {

@@ -97,6 +97,8 @@ internal fun PlayerScreen(
     onToggleFullscreen: () -> Unit,
     onCastClick: () -> Unit = {},
     onDismissSubtitleBanner: () -> Unit = {},
+    onSetHebrewMode: (tv.bayit.plus.core.model.SubtitleHebrewMode) -> Unit = {},
+    onSetEnglishMode: (tv.bayit.plus.core.model.SubtitleEnglishMode) -> Unit = {},
     onBack: () -> Unit,
     tooltipManager: TooltipManager? = null,
     isPlaying: Boolean = false,
@@ -194,6 +196,8 @@ internal fun PlayerScreen(
                     onFetchExternalSubtitles = onFetchExternalSubtitles,
                     onSelectExternalSubtitle = onSelectExternalSubtitle,
                     onHideOpenSubtitles = onHideOpenSubtitles,
+                    onSetHebrewMode = onSetHebrewMode,
+                    onSetEnglishMode = onSetEnglishMode,
                 )
                 SubtitleBanner(
                     message = extendedState.subtitleBannerMessage,
