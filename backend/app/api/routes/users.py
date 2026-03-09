@@ -129,6 +129,8 @@ class UpdatePreferencesRequest(BaseModel):
     interactive_moments_enabled: Optional[bool] = None
     show_widgets_dock: Optional[bool] = None
     show_voice_control_fab: Optional[bool] = None
+    autoplay_enabled: Optional[bool] = None
+    notifications_enabled: Optional[bool] = None
 
 
 @router.get("/me/preferences")
@@ -177,6 +179,14 @@ async def update_my_preferences(
     if request.show_voice_control_fab is not None:
         current_user.preferences["show_voice_control_fab"] = (
             request.show_voice_control_fab
+        )
+    if request.autoplay_enabled is not None:
+        current_user.preferences["autoplay_enabled"] = (
+            request.autoplay_enabled
+        )
+    if request.notifications_enabled is not None:
+        current_user.preferences["notifications_enabled"] = (
+            request.notifications_enabled
         )
 
     await current_user.save()

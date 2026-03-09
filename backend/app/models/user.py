@@ -289,6 +289,10 @@ class User(Document):
             "location_data_retention_days": 90,  # User's preference for how long to keep location data
             # Interactive moments (VOD character interactions)
             "interactive_moments_enabled": False,
+            # Playback preferences
+            "autoplay_enabled": False,
+            # Notification master toggle
+            "notifications_enabled": False,
             # UI element visibility (user-controlled)
             "show_widgets_dock": False,
             "show_voice_control_fab": False,

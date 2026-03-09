@@ -6,45 +6,23 @@ extension SettingsViewModel {
     @MainActor
     func updateAutoplay(_ enabled: Bool) async {
         autoplay = enabled
-        let update = ProfilePreferencesUpdate(
-            language: nil, subtitleLanguage: nil,
-            autoplay: enabled, notifications: nil,
-            contentRating: nil, quality: nil
-        )
-        do {
-            _ = try await userRepository.updateProfile(
-                request: ProfileUpdateRequest(
-                    displayName: nil, avatar: nil, language: nil,
-                    preferences: update, phoneNumber: nil
-                )
-            )
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
+        await savePreference(UserPreferencesUpdate(
+            autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
+            showWidgetsDock: nil, showVoiceControlFAB: nil,
+            autoplayEnabled: enabled, notificationsEnabled: nil
+        ))
     }
 
     @MainActor
     func updateNotifications(_ enabled: Bool) async {
         notifications = enabled
-        let update = ProfilePreferencesUpdate(
-            language: nil, subtitleLanguage: nil,
-            autoplay: nil, notifications: enabled,
-            contentRating: nil, quality: nil
-        )
-        do {
-            _ = try await userRepository.updateProfile(
-                request: ProfileUpdateRequest(
-                    displayName: nil, avatar: nil, language: nil,
-                    preferences: update, phoneNumber: nil
-                )
-            )
-        } catch {
-            if let message = error.userFriendlyMessage {
-                self.error = message
-            }
-        }
+        await savePreference(UserPreferencesUpdate(
+            autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
+            subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
+            showWidgetsDock: nil, showVoiceControlFAB: nil,
+            autoplayEnabled: nil, notificationsEnabled: enabled
+        ))
     }
 
     @MainActor

@@ -162,6 +162,8 @@ struct UserPreferencesUpdate: Encodable, Sendable {
     let interactiveMomentsEnabled: Bool?
     let showWidgetsDock: Bool?
     let showVoiceControlFAB: Bool?
+    let autoplayEnabled: Bool?
+    let notificationsEnabled: Bool?
 }
 
 /// Response from PATCH /api/v1/users/me/preferences
@@ -179,4 +181,6 @@ struct UserPreferencesDetail: Decodable, Sendable {
     let interactiveMomentsEnabled: Bool?
     let showWidgetsDock: Bool?
     let showVoiceControlFAB: Bool?
+    let autoplayEnabled: Bool?
+    let notificationsEnabled: Bool?
 }

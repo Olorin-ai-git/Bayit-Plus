@@ -67,7 +67,8 @@ final class SettingsViewModel {
             autoTranslateEnabled: enabled,
             showIsraelTime: nil, shabbatModeEnabled: nil,
             subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
-            showWidgetsDock: nil, showVoiceControlFAB: nil
+            showWidgetsDock: nil, showVoiceControlFAB: nil,
+            autoplayEnabled: nil, notificationsEnabled: nil
         ))
     }
 
@@ -78,7 +79,8 @@ final class SettingsViewModel {
             autoTranslateEnabled: nil,
             showIsraelTime: nil, shabbatModeEnabled: nil,
             subtitlesEnabled: enabled, interactiveMomentsEnabled: nil,
-            showWidgetsDock: nil, showVoiceControlFAB: nil
+            showWidgetsDock: nil, showVoiceControlFAB: nil,
+            autoplayEnabled: nil, notificationsEnabled: nil
         ))
     }
 
@@ -92,7 +94,8 @@ final class SettingsViewModel {
                 autoTranslateEnabled: nil,
                 showIsraelTime: nil, shabbatModeEnabled: nil,
                 subtitlesEnabled: nil, interactiveMomentsEnabled: false,
-                showWidgetsDock: nil, showVoiceControlFAB: nil
+                showWidgetsDock: nil, showVoiceControlFAB: nil,
+                autoplayEnabled: nil, notificationsEnabled: nil
             ))
             return
         }
@@ -113,7 +116,8 @@ final class SettingsViewModel {
             autoTranslateEnabled: nil,
             showIsraelTime: nil, shabbatModeEnabled: nil,
             subtitlesEnabled: nil, interactiveMomentsEnabled: true,
-            showWidgetsDock: nil, showVoiceControlFAB: nil
+            showWidgetsDock: nil, showVoiceControlFAB: nil,
+            autoplayEnabled: nil, notificationsEnabled: nil
         ))
     }
 
@@ -124,7 +128,8 @@ final class SettingsViewModel {
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
             subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
-            showWidgetsDock: enabled, showVoiceControlFAB: nil
+            showWidgetsDock: enabled, showVoiceControlFAB: nil,
+            autoplayEnabled: nil, notificationsEnabled: nil
         ))
     }
 
@@ -135,7 +140,8 @@ final class SettingsViewModel {
         await savePreference(UserPreferencesUpdate(
             autoTranslateEnabled: nil, showIsraelTime: nil, shabbatModeEnabled: nil,
             subtitlesEnabled: nil, interactiveMomentsEnabled: nil,
-            showWidgetsDock: nil, showVoiceControlFAB: enabled
+            showWidgetsDock: nil, showVoiceControlFAB: enabled,
+            autoplayEnabled: nil, notificationsEnabled: nil
         ))
     }
 
@@ -154,7 +160,7 @@ final class SettingsViewModel {
     // MARK: - Private
 
     @MainActor
-    private func savePreference(_ update: UserPreferencesUpdate) async {
+    func savePreference(_ update: UserPreferencesUpdate) async {
         isSaving = true
         do {
             let response = try await settingsRepository.updatePreferences(
@@ -178,5 +184,7 @@ final class SettingsViewModel {
         interactiveMoments = prefs?.interactiveMomentsEnabled ?? false
         showWidgetsDock = prefs?.showWidgetsDock ?? false
         showVoiceControlFAB = prefs?.showVoiceControlFAB ?? false
+        autoplay = prefs?.autoplayEnabled ?? false
+        notifications = prefs?.notificationsEnabled ?? false
     }
 }
