@@ -5036,7 +5036,8 @@
     "liveChannels": "Canales en vivo",
     "menu": "Menú",
     "more": "Más",
-    "playlist": "Lista de reproducción"
+    "playlist": "Lista de reproducción",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5204,11 +5205,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -5220,10 +5217,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",

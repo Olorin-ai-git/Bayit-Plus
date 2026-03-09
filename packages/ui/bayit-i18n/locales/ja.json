@@ -4825,7 +4825,8 @@
     "friends": "友達",
     "liveChannels": "ライブチャンネル",
     "playlist": "プレイリスト",
-    "flows": "Flows"
+    "flows": "Flows",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -4904,11 +4905,7 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4921,10 +4918,7 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "features": [

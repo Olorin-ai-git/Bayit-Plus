@@ -3976,7 +3976,8 @@
     "liveChannels": "Chaînes en direct",
     "menu": "Menu",
     "more": "Plus",
-    "playlist": "Liste de lecture"
+    "playlist": "Liste de lecture",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -4052,10 +4053,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",

@@ -5199,7 +5199,8 @@
     "liveChannels": "Live Channels",
     "menu": "Menu",
     "more": "More",
-    "playlist": "Playlist"
+    "playlist": "Playlist",
+    "byoc": "BYOC"
   },
   "onboarding": {
     "welcome": {
@@ -5375,11 +5376,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -5391,10 +5388,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
