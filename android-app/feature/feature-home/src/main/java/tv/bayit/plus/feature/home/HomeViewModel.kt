@@ -138,7 +138,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private val ownerOnlyContentTypes = listOf("movie", "series", "film", "vod")
+    private val ownerOnlyContentTypes = listOf("movie", "series", "film", "vod", "collection")
 
     private fun filterCategories(categories: List<tv.bayit.plus.core.model.ContentCategory>): List<tv.bayit.plus.core.model.ContentCategory> {
         val filtered = categories.filter { category ->

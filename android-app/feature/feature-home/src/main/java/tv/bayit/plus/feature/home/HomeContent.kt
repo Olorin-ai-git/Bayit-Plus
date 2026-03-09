@@ -145,7 +145,7 @@ internal fun HomeSuccessContent(
                 }
             }
 
-            if (uiState.featuredCollections.isNotEmpty() && !isBannerDismissed) {
+            if (ownerMode && uiState.featuredCollections.isNotEmpty() && !isBannerDismissed) {
                 item(key = "collections_banner") {
                     CollectionBanner(
                         collections = uiState.featuredCollections,

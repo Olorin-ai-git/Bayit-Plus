@@ -12,7 +12,7 @@ interface PlexApi {
 
     @POST("api/v2/pins")
     suspend fun requestPin(
-        @Query("strong") strong: Boolean = true,
+        @Query("strong") strong: Boolean = false,
         @Header("Accept") accept: String = "application/json",
         @Header("X-Plex-Product") product: String,
         @Header("X-Plex-Client-Identifier") clientId: String,
@@ -51,7 +51,7 @@ interface PlexServerApi {
 data class PlexPinResponse(
     val id: Long,
     val code: String,
-    @SerialName("auth_token") val authToken: String? = null,
+    val authToken: String? = null,
     @SerialName("product") val product: String? = null,
     @SerialName("client_identifier") val clientIdentifier: String? = null,
 )
