@@ -6,6 +6,7 @@ import SwiftUI
 struct TrendingRowView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) var coordinator
+    @Environment(\.appConfiguration) private var appConfiguration
     @State private var viewModel: TrendingViewModel?
 
     var body: some View {
@@ -138,11 +139,14 @@ struct TrendingRowView: View {
 
     @ViewBuilder
     private func recommendationsSection(_ items: [ContentItem]) -> some View {
-        if !items.isEmpty {
+        let filtered = appConfiguration.ownerMode
+            ? items
+            : items.filter { !ContentType.isOwnerOnlyType($0.type) }
+        if !filtered.isEmpty {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
                 sectionHeader(title: "Recommended for You", icon: "sparkles")
 
-                GlassCarousel(items: items, itemWidth: 160) { item in
+                GlassCarousel(items: filtered, itemWidth: 160) { item in
                     GlassContentCard(
                         thumbnailURL: item.thumbnail,
                         title: item.title,

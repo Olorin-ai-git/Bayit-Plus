@@ -11,7 +11,7 @@ struct TVHomeView: View {
     @Environment(TVNavigationCoordinator.self) var coordinator
     @Environment(LocalizationManager.self) var localization
     @Environment(TVOnboardingPreferences.self) var prefs
-    @Environment(\.appConfiguration) private var appConfiguration
+    @Environment(\.appConfiguration) var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var featuredCollections: [CollectionDetail] = []
     @State private var showBYOCSources = false
@@ -42,7 +42,8 @@ struct TVHomeView: View {
                     featureFlags: FeatureFlags(),
                     contentRowLimit: appConfiguration.homeContentRowLimit,
                     defaultCultureId: prefs.cultureId ?? appConfiguration.defaultCultureId,
-                    hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
+                    hiddenChannelKeywords: appConfiguration.ownerMode
+                        ? [] : appConfiguration.hiddenChannelKeywords
                 )
             }
             await viewModel?.loadFeatured()

@@ -84,7 +84,10 @@ extension PlayerView {
             }
 
             // Previous Interaction button (VOD only, when interactions enabled)
-            if !mediaContentType.isLive, interactionVM != nil, let action = previousInteractionAction {
+            // Gate on ownerMode for private content types
+            if !mediaContentType.isLive, interactionVM != nil, let action = previousInteractionAction,
+               appConfiguration.ownerMode || !contentType.isOwnerOnly
+            {
                 Button { action() } label: {
                     Image(systemName: "backward.end.fill")
                         .font(.system(size: 18))
@@ -95,8 +98,10 @@ extension PlayerView {
             }
 
             // Interact button (VOD only, when interactions or characters enabled)
+            // Gate on ownerMode for private content types
             if !mediaContentType.isLive,
-               interactionVM != nil || hasInteractiveCharacters
+               interactionVM != nil || hasInteractiveCharacters,
+               appConfiguration.ownerMode || !contentType.isOwnerOnly
             {
                 Button {
                     Task { await startPauseAskInteraction() }
@@ -122,7 +127,9 @@ extension PlayerView {
             }
 
             // Next Interaction button (VOD only, when interactions enabled)
-            if !mediaContentType.isLive, interactionVM != nil, let action = nextInteractionAction {
+            if !mediaContentType.isLive, interactionVM != nil, let action = nextInteractionAction,
+               appConfiguration.ownerMode || !contentType.isOwnerOnly
+            {
                 Button { action() } label: {
                     Image(systemName: "forward.end.fill")
                         .font(.system(size: 18))

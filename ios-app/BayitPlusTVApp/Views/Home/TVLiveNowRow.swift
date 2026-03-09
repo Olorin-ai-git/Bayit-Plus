@@ -63,7 +63,8 @@ struct TVLiveNowRow: View {
                 cultureId: nil,
                 category: nil
             )
-            let hidden = appConfiguration.hiddenChannelKeywords
+            let hidden = appConfiguration.ownerMode
+                ? [] : appConfiguration.hiddenChannelKeywords
             channels = response.channels.filter { channel in
                 guard let name = channel.name?.lowercased() else { return true }
                 return !hidden.contains(where: { name.contains($0) })

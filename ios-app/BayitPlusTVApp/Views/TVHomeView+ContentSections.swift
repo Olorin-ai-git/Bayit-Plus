@@ -7,10 +7,13 @@ import SwiftUI
 
 extension TVHomeView {
     func continueWatchingSection(_ vm: HomeViewModel) -> some View {
-        TVContentSection(
+        let filtered = appConfiguration.ownerMode
+            ? vm.continueWatching
+            : vm.continueWatching.filter { !ContentType.isOwnerOnlyType($0.type) }
+        return TVContentSection(
             title: localization.t("home.continueWatching"),
             icon: "play.circle.fill",
-            items: vm.continueWatching,
+            items: filtered,
             maxItems: 4,
             seeAllAction: { coordinator.selectedTab = .profile }
         ) { item in

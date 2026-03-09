@@ -61,7 +61,8 @@ struct HomeView: View {
                     widgetSync: widgetSync,
                     contentRowLimit: appConfiguration.homeContentRowLimit,
                     defaultCultureId: appConfiguration.defaultCultureId,
-                    hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
+                    hiddenChannelKeywords: appConfiguration.ownerMode
+                        ? [] : appConfiguration.hiddenChannelKeywords
                 )
             }
             await viewModel?.loadFeatured()

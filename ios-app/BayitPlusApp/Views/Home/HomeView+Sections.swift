@@ -17,8 +17,11 @@ extension HomeView {
             HeroCarousel(items: vm.spotlight, coordinator: coordinator)
         }
 
-        if !vm.continueWatching.isEmpty {
-            ContinueWatchingRow(items: vm.continueWatching, coordinator: coordinator)
+        let filteredContinueWatching = appConfiguration.ownerMode
+            ? vm.continueWatching
+            : vm.continueWatching.filter { !ContentType.isOwnerOnlyType($0.type) }
+        if !filteredContinueWatching.isEmpty {
+            ContinueWatchingRow(items: filteredContinueWatching, coordinator: coordinator)
         }
 
         if !vm.featuredCollections.isEmpty {

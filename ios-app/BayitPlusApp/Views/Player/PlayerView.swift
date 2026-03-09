@@ -20,6 +20,7 @@ struct PlayerView: View {
     @Environment(DownloadManager.self) var downloadManager
     @Environment(CastSessionManager.self) var castSessionManager
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.appConfiguration) var appConfiguration
 
     @State var viewModel: MediaPlayerViewModel
     @State var showControls = true

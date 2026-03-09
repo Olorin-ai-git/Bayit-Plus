@@ -9,6 +9,7 @@ struct TVTrendingRecommendationsRow: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(\.appConfiguration) private var appConfiguration
 
     @State private var recommendations: [TrendingContentRecommendation] = []
     @State private var hasLoaded = false
@@ -95,7 +96,9 @@ struct TVTrendingRecommendationsRow: View {
         do {
             let response = try await repos.trendingRepo
                 .fetchTrendingRecommendations(limit: maxItems)
-            recommendations = response.recommendations
+            recommendations = appConfiguration.ownerMode
+                ? response.recommendations
+                : response.recommendations.filter { !ContentType.isOwnerOnlyType($0.type) }
         } catch {
             recommendations = []
         }

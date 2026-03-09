@@ -19,6 +19,7 @@ struct TVPlayerView: View {
     @Environment(TVOnboardingPreferences.self) var onboardingPrefs
     @Environment(BYOCSourceManager.self) var byocManager
     @Environment(\.dismiss) var dismiss
+    @Environment(\.appConfiguration) var appConfiguration
 
     let contentId: String
     let contentType: MediaContentType

@@ -41,7 +41,8 @@ struct TVLiveTVView: View {
                     viewModel = LiveTVViewModel(
                         repository: repos.liveTV,
                         featureFlags: FeatureFlags(),
-                        hiddenChannelKeywords: appConfiguration.hiddenChannelKeywords
+                        hiddenChannelKeywords: appConfiguration.ownerMode
+                            ? [] : appConfiguration.hiddenChannelKeywords
                     )
                 }
                 await viewModel?.loadChannels()

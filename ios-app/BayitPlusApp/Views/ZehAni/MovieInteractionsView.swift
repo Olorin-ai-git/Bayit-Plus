@@ -6,6 +6,7 @@ struct MovieInteractionsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(\.appConfiguration) private var appConfiguration
 
     let profileId: String
 
@@ -137,7 +138,10 @@ struct MovieInteractionsView: View {
         isLoading = true
         error = nil
         do {
-            movies = try await repos.movieInteraction.listInteractableMovies(source: nil)
+            let allMovies = try await repos.movieInteraction.listInteractableMovies(source: nil)
+            movies = appConfiguration.ownerMode
+                ? allMovies
+                : allMovies.filter { $0.isBYOC }
         } catch {
             self.error = error.localizedDescription
         }

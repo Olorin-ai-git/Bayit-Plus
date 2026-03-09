@@ -4,6 +4,10 @@ import SwiftUI
 
 /// Controls overlay layer, live/VOD control bar sections, and dock focus handling.
 extension TVPlayerView {
+    private var isOwnerOnlyContent: Bool {
+        contentType == .vod
+    }
+
     // MARK: - Controls Overlay
 
     @ViewBuilder
@@ -68,13 +72,14 @@ extension TVPlayerView {
             onStartOver: mediaPlayer.currentTime > 30 ? { startOver() } : nil,
             onAudioTracks: { state.showAudioTracks = true },
             onSpeed: { state.showSpeedControl = true },
-            onTalk: state.interactionVM != nil ? {
-                if state.hasVoiceClone {
-                    Task { await startPauseAskInteraction() }
-                } else {
-                    Task { await openCharacterSelection() }
-                }
-            } : nil,
+            onTalk: state.interactionVM != nil
+                && (appConfiguration.ownerMode || !isOwnerOnlyContent) ? {
+                    if state.hasVoiceClone {
+                        Task { await startPauseAskInteraction() }
+                    } else {
+                        Task { await openCharacterSelection() }
+                    }
+                } : nil,
             onVocabulary: state.interactiveSubtitleVM != nil ? {
                 state.showVocabulary = true
             } : nil,
@@ -84,8 +89,10 @@ extension TVPlayerView {
             onSharePlay: {
                 Task { await activateSharePlay() }
             },
-            onPreviousInteraction: previousInteractionAction,
-            onNextInteraction: nextInteractionAction,
+            onPreviousInteraction: (appConfiguration.ownerMode || !isOwnerOnlyContent)
+                ? previousInteractionAction : nil,
+            onNextInteraction: (appConfiguration.ownerMode || !isOwnerOnlyContent)
+                ? nextInteractionAction : nil,
             isInteractiveSubtitlesEnabled: state.interactiveSubtitleVM?.isEnabled ?? false,
             selectedSubtitleLanguage: state.selectedSubtitleLanguage,
             isSplitEnabled: state.splitModeEnabled,

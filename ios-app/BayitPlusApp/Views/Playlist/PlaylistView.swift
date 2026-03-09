@@ -11,13 +11,21 @@ struct PlaylistView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(AuthManager.self) private var authManager
     @Environment(WidgetDataSyncService.self) private var widgetSync
+    @Environment(\.appConfiguration) private var appConfiguration
     @State private var viewModel: PlaylistViewModel?
     @State private var isEditing = false
 
+    /// Playlist items filtered to exclude private content when not in owner mode.
+    private var visibleItems: [PlaylistItem] {
+        guard let items = viewModel?.items else { return [] }
+        if appConfiguration.ownerMode { return items }
+        return items.filter { !ContentType.isOwnerOnlyType($0.contentType) }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            if let vm = viewModel, !vm.items.isEmpty {
-                headerBar(vm)
+            if viewModel != nil, !visibleItems.isEmpty {
+                headerBar
             }
 
             contentBody
@@ -75,17 +83,17 @@ struct PlaylistView: View {
                         Task { await viewModel?.load() }
                     }
                 }
-            } else if vm.items.isEmpty {
+            } else if visibleItems.isEmpty {
                 ScrollView { PlaylistEmptyState() }
             } else {
-                playlistList(vm)
+                playlistList
             }
         } else {
             ScreenLoadingView()
         }
     }
 
-    private func headerBar(_ vm: PlaylistViewModel) -> some View {
+    private var headerBar: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             GlassButton(
                 localization.t("playlist.playAll"),
@@ -93,7 +101,7 @@ struct PlaylistView: View {
                 size: .small,
                 icon: Image(systemName: "play.fill")
             ) {
-                if let first = vm.items.first {
+                if let first = visibleItems.first {
                     let type = ContentType(rawValue: first.contentType ?? "") ?? .movie
                     coordinator.navigate(
                         to: .player(contentId: first.contentId, contentType: type)
@@ -110,7 +118,7 @@ struct PlaylistView: View {
                 icon: Image(systemName: "trash")
             ) {
                 Task {
-                    await vm.clearAll()
+                    await viewModel?.clearAll()
                     await syncPlaylistWidget()
                 }
             }
@@ -119,9 +127,9 @@ struct PlaylistView: View {
         .padding(.vertical, DesignTokens.Spacing.sm)
     }
 
-    private func playlistList(_ vm: PlaylistViewModel) -> some View {
+    private var playlistList: some View {
         List {
-            ForEach(vm.items) { item in
+            ForEach(visibleItems) { item in
                 PlaylistItemRow(item: item) {
                     let type = ContentType(rawValue: item.contentType ?? "") ?? .movie
                     coordinator.navigate(
@@ -139,7 +147,7 @@ struct PlaylistView: View {
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                     Button(role: .destructive) {
                         Task {
-                            await vm.removeItem(contentId: item.contentId)
+                            await viewModel?.removeItem(contentId: item.contentId)
                             await syncPlaylistWidget()
                         }
                     } label: {
@@ -151,7 +159,7 @@ struct PlaylistView: View {
                 }
             }
             .onMove { source, destination in
-                vm.moveItem(from: source, to: destination)
+                viewModel?.moveItem(from: source, to: destination)
             }
         }
         .listStyle(.plain)
