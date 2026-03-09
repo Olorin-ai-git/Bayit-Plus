@@ -830,10 +830,7 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": [
-        "Visionnage hors ligne",
-        "Profils familiaux"
-      ]
+      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
     },
     "family": {
       "name": "Famille",
@@ -2991,6 +2988,15 @@
     "whatsAppMessage": "Je te defie aux echecs sur Bayit+! Code: {{code}} - Appuie pour jouer: {{link}}"
   },
   "byoc": {
+    "home": {
+      "title": "Apportez Votre Propre Contenu",
+      "subtitle": "Connectez vos sources de contenu preferees et ameliorez-les avec le doublage IA, les sous-titres et plus",
+      "connectButton": "Connectez Votre Contenu",
+      "aiFeatures": {
+        "dubbing": "Doublage IA",
+        "subtitles": "Sous-titres IA"
+      }
+    },
     "yourChannels": "Vos Chaines",
     "iptv": "IPTV",
     "plex": "Plex",

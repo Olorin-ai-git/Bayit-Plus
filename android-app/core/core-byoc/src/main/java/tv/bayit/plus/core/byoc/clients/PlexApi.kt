@@ -51,7 +51,7 @@ interface PlexServerApi {
 data class PlexPinResponse(
     val id: Long,
     val code: String,
-    val authToken: String? = null,
+    @SerialName("auth_token") val authToken: String? = null,
     @SerialName("product") val product: String? = null,
     @SerialName("client_identifier") val clientIdentifier: String? = null,
 )

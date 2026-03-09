@@ -1437,17 +1437,8 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "高级版",
@@ -1459,10 +1450,7 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": [
-        "离线观看",
-        "家庭档案"
-      ]
+      "notIncluded": ["离线观看", "家庭档案"]
     },
     "family": {
       "name": "家庭版",
@@ -3874,6 +3862,15 @@
     "retryButton": "重试"
   },
   "byoc": {
+    "home": {
+      "title": "自带内容",
+      "subtitle": "连接您喜爱的内容源，并通过AI配音、字幕等功能增强它们",
+      "connectButton": "连接您的内容",
+      "aiFeatures": {
+        "dubbing": "AI配音",
+        "subtitles": "AI字幕"
+      }
+    },
     "yourChannels": "您的频道",
     "iptv": "IPTV",
     "plex": "Plex",

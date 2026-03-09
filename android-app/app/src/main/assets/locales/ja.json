@@ -3706,6 +3706,15 @@
     "whatsAppMessage": "Bayit+でチェスの対戦を申し込みます! コード: {{code}} - タップでプレイ: {{link}}"
   },
   "byoc": {
+    "home": {
+      "title": "自分のコンテンツを持ち込む",
+      "subtitle": "お気に入りのコンテンツソースを接続して、AI吹き替え、字幕などで強化しましょう",
+      "connectButton": "コンテンツを接続",
+      "aiFeatures": {
+        "dubbing": "AI吹き替え",
+        "subtitles": "AI字幕"
+      }
+    },
     "yourChannels": "あなたのチャンネル",
     "iptv": "IPTV",
     "plex": "Plex",

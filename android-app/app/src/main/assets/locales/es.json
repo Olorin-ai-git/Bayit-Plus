@@ -2772,11 +2772,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Premium",
@@ -2788,10 +2784,7 @@
         "Ver en 2 dispositivos",
         "Calidad HD"
       ],
-      "notIncluded": [
-        "Ver sin conexión",
-        "Perfiles familiares"
-      ]
+      "notIncluded": ["Ver sin conexión", "Perfiles familiares"]
     },
     "family": {
       "name": "Familiar",
@@ -4038,6 +4031,15 @@
     }
   },
   "byoc": {
+    "home": {
+      "title": "Trae Tu Propio Contenido",
+      "subtitle": "Conecta tus fuentes de contenido favoritas y mejoralas con doblaje IA, subtitulos y mas",
+      "connectButton": "Conecta Tu Contenido",
+      "aiFeatures": {
+        "dubbing": "Doblaje IA",
+        "subtitles": "Subtitulos IA"
+      }
+    },
     "yourChannels": "Tus Canales",
     "iptv": "IPTV",
     "plex": "Plex",

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +10,13 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
 }
+
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+fun localOrProject(key: String): String? =
+    localProps.getProperty(key) ?: project.findProperty(key)?.toString()
 
 android {
     namespace = "tv.bayit.plus"
@@ -53,7 +62,7 @@ android {
         buildConfigField(
             "String",
             "GOOGLE_CLIENT_SECRET",
-            "\"${project.findProperty("bayit.google.clientSecret")?.toString() ?: ""}\""
+            "\"${localOrProject("bayit.google.clientSecret") ?: ""}\""
         )
         buildConfigField(
             "String",
@@ -69,12 +78,13 @@ android {
     }
 
     signingConfigs {
-        if (project.hasProperty("bayit.keystore.path")) {
+        val keystorePath = localOrProject("bayit.keystore.path")
+        if (keystorePath != null) {
             create("release") {
-                storeFile = file(project.property("bayit.keystore.path").toString())
-                storePassword = project.property("bayit.keystore.password").toString()
-                keyAlias = project.property("bayit.key.alias").toString()
-                keyPassword = project.property("bayit.key.password").toString()
+                storeFile = file(keystorePath)
+                storePassword = localOrProject("bayit.keystore.password") ?: ""
+                keyAlias = localOrProject("bayit.key.alias") ?: ""
+                keyPassword = localOrProject("bayit.key.password") ?: ""
             }
         }
     }

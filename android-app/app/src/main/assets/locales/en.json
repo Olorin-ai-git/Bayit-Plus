@@ -2935,11 +2935,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Premium",
@@ -2951,10 +2947,7 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": [
-        "Offline viewing",
-        "Family profiles"
-      ]
+      "notIncluded": ["Offline viewing", "Family profiles"]
     },
     "family": {
       "name": "Family",
@@ -4124,6 +4117,15 @@
     }
   },
   "byoc": {
+    "home": {
+      "title": "Bring Your Own Content",
+      "subtitle": "Connect your favorite content sources and enhance them with AI-powered dubbing, subtitles, and more",
+      "connectButton": "Connect Your Content",
+      "aiFeatures": {
+        "dubbing": "AI Dubbing",
+        "subtitles": "AI Subtitles"
+      }
+    },
     "yourChannels": "Your Channels",
     "iptv": "IPTV",
     "plex": "Plex",

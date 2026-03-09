@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.byoc
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -23,14 +24,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.byoc.models.BYOCSourceConfig
+import tv.bayit.plus.core.byoc.models.BYOCSourceType
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.icons.BayitIcons
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -143,7 +148,9 @@ private fun SourceCard(source: BYOCSourceConfig, onRemove: () -> Unit) {
                 .fillMaxWidth()
                 .padding(DesignTokens.Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
+            ProviderIcon(sourceType = source.type, modifier = Modifier.size(32.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = source.name,
@@ -177,21 +184,52 @@ private fun SourceCard(source: BYOCSourceConfig, onRemove: () -> Unit) {
 }
 
 @Composable
+private fun ProviderIcon(sourceType: BYOCSourceType, modifier: Modifier = Modifier) {
+    when (sourceType) {
+        BYOCSourceType.PLEX -> Image(
+            painter = painterResource(R.drawable.ic_plex_logo),
+            contentDescription = "Plex",
+            modifier = modifier,
+        )
+        BYOCSourceType.YOUTUBE -> Image(
+            painter = painterResource(R.drawable.ic_youtube_logo),
+            contentDescription = "YouTube",
+            modifier = modifier,
+        )
+        BYOCSourceType.XTREAM -> Icon(
+            imageVector = BayitIcons.Xtream,
+            contentDescription = "Xtream",
+            modifier = modifier,
+            tint = DesignTokens.Colors.Text.primary,
+        )
+        BYOCSourceType.IPTV -> Icon(
+            imageVector = BayitIcons.Iptv,
+            contentDescription = "IPTV",
+            modifier = modifier,
+            tint = DesignTokens.Colors.Text.primary,
+        )
+    }
+}
+
+@Composable
 private fun AddSourceButtons(onAddPlex: () -> Unit, onAddYouTube: () -> Unit, onAddSource: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
         GlassButton(
             text = "Connect Plex",
             onClick = onAddPlex,
+            iconPainter = painterResource(R.drawable.ic_plex_logo),
             modifier = Modifier.fillMaxWidth(),
         )
         GlassButton(
             text = "Connect YouTube",
             onClick = onAddYouTube,
+            iconPainter = painterResource(R.drawable.ic_youtube_logo),
             modifier = Modifier.fillMaxWidth(),
         )
         GlassButton(
             text = "Add IPTV / Xtream Source",
             onClick = onAddSource,
+            icon = BayitIcons.Xtream,
             modifier = Modifier.fillMaxWidth(),
         )
     }
