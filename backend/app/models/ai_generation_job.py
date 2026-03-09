@@ -8,7 +8,6 @@ from enum import Enum
 from typing import Optional
 
 from beanie import Document, Indexed
-from beanie.operators import In
 from pydantic import Field
 
 
@@ -68,9 +67,9 @@ class AIGenerationJob(Document):
     ) -> Optional["AIGenerationJob"]:
         """Get any pending/processing job for content"""
         return await cls.find_one(
-            cls.content_id == content_id,
-            cls.job_type == job_type,
-            In(cls.status, [JobStatus.PENDING, JobStatus.PROCESSING]),
+            {"content_id": content_id},
+            {"job_type": job_type.value},
+            {"status": {"$in": [JobStatus.PENDING.value, JobStatus.PROCESSING.value]}},
         )
 
     @classmethod
