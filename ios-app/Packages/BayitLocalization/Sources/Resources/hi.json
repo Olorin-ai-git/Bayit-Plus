@@ -5996,164 +5996,53 @@
     }
   },
   "onboarding": {
-    "autoplay": "ऑटोप्ले",
-    "back": "पीछे",
-    "chooseAvatar": "अपना अवतार चुनें",
-    "enableVoice": "वॉइस कमांड सक्षम करें",
-    "finish": "समाप्त",
-    "language": {
-      "content": "सामग्री भाषाएँ",
-      "primary": "प्राथमिक भाषा",
-      "subtitle": "अपनी पसंदीदा भाषा चुनें",
-      "title": "अपनी भाषा चुनें"
-    },
-    "namePlaceholder": "अपना नाम दर्ज करें",
-    "next": "अगला",
-    "profileTitle": "अपनी प्रोफ़ाइल सेट करें",
-    "subtitles": "उपशीर्षक",
-    "tasteSubtitle": "अपनी पसंदीदा शैलियाँ चुनें",
-    "tasteTitle": "आपको क्या पसंद है?",
-    "voiceSubtitle": "हैंड्स-फ्री कंट्रोल के लिए वॉइस सेट करें",
-    "voiceTitle": "वॉइस कंट्रोल",
-    "wakeWord": "वेक वर्ड",
-    "welcomeSubtitle": "आइए आपके अनुभव को वैयक्तिकृत करें",
-    "welcomeTitle": "Bayit+ में आपका स्वागत है",
-    "complete": {
-      "culture": "संस्कृति",
-      "interests": "रुचियाँ",
-      "language": "भाषा",
-      "name": "नाम",
-      "saving": "आपकी प्राथमिकताएँ सहेज रहे हैं...",
-      "startWatching": "देखना शुरू करें",
-      "subtitle": "आपका व्यक्तिगत अनुभव तैयार है",
-      "title": "सब तैयार है!"
-    },
-    "culture": {
-      "american": "अमेरिकी",
-      "european": "यूरोपियन",
-      "israeli": "इज़राइली",
-      "mixed": "मिश्रित",
-      "subtitle": "अपनी सामग्री पसंद के अनुसार संस्कृति चुनें",
-      "title": "अपनी संस्कृति चुनें"
-    },
-    "interest": {
-      "audiobooks": "ऑडियोबुक्स",
-      "kids": "बच्चे",
-      "kidsContent": "बच्चे",
-      "liveTV": "लाइव टीवी",
-      "movies": "फिल्में",
-      "music": "संगीत",
-      "news": "समाचार",
-      "podcasts": "पॉडकास्ट",
-      "radio": "रेडियो",
-      "series": "सीरीज़",
-      "sports": "खेल"
-    },
-    "interests": {
-      "selected": "%d चयनित",
-      "subtitle": "कम से कम 3 सामग्री प्रकार चुनें",
-      "title": "आपको क्या पसंद है?"
-    },
-    "skip": "छोड़ें",
-    "voice": {
-      "micUnavailable": "माइक्रोफ़ोन उपलब्ध नहीं है",
-      "noAudio": "कोई ऑडियो नहीं मिला",
-      "orType": "या अपना नाम टाइप करें",
-      "subtitle": "अपना नाम बोलें या नीचे टाइप करें",
-      "title": "हम आपको क्या बुलाएँ?",
-      "useTextInput": "टेक्स्ट इनपुट का उपयोग करें"
-    },
     "welcome": {
-      "getStarted": "शुरू करें",
-      "subtitle": "आपके अनुभव को व्यक्तिगत बनाएँ",
-      "title": "Bayit+ में आपका स्वागत है"
+      "title": "Bayit+ में आपका स्वागत है",
+      "subtitle": "इज़रायली टीवी, आपकी भाषा में",
+      "continue": "आगे बढ़ें"
     },
-    "byoc": {
-      "title": "अपनी सामग्री लाएं",
-      "subtitle": "अपने पसंदीदा कंटेंट स्रोतों को कनेक्ट करें और AI डबिंग, उपशीर्षक और अधिक के साथ उन्हें बेहतर बनाएं",
-      "iptvDesc": "M3U प्लेलिस्ट से लाइव टीवी चैनल",
-      "plexDesc": "आपकी व्यक्तिगत मीडिया लाइब्रेरी",
-      "youtubeDesc": "आपकी सदस्यता से वीडियो",
-      "connectNow": "एक स्रोत कनेक्ट करें",
-      "skipForNow": "बाद में सेट अप करें"
+    "aiLanguage": {
+      "title": "{{language}} में देखें",
+      "subtitle": "AI डबिंग, रियल-टाइम सबटाइटल और हिब्रू सीखना -- सब बिल्ट-इन",
+      "dubbing": "लाइव डबिंग",
+      "subtitles": "स्मार्ट सबटाइटल",
+      "engrew": "Engrew"
     },
-    "tour": {
-      "title": "Discover Bayit+",
-      "skipButton": "Skip Tour",
-      "getStarted": "Get Started",
-      "continuePrompt": "Continue where you left off?",
-      "replayLabel": "Replay Feature Tour",
-      "tryItNow": "Try It Now",
-      "cardProgress": "Card {current} of {total}",
-      "dubbing": {
-        "title": "Live AI Dubbing",
-        "tagline": "Watch Israeli TV in your language",
-        "description": "Every live channel dubbed in real time into English, French, Spanish, Italian, Bengali, Hindi, Japanese, Tamil, and Chinese."
-      },
-      "trivia": {
-        "title": "Live Trivia",
-        "tagline": "Learn while you watch",
-        "description": "AI-generated facts and trivia pop up during live TV, sourced from the web and matched to what's on screen."
-      },
-      "subtitles": {
-        "title": "Smart Subtitles",
-        "tagline": "Four subtitle modes",
-        "description": "Switch between Original Hebrew, Nikud (voweled), Engrew, and Heblish subtitles on any content.",
-        "mode": {
-          "original": "Original",
-          "nikud": "Nikud",
-          "engrew": "Engrew",
-          "heblish": "Heblish"
-        }
-      },
-      "engrewHeblish": {
-        "title": "Engrew and Heblish",
-        "tagline": "Bridge two languages",
-        "description": "Engrew writes English words in Hebrew letters. Heblish writes Hebrew words in Latin script. Both help you learn naturally."
-      },
-      "pauseAndAsk": {
-        "title": "Pause and Ask",
-        "tagline": "Talk to any scene",
-        "description": "Pause any moment and ask questions about what's happening. AI answers using the scene context."
-      },
-      "interaction": {
-        "title": "Movie Interactions",
-        "tagline": "Chat with characters",
-        "description": "Tap highlighted characters during curated moments to start a conversation. Look for the star icon during playback.",
-        "creditInfo": "Each exchange uses 1 AI credit. Premium subscribers get unlimited interactions.",
-        "tapCharacter": "Tap a character to start talking",
-        "curatedMoments": "Look for the star icon during playback for interactive moments"
-      },
-      "zehAni": {
-        "title": "Zeh Ani - Magic Mirror",
-        "tagline": "Your personal avatar",
-        "description": "Create a 3D avatar from a selfie. Use it for interactive features, vocabulary practice, and social connections.",
-        "consent": "Camera access is used only on-device. No photos are sent to our servers.",
-        "enableCamera": "Enable Camera",
-        "noDataSent": "All processing happens on your device",
-        "vocabWord": "Word of the day",
-        "vocabTransliteration": "Transliteration",
-        "vocabTranslation": "Translation"
-      },
-      "catchup": {
-        "title": "7-Day Catchup",
-        "tagline": "Never miss a moment",
-        "description": "Scroll back up to 7 days on any channel. AI summaries help you jump to the best moments. Programs up to 4 hours supported."
-      },
-      "byoc": {
-        "title": "Bring Your Own Content",
-        "tagline": "Your media, our AI",
-        "description": "Connect Plex, YouTube, IPTV, Xtream, USB, or cloud storage. All AI features work on your content too."
-      },
-      "personalization": {
-        "title": "Personalize Your Experience",
-        "subtitle": "Help us recommend the best content for you",
-        "languages": "Content Languages",
-        "genres": "Favorite Genres",
-        "hasChildren": "Do you have children?",
-        "done": "Done"
-      }
-    }
+    "pauseAsk": {
+      "title": "रुकें और कुछ भी पूछें",
+      "subtitle": "किसी सीन, अभिनेता या संदर्भ के बारे में जानना चाहते हैं? बस पूछें -- AI जानता है आप क्या देख रहे हैं",
+      "pill": "रुकें और पूछें"
+    },
+    "interactive": {
+      "title": "आपका टीवी आपसे बात करता है",
+      "subtitle": "पात्रों पर टैप करें, पलों को एक्सप्लोर करें और देखते हुए लाइव ट्रिविया खेलें",
+      "moments": "इंटरैक्टिव पल",
+      "trivia": "लाइव ट्रिविया"
+    },
+    "neverMiss": {
+      "title": "आपकी सामग्री, आपके तरीके से",
+      "subtitle": "AI संक्षेप और Plex, IPTV और YouTube से अपनी सामग्री लाएं",
+      "catchup": "AI कैचअप",
+      "byoc": "अपनी सामग्री लाएं"
+    },
+    "zehAni": {
+      "title": "हिब्रू सीखें, स्वाभाविक रूप से",
+      "subtitle": "चेहरे और हाव-भाव पहचान से व्यक्तिगत हिब्रू सीखना",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "आवाज़ से नियंत्रण",
+      "subtitle": "'Hey Bayit' कहें चैनल बदलने, खोजने या सवाल पूछने के लिए -- हैंड्स फ्री",
+      "enableVoice": "वॉयस कंट्रोल चालू करें",
+      "wakeWord": "वेक वर्ड डिटेक्शन",
+      "continue": "आगे बढ़ें",
+      "later": "बाद में सेट करें"
+    },
+    "launch": {
+      "title": "सब तैयार है",
+      "hint": "चैनलों के लिए ऊपर स्वाइप करें, कभी भी 'Hey Bayit' कहें"
+    },
+    "skip": "छोड़ें"
   },
   "pairing": {
     "codePlaceholder": "पेयरिंग कोड दर्ज करें",
@@ -7897,7 +7786,9 @@
       "loading": "सहायता लोड हो रही है...",
       "noFaqs": "कोई FAQ उपलब्ध नहीं",
       "subtitle": "उत्तर खोजें और सहायता प्राप्त करें",
-      "title": "सहायता और समर्थन"
+      "title": "सहायता और समर्थन",
+      "replayOnboarding": "ऑनबोर्डिंग दोबारा देखें",
+      "replayTour": "फीचर टूर दोबारा चलाएं"
     },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
@@ -7948,7 +7839,8 @@
     "children": "बच्चे",
     "loading": "सेटिंग्स लोड हो रही हैं...",
     "not_connected": "कनेक्ट नहीं है",
-    "privacySecurity": "गोपनीयता & Security"
+    "privacySecurity": "गोपनीयता & Security",
+    "privacySection": "गोपनीयता और कानूनी"
   },
   "shabbat": {
     "activate": "सक्रिय करें",

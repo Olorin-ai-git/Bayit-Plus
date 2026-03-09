@@ -6044,164 +6044,53 @@
     }
   },
   "onboarding": {
-    "autoplay": "ניגון אוטומטי",
-    "back": "חזור",
-    "chooseAvatar": "בחר את האווטאר שלך",
-    "enableVoice": "הפעל פקודות קוליות",
-    "finish": "סיום",
-    "language": {
-      "content": "שפות תוכן",
-      "primary": "שפה ראשית",
-      "subtitle": "בחר את השפה המועדפת עליך",
-      "title": "בחר שפה"
-    },
-    "namePlaceholder": "הכנס את שמך",
-    "next": "הבא",
-    "profileTitle": "הגדר את הפרופיל שלך",
-    "subtitles": "כתוביות",
-    "tasteSubtitle": "בחר את הז'אנרים והקטגוריות המועדפות עליך",
-    "tasteTitle": "מה אתה אוהב?",
-    "voiceSubtitle": "הגדר פקודות קוליות לשליטה ללא ידיים",
-    "voiceTitle": "שליטה קולית",
-    "wakeWord": "מילת השכמה",
-    "welcomeSubtitle": "בואו נתאים את החוויה שלך",
-    "welcomeTitle": "ברוכים הבאים לבית+",
-    "complete": {
-      "culture": "תרבות",
-      "interests": "תחומי עניין",
-      "language": "שפה",
-      "name": "שם",
-      "saving": "שומר את ההעדפות שלך...",
-      "startWatching": "התחל לצפות",
-      "subtitle": "החוויה המותאמת אישית שלך מוכנה",
-      "title": "הכל מוכן!"
-    },
-    "culture": {
-      "american": "אמריקאי",
-      "european": "אירופאי",
-      "israeli": "ישראלי",
-      "mixed": "מעורב",
-      "subtitle": "בחר את התרבות שמתאימה לך",
-      "title": "בחר תרבות"
-    },
-    "interest": {
-      "audiobooks": "ספרי שמע",
-      "kids": "ילדים",
-      "kidsContent": "ילדים",
-      "liveTV": "שידור חי",
-      "movies": "סרטים",
-      "music": "מוזיקה",
-      "news": "חדשות",
-      "podcasts": "פודקאסטים",
-      "radio": "רדיו",
-      "series": "סדרות",
-      "sports": "ספורט"
-    },
-    "interests": {
-      "selected": "%d נבחרו",
-      "subtitle": "בחר לפחות 3 סוגי תוכן שאתה נהנה מהם",
-      "title": "מה אתה אוהב?"
-    },
-    "skip": "דלג",
-    "voice": {
-      "micUnavailable": "המיקרופון אינו זמין",
-      "noAudio": "לא זוהה שמע",
-      "orType": "או הקלד את שמך",
-      "subtitle": "אמור את שמך או הקלד אותו למטה",
-      "title": "איך לקרוא לך?",
-      "useTextInput": "השתמש בהקלדה"
-    },
     "welcome": {
-      "getStarted": "בואו נתחיל",
-      "subtitle": "בואו נתאים את החוויה שלך",
-      "title": "ברוכים הבאים ל-Bayit+"
+      "title": "ברוכים הבאים ל-Bayit+",
+      "subtitle": "טלוויזיה ישראלית, בשפה שלך",
+      "continue": "המשך"
     },
-    "byoc": {
-      "title": "הביאו את התוכן שלכם",
-      "subtitle": "חברו את מקורות התוכן האהובים עליכם ושפרו אותם עם דיבוב AI, כתוביות ועוד",
-      "iptvDesc": "ערוצי טלוויזיה חיים מרשימות M3U",
-      "plexDesc": "ספריית המדיה האישית שלכם",
-      "youtubeDesc": "סרטונים מהמנויים שלכם",
-      "connectNow": "חבר מקור",
-      "skipForNow": "הגדר מאוחר יותר"
+    "aiLanguage": {
+      "title": "צפה ב-{{language}}",
+      "subtitle": "דיבוב AI, כתוביות בזמן אמת ולימוד עברית -- הכל מובנה",
+      "dubbing": "דיבוב חי",
+      "subtitles": "כתוביות חכמות",
+      "engrew": "Engrew"
     },
-    "tour": {
-      "title": "גלה את בית פלוס",
-      "skipButton": "דלג על הסיור",
-      "getStarted": "בוא נתחיל",
-      "continuePrompt": "להמשיך מאיפה שהפסקת?",
-      "replayLabel": "הפעל מחדש את סיור התכונות",
-      "tryItNow": "נסה עכשיו",
-      "cardProgress": "כרטיס {current} מתוך {total}",
-      "dubbing": {
-        "title": "דיבוב AI חי",
-        "tagline": "צפה בטלוויזיה ישראלית בשפה שלך",
-        "description": "כל ערוץ חי מדובב בזמן אמת לאנגלית, צרפתית, ספרדית, איטלקית, בנגלית, הינדית, יפנית, טמילית וסינית."
-      },
-      "trivia": {
-        "title": "טריוויה חיה",
-        "tagline": "למד תוך כדי צפייה",
-        "description": "עובדות וטריוויה שנוצרו על ידי בינה מלאכותית צצות במהלך שידור חי."
-      },
-      "subtitles": {
-        "title": "כתוביות חכמות",
-        "tagline": "ארבעה מצבי כתוביות",
-        "description": "החלף בין עברית מקורית, ניקוד, אנגרו והבליש על כל תוכן.",
-        "mode": {
-          "original": "מקור",
-          "nikud": "ניקוד",
-          "engrew": "אנגרו",
-          "heblish": "הבליש"
-        }
-      },
-      "engrewHeblish": {
-        "title": "אנגרו והבליש",
-        "tagline": "גשר בין שתי שפות",
-        "description": "אנגרו כותב מילים באנגלית באותיות עבריות. הבליש כותב מילים בעברית באותיות לטיניות."
-      },
-      "pauseAndAsk": {
-        "title": "עצור ושאל",
-        "tagline": "דבר עם כל סצנה",
-        "description": "עצור כל רגע ושאל שאלות על מה שקורה. הבינה המלאכותית עונה לפי הקשר הסצנה."
-      },
-      "interaction": {
-        "title": "אינטראקציות עם סרטים",
-        "tagline": "שוחח עם דמויות",
-        "description": "הקש על דמויות מודגשות ברגעים נבחרים כדי להתחיל שיחה. חפש את סמל הכוכב במהלך הצפייה.",
-        "creditInfo": "כל חילופי דברים משתמש בקרדיט AI אחד. מנויי פרימיום מקבלים אינטראקציות ללא הגבלה.",
-        "tapCharacter": "הקש על דמות כדי להתחיל לדבר",
-        "curatedMoments": "חפש את סמל הכוכב במהלך הצפייה לרגעים אינטראקטיביים"
-      },
-      "zehAni": {
-        "title": "זה אני - מראה קסם",
-        "tagline": "האווטאר האישי שלך",
-        "description": "צור אווטאר תלת-ממדי מסלפי. השתמש בו לתכונות אינטראקטיביות, תרגול אוצר מילים וקשרים חברתיים.",
-        "consent": "גישה למצלמה משמשת רק במכשיר. אין תמונות שנשלחות לשרתים שלנו.",
-        "enableCamera": "הפעל מצלמה",
-        "noDataSent": "כל העיבוד מתבצע במכשיר שלך",
-        "vocabWord": "מילת היום",
-        "vocabTransliteration": "תעתיק",
-        "vocabTranslation": "תרגום"
-      },
-      "catchup": {
-        "title": "השלמת 7 ימים",
-        "tagline": "אל תפספס רגע",
-        "description": "גלול אחורה עד 7 ימים בכל ערוץ. סיכומי AI עוזרים לך לקפוץ לרגעים הטובים ביותר."
-      },
-      "byoc": {
-        "title": "הבא תוכן משלך",
-        "tagline": "המדיה שלך, הבינה המלאכותית שלנו",
-        "description": "חבר Plex, YouTube, IPTV, Xtream, USB או אחסון ענן. כל תכונות הבינה המלאכותית עובדות על התוכן שלך."
-      },
-      "personalization": {
-        "title": "התאם אישית את החוויה שלך",
-        "subtitle": "עזור לנו להמליץ על התוכן הטוב ביותר עבורך",
-        "languages": "שפות תוכן",
-        "genres": "ז'אנרים מועדפים",
-        "hasChildren": "יש לך ילדים?",
-        "done": "סיום"
-      }
-    }
+    "pauseAsk": {
+      "title": "עצור ושאל כל דבר",
+      "subtitle": "סקרנים לגבי סצנה, שחקן או הפנייה? פשוט תשאלו -- ה-AI יודע מה אתם צופים",
+      "pill": "עצור ושאל"
+    },
+    "interactive": {
+      "title": "הטלוויזיה מדברת אליכם",
+      "subtitle": "לחצו על דמויות, חקרו רגעים ושחקו טריוויה חיה תוך כדי צפייה",
+      "moments": "רגעים אינטראקטיביים",
+      "trivia": "טריוויה חיה"
+    },
+    "neverMiss": {
+      "title": "התוכן שלך, בדרך שלך",
+      "subtitle": "סיכומי השלמה ב-AI והבאת תוכן משלך מ-Plex, IPTV ו-YouTube",
+      "catchup": "השלמה ב-AI",
+      "byoc": "התוכן שלך"
+    },
+    "zehAni": {
+      "title": "למדו עברית באופן טבעי",
+      "subtitle": "זיהוי פנים ומחוות מפעילים לימוד עברית מותאם אישית תוך כדי צפייה",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "שלטו בקול",
+      "subtitle": "אמרו 'Hey Bayit' כדי להחליף ערוצים, לחפש או לשאול -- בלי ידיים",
+      "enableVoice": "הפעל שליטה קולית",
+      "wakeWord": "זיהוי מילת הערה",
+      "continue": "המשך",
+      "later": "אגדיר מאוחר יותר"
+    },
+    "launch": {
+      "title": "הכל מוכן",
+      "hint": "החליקו למעלה לערוצים, אמרו 'Hey Bayit' בכל רגע"
+    },
+    "skip": "דלג"
   },
   "pairing": {
     "codePlaceholder": "הכנס קוד התאמה",
@@ -7969,7 +7858,9 @@
       "loading": "טוען עזרה...",
       "noFaqs": "אין שאלות נפוצות זמינות",
       "subtitle": "מצא תשובות וקבל תמיכה",
-      "title": "עזרה ותמיכה"
+      "title": "עזרה ותמיכה",
+      "replayOnboarding": "הצג שוב את ההדרכה",
+      "replayTour": "הפעל מחדש סיור תכונות"
     },
     "autoplayDescription": "Automatically play the next episode when one finishes",
     "autoplayNextEpisode": "Autoplay Next Episode",
@@ -8015,7 +7906,8 @@
     "children": "ילדים",
     "loading": "טוען הגדרות...",
     "not_connected": "לא מחובר",
-    "privacySecurity": "פרטיות & Security"
+    "privacySecurity": "פרטיות & Security",
+    "privacySection": "פרטיות ומשפטי"
   },
   "shabbat": {
     "activate": "הפעל",

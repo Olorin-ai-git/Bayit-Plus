@@ -6073,164 +6073,53 @@
     }
   },
   "onboarding": {
-    "autoplay": "தானியங்கி இயக்கம்",
-    "back": "பின்",
-    "chooseAvatar": "உங்கள் அவதாரத்தைத் தேர்ந்தெடுங்கள்",
-    "enableVoice": "குரல் கட்டளைகளை இயக்கு",
-    "finish": "முடி",
-    "language": {
-      "content": "உள்ளடக்க மொழிகள்",
-      "primary": "முதன்மை மொழி",
-      "subtitle": "உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்",
-      "title": "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்"
-    },
-    "namePlaceholder": "உங்கள் பெயரை உள்ளிடவும்",
-    "next": "அடுத்து",
-    "profileTitle": "உங்கள் சுயவிவரத்தை அமைக்கவும்",
-    "subtitles": "வசனங்கள்",
-    "tasteSubtitle": "உங்கள் விருப்ப வகைகளைத் தேர்ந்தெடுங்கள்",
-    "tasteTitle": "நீங்கள் எதை விரும்புகிறீர்கள்?",
-    "voiceSubtitle": "கைகள் இல்லாத கட்டுப்பாட்டிற்கு குரலை அமைக்கவும்",
-    "voiceTitle": "குரல் கட்டுப்பாடு",
-    "wakeWord": "விழிப்பு வார்த்தை",
-    "welcomeSubtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்குவோம்",
-    "welcomeTitle": "Bayit+ க்கு வரவேற்கிறோம்",
-    "complete": {
-      "culture": "கலாச்சாரம்",
-      "interests": "ஆர்வங்கள்",
-      "language": "மொழி",
-      "name": "பெயர்",
-      "saving": "உங்கள் விருப்பங்களைச் சேமிக்கிறது...",
-      "startWatching": "பார்க்கத் தொடங்கு",
-      "subtitle": "உங்கள் தனிப்பயன் அனுபவம் தயாராக உள்ளது",
-      "title": "எல்லாம் தயார்!"
-    },
-    "culture": {
-      "american": "அமெரிக்கன்",
-      "european": "ஐரோப்பியன்",
-      "israeli": "இஸ்ரேலி",
-      "mixed": "கலப்பு",
-      "subtitle": "உங்கள் விருப்பத்திற்கு ஏற்ற கலாச்சாரத்தைத் தேர்ந்தெடுக்கவும்",
-      "title": "உங்கள் கலாச்சாரத்தைத் தேர்ந்தெடுக்கவும்"
-    },
-    "interest": {
-      "audiobooks": "ஒலி புத்தகங்கள்",
-      "kids": "குழந்தைகள்",
-      "kidsContent": "குழந்தைகள்",
-      "liveTV": "நேரடி டிவி",
-      "movies": "திரைப்படங்கள்",
-      "music": "இசை",
-      "news": "செய்திகள்",
-      "podcasts": "பாட்காஸ்ட்கள்",
-      "radio": "வானொலி",
-      "series": "தொடர்கள்",
-      "sports": "விளையாட்டு"
-    },
-    "interests": {
-      "selected": "%d தேர்ந்தெடுக்கப்பட்டவை",
-      "subtitle": "குறைந்தது 3 உள்ளடக்க வகைகளைத் தேர்ந்தெடுக்கவும்",
-      "title": "உங்களுக்கு என்ன பிடிக்கும்?"
-    },
-    "skip": "தவிர்",
-    "voice": {
-      "micUnavailable": "ஒலிவாங்கி கிடைக்கவில்லை",
-      "noAudio": "ஒலி கண்டறியப்படவில்லை",
-      "orType": "அல்லது உங்கள் பெயரை உள்ளிடவும்",
-      "subtitle": "உங்கள் பெயரைச் சொல்லுங்கள் அல்லது கீழே உள்ளிடவும்",
-      "title": "உங்களை என்னவென்று அழைக்கலாம்?",
-      "useTextInput": "உரை உள்ளீட்டைப் பயன்படுத்தவும்"
-    },
     "welcome": {
-      "getStarted": "தொடங்குவோம்",
-      "subtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்குவோம்",
-      "title": "Bayit+ க்கு வரவேற்கிறோம்"
+      "title": "Bayit+ இல் உங்களை வரவேற்கிறோம்",
+      "subtitle": "இச்ரேலிய டிவி, உங்கள் மொழியில்",
+      "continue": "தொடருங்கள்"
     },
-    "byoc": {
-      "title": "உங்கள் சொந்த உள்ளடக்கத்தைக் கொண்டு வாருங்கள்",
-      "subtitle": "உங்கள் விருப்பமான உள்ளடக்க ஆதாரங்களை இணைத்து AI டப்பிங், வசனங்கள் மற்றும் பலவற்றுடன் மேம்படுத்துங்கள்",
-      "iptvDesc": "M3U பிளேலிஸ்ட்களிலிருந்து நேரலை தொலைக்காட்சி சேனல்கள்",
-      "plexDesc": "உங்கள் தனிப்பட்ட மீடியா நூலகம்",
-      "youtubeDesc": "உங்கள் சந்தாக்களிலிருந்து வீடியோக்கள்",
-      "connectNow": "ஒரு ஆதாரத்தை இணைக்கவும்",
-      "skipForNow": "பின்னர் அமைக்கவும்"
+    "aiLanguage": {
+      "title": "{{language}} இல் பாருங்கள்",
+      "subtitle": "AI டப்பிங், நேரடி உபதலைகள் மற்றும் எப்ரூ கற்றல் -- எல்லாம் உள்ளடங்கியது",
+      "dubbing": "நேரடி டப்பிங்",
+      "subtitles": "ச்மார்ட் உபதலை",
+      "engrew": "Engrew"
     },
-    "tour": {
-      "title": "Discover Bayit+",
-      "skipButton": "Skip Tour",
-      "getStarted": "Get Started",
-      "continuePrompt": "Continue where you left off?",
-      "replayLabel": "Replay Feature Tour",
-      "tryItNow": "Try It Now",
-      "cardProgress": "Card {current} of {total}",
-      "dubbing": {
-        "title": "Live AI Dubbing",
-        "tagline": "Watch Israeli TV in your language",
-        "description": "Every live channel dubbed in real time into English, French, Spanish, Italian, Bengali, Hindi, Japanese, Tamil, and Chinese."
-      },
-      "trivia": {
-        "title": "Live Trivia",
-        "tagline": "Learn while you watch",
-        "description": "AI-generated facts and trivia pop up during live TV, sourced from the web and matched to what's on screen."
-      },
-      "subtitles": {
-        "title": "Smart Subtitles",
-        "tagline": "Four subtitle modes",
-        "description": "Switch between Original Hebrew, Nikud (voweled), Engrew, and Heblish subtitles on any content.",
-        "mode": {
-          "original": "Original",
-          "nikud": "Nikud",
-          "engrew": "Engrew",
-          "heblish": "Heblish"
-        }
-      },
-      "engrewHeblish": {
-        "title": "Engrew and Heblish",
-        "tagline": "Bridge two languages",
-        "description": "Engrew writes English words in Hebrew letters. Heblish writes Hebrew words in Latin script. Both help you learn naturally."
-      },
-      "pauseAndAsk": {
-        "title": "Pause and Ask",
-        "tagline": "Talk to any scene",
-        "description": "Pause any moment and ask questions about what's happening. AI answers using the scene context."
-      },
-      "interaction": {
-        "title": "Movie Interactions",
-        "tagline": "Chat with characters",
-        "description": "Tap highlighted characters during curated moments to start a conversation. Look for the star icon during playback.",
-        "creditInfo": "Each exchange uses 1 AI credit. Premium subscribers get unlimited interactions.",
-        "tapCharacter": "Tap a character to start talking",
-        "curatedMoments": "Look for the star icon during playback for interactive moments"
-      },
-      "zehAni": {
-        "title": "Zeh Ani - Magic Mirror",
-        "tagline": "Your personal avatar",
-        "description": "Create a 3D avatar from a selfie. Use it for interactive features, vocabulary practice, and social connections.",
-        "consent": "Camera access is used only on-device. No photos are sent to our servers.",
-        "enableCamera": "Enable Camera",
-        "noDataSent": "All processing happens on your device",
-        "vocabWord": "Word of the day",
-        "vocabTransliteration": "Transliteration",
-        "vocabTranslation": "Translation"
-      },
-      "catchup": {
-        "title": "7-Day Catchup",
-        "tagline": "Never miss a moment",
-        "description": "Scroll back up to 7 days on any channel. AI summaries help you jump to the best moments. Programs up to 4 hours supported."
-      },
-      "byoc": {
-        "title": "Bring Your Own Content",
-        "tagline": "Your media, our AI",
-        "description": "Connect Plex, YouTube, IPTV, Xtream, USB, or cloud storage. All AI features work on your content too."
-      },
-      "personalization": {
-        "title": "Personalize Your Experience",
-        "subtitle": "Help us recommend the best content for you",
-        "languages": "Content Languages",
-        "genres": "Favorite Genres",
-        "hasChildren": "Do you have children?",
-        "done": "Done"
-      }
-    }
+    "pauseAsk": {
+      "title": "நிறுத்தி எதையும் கேளுங்கள்",
+      "subtitle": "காட்சி, நடிகர் அல்லது குறிப்பு பற்றி குதூகலமா? கேளுங்கள் -- AI தெரியும் நீங்கள் என்ன பார்க்கிறீர்கள் என்று",
+      "pill": "நிறுத்தி கேளுங்கள்"
+    },
+    "interactive": {
+      "title": "உங்கள் டிவி பதிலளிக்கிறது",
+      "subtitle": "கதாபாத்திரங்களை தொடுங்கள், நிமிடங்களை ஆராயுங்கள், பார்க்கும்போதே நேரடி ட்ரிவியா விளையாடுங்கள்",
+      "moments": "இண்டராக்டிவ் நிமிடங்கள்",
+      "trivia": "நேரடி ட்ரிவியா"
+    },
+    "neverMiss": {
+      "title": "உங்கள் உள்ளடக்கம், உங்கள் வழியில்",
+      "subtitle": "AI காட்ச்அப் சுருக்கம் மற்றும் Plex, IPTV, YouTube இல் இருந்து உங்கள் உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+      "catchup": "AI காட்ச்அப்",
+      "byoc": "உங்கள் உள்ளடக்கம்"
+    },
+    "zehAni": {
+      "title": "எப்ரூவை இயல்பாக கற்றுக்கொள்ளுங்கள்",
+      "subtitle": "முக மற்றும் சைகை அடையாளம் மூலம் தனிப்பயனான எப்ரூ கற்றல்",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "குரலால் கட்டுப்படுத்துங்கள்",
+      "subtitle": "'Hey Bayit' என்று சொல்லுங்கள் சானல் மாற்ற, தேட அல்லது கேள்வி கேக்க -- கைகள் இல்லாமல்",
+      "enableVoice": "குரல் கட்டுப்பாட்டை இயக்கு",
+      "wakeWord": "வேக் வேர்ட் கண்டறிதல்",
+      "continue": "தொடருங்கள்",
+      "later": "பின்னர் அமைக்கவும்"
+    },
+    "launch": {
+      "title": "எல்லாம் தயார்",
+      "hint": "சானல்களுக்கு மேலே ஸ்வைப் செய்யுங்கள், எப்போதும் 'Hey Bayit' சொல்லுங்கள்"
+    },
+    "skip": "தவிர்"
   },
   "pairing": {
     "codePlaceholder": "இணைப்புக் குறியீடு உள்ளிடவும்",
@@ -7970,7 +7859,9 @@
       "loading": "உதவியை ஏற்றுகிறது...",
       "noFaqs": "அடிக்கடி கேட்கப்படும் கேள்விகள் இல்லை",
       "subtitle": "பதில்களைக் கண்டறிந்து ஆதரவைப் பெறுங்கள்",
-      "title": "உதவி மற்றும் ஆதரவு"
+      "title": "உதவி மற்றும் ஆதரவு",
+      "replayOnboarding": "அறிமுகப்படுத்தலை மீண்டும் பார்க்க",
+      "replayTour": "அம்ச சுற்றுப்பயணத்தை மீண்டும் இயக்கு"
     },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
@@ -8021,7 +7912,8 @@
     "children": "குழந்தைகள்",
     "loading": "அமைப்புகளை ஏற்றுகிறது...",
     "not_connected": "இணைக்கப்படவில்லை",
-    "privacySecurity": "தனியுரிமை & Security"
+    "privacySecurity": "தனியுரிமை & Security",
+    "privacySection": "தனியுரிமை மற்றும் சட்டம்"
   },
   "shabbat": {
     "activate": "செயல்படுத்து",

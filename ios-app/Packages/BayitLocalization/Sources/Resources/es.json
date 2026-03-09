@@ -6073,164 +6073,53 @@
     }
   },
   "onboarding": {
-    "autoplay": "Reproducción automática",
-    "back": "Atrás",
-    "chooseAvatar": "Elige tu avatar",
-    "enableVoice": "Habilitar comandos de voz",
-    "finish": "Finalizar",
-    "language": {
-      "content": "Idiomas de contenido",
-      "primary": "Idioma principal",
-      "subtitle": "Selecciona tu idioma preferido",
-      "title": "Elige tu idioma"
-    },
-    "namePlaceholder": "Ingresa tu nombre",
-    "next": "Siguiente",
-    "profileTitle": "Configura tu perfil",
-    "subtitles": "Subtítulos",
-    "tasteSubtitle": "Selecciona tus géneros y categorías favoritos",
-    "tasteTitle": "¿Qué te gusta?",
-    "voiceSubtitle": "Configura comandos de voz para control manos libres",
-    "voiceTitle": "Control por voz",
-    "wakeWord": "Palabra de activación",
-    "welcomeSubtitle": "Personalicemos tu experiencia",
-    "welcomeTitle": "Bienvenido a Bayit+",
-    "complete": {
-      "culture": "Cultura",
-      "interests": "Intereses",
-      "language": "Idioma",
-      "name": "Nombre",
-      "saving": "Guardando tus preferencias...",
-      "startWatching": "Empezar a ver",
-      "subtitle": "Tu experiencia personalizada esta lista",
-      "title": "Todo listo!"
-    },
-    "culture": {
-      "american": "Americano",
-      "european": "Europeo",
-      "israeli": "Israeli",
-      "mixed": "Mixto",
-      "subtitle": "Selecciona la cultura que mejor se adapte",
-      "title": "Elige tu cultura"
-    },
-    "interest": {
-      "audiobooks": "Audiolibros",
-      "kids": "Ninos",
-      "kidsContent": "Ninos",
-      "liveTV": "TV en vivo",
-      "movies": "Peliculas",
-      "music": "Musica",
-      "news": "Noticias",
-      "podcasts": "Podcasts",
-      "radio": "Radio",
-      "series": "Series",
-      "sports": "Deportes"
-    },
-    "interests": {
-      "selected": "%d seleccionados",
-      "subtitle": "Selecciona al menos 3 tipos de contenido",
-      "title": "Que te gusta?"
-    },
-    "skip": "Omitir",
-    "voice": {
-      "micUnavailable": "El microfono no esta disponible",
-      "noAudio": "No se detecto audio",
-      "orType": "O escribe tu nombre",
-      "subtitle": "Di tu nombre o escribelo",
-      "title": "Como te llamamos?",
-      "useTextInput": "Usar entrada de texto"
-    },
     "welcome": {
-      "getStarted": "Empezar",
-      "subtitle": "Personalicemos tu experiencia",
-      "title": "Bienvenido a Bayit+"
+      "title": "Bienvenido a Bayit+",
+      "subtitle": "TV israelí, en tu idioma",
+      "continue": "Continuar"
     },
-    "byoc": {
-      "title": "Trae Tu Propio Contenido",
-      "subtitle": "Conecta tus fuentes de contenido favoritas y mejoralas con doblaje IA, subtitulos y mas",
-      "iptvDesc": "Canales de TV en vivo desde listas M3U",
-      "plexDesc": "Tu biblioteca multimedia personal",
-      "youtubeDesc": "Videos de tus suscripciones",
-      "connectNow": "Conectar una Fuente",
-      "skipForNow": "Configurar Despues"
+    "aiLanguage": {
+      "title": "Mira en {{language}}",
+      "subtitle": "Doblaje con IA, subtítulos en tiempo real y aprendizaje de hebreo -- todo integrado",
+      "dubbing": "Doblaje en vivo",
+      "subtitles": "Subtítulos inteligentes",
+      "engrew": "Engrew"
     },
-    "tour": {
-      "title": "Discover Bayit+",
-      "skipButton": "Skip Tour",
-      "getStarted": "Get Started",
-      "continuePrompt": "Continue where you left off?",
-      "replayLabel": "Replay Feature Tour",
-      "tryItNow": "Try It Now",
-      "cardProgress": "Card {current} of {total}",
-      "dubbing": {
-        "title": "Live AI Dubbing",
-        "tagline": "Watch Israeli TV in your language",
-        "description": "Every live channel dubbed in real time into English, French, Spanish, Italian, Bengali, Hindi, Japanese, Tamil, and Chinese."
-      },
-      "trivia": {
-        "title": "Live Trivia",
-        "tagline": "Learn while you watch",
-        "description": "AI-generated facts and trivia pop up during live TV, sourced from the web and matched to what's on screen."
-      },
-      "subtitles": {
-        "title": "Smart Subtitles",
-        "tagline": "Four subtitle modes",
-        "description": "Switch between Original Hebrew, Nikud (voweled), Engrew, and Heblish subtitles on any content.",
-        "mode": {
-          "original": "Original",
-          "nikud": "Nikud",
-          "engrew": "Engrew",
-          "heblish": "Heblish"
-        }
-      },
-      "engrewHeblish": {
-        "title": "Engrew and Heblish",
-        "tagline": "Bridge two languages",
-        "description": "Engrew writes English words in Hebrew letters. Heblish writes Hebrew words in Latin script. Both help you learn naturally."
-      },
-      "pauseAndAsk": {
-        "title": "Pause and Ask",
-        "tagline": "Talk to any scene",
-        "description": "Pause any moment and ask questions about what's happening. AI answers using the scene context."
-      },
-      "interaction": {
-        "title": "Movie Interactions",
-        "tagline": "Chat with characters",
-        "description": "Tap highlighted characters during curated moments to start a conversation. Look for the star icon during playback.",
-        "creditInfo": "Each exchange uses 1 AI credit. Premium subscribers get unlimited interactions.",
-        "tapCharacter": "Tap a character to start talking",
-        "curatedMoments": "Look for the star icon during playback for interactive moments"
-      },
-      "zehAni": {
-        "title": "Zeh Ani - Magic Mirror",
-        "tagline": "Your personal avatar",
-        "description": "Create a 3D avatar from a selfie. Use it for interactive features, vocabulary practice, and social connections.",
-        "consent": "Camera access is used only on-device. No photos are sent to our servers.",
-        "enableCamera": "Enable Camera",
-        "noDataSent": "All processing happens on your device",
-        "vocabWord": "Word of the day",
-        "vocabTransliteration": "Transliteration",
-        "vocabTranslation": "Translation"
-      },
-      "catchup": {
-        "title": "7-Day Catchup",
-        "tagline": "Never miss a moment",
-        "description": "Scroll back up to 7 days on any channel. AI summaries help you jump to the best moments. Programs up to 4 hours supported."
-      },
-      "byoc": {
-        "title": "Bring Your Own Content",
-        "tagline": "Your media, our AI",
-        "description": "Connect Plex, YouTube, IPTV, Xtream, USB, or cloud storage. All AI features work on your content too."
-      },
-      "personalization": {
-        "title": "Personalize Your Experience",
-        "subtitle": "Help us recommend the best content for you",
-        "languages": "Content Languages",
-        "genres": "Favorite Genres",
-        "hasChildren": "Do you have children?",
-        "done": "Done"
-      }
-    }
+    "pauseAsk": {
+      "title": "Pausa y pregunta lo que quieras",
+      "subtitle": "¿Curioso sobre una escena, actor o referencia? Solo pregunta -- la IA sabe lo que estás viendo",
+      "pill": "Pausa y pregunta"
+    },
+    "interactive": {
+      "title": "Tu TV te responde",
+      "subtitle": "Toca personajes, explora momentos y juega trivia en vivo mientras miras",
+      "moments": "Momentos interactivos",
+      "trivia": "Trivia en vivo"
+    },
+    "neverMiss": {
+      "title": "Tu contenido, a tu manera",
+      "subtitle": "Resúmenes de puesta al día con IA y trae tu propio contenido de Plex, IPTV y YouTube",
+      "catchup": "Puesta al día con IA",
+      "byoc": "Trae tu contenido"
+    },
+    "zehAni": {
+      "title": "Aprende hebreo, naturalmente",
+      "subtitle": "Reconocimiento facial y de gestos impulsa el aprendizaje personalizado de hebreo mientras miras",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "Controla con tu voz",
+      "subtitle": "Di 'Hey Bayit' para cambiar canales, buscar o hacer preguntas -- manos libres",
+      "enableVoice": "Activar control por voz",
+      "wakeWord": "Detección de palabra clave",
+      "continue": "Continuar",
+      "later": "Configurar después"
+    },
+    "launch": {
+      "title": "Todo listo",
+      "hint": "Desliza hacia arriba para canales, di 'Hey Bayit' en cualquier momento"
+    },
+    "skip": "Omitir"
   },
   "pairing": {
     "codePlaceholder": "Ingresa código de emparejamiento",
@@ -8001,7 +7890,9 @@
       "loading": "Cargando ayuda...",
       "noFaqs": "No hay preguntas frecuentes",
       "subtitle": "Encuentra respuestas y obten soporte",
-      "title": "Ayuda y soporte"
+      "title": "Ayuda y soporte",
+      "replayOnboarding": "Repetir introducción",
+      "replayTour": "Repetir Tour de Funciones"
     },
     "autoplayDescription": "Reproducir automaticamente el siguiente episodio al terminar",
     "autoplayNextEpisode": "Reproducir Siguiente Episodio",
@@ -8047,7 +7938,8 @@
     "children": "Ninos",
     "loading": "Cargando configuracion...",
     "not_connected": "No conectado",
-    "privacySecurity": "Privacidad & Security"
+    "privacySecurity": "Privacidad & Security",
+    "privacySection": "Privacidad y Legal"
   },
   "shabbat": {
     "activate": "Activar",

@@ -5995,164 +5995,53 @@
     }
   },
   "onboarding": {
-    "autoplay": "自动播放",
-    "back": "返回",
-    "chooseAvatar": "选择你的头像",
-    "enableVoice": "启用语音命令",
-    "finish": "完成",
-    "language": {
-      "content": "内容语言",
-      "primary": "主要语言",
-      "subtitle": "选择您的首选语言",
-      "title": "选择语言"
-    },
-    "namePlaceholder": "输入您的名字",
-    "next": "下一步",
-    "profileTitle": "设置你的个人资料",
-    "subtitles": "字幕",
-    "tasteSubtitle": "选择您喜欢的类型和分类",
-    "tasteTitle": "你喜欢什么？",
-    "voiceSubtitle": "设置语音命令进行免提控制",
-    "voiceTitle": "语音控制",
-    "wakeWord": "唤醒词",
-    "welcomeSubtitle": "让我们个性化您的体验",
-    "welcomeTitle": "欢迎来到Bayit+",
-    "complete": {
-      "culture": "文化",
-      "interests": "兴趣",
-      "language": "语言",
-      "name": "名字",
-      "saving": "正在保存您的偏好设置...",
-      "startWatching": "开始观看",
-      "subtitle": "您的个性化体验已准备就绪",
-      "title": "一切就绪！"
-    },
-    "culture": {
-      "american": "美国",
-      "european": "欧洲",
-      "israeli": "以色列",
-      "mixed": "混合",
-      "subtitle": "选择最适合您的文化偏好",
-      "title": "选择您的文化"
-    },
-    "interest": {
-      "audiobooks": "有声书",
-      "kids": "儿童",
-      "kidsContent": "儿童",
-      "liveTV": "直播电视",
-      "movies": "电影",
-      "music": "音乐",
-      "news": "新闻",
-      "podcasts": "播客",
-      "radio": "广播",
-      "series": "电视剧",
-      "sports": "体育"
-    },
-    "interests": {
-      "selected": "已选择 %d 项",
-      "subtitle": "选择至少3种您喜欢的内容类型",
-      "title": "您喜欢什么？"
-    },
-    "skip": "跳过",
-    "voice": {
-      "micUnavailable": "麦克风不可用",
-      "noAudio": "未检测到音频",
-      "orType": "或输入您的名字",
-      "subtitle": "说出您的名字或在下方输入",
-      "title": "我们怎么称呼您？",
-      "useTextInput": "使用文本输入"
-    },
     "welcome": {
-      "getStarted": "开始使用",
-      "subtitle": "让我们个性化您的体验",
-      "title": "欢迎来到 Bayit+"
+      "title": "欢迎来到 Bayit+",
+      "subtitle": "以您的语言观看以色列电视",
+      "continue": "继续"
     },
-    "byoc": {
-      "title": "自带内容",
-      "subtitle": "连接您喜爱的内容源，并通过AI配音、字幕等功能增强它们",
-      "iptvDesc": "来自M3U播放列表的直播电视频道",
-      "plexDesc": "您的个人媒体库",
-      "youtubeDesc": "来自您订阅的视频",
-      "connectNow": "连接来源",
-      "skipForNow": "稍后设置"
+    "aiLanguage": {
+      "title": "使用 {{language}} 观看",
+      "subtitle": "AI 配音、实时字幕和希伯来语学习 -- 全部内置",
+      "dubbing": "实时配音",
+      "subtitles": "智能字幕",
+      "engrew": "Engrew"
     },
-    "tour": {
-      "title": "Discover Bayit+",
-      "skipButton": "Skip Tour",
-      "getStarted": "Get Started",
-      "continuePrompt": "Continue where you left off?",
-      "replayLabel": "Replay Feature Tour",
-      "tryItNow": "Try It Now",
-      "cardProgress": "Card {current} of {total}",
-      "dubbing": {
-        "title": "Live AI Dubbing",
-        "tagline": "Watch Israeli TV in your language",
-        "description": "Every live channel dubbed in real time into English, French, Spanish, Italian, Bengali, Hindi, Japanese, Tamil, and Chinese."
-      },
-      "trivia": {
-        "title": "Live Trivia",
-        "tagline": "Learn while you watch",
-        "description": "AI-generated facts and trivia pop up during live TV, sourced from the web and matched to what's on screen."
-      },
-      "subtitles": {
-        "title": "Smart Subtitles",
-        "tagline": "Four subtitle modes",
-        "description": "Switch between Original Hebrew, Nikud (voweled), Engrew, and Heblish subtitles on any content.",
-        "mode": {
-          "original": "Original",
-          "nikud": "Nikud",
-          "engrew": "Engrew",
-          "heblish": "Heblish"
-        }
-      },
-      "engrewHeblish": {
-        "title": "Engrew and Heblish",
-        "tagline": "Bridge two languages",
-        "description": "Engrew writes English words in Hebrew letters. Heblish writes Hebrew words in Latin script. Both help you learn naturally."
-      },
-      "pauseAndAsk": {
-        "title": "Pause and Ask",
-        "tagline": "Talk to any scene",
-        "description": "Pause any moment and ask questions about what's happening. AI answers using the scene context."
-      },
-      "interaction": {
-        "title": "Movie Interactions",
-        "tagline": "Chat with characters",
-        "description": "Tap highlighted characters during curated moments to start a conversation. Look for the star icon during playback.",
-        "creditInfo": "Each exchange uses 1 AI credit. Premium subscribers get unlimited interactions.",
-        "tapCharacter": "Tap a character to start talking",
-        "curatedMoments": "Look for the star icon during playback for interactive moments"
-      },
-      "zehAni": {
-        "title": "Zeh Ani - Magic Mirror",
-        "tagline": "Your personal avatar",
-        "description": "Create a 3D avatar from a selfie. Use it for interactive features, vocabulary practice, and social connections.",
-        "consent": "Camera access is used only on-device. No photos are sent to our servers.",
-        "enableCamera": "Enable Camera",
-        "noDataSent": "All processing happens on your device",
-        "vocabWord": "Word of the day",
-        "vocabTransliteration": "Transliteration",
-        "vocabTranslation": "Translation"
-      },
-      "catchup": {
-        "title": "7-Day Catchup",
-        "tagline": "Never miss a moment",
-        "description": "Scroll back up to 7 days on any channel. AI summaries help you jump to the best moments. Programs up to 4 hours supported."
-      },
-      "byoc": {
-        "title": "Bring Your Own Content",
-        "tagline": "Your media, our AI",
-        "description": "Connect Plex, YouTube, IPTV, Xtream, USB, or cloud storage. All AI features work on your content too."
-      },
-      "personalization": {
-        "title": "Personalize Your Experience",
-        "subtitle": "Help us recommend the best content for you",
-        "languages": "Content Languages",
-        "genres": "Favorite Genres",
-        "hasChildren": "Do you have children?",
-        "done": "Done"
-      }
-    }
+    "pauseAsk": {
+      "title": "暂停并提问",
+      "subtitle": "对场景、演员或参考感到好奇？尽管问 -- AI 知道你在看什么",
+      "pill": "暂停提问"
+    },
+    "interactive": {
+      "title": "你的电视会回应",
+      "subtitle": "点击角色、探索精彩时刻，边看边玩实时问答",
+      "moments": "互动时刻",
+      "trivia": "实时问答"
+    },
+    "neverMiss": {
+      "title": "你的内容，你做主",
+      "subtitle": "AI 补看摘要，还可从 Plex、IPTV 和 YouTube 导入自己的内容",
+      "catchup": "AI 补看",
+      "byoc": "自带内容"
+    },
+    "zehAni": {
+      "title": "自然地学希伯来语",
+      "subtitle": "人脸和手势识别驱动个性化希伯来语学习",
+      "pill": "Zeh Ani"
+    },
+    "voice": {
+      "title": "语音控制",
+      "subtitle": "说 'Hey Bayit' 切换频道、搜索或提问 -- 解放双手",
+      "enableVoice": "启用语音控制",
+      "wakeWord": "唤醒词检测",
+      "continue": "继续",
+      "later": "稍后设置"
+    },
+    "launch": {
+      "title": "一切就绪",
+      "hint": "向上滑动查看频道，随时说 'Hey Bayit'"
+    },
+    "skip": "跳过"
   },
   "pairing": {
     "codePlaceholder": "输入配对码",
@@ -7887,7 +7776,9 @@
       "loading": "加载帮助...",
       "noFaqs": "暂无常见问题",
       "subtitle": "查找答案并获取支持",
-      "title": "帮助与支持"
+      "title": "帮助与支持",
+      "replayOnboarding": "重播引导",
+      "replayTour": "重播功能导览"
     },
     "dangerZone": "Danger Zone",
     "deleteAccount": "Delete Account",
@@ -7938,7 +7829,8 @@
     "children": "儿童",
     "loading": "正在加载设置...",
     "not_connected": "未连接",
-    "privacySecurity": "隐私 & Security"
+    "privacySecurity": "隐私 & Security",
+    "privacySection": "隐私与法律"
   },
   "shabbat": {
     "activate": "激活",
