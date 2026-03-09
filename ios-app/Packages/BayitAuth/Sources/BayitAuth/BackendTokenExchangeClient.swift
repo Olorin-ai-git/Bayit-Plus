@@ -8,6 +8,13 @@ import Foundation
 /// (APIClient depends on AuthTokenProvider which depends on the token
 /// this client produces).
 enum BackendTokenExchangeClient {
+    private static var clientPlatform: String {
+        #if os(tvOS)
+            return "tvos"
+        #else
+            return "ios"
+        #endif
+    }
 
     // MARK: - Response Models
 
@@ -81,7 +88,7 @@ enum BackendTokenExchangeClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.setValue(clientPlatform, forHTTPHeaderField: "X-Client-Platform")
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
@@ -136,7 +143,7 @@ enum BackendTokenExchangeClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.setValue(clientPlatform, forHTTPHeaderField: "X-Client-Platform")
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
@@ -206,7 +213,7 @@ enum BackendTokenExchangeClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.setValue(clientPlatform, forHTTPHeaderField: "X-Client-Platform")
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
@@ -261,7 +268,7 @@ enum BackendTokenExchangeClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.setValue(clientPlatform, forHTTPHeaderField: "X-Client-Platform")
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
@@ -312,7 +319,7 @@ enum BackendTokenExchangeClient {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.setValue(clientPlatform, forHTTPHeaderField: "X-Client-Platform")
         request.timeoutInterval = config.apiTimeout
         request.httpBody = bodyData
 
@@ -340,5 +347,4 @@ enum BackendTokenExchangeClient {
 
         return try JSONDecoder().decode(LoginResponse.self, from: data)
     }
-
 }

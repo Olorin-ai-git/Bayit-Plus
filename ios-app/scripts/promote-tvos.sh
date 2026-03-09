@@ -9,7 +9,14 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}📺 Promoting tvOS Build${NC}"
+NEW_VERSION="${1:-}"
+
+if [ -z "$NEW_VERSION" ]; then
+  echo -e "${RED}ERROR: Marketing version required. Usage: promote-tvos.sh X.Y.Z${NC}"
+  exit 1
+fi
+
+echo -e "${BLUE}Promoting tvOS Build to version $NEW_VERSION${NC}"
 
 # Set correct GCP project for Bayit+
 echo -e "${BLUE}📋 Setting GCP project to bayit-plus${NC}"
@@ -66,16 +73,23 @@ echo -e "${GREEN}AutoLoginConfig.plist present${NC}"
 CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusTVApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))
 
+CURRENT_VERSION=$(plutil -extract CFBundleShortVersionString raw -o - BayitPlusTVApp/Info.plist)
 echo -e "${BLUE}Bumping tvOS build number: $CURRENT_BUILD -> $NEW_BUILD${NC}"
+echo -e "${BLUE}Bumping tvOS marketing version: $CURRENT_VERSION -> $NEW_VERSION${NC}"
 
 # Update tvOS Info.plist only (not iOS or widget extension)
 plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusTVApp/Info.plist
+plutil -replace CFBundleShortVersionString -string "$NEW_VERSION" BayitPlusTVApp/Info.plist
 
 echo -e "${GREEN}Updated BayitPlusTVApp/Info.plist${NC}"
 
 # Update CURRENT_PROJECT_VERSION in project.pbxproj for tvOS target only
 # (tvOS uses GENERATE_INFOPLIST_FILE = YES, so this is the authoritative build number)
 sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
+
+# Update MARKETING_VERSION in project.pbxproj (already handled by iOS script if running both,
+# but needed for standalone tvOS promotion)
+sed -i '' "s/MARKETING_VERSION = $CURRENT_VERSION;/MARKETING_VERSION = $NEW_VERSION;/g" BayitPlus.xcodeproj/project.pbxproj
 
 echo -e "${BLUE}Archiving tvOS app (clean build)...${NC}"
 

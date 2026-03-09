@@ -11,7 +11,7 @@
     "promote:ios": "./scripts/promote-ios.sh",
     "promote:tvos": "./scripts/promote-tvos.sh",
     "promote:both": "./scripts/promote-both.sh",
-    "promote": "npm run promote:both"
+    "promote": "./scripts/promote-both.sh"
   },
   "keywords": [],
   "author": "",

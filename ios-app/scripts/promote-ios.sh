@@ -9,7 +9,14 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 Promoting iOS Build${NC}"
+NEW_VERSION="${1:-}"
+
+if [ -z "$NEW_VERSION" ]; then
+  echo -e "${RED}ERROR: Marketing version required. Usage: promote-ios.sh X.Y.Z${NC}"
+  exit 1
+fi
+
+echo -e "${BLUE}Promoting iOS Build to version $NEW_VERSION${NC}"
 
 # Set correct GCP project for Bayit+
 echo -e "${BLUE}Setting GCP project to bayit-plus${NC}"
@@ -70,14 +77,22 @@ echo -e "${GREEN}Release.xcconfig validation passed - production values confirme
 CURRENT_BUILD=$(plutil -extract CFBundleVersion raw -o - BayitPlusApp/Info.plist)
 NEW_BUILD=$((CURRENT_BUILD + 1))
 
-echo -e "${BLUE}📦 Bumping build number: $CURRENT_BUILD → $NEW_BUILD${NC}"
+CURRENT_VERSION=$(plutil -extract CFBundleShortVersionString raw -o - BayitPlusApp/Info.plist)
+echo -e "${BLUE}Bumping build number: $CURRENT_BUILD -> $NEW_BUILD${NC}"
+echo -e "${BLUE}Bumping marketing version: $CURRENT_VERSION -> $NEW_VERSION${NC}"
 
-# Update Info.plist files
+# Update build number
 plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusApp/Info.plist
 plutil -replace CFBundleVersion -string "$NEW_BUILD" Extensions/WidgetExtension/Info.plist
 
-echo -e "${GREEN}✅ Updated BayitPlusApp/Info.plist${NC}"
-echo -e "${GREEN}✅ Updated Extensions/WidgetExtension/Info.plist${NC}"
+# Update marketing version
+plutil -replace CFBundleShortVersionString -string "$NEW_VERSION" BayitPlusApp/Info.plist
+plutil -replace CFBundleShortVersionString -string "$NEW_VERSION" Extensions/WidgetExtension/Info.plist
+
+# Update MARKETING_VERSION in project.pbxproj
+sed -i '' "s/MARKETING_VERSION = $CURRENT_VERSION;/MARKETING_VERSION = $NEW_VERSION;/g" BayitPlus.xcodeproj/project.pbxproj
+
+echo -e "${GREEN}Updated iOS marketing version to $NEW_VERSION, build $NEW_BUILD${NC}"
 
 echo -e "${BLUE}🏗️  Archiving iOS app...${NC}"
 
