@@ -69,13 +69,14 @@ enum TVHomeSection: Int, CaseIterable {
 
     /// Sections that depend on the owner's private content library.
     /// In public (non-owner) mode, these are hidden.
+    /// Continue watching, youngsters, and trending are always public.
     var requiresOwnerMode: Bool {
         switch self {
-        case .continueWatching:
-            return true
+        case .continueWatching, .youngsters:
+            return false
         case .nearMe, .whatsHot, .jerusalem, .telAviv, .liveTV:
             return false
-        case .israeliMovies, .movies, .kids, .youngsters, .music,
+        case .israeliMovies, .movies, .kids, .music,
              .documentary, .israeliSeries, .series:
             return true
         case .podcasts, .audiobooks:

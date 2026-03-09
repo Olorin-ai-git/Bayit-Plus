@@ -101,8 +101,8 @@ struct TVHomeView: View {
                 }
             }
 
-            // Featured collections carousel (owner mode only)
-            if appConfiguration.ownerMode, !featuredCollections.isEmpty {
+            // Featured collections carousel
+            if !featuredCollections.isEmpty {
                 TVFeaturedCollectionsCarousel(collections: featuredCollections)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
@@ -124,10 +124,8 @@ struct TVHomeView: View {
             TVPlexRow()
             TVYouTubeRow()
 
-            // Trending recommendations (owner mode — matches VOD library to news)
-            if appConfiguration.ownerMode {
-                TVTrendingRecommendationsRow()
-            }
+            // Trending recommendations
+            TVTrendingRecommendationsRow()
 
             // Radio stations (filtered by interest)
             if prefs.showRadio, !vm.radioStations.isEmpty {

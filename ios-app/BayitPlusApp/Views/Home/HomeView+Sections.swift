@@ -13,7 +13,7 @@ extension HomeView {
         ShabbatBannerView()
         ShabbatEveView()
 
-        if featureFlags.isLegacyFeaturesEnabled && !vm.spotlight.isEmpty {
+        if appConfiguration.ownerMode && !vm.spotlight.isEmpty {
             HeroCarousel(items: vm.spotlight, coordinator: coordinator)
         }
 
@@ -132,7 +132,7 @@ extension HomeView {
         ForEach(vm.categories.filter { category in
             let name = category.name.lowercased()
             let hidden = ["movie", "series", "audiobook", "kid", "children", "music", "documentar"]
-            if featureFlags.isLegacyFeaturesEnabled {
+            if appConfiguration.ownerMode {
                 return true
             } else {
                 return !hidden.contains(where: { name.contains($0) })

@@ -14,7 +14,7 @@ struct HomeView: View {
     @Environment(FeatureFlags.self) var featureFlags
     @Environment(LocalizationManager.self) var localization
     @Environment(WidgetDataSyncService.self) private var widgetSync
-    @Environment(\.appConfiguration) private var appConfiguration
+    @Environment(\.appConfiguration) var appConfiguration
     @State var viewModel: HomeViewModel?
     @State var cardActions: CardActionsViewModel?
 

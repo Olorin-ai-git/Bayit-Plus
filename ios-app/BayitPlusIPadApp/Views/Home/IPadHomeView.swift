@@ -10,6 +10,7 @@ struct IPadHomeView: View {
     @Environment(AppLocationProvider.self) private var locationProvider
     @Environment(FeatureFlags.self) private var featureFlags
     @Environment(LocalizationManager.self) private var localization
+    @Environment(\.appConfiguration) private var appConfiguration
     @Environment(WidgetDataSyncService.self) private var widgetSync
     @State private var viewModel: HomeViewModel?
     @State private var cardActions: CardActionsViewModel?
@@ -80,7 +81,7 @@ struct IPadHomeView: View {
         ShabbatBannerView()
         ShabbatEveView()
 
-        if featureFlags.isLegacyFeaturesEnabled && !vm.spotlight.isEmpty {
+        if appConfiguration.ownerMode && !vm.spotlight.isEmpty {
             HeroCarousel(items: vm.spotlight, coordinator: coordinator)
         }
         if !vm.continueWatching.isEmpty {
@@ -118,7 +119,7 @@ struct IPadHomeView: View {
         ForEach(vm.categories.filter { category in
             let name = category.name.lowercased()
             let hidden = ["movie", "series", "audiobook", "kid", "children", "music", "documentar"]
-            return featureFlags.isLegacyFeaturesEnabled || !hidden.contains(where: { name.contains($0) })
+            return appConfiguration.ownerMode || !hidden.contains(where: { name.contains($0) })
         }) { category in
             CategoryRow(category: category, coordinator: coordinator, cardActions: cardActions)
         }
