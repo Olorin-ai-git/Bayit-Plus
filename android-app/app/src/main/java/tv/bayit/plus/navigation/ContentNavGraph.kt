@@ -21,6 +21,7 @@ import tv.bayit.plus.feature.search.llm.LLMSearchRoute
 import tv.bayit.plus.feature.vod.VodRoute
 import tv.bayit.plus.feature.vod.collection.CollectionDetailRoute
 import tv.bayit.plus.feature.onboarding.FeatureTourRoute
+import tv.bayit.plus.feature.onboarding.intro.OnboardingIntroRoute
 import tv.bayit.plus.feature.onboarding.R as OnboardingR
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
@@ -169,5 +170,14 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.FeatureTour> {
         FeatureTourRoute(onComplete = { navController.popBackStack() })
+    }
+    composable<Route.OnboardingIntro> {
+        OnboardingIntroRoute(
+            onComplete = {
+                navController.navigate(Route.Home) {
+                    popUpTo(Route.OnboardingIntro) { inclusive = true }
+                }
+            },
+        )
     }
 }

@@ -140,6 +140,9 @@ sealed class Route {
     // Feature Tour
     @Serializable data object FeatureTour : Route()
 
+    // Onboarding Intro (iOS-style welcome + feature cards)
+    @Serializable data object OnboardingIntro : Route()
+
     // Social
     @Serializable data object Friends : Route()
     @Serializable data object WatchParty : Route()

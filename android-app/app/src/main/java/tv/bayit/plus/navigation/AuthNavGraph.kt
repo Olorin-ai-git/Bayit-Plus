@@ -47,8 +47,14 @@ fun NavGraphBuilder.authNavGraph(
     composable<Route.Splash> {
         SplashRoute(
             onFinished = {
-                navController.navigate(Route.Home) {
-                    popUpTo(Route.Splash) { inclusive = true }
+                if (BuildConfig.DEBUG) {
+                    navController.navigate(Route.OnboardingIntro) {
+                        popUpTo(Route.Splash) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.Splash) { inclusive = true }
+                    }
                 }
             },
         )

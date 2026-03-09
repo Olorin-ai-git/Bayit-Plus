@@ -157,6 +157,48 @@
     <string name="settings_replay_tour">Replay Feature Tour</string>
     <string name="settings_tips_label">Show Feature Tips</string>
 
+    <!-- Onboarding Intro Flow (matching iOS) -->
+    <string name="onboarding_welcome_title">Welcome to Bayit+</string>
+    <string name="onboarding_welcome_subtitle">Israeli TV, in your language</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_back">Back</string>
+
+    <string name="onboarding_ai_language_title">Watch in %1$s</string>
+    <string name="onboarding_ai_language_subtitle">AI dubbing, real-time subtitles, and Hebrew learning -- all built in</string>
+    <string name="onboarding_ai_language_dubbing">Live Dubbing</string>
+    <string name="onboarding_ai_language_subtitles">Smart Subtitles</string>
+    <string name="onboarding_ai_language_engrew">Engrew</string>
+
+    <string name="onboarding_pause_ask_title">Pause and ask anything</string>
+    <string name="onboarding_pause_ask_subtitle">Curious about a scene, actor, or reference? Just ask -- AI knows what you\'re watching</string>
+    <string name="onboarding_pause_ask_pill">Pause &amp; Ask</string>
+
+    <string name="onboarding_interactive_title">Watch shows that talk back</string>
+    <string name="onboarding_interactive_subtitle">Chat with characters, vote in scenes, and explore branching storylines</string>
+    <string name="onboarding_interactive_moments">Interactive Moments</string>
+    <string name="onboarding_interactive_trivia">Live Trivia</string>
+
+    <string name="onboarding_never_miss_title">Never miss a moment</string>
+    <string name="onboarding_never_miss_subtitle">Catch up on live shows and add your own content from Plex, YouTube, or IPTV</string>
+    <string name="onboarding_never_miss_catchup">Catch Up</string>
+    <string name="onboarding_never_miss_byoc">Bring Your Own Content</string>
+
+    <string name="onboarding_zeh_ani_title">This is me -- Zeh Ani</string>
+    <string name="onboarding_zeh_ani_subtitle">See yourself in the story with AI face mapping and personalized viewing</string>
+    <string name="onboarding_zeh_ani_pill">Zeh Ani</string>
+
+    <string name="onboarding_voice_title">Control with your voice</string>
+    <string name="onboarding_voice_subtitle">Say \'Hey Bayit\' to change channels, search, or ask questions</string>
+    <string name="onboarding_voice_or_type">Or type your name</string>
+
+    <string name="onboarding_complete_title">You\'re All Set!</string>
+    <string name="onboarding_complete_subtitle">Your personalized experience is ready. Enjoy Bayit+!</string>
+    <string name="onboarding_complete_language">Language</string>
+    <string name="onboarding_complete_name">Name</string>
+    <string name="onboarding_complete_start_watching">Start Watching</string>
+    <string name="onboarding_complete_saving">Saving\u2026</string>
+
     <!-- Accessibility / TalkBack Descriptions (T091) -->
     <string name="a11y_feature_card_title">Feature: %1$s</string>
     <string name="a11y_feature_card_tagline">%1$s</string>

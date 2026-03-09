@@ -93,7 +93,7 @@ internal fun NavController.navigateToSettingsSubScreen(item: String) {
         SettingsMenuItem.DEVICES -> Route.DevicePairing
         SettingsMenuItem.VOICE -> Route.VoiceSettings
         SettingsMenuItem.BYOC -> Route.BYOCSettings
-        SettingsMenuItem.REPLAY_TOUR -> Route.FeatureTour
+        SettingsMenuItem.REPLAY_TOUR -> Route.OnboardingIntro
         else -> null
     }
     route?.let { navigate(it) }
