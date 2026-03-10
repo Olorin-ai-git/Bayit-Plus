@@ -1,24 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Lock } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@olorin/shared-icons/web';
-import { useProfileStore } from '@/stores/profileStore';
-import { useAuthStore } from '@/stores/authStore';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton, GlassModal, GlassInput } from '@bayit/shared/ui';
+import { useState, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import { GlassLoadingSpinner } from "@bayit/shared/ui";
+import { useNavigate } from "react-router-dom";
+import { Plus, Edit2, Lock } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Icon } from "@olorin/shared-icons/web";
+import { useProfileStore } from "@/stores/profileStore";
+import { useAuthStore } from "@/stores/authStore";
+import { useOnboardingStore } from "@/stores/onboardingStore";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import { GlassButton, GlassModal, GlassInput } from "@bayit/shared/ui";
 
 const AVATAR_COLORS = [
-  '#a855f7', // Cyan
-  '#ff6b6b', // Red
-  '#4ecdc4', // Teal
-  '#ffd93d', // Yellow
-  '#6c5ce7', // Purple
-  '#a8e6cf', // Mint
-  '#ff8b94', // Pink
-  '#ffaaa5', // Coral
+  "#a855f7", // Cyan
+  "#ff6b6b", // Red
+  "#4ecdc4", // Teal
+  "#ffd93d", // Yellow
+  "#6c5ce7", // Purple
+  "#a8e6cf", // Mint
+  "#ff8b94", // Pink
+  "#ffaaa5", // Coral
 ];
 
 interface Profile {
@@ -30,7 +31,11 @@ interface Profile {
   has_pin?: boolean;
 }
 
-function ProfileCard({ profile, onSelect, isManageMode }: {
+function ProfileCard({
+  profile,
+  onSelect,
+  isManageMode,
+}: {
   profile: Profile;
   onSelect: (profile: Profile) => void;
   isManageMode: boolean;
@@ -38,7 +43,12 @@ function ProfileCard({ profile, onSelect, isManageMode }: {
   const [isHovered, setIsHovered] = useState(false);
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -82,7 +92,9 @@ function ProfileCard({ profile, onSelect, isManageMode }: {
         )}
       </View>
 
-      <Text style={[styles.profileName, isHovered && styles.profileNameHovered]}>
+      <Text
+        style={[styles.profileName, isHovered && styles.profileNameHovered]}
+      >
         {profile.name}
       </Text>
     </Pressable>
@@ -101,16 +113,30 @@ function AddProfileCard({ onClick }: { onClick: () => void }) {
       style={styles.profileButton}
     >
       <View style={[styles.addAvatar, isHovered && styles.addAvatarHovered]}>
-        <Plus size={40} color={isHovered ? colors.primary.DEFAULT : colors.textMuted} />
+        <Plus
+          size={40}
+          color={isHovered ? colors.primary.DEFAULT : colors.textMuted}
+        />
       </View>
-      <Text style={[styles.addProfileText, isHovered && styles.addProfileTextHovered]}>
-        {t('profiles.addProfile')}
+      <Text
+        style={[
+          styles.addProfileText,
+          isHovered && styles.addProfileTextHovered,
+        ]}
+      >
+        {t("profiles.addProfile")}
       </Text>
     </Pressable>
   );
 }
 
-function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
+function PinModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  error,
+  isLoading,
+}: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (pin: string) => void;
@@ -118,11 +144,11 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
   isLoading: boolean;
 }) {
   const { t } = useTranslation();
-  const [pin, setPin] = useState('');
+  const [pin, setPin] = useState("");
 
   useEffect(() => {
     if (isOpen) {
-      setPin('');
+      setPin("");
     }
   }, [isOpen]);
 
@@ -135,7 +161,7 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
   return (
     <GlassModal
       visible={isOpen}
-      title={t('profiles.enterPin')}
+      title={t("profiles.enterPin")}
       onClose={onClose}
       dismissable={true}
     >
@@ -144,21 +170,21 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
         keyboardType="numeric"
         maxLength={6}
         value={pin}
-        onChangeText={(text: string) => setPin(text.replace(/\D/g, ''))}
+        onChangeText={(text: string) => setPin(text.replace(/\D/g, ""))}
         inputStyle={styles.pinInput}
-        placeholder={t('placeholder.pin')}
+        placeholder={t("placeholder.pin")}
         error={error}
         autoFocus
       />
 
       <View style={styles.modalButtons}>
         <GlassButton
-          title={t('common.cancel')}
+          title={t("common.cancel")}
           onPress={onClose}
           style={styles.modalButton}
         />
         <GlassButton
-          title={isLoading ? '' : t('common.confirm')}
+          title={isLoading ? "" : t("common.confirm")}
           onPress={handleSubmit}
           disabled={pin.length < 4 || isLoading}
           variant="primary"
@@ -173,22 +199,26 @@ export default function ProfileSelectionPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  const {
-    profiles,
-    isLoading,
-    error,
-    fetchProfiles,
-    selectProfile,
-  } = useProfileStore();
+  const { profiles, isLoading, error, fetchProfiles, selectProfile } =
+    useProfileStore();
+  const onboardingCompleted = useOnboardingStore((s) => s.completed);
+
+  const navigateAfterSelect = () => {
+    if (!onboardingCompleted) {
+      navigate("/onboarding", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  };
 
   const [isManageMode, setIsManageMode] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showPinModal, setShowPinModal] = useState(false);
-  const [pinError, setPinError] = useState('');
+  const [pinError, setPinError] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
       return;
     }
     fetchProfiles();
@@ -203,15 +233,15 @@ export default function ProfileSelectionPage() {
     if (profile.has_pin) {
       setSelectedProfile(profile);
       setShowPinModal(true);
-      setPinError('');
+      setPinError("");
       return;
     }
 
     try {
       await selectProfile(profile.id);
-      navigate('/', { replace: true });
+      navigateAfterSelect();
     } catch (err: any) {
-      setPinError(err.detail || t('profiles.selectError'));
+      setPinError(err.detail || t("profiles.selectError"));
     }
   };
 
@@ -222,14 +252,14 @@ export default function ProfileSelectionPage() {
       await selectProfile(selectedProfile.id, pin);
       setShowPinModal(false);
       setSelectedProfile(null);
-      navigate('/', { replace: true });
+      navigateAfterSelect();
     } catch (err: any) {
-      setPinError(err.detail || t('profiles.wrongPin'));
+      setPinError(err.detail || t("profiles.wrongPin"));
     }
   };
 
   const handleAddProfile = () => {
-    navigate('/profile/create');
+    navigate("/profile/create");
   };
 
   const canAddProfile = profiles.length < 5;
@@ -238,7 +268,7 @@ export default function ProfileSelectionPage() {
     return (
       <View style={styles.loadingContainer}>
         <GlassLoadingSpinner size="large" />
-        <Text style={styles.loadingText}>{t('profiles.loading')}</Text>
+        <Text style={styles.loadingText}>{t("profiles.loading")}</Text>
       </View>
     );
   }
@@ -253,7 +283,7 @@ export default function ProfileSelectionPage() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={{ uri: '/assets/images/logos/logo.png' }}
+            source={{ uri: "/assets/images/logos/logo.png" }}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -261,7 +291,7 @@ export default function ProfileSelectionPage() {
 
         {/* Title */}
         <Text style={styles.title}>
-          {isManageMode ? t('profiles.manage') : t('profiles.whoIsWatching')}
+          {isManageMode ? t("profiles.manage") : t("profiles.whoIsWatching")}
         </Text>
 
         {/* Profiles Grid */}
@@ -286,14 +316,12 @@ export default function ProfileSelectionPage() {
           style={styles.manageButton}
         >
           <Text style={styles.manageButtonText}>
-            {isManageMode ? t('common.done') : t('profiles.manageProfiles')}
+            {isManageMode ? t("common.done") : t("profiles.manageProfiles")}
           </Text>
         </Pressable>
 
         {/* Error */}
-        {error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : null}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
       </View>
 
       {/* PIN Modal */}
@@ -302,7 +330,7 @@ export default function ProfileSelectionPage() {
         onClose={() => {
           setShowPinModal(false);
           setSelectedProfile(null);
-          setPinError('');
+          setPinError("");
         }}
         onSubmit={handlePinSubmit}
         error={pinError}
@@ -315,18 +343,18 @@ export default function ProfileSelectionPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: '100vh' as any,
-    justifyContent: 'center',
-    alignItems: 'center',
+    minHeight: "100vh" as any,
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xl,
-    position: 'relative',
+    position: "relative",
   },
   blurCircle: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 9999,
     // @ts-ignore
-    filter: 'blur(100px)',
+    filter: "blur(100px)",
   },
   blurCirclePrimary: {
     width: 320,
@@ -346,9 +374,9 @@ const styles = StyleSheet.create({
   },
   content: {
     zIndex: 10,
-    width: '100%',
+    width: "100%",
     maxWidth: 900,
-    alignItems: 'center',
+    alignItems: "center",
   },
   logoContainer: {
     marginBottom: spacing.lg,
@@ -359,20 +387,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: spacing.xl,
   },
   profilesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     gap: spacing.lg,
     marginBottom: spacing.xl,
   },
   profileButton: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.sm,
   },
   profileButtonHovered: {
@@ -382,30 +410,30 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
   },
   avatarEmoji: {
     fontSize: 56,
   },
   avatarInitials: {
     fontSize: 40,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
   },
   kidsIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -4,
     right: -4,
-    backgroundColor: '#FBBF24',
+    backgroundColor: "#FBBF24",
     borderRadius: borderRadius.full,
     padding: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   pinIndicator: {
-    position: 'absolute',
+    position: "absolute",
     top: -4,
     right: -4,
     backgroundColor: colors.backgroundLighter,
@@ -414,16 +442,16 @@ const styles = StyleSheet.create({
   },
   editOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileName: {
     fontSize: 14,
     color: colors.textMuted,
     maxWidth: 120,
-    textAlign: 'center',
+    textAlign: "center",
   },
   profileNameHovered: {
     color: colors.text,
@@ -433,15 +461,15 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: borderRadius.lg,
     borderWidth: 2,
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderColor: colors.glass,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(30, 30, 30, 0.3)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(30, 30, 30, 0.3)",
   },
   addAvatarHovered: {
     borderColor: colors.primary.DEFAULT,
-    backgroundColor: 'rgba(30, 30, 30, 0.5)',
+    backgroundColor: "rgba(30, 30, 30, 0.5)",
   },
   addProfileText: {
     fontSize: 14,
@@ -463,9 +491,9 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    minHeight: '100vh' as any,
-    justifyContent: 'center',
-    alignItems: 'center',
+    minHeight: "100vh" as any,
+    justifyContent: "center",
+    alignItems: "center",
     gap: spacing.md,
   },
   loadingText: {
@@ -475,16 +503,16 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 14,
     color: colors.error.DEFAULT,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: spacing.md,
   },
   pinInput: {
     fontSize: 24,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: 8,
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   modalButton: {

@@ -138,6 +138,18 @@ const ChessPage = lazy(() => import("./pages/ChessPage"));
 const ChessInvitePage = lazy(() => import("./pages/ChessInvitePage"));
 const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const PlayerProfilePage = lazy(() => import("./pages/PlayerProfilePage"));
+const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
+const MissionsPage = lazy(() => import("./pages/MissionsPage"));
+const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
+const DiscoverFeatureDetailPage = lazy(
+  () => import("./pages/DiscoverFeatureDetailPage"),
+);
+const ListenPage = lazy(() => import("./pages/ListenPage"));
+const BYOCPage = lazy(() => import("./pages/BYOCPage"));
+const HouseholdPage = lazy(() => import("./pages/HouseholdPage"));
+const DirectMessagesPage = lazy(() => import("./pages/DirectMessagesPage"));
+const ConversationPage = lazy(() => import("./pages/ConversationPage"));
+const OnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 
 // Admin Pages (lazily loaded as a separate chunk)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -285,6 +297,7 @@ const AppContent = () => {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route path="/profiles" element={<ProfileSelectionPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/tv-login" element={<TVLoginPage />} />
 
       {/* Payment Routes (no layout, no guard) */}
@@ -450,6 +463,18 @@ const AppContent = () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/support" element={<SupportPage />} />
+        <Route path="/glossary" element={<GlossaryPage />} />
+        <Route path="/missions" element={<MissionsPage />} />
+        <Route path="/discover" element={<DiscoverPage />} />
+        <Route
+          path="/discover/:featureId"
+          element={<DiscoverFeatureDetailPage />}
+        />
+        <Route path="/listen" element={<ListenPage />} />
+        <Route path="/byoc" element={<BYOCPage />} />
+        <Route path="/household" element={<HouseholdPage />} />
+        <Route path="/messages" element={<DirectMessagesPage />} />
+        <Route path="/messages/:friendId" element={<ConversationPage />} />
 
         {/* Zeh Ani (Me in the Story) Routes - AI Avatar Features */}
         <Route path="/zeh-ani" element={<ZehAniHubPage />} />

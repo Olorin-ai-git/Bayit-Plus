@@ -6,7 +6,13 @@
  * Supports TV remote control with focus states.
  */
 
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -15,22 +21,23 @@ import {
   Animated,
   ScrollView,
   Image,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useModeEnforcement } from '@bayit/shared-hooks';
-import { GlassButton } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { useDirection } from '@/hooks/useDirection';
-import { useAuthStore } from '@/stores/authStore';
-import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
-import { usePlaylistStore } from '@bayit/shared/stores/playlistStore';
-import { useResponsive } from '@/hooks/useResponsive';
-import { renderIcon } from '@olorin/shared-icons/web';
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useModeEnforcement } from "@bayit/shared-hooks";
+import { GlassButton } from "@bayit/shared/ui";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import { useDirection } from "@/hooks/useDirection";
+import { useAuthStore } from "@/stores/authStore";
+import { useMobileLayoutStore } from "@/stores/mobileLayoutStore";
+import { usePlaylistStore } from "@bayit/shared/stores/playlistStore";
+import { useResponsive } from "@/hooks/useResponsive";
+import { renderIcon } from "@olorin/shared-icons/web";
+import { useDMStore } from "@/stores/dmStore";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
-const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
 
 interface GlassSidebarProps {
   isExpanded: boolean;
@@ -53,62 +60,177 @@ interface MenuSection {
 const baseMenuSections: MenuSection[] = [
   {
     items: [
-      { id: 'home', icon: 'home', labelKey: 'nav.home', path: '/' },
-      { id: 'plans', icon: 'plans', labelKey: 'nav.plans', path: '/subscribe' },
-      { id: 'liveTV', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
-      { id: 'epg', icon: 'epg', labelKey: 'nav.epg', path: '/epg' },
-      { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
-      { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
-      { id: 'radio', icon: 'radio', labelKey: 'nav.radio', path: '/radio' },
-      { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },
-      { id: 'audiobooks', icon: 'audiobooks', labelKey: 'nav.audiobooks', path: '/audiobooks' },
+      { id: "home", icon: "home", labelKey: "nav.home", path: "/" },
+      { id: "plans", icon: "plans", labelKey: "nav.plans", path: "/subscribe" },
+      {
+        id: "discoverHub",
+        icon: "discover",
+        labelKey: "nav.discoverHub",
+        path: "/discover",
+      },
+      { id: "liveTV", icon: "live", labelKey: "nav.liveTV", path: "/live" },
+      { id: "epg", icon: "epg", labelKey: "nav.epg", path: "/epg" },
+      { id: "vod", icon: "vod", labelKey: "nav.vod", path: "/vod" },
+      {
+        id: "listen",
+        icon: "headphones",
+        labelKey: "nav.listen",
+        path: "/listen",
+      },
+      {
+        id: "widgets",
+        icon: "widgets",
+        labelKey: "nav.widgets",
+        path: "/widgets",
+      },
+      { id: "radio", icon: "radio", labelKey: "nav.radio", path: "/radio" },
+      {
+        id: "podcasts",
+        icon: "podcasts",
+        labelKey: "nav.podcasts",
+        path: "/podcasts",
+      },
+      {
+        id: "audiobooks",
+        icon: "audiobooks",
+        labelKey: "nav.audiobooks",
+        path: "/audiobooks",
+      },
     ],
   },
   {
-    titleKey: 'nav.discover',
+    titleKey: "nav.discover",
     items: [
-      { id: 'judaism', icon: 'judaism', labelKey: 'nav.judaism', path: '/judaism' },
-      { id: 'children', icon: 'children', labelKey: 'nav.children', path: '/children' },
+      {
+        id: "judaism",
+        icon: "judaism",
+        labelKey: "nav.judaism",
+        path: "/judaism",
+      },
+      {
+        id: "children",
+        icon: "children",
+        labelKey: "nav.children",
+        path: "/children",
+      },
+      {
+        id: "glossary",
+        icon: "glossary",
+        labelKey: "nav.glossary",
+        path: "/glossary",
+      },
+      {
+        id: "missions",
+        icon: "missions",
+        labelKey: "nav.missions",
+        path: "/missions",
+      },
     ],
   },
   {
-    titleKey: 'nav.games',
+    titleKey: "nav.games",
     items: [
-      { id: 'games', icon: 'games', labelKey: 'nav.games', path: '/games' },
-      { id: 'friends', icon: 'friends', labelKey: 'nav.friends', path: '/friends' },
+      { id: "games", icon: "games", labelKey: "nav.games", path: "/games" },
+      {
+        id: "friends",
+        icon: "friends",
+        labelKey: "nav.friends",
+        path: "/friends",
+      },
     ],
   },
   {
-    titleKey: 'nav.zehAni',
+    titleKey: "nav.zehAni",
     items: [
-      { id: 'zehAni', icon: 'avatar', labelKey: 'nav.zehAniHub', path: '/zeh-ani' },
+      {
+        id: "zehAni",
+        icon: "avatar",
+        labelKey: "nav.zehAniHub",
+        path: "/zeh-ani",
+      },
     ],
   },
   {
-    titleKey: 'nav.favorites',
+    titleKey: "nav.favorites",
     items: [
-      { id: 'playlist', icon: 'playlist', labelKey: 'nav.playlist' },
-      { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', path: '/favorites' },
-      { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', path: '/downloads' },
-      { id: 'recordings', icon: 'recordings', labelKey: 'nav.recordings', path: '/recordings' },
+      { id: "playlist", icon: "playlist", labelKey: "nav.playlist" },
+      {
+        id: "favorites",
+        icon: "favorites",
+        labelKey: "nav.favorites",
+        path: "/favorites",
+      },
+      {
+        id: "downloads",
+        icon: "downloads",
+        labelKey: "nav.downloads",
+        path: "/downloads",
+      },
+      {
+        id: "recordings",
+        icon: "recordings",
+        labelKey: "nav.recordings",
+        path: "/recordings",
+      },
     ],
   },
   {
-    titleKey: 'nav.account',
+    titleKey: "nav.myContent",
     items: [
-      { id: 'profile', icon: 'profile', labelKey: 'nav.profile', path: '/profile' },
+      { id: "byoc", icon: "upload", labelKey: "nav.byoc", path: "/byoc" },
     ],
   },
   {
-    titleKey: 'nav.settings',
+    titleKey: "nav.social",
     items: [
-      { id: 'settings', icon: 'settings', labelKey: 'nav.settings', path: '/settings' },
-      { id: 'support', icon: 'support', labelKey: 'nav.support', path: '/support' },
+      {
+        id: "household",
+        icon: "household",
+        labelKey: "nav.household",
+        path: "/household",
+      },
+      {
+        id: "messages",
+        icon: "messages",
+        labelKey: "nav.messages",
+        path: "/messages",
+      },
+    ],
+  },
+  {
+    titleKey: "nav.account",
+    items: [
+      {
+        id: "profile",
+        icon: "profile",
+        labelKey: "nav.profile",
+        path: "/profile",
+      },
+    ],
+  },
+  {
+    titleKey: "nav.settings",
+    items: [
+      {
+        id: "settings",
+        icon: "settings",
+        labelKey: "nav.settings",
+        path: "/settings",
+      },
+      {
+        id: "support",
+        icon: "support",
+        labelKey: "nav.support",
+        path: "/support",
+      },
     ],
   },
 ];
 
-export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle }) => {
+export const GlassSidebar: React.FC<GlassSidebarProps> = ({
+  isExpanded,
+  onToggle,
+}) => {
   const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigate = useNavigate();
@@ -118,17 +240,18 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const responsive = useResponsive();
   const { isMobile } = responsive;
   const { isSidebarOpen, closeSidebar } = useMobileLayoutStore();
+  const totalUnread = useDMStore((s) => s.totalUnread);
 
   // User display info
-  const displayName = user?.name || t('account.guest', 'Guest');
+  const displayName = user?.name || t("account.guest", "Guest");
   const displayInitial = displayName.charAt(0).toUpperCase();
-  const subscriptionPlan = user?.subscription?.plan || 'basic';
+  const subscriptionPlan = user?.subscription?.plan || "basic";
 
   // Mobile: drawer mode (280px fixed width)
   // Desktop/TV: collapsible sidebar
   const isMobileDrawer = isMobile && !IS_TV_BUILD;
   const collapsedWidth = IS_TV_BUILD ? 80 : 64;
-  const expandedWidth = isMobileDrawer ? 280 : (IS_TV_BUILD ? 280 : 220);
+  const expandedWidth = isMobileDrawer ? 280 : IS_TV_BUILD ? 280 : 220;
   const minWidth = collapsedWidth;
   const maxWidth = IS_TV_BUILD ? 350 : 300;
 
@@ -137,7 +260,8 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
 
-  const currentWidth = customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
+  const currentWidth =
+    customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
   const widthAnim = useRef(new Animated.Value(currentWidth)).current;
   const opacityAnim = useRef(new Animated.Value(isExpanded ? 1 : 0)).current;
   const sloganOpacityAnim = useRef(new Animated.Value(0)).current;
@@ -147,20 +271,29 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const lastToggleTime = useRef<number>(0);
 
   // Handle drag to resize (web only)
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    if (IS_TV_BUILD) return;
-    e.preventDefault();
-    setIsDragging(true);
-    dragStartX.current = e.clientX;
-    dragStartWidth.current = customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
-  }, [customWidth, isExpanded, expandedWidth, collapsedWidth]);
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent) => {
+      if (IS_TV_BUILD) return;
+      e.preventDefault();
+      setIsDragging(true);
+      dragStartX.current = e.clientX;
+      dragStartWidth.current =
+        customWidth ?? (isExpanded ? expandedWidth : collapsedWidth);
+    },
+    [customWidth, isExpanded, expandedWidth, collapsedWidth],
+  );
 
   useEffect(() => {
     if (!isDragging) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const delta = isRTL ? (dragStartX.current - e.clientX) : (e.clientX - dragStartX.current);
-      const newWidth = Math.min(maxWidth, Math.max(minWidth, dragStartWidth.current + delta));
+      const delta = isRTL
+        ? dragStartX.current - e.clientX
+        : e.clientX - dragStartX.current;
+      const newWidth = Math.min(
+        maxWidth,
+        Math.max(minWidth, dragStartWidth.current + delta),
+      );
       setCustomWidth(newWidth);
       widthAnim.setValue(newWidth);
 
@@ -176,21 +309,36 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         if (customWidth < collapsedWidth + 30) {
           setCustomWidth(null);
           if (isExpanded) onToggle();
-        } else if (customWidth > expandedWidth - 30 && customWidth < expandedWidth + 30) {
+        } else if (
+          customWidth > expandedWidth - 30 &&
+          customWidth < expandedWidth + 30
+        ) {
           setCustomWidth(null);
           if (!isExpanded) onToggle();
         }
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isRTL, customWidth, isExpanded, onToggle, widthAnim, opacityAnim, collapsedWidth, expandedWidth, minWidth, maxWidth]);
+  }, [
+    isDragging,
+    isRTL,
+    customWidth,
+    isExpanded,
+    onToggle,
+    widthAnim,
+    opacityAnim,
+    collapsedWidth,
+    expandedWidth,
+    minWidth,
+    maxWidth,
+  ]);
 
   // Debounced toggle handler
   const handleToggle = useCallback(() => {
@@ -204,32 +352,39 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
 
   // Dynamically add menu items based on user role and subscription
   const menuSections = useMemo(() => {
-    const isAdmin = user?.role === 'admin';
-    const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family';
+    const isAdmin = user?.role === "admin";
+    const isPremium =
+      user?.subscription?.plan === "premium" ||
+      user?.subscription?.plan === "family";
 
-    let sections = baseMenuSections.map(section => {
+    let sections = baseMenuSections.map((section) => {
       // Filter out games section from non-admin users
-      if (section.titleKey === 'nav.games' && !isAdmin) {
+      if (section.titleKey === "nav.games" && !isAdmin) {
         return {
           ...section,
-          items: section.items.filter(item => item.id !== 'games'),
+          items: section.items.filter((item) => item.id !== "games"),
         };
       }
 
       // Hide recordings from favorites if not premium (already in base, will be filtered)
-      if (section.titleKey === 'nav.favorites' && !isPremium) {
+      if (section.titleKey === "nav.favorites" && !isPremium) {
         return {
           ...section,
-          items: section.items.filter(item => item.id !== 'recordings'),
+          items: section.items.filter((item) => item.id !== "recordings"),
         };
       }
 
       // Add Admin to settings section (admin only)
-      if (section.titleKey === 'nav.settings' && isAdmin) {
+      if (section.titleKey === "nav.settings" && isAdmin) {
         return {
           ...section,
           items: [
-            { id: 'admin', icon: 'admin', labelKey: 'nav.admin', path: '/admin' },
+            {
+              id: "admin",
+              icon: "admin",
+              labelKey: "nav.admin",
+              path: "/admin",
+            },
             ...section.items,
           ],
         };
@@ -254,11 +409,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
       }, 500); // Show slogan 500ms after page load
     };
 
-    if (document.readyState === 'complete') {
+    if (document.readyState === "complete") {
       handleLoad();
     } else {
-      window.addEventListener('load', handleLoad);
-      return () => window.removeEventListener('load', handleLoad);
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
     }
   }, [sloganOpacityAnim]);
 
@@ -288,7 +443,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
       return;
     }
     // Playlist opens overlay instead of navigating
-    if (item.id === 'playlist') {
+    if (item.id === "playlist") {
       usePlaylistStore.getState().fetchPlaylist();
       usePlaylistStore.getState().setVisible(true);
       if (isMobileDrawer) {
@@ -311,8 +466,8 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
 
   const isActive = (item: MenuItem) => {
     if (!item.path) return false;
-    if (item.path === '/') {
-      return location.pathname === '/';
+    if (item.path === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(item.path);
   };
@@ -320,277 +475,335 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   // Toggle icon based on direction and expanded state
   const getToggleIconName = () => {
     if (isRTL) {
-      return isExpanded ? 'chevronLeft' : 'chevronRight';
+      return isExpanded ? "chevronLeft" : "chevronRight";
     } else {
-      return isExpanded ? 'chevronRight' : 'chevronLeft';
+      return isExpanded ? "chevronRight" : "chevronLeft";
     }
   };
 
   // Show labels when width is large enough
-  const showLabels = customWidth !== null ? customWidth > collapsedWidth + 40 : isExpanded;
+  const showLabels =
+    customWidth !== null ? customWidth > collapsedWidth + 40 : isExpanded;
 
   // Mobile drawer visibility
   const drawerVisible = isMobileDrawer ? isSidebarOpen : true;
 
   return (
-    <Animated.View style={[
-      styles.container,
-      { width: widthAnim },
-      isRTL ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' },
-      isMobileDrawer && {
-        position: 'fixed' as any,
-        zIndex: 100,
-        transform: [{
-          translateX: isSidebarOpen
-            ? 0
-            : (isRTL ? expandedWidth : -expandedWidth)
-        }] as any,
-        // @ts-ignore - Web CSS
-        transition: 'transform 0.3s ease-out',
-      },
-    ]}>
-        <View style={[
+    <Animated.View
+      style={[
+        styles.container,
+        { width: widthAnim },
+        isRTL ? { right: 0, left: "auto" } : { left: 0, right: "auto" },
+        isMobileDrawer && {
+          position: "fixed" as any,
+          zIndex: 100,
+          transform: [
+            {
+              translateX: isSidebarOpen
+                ? 0
+                : isRTL
+                  ? expandedWidth
+                  : -expandedWidth,
+            },
+          ] as any,
+          // @ts-ignore - Web CSS
+          transition: "transform 0.3s ease-out",
+        },
+      ]}
+    >
+      <View
+        style={[
           styles.sidebar,
           styles.glassEffect,
           isRTL
             ? { borderLeftWidth: 1, borderLeftColor: colors.glassBorder }
             : { borderRightWidth: 1, borderRightColor: colors.glassBorder },
-        ]}>
+        ]}
+      >
+        {/* Draggable Splitter (web only) */}
+        {!IS_TV_BUILD && (
+          <div
+            onMouseDown={handleDragStart as any}
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              [isRTL ? "left" : "right"]: 0,
+              width: 6,
+              cursor: isDragging ? "grabbing" : "col-resize",
+              zIndex: 200,
+              backgroundColor: isDragging
+                ? "rgba(168, 85, 247, 0.6)"
+                : "transparent",
+              transition: isDragging ? "none" : "background-color 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              if (!isDragging)
+                (e.target as HTMLDivElement).style.backgroundColor =
+                  "rgba(107, 33, 168, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              if (!isDragging)
+                (e.target as HTMLDivElement).style.backgroundColor =
+                  "transparent";
+            }}
+          />
+        )}
 
-          {/* Draggable Splitter (web only) */}
-          {!IS_TV_BUILD && (
-            <div
-              onMouseDown={handleDragStart as any}
-              style={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                [isRTL ? 'left' : 'right']: 0,
-                width: 6,
-                cursor: isDragging ? 'grabbing' : 'col-resize',
-                zIndex: 200,
-                backgroundColor: isDragging ? 'rgba(168, 85, 247, 0.6)' : 'transparent',
-                transition: isDragging ? 'none' : 'background-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'rgba(107, 33, 168, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                if (!isDragging) (e.target as HTMLDivElement).style.backgroundColor = 'transparent';
-              }}
-            />
-          )}
-
-          {/* Toggle Button - Glass Button at edge, half overflowing */}
-          <View style={[
+        {/* Toggle Button - Glass Button at edge, half overflowing */}
+        <View
+          style={[
             styles.toggleButtonContainer,
             isRTL ? { left: -20 } : { right: -20 },
-          ]}>
-            <GlassButton
-              icon={renderIcon(getToggleIconName(), 'sm', 'navigation')}
-              onPress={isUIInteractionEnabled ? handleToggle : undefined}
-              variant="secondary"
-              size="sm"
-              style={styles.toggleGlassButton}
-              disabled={!isUIInteractionEnabled}
-            />
-          </View>
+          ]}
+        >
+          <GlassButton
+            icon={renderIcon(getToggleIconName(), "sm", "navigation")}
+            onPress={isUIInteractionEnabled ? handleToggle : undefined}
+            variant="secondary"
+            size="sm"
+            style={styles.toggleGlassButton}
+            disabled={!isUIInteractionEnabled}
+          />
+        </View>
 
-          {/* Logo Section - placeholder maintained when collapsed */}
-          <View style={styles.logoSection}>
-            {showLabels ? (
-              <>
-                <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                    source={{ uri: '/assets/images/logos/logo-transparent.png' }}
-                    style={[
-                      styles.houseLogo,
-                      styles.houseLogoExpanded,
-                    ]}
-                    resizeMode="cover"
-                  />
-                </Link>
-                <Animated.View
-                  style={[
-                    styles.sloganContainer,
-                    { opacity: sloganOpacityAnim },
-                  ]}
-                >
-                  <Text style={styles.sloganText}>
-                    {t('common.slogan', 'Your Home. Anywhere.')}
-                  </Text>
-                </Animated.View>
-              </>
-            ) : (
-              <View style={styles.logoPlaceholder} />
-            )}
-          </View>
+        {/* Logo Section - placeholder maintained when collapsed */}
+        <View style={styles.logoSection}>
+          {showLabels ? (
+            <>
+              <Link
+                to="/"
+                style={{
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image
+                  source={{ uri: "/assets/images/logos/logo-transparent.png" }}
+                  style={[styles.houseLogo, styles.houseLogoExpanded]}
+                  resizeMode="cover"
+                />
+              </Link>
+              <Animated.View
+                style={[styles.sloganContainer, { opacity: sloganOpacityAnim }]}
+              >
+                <Text style={styles.sloganText}>
+                  {t("common.slogan", "Your Home. Anywhere.")}
+                </Text>
+              </Animated.View>
+            </>
+          ) : (
+            <View style={styles.logoPlaceholder} />
+          )}
+        </View>
 
-          {/* User Profile Section */}
-          <TouchableOpacity
-            onPress={() => {
-              if (isAuthenticated) {
-                navigate('/profile');
-              } else {
-                navigate('/login');
-              }
-            }}
-            onFocus={() => setFocusedItem('profile-section')}
-            onBlur={() => setFocusedItem(null)}
+        {/* User Profile Section */}
+        <TouchableOpacity
+          onPress={() => {
+            if (isAuthenticated) {
+              navigate("/profile");
+            } else {
+              navigate("/login");
+            }
+          }}
+          onFocus={() => setFocusedItem("profile-section")}
+          onBlur={() => setFocusedItem(null)}
+          style={[
+            styles.userProfileSection,
+            {
+              flexDirection: isRTL ? "row-reverse" : "row",
+              justifyContent: showLabels ? "flex-start" : "center",
+              paddingHorizontal: showLabels ? spacing.sm : 0,
+            },
+            focusedItem === "profile-section" &&
+              styles.userProfileSectionFocused,
+          ]}
+        >
+          <View
             style={[
-              styles.userProfileSection,
-              {
-                flexDirection: isRTL ? 'row-reverse' : 'row',
-                justifyContent: showLabels ? 'flex-start' : 'center',
-                paddingHorizontal: showLabels ? spacing.sm : 0,
-              },
-              focusedItem === 'profile-section' && styles.userProfileSectionFocused,
-            ]}
-          >
-            <View style={[
               styles.userAvatar,
               isAuthenticated && styles.userAvatarAuthenticated,
-            ]}>
-              {user?.avatar ? (
-                <Image
-                  source={{ uri: user.avatar }}
-                  style={styles.userAvatarImage}
-                />
-              ) : (
-                <Text style={styles.userAvatarText}>{displayInitial}</Text>
-              )}
-              {isAuthenticated && (
-                <View style={styles.onlineBadge} />
-              )}
-            </View>
-            {showLabels && (
-              <Animated.View style={[
+            ]}
+          >
+            {user?.avatar ? (
+              <Image
+                source={{ uri: user.avatar }}
+                style={styles.userAvatarImage}
+              />
+            ) : (
+              <Text style={styles.userAvatarText}>{displayInitial}</Text>
+            )}
+            {isAuthenticated && <View style={styles.onlineBadge} />}
+          </View>
+          {showLabels && (
+            <Animated.View
+              style={[
                 styles.userInfoContainer,
                 {
                   opacity: opacityAnim,
                   marginStart: isRTL ? 0 : spacing.md,
                   marginEnd: isRTL ? spacing.md : 0,
-                }
-              ]}>
-                <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
-                  {displayName}
-                </Text>
-                {isAuthenticated ? (
-                  <View style={styles.subscriptionBadge}>
-                    <Text style={styles.subscriptionText}>
-                      {subscriptionPlan === 'premium' ? t('account.premium', 'Premium') : t('account.basic', 'Basic')}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text style={[styles.loginPrompt, { textAlign }]}>
-                    {t('account.tapToLogin', 'Tap to login')}
+                },
+              ]}
+            >
+              <Text style={[styles.userName, { textAlign }]} numberOfLines={1}>
+                {displayName}
+              </Text>
+              {isAuthenticated ? (
+                <View style={styles.subscriptionBadge}>
+                  <Text style={styles.subscriptionText}>
+                    {subscriptionPlan === "premium"
+                      ? t("account.premium", "Premium")
+                      : t("account.basic", "Basic")}
                   </Text>
-                )}
-              </Animated.View>
-            )}
-          </TouchableOpacity>
-
-          <View style={styles.profileDivider} />
-
-          <ScrollView
-            style={styles.menuContainer}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.menuContent}
-          >
-            {menuSections.map((section, sectionIndex) => (
-              <View key={sectionIndex} style={styles.section}>
-                {/* Section Title (only when expanded and has title) */}
-                {section.titleKey && showLabels && (
-                  <Animated.Text
-                    style={[
-                      styles.sectionTitle,
-                      { opacity: opacityAnim, textAlign },
-                    ]}
-                  >
-                    {t(section.titleKey)}
-                  </Animated.Text>
-                )}
-
-                {/* Menu Items */}
-                {section.items.map((item) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    onPress={() => handleItemPress(item)}
-                    disabled={!isUIInteractionEnabled}
-                    onFocus={() => setFocusedItem(item.id)}
-                    onBlur={() => setFocusedItem(null)}
-                    style={[
-                      styles.menuItem,
-                      { flexDirection: isRTL ? 'row-reverse' : 'row' },
-                      isActive(item) && styles.menuItemActive,
-                      focusedItem === item.id && styles.menuItemFocused,
-                      !isUIInteractionEnabled && {
-                        pointerEvents: 'none',
-                        opacity: 0.5,
-                      },
-                    ]}
-                  >
-                    <View style={styles.iconContainer}>
-                      <View style={[
-                        styles.menuIcon,
-                        isActive(item) && styles.menuIconActive,
-                      ]}>
-                        {renderIcon(item.icon, IS_TV_BUILD ? 'lg' : 'md', 'navigation')}
-                      </View>
-                    </View>
-                    {showLabels && (
-                      <Animated.Text
-                        style={[
-                          styles.menuLabel,
-                          {
-                            textAlign,
-                            marginStart: isRTL ? 0 : spacing.sm,
-                            marginEnd: isRTL ? spacing.sm : 0,
-                          },
-                          isActive(item) && styles.menuLabelActive,
-                          { opacity: opacityAnim },
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {t(item.labelKey)}
-                      </Animated.Text>
-                    )}
-                    {isActive(item) && (
-                      <View style={[
-                        styles.activeIndicator,
-                        isRTL ? { right: 0 } : { left: 0 },
-                      ]} />
-                    )}
-                  </TouchableOpacity>
-                ))}
-
-                {/* Section Divider */}
-                {sectionIndex < menuSections.length - 1 && (
-                  <View style={styles.divider} />
-                )}
-              </View>
-            ))}
-          </ScrollView>
-
-          {/* App Version (when expanded) */}
-          {showLabels && (
-            <Animated.View style={[styles.versionContainer, { opacity: opacityAnim }]}>
-              <Text style={[styles.versionText, { textAlign }]}>{t('common.appVersion', 'Bayit+ v1.0.0')}</Text>
+                </View>
+              ) : (
+                <Text style={[styles.loginPrompt, { textAlign }]}>
+                  {t("account.tapToLogin", "Tap to login")}
+                </Text>
+              )}
             </Animated.View>
           )}
-        </View>
+        </TouchableOpacity>
+
+        <View style={styles.profileDivider} />
+
+        <ScrollView
+          style={styles.menuContainer}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.menuContent}
+        >
+          {menuSections.map((section, sectionIndex) => (
+            <View key={sectionIndex} style={styles.section}>
+              {/* Section Title (only when expanded and has title) */}
+              {section.titleKey && showLabels && (
+                <Animated.Text
+                  style={[
+                    styles.sectionTitle,
+                    { opacity: opacityAnim, textAlign },
+                  ]}
+                >
+                  {t(section.titleKey)}
+                </Animated.Text>
+              )}
+
+              {/* Menu Items */}
+              {section.items.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => handleItemPress(item)}
+                  disabled={!isUIInteractionEnabled}
+                  onFocus={() => setFocusedItem(item.id)}
+                  onBlur={() => setFocusedItem(null)}
+                  style={[
+                    styles.menuItem,
+                    { flexDirection: isRTL ? "row-reverse" : "row" },
+                    isActive(item) && styles.menuItemActive,
+                    focusedItem === item.id && styles.menuItemFocused,
+                    !isUIInteractionEnabled && {
+                      pointerEvents: "none",
+                      opacity: 0.5,
+                    },
+                  ]}
+                >
+                  <View style={styles.iconContainer}>
+                    <View
+                      style={[
+                        styles.menuIcon,
+                        isActive(item) && styles.menuIconActive,
+                      ]}
+                    >
+                      {renderIcon(
+                        item.icon,
+                        IS_TV_BUILD ? "lg" : "md",
+                        "navigation",
+                      )}
+                    </View>
+                  </View>
+                  {showLabels && (
+                    <Animated.Text
+                      style={[
+                        styles.menuLabel,
+                        {
+                          textAlign,
+                          marginStart: isRTL ? 0 : spacing.sm,
+                          marginEnd: isRTL ? spacing.sm : 0,
+                        },
+                        isActive(item) && styles.menuLabelActive,
+                        { opacity: opacityAnim },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {t(item.labelKey)}
+                    </Animated.Text>
+                  )}
+                  {item.id === "messages" && totalUnread > 0 && (
+                    <View
+                      style={{
+                        backgroundColor: colors.primary.DEFAULT,
+                        minWidth: 18,
+                        height: 18,
+                        borderRadius: 9,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        paddingHorizontal: 4,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: "700",
+                          color: colors.text,
+                        }}
+                      >
+                        {totalUnread > 99 ? "99+" : totalUnread}
+                      </Text>
+                    </View>
+                  )}
+                  {isActive(item) && (
+                    <View
+                      style={[
+                        styles.activeIndicator,
+                        isRTL ? { right: 0 } : { left: 0 },
+                      ]}
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+
+              {/* Section Divider */}
+              {sectionIndex < menuSections.length - 1 && (
+                <View style={styles.divider} />
+              )}
+            </View>
+          ))}
+        </ScrollView>
+
+        {/* App Version (when expanded) */}
+        {showLabels && (
+          <Animated.View
+            style={[styles.versionContainer, { opacity: opacityAnim }]}
+          >
+            <Text style={[styles.versionText, { textAlign }]}>
+              {t("common.appVersion", "Bayit+ v1.0.0")}
+            </Text>
+          </Animated.View>
+        )}
+      </View>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    position: 'absolute',
+    height: "100%",
+    position: "absolute",
     top: 0,
     bottom: 0,
     zIndex: 100,
-    overflow: 'visible',
+    overflow: "visible",
   },
   sidebar: {
     flex: 1,
@@ -598,13 +811,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   glassEffect: {
-    backgroundColor: 'rgba(10, 10, 20, 0.3)',
+    backgroundColor: "rgba(10, 10, 20, 0.3)",
     // @ts-ignore - Web CSS
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
   } as any,
   toggleButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: spacing.xl * 2,
     zIndex: 9999,
   },
@@ -614,19 +827,19 @@ const styles = StyleSheet.create({
     minWidth: 44,
     paddingHorizontal: 0,
     opacity: 0.5,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: colors.primary.DEFAULT,
   },
   logoSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: 0,
     paddingBottom: spacing.xs,
     marginBottom: 0,
   },
   houseLogo: {
-    transition: 'width 0.3s, height 0.3s',
+    transition: "width 0.3s, height 0.3s",
   } as any,
   houseLogoExpanded: {
     width: 96,
@@ -638,40 +851,42 @@ const styles = StyleSheet.create({
   },
   sloganContainer: {
     marginBottom: 20,
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
+    backgroundColor: "rgba(168, 85, 247, 0.15)",
     borderWidth: 2,
-    borderColor: 'rgba(147, 51, 234, 0.4)',
+    borderColor: "rgba(147, 51, 234, 0.4)",
     borderRadius: borderRadius.md,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
-    alignSelf: 'center',
+    alignSelf: "center",
     // @ts-ignore - Web CSS
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    boxShadow:
+      "0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
   } as any,
   sloganText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.95)',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "rgba(255, 255, 255, 0.95)",
+    textAlign: "center",
     letterSpacing: 0.8,
     // @ts-ignore - Web CSS
-    backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
+    backgroundImage:
+      "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.9) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
   } as any,
   userProfileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: spacing.sm,
     marginHorizontal: spacing.xs,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   userProfileSectionFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
     borderColor: colors.primary.DEFAULT,
     borderWidth: 3,
   },
@@ -679,34 +894,34 @@ const styles = StyleSheet.create({
     width: IS_TV_BUILD ? 56 : 48,
     height: IS_TV_BUILD ? 56 : 48,
     borderRadius: IS_TV_BUILD ? 28 : 24,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 3,
     borderColor: colors.primary.DEFAULT,
-    position: 'relative',
-    overflow: 'hidden',
+    position: "relative",
+    overflow: "hidden",
   },
   userAvatarAuthenticated: {
     // Keep same styling for authenticated users
   },
   userAvatarText: {
     fontSize: IS_TV_BUILD ? 24 : 20,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.primary.DEFAULT,
   },
   userAvatarImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   onlineBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 2,
     right: 2,
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#22c55e',
+    backgroundColor: "#22c55e",
     borderWidth: 2,
     borderColor: colors.background,
   },
@@ -716,21 +931,21 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.text,
     marginBottom: 2,
   },
   subscriptionBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: borderRadius.sm,
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
   },
   subscriptionText: {
     fontSize: 11,
     color: colors.primary.DEFAULT,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   loginPrompt: {
     fontSize: 12,
@@ -753,42 +968,42 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.textSecondary,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginTop: spacing.sm,
   },
   menuItem: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.md,
     marginBottom: spacing.xs,
-    position: 'relative',
+    position: "relative",
   },
   menuItemActive: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
   },
   menuItemFocused: {
-    backgroundColor: 'rgba(107, 33, 168, 0.3)',
+    backgroundColor: "rgba(107, 33, 168, 0.3)",
     borderWidth: 1,
     borderColor: colors.primary.DEFAULT,
   },
   iconContainer: {
     width: IS_TV_BUILD ? 48 : 36,
     height: IS_TV_BUILD ? 48 : 36,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   menuIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
   },
   menuIconActive: {
     opacity: 1,
@@ -800,11 +1015,11 @@ const styles = StyleSheet.create({
   },
   menuLabelActive: {
     color: colors.primary.DEFAULT,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   activeIndicator: {
-    position: 'absolute',
-    top: '50%',
+    position: "absolute",
+    top: "50%",
     marginTop: -12,
     width: 4,
     height: 24,

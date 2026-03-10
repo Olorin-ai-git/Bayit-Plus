@@ -1,23 +1,22 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useAuthStore } from '@/stores/authStore';
-import { subscriptionService } from '@/services/api';
-import { sanitizeI18n } from '@/utils/security/sanitizeI18n';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { GlassButton } from '@bayit/shared/ui';
-import { BillingToggle } from './components/BillingToggle';
-import { EnhancedPlanCard } from './components/EnhancedPlanCard';
-import { EnhancedComparisonTable } from './components/EnhancedComparisonTable';
-import { PremiumFeaturesShowcase } from './components/PremiumFeaturesShowcase';
-import logger from '@/utils/logger';
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
+import { useAuthStore } from "@/stores/authStore";
+import { subscriptionService } from "@/services/api";
+import { sanitizeI18n } from "@/utils/security/sanitizeI18n";
+import { colors, spacing, borderRadius } from "@olorin/design-tokens";
+import { GlassButton } from "@bayit/shared/ui";
+import { BillingToggle } from "./components/BillingToggle";
+import { EnhancedPlanCard } from "./components/EnhancedPlanCard";
+import { EnhancedComparisonTable } from "./components/EnhancedComparisonTable";
+import { PremiumFeaturesShowcase } from "./components/PremiumFeaturesShowcase";
+import logger from "@/utils/logger";
 
 const plansConfig = [
-  { id: 'basic', price: '$9.99', popular: false },
-  { id: 'premium', price: '$14.99', popular: true },
-  { id: 'family', price: '$19.99', popular: false },
+  { id: "free", price: "$0", popular: false },
+  { id: "ai_premium", price: "$6.99", popular: true },
 ];
 
 export default function SubscribePage() {
@@ -25,13 +24,15 @@ export default function SubscribePage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
 
-  const [selectedPlan, setSelectedPlan] = useState('premium');
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState("ai_premium");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly",
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSubscribe = useCallback(async () => {
     if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/subscribe' } });
+      navigate("/login", { state: { from: "/subscribe" } });
       return;
     }
 
@@ -40,7 +41,7 @@ export default function SubscribePage() {
       const response = await subscriptionService.createCheckout(selectedPlan);
       window.location.href = response.checkoutUrl;
     } catch (error) {
-      logger.error('Failed to create checkout', 'SubscribePage', error);
+      logger.error("Failed to create checkout", "SubscribePage", error);
     } finally {
       setLoading(false);
     }
@@ -52,9 +53,9 @@ export default function SubscribePage() {
       <View style={styles.backgroundGradient}>
         <LinearGradient
           colors={[
-            'rgba(168, 85, 247, 0.15)',
-            'rgba(139, 92, 246, 0.1)',
-            'rgba(0, 0, 0, 0)',
+            "rgba(168, 85, 247, 0.15)",
+            "rgba(139, 92, 246, 0.1)",
+            "rgba(0, 0, 0, 0)",
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -67,16 +68,19 @@ export default function SubscribePage() {
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <Text style={styles.heroTitle}>
-            {sanitizeI18n(t('subscribe.title'))}
+            {sanitizeI18n(t("subscribe.title"))}
           </Text>
           <Text style={styles.heroSubtitle}>
-            {sanitizeI18n(t('subscribe.subtitle'))}
+            {sanitizeI18n(t("subscribe.subtitle"))}
           </Text>
         </View>
 
         {/* Billing Toggle */}
         <View style={styles.billingSection}>
-          <BillingToggle billingPeriod={billingPeriod} onToggle={setBillingPeriod} />
+          <BillingToggle
+            billingPeriod={billingPeriod}
+            onToggle={setBillingPeriod}
+          />
         </View>
 
         {/* Plan Cards Grid */}
@@ -110,8 +114,8 @@ export default function SubscribePage() {
           <GlassButton
             title={
               loading
-                ? sanitizeI18n(t('subscribe.processing'))
-                : sanitizeI18n(t('subscribe.startTrial'))
+                ? sanitizeI18n(t("subscribe.processing"))
+                : sanitizeI18n(t("subscribe.startTrial"))
             }
             onPress={handleSubscribe}
             disabled={loading}
@@ -119,7 +123,7 @@ export default function SubscribePage() {
             style={styles.ctaButton}
           />
           <Text style={styles.ctaDisclaimer}>
-            {sanitizeI18n(t('subscribe.noCharge'))}
+            {sanitizeI18n(t("subscribe.noCharge"))}
           </Text>
         </View>
       </View>
@@ -130,73 +134,73 @@ export default function SubscribePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
   backgroundGradient: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 600,
-    pointerEvents: 'none',
+    pointerEvents: "none",
     zIndex: 0,
   },
   content: {
-    width: '100%',
+    width: "100%",
     maxWidth: 1280,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xl * 2,
-    alignItems: 'center',
+    alignItems: "center",
   },
   heroSection: {
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     marginBottom: spacing.xl * 2,
   },
   heroTitle: {
     fontSize: 48,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontWeight: "900",
+    color: "#FFFFFF",
     marginBottom: spacing.md,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: -0.5,
   },
   heroSubtitle: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: "rgba(255, 255, 255, 0.7)",
     maxWidth: 600,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 28,
   },
   billingSection: {
     marginBottom: spacing.xl * 2,
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
   },
   planCardsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     gap: spacing.lg,
     marginBottom: spacing.xl * 3,
-    width: '100%',
+    width: "100%",
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     maxWidth: 800,
     marginBottom: spacing.xl * 3,
-    width: '100%',
+    width: "100%",
   },
   comparisonSection: {
     marginBottom: spacing.xl * 3,
-    width: '100%',
+    width: "100%",
   },
   ctaSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.xl * 2,
-    width: '100%',
+    width: "100%",
   },
   ctaButton: {
     paddingHorizontal: spacing.xl * 2,
@@ -205,8 +209,8 @@ const styles = StyleSheet.create({
   },
   ctaDisclaimer: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: "rgba(255, 255, 255, 0.6)",
     marginTop: spacing.md,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

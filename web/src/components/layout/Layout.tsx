@@ -1,34 +1,38 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Outlet } from 'react-router-dom';
-import Header from './Header';
-import Footer from './Footer';
-import GlassSidebar from './GlassSidebar';
-import Breadcrumbs from './Breadcrumbs';
-import Chatbot from '../chat/Chatbot';
-import SoundwaveParticles from '../content/SoundwaveParticles';
-import MobileBottomNav from '../mobile/MobileBottomNav';
-import { WidgetManager } from '../widgets';
-import { GlassPlaylist } from '@bayit/shared/ui';
-import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
-import { usePlaylistPlaybackStore } from '@bayit/shared/stores';
-import { useVoiceListeningContext } from '@bayit/shared-contexts';
-import { ttsService } from '@bayit/shared-services';
-import { colors, spacing } from '@olorin/design-tokens';
-import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
-import { useSamsungVoice } from '@/hooks/useSamsungVoice';
-import { useChatbotStore } from '@/stores/chatbotStore';
-import { useDirection } from '@/hooks/useDirection';
-import { useResponsive } from '@/hooks/useResponsive';
-import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
-import { useVoiceSupport } from '@bayit/shared-hooks';
-import { supportConfig } from '@bayit/shared-config/supportConfig';
-import { useVoiceActionExecutor } from '@/hooks/useVoiceActionExecutor';
-import logger from '@/utils/logger';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
+import { Outlet } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
+import GlassSidebar from "./GlassSidebar";
+import Breadcrumbs from "./Breadcrumbs";
+import Chatbot from "../chat/Chatbot";
+import SoundwaveParticles from "../content/SoundwaveParticles";
+import MobileBottomNav from "../mobile/MobileBottomNav";
+import { WidgetManager } from "../widgets";
+import { GlassPlaylist } from "@bayit/shared/ui";
+import { useFullscreenPlayerStore } from "@/stores/fullscreenPlayerStore";
+import { usePlaylistPlaybackStore } from "@bayit/shared/stores";
+import { useVoiceListeningContext } from "@bayit/shared-contexts";
+import { ttsService } from "@bayit/shared-services";
+import { colors, spacing } from "@olorin/design-tokens";
+import { useTizenRemoteKeys } from "@/hooks/useTizenRemoteKeys";
+import { useSamsungVoice } from "@/hooks/useSamsungVoice";
+import { useChatbotStore } from "@/stores/chatbotStore";
+import { useDirection } from "@/hooks/useDirection";
+import { useResponsive } from "@/hooks/useResponsive";
+import {
+  VoiceAvatarFAB,
+  VoiceChatModal,
+} from "@bayit/shared/components/support";
+import { useVoiceSupport } from "@bayit/shared-hooks";
+import { supportConfig } from "@bayit/shared-config/supportConfig";
+import { useVoiceActionExecutor } from "@/hooks/useVoiceActionExecutor";
+import { VoiceAssistantPanel } from "@/components/voice-assistant/VoiceAssistantPanel";
+import logger from "@/utils/logger";
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
-const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
+const IS_TV_BUILD = typeof __TV__ !== "undefined" && __TV__;
 
 export default function Layout() {
   // Responsive state
@@ -36,7 +40,20 @@ export default function Layout() {
 
   // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isVoiceAssistantOpen, setIsVoiceAssistantOpen] = useState(false);
   const { isRTL } = useDirection();
+
+  // Ctrl+Shift+V keyboard shortcut for voice assistant panel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "V") {
+        e.preventDefault();
+        setIsVoiceAssistantOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Execute voice actions (PLAYBACK, SEARCH, NAVIGATE) from voice assistant
   useVoiceActionExecutor();
@@ -54,26 +71,29 @@ export default function Layout() {
   } = useVoiceSupport();
 
   const handleVoiceAvatarPress = useCallback(() => {
-    logger.debug('Wizard avatar pressed - activating voice assistant', 'Layout');
+    logger.debug(
+      "Wizard avatar pressed - activating voice assistant",
+      "Layout",
+    );
     // Activate voice assistant (handles intro + modal + listening)
     activateVoiceAssistant();
   }, [activateVoiceAssistant]);
 
   const handleCloseVoiceModal = useCallback(() => {
-    logger.debug('Voice modal closing', 'Layout');
+    logger.debug("Voice modal closing", "Layout");
     // Close the modal
     closeVoiceModal();
   }, [closeVoiceModal]);
 
   const toggleSidebar = useCallback(() => {
-    setIsSidebarExpanded(prev => !prev);
+    setIsSidebarExpanded((prev) => !prev);
   }, []);
 
   // Handle Red button on TV remote to toggle voice listening
   const handleRedButton = useCallback(() => {
-    logger.debug('Red button pressed - toggling voice', 'Layout');
+    logger.debug("Red button pressed - toggling voice", "Layout");
     // Dispatch custom event that VoiceSearchButton listens for
-    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
+    window.dispatchEvent(new CustomEvent("bayit:toggle-voice"));
   }, []);
 
   // Register TV remote key handlers (same for both TV and web)
@@ -87,14 +107,17 @@ export default function Layout() {
   // When user says "Hey Bixby, search for X", the search query is sent to chatbot
   const { sendMessage, toggleOpen } = useChatbotStore();
 
-  const handleBixbySearch = useCallback((query: string) => {
-    logger.debug('Bixby search received', 'Layout', query);
-    toggleOpen(); // Open chatbot
-    sendMessage(query); // Send the voice query to chatbot
-  }, [sendMessage, toggleOpen]);
+  const handleBixbySearch = useCallback(
+    (query: string) => {
+      logger.debug("Bixby search received", "Layout", query);
+      toggleOpen(); // Open chatbot
+      sendMessage(query); // Send the voice query to chatbot
+    },
+    [sendMessage, toggleOpen],
+  );
 
   const handleBixbyCommand = useCallback((command: string, data?: any) => {
-    logger.debug('Bixby command', 'Layout', { command, data });
+    logger.debug("Bixby command", "Layout", { command, data });
     // Could handle play/pause/etc commands here
   }, []);
 
@@ -111,17 +134,22 @@ export default function Layout() {
   // Log Bixby availability
   useEffect(() => {
     if (IS_TV_BUILD) {
-      logger.debug('Bixby voice integration available', 'Layout', bixbyAvailable);
+      logger.debug(
+        "Bixby voice integration available",
+        "Layout",
+        bixbyAvailable,
+      );
     }
   }, [bixbyAvailable]);
 
   // Voice listening context - shared across all pages
-  const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
+  const { isListening, isAwake, isProcessing, audioLevel } =
+    useVoiceListeningContext();
 
   // Debug: Log when processing state is received
   useEffect(() => {
     if (isProcessing || isAwake) {
-      logger.debug('CONTEXT RECEIVED - Processing', 'Layout', {
+      logger.debug("CONTEXT RECEIVED - Processing", "Layout", {
         isProcessing,
         isAwake,
         isListening,
@@ -131,7 +159,7 @@ export default function Layout() {
   }, [isProcessing, isAwake]);
 
   // TTS event state - tracks when system is speaking
-  const [voiceResponse, setVoiceResponse] = useState<string>('');
+  const [voiceResponse, setVoiceResponse] = useState<string>("");
   const [voiceError, setVoiceError] = useState<boolean>(false);
   const [isResponding, setIsResponding] = useState<boolean>(false);
   const [isTTSSpeaking, setIsTTSSpeaking] = useState<boolean>(false);
@@ -140,7 +168,8 @@ export default function Layout() {
   const voicePanelAnim = useRef(new Animated.Value(0)).current;
 
   // Voice panel is visible when any voice activity is happening
-  const isVoiceActive = isListening || isAwake || isProcessing || isResponding || isTTSSpeaking;
+  const isVoiceActive =
+    isListening || isAwake || isProcessing || isResponding || isTTSSpeaking;
 
   // Animate the voice panel visibility
   useEffect(() => {
@@ -153,28 +182,32 @@ export default function Layout() {
 
   // Listen for TTS events to track response speaking state
   useEffect(() => {
-    logger.debug('Setting up TTS event listeners', 'Layout');
+    logger.debug("Setting up TTS event listeners", "Layout");
 
     const handlePlaying = (item: any) => {
-      logger.debug('TTS playing event fired', 'Layout', item.text?.substring(0, 50));
+      logger.debug(
+        "TTS playing event fired",
+        "Layout",
+        item.text?.substring(0, 50),
+      );
       // Delay setting isResponding to allow Processing state to be visible first
       setTimeout(() => {
         setIsResponding(true);
       }, 300);
       setIsTTSSpeaking(true);
-      setVoiceResponse(item.text || '');
+      setVoiceResponse(item.text || "");
     };
 
     const handleCompleted = () => {
-      logger.debug('TTS completed event fired', 'Layout');
+      logger.debug("TTS completed event fired", "Layout");
       setIsResponding(false);
       setIsTTSSpeaking(false);
       // Keep response text for a moment before clearing
-      setTimeout(() => setVoiceResponse(''), 2000);
+      setTimeout(() => setVoiceResponse(""), 2000);
     };
 
     const handleError = (data: any) => {
-      logger.error('TTS error event fired', 'Layout', data?.error);
+      logger.error("TTS error event fired", "Layout", data?.error);
       setVoiceError(true);
       setIsResponding(false);
       setIsTTSSpeaking(false);
@@ -182,16 +215,19 @@ export default function Layout() {
     };
 
     // Listen to TTS events
-    logger.debug('Registering TTS event listeners - playing, completed, error', 'Layout');
-    ttsService.on('playing', handlePlaying);
-    ttsService.on('completed', handleCompleted);
-    ttsService.on('error', handleError);
+    logger.debug(
+      "Registering TTS event listeners - playing, completed, error",
+      "Layout",
+    );
+    ttsService.on("playing", handlePlaying);
+    ttsService.on("completed", handleCompleted);
+    ttsService.on("error", handleError);
 
     return () => {
-      logger.debug('Cleanup: removing TTS event listeners', 'Layout');
-      ttsService.off('playing', handlePlaying);
-      ttsService.off('completed', handleCompleted);
-      ttsService.off('error', handleError);
+      logger.debug("Cleanup: removing TTS event listeners", "Layout");
+      ttsService.off("playing", handlePlaying);
+      ttsService.off("completed", handleCompleted);
+      ttsService.off("error", handleError);
     };
   }, []);
 
@@ -199,35 +235,70 @@ export default function Layout() {
   const openPlayer = useFullscreenPlayerStore((s) => s.openPlayer);
   const startPlayAll = usePlaylistPlaybackStore((s) => s.startPlayAll);
 
-  const handlePlaylistItem = useCallback((item: { content_id: string; content_type: string; title: string; thumbnail?: string }) => {
-    openPlayer({
-      id: item.content_id,
-      title: item.title,
-      src: '',
-      type: (item.content_type as 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio') || 'vod',
-      poster: item.thumbnail,
-    });
-  }, [openPlayer]);
-
-  const handlePlaylistPlayAll = useCallback((items: Array<{ content_id: string; content_type: string; title: string; thumbnail?: string; duration?: number }>) => {
-    const playbackItems = items.map((item) => ({
-      id: item.content_id,
-      title: item.title,
-      thumbnail: item.thumbnail,
-      type: item.content_type,
-      duration: item.duration != null ? String(item.duration) : undefined,
-    }));
-    const firstItem = startPlayAll(playbackItems);
-    if (firstItem) {
+  const handlePlaylistItem = useCallback(
+    (item: {
+      content_id: string;
+      content_type: string;
+      title: string;
+      thumbnail?: string;
+    }) => {
       openPlayer({
-        id: firstItem.id,
-        title: firstItem.title,
-        src: '',
-        type: (firstItem.type as 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio') || 'vod',
-        poster: firstItem.thumbnail,
+        id: item.content_id,
+        title: item.title,
+        src: "",
+        type:
+          (item.content_type as
+            | "movie"
+            | "series"
+            | "live"
+            | "vod"
+            | "audiobook"
+            | "podcast"
+            | "radio") || "vod",
+        poster: item.thumbnail,
       });
-    }
-  }, [openPlayer, startPlayAll]);
+    },
+    [openPlayer],
+  );
+
+  const handlePlaylistPlayAll = useCallback(
+    (
+      items: Array<{
+        content_id: string;
+        content_type: string;
+        title: string;
+        thumbnail?: string;
+        duration?: number;
+      }>,
+    ) => {
+      const playbackItems = items.map((item) => ({
+        id: item.content_id,
+        title: item.title,
+        thumbnail: item.thumbnail,
+        type: item.content_type,
+        duration: item.duration != null ? String(item.duration) : undefined,
+      }));
+      const firstItem = startPlayAll(playbackItems);
+      if (firstItem) {
+        openPlayer({
+          id: firstItem.id,
+          title: firstItem.title,
+          src: "",
+          type:
+            (firstItem.type as
+              | "movie"
+              | "series"
+              | "live"
+              | "vod"
+              | "audiobook"
+              | "podcast"
+              | "radio") || "vod",
+          poster: firstItem.thumbnail,
+        });
+      }
+    },
+    [openPlayer, startPlayAll],
+  );
 
   // Calculate content margin based on sidebar state
   // Sidebar widths must match GlassSidebar: TV uses 80/280, web uses 64/220
@@ -250,18 +321,17 @@ export default function Layout() {
 
       {/* Sidebar - Hidden on mobile (uses drawer), always visible on web/TV */}
       {!isMobile && (
-        <GlassSidebar
-          isExpanded={isSidebarExpanded}
-          onToggle={toggleSidebar}
-        />
+        <GlassSidebar isExpanded={isSidebarExpanded} onToggle={toggleSidebar} />
       )}
 
       {/* Main content wrapper with sidebar offset */}
-      <View style={[
-        styles.contentWrapper,
-        isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
-        isMobile && { paddingBottom: 64 },
-      ]}>
+      <View
+        style={[
+          styles.contentWrapper,
+          isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
+          isMobile && { paddingBottom: 64 },
+        ]}
+      >
         <Header />
 
         {/* Breadcrumbs Navigation */}
@@ -323,6 +393,12 @@ export default function Layout() {
       {/* Widget Manager - renders floating overlay widgets */}
       <WidgetManager />
 
+      {/* Voice Assistant Panel - Ctrl+Shift+V to toggle */}
+      <VoiceAssistantPanel
+        visible={isVoiceAssistantOpen}
+        onClose={() => setIsVoiceAssistantOpen(false)}
+      />
+
       {/* Playlist slide-in overlay - plays directly in fullscreen player */}
       <GlassPlaylist
         onPlayItem={handlePlaylistItem}
@@ -335,34 +411,34 @@ export default function Layout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: '100vh' as any,
+    minHeight: "100vh" as any,
     backgroundColor: colors.background,
-    position: 'relative',
-    flexDirection: 'row',
+    position: "relative",
+    flexDirection: "row",
   },
   contentWrapper: {
     flex: 1,
-    flexDirection: 'column',
-    minHeight: '100vh' as any,
-    transition: 'margin-left 0.3s ease-out',
+    flexDirection: "column",
+    minHeight: "100vh" as any,
+    transition: "margin-left 0.3s ease-out",
     // Ensure content isn't clipped at the top edge
-    paddingTop: 'env(safe-area-inset-top, 0px)',
+    paddingTop: "env(safe-area-inset-top, 0px)",
   } as any,
   blurContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    overflow: 'hidden',
-    pointerEvents: 'none' as any,
+    overflow: "hidden",
+    pointerEvents: "none" as any,
     zIndex: 0,
   },
   blurCircle: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 9999,
     // @ts-ignore - Web CSS property
-    filter: 'blur(100px)',
+    filter: "blur(100px)",
   },
   blurCirclePrimary: {
     width: 384,
@@ -375,7 +451,7 @@ const styles = StyleSheet.create({
   blurCirclePurple: {
     width: 288,
     height: 288,
-    top: '33%' as any,
+    top: "33%" as any,
     left: -144,
     backgroundColor: colors.secondary.DEFAULT,
     opacity: 0.4,
@@ -383,18 +459,18 @@ const styles = StyleSheet.create({
   blurCircleSuccess: {
     width: 256,
     height: 256,
-    bottom: '25%' as any,
-    right: '25%' as any,
+    bottom: "25%" as any,
+    right: "25%" as any,
     backgroundColor: colors.success.DEFAULT,
     opacity: 0.3,
   },
   main: {
     flex: 1,
-    position: 'relative',
+    position: "relative",
     zIndex: 10,
   },
   voicePanelWrapper: {
-    overflow: 'hidden',
-    width: '100%',
+    overflow: "hidden",
+    width: "100%",
   },
 });
