@@ -141,22 +141,22 @@ internal fun VodTransportButtons(
             modifier = Modifier.size(24.dp),
         )
     }
+    onInteract?.let { action ->
+        IconButton(onClick = action) {
+            Icon(
+                imageVector = Icons.Default.RecordVoiceOver,
+                contentDescription = bayitString("player.pauseAsk.title"),
+                tint = DesignTokens.Colors.Text.primary,
+                modifier = Modifier.size(24.dp),
+            )
+        }
+    }
     if (hasInteractiveMoments) {
         onPreviousInteraction?.let { action ->
             IconButton(onClick = action) {
                 Icon(
                     imageVector = Icons.Default.SkipPrevious,
                     contentDescription = bayitString("player.interaction.previous"),
-                    tint = DesignTokens.Colors.Text.primary,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-        }
-        onInteract?.let { action ->
-            IconButton(onClick = action) {
-                Icon(
-                    imageVector = Icons.Default.RecordVoiceOver,
-                    contentDescription = bayitString("player.pauseAsk.title"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(24.dp),
                 )

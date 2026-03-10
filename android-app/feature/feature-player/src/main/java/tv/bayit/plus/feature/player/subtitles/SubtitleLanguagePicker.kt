@@ -143,13 +143,17 @@ private fun LanguageRow(
     onClick: () -> Unit,
     onAIToggle: (() -> Unit)?,
 ) {
-    GlassCard(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onClick),
+            ) {
                 Text(
                     text = info?.name ?: code,
                     color = DesignTokens.Colors.Text.primary,
@@ -170,7 +174,7 @@ private fun LanguageRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (hasAIModes && onAIToggle != null) {
-                    IconButton(onClick = onAIToggle, modifier = Modifier.size(36.dp)) {
+                    IconButton(onClick = onAIToggle, modifier = Modifier.size(48.dp)) {
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
                             contentDescription = bayitString("subtitles.aiModesAvailable"),
