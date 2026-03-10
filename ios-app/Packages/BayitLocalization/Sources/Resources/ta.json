@@ -10965,6 +10965,11 @@
       "next": "அடுத்தது",
       "done": "முடிந்தது",
       "complete": "வழிகாட்டல் முடிந்தது",
+      "stepCounter": "{{total}}-இல் {{current}}",
+      "skipAccessibility": "பயிற்சியை தவிர்",
+      "nextAccessibility": "அடுத்த படி",
+      "doneAccessibility": "பயிற்சியை முடி",
+      "stepAccessibility": "{{total}}-இல் படி {{current}}",
       "pause_ask": {
         "step1": "ஊடாடும் தருணங்கள் உள்ள திரைப்படத்திற்குச் செல்லுங்கள்",
         "step2": "ஒரு காட்சியின் போது திரைப்படத்தை நிறுத்துங்கள்",

@@ -10194,6 +10194,11 @@
       "next": "Next",
       "done": "Done",
       "complete": "Walkthrough complete",
+      "stepCounter": "{{current}} of {{total}}",
+      "skipAccessibility": "Skip tutorial",
+      "nextAccessibility": "Next step",
+      "doneAccessibility": "Finish tutorial",
+      "stepAccessibility": "Step {{current}} of {{total}}",
       "pause_ask": {
         "step1": "Navigate to a movie with interactive moments",
         "step2": "Pause the movie during a scene",

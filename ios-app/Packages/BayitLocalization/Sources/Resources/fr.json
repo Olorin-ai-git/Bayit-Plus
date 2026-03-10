@@ -11762,6 +11762,11 @@
       "next": "Suivant",
       "done": "Termine",
       "complete": "Tutoriel termine",
+      "stepCounter": "{{current}} sur {{total}}",
+      "skipAccessibility": "Passer le tutoriel",
+      "nextAccessibility": "Etape suivante",
+      "doneAccessibility": "Terminer le tutoriel",
+      "stepAccessibility": "Etape {{current}} sur {{total}}",
       "pause_ask": {
         "step1": "Naviguez vers un film avec des moments interactifs",
         "step2": "Mettez le film en pause pendant une scene",

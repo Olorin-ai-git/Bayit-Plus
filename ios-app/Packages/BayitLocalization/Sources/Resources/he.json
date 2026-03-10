@@ -10947,6 +10947,11 @@
       "next": "הבא",
       "done": "סיום",
       "complete": "ההדרכה הושלמה",
+      "stepCounter": "{{current}} מתוך {{total}}",
+      "skipAccessibility": "דלג על המדריך",
+      "nextAccessibility": "שלב הבא",
+      "doneAccessibility": "סיים את המדריך",
+      "stepAccessibility": "שלב {{current}} מתוך {{total}}",
       "pause_ask": {
         "step1": "נווטו לסרט עם רגעים אינטראקטיביים",
         "step2": "עצרו את הסרט במהלך סצנה",

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Data describing a single step in the coach mark overlay.
 public struct CoachMarkOverlayStep {
     public let instructionText: String
     public let targetFrame: CGRect
@@ -17,11 +16,10 @@ public struct CoachMarkOverlayStep {
     }
 }
 
-/// Full-screen coach mark overlay with a spotlight cutout, instruction text,
-/// step counter, and Next/Skip/Done navigation buttons.
 public struct CoachMarkOverlay: View {
     let steps: [CoachMarkOverlayStep]
     let currentStepIndex: Int
+    let localize: (String) -> String
     let onNext: () -> Void
     let onSkip: () -> Void
     let onDone: () -> Void
@@ -29,12 +27,14 @@ public struct CoachMarkOverlay: View {
     public init(
         steps: [CoachMarkOverlayStep],
         currentStepIndex: Int,
+        localize: @escaping (String) -> String,
         onNext: @escaping () -> Void,
         onSkip: @escaping () -> Void,
         onDone: @escaping () -> Void
     ) {
         self.steps = steps
         self.currentStepIndex = currentStepIndex
+        self.localize = localize
         self.onNext = onNext
         self.onSkip = onSkip
         self.onDone = onDone
@@ -45,18 +45,17 @@ public struct CoachMarkOverlay: View {
     }
 
     public var body: some View {
-        guard steps.indices.contains(currentStepIndex) else {
-            return AnyView(EmptyView())
-        }
-        let step = steps[currentStepIndex]
-        return AnyView(
-            ZStack {
-                spotlightBackground(step: step)
-                instructionContent(step: step)
+        if steps.indices.contains(currentStepIndex) {
+            let step = steps[currentStepIndex]
+            GeometryReader { geometry in
+                ZStack {
+                    spotlightBackground(step: step)
+                    instructionContent(step: step, geometry: geometry)
+                }
             }
             .ignoresSafeArea()
             .animation(.easeInOut, value: currentStepIndex)
-        )
+        }
     }
 
     private func spotlightBackground(step: CoachMarkOverlayStep) -> some View {
@@ -70,15 +69,15 @@ public struct CoachMarkOverlay: View {
     }
 
     @ViewBuilder
-    private func instructionContent(step: CoachMarkOverlayStep) -> some View {
-        let showAbove = step.targetFrame.midY > UIScreen.main.bounds.height / 2
+    private func instructionContent(step: CoachMarkOverlayStep, geometry: GeometryProxy) -> some View {
+        let showAbove = step.targetFrame.midY > geometry.size.height / 2
         VStack(spacing: Metrics.contentSpacing) {
             if !showAbove {
                 Spacer().frame(height: step.targetFrame.maxY + Metrics.contentSpacing)
             }
             instructionCard(step: step)
             if showAbove {
-                let bottomGap = UIScreen.main.bounds.height
+                let bottomGap = geometry.size.height
                     - step.targetFrame.minY + Metrics.contentSpacing
                 Spacer().frame(height: bottomGap)
             }
@@ -93,7 +92,11 @@ public struct CoachMarkOverlay: View {
                 .foregroundStyle(DesignTokens.Text.primary)
                 .multilineTextAlignment(.center)
                 .accessibilityAddTraits(.isStaticText)
-            CoachMarkStep(currentStep: currentStepIndex + 1, totalSteps: steps.count)
+            CoachMarkStep(
+                currentStep: currentStepIndex + 1,
+                totalSteps: steps.count,
+                localize: localize
+            )
             buttonRow
         }
         .padding(Metrics.cardPadding)
@@ -109,10 +112,25 @@ public struct CoachMarkOverlay: View {
     private var buttonRow: some View {
         HStack(spacing: Metrics.buttonSpacing) {
             if isLastStep {
-                coachMarkButton("Done", style: .primary, label: "Finish tutorial", action: onDone)
+                coachMarkButton(
+                    localize("discover.walkthrough.done"),
+                    style: .primary,
+                    label: localize("discover.walkthrough.doneAccessibility"),
+                    action: onDone
+                )
             } else {
-                coachMarkButton("Skip", style: .ghost, label: "Skip tutorial", action: onSkip)
-                coachMarkButton("Next", style: .primary, label: "Next step", action: onNext)
+                coachMarkButton(
+                    localize("discover.walkthrough.skip"),
+                    style: .ghost,
+                    label: localize("discover.walkthrough.skipAccessibility"),
+                    action: onSkip
+                )
+                coachMarkButton(
+                    localize("discover.walkthrough.next"),
+                    style: .primary,
+                    label: localize("discover.walkthrough.nextAccessibility"),
+                    action: onNext
+                )
             }
         }
     }

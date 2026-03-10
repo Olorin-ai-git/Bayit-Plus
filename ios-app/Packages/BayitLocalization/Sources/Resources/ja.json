@@ -11813,6 +11813,11 @@
       "next": "次へ",
       "done": "完了",
       "complete": "ウォークスルー完了",
+      "stepCounter": "{{total}}中{{current}}",
+      "skipAccessibility": "チュートリアルをスキップ",
+      "nextAccessibility": "次のステップ",
+      "doneAccessibility": "チュートリアルを終了",
+      "stepAccessibility": "{{total}}中ステップ{{current}}",
       "pause_ask": {
         "step1": "インタラクティブモーメントのある映画に移動",
         "step2": "シーン中に映画を一時停止",

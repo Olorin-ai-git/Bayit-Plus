@@ -10980,6 +10980,11 @@
       "next": "Siguiente",
       "done": "Listo",
       "complete": "Tutorial completado",
+      "stepCounter": "{{current}} de {{total}}",
+      "skipAccessibility": "Saltar tutorial",
+      "nextAccessibility": "Siguiente paso",
+      "doneAccessibility": "Finalizar tutorial",
+      "stepAccessibility": "Paso {{current}} de {{total}}",
       "pause_ask": {
         "step1": "Navega a una pelicula con momentos interactivos",
         "step2": "Pausa la pelicula durante una escena",

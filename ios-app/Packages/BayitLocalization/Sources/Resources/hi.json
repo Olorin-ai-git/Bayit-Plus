@@ -10888,6 +10888,11 @@
       "next": "अगला",
       "done": "हो गया",
       "complete": "वॉकथ्रू पूरा हुआ",
+      "stepCounter": "{{total}} में से {{current}}",
+      "skipAccessibility": "ट्यूटोरियल छोड़ें",
+      "nextAccessibility": "अगला चरण",
+      "doneAccessibility": "ट्यूटोरियल समाप्त करें",
+      "stepAccessibility": "{{total}} में से चरण {{current}}",
       "pause_ask": {
         "step1": "इंटरैक्टिव क्षणों वाली फिल्म पर जाएं",
         "step2": "किसी दृश्य के दौरान फिल्म रोकें",

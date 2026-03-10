@@ -10867,6 +10867,11 @@
       "next": "পরবর্তী",
       "done": "সম্পন্ন",
       "complete": "ওয়াকথ্রু সম্পূর্ণ",
+      "stepCounter": "{{total}}-এর মধ্যে {{current}}",
+      "skipAccessibility": "টিউটোরিয়াল এড়িয়ে যান",
+      "nextAccessibility": "পরবর্তী ধাপ",
+      "doneAccessibility": "টিউটোরিয়াল শেষ করুন",
+      "stepAccessibility": "{{total}}-এর মধ্যে ধাপ {{current}}",
       "pause_ask": {
         "step1": "ইন্টারেক্টিভ মুহূর্ত সহ সিনেমায় যান",
         "step2": "একটি দৃশ্যের সময় সিনেমা পজ করুন",
