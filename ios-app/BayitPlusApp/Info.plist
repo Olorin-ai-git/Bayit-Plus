@@ -6,6 +6,8 @@
 	<string>$(API_BASE_URL)</string>
 	<key>API_RETRYABLE_STATUS_CODES</key>
 	<string>$(API_RETRYABLE_STATUS_CODES)</string>
+	<key>AUTH_SERVICE_URL</key>
+	<string>$(AUTH_SERVICE_URL)</string>
 	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
 	<string>15</string>
 	<key>CATCHUP_CREDIT_COST</key>
@@ -27,7 +29,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.3</string>
+	<string>1.0.5</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -44,13 +46,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>218</string>
+	<string>220</string>
 	<key>DEFAULT_CULTURE_ID</key>
 	<string>$(DEFAULT_CULTURE_ID)</string>
 	<key>FEATURE_CARPLAY</key>
 	<string>true</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
-	<string>true</string>
+	<string>$(FEATURE_LEGACY_FEATURES)</string>
 	<key>FirebaseCrashlyticsCollectionEnabled</key>
 	<true/>
 	<key>GOOGLE_CLIENT_ID</key>
