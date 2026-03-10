@@ -55,6 +55,10 @@
                     .tabItem { Label(localization.t("nav.byoc"), systemImage: TVTab.byoc.iconName) }
                     .tag(TVTab.byoc)
 
+                TVDiscoverView()
+                    .tabItem { Label(localization.t("nav.discover"), systemImage: TVTab.discover.iconName) }
+                    .tag(TVTab.discover)
+
                 TVWidgetsView()
                     .tabItem { Label(localization.t("nav.widgets"), systemImage: TVTab.widgets.iconName) }
                     .tag(TVTab.widgets)

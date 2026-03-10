@@ -139,6 +139,8 @@ struct IPadMainView: View {
             IPadListenView()
         case .search:
             IPadSearchView()
+        case .discover:
+            DiscoverView()
         case .downloads:
             IPadDownloadsView()
         }

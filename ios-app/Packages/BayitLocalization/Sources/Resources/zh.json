@@ -6224,17 +6224,8 @@
   "plans": {
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -10760,6 +10751,283 @@
     "catchup": {
       "title": "Catch Up",
       "description": "Missed the beginning? Get an AI-generated summary of what happened so far."
+    }
+  },
+  "discover": {
+    "title": "探索",
+    "subtitle": "探索 Bayit+ 上所有 AI 驱动的功能",
+    "category": {
+      "watching_movies": "观看电影时",
+      "watching_live_tv": "观看直播电视时",
+      "learn_hebrew": "学习希伯来语",
+      "search_discovery": "搜索与发现",
+      "chat_assistants": "聊天与助手"
+    },
+    "feature": {
+      "pause_ask": {
+        "name": "暂停提问",
+        "tagline": "暂停任何电影并与角色对话",
+        "description": "暂停电影，与任何角色进行真实对话。他们用自己的声音和性格回应，回答关于剧情、动机或其他任何你想知道的问题。"
+      },
+      "interactive_subtitles": {
+        "name": "互动字幕",
+        "tagline": "点击字幕中的任何单词了解其含义",
+        "description": "将字幕变成学习工具。点击任何单词查看定义、听取发音，并将其保存到您的词汇表中。支持希伯来语、英语和双语字幕。"
+      },
+      "vocabulary": {
+        "name": "词汇构建器",
+        "tagline": "从电影中构建您的个人词库",
+        "description": "从互动字幕中收集单词到个人词汇表。复习闪卡，跟踪进度，在学习单词的电影语境中查看它们。"
+      },
+      "vod_moments": {
+        "name": "互动时刻",
+        "tagline": "通过 AI 驱动的互动回应关键场景",
+        "description": "在电影的关键时刻，会出现互动提示，让您参与故事。提问、获取文化背景或深入了解关键场景。"
+      },
+      "cultural_context": {
+        "name": "文化背景",
+        "tagline": "理解每个场景背后的文化含义",
+        "description": "获取 AI 生成的文化解释，涵盖可能不熟悉的场景、对话和参考。了解以色列幽默、宗教习俗、历史典故等。"
+      },
+      "bilingual_bridge": {
+        "name": "双语桥梁",
+        "tagline": "通过电影对话自然学习希伯来语",
+        "description": "并排查看希伯来语和英语字幕。AI 高亮显示关键短语，帮助您在电影对话的自然语境中理解希伯来语对话。"
+      },
+      "ai_companion": {
+        "name": "AI 伴侣",
+        "tagline": "您的智能观影伙伴",
+        "description": "一个与您一起观看的 AI 助手。随时询问剧情、角色或制作细节。它理解您正在观看的内容的上下文，并给出相关回答。"
+      },
+      "live_dubbing": {
+        "name": "直播配音",
+        "tagline": "以您的语言观看任何频道的配音",
+        "description": "实时 AI 配音以色列直播电视频道为英语、西班牙语、法语等。在观看直播时用您偏好的语言收听内容。"
+      },
+      "live_subtitles": {
+        "name": "直播字幕",
+        "tagline": "直播电视的实时字幕",
+        "description": "AI 生成的字幕在您观看直播电视时实时出现。选择您偏好的语言，跟随任何希伯来语节目。"
+      },
+      "live_trivia": {
+        "name": "直播问答",
+        "tagline": "玩关于您正在观看内容的问答游戏",
+        "description": "AI 检测直播节目的主题并实时生成问答题。与其他观众竞争，测试您对以色列文化、新闻和娱乐的了解。"
+      },
+      "catch_up": {
+        "name": "回顾摘要",
+        "tagline": "获取您错过内容的 AI 摘要",
+        "description": "加入直播节目迟了？AI 会生成您接入前所发生一切的快速摘要，让您可以直接加入而不会错过上下文。"
+      },
+      "scene_search": {
+        "name": "场景搜索",
+        "tagline": "在录制的节目中找到任何时刻",
+        "description": "通过描述您要找的内容来搜索录制的直播电视内容。AI 找到确切时刻并直接带您到那里。"
+      },
+      "phonetic_mirror": {
+        "name": "语音镜像",
+        "tagline": "通过 AI 反馈练习希伯来语发音",
+        "description": "读出一个希伯来语短语并大声说出来。AI 分析您的发音，指出需要改进的地方，并使用您的头像作为视觉指导来展示正确的发音。"
+      },
+      "talk_back": {
+        "name": "对话练习",
+        "tagline": "与您的头像练习希伯来语对话",
+        "description": "与您的 AI 头像进行希伯来语对话。它用希伯来语与您交谈，您回应，它会对您的发音、语法和词汇使用给出反馈。"
+      },
+      "interactive_mission": {
+        "name": "互动任务",
+        "tagline": "在 AI 引导下完成希伯来语学习任务",
+        "description": "开始引导式希伯来语学习任务。您的头像带领您完成结合口语、听力和阅读练习的互动练习，在有趣的游戏化场景中学习。"
+      },
+      "glossary": {
+        "name": "希伯来语词汇表",
+        "tagline": "浏览和搜索希伯来语词汇数据库",
+        "description": "访问全面的希伯来语-英语词汇表。搜索单词、听取发音、查看来自 Bayit+ 内容的使用示例，并将单词保存到您的个人词汇表中。"
+      },
+      "llm_search": {
+        "name": "AI 搜索",
+        "tagline": "使用自然语言搜索内容",
+        "description": "用您自己的话描述您想看什么。AI 理解您的意图，从整个 Bayit+ 目录中找到匹配的电影、节目和频道。"
+      },
+      "proactive_voice": {
+        "name": "语音推荐",
+        "tagline": "通过语音获取个性化内容推荐",
+        "description": "激活语音模式并告诉 Bayit+ 您想看什么。AI 考虑您的观看历史、偏好和当前时间，为您推荐完美的内容。"
+      },
+      "chatbot": {
+        "name": "AI 助手",
+        "tagline": "询问关于 Bayit+ 和以色列内容的任何问题",
+        "description": "与 Bayit+ AI 助手聊任何话题。获取应用导航帮助、了解以色列文化、找到内容推荐，或询问关于您的账户和功能的问题。"
+      }
+    },
+    "badge": {
+      "ready": "就绪",
+      "setupNeeded": "需要设置",
+      "premium": "高级版",
+      "notAvailable": "不可用",
+      "platformOnly": "仅限 iOS"
+    },
+    "walkthrough": {
+      "tryItNow": "立即试用",
+      "watchDemo": "观看演示",
+      "skip": "跳过",
+      "next": "下一步",
+      "done": "完成",
+      "complete": "教程完成",
+      "pause_ask": {
+        "step1": "导航到有互动时刻的电影",
+        "step2": "在场景中暂停电影",
+        "step3": "点击询问角色按钮",
+        "step4": "观看角色回应您"
+      },
+      "interactive_subtitles": {
+        "step1": "开始观看带字幕的电影",
+        "step2": "点击控制栏中的互动按钮",
+        "step3": "选择您的字幕语言",
+        "step4": "点击字幕中的任何单词了解更多"
+      },
+      "vocabulary": {
+        "step1": "打开启用了互动字幕的电影",
+        "step2": "点击您想学习的单词",
+        "step3": "点击保存到词汇表",
+        "step4": "在词汇部分查看保存的单词"
+      },
+      "vod_moments": {
+        "step1": "开始观看有互动时刻的电影",
+        "step2": "等待互动提示出现",
+        "step3": "查看 AI 生成的互动"
+      },
+      "cultural_context": {
+        "step1": "播放有希伯来语对话的电影",
+        "step2": "点击具有文化意义的字幕",
+        "step3": "阅读 AI 生成的文化解释"
+      },
+      "bilingual_bridge": {
+        "step1": "打开支持双语的电影",
+        "step2": "选择双语字幕模式",
+        "step3": "点击高亮短语查看翻译",
+        "step4": "并排查看两种语言"
+      },
+      "ai_companion": {
+        "step1": "开始观看任何电影",
+        "step2": "点击 AI 伴侣按钮",
+        "step3": "输入关于电影的问题",
+        "step4": "阅读 AI 的上下文回答"
+      },
+      "live_dubbing": {
+        "step1": "导航到直播电视频道",
+        "step2": "点击控制栏中的配音按钮",
+        "step3": "选择您偏好的语言",
+        "step4": "收听实时 AI 配音"
+      },
+      "live_subtitles": {
+        "step1": "导航到直播电视频道",
+        "step2": "点击字幕按钮",
+        "step3": "选择您的字幕语言",
+        "step4": "观看实时字幕出现"
+      },
+      "live_trivia": {
+        "step1": "导航到直播电视频道",
+        "step2": "点击问答按钮",
+        "step3": "回答 AI 生成的问题"
+      },
+      "catch_up": {
+        "step1": "导航到直播节目",
+        "step2": "选择回顾选项",
+        "step3": "点击生成 AI 摘要",
+        "step4": "阅读您错过内容的摘要"
+      },
+      "scene_search": {
+        "step1": "导航到录制的节目",
+        "step2": "输入您要找的内容",
+        "step3": "点击匹配的场景",
+        "step4": "从该时间点观看场景"
+      },
+      "phonetic_mirror": {
+        "step1": "在 Zeh Ani 中打开语音镜像",
+        "step2": "阅读显示的希伯来语短语",
+        "step3": "对着麦克风说出短语",
+        "step4": "查看 AI 发音反馈"
+      },
+      "talk_back": {
+        "step1": "在 Zeh Ani 中打开对话练习",
+        "step2": "听您的头像说希伯来语",
+        "step3": "用麦克风用希伯来语回应",
+        "step4": "查看 AI 对您回应的反馈"
+      },
+      "interactive_mission": {
+        "step1": "打开互动任务",
+        "step2": "选择任务级别",
+        "step3": "按照 AI 引导的练习操作",
+        "step4": "完成任务并获得奖励"
+      },
+      "glossary": {
+        "step1": "打开希伯来语词汇表",
+        "step2": "搜索一个希伯来语单词",
+        "step3": "听取发音"
+      },
+      "llm_search": {
+        "step1": "打开搜索标签",
+        "step2": "输入自然语言查询",
+        "step3": "浏览 AI 精选的结果"
+      },
+      "proactive_voice": {
+        "step1": "打开语音推荐功能",
+        "step2": "长按说话",
+        "step3": "听取个性化推荐"
+      },
+      "chatbot": {
+        "step1": "打开 AI 助手",
+        "step2": "输入您的问题或请求",
+        "step3": "阅读 AI 的回复"
+      },
+      "avatarNeeded": "您需要一个头像才能试用此功能。现在创建一个吗？",
+      "createAvatar": "创建头像",
+      "skipAvatar": "暂时跳过",
+      "scanQR": "扫描二维码上传照片",
+      "aiAvatar": "生成 AI 头像"
+    },
+    "prereq": {
+      "avatar_required": "请先创建您的头像",
+      "subscription_required": "需要高级订阅",
+      "microphone_required": "需要麦克风权限",
+      "contentType_required": "需要特定内容",
+      "preference_required": "请在设置中启用此功能",
+      "voiceClone_required": "需要设置语音克隆"
+    },
+    "empty": {
+      "title": "没有可用的功能",
+      "subtitle": "稍后再来查看新的 AI 功能"
+    },
+    "loading": "正在加载功能...",
+    "prerequisites": {
+      "title": "前提条件"
+    },
+    "action": {
+      "tryIt": "立即试用",
+      "watchDemo": "观看演示"
+    },
+    "detail": {
+      "prerequisites": "前提条件",
+      "tryIt": "立即试用",
+      "watchDemo": "观看演示",
+      "back": "返回"
+    },
+    "a11y": {
+      "ready": "功能已准备就绪",
+      "setupNeeded": "使用此功能前需要进行设置",
+      "premium": "需要高级订阅",
+      "notAvailable": "功能不可用",
+      "platformOnly": "仅在 iOS 上可用"
+    },
+    "characterGen": {
+      "stages": {
+        "analyzing": "正在分析电影...",
+        "extracting": "正在查找主要角色...",
+        "voices": "正在学习角色声音...",
+        "frames": "正在捕捉角色外貌...",
+        "almost": "即将完成..."
+      }
     }
   }
 }

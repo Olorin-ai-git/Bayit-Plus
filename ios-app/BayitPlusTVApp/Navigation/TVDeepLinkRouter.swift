@@ -97,6 +97,7 @@ enum TVDeepLinkRouter {
         case "kids", "children", "youngsters": return .home
         case "byoc", "iptv", "plex", "xtream": return .byoc
         case "search": return .search
+        case "discover": return .discover
         case "profile", "settings", "favorites", "messages", "friends",
              "help", "accounts", "credits", "subscribe": return .profile
         case "missions", "leaderboard", "wallet", "coupons": return .profile

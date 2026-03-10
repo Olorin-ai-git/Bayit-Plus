@@ -19,6 +19,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case podcasts
     case byoc
     case search
+    case discover
     case profile
     case widgets
 
@@ -35,6 +36,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "Podcasts"
         case .byoc: return "BYOC"
         case .search: return "Search"
+        case .discover: return "Discover"
         case .profile: return "Profile"
         case .widgets: return "Widgets"
         }
@@ -49,6 +51,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "headphones"
         case .byoc: return "play.tv"
         case .search: return "magnifyingglass"
+        case .discover: return "sparkles"
         case .profile: return "person.crop.circle"
         case .widgets: return "square.grid.2x2"
         }

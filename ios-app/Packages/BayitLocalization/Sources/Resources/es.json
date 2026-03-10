@@ -6308,11 +6308,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -10861,6 +10857,283 @@
     "catchup": {
       "title": "Ponerse al dia",
       "description": "Te perdiste el inicio? Obtene un resumen generado por AI de lo que paso hasta ahora."
+    }
+  },
+  "discover": {
+    "title": "Descubrir",
+    "subtitle": "Explora todas las funciones impulsadas por AI disponibles en Bayit+",
+    "category": {
+      "watching_movies": "Mientras ves peliculas",
+      "watching_live_tv": "Mientras ves TV en vivo",
+      "learn_hebrew": "Aprende hebreo",
+      "search_discovery": "Busqueda y descubrimiento",
+      "chat_assistants": "Chat y asistentes"
+    },
+    "feature": {
+      "pause_ask": {
+        "name": "Pausar y preguntar",
+        "tagline": "Pausa cualquier pelicula y chatea con los personajes",
+        "description": "Pausa una pelicula y ten una conversacion real con cualquier personaje. Responden con su propia voz y personalidad, contestando preguntas sobre la trama, sus motivaciones o cualquier otra cosa que quieras saber."
+      },
+      "interactive_subtitles": {
+        "name": "Subtitulos interactivos",
+        "tagline": "Toca cualquier palabra del subtitulo para aprender su significado",
+        "description": "Convierte los subtitulos en una herramienta de aprendizaje. Toca cualquier palabra para ver su definicion, escuchar la pronunciacion y guardarla en tu lista de vocabulario. Funciona con subtitulos en hebreo, ingles y bilingues."
+      },
+      "vocabulary": {
+        "name": "Constructor de vocabulario",
+        "tagline": "Crea tu banco de palabras personal desde peliculas",
+        "description": "Recopila palabras de subtitulos interactivos en una lista de vocabulario personal. Repasa tarjetas, sigue tu progreso y ve las palabras en contexto de las peliculas donde las aprendiste."
+      },
+      "vod_moments": {
+        "name": "Momentos interactivos",
+        "tagline": "Reacciona a escenas clave con interacciones impulsadas por AI",
+        "description": "En momentos clave de una pelicula aparecen indicaciones interactivas que te permiten interactuar con la historia. Haz preguntas, obtiene contexto cultural o profundiza en escenas fundamentales."
+      },
+      "cultural_context": {
+        "name": "Contexto cultural",
+        "tagline": "Comprende el significado cultural detras de cada escena",
+        "description": "Obtiene explicaciones culturales generadas por AI para escenas, dialogos y referencias que podrian ser desconocidas. Comprende el humor israeli, las costumbres religiosas, las referencias historicas y mas."
+      },
+      "bilingual_bridge": {
+        "name": "Puente bilingue",
+        "tagline": "Aprende hebreo naturalmente a traves del dialogo de peliculas",
+        "description": "Ve subtitulos en hebreo e ingles uno al lado del otro. El AI destaca frases clave y te ayuda a entender el dialogo en hebreo en el contexto natural de una conversacion de pelicula."
+      },
+      "ai_companion": {
+        "name": "Companero AI",
+        "tagline": "Tu companero inteligente para ver peliculas",
+        "description": "Un asistente de AI que mira junto contigo. Pregunta sobre la trama, los personajes o los detalles de produccion en cualquier momento. Entiende el contexto de lo que estas viendo y da respuestas relevantes."
+      },
+      "live_dubbing": {
+        "name": "Doblaje en vivo",
+        "tagline": "Mira cualquier canal doblado a tu idioma",
+        "description": "Doblaje de AI en tiempo real de canales de TV israelies en vivo al ingles, espanol, frances y mas. Escucha el contenido en tu idioma preferido mientras ves transmisiones en vivo."
+      },
+      "live_subtitles": {
+        "name": "Subtitulos en vivo",
+        "tagline": "Subtitulos en tiempo real para TV en vivo",
+        "description": "Subtitulos generados por AI aparecen en tiempo real mientras ves TV en vivo. Elige tu idioma preferido y sigue cualquier transmision en hebreo."
+      },
+      "live_trivia": {
+        "name": "Trivia en vivo",
+        "tagline": "Juega juegos de trivia sobre lo que estas viendo",
+        "description": "El AI detecta el tema de la transmision en vivo y genera preguntas de trivia en tiempo real. Compite con otros espectadores y pon a prueba tu conocimiento de la cultura, noticias y entretenimiento israeli."
+      },
+      "catch_up": {
+        "name": "Ponerse al dia",
+        "tagline": "Obtiene un resumen de AI de lo que te perdiste",
+        "description": "Te uniste tarde a una transmision en vivo? El AI genera un resumen rapido de todo lo que paso antes de que te conectaras, para que puedas sumarte sin perder contexto."
+      },
+      "scene_search": {
+        "name": "Busqueda de escenas",
+        "tagline": "Encuentra cualquier momento en una transmision grabada",
+        "description": "Busca en contenido de TV en vivo grabado describiendo lo que buscas. El AI encuentra el momento exacto y te lleva directamente a el."
+      },
+      "phonetic_mirror": {
+        "name": "Espejo fonetico",
+        "tagline": "Practica la pronunciacion del hebreo con retroalimentacion de AI",
+        "description": "Lee una frase en hebreo y dila en voz alta. El AI analiza tu pronunciacion, te muestra donde mejorar y demuestra los sonidos correctos usando tu avatar como guia visual."
+      },
+      "talk_back": {
+        "name": "Responde",
+        "tagline": "Practica conversacion en hebreo con tu avatar",
+        "description": "Ten una conversacion en hebreo con tu avatar de AI. Te habla en hebreo, tu respondes y te da retroalimentacion sobre tu pronunciacion, gramatica y uso de vocabulario."
+      },
+      "interactive_mission": {
+        "name": "Mision interactiva",
+        "tagline": "Completa misiones de aprendizaje de hebreo con guia de AI",
+        "description": "Embarcate en misiones guiadas de aprendizaje de hebreo. Tu avatar te guia a traves de ejercicios interactivos que combinan hablar, escuchar y leer en escenarios divertidos y gamificados."
+      },
+      "glossary": {
+        "name": "Glosario de hebreo",
+        "tagline": "Navega y busca en la base de datos de vocabulario hebreo",
+        "description": "Accede a un glosario completo hebreo-ingles. Busca palabras, escucha pronunciaciones, ve ejemplos de uso del contenido de Bayit+ y guarda palabras en tu lista de vocabulario personal."
+      },
+      "llm_search": {
+        "name": "Busqueda AI",
+        "tagline": "Busca contenido usando lenguaje natural",
+        "description": "Describe lo que quieres ver con tus propias palabras. El AI entiende tu intencion y encuentra peliculas, programas y canales coincidentes de todo el catalogo de Bayit+."
+      },
+      "proactive_voice": {
+        "name": "Sugerencias por voz",
+        "tagline": "Recibe sugerencias de contenido personalizadas por voz",
+        "description": "Activa el modo de voz y dile a Bayit+ que te apetece. El AI considera tu historial de visualizacion, preferencias y la hora actual para sugerirte el contenido perfecto."
+      },
+      "chatbot": {
+        "name": "Asistente AI",
+        "tagline": "Pregunta cualquier cosa sobre Bayit+ y contenido israeli",
+        "description": "Chatea con el asistente de AI de Bayit+ sobre cualquier tema. Obtiene ayuda para navegar la app, aprende sobre cultura israeli, encuentra recomendaciones de contenido o haz preguntas sobre tu cuenta y funciones."
+      }
+    },
+    "badge": {
+      "ready": "Listo",
+      "setupNeeded": "Configuracion necesaria",
+      "premium": "Premium",
+      "notAvailable": "No disponible",
+      "platformOnly": "Solo iOS"
+    },
+    "walkthrough": {
+      "tryItNow": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion",
+      "skip": "Omitir",
+      "next": "Siguiente",
+      "done": "Listo",
+      "complete": "Tutorial completado",
+      "pause_ask": {
+        "step1": "Navega a una pelicula con momentos interactivos",
+        "step2": "Pausa la pelicula durante una escena",
+        "step3": "Toca el boton Preguntar a un personaje",
+        "step4": "Mira al personaje responderte"
+      },
+      "interactive_subtitles": {
+        "step1": "Comienza a ver una pelicula con subtitulos",
+        "step2": "Toca el boton Interactivo en la barra de control",
+        "step3": "Selecciona tu idioma de subtitulos",
+        "step4": "Toca cualquier palabra en los subtitulos para aprender mas"
+      },
+      "vocabulary": {
+        "step1": "Abre una pelicula con subtitulos interactivos activados",
+        "step2": "Toca una palabra que quieras aprender",
+        "step3": "Toca Guardar en vocabulario",
+        "step4": "Revisa tus palabras guardadas en la seccion de Vocabulario"
+      },
+      "vod_moments": {
+        "step1": "Comienza a ver una pelicula con momentos interactivos",
+        "step2": "Espera a que aparezca una indicacion interactiva",
+        "step3": "Ve la interaccion generada por AI"
+      },
+      "cultural_context": {
+        "step1": "Reproduce una pelicula con dialogo en hebreo",
+        "step2": "Toca un subtitulo con significado cultural",
+        "step3": "Lee la explicacion cultural generada por AI"
+      },
+      "bilingual_bridge": {
+        "step1": "Abre una pelicula con soporte bilingue",
+        "step2": "Selecciona el modo de subtitulos bilingue",
+        "step3": "Toca una frase resaltada para ver la traduccion",
+        "step4": "Ve ambos idiomas uno al lado del otro"
+      },
+      "ai_companion": {
+        "step1": "Comienza a ver cualquier pelicula",
+        "step2": "Toca el boton del Companero AI",
+        "step3": "Escribe una pregunta sobre la pelicula",
+        "step4": "Lee la respuesta contextual del AI"
+      },
+      "live_dubbing": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de doblaje en la barra de control",
+        "step3": "Selecciona tu idioma preferido",
+        "step4": "Escucha el doblaje de AI en tiempo real"
+      },
+      "live_subtitles": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de subtitulos",
+        "step3": "Selecciona tu idioma de subtitulos",
+        "step4": "Ve los subtitulos en tiempo real aparecer"
+      },
+      "live_trivia": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de trivia",
+        "step3": "Responde las preguntas generadas por AI"
+      },
+      "catch_up": {
+        "step1": "Navega a una transmision en vivo",
+        "step2": "Selecciona la opcion de ponerse al dia",
+        "step3": "Toca para generar un resumen de AI",
+        "step4": "Lee el resumen de lo que te perdiste"
+      },
+      "scene_search": {
+        "step1": "Navega a una transmision grabada",
+        "step2": "Escribe lo que estas buscando",
+        "step3": "Toca la escena coincidente",
+        "step4": "Ve la escena desde ese punto"
+      },
+      "phonetic_mirror": {
+        "step1": "Abre el Espejo fonetico en Zeh Ani",
+        "step2": "Lee la frase en hebreo mostrada",
+        "step3": "Di la frase en tu microfono",
+        "step4": "Revisa la retroalimentacion de AI sobre tu pronunciacion"
+      },
+      "talk_back": {
+        "step1": "Abre Responde en Zeh Ani",
+        "step2": "Escucha a tu avatar hablar hebreo",
+        "step3": "Responde en hebreo usando tu microfono",
+        "step4": "Revisa la retroalimentacion de AI sobre tu respuesta"
+      },
+      "interactive_mission": {
+        "step1": "Abre Misiones interactivas",
+        "step2": "Selecciona un nivel de mision",
+        "step3": "Sigue los ejercicios guiados por AI",
+        "step4": "Completa la mision y gana recompensas"
+      },
+      "glossary": {
+        "step1": "Abre el Glosario de hebreo",
+        "step2": "Busca una palabra en hebreo",
+        "step3": "Escucha la pronunciacion"
+      },
+      "llm_search": {
+        "step1": "Abre la pestana de Busqueda",
+        "step2": "Escribe una consulta en lenguaje natural",
+        "step3": "Explora los resultados curados por AI"
+      },
+      "proactive_voice": {
+        "step1": "Abre la funcion de Sugerencias por voz",
+        "step2": "Mantiene presionado para hablar",
+        "step3": "Escucha las recomendaciones personalizadas"
+      },
+      "chatbot": {
+        "step1": "Abre el Asistente AI",
+        "step2": "Escribe tu pregunta o solicitud",
+        "step3": "Lee la respuesta del AI"
+      },
+      "avatarNeeded": "Necesitas un avatar para probar esta funcion. ¿Crear uno ahora?",
+      "createAvatar": "Crear Avatar",
+      "skipAvatar": "Omitir por ahora",
+      "scanQR": "Escanear QR para subir foto",
+      "aiAvatar": "Generar Avatar con AI"
+    },
+    "prereq": {
+      "avatar_required": "Crea tu avatar primero",
+      "subscription_required": "Se requiere suscripcion premium",
+      "microphone_required": "Se necesita acceso al microfono",
+      "contentType_required": "Se requiere contenido especifico",
+      "preference_required": "Habilita esta funcion en configuracion",
+      "voiceClone_required": "Se necesita configurar el clon de voz"
+    },
+    "empty": {
+      "title": "No hay funciones disponibles",
+      "subtitle": "Vuelve mas tarde para nuevas funciones de AI"
+    },
+    "loading": "Cargando funciones...",
+    "prerequisites": {
+      "title": "Requisitos previos"
+    },
+    "action": {
+      "tryIt": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion"
+    },
+    "detail": {
+      "prerequisites": "Requisitos previos",
+      "tryIt": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion",
+      "back": "Volver"
+    },
+    "a11y": {
+      "ready": "La funcion esta lista para usar",
+      "setupNeeded": "Se necesita configuracion antes de usar esta funcion",
+      "premium": "Se requiere suscripcion premium",
+      "notAvailable": "La funcion no esta disponible",
+      "platformOnly": "Solo disponible en iOS"
+    },
+    "characterGen": {
+      "stages": {
+        "analyzing": "Analizando la pelicula...",
+        "extracting": "Buscando los personajes principales...",
+        "voices": "Aprendiendo las voces de los personajes...",
+        "frames": "Capturando la apariencia de los personajes...",
+        "almost": "Casi listo..."
+      }
     }
   }
 }

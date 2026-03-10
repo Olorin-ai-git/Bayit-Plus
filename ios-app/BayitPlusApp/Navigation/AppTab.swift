@@ -8,6 +8,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
     case zehAni
     case podcasts
     case search
+    case discover
     case downloads
 
     public var id: String {
@@ -23,6 +24,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "Zeh Ani"
         case .podcasts: return "Listen"
         case .search: return "Search"
+        case .discover: return "Discover"
         case .downloads: return "Downloads"
         }
     }
@@ -36,6 +38,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "nav.zehAni"
         case .podcasts: return "listen.title"
         case .search: return "nav.search"
+        case .discover: return "nav.discover"
         case .downloads: return "downloads.title"
         }
     }
@@ -43,7 +46,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
     /// Whether the tab has a valid i18n key. Tabs without a key use `title`.
     public var hasLocalizationKey: Bool {
         switch self {
-        case .home, .vod, .search, .podcasts, .downloads: return true
+        case .home, .vod, .search, .discover, .podcasts, .downloads: return true
         case .liveTV, .zehAni: return false
         }
     }
@@ -56,6 +59,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
         case .search: return "magnifyingglass"
+        case .discover: return "sparkles"
         case .downloads: return "arrow.down.circle"
         }
     }
@@ -65,7 +69,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .vod, .downloads:
             return true
-        case .home, .liveTV, .zehAni, .podcasts, .search:
+        case .home, .liveTV, .zehAni, .podcasts, .search, .discover:
             return false
         }
     }
@@ -83,6 +87,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
         case .search: return "magnifyingglass"
+        case .discover: return "sparkles"
         case .downloads: return "arrow.down.circle.fill"
         }
     }

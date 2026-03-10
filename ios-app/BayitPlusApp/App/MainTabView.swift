@@ -132,6 +132,8 @@ struct MainTabView: View {
             ListenView()
         case .search:
             SearchView()
+        case .discover:
+            DiscoverView()
         case .downloads:
             DownloadsView()
         }
