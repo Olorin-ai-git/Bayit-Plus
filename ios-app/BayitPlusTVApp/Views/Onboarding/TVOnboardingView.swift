@@ -176,6 +176,15 @@ struct TVOnboardingView: View {
                 pills: ["onboarding.zehAni.pill"]
             ) { vm.nextStep() }
 
+        case .language:
+            TVOnboardingLanguageStep(viewModel: vm)
+
+        case .interests:
+            TVOnboardingInterestsStep(viewModel: vm)
+
+        case .culture:
+            TVOnboardingCultureStep(viewModel: vm)
+
         case .voiceSetup:
             TVOnboardingVoiceStep(viewModel: vm)
 
