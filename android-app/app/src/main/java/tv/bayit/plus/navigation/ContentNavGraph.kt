@@ -28,6 +28,7 @@ import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
 import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
 import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
+import tv.bayit.plus.feature.discover.ui.DiscoverRoute
 import tv.bayit.plus.feature.vod.trending.TrendingRoute
 
 fun NavGraphBuilder.contentNavGraph(navController: NavController) {
@@ -76,6 +77,23 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.Search> {
         SearchRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+    }
+    composable<Route.Discover> {
+        DiscoverRoute(
+            onNavigateToPlayer = { id, type ->
+                navController.navigate(Route.Player(contentId = id, contentType = type))
+            },
+            onNavigateToZehAni = { navController.navigate(Route.ZehAni) },
+            onNavigateToFeatureDetail = { featureId ->
+                when (featureId) {
+                    "glossary" -> navController.navigate(Route.Glossary)
+                    "llm_search" -> navController.navigate(Route.LlmSearch)
+                    "chatbot" -> navController.navigate(Route.Chatbot)
+                    "interactive_mission" -> navController.navigate(Route.MissionsDashboard)
+                    else -> navController.navigate(Route.Search)
+                }
+            },
+        )
     }
     composable<Route.Player> { entry ->
         val route = entry.toRoute<Route.Player>()
