@@ -59,7 +59,12 @@ private fun FeatureDetailContent(
     config: FeatureConfigDto?,
     onStartWalkthrough: (DiscoverFeature) -> Unit,
 ) {
-    val hasWalkthroughContent = config?.walkthroughContentId != null || feature.deepLinkRoute != null
+    val playerRoutes = setOf("player", "live_tv", "epg")
+    val needsContentId = feature.deepLinkRoute in playerRoutes
+    val hasWalkthroughContent = when {
+        needsContentId -> config?.walkthroughContentId != null
+        else -> feature.deepLinkRoute != null
+    }
 
     Column(
         modifier = Modifier

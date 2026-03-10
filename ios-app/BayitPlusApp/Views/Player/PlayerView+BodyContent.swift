@@ -49,6 +49,7 @@ extension PlayerView {
             .walkthroughTarget(id: "discover_catch_up_step4")
             .walkthroughTarget(id: "discover_scene_search_step4")
             .walkthroughTarget(id: "discover_ai_companion_step4")
+            .walkthroughTarget(id: "discover_pause_ask_step4")
 
             if viewModel.isLoading {
                 loadingOverlay

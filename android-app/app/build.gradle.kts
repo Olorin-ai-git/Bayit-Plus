@@ -39,9 +39,9 @@ android {
             abiFilters += listOf("arm64-v8a", "x86_64")
         }
 
-        buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
-        buildConfigField("String", "WS_BASE_URL", "\"${project.findProperty("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
-        buildConfigField("String", "CDN_BASE_URL", "\"${project.findProperty("bayit.cdn.baseUrl") ?: "https://cdn.bayit.tv"}\"")
+        buildConfigField("String", "API_BASE_URL", "\"${localOrProject("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
+        buildConfigField("String", "WS_BASE_URL", "\"${localOrProject("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
+        buildConfigField("String", "CDN_BASE_URL", "\"${localOrProject("bayit.cdn.baseUrl") ?: "https://cdn.bayit.tv"}\"")
         buildConfigField("String", "CAST_RECEIVER_APP_ID", "\"${project.findProperty("bayit.cast.receiverAppId") ?: ""}\"")
         buildConfigField(
             "String",
