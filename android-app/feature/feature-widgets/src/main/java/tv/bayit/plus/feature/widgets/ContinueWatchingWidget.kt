@@ -27,22 +27,38 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface ContinueWatchingWidgetEntryPoint {
+    fun bayitStringProvider(): BayitStringProvider
+}
 
 class ContinueWatchingWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val dataProvider = WidgetDataProvider(kotlinx.serialization.json.Json { ignoreUnknownKeys = true })
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            ContinueWatchingWidgetEntryPoint::class.java,
+        )
+        val sp = entryPoint.bayitStringProvider()
         val isLoggedIn = dataProvider.isLoggedIn(context)
         val items = if (isLoggedIn) dataProvider.getContinueWatching(context) else emptyList()
 
         provideContent {
             GlanceTheme {
                 if (!isLoggedIn) {
-                    ContinueWatchingSignInPrompt()
+                    ContinueWatchingSignInPrompt(sp)
                 } else if (items.isNotEmpty()) {
-                    ContinueWatchingContent(items)
+                    ContinueWatchingContent(items, sp)
                 } else {
-                    EmptyContinueWatching()
+                    EmptyContinueWatching(sp)
                 }
             }
         }
@@ -50,7 +66,7 @@ class ContinueWatchingWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun ContinueWatchingContent(items: List<ContinueWatchingItem>) {
+private fun ContinueWatchingContent(items: List<ContinueWatchingItem>, sp: BayitStringProvider) {
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -58,7 +74,7 @@ private fun ContinueWatchingContent(items: List<ContinueWatchingItem>) {
             .padding(12.dp),
     ) {
         Text(
-            text = "Continue Watching",
+            text = sp.string("home.continueWatching"),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
@@ -102,7 +118,7 @@ private fun ContinueWatchingRow(item: ContinueWatchingItem) {
 }
 
 @Composable
-private fun EmptyContinueWatching() {
+private fun EmptyContinueWatching(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -111,7 +127,7 @@ private fun EmptyContinueWatching() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Start watching to see your progress",
+            text = sp.string("widgets.startWatching"),
             style = TextStyle(
                 fontSize = 12.sp,
                 color = GlanceTheme.colors.secondary,
@@ -121,7 +137,7 @@ private fun EmptyContinueWatching() {
 }
 
 @Composable
-private fun ContinueWatchingSignInPrompt() {
+private fun ContinueWatchingSignInPrompt(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -130,7 +146,7 @@ private fun ContinueWatchingSignInPrompt() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Sign in to Bayit+",
+            text = sp.string("widgets.signInToBayit"),
             style = TextStyle(
                 fontSize = 14.sp,
                 color = GlanceTheme.colors.primary,

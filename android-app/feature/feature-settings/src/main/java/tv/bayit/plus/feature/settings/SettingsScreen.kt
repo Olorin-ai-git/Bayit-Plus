@@ -37,6 +37,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SettingsRoute(
@@ -84,10 +85,10 @@ internal fun SettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Settings",
+            title = bayitString("settings.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -137,7 +138,7 @@ private fun SettingsContent(
         }
         item(key = "logout") {
             Spacer(Modifier.height(DesignTokens.Spacing.base))
-            GlassButton(text = "Sign Out", onClick = onLogout, isPrimary = false, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("auth.logout"), onClick = onLogout, isPrimary = false, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
         }
     }
@@ -177,7 +178,7 @@ private fun SettingsErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

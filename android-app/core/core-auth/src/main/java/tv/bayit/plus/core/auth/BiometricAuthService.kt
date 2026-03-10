@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.common.result.BayitError
 import tv.bayit.plus.core.common.result.BayitResult
@@ -36,6 +37,7 @@ import kotlin.math.min
 class BiometricAuthService @Inject constructor(
     @ApplicationContext private val context: Context,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) {
     private val _state = MutableStateFlow<BiometricAuthState>(BiometricAuthState.Idle)
     val biometricAuthState: StateFlow<BiometricAuthState> = _state.asStateFlow()
@@ -68,11 +70,16 @@ class BiometricAuthService @Inject constructor(
         val canAuth = BiometricManager.from(context)
             .canAuthenticate(Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
         if (!canAuth) return BayitResult.failure(
-            BayitError.Authentication("Device does not support biometric authentication"),
+            BayitError.Authentication(stringProvider.string("biometric.unsupported")),
         )
         val lockout = getLockoutStatus()
         if (lockout.isLocked) return BayitResult.failure(
-            BayitError.Authentication("Locked out for ${lockout.timeRemainingMs}ms"),
+            BayitError.Authentication(
+                stringProvider.string(
+                    "biometric.lockedOut",
+                    mapOf("ms" to lockout.timeRemainingMs.toString()),
+                ),
+            ),
         )
         _state.value = BiometricAuthState.Authenticating
         val executor = Executor { task -> Handler(Looper.getMainLooper()).post(task) }
@@ -81,7 +88,7 @@ class BiometricAuthService @Inject constructor(
             val info = BiometricPrompt.PromptInfo.Builder()
                 .setTitle(title).setSubtitle(subtitle)
                 .setAllowedAuthenticators(Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) info.setNegativeButtonText("Cancel")
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) info.setNegativeButtonText(stringProvider.string("common.cancel"))
             prompt.authenticate(info.build())
             cont.invokeOnCancellation { prompt.cancelAuthentication() }
         }
@@ -137,7 +144,7 @@ class BiometricAuthService @Inject constructor(
         }
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-            val msg = mapBiometricErrorMessage(errorCode, errString)
+            val msg = mapBiometricErrorMessage(errorCode, errString, stringProvider)
             _state.value = BiometricAuthState.Error(msg)
             logger.warning("Biometric auth error", mapOf("errorCode" to errorCode.toString()))
             cont.resume(BayitResult.failure(BayitError.Authentication(msg)))
@@ -146,7 +153,10 @@ class BiometricAuthService @Inject constructor(
         override fun onAuthenticationFailed() {
             recordFailedAttempt()
             val status = getLockoutStatus()
-            val msg = if (status.isLocked) "Locked out for ${status.timeRemainingMs}ms" else "Authentication failed"
+            val msg = if (status.isLocked)
+                stringProvider.string("biometric.lockedOut", mapOf("ms" to status.timeRemainingMs.toString()))
+            else
+                stringProvider.string("biometric.authFailed")
             _state.value = BiometricAuthState.Failed(msg, status)
             logger.warning("Biometric auth failed", mapOf("isLocked" to status.isLocked.toString()))
             cont.resume(BayitResult.failure(BayitError.Authentication(msg)))

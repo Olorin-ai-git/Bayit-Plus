@@ -13,6 +13,7 @@ enum class AppTab(
     ZEH_ANI(Route.ZehAni, "nav.zehAni", "person"),
     PODCASTS(Route.Podcasts, "nav.podcasts", "headphones"),
     SEARCH(Route.Search, "nav.search", "search"),
+    DISCOVER(Route.Discover, "nav.discover", "auto_awesome"),
     DOWNLOADS(Route.Downloads, "downloads.title", "download", requiresOwnerMode = true),
     ;
 

@@ -3175,7 +3175,14 @@
     "subscription": "מנוי",
     "by": "By",
     "loadingAudiobooks": "Loading audiobooks...",
-    "speed": "Speed:"
+    "speed": "Speed:",
+    "detail": {
+      "byAuthor": "מאת {{author}}",
+      "narratedBy": "קריינות: {{narrator}}",
+      "bookmarks": "{{count}} סימניות",
+      "chapters": "פרקים ({{count}})",
+      "chapter": "פרק"
+    }
   },
   "breadcrumbs": {
     "series": "סדרה",
@@ -4522,7 +4529,17 @@
       "invalidChannel": "מזהה ערוץ לא תקין"
     },
     "initializationFailed": "האתחול נכשל",
-    "reloadButton": "טען מחדש"
+    "reloadButton": "טען מחדש",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "אנא התחבר כדי להשתמש ב-Bayit+ Companion",
@@ -5209,7 +5226,8 @@
     "menu": "תפריט",
     "more": "עוד",
     "playlist": "רשימת השמעה",
-    "byoc": "BYOC"
+    "byoc": "התוכן שלך",
+    "zehAniHub": "זה אני"
   },
   "onboarding": {
     "welcome": {
@@ -5385,7 +5403,11 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
+      "notIncluded": [
+        "ערוצי שידור חי",
+        "עוזר AI",
+        "צפייה אופליין"
+      ]
     },
     "premium": {
       "name": "פרימיום",
@@ -5397,7 +5419,10 @@
         "צפייה על 2 מכשירים",
         "איכות HD"
       ],
-      "notIncluded": ["צפייה אופליין", "פרופילים משפחתיים"]
+      "notIncluded": [
+        "צפייה אופליין",
+        "פרופילים משפחתיים"
+      ]
     },
     "family": {
       "name": "משפחתי",
@@ -5456,7 +5481,9 @@
     "noStream": "הזרם אינו זמין",
     "loadError": "שגיאה בטעינת הזרם",
     "settings": "הגדרות",
-    "subtitles": "כתוביות",
+    "subtitles": {
+      "language": "שפה"
+    },
     "playbackSpeed": "מהירות ניגון",
     "quality": "איכות",
     "auto": "אוטומטי",
@@ -5709,7 +5736,9 @@
     "radio": "Radio",
     "playLatest": "נגן אחרון",
     "subscribe": "הירשם",
-    "unsubscribe": "בטל הרשמה"
+    "unsubscribe": "בטל הרשמה",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "פרק"
   },
   "miniPlayer": {
     "skipBackward": "דלג 15 שניות אחורה",
@@ -6020,7 +6049,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "ילדים",
+    "addIcon": "+"
   },
   "radio": {
     "title": "תחנות רדיו",
@@ -6306,7 +6337,11 @@
     "results": "תוצאות",
     "previousPage": "הקודם",
     "nextPage": "הבא",
-    "pageIndicator": "עמוד {{current}} מתוך {{total}}"
+    "pageIndicator": "עמוד {{current}} מתוך {{total}}",
+    "llm": {
+      "title": "חיפוש AI",
+      "placeholder": "תאר מה אתה רוצה לצפות..."
+    }
   },
   "settings": {
     "title": "הגדרות",
@@ -6422,7 +6457,10 @@
       "signOutAll": "התנתק מכל המכשירים",
       "signOutAllDesc": "פעולה זו תנתק אותך מכל מקום מלבד מכשיר זה",
       "thisDevice": "מכשיר זה",
-      "lastActive": "פעיל לאחרונה {{time}}"
+      "lastActive": "פעיל לאחרונה {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "תכונות AI",
@@ -6701,7 +6739,8 @@
         "features": "תכונות",
         "support": "תמיכה"
       }
-    }
+    },
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "ניקוד",
@@ -6948,7 +6987,8 @@
     },
     "wizard": {
       "role": "המדריך שלך"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "telAviv": {
     "title": "חיבור לתל אביב",
@@ -7064,7 +7104,14 @@
   "vod": {
     "title": "סרטים וסדרות",
     "movies": "סרטים",
-    "series": "סדרות",
+    "series": {
+      "seasonsCount": "{{count}} עונות",
+      "episodesCount": "{{count}} פרקים",
+      "playAll": "נגן הכל",
+      "removeFromFavorites": "הסר מהמועדפים",
+      "addToFavorites": "הוסף למועדפים",
+      "seasonNumber": "עונה {{number}}"
+    },
     "searchPlaceholder": "חפש סרטים וסדרות...",
     "noMovies": "לא נמצאו סרטים",
     "noSeries": "לא נמצאו סדרות",
@@ -7405,7 +7452,9 @@
     "error": {
       "failed": "לא ניתן לייצר סיכום",
       "retry": "נסה שוב",
-      "insufficientCredits": "אין מספיק קרדיטים"
+      "insufficientCredits": "אין מספיק קרדיטים",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "timeline": {
       "title": "ציר זמן תמלילים",
@@ -7803,7 +7852,21 @@
     "biometricEnrollTitle": "הפעל כניסה ביומטרית",
     "biometricEnrollMessage": "השתמש בטביעת האצבע או הפנים שלך לכניסה מהירה יותר",
     "biometricEnrollEnable": "הפעל",
-    "biometricEnrollSkip": "לא עכשיו"
+    "biometricEnrollSkip": "לא עכשיו",
+    "register": {
+      "createAccount": "צור חשבון",
+      "email": "דוא\"ל",
+      "password": "סיסמה",
+      "confirmPassword": "אשר סיסמה",
+      "register": "הרשמה",
+      "alreadyHaveAccount": "כבר יש לך חשבון? התחבר",
+      "passwordStrength": {
+        "weak": "חלשה",
+        "medium": "בינונית",
+        "strong": "חזקה"
+      }
+    },
+    "logout": "התנתק"
   },
   "email": {
     "greeting": "שלום",
@@ -8138,7 +8201,8 @@
     "translationBeta": "תרגום (בטא)",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "location": {
     "consentModal": {
@@ -8914,7 +8978,8 @@
       "loading": "טוען שאלה...",
       "insufficient_credits": "אין מספיק קרדיטים לשאלת הבנה",
       "error": "שגיאה בטעינת שאלה"
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "תרגום",
@@ -9675,10 +9740,11 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
-    "bayit": "Bayit",
+    "bayit": "בית",
     "plus": "+",
     "poweredBy": "Powered by Olorin.ai"
   },
@@ -9717,7 +9783,10 @@
       "genericQuestions": "שאלות כלליות",
       "placeholder": "שאלו שאלה...",
       "send": "שלח",
-      "you": "אתה"
+      "you": "אתה",
+      "title": "דיאלוג",
+      "askQuestion": "שאל שאלה...",
+      "sendQuestion": "שלח שאלה"
     },
     "subtitle": "הזהות האינטראקטיבית שלכם",
     "hub": {
@@ -9733,6 +9802,156 @@
       "feedbackDesc": "הודעות מהמשפחה וחברים",
       "chess": "שחמט",
       "chessDesc": "שחקו שחמט עם משפחה וחברים"
+    },
+    "contacts": {
+      "title": "אנשי קשר",
+      "addContact": "הוסף איש קשר",
+      "searchPlaceholder": "חפש אנשי קשר...",
+      "noContacts": "אין עדיין אנשי קשר",
+      "noMatchingContacts": "אין אנשי קשר תואמים",
+      "reelsShared": "{{count}} סרטונים ששותפו",
+      "remove": "הסר"
+    },
+    "feedback": {
+      "title": "משוב",
+      "rateQuestion": "איך היית מדרג את זה אני?",
+      "tellUsMore": "ספר לנו עוד",
+      "sharePlaceholder": "שתף את החוויה שלך עם תכונות זה אני...",
+      "submit": "שלח משוב",
+      "thankYou": "תודה על המשוב שלך!",
+      "appreciateInput": "אנו מעריכים את הקלט שלך ונשתמש בו לשיפור.",
+      "sendMore": "שלח משוב נוסף"
+    },
+    "consent": {
+      "title": "הסכמה ביומטרית",
+      "familyPin": "קוד PIN משפחתי",
+      "enterPin": "הזן קוד PIN משפחתי...",
+      "consentTypes": "סוגי הסכמה",
+      "active": "פעיל",
+      "notGranted": "לא הוענקה",
+      "grant": "הענק",
+      "granted": "הוענקה"
+    },
+    "highlights": {
+      "title": "רגעים נבחרים",
+      "shareHighlight": "שתף רגע נבחר",
+      "sentTo": "נשלח ל-{{sentCount}} אנשי קשר משפחתיים",
+      "generateReel": "צור סרטון חדש",
+      "noHighlights": "אין עדיין רגעים נבחרים",
+      "momentsCount": "{{count}} רגעים",
+      "sendToFamily": "שלח למשפחה"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "הגדרת אימות דו-שלבי",
+      "scanQrCode": "סרוק קוד QR",
+      "scanQrDescription": "סרוק את קוד ה-QR הזה עם אפליקציית האימות שלך",
+      "qrLabel": "QR",
+      "enterCode": "הזן קוד אימות",
+      "codePlaceholder": "קוד בן 6 ספרות",
+      "enable": "הפעל אימות דו-שלבי",
+      "verified": "אימות דו-שלבי הופעל!"
+    },
+    "passkey": {
+      "title": "ניהול מפתחות גישה",
+      "addPasskey": "הוסף מפתח גישה",
+      "empty": "אין מפתחות גישה מוגדרים.\nהוסף את מפתח הגישה הראשון שלך!",
+      "lastUsedNa": "שימוש אחרון: לא זמין"
+    },
+    "phone": {
+      "title": "אימות טלפון",
+      "enterNumber": "הזן מספר טלפון",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "שלח קוד",
+      "enterCode": "הזן קוד אימות",
+      "codePlaceholder": "קוד בן 6 ספרות",
+      "verify": "אמת",
+      "verified": "הטלפון אומת!"
+    },
+    "devices": {
+      "title": "שיוך מכשירים",
+      "pairingCode": "קוד שיוך",
+      "enterCodeOnTv": "הזן קוד זה במכשיר הטלוויזיה שלך",
+      "pairNewDevice": "שייך מכשיר חדש",
+      "empty": "אין מכשירים משויכים.\nשייך את המכשיר הראשון שלך!",
+      "lastActiveNa": "פעילות אחרונה: לא זמין",
+      "remove": "הסר"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "צפייה משותפת",
+      "create": "צור צפייה משותפת",
+      "contentId": "מזהה תוכן",
+      "enterContent": "הזן תוכן לצפייה",
+      "createButton": "צור מסיבה",
+      "join": "הצטרף לצפייה משותפת",
+      "partyCode": "קוד מסיבה",
+      "enterCode": "הזן קוד מסיבה",
+      "joinButton": "הצטרף"
+    },
+    "grandparent": {
+      "title": "הזמן סבא/סבתא",
+      "createInvite": "צור הזמנה",
+      "createInviteDescription": "הזן את שם הסבא/סבתא שלך...",
+      "nameLabel": "שם סבא/סבתא",
+      "enterName": "הזן שם",
+      "generateCode": "צור קוד הזמנה",
+      "codeGenerated": "קוד הזמנה נוצר",
+      "shareCode": "שתף קוד זה עם הסבא/סבתא שלך",
+      "codeInstructions": "הם יכולים להזין קוד זה באפליקציית Bayit+ שלהם כדי להתחבר",
+      "createAnother": "צור הזמנה נוספת"
+    },
+    "conversation": {
+      "title": "שיחה"
+    },
+    "friends": {
+      "online": "מחוברים"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "מילון מונחים",
+      "searchPlaceholder": "חפש מונחים..."
+    },
+    "shabbat": {
+      "shabbatShalom": "שבת שלום",
+      "modeActivated": "מצב שבת הופעל",
+      "shavuaTov": "שבוע טוב",
+      "modeDeactivated": "מצב שבת בוטל",
+      "channelName": "מצב שבת"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "חבר Plex",
+      "enterCodeAt": "הזן קוד זה ב",
+      "waitingForAuth": "ממתין לאישור...",
+      "selectServer": "בחר שרת Plex",
+      "connecting": "מתחבר ל-{{serverName}}...",
+      "connected": "מחובר",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "מקורות התוכן שלי",
+      "refresh": "רענן",
+      "noSources": "אין מקורות תוכן",
+      "noSourcesSubtitle": "הוסף את מקורות ה-Plex, YouTube או IPTV שלך",
+      "removeSource": "הסר מקור",
+      "plexSubtitle": "סרטים, סדרות, מוזיקה",
+      "youtubeSubtitle": "סרטונים, רשימות השמעה, ערוצים",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "ערוצים חיים, VOD, סדרות",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, פתח פרופיל",
+    "languageCurrent": "שפה: {{lang}}, הקש לשינוי",
+    "selectLanguage": "בחר שפה",
+    "homeLogo": "בית+"
   }
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.EpisodeItem
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private val EPISODE_THUMBNAIL_WIDTH = 140.dp
@@ -65,14 +66,14 @@ internal fun SeriesEpisodeRow(
             Column(modifier = Modifier.weight(1f).padding(start = DesignTokens.Spacing.md)) {
                 episode.episodeNumber?.let { num ->
                     Text(
-                        text = "Episode $num",
+                        text = bayitString("vod.series.episodeNumber", mapOf("num" to num.toString())),
                         style = MaterialTheme.typography.labelSmall,
                         color = DesignTokens.Colors.Text.muted,
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
                 }
                 Text(
-                    text = buildEpisodeTitle(episode, selectedSeason),
+                    text = buildEpisodeTitle(episode, selectedSeason, bayitString("vod.series.episode")),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -93,7 +94,7 @@ internal fun SeriesEpisodeRow(
                 IconButton(onClick = onDownload, modifier = Modifier.size(ICON_BUTTON_SIZE)) {
                     Icon(
                         imageVector = Icons.Filled.ArrowDownward,
-                        contentDescription = "Download episode",
+                        contentDescription = bayitString("vod.series.downloadEpisode"),
                         tint = DesignTokens.Colors.Text.muted,
                         modifier = Modifier.size(22.dp),
                     )
@@ -108,7 +109,7 @@ internal fun SeriesEpisodeRow(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Play episode",
+                        contentDescription = bayitString("vod.series.playEpisode"),
                         tint = DesignTokens.Colors.Text.primary,
                         modifier = Modifier.size(22.dp),
                     )
@@ -118,10 +119,10 @@ internal fun SeriesEpisodeRow(
     }
 }
 
-private fun buildEpisodeTitle(episode: EpisodeItem, season: Int): String {
+private fun buildEpisodeTitle(episode: EpisodeItem, season: Int, fallback: String): String {
     val title = episode.title.orEmpty()
     val code = episode.episodeNumber?.let { ep ->
         "S${season.toString().padStart(2, '0')}E${ep.toString().padStart(2, '0')}"
     }
-    return listOfNotNull(title, code).joinToString("\n").ifEmpty { "Episode" }
+    return listOfNotNull(title, code).joinToString("\n").ifEmpty { fallback }
 }

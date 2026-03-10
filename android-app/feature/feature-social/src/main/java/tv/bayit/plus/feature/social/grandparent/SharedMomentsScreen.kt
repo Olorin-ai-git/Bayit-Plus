@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 /**
  * Route composable for Shared Moments screen.
@@ -62,7 +63,7 @@ internal fun SharedMomentsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Shared Moments")
+        GlassTopBar(title = bayitString("social.sharedMoments.title"))
 
         when (uiState) {
             is SharedMomentsUiState.Loading -> {
@@ -108,12 +109,12 @@ private fun EmptySharedState() {
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
                 Text(
-                    text = "No shared moments yet",
+                    text = bayitString("social.sharedMoments.emptyTitle"),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Start sharing content to create memories together",
+                    text = bayitString("social.sharedMoments.emptySubtitle"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -132,27 +133,27 @@ private fun SharedItemCard(item: Any, onPlay: () -> Unit) {
         ) {
             CachedAsyncImage(
                 url = null,
-                contentDescription = "Content thumbnail",
+                contentDescription = bayitString("social.sharedMoments.contentThumbnail"),
                 modifier = Modifier.size(80.dp).clip(RoundedCornerShape(DesignTokens.Radius.md)),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Shared Content",
+                    text = bayitString("social.sharedMoments.sharedContent"),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Shared by Grandparent",
+                    text = bayitString("social.sharedMoments.sharedByGrandparent"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "2 hours ago",
+                    text = bayitString("social.sharedMoments.timeAgo"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            GlassButton(text = "Play", onClick = onPlay)
+            GlassButton(text = bayitString("common.play"), onClick = onPlay)
         }
     }
 }
@@ -169,7 +170,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

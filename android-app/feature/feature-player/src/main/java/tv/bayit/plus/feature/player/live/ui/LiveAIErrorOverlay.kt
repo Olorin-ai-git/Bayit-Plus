@@ -100,7 +100,7 @@ fun LiveAIErrorOverlay(
                                 is LiveAIError.ConnectionFailed -> bayitString("errors.connection_failed")
                                 is LiveAIError.QuotaExceeded -> bayitString("errors.quota_exceeded")
                                 is LiveAIError.ServerError -> bayitString("errors.server_error")
-                                is LiveAIError.Reconnecting -> "Reconnecting..."
+                                is LiveAIError.Reconnecting -> bayitString("errors.reconnecting")
                             },
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
@@ -114,7 +114,7 @@ fun LiveAIErrorOverlay(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Dismiss error message",
+                            contentDescription = bayitString("errors.dismissError"),
                             tint = DesignTokens.Colors.Text.secondary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -125,19 +125,19 @@ fun LiveAIErrorOverlay(
                     text = when (currentError) {
                         is LiveAIError.ConnectionFailed -> {
                             if (currentError.retryCount > 0) {
-                                "Failed to connect after ${currentError.retryCount} attempts. Please check your connection."
+                                bayitString("errors.connectionFailedRetry", mapOf("count" to currentError.retryCount.toString()))
                             } else {
-                                "Failed to connect to AI services. Please try again."
+                                bayitString("errors.connectionFailedGeneric")
                             }
                         }
                         is LiveAIError.QuotaExceeded -> {
-                            "You've reached your AI feature usage limit. Upgrade to continue using AI features."
+                            bayitString("errors.quotaExceededMessage")
                         }
                         is LiveAIError.ServerError -> {
-                            currentError.message.ifEmpty { "An unexpected error occurred. Please try again." }
+                            currentError.message.ifEmpty { bayitString("errors.unexpectedRetry") }
                         }
                         is LiveAIError.Reconnecting -> {
-                            "Attempting to reconnect (${currentError.attempt}/3)..."
+                            bayitString("errors.reconnectingAttempt", mapOf("attempt" to currentError.attempt.toString()))
                         }
                     },
                     style = MaterialTheme.typography.bodySmall,
@@ -152,7 +152,7 @@ fun LiveAIErrorOverlay(
                             modifier = Modifier.align(Alignment.End)
                         ) {
                             Text(
-                                text = "Retry",
+                                text = bayitString("common.retry"),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -164,7 +164,7 @@ fun LiveAIErrorOverlay(
                             modifier = Modifier.align(Alignment.End)
                         ) {
                             Text(
-                                text = "Upgrade",
+                                text = bayitString("common.upgrade"),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold
                             )

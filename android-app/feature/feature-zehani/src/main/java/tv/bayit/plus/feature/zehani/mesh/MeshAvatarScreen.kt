@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun MeshAvatarRoute(
@@ -65,12 +66,12 @@ internal fun MeshAvatarScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "3D Avatar",
+            title = bayitString("zehAni.mesh.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -112,14 +113,14 @@ private fun MeshAvatarContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                     Text(
-                        text = "3D Mesh Viewer",
+                        text = bayitString("zehAni.mesh.meshViewer"),
                         style = MaterialTheme.typography.titleSmall,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     Box(modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentAlignment = Alignment.Center) {
                         Text(
-                            text = "3D mesh viewer requires WebView or GLSurfaceView integration",
+                            text = bayitString("zehAni.mesh.meshViewerDescription"),
                             style = MaterialTheme.typography.bodyMedium,
                             color = DesignTokens.Colors.Text.muted,
                         )
@@ -128,7 +129,7 @@ private fun MeshAvatarContent(
             }
         }
         item {
-            Text(text = "Skin Tone", style = MaterialTheme.typography.titleSmall,
+            Text(text = bayitString("zehAni.mesh.skinTone"), style = MaterialTheme.typography.titleSmall,
                 color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
         }
         item {
@@ -140,7 +141,7 @@ private fun MeshAvatarContent(
         }
         item {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
-            Text(text = "Hair Style", style = MaterialTheme.typography.titleSmall,
+            Text(text = bayitString("zehAni.mesh.hairStyle"), style = MaterialTheme.typography.titleSmall,
                 color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
         }
         item {
@@ -152,7 +153,7 @@ private fun MeshAvatarContent(
         }
         item {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
-            Text(text = "Accessories", style = MaterialTheme.typography.titleSmall,
+            Text(text = bayitString("zehAni.mesh.accessories"), style = MaterialTheme.typography.titleSmall,
                 color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
         }
         item {
@@ -162,7 +163,7 @@ private fun MeshAvatarContent(
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(text = accessory, style = MaterialTheme.typography.bodyMedium,
                             color = DesignTokens.Colors.Text.primary)
-                        GlassChip(label = if (accessories.contains(accessory)) "Enabled" else "Disabled",
+                        GlassChip(label = if (accessories.contains(accessory)) bayitString("common.enabled") else bayitString("common.disabled"),
                             isSelected = accessories.contains(accessory), onClick = { onToggleAccessory(accessory) })
                     }
                 }
@@ -170,7 +171,7 @@ private fun MeshAvatarContent(
         }
         item {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-            GlassButton(text = "Save Changes", onClick = onSave, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("zehAni.mesh.saveChanges"), onClick = onSave, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -183,7 +184,7 @@ private fun MeshAvatarError(message: String, onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

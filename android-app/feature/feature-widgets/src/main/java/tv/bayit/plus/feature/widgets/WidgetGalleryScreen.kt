@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.*
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -20,7 +21,7 @@ fun WidgetGalleryRoute(onNavigateBack: () -> Unit, modifier: Modifier = Modifier
 @Composable
 internal fun WidgetGalleryScreen(uiState: WidgetGalleryUiState, onConfigureWidget: (String) -> Unit, onNavigateBack: () -> Unit, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxSize()) {
-        GlassTopBar("Widget Gallery")
+        GlassTopBar(bayitString("widgets.gallery"))
         when (uiState) {
             WidgetGalleryUiState.Loading -> GlassLoadingIndicator()
             is WidgetGalleryUiState.Error -> Box(
@@ -32,7 +33,7 @@ internal fun WidgetGalleryScreen(uiState: WidgetGalleryUiState, onConfigureWidge
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
                 ) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
-                    GlassButton("Retry", onRetry)
+                    GlassButton(bayitString("common.retry"), onRetry)
                 }
             }
             is WidgetGalleryUiState.Success -> LazyVerticalGrid(
@@ -48,7 +49,7 @@ internal fun WidgetGalleryScreen(uiState: WidgetGalleryUiState, onConfigureWidge
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(widget.toString(), fontWeight = FontWeight.Medium, color = DesignTokens.Colors.Text.primary)
-                            GlassButton(text = "Configure", onClick = { onConfigureWidget(widget.hashCode().toString()) })
+                            GlassButton(text = bayitString("widgets.configure"), onClick = { onConfigureWidget(widget.hashCode().toString()) })
                         }
                     }
                 }

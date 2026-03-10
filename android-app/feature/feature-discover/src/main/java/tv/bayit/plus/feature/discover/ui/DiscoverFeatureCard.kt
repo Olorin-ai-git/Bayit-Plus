@@ -13,14 +13,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.i18n.bayitString
+import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.discover.model.DiscoverFeature
 import tv.bayit.plus.feature.discover.model.FeatureAvailabilityState
 
+private val CARD_WIDTH = 160.dp
+private val ICON_SIZE = 28.dp
+
+/**
+ * Compact glass card representing a single [DiscoverFeature] in the horizontal category row.
+ */
 @Composable
 internal fun DiscoverFeatureCard(
     feature: DiscoverFeature,
@@ -28,49 +35,34 @@ internal fun DiscoverFeatureCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GlassCard(
+    Column(
         modifier = modifier
             .width(CARD_WIDTH)
-            .clickable(onClick = onClick),
+            .glassMorphism(cornerRadius = DesignTokens.Radius.md)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(DesignTokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-            ) {
-                Icon(
-                    imageVector = discoverIcon(feature.iconName),
-                    contentDescription = bayitString(feature.nameKey),
-                    tint = DesignTokens.Colors.Primary.light,
-                    modifier = Modifier.size(ICON_SIZE),
-                )
-                Text(
-                    text = bayitString(feature.nameKey),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = DesignTokens.Colors.Text.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-
+            Icon(
+                imageVector = discoverIcon(feature.iconName),
+                contentDescription = null,
+                tint = DesignTokens.Colors.Primary.light,
+                modifier = Modifier.size(ICON_SIZE),
+            )
             Text(
-                text = bayitString(feature.taglineKey),
-                style = MaterialTheme.typography.bodySmall,
-                color = DesignTokens.Colors.Text.secondary,
+                text = bayitString(feature.nameKey),
+                style = MaterialTheme.typography.labelLarge,
+                color = DesignTokens.Colors.Text.primary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-            )
-
-            DiscoverAvailabilityBadge(
-                state = availability,
-                modifier = Modifier.padding(top = DesignTokens.Spacing.xxs),
+                modifier = Modifier.weight(1f),
             )
         }
+
+        DiscoverAvailabilityBadge(state = availability)
     }
 }
-
-private val CARD_WIDTH = 200.dp
-private val ICON_SIZE = 24.dp

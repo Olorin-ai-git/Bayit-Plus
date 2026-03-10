@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.InteractiveMissionRepository
 import tv.bayit.plus.core.model.InteractiveMissionDetail
@@ -20,6 +21,7 @@ class InteractiveMissionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val interactiveMissionRepository: InteractiveMissionRepository,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val missionId: String = savedStateHandle["missionId"] ?: ""
@@ -98,7 +100,7 @@ class InteractiveMissionViewModel @Inject constructor(
                         )
                     } else {
                         _uiState.value = InteractiveMissionUiState.Error(
-                            message = "Mission has no steps",
+                            message = stringProvider.string("missions.noStepsError"),
                         )
                     }
                 }

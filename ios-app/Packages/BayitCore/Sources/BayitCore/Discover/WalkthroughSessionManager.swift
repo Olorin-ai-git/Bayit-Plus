@@ -1,5 +1,8 @@
 import Foundation
 import Observation
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 @Observable
 @MainActor
@@ -7,6 +10,7 @@ public final class WalkthroughSessionManager {
     public static let shared = WalkthroughSessionManager()
 
     public private(set) var activeSession: WalkthroughSession?
+    public var onSessionEnd: ((String, Int, Bool) async -> Void)?
 
     public var isActive: Bool {
         activeSession != nil
@@ -26,7 +30,11 @@ public final class WalkthroughSessionManager {
 
     private let logger = BayitLogger(category: "WalkthroughSession")
 
-    private init() {}
+    private init() {
+        #if canImport(UIKit) && !os(watchOS)
+            observeBackgroundTransition()
+        #endif
+    }
 
     public func start(session: WalkthroughSession) {
         if let existing = activeSession {
@@ -39,19 +47,39 @@ public final class WalkthroughSessionManager {
         activeSession = session
         logger.info(
             "Walkthrough session started",
-            context: ["featureId": session.featureId, "token": session.sessionToken]
+            context: ["featureId": session.featureId]
         )
     }
 
     public func end() {
         guard let session = activeSession else { return }
+        let featureId = session.featureId
+        let steps = session.stateMachine.totalSteps
+        let skipped = !session.stateMachine.isComplete
         if session.stateMachine.isActive {
             session.stateMachine.skip()
         }
         logger.info(
             "Walkthrough session ended",
-            context: ["featureId": session.featureId]
+            context: ["featureId": featureId]
         )
         activeSession = nil
+        if let callback = onSessionEnd {
+            Task { await callback(featureId, steps, skipped) }
+        }
     }
+
+    #if canImport(UIKit) && !os(watchOS)
+        private func observeBackgroundTransition() {
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.didEnterBackgroundNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor in
+                    self?.end()
+                }
+            }
+        }
+    #endif
 }

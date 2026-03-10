@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 
@@ -105,14 +106,14 @@ private fun CultureHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Israeli Culture",
+                text = bayitString("culture.title"),
                 style = MaterialTheme.typography.headlineMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Jerusalem, Tel Aviv, and Israeli heritage",
+                text = bayitString("culture.description"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -184,7 +185,7 @@ private fun CultureErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

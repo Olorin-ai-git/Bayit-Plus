@@ -14,7 +14,7 @@ private struct WalkthroughOverlayModifier: ViewModifier {
                 targetFrames = frames
             }
             .overlay { overlayContent }
-            .onDisappear {
+            .onDisappear { @MainActor in
                 let manager = WalkthroughSessionManager.shared
                 if let currentId = manager.currentFeatureId,
                    featureIds.contains(currentId)
@@ -38,6 +38,7 @@ private struct WalkthroughOverlayModifier: ViewModifier {
                 CoachMarkOverlay(
                     steps: steps,
                     currentStepIndex: stateMachine.displayStepIndex,
+                    localize: localize,
                     onNext: { stateMachine.advance() },
                     onSkip: { manager.end() },
                     onDone: {

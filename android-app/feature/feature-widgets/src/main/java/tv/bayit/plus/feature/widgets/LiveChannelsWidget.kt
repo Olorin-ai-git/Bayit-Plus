@@ -23,22 +23,38 @@ import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface LiveChannelsWidgetEntryPoint {
+    fun bayitStringProvider(): BayitStringProvider
+}
 
 class LiveChannelsWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val dataProvider = WidgetDataProvider(kotlinx.serialization.json.Json { ignoreUnknownKeys = true })
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            LiveChannelsWidgetEntryPoint::class.java,
+        )
+        val sp = entryPoint.bayitStringProvider()
         val isLoggedIn = dataProvider.isLoggedIn(context)
         val channels = if (isLoggedIn) dataProvider.getLiveChannels(context) else emptyList()
 
         provideContent {
             GlanceTheme {
                 if (!isLoggedIn) {
-                    LiveChannelsSignInPrompt()
+                    LiveChannelsSignInPrompt(sp)
                 } else if (channels.isNotEmpty()) {
-                    LiveChannelsContent(channels)
+                    LiveChannelsContent(channels, sp)
                 } else {
-                    EmptyLiveChannels()
+                    EmptyLiveChannels(sp)
                 }
             }
         }
@@ -46,7 +62,7 @@ class LiveChannelsWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun LiveChannelsContent(channels: List<LiveChannelItem>) {
+private fun LiveChannelsContent(channels: List<LiveChannelItem>, sp: BayitStringProvider) {
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -54,7 +70,7 @@ private fun LiveChannelsContent(channels: List<LiveChannelItem>) {
             .padding(12.dp),
     ) {
         Text(
-            text = "Live Channels",
+            text = sp.string("widgets.liveChannels"),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
@@ -102,7 +118,7 @@ private fun LiveChannelRow(channel: LiveChannelItem) {
 }
 
 @Composable
-private fun EmptyLiveChannels() {
+private fun EmptyLiveChannels(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -111,7 +127,7 @@ private fun EmptyLiveChannels() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "No favorite channels set",
+            text = sp.string("widgets.noFavoriteChannels"),
             style = TextStyle(
                 fontSize = 12.sp,
                 color = GlanceTheme.colors.secondary,
@@ -121,7 +137,7 @@ private fun EmptyLiveChannels() {
 }
 
 @Composable
-private fun LiveChannelsSignInPrompt() {
+private fun LiveChannelsSignInPrompt(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -130,7 +146,7 @@ private fun LiveChannelsSignInPrompt() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Sign in to Bayit+",
+            text = sp.string("widgets.signInToBayit"),
             style = TextStyle(
                 fontSize = 14.sp,
                 color = GlanceTheme.colors.primary,

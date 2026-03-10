@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -84,7 +85,7 @@ internal fun CollectionBannerTextContent(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "AI RECOMMENDATION",
+            text = bayitString("vod.collection.aiRecommendation"),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -116,7 +117,7 @@ internal fun CollectionBannerTextContent(
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
         Text(
-            text = "${currentCollection.availableMovies ?: 0} Movies",
+            text = bayitString("vod.collection.moviesCount", mapOf("count" to (currentCollection.availableMovies ?: 0).toString())),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
             color = DesignTokens.Colors.Text.muted,
         )
@@ -137,7 +138,7 @@ internal fun CollectionBannerTextContent(
                 .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.sm),
         ) {
             Text(
-                text = "Watch Now",
+                text = bayitString("common.watchNow"),
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,

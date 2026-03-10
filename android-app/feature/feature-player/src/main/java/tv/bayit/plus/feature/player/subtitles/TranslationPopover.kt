@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.TranslationResult
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -64,7 +65,7 @@ fun TranslationPopover(
             IconButton(onClick = onDismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss",
+                    contentDescription = bayitString("common.dismiss"),
                     tint = DesignTokens.Colors.Text.secondary,
                     modifier = Modifier.width(20.dp).height(20.dp),
                 )

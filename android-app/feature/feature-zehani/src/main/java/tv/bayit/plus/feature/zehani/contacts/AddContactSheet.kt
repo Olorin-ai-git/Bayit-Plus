@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val RELATIONSHIPS = listOf("grandparent", "parent", "aunt/uncle", "sibling", "other")
 private val LANGUAGES = listOf("he", "en", "es", "fr", "ru", "ar", "yi", "de", "pt", "it")
@@ -57,27 +58,27 @@ internal fun AddContactSheet(
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "Add Contact",
+                text = bayitString("zehAni.addContact.title"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
             )
-            GlassTextField(value = name, onValueChange = { name = it }, label = "Name")
+            GlassTextField(value = name, onValueChange = { name = it }, label = bayitString("zehAni.addContact.nameLabel"))
             GlassTextField(
                 value = phone,
                 onValueChange = { phone = it },
-                label = "Phone",
+                label = bayitString("zehAni.addContact.phoneLabel"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             )
             GlassTextField(
                 value = pin,
                 onValueChange = { pin = it },
-                label = "PIN",
+                label = bayitString("zehAni.selfie.pinLabel"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                 visualTransformation = PasswordVisualTransformation(),
             )
             Text(
-                text = "Relationship",
+                text = bayitString("zehAni.addContact.relationship"),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -87,7 +88,7 @@ internal fun AddContactSheet(
                 }
             }
             Text(
-                text = "Language",
+                text = bayitString("zehAni.addContact.language"),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -100,9 +101,9 @@ internal fun AddContactSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
-                GlassButton(text = "Cancel", onClick = onDismiss, isPrimary = false, modifier = Modifier.weight(1f))
+                GlassButton(text = bayitString("common.cancel"), onClick = onDismiss, isPrimary = false, modifier = Modifier.weight(1f))
                 GlassButton(
-                    text = "Save",
+                    text = bayitString("common.save"),
                     onClick = {
                         if (name.isNotBlank() && phone.isNotBlank() && pin.isNotBlank()) {
                             onSave(name, phone, relationship, language, pin)

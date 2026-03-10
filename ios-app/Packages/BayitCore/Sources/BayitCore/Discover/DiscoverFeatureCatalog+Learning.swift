@@ -122,12 +122,14 @@ extension DiscoverFeatureCatalog {
     static func makeSteps(featureId: String, actions: [WalkthroughAction]) -> [WalkthroughStep] {
         actions.enumerated().map { index, action in
             let stepNumber = index + 1
+            let prereqType: String? = action == .createAvatar ? "avatar" : nil
             return WalkthroughStep(
                 id: "\(featureId)_step\(stepNumber)",
                 instructionKey: "discover.walkthrough.\(featureId).step\(stepNumber)",
                 targetAccessibilityId: "discover_\(featureId)_step\(stepNumber)",
                 expectedAction: action,
-                order: stepNumber
+                order: stepNumber,
+                prerequisiteType: prereqType
             )
         }
     }

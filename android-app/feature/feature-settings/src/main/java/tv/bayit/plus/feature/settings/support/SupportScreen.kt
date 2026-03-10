@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SupportRoute(
@@ -61,12 +62,12 @@ internal fun SupportScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Contact Support",
+            title = bayitString("settings.support.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -88,7 +89,7 @@ internal fun SupportScreen(
                         GlassTextField(
                             value = uiState.subject,
                             onValueChange = onSubjectChange,
-                            label = "Subject",
+                            label = bayitString("settings.support.subject"),
                             singleLine = true,
                         )
 
@@ -97,14 +98,14 @@ internal fun SupportScreen(
                         GlassTextField(
                             value = uiState.message,
                             onValueChange = onMessageChange,
-                            label = "Message",
+                            label = bayitString("settings.support.message"),
                             singleLine = false,
                         )
 
                         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
                         GlassButton(
-                            text = "Send",
+                            text = bayitString("common.send"),
                             onClick = onSubmit,
                             enabled = isValid,
                             modifier = Modifier.fillMaxWidth(),
@@ -127,7 +128,7 @@ internal fun SupportScreen(
                     GlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(DesignTokens.Spacing.xl)) {
                             Text(
-                                text = "Message Sent",
+                                text = bayitString("settings.support.messageSent"),
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = DesignTokens.Colors.Text.primary,
                             )
@@ -135,7 +136,7 @@ internal fun SupportScreen(
                             Spacer(modifier = Modifier.height(DesignTokens.Spacing.base))
 
                             Text(
-                                text = "Thank you for contacting support. We'll respond within 24 hours.",
+                                text = bayitString("settings.support.thankYou"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = DesignTokens.Colors.Text.secondary,
                             )
@@ -145,7 +146,7 @@ internal fun SupportScreen(
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
                     GlassButton(
-                        text = "Send Another",
+                        text = bayitString("settings.support.sendAnother"),
                         onClick = onReset,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -168,7 +169,7 @@ internal fun SupportScreen(
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
                     GlassButton(
-                        text = "Retry",
+                        text = bayitString("common.retry"),
                         onClick = onRetry,
                         modifier = Modifier.fillMaxWidth(),
                     )

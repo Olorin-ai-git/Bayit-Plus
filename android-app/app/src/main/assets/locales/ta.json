@@ -13,7 +13,6 @@
     "watchNow": "இப்போது பாருங்கள்",
     "playNow": "இப்போது இயக்கு",
     "play": "இயக்கு",
-    "pause": "இடைநிறுத்து",
     "moreInfo": "மேலும் தகவல்",
     "seeAll": "அனைத்தையும் காண்",
     "new": "புதிய",
@@ -55,19 +54,14 @@
     "collapse": "சுருக்கு",
     "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
     "skip": "தவிர்",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
-  },
-  "auth": {
-    "loginRequired": "உள்நுழைவு தேவை",
-    "loginToWatch": "{{title}} பார்க்க உள்நுழையவும்",
-    "login": "உள்நுழைவு",
-    "signUp": "பதிவு செய்யவும்",
-    "biometricSignIn": "கைரேகையில் உள்நுழைக",
-    "biometricEnrollTitle": "பயோமெட்ரிக் உள்நுழைவை இயக்கு",
-    "biometricEnrollMessage": "அடுத்த முறை விரைவாக உள்நுழைய உங்கள் கைரேகை அல்லது முகத்தைப் பயன்படுத்தவும்",
-    "biometricEnrollEnable": "இயக்கு",
-    "biometricEnrollSkip": "இப்போது வேண்டாம்",
-    "signOut": "வெளியேறு"
+    "dismiss": "[ta] Dismiss",
+    "goBack": "[ta] Go Back",
+    "pause": "[ta] Pause",
+    "tryAgain": "[ta] Try Again",
+    "backToHome": "[ta] Back to Home",
+    "thisContent": "[ta] this content",
+    "clearSelection": "[ta] Clear",
+    "refresh": "புதுப்பி"
   },
   "demo": {
     "banner": "டெமோ பயன்முறை",
@@ -83,7 +77,17 @@
     },
     "shabbat": "ஷப்பத்",
     "until_shabbat": "ஷப்பத் வரை",
-    "premium_plan": "பிரீமியம்"
+    "premium_plan": "பிரீமியம்",
+    "suggestions": {
+      "3": "[ta] The Arbitrator",
+      "2": "[ta] Tehran",
+      "1": "[ta] Shtisel",
+      "0": "[ta] Fauda",
+      "4": "[ta] Labour"
+    },
+    "assistant_response": "[ta] I recommend Fauda - an excellent thriller series!",
+    "search_interpretation": "[ta] Search for \"{{query}}\"",
+    "morning_greeting": "[ta] Good morning! Today the weather is nice, there are some important news from Israel, and I've selected content especially for you."
   },
   "hero": {
     "watch": "பார்",
@@ -111,8 +115,32 @@
       "emailRequired": "மின்னஞ்சல் தேவை",
       "passwordRequired": "கடவுச்சொல் தேவை",
       "loginFailed": "உள்நுழைவு தோல்வி.",
-      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்"
-    }
+      "fillAllFields": "அனைத்து புலங்களையும் நிரப்பவும்",
+      "googleFailed": "[ta] Google sign-in failed. Please try again."
+    },
+    "step2": "[ta] Scan the QR code above",
+    "companionConnected": "[ta] Phone connected!",
+    "qrTitle": "[ta] Scan to Login",
+    "qrInstructions": "[ta] Scan the code with your phone for quick login",
+    "step4": "[ta] TV logs in automatically!",
+    "authenticating": "[ta] Logging you in...",
+    "generatingQR": "[ta] Generating QR code...",
+    "refreshQR": "[ta] Generate New Code",
+    "step3": "[ta] Login on your phone",
+    "step1": "[ta] Open camera on your phone",
+    "sessionExpired": "[ta] Session expired",
+    "methodVoice": "[ta] Voice",
+    "bayitThinking": "[ta] Bayit is thinking...",
+    "expiresIn": "[ta] Expires in 5 minutes",
+    "methodQR": "[ta] QR Code",
+    "methodTraditional": "[ta] Email",
+    "qrDescription": "[ta] Scan this QR code with your phone to login without typing",
+    "voicePlaceholder": "[ta] Type your response...",
+    "termsNotice": "[ta] By signing in, you agree to our Terms of Service and Privacy Policy",
+    "send": "[ta] Send",
+    "unexpectedError": "[ta] An unexpected error occurred",
+    "createAccount": "[ta] Create Account",
+    "howItWorks": "[ta] How it works:"
   },
   "register": {
     "title": "கணக்கை உருவாக்கு",
@@ -131,7 +159,28 @@
     "and": "மற்றும்",
     "privacyPolicy": "தனியுரிமைக் கொள்கை",
     "haveAccount": "ஏற்கனவே கணக்கு உள்ளதா?",
-    "signIn": "உள்நுழையவும்"
+    "signIn": "உள்நுழையவும்",
+    "errors": {
+      "emailRequired": "[ta] Email is required",
+      "nameRequired": "[ta] Name is required",
+      "acceptTerms": "[ta] You must accept the Terms of Service and Privacy Policy",
+      "passwordTooShort": "[ta] Password must be at least 8 characters",
+      "passwordRequired": "[ta] Password is required",
+      "googleFailed": "[ta] Sign up with Google failed. Please try again.",
+      "fillAllFields": "[ta] Please fill in all fields",
+      "passwordMismatch": "[ta] Passwords do not match",
+      "registrationFailed": "[ta] Registration failed. Please try again."
+    },
+    "placeholders": {
+      "confirmPassword": "[ta] Enter password again",
+      "fullName": "[ta] John Doe",
+      "email": "[ta] your@email.com",
+      "password": "[ta] At least 8 characters"
+    },
+    "fullName": "[ta] Full Name",
+    "loginLink": "[ta] Login",
+    "registering": "[ta] Signing up...",
+    "continueWithGoogle": "[ta] Sign up with Google"
   },
   "nav": {
     "home": "முகப்பு",
@@ -156,7 +205,22 @@
     "subscribe": "சந்தா செலுத்து",
     "admin": "நிர்வாகி",
     "games": "விளையாட்டுகள்",
-    "friends": "நண்பர்கள்"
+    "friends": "நண்பர்கள்",
+    "glossary": "சொற்களஞ்சியம்",
+    "missions": "பணிகள்",
+    "audiobooks": "ஒலிப்புத்தகங்கள்",
+    "playlist": "பிளேலிஸ்ட்",
+    "zehAniHub": "Zeh Ani",
+    "support": "ஆதரவு",
+    "discoverHub": "AI கண்டறி",
+    "listen": "கேளுங்கள்",
+    "byoc": "என் ஆதாரங்கள்",
+    "household": "குடும்பம்",
+    "messages": "செய்திகள்",
+    "myContent": "என் உள்ளடக்கம்",
+    "social": "சமூகம்",
+    "discover": "[ta] Discover",
+    "plans": "[ta] Plans"
   },
   "epg": {
     "title": "TV வழிகாட்டி",
@@ -168,7 +232,40 @@
     "jumpToNow": "இப்போதுக்கு செல்",
     "errorTitle": "TV வழிகாட்டி ஏற்ற முடியவில்லை",
     "noPrograms": "நிரல்கள் இல்லை",
-    "noChannels": "சேனல்கள் இல்லை"
+    "noChannels": "சேனல்கள் இல்லை",
+    "searching": "[ta] Searching...",
+    "availableSpace": "[ta] Available Space",
+    "storageEstimate": "[ta] Storage Estimate",
+    "smartSearch": "[ta] Smart Search",
+    "subtitleLanguage": "[ta] Subtitle Language",
+    "local": "[ta] Local",
+    "exampleQuery2": "[ta] What comedy shows are airing this week?",
+    "smartSearchPlaceholder": "[ta] e.g., Show me all shows with actress Tali Sharon tonight",
+    "searchWithAI": "[ta] Search with AI",
+    "exampleQuery1": "[ta] Show me all shows with actress Tali Sharon tonight",
+    "channel": "[ta] Channel",
+    "exampleQuery3": "[ta] Find documentaries about history on Channel 11",
+    "scheduleRecording": "[ta] Schedule Recording",
+    "tryThese": "[ta] Try these examples",
+    "premiumRequiredMessage": "[ta] Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "premiumRequired": "[ta] Premium Feature",
+    "recordingFailed": "[ta] Failed to start/schedule recording",
+    "recordProgram": "[ta] Record Program",
+    "il": "[ta] IL",
+    "lowStorage": "[ta] Low Storage Warning",
+    "interpretationTitle": "[ta] What I understood",
+    "exampleQuery4": "[ta] Show me all news programs tomorrow morning",
+    "scheduledRecordingNotSupported": "[ta] Scheduled recordings are not yet supported. Only immediate recordings are available.",
+    "lowStorageMessage": "[ta] You're running low on storage space. Consider deleting old recordings.",
+    "aiDisclaimer": "[ta] Powered by Claude AI. Results may vary based on program data availability.",
+    "goBack": "[ta] ← {{hours}}h",
+    "goForward": "[ta] {{hours}}h →",
+    "searchPlaceholder": "[ta] Search programs, channels, actors...",
+    "noResultsFound": "[ta] No programs found matching your query",
+    "errorLoading": "[ta] Could not load TV guide data",
+    "enableSubtitles": "[ta] Enable Subtitles",
+    "smartSearchSubtitle": "[ta] Ask questions in natural language",
+    "toggleTimezone": "[ta] Toggle Timezone"
   },
   "home": {
     "continueWatching": "தொடர்ந்து பாருங்கள்",
@@ -185,10 +282,39 @@
     "categories": "வகைகள்",
     "nearYou": "அருகிலுள்ள இஸ்ரேலியர்கள்",
     "betaExclusive": "பீட்டா எக்ஸ்க்ளூசிவ்",
-    "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
-    "enableLocation": "இருப்பிடத்தை இயக்கு",
-    "locationPermissionDeniedDescription": "இருப்பிட அணுகல் மறுக்கப்பட்டது. அதை இயக்க மற்றும் உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கத்தைக் காண அமைப்புகளைத் திறக்கவும்.",
-    "openSettings": "அமைப்புகளைத் திற"
+    "enableLocation": "[ta] Enable Location",
+    "locationPermissionDeniedDescription": "[ta] Location access was denied. Enable it in Settings to see content near you.",
+    "locationPermissionDescription": "[ta] Allow location access to discover content near you.",
+    "openSettings": "[ta] Open Settings",
+    "jerusalemConnection": "[ta] Jerusalem Connection",
+    "carousel": {
+      "tehran": {
+        "title": "[ta] Tehran",
+        "description": "[ta] A Mossad agent deep in Iran on a dangerous mission",
+        "subtitle": "[ta] Season 2"
+      },
+      "fauda": {
+        "description": "[ta] The hit Israeli series returns for a fourth season full of suspense and action",
+        "title": "[ta] Fauda",
+        "subtitle": "[ta] Season 4 - Now Streaming"
+      },
+      "shtisel": {
+        "title": "[ta] Shtisel",
+        "subtitle": "[ta] All Seasons Available",
+        "description": "[ta] Follow the Shtisel family in the ultra-Orthodox neighborhood of Jerusalem"
+      },
+      "live": {
+        "subtitle": "[ta] Watch Now",
+        "description": "[ta] News, current affairs and quality content",
+        "title": "[ta] Live - Kan 11"
+      }
+    },
+    "israeli-movies": "[ta] Israeli Movies",
+    "action": "[ta] Action & Thriller",
+    "israeli-series": "[ta] Israeli Series",
+    "telAvivConnection": "[ta] Tel Aviv Connection",
+    "trendingInIsrael": "[ta] Trending in Israel",
+    "showOnlyWithSubtitles": "[ta] Show only with subtitles"
   },
   "search": {
     "title": "தேடு",
@@ -204,8 +330,27 @@
       "vod": "திரைப்படங்கள் & தொடர்கள்",
       "live": "சேனல்கள்",
       "radio": "வானொலி",
-      "podcast": "பாட்காஸ்ட்"
-    }
+      "podcast": "பாட்காஸ்ட்",
+      "podcasts": "[ta] Podcasts",
+      "channels": "[ta] Channels",
+      "moviesAndSeries": "[ta] Movies & Series"
+    },
+    "trending": "[ta] Trending Searches",
+    "resultsFound": "[ta] {{count}} results found for \"{{query}}\"",
+    "suggestions": {
+      "kids": "[ta] Kids",
+      "movies": "[ta] Movies",
+      "sports": "[ta] Sports",
+      "series": "[ta] Series",
+      "liveTV": "[ta] Live TV",
+      "news": "[ta] News"
+    },
+    "noResultsHint": "[ta] Try different keywords or change your filters",
+    "promptDescription": "[ta] Search for your favorite content or use voice search",
+    "promptTitle": "[ta] What are you looking for?",
+    "tryDifferent": "[ta] Try different search terms",
+    "resultsFor": "[ta] results for",
+    "voicePlaceholder": "[ta] Speak now..."
   },
   "liveTV": {
     "title": "நேரலை TV",
@@ -219,6 +364,15 @@
       "entertainment": "பொழுதுபோக்கு",
       "kids": "குழந்தைகள்",
       "documentary": "ஆவணப்படம்"
+    }
+  },
+  "listen": {
+    "title": "கேளுங்கள்",
+    "subtitle": "வானொலி, பாட்காஸ்ட் மற்றும் ஆடியோ புத்தகங்கள்",
+    "tab": {
+      "radio": "வானொலி",
+      "podcasts": "பாட்காஸ்ட்",
+      "audiobooks": "ஆடியோ புத்தகங்கள்"
     }
   },
   "radio": {
@@ -252,14 +406,8 @@
       "history": "வரலாறு",
       "educational": "கல்வி"
     },
-    "playLatest": "இயக்கு",
-    "subscribe": "சந்தா செய்",
-    "unsubscribe": "சந்தா நீக்கு"
-  },
-  "miniPlayer": {
-    "skipBackward": "15 வினாடி பின்னால்",
-    "skipForward": "30 வினாடி முன்னால்",
-    "closePlayer": "பிளேயரை மூடு"
+    "playLatest": "[ta] Play Latest",
+    "tryLater": "[ta] Try again later"
   },
   "vod": {
     "title": "திரைப்படங்கள் & தொடர்கள்",
@@ -276,7 +424,14 @@
       "action": "அதிரடி",
       "documentary": "ஆவணப்படம்",
       "kids": "குழந்தைகள்"
-    }
+    },
+    "noContentInCategory": "[ta] No content found in this category",
+    "emptyTitle": "[ta] No Content Available",
+    "noContent": "[ta] No content available",
+    "emptyDescription": "[ta] Try selecting another category",
+    "allContent": "[ta] All Content",
+    "showOnlyWithSubtitles": "[ta] Show only with subtitles",
+    "allCategories": "[ta] All"
   },
   "account": {
     "title": "என் கணக்கு",
@@ -287,7 +442,14 @@
     "login": "உள்நுழை",
     "guest": "விருந்தினர்",
     "premium": "பிரீமியம்",
-    "basic": "அடிப்படை"
+    "basic": "அடிப்படை",
+    "billing": "[ta] Billing & Payment",
+    "manageSubscription": "[ta] Manage Subscription",
+    "name": "[ta] Name",
+    "password": "[ta] Password",
+    "email": "[ta] Email",
+    "personalDetails": "[ta] Personal Details",
+    "register": "[ta] Register"
   },
   "profile": {
     "title": "என் சுயவிவரம்",
@@ -306,7 +468,150 @@
     "phoneUnverified": "தொலைபேசி சரிபார்க்கப்படவில்லை",
     "completeVerification": "அனைத்து அம்சங்களையும் திறக்க சரிபார்ப்பை நிறைவு செய்யுங்கள்",
     "unlockPremium": "பிரீமியம் அம்சங்களைத் திறக்கவும்",
-    "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்"
+    "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்",
+    "voice": {
+      "voiceSearch": "[ta] Voice Search",
+      "autoSubtitleDesc": "[ta] Automatically show subtitles when playing content",
+      "sensitivityDesc": "[ta] Adjust how responsive the voice detection is",
+      "accessibility": "[ta] Accessibility",
+      "highContrast": "[ta] High contrast mode",
+      "hybridFeedback": "[ta] Interactive Feedback",
+      "holdButtonMode": "[ta] Hold Button to Talk",
+      "classicDetails": "[ta] All voice features disabled. Remote control only.",
+      "textSizeSmall": "[ta] Small",
+      "voiceSearchEnabled": "[ta] Enable voice search",
+      "ttsDesc": "[ta] AI responses read aloud",
+      "ttsEnabled": "[ta] Enable voice responses",
+      "description": "[ta] Hands-free navigation",
+      "sensitivity": "[ta] Voice Detection Sensitivity",
+      "hybridDetails": "[ta] Use voice or remote control. Voice feedback on non-voice actions.",
+      "enabled": "[ta] Voice Commands",
+      "classicInfo": "[ta] Classic Mode",
+      "operationMode": "[ta] Operation Mode",
+      "voiceFeedbackDesc": "[ta] Get voice confirmation when you use the remote or click buttons",
+      "highContrastDesc": "[ta] Increase contrast for better visibility",
+      "silenceThresholdDesc": "[ta] How long to wait after speaking before processing",
+      "operationModeDesc": "[ta] Choose how you interact with the app",
+      "autoSubtitle": "[ta] Auto-enable subtitles",
+      "wakeWord": "[ta] Wake Word Detection",
+      "sensitivityMedium": "[ta] Medium (balanced)",
+      "constantListeningPrivacy": "[ta] Audio is only sent to servers when speech is detected",
+      "ttsEnabledDesc": "[ta] App will speak responses to your voice commands",
+      "sensitivityHigh": "[ta] High (most responsive)",
+      "textToSpeech": "[ta] Voice Responses",
+      "holdButtonModeDesc": "[ta] Press and hold the microphone button instead of always listening",
+      "voiceSearchEnabledDesc": "[ta] Search for content using your voice",
+      "voiceOnlyDetails": "[ta] Say \"Hi Bayit\" to activate. Remote control disabled. Navigate entirely with voice commands.",
+      "textSizeLarge": "[ta] Large",
+      "ttsVolume": "[ta] Voice Volume",
+      "title": "[ta] Voice Control",
+      "sensitivityLow": "[ta] Low (fewer false triggers)",
+      "feedbackExample": "[ta] Example: Click a movie → App says \"Playing [Movie Name]\"",
+      "enabledDesc": "[ta] Control the app with your voice",
+      "textSize": "[ta] Text size",
+      "voiceOnlyInfo": "[ta] Voice Only Mode",
+      "ttsSpeed": "[ta] Speaking Speed",
+      "wakeWordDesc": "[ta] Say \"Bayit\" to activate",
+      "language": "[ta] Voice language",
+      "textSizeMedium": "[ta] Medium",
+      "silenceThreshold": "[ta] Silence Detection",
+      "constantListeningDesc": "[ta] Continuously listen for voice commands without pressing a button",
+      "hybridInfo": "[ta] Hybrid Mode",
+      "tts": "[ta] Text-to-Speech",
+      "constantListening": "[ta] Always Listening Mode",
+      "voiceFeedback": "[ta] Voice feedback on actions"
+    },
+    "ai": {
+      "saveHistory": "[ta] Save Conversation History",
+      "assistant": "[ta] AI Assistant",
+      "description": "[ta] Configure AI-powered features",
+      "assistantDesc": "[ta] Personalized recommendations and help",
+      "privacyNote": "[ta] Your data is encrypted and secure",
+      "personalizedRecsDesc": "[ta] Content suggestions based on history",
+      "personalizedRecs": "[ta] Personalized Recommendations",
+      "chatbot": "[ta] AI Assistant",
+      "saveHistoryDesc": "[ta] Remember previous conversations",
+      "dataConsentDesc": "[ta] Help improve AI features",
+      "chatbotEnabled": "[ta] Enable AI Assistant",
+      "chatbotEnabledDesc": "[ta] Get help navigating content",
+      "dataConsent": "[ta] Usage Analytics",
+      "title": "[ta] AI & Personalization",
+      "recommendations": "[ta] Recommendations",
+      "privacyDesc": "[ta] Your data is encrypted and secure",
+      "privacy": "[ta] Privacy & Data"
+    },
+    "uploadFailed": "[ta] Failed to upload avatar. Please try again.",
+    "settings": "[ta] Settings",
+    "language": "[ta] Language",
+    "subscription": {
+      "renewsOn": "[ta] Renews on",
+      "noActivePlan": "[ta] No active subscription",
+      "currentPlan": "[ta] Current Plan",
+      "manageSubscription": "[ta] Manage Subscription",
+      "cancelSubscription": "[ta] Cancel Subscription",
+      "selectPlan": "[ta] Select a Plan"
+    },
+    "accountSecurity": "[ta] Account Security",
+    "manageDevices": "[ta] Manage devices connected to your account",
+    "tabs": {
+      "voice": "[ta] Voice & Accessibility",
+      "ai": "[ta] AI & Voice",
+      "notifications": "[ta] Notifications",
+      "personal": "[ta] Personal",
+      "overview": "[ta] Overview",
+      "subscription": "[ta] Subscription",
+      "security": "[ta] Security"
+    },
+    "minutes": "[ta] minutes",
+    "notifications": "[ta] Notifications",
+    "dropdown": {
+      "downloads": "[ta] Downloads",
+      "signOut": "[ta] Sign Out",
+      "subscription": "[ta] Subscription",
+      "myProfile": "[ta] My Profile",
+      "favorites": "[ta] Favorites"
+    },
+    "address": {
+      "line2": "[ta] Tel Aviv, Israel 6100000",
+      "line1": "[ta] 123 Main Street"
+    },
+    "profileDetails": "[ta] Profile Details",
+    "justNow": "[ta] Just now",
+    "watchTime": "[ta] Watch Time",
+    "imageTooLarge": "[ta] Image is too large. Maximum size is 5MB.",
+    "recentActivity": "[ta] Recent Activity",
+    "lastLogin": "[ta] Last login",
+    "hoursAgo": "[ta] {{hours}} hours ago",
+    "invalidImageType": "[ta] Please select a valid image file (JPEG, PNG, WebP, or GIF)",
+    "morningRitual": "[ta] Morning Ritual",
+    "addExtraSecurity": "[ta] Add an extra layer of security",
+    "memberSince": "[ta] Member since",
+    "uploadSuccess": "[ta] Avatar updated successfully!",
+    "downloads": "[ta] Downloads",
+    "securityNote": "[ta] Your account is secured with encrypted authentication",
+    "noRecentActivity": "[ta] No recent activity",
+    "premiumPrice": "[ta] $7.99/month",
+    "hours": "[ta] hours",
+    "aiAssistant": "[ta] AI Assistant",
+    "accountInfo": "[ta] Account Information",
+    "role": "[ta] Role",
+    "familyPrice": "[ta] $12.99/month",
+    "free": "[ta] Free",
+    "security": "[ta] Security",
+    "favorites": "[ta] Favorites",
+    "dangerZone": "[ta] Danger Zone",
+    "subscriptionButton": "[ta] Subscription",
+    "watchlist": "[ta] Watchlist",
+    "updatePassword": "[ta] Update your password",
+    "remaining": "[ta] remaining",
+    "yesterday": "[ta] Yesterday",
+    "admin": "[ta] Admin",
+    "connectedDevices": "[ta] Connected Devices",
+    "notificationSettings": "[ta] Notification Settings",
+    "guest": "[ta] Guest",
+    "twoFactorAuth": "[ta] Two-Factor Authentication",
+    "voiceSettings": "[ta] Voice",
+    "changePassword": "[ta] Change Password"
   },
   "settings": {
     "title": "அமைப்புகள்",
@@ -335,7 +640,24 @@
     "privacy": "தனியுரிமை",
     "privacyPolicy": "தனியுரிமைக் கொள்கை",
     "termsOfService": "சேவை விதிமுறைகள்",
-    "about": "பற்றி"
+    "about": "பற்றி",
+    "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்",
+    "resetConfirmMessage": "[ta] Are you sure you want to reset home page sections to their default configuration?",
+    "resetToDefault": "[ta] Reset to Default",
+    "chatTranslation": "[ta] Chat Translation",
+    "homePageSections": "[ta] Home Page Sections",
+    "sectionShown": "[ta] Section shown",
+    "autoTranslate": "[ta] Auto-translate messages",
+    "dragToReorder": "[ta] Drag to reorder",
+    "tapToHide": "[ta] Tap to hide",
+    "autoTranslateDescription": "[ta] Automatically translate chat messages to your preferred language",
+    "configureSections": "[ta] Configure which sections appear on your home page",
+    "display": "[ta] Display",
+    "hiddenSections": "[ta] Hidden Sections",
+    "pushNotifications": "[ta] Push Notifications",
+    "visibleSections": "[ta] Visible Sections",
+    "sectionHidden": "[ta] Section hidden",
+    "tapToShow": "[ta] Tap to show"
   },
   "player": {
     "loading": "ஏற்றுகிறது...",
@@ -345,10 +667,7 @@
     "liveBadge": "நேரலை",
     "noStream": "ஸ்ட்ரீம் இல்லை",
     "settings": "அமைப்புகள்",
-    "subtitles": {
-      "_": "வசனங்கள்",
-      "translateWord": "Translate word: {{word}}"
-    },
+    "subtitles": "[ta] Subtitles",
     "quality": "தரம்",
     "auto": "தானியங்கி",
     "subtitlesOff": "அணைக்கவும்",
@@ -365,13 +684,16 @@
       "split": "Split",
       "togglePanel": "Toggle AI Panel",
       "translate": "Translate",
-      "trivia": "Trivia"
+      "trivia": "Trivia",
+      "triviaToggle": "[ta] Trivia"
     },
     "catchup": {
       "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
       "generateSummary": "Generate Summary",
       "summaryTitle": "Summary",
-      "title": "Catch Up"
+      "title": "Catch Up",
+      "keyPoints": "[ta] Key Points",
+      "transcript": "[ta] Transcript"
     },
     "chat": {
       "title": "Live Chat",
@@ -403,13 +725,18 @@
       "selected": "Selected",
       "send": "Send",
       "skip": "Skip",
-      "fullscreen": "Enter full screen",
-      "exitFullscreen": "Exit full screen"
+      "close": "[ta] Close",
+      "exitFullscreen": "[ta] Exit Fullscreen",
+      "fullscreen": "[ta] Fullscreen",
+      "restart": "[ta] Restart",
+      "skipBackward": "[ta] Skip Backward",
+      "skipForward": "[ta] Skip Forward",
+      "volume": "[ta] Volume"
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
-      "premiumTitle": "Bayit+ Feature",
+      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
+      "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "நேரடி டப்பிங் அமைப்புகள்",
@@ -427,80 +754,60 @@
     "language_ratio": "மொழி கற்றல் விகிதம்",
     "go_back": "திரும்பு",
     "sleepTimer": {
-      "title": "தூக்க டைமர்",
-      "setTimer": "டைமர் அமைக்கவும்",
-      "minutesFormat": "{{minutes}} நிமிடம்",
-      "remaining": "{{time}} மீதம்",
-      "extend": "+{{minutes}} நிமிடம்",
-      "cancel": "டைமர் ரத்து",
-      "off": "ஆப்",
-      "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
-      "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
-      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
+      "title": "தூக்க நேரமானி",
+      "subtitle": "நிர்ணயிக்கப்பட்ட நேரத்திற்குப் பிறகு இயக்கத்தை தானாக நிறுத்து",
+      "minutes": "{{count}} நிமி",
+      "customPlaceholder": "தனிப்பயன் நிமிடங்கள்",
+      "set": "நேரமானி அமை",
+      "remaining": "{{time}} இல் தூக்கம்",
+      "extend": "+15 நிமி",
+      "cancel": "நேரமானி ரத்து",
+      "off": "[ta] Off",
+      "setTimer": "[ta] Set Sleep Timer"
+    },
+    "openSubs": {
+      "title": "வசனங்களை தேடு",
+      "searchPlaceholder": "தலைப்பு மூலம் தேடு...",
+      "search": "தேடு",
+      "searchFailed": "தேடல் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "downloads": "{{count}} பதிவிறக்கங்கள்",
+      "noResults": "வசனங்கள் எதுவும் இல்லை"
     },
     "dialogue": {
-      "selectCharacter": "ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்",
-      "cancel": "ரத்துசெய்",
-      "placeholder": "கேள்வி எழுதவும்...",
-      "send": "அனுப்பு",
-      "close": "மூடு",
-      "yourAvatar": "உங்கள் அவதார்",
-      "sharedSession": "பகிர்ந்த அமர்வு",
-      "waitingForTurn": "உங்கள் இருக்கு காத்திருக்கிறேன்..."
-    },
-    "pauseAsk": {
-      "title": "கதாபாத்திரத்திடம் கேளுங்கள்",
-      "selectCharacter": "நீங்கள் யாரிடம் கேட்க விரும்புகிறீர்கள்?",
-      "resumeMovie": "திரைப்படத்தை தொடருங்கள்",
-      "processing": "உங்கள் கேள்வி செயல்படுத்தப்படுகிறது...",
-      "askAgain": "மற்றொரு கேள்வி கேளுங்கள்",
-      "resume": "தொடருங்கள்",
-      "watchAgain": "மீண்டும் பார்",
-      "placeholder": "உங்கள் கேள்வியை கேளுங்கள்...",
-      "stages": {
-        "polishing": "உங்கள் கேள்வியை மெருகேற்றுகிறது...",
-        "thinking": "உங்கள் கேள்வி பற்றி யோசிக்கிறது...",
-        "biff1": "பிஃப்புக்கு உங்கள் கேள்வி பிடிக்கவில்லை...",
-        "biff2": "பிஃப் கண்ணாடியில் தன்னைப் பார்க்கிறான்...",
-        "biff3": "பிஃப் பதிலை எழுத முயற்சிக்கிறான்...",
-        "biff4": "பிஃப் யாரையோ முட்டாள் என்று கூறிவிட்டான்...",
-        "doc1": "டாக் ஃப்ளக்ஸ் கெப்பாசிட்டரை ஆலோசிக்கிறார்...",
-        "doc2": "கிரேட் ஸ்காட்! இன்னும் கணக்கிடுகிறது...",
-        "doc3": "டாக் 1.21 ஜிகாவாட்களை சரிசெய்கிறார்...",
-        "doc4": "டாக் விண்வெளி-நேரத் தொடர்ச்சியை சரிபார்க்கிறார்...",
-        "marty1": "மார்ட்டி முதலில் கிட்டார் டியூன் செய்கிறான்...",
-        "marty2": "இது கனமானது...",
-        "marty3": "மார்ட்டி தான் இன்னும் இருக்கிறானா என்று பார்க்கிறான்...",
-        "marty4": "மார்ட்டி சொல்கிறான் யாரும் தன்னை கோழை என்று கூப்பிடக்கூடாது...",
-        "george1": "ஜார்ஜ் பதிலளிக்க தைரியம் சேகரிக்கிறான்...",
-        "george2": "ஜார்ஜ் நோட்டுப்புத்தகத்தில் பதிலை எழுதுகிறான்...",
-        "george3": "ஜார்ஜ் தன் அடர்த்தி தன்னை இங்கு கொண்டு வந்தது என்கிறான்...",
-        "george4": "ஜார்ஜுக்கு இறுதியாக நம்பிக்கை வந்தது...",
-        "lorraine1": "லோரேன் முதலில் தலைமுடியை சரிசெய்கிறாள்...",
-        "lorraine2": "லோரேன் கடலுக்கு அடியில் மந்திரத்தை நினைக்கிறாள்...",
-        "lorraine3": "லோரேன் இது விதி என்கிறாள்...",
-        "lorraine4": "லோரேன் நடனத்திற்கு தயாராகிறாள்...",
-        "jennifer1": "ஜெனிஃபர் காரில் காத்திருக்கிறாள்...",
-        "jennifer2": "ஜெனிஃபர் எதிர்காலத்தைப் பற்றி யோசிக்கிறாள்...",
-        "jennifer3": "ஜெனிஃபர் சமாளிக்க முடியும் என்கிறாள்...",
-        "jennifer4": "ஜெனிஃபர் பொறுமையாக இருக்கிறாள்...",
-        "generic1": "{{name}} யோசிக்கிறது...",
-        "generic2": "{{name}} பதிலை உருவாக்குகிறது...",
-        "generic3": "கிட்டத்தட்ட முடிந்தது...",
-        "generic4": "இன்னும் சிறிது நேரம்..."
-      },
-      "error": {
-        "generic": "ஏதோ தவறு ஏற்பட்டது",
-        "anthropic": "AI சேவை கிடைக்கவில்லை",
-        "falAi": "வீடியோ சேவை கிடைக்கவில்லை",
-        "elevenlabs": "குரல் சேவை கிடைக்கவில்லை",
-        "credits": "போதுமான கிரெடிட்கள் இல்லை"
-      }
+      "cancel": "[ta] Cancel",
+      "close": "[ta] Close",
+      "placeholder": "[ta] Type your message...",
+      "selectCharacter": "[ta] Select Character",
+      "send": "[ta] Send",
+      "sharedSession": "[ta] Shared Session",
+      "waitingForTurn": "[ta] Waiting for your turn...",
+      "yourAvatar": "[ta] Your Avatar"
     },
     "interaction": {
-      "previous": "முந்தைய இடைவினை",
-      "next": "அடுத்த இடைவினை"
-    }
+      "next": "[ta] Next",
+      "previous": "[ta] Previous"
+    },
+    "pauseAsk": {
+      "askAgain": "[ta] Ask Again",
+      "placeholder": "[ta] Ask about this scene...",
+      "resume": "[ta] Resume",
+      "resumeMovie": "[ta] Resume Movie",
+      "selectCharacter": "[ta] Select Character",
+      "title": "[ta] Pause & Ask"
+    },
+    "loadError": "[ta] Failed to load stream",
+    "subscription": {
+      "requiredTitle": "[ta] Subscription Required",
+      "upgrade": "[ta] Upgrade Now",
+      "requiredMessage": "[ta] requires a paid subscription",
+      "upgradeInfo": "[ta] Upgrade your subscription to access premium content"
+    },
+    "playbackSpeed": "[ta] Playback Speed",
+    "previousChapter": "[ta] Previous chapter",
+    "restart": "[ta] Restart from beginning",
+    "skipBackward": "[ta] Skip backward 30 seconds",
+    "skipForward": "[ta] Skip forward 30 seconds",
+    "nextChapter": "[ta] Next chapter"
   },
   "content": {
     "play": "இயக்கு",
@@ -518,7 +825,24 @@
     "rating": "மதிப்பீடு",
     "watchTrailer": "டிரெய்லர் பார்",
     "relatedContent": "தொடர்புடைய உள்ளடக்கம்",
-    "notFound": "உள்ளடக்கம் இல்லை"
+    "notFound": "உள்ளடக்கம் இல்லை",
+    "previewPlaying": "[ta] Preview playing",
+    "released": "[ta] Released",
+    "preview": "[ta] Preview",
+    "seasons": "[ta] Seasons",
+    "ep": "[ta] Ep",
+    "trailerPlaying": "[ta] Trailer playing",
+    "availableSubtitles": "[ta] Available Subtitles",
+    "loadingSeries": "[ta] Loading series information...",
+    "selectSeason": "[ta] Select Season",
+    "votes": "[ta] votes",
+    "genres": "[ta] Genres",
+    "starring": "[ta] Starring",
+    "subtitleSelected": "[ta] Selected: {{language}}",
+    "noEpisodes": "[ta] No episodes available",
+    "noEpisodesAvailable": "[ta] No episodes available to play",
+    "youMayAlsoLike": "[ta] You May Also Like",
+    "imdbRating": "[ta] IMDB Rating"
   },
   "errors": {
     "networkError": "நெட்வொர்க் பிழை",
@@ -526,16 +850,45 @@
     "tryAgain": "மீண்டும் முயற்சிக்கவும்",
     "offline": {
       "title": "இணைய இணைப்பு இல்லை",
-      "message": "நீங்கள் தற்போது ஆஃப்லைனில் உள்ளீர்கள்."
+      "message": "நீங்கள் தற்போது ஆஃப்லைனில் உள்ளீர்கள்.",
+      "ttsMessage": "[ta] No internet connection. You are now in offline mode."
     },
     "online": {
       "title": "இணைப்பு மீட்டமைக்கப்பட்டது",
-      "message": "நீங்கள் மீண்டும் ஆன்லைனில் உள்ளீர்கள்."
+      "message": "நீங்கள் மீண்டும் ஆன்லைனில் உள்ளீர்கள்.",
+      "ttsMessage": "[ta] Internet connection restored."
     },
     "no_audio_url": "ஆடியோ URL கிடைக்கவில்லை",
     "connection_failed": "இணைப்பு தோல்வி",
     "quota_exceeded": "ஒதுக்கீடு மீறப்பட்டது",
-    "server_error": "சேவையக பிழை"
+    "server_error": "சேவையக பிழை",
+    "api": {
+      "requestFailed": "[ta] Something went wrong. Please try again.",
+      "rateLimit": "[ta] You are making too many requests. Please wait a moment.",
+      "badRequest": "[ta] Something went wrong. Please try again.",
+      "serverError": "[ta] Our servers are having issues. Please try again later.",
+      "networkTimeout": "[ta] Unable to connect to our servers. Please check your connection.",
+      "forbidden": "[ta] You do not have permission to access this content.",
+      "unauthorized": "[ta] Please log in to continue.",
+      "offlineMessage": "[ta] You are offline. Please check your internet connection.",
+      "notFound": "[ta] The content you are looking for is not available.",
+      "unknown": "[ta] Something went wrong. Please try again."
+    },
+    "buttons": {
+      "retry": "[ta] Retry",
+      "ok": "[ta] OK",
+      "cancel": "[ta] Cancel"
+    },
+    "voice": {
+      "permissionDenied": "[ta] Microphone access is required for voice commands. Please enable it in Settings.",
+      "recognitionFailed": "[ta] I didn't understand that. Please try again.",
+      "commandFailed": "[ta] Voice command failed. Please try again."
+    },
+    "title": "[ta] Error",
+    "widget": {
+      "loadFailed": "[ta] Unable to load widget. Please try again."
+    },
+    "networkUnavailable": "[ta] Network unavailable"
   },
   "favorites": {
     "title": "பிடித்தவை",
@@ -547,7 +900,9 @@
     "title": "பதிவிறக்கங்கள்",
     "items": "உருப்படிகள்",
     "empty": "பதிவிறக்கங்கள் இல்லை",
-    "emptyHint": "ஆஃப்லைன் பார்வைக்கு உள்ளடக்கத்தைப் பதிவிறக்கவும்"
+    "emptyHint": "ஆஃப்லைன் பார்வைக்கு உள்ளடக்கத்தைப் பதிவிறக்கவும்",
+    "paused": "[ta] Paused",
+    "storage": "[ta] Storage"
   },
   "watchlist": {
     "title": "கண்காணிப்பு பட்டியல்",
@@ -557,8 +912,14 @@
       "all": "அனைத்தும்",
       "movies": "திரைப்படங்கள்",
       "series": "தொடர்கள்",
-      "kids": "குழந்தைகள்"
-    }
+      "kids": "குழந்தைகள்",
+      "judaism": "[ta] Judaism",
+      "continue": "[ta] Continue Watching",
+      "radio": "[ta] Radio",
+      "podcasts": "[ta] Podcasts"
+    },
+    "watched": "[ta] watched",
+    "emptyHint": "[ta] Start watching and items will appear here"
   },
   "children": {
     "title": "குழந்தைகள்",
@@ -571,8 +932,37 @@
       "educational": "கல்வி",
       "music": "இசை",
       "stories": "கதைகள்",
-      "jewish": "யூத"
-    }
+      "jewish": "யூத",
+      "hebrew": "[ta] Hebrew"
+    },
+    "admin": {
+      "tagVod": "[ta] Tag VOD",
+      "stats": "[ta] Kids Content Manager",
+      "seedContent": "[ta] Seed Content",
+      "syncYouTube": "[ta] Sync YouTube",
+      "syncPodcasts": "[ta] Sync Podcasts",
+      "importArchive": "[ta] Import Archive.org",
+      "pendingModeration": "[ta] Pending Moderation"
+    },
+    "ageRatings": {
+      "3": "[ta] Ages 3+",
+      "12": "[ta] Ages 12+",
+      "7": "[ta] Ages 7+",
+      "5": "[ta] Ages 5+",
+      "10": "[ta] Ages 10+"
+    },
+    "wrongCode": "[ta] Incorrect code",
+    "emptyHint": "[ta] Try another category",
+    "noContent": "[ta] No content available",
+    "exitDescription": "[ta] Enter parent code to exit",
+    "moderation": {
+      "pending": "[ta] Pending Review",
+      "rejected": "[ta] Rejected",
+      "approved": "[ta] Approved"
+    },
+    "parentCode": "[ta] Parent code",
+    "confirm": "[ta] Confirm",
+    "tryAnotherCategory": "[ta] Try selecting another category"
   },
   "judaism": {
     "title": "யூதமதம்",
@@ -582,13 +972,64 @@
       "title": "ஷப்பத் நேரங்கள்",
       "shabbatShalom": "ஷப்பத் ஷாலோம்!",
       "candleLighting": "மெழுகுவர்த்தி ஏற்றுதல்",
-      "havdalah": "ஹவ்தலா"
-    }
+      "havdalah": "ஹவ்தலா",
+      "shabbatMode": "[ta] Shabbat Mode",
+      "parashat": "[ta] Parashat",
+      "friday": "[ta] Friday",
+      "noData": "[ta] Unable to load Shabbat times",
+      "saturday": "[ta] Saturday",
+      "endsIn": "[ta] Shabbat ends in"
+    },
+    "erevShabbat": {
+      "shabbatSongs": "[ta] Shabbat Songs",
+      "title": "[ta] Erev Shabbat",
+      "inTime": "[ta] in {{time}}",
+      "featuredContent": "[ta] Shabbat Content",
+      "prepareFor": "[ta] Prepare for Shabbat",
+      "noContent": "[ta] Shabbat content coming soon!",
+      "shabbatRecipes": "[ta] Recipes",
+      "shabbatShalom": "[ta] Shabbat Shalom!",
+      "parashaStudy": "[ta] Parasha",
+      "timeUntil": "[ta] Time until Shabbat",
+      "prayers": "[ta] Prayers"
+    },
+    "categories": {
+      "community": "[ta] Community",
+      "news": "[ta] Jewish News"
+    },
+    "emptyHint": "[ta] Try selecting another category",
+    "dashboard": "[ta] Your Jewish Dashboard"
   },
   "chatbot": {
     "title": "Bayit+ உதவியாளர்",
     "greeting": "வணக்கம்! நான் Bayit+ ஸ்மார்ட் உதவியாளர். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?",
-    "placeholder": "இங்கே தட்டச்சு செய்யவும்..."
+    "placeholder": "இங்கே தட்டச்சு செய்யவும்...",
+    "errors": {
+      "micPermission": "[ta] Could not access microphone. Please check microphone permissions in your browser.",
+      "general": "[ta] Sorry, something went wrong. Please try again.",
+      "transcribeFailed": "[ta] Could not transcribe the recording. Please try again."
+    },
+    "showMultipleSuccess": "[ta] Showing {{count}} content items in widgets",
+    "suggestions": {
+      "whatsOnNow": "[ta] What's on now?",
+      "israeliMovies": "[ta] Recommended Israeli movies",
+      "whatToWatch": "[ta] What to watch today?",
+      "popularPodcasts": "[ta] Popular podcasts"
+    },
+    "recording": "[ta] Recording... click again to stop",
+    "openChat": "[ta] Open chat",
+    "showMultipleNotFound": "[ta] Could not find the requested content. Please try different names.",
+    "stopRecording": "[ta] Stop recording",
+    "resolvingContent": "[ta] Finding your content...",
+    "transcribing": "[ta] Transcribing...",
+    "voiceCommands": {
+      "playChess": "[ta] Start a chess game with...",
+      "multiContent": "[ta] Show side by side...",
+      "showChannels": "[ta] Show me channels..."
+    },
+    "startRecording": "[ta] Start voice recording",
+    "welcome": "[ta] Hello! I'm the Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
+    "recommendations": "[ta] Here are some recommendations:"
   },
   "subscribe": {
     "title": "உங்கள் திட்டத்தைத் தேர்ந்தெடுக்கவும்",
@@ -598,7 +1039,12 @@
     "popular": "மிகவும் பிரபலமான",
     "period": "/மாதம்",
     "select": "திட்டத்தைத் தேர்ந்தெடு",
-    "startTrial": "இலவச சோதனையைத் தொடங்கு"
+    "startTrial": "இலவச சோதனையைத் தொடங்கு",
+    "selected": "[ta] Selected",
+    "processing": "[ta] Processing...",
+    "save2Months": "[ta] Save 2 months",
+    "noCharge": "[ta] Your credit card won't be charged during the trial period",
+    "perYear": "[ta] /year"
   },
   "footer": {
     "brandDescription": "USA இல் உங்கள் வீடு. ஹீப்ரூவில் TV ஒளிபரப்புகள், VOD, வானொலி மற்றும் பாட்காஸ்ட்கள்.",
@@ -607,7 +1053,60 @@
     "support": "ஆதரவு",
     "legal": "சட்ட",
     "copyright": "© {{year}} Bayit+. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
-    "poweredBy": "மூலம் இயக்கப்படுகிறது"
+    "poweredBy": "மூலம் இயக்கப்படுகிறது",
+    "apps": {
+      "getItOn": "[ta] Get it on",
+      "downloadOn": "[ta] Download on",
+      "title": "[ta] Get the App",
+      "googlePlay": "[ta] Google Play",
+      "appStore": "[ta] App Store"
+    },
+    "links": {
+      "contact": "[ta] Contact Us",
+      "terms": "[ta] Terms of Service",
+      "favorites": "[ta] Favorites",
+      "feedback": "[ta] Feedback",
+      "podcasts": "[ta] Podcasts",
+      "help": "[ta] Help Center",
+      "liveTV": "[ta] Live TV",
+      "vod": "[ta] Movies & Series",
+      "judaism": "[ta] Judaism",
+      "faq": "[ta] FAQ",
+      "licenses": "[ta] Licenses",
+      "watchlist": "[ta] Watchlist",
+      "radio": "[ta] Radio",
+      "profile": "[ta] My Profile",
+      "privacy": "[ta] Privacy Policy",
+      "downloads": "[ta] Downloads",
+      "cookies": "[ta] Cookie Policy",
+      "subscribe": "[ta] Subscribe",
+      "home": "[ta] Home"
+    },
+    "newsletter": {
+      "success": "[ta] Thanks for subscribing!",
+      "description": "[ta] Subscribe to our newsletter for the latest updates and exclusive content.",
+      "placeholder": "[ta] Enter your email",
+      "title": "[ta] Stay Updated"
+    },
+    "social": {
+      "youtube": "[ta] YouTube",
+      "instagram": "[ta] Instagram",
+      "twitter": "[ta] Twitter",
+      "facebook": "[ta] Facebook"
+    },
+    "privacyPolicy": "[ta] Privacy Policy",
+    "myProfile": "[ta] My Profile",
+    "termsOfUse": "[ta] Terms of Use",
+    "subscriptions": "[ta] Subscriptions",
+    "liveTV": "[ta] Live TV",
+    "location": "[ta] New York, USA",
+    "sitemap": "[ta] Sitemap",
+    "contactUs": "[ta] Contact Us",
+    "helpAndSupport": "[ta] Help & Support",
+    "radioStations": "[ta] Radio Stations",
+    "moviesAndSeries": "[ta] Movies & Series",
+    "accessibility": "[ta] Accessibility",
+    "navigation": "[ta] Navigation"
   },
   "support": {
     "title": "ஆதரவு மையம்",
@@ -617,27 +1116,159 @@
       "faq": "FAQ",
       "contact": "தொடர்பு",
       "tickets": "என் டிக்கெட்கள்"
+    },
+    "faq": {
+      "title": "[ta] Frequently Asked Questions",
+      "loadError": "[ta] Failed to load FAQ",
+      "categories": {
+        "features": "[ta] Features",
+        "technical": "[ta] Technical",
+        "general": "[ta] General",
+        "all": "[ta] All Topics",
+        "billing": "[ta] Billing"
+      },
+      "empty": "[ta] No FAQ items in this category",
+      "loading": "[ta] Loading FAQ..."
+    },
+    "contact": {
+      "ticketDescription": "[ta] Need human assistance? Create a support ticket and our team will respond within 24 hours.",
+      "emailDescription": "[ta] Prefer email? Reach us at support@bayit.tv for any questions or concerns.",
+      "createTicket": "[ta] Create Ticket",
+      "ticketTitle": "[ta] Create Support Ticket",
+      "voiceTitle": "[ta] Voice Support",
+      "emailTitle": "[ta] Email Support",
+      "voiceDescription": "[ta] Click the avatar button or say \"Jarvis\" to start a voice conversation with our AI assistant."
+    },
+    "ticket": {
+      "priority": {
+        "high": "[ta] High",
+        "low": "[ta] Low",
+        "urgent": "[ta] Urgent",
+        "medium": "[ta] Medium"
+      },
+      "category": {
+        "general": "[ta] General",
+        "technical": "[ta] Technical",
+        "billing": "[ta] Billing",
+        "feature": "[ta] Feature Request"
+      },
+      "categoryLabel": "[ta] Category",
+      "message": "[ta] Message",
+      "priorityLabel": "[ta] Priority",
+      "submit": "[ta] Submit Ticket",
+      "messagePlaceholder": "[ta] Describe your issue in detail...",
+      "created": "[ta] Created",
+      "status": {
+        "open": "[ta] Open",
+        "closed": "[ta] Closed",
+        "in_progress": "[ta] In Progress",
+        "resolved": "[ta] Resolved"
+      },
+      "subject": "[ta] Subject",
+      "error": {
+        "submit": "[ta] Failed to create ticket. Please try again.",
+        "required": "[ta] Please fill in all required fields"
+      },
+      "title": "[ta] Create Support Ticket",
+      "subjectPlaceholder": "[ta] Brief description of your issue"
+    },
+    "categories": {
+      "loadError": "[ta] Failed to load categories",
+      "gettingStarted": "[ta] Getting Started",
+      "features": "[ta] Features",
+      "loading": "[ta] Loading documentation...",
+      "articleCount": "[ta] {{count}} articles",
+      "title": "[ta] Browse Documentation",
+      "account": "[ta] Account",
+      "troubleshooting": "[ta] Troubleshooting"
+    },
+    "docs": {
+      "backToList": "[ta] Back to documentation",
+      "loadError": "[ta] Failed to load document",
+      "loading": "[ta] Loading document..."
+    },
+    "voice": {
+      "ready": "[ta] What would you like to know?",
+      "wakeWordHint": "[ta] Say \"Jarvis\" to speak",
+      "listening": "[ta] I'm listening...",
+      "error": "[ta] Sorry, I didn't catch that. Try again?",
+      "thinking": "[ta] Let me think about that...",
+      "speaking": "[ta] Speaking...",
+      "listeningNow": "[ta] Listening...",
+      "title": "[ta] Voice Assistant"
+    },
+    "search": {
+      "noResults": "[ta] No results found",
+      "placeholder": "[ta] Search documentation..."
+    },
+    "tickets": {
+      "title": "[ta] My Support Tickets",
+      "empty": "[ta] No support tickets yet",
+      "filter": {
+        "open": "[ta] Open",
+        "resolved": "[ta] Resolved",
+        "inProgress": "[ta] In Progress",
+        "all": "[ta] All"
+      },
+      "create": "[ta] New Ticket",
+      "createFirst": "[ta] Create Your First Ticket",
+      "loadError": "[ta] Failed to load tickets",
+      "emptyFilter": "[ta] No tickets with this status",
+      "loading": "[ta] Loading tickets..."
+    },
+    "wizard": {
+      "role": "[ta] Your Guide"
     }
   },
   "notFound": {
     "title": "பக்கம் கிடைக்கவில்லை",
     "description": "நீங்கள் தேடும் பக்கம் இல்லை.",
     "homeButton": "முகப்புக்கு செல்",
-    "searchButton": "தேடு"
+    "searchButton": "தேடு",
+    "orTry": "[ta] Or try:",
+    "liveChannel": "[ta] Live",
+    "podcastsLabel": "[ta] Podcasts",
+    "vodLabel": "[ta] Movies"
   },
   "recordings": {
     "title": "என் பதிவுகள்",
     "subtitle": "உங்கள் பதிவுசெய்த நேரலை ஸ்ட்ரீம்களைப் பார்க்கவும் நிர்வகிக்கவும்",
     "record": "பதிவு",
     "recording": "பதிவு செய்கிறது",
-    "noRecordings": "பதிவுகள் இல்லை"
+    "noRecordings": "பதிவுகள் இல்லை",
+    "error": "[ta] Recording Error",
+    "stopFailed": "[ta] Failed to stop recording. Please try again.",
+    "page": "[ta] Page",
+    "maxDuration": "[ta] Max Duration",
+    "noRecordingsHint": "[ta] Start recording from any live channel!",
+    "subtitlesAvailable": "[ta] Subtitles Available",
+    "viewInMyRecordings": "[ta] View in My Recordings",
+    "storageUsed": "[ta] Storage Used",
+    "deleteRecording": "[ta] Delete Recording",
+    "recordingSaved": "[ta] Recording Saved!",
+    "deleteFailed": "[ta] Failed to delete recording",
+    "startFailed": "[ta] Failed to start recording. Please try again.",
+    "savedSuccess": "[ta] Recording saved successfully! Duration: {{duration}}",
+    "expires": "[ta] Expires",
+    "totalRecordings": "[ta] Total Recordings",
+    "confirmDelete": "[ta] Are you sure you want to delete this recording? This action cannot be undone."
   },
   "voice": {
-    "listening": "கேட்கிறது...",
-    "speaking": "பேசுகிறது",
-    "ready": "தயார்",
-    "tapToSpeak": "பேச தட்டவும்",
-    "processing": "செயலாக்குகிறது..."
+    "panelTitle": "குரல் உதவியாளர்",
+    "typeCommand": "ஒரு கட்டளையை தட்டச்சு செய்யுங்கள்...",
+    "controlExecuted": "செயல்படுத்தப்பட்டது: {{action}}",
+    "timerSet": "{{amount}} {{unit}} க்கு டைமர் அமைக்கப்பட்டது",
+    "chatPending": "உங்கள் செய்தி செயலாக்கப்படுகிறது...",
+    "suggestion": {
+      "watchLive": "நேரடி தொலைக்காட்சி பாருங்கள்",
+      "search": "உள்ளடக்கத்தை தேடுங்கள்",
+      "listenRadio": "வானொலி கேளுங்கள்"
+    },
+    "error": {
+      "micDenied": "மைக்ரோஃபோன் அணுகல் மறுக்கப்பட்டது",
+      "notSupported": "இந்த உலாவியில் குரல் கட்டளைகள் ஆதரிக்கப்படவில்லை",
+      "recognitionFailed": "புரிந்துகொள்ள முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+    }
   },
   "plans": {
     "basic": {
@@ -647,7 +1278,8 @@
         "வானொலி & பாட்காஸ்ட்கள்",
         "1 சாதனத்தில் பார்",
         "SD தரம்"
-      ]
+      ],
+      "notIncluded": "[ta] ['Live channels', 'AI Assistant', 'Offline viewing']"
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -658,7 +1290,8 @@
         "ஸ்மார்ட் AI உதவியாளர்",
         "2 சாதனங்களில் பார்",
         "HD தரம்"
-      ]
+      ],
+      "notIncluded": "[ta] ['Offline viewing', 'Family profiles']"
     },
     "family": {
       "name": "குடும்பம்",
@@ -668,7 +1301,63 @@
         "4 சாதனங்களில் பார்",
         "4K தரம்",
         "5 குடும்ப சுயவிவரங்கள்"
-      ]
+      ],
+      "notIncluded": "[ta] []"
+    },
+    "costDashboard": {
+      "topSpenders": {
+        "privacyNote": "[ta] User IDs are hashed and costs are aggregated into ranges for privacy protection.",
+        "title": "[ta] Top 20 Spenders (Monthly)",
+        "userId": "[ta] User ID",
+        "rank": "[ta] Rank",
+        "loading": "[ta] Loading top spenders...",
+        "costRange": "[ta] Cost Range"
+      },
+      "categories": {
+        "transient": "[ta] Transient",
+        "permanentFixed": "[ta] Permanent (Fixed)",
+        "category": "[ta] Category",
+        "amount": "[ta] Amount",
+        "detailedBreakdown": "[ta] Detailed Breakdown",
+        "transientDesc": "[ta] Usage-based costs that fluctuate with platform activity",
+        "permanentDesc": "[ta] Infrastructure costs that occur monthly regardless of usage",
+        "permanent": "[ta] Permanent",
+        "transientVariable": "[ta] Transient (Variable)",
+        "permanentVsTransient": "[ta] Permanent vs Transient",
+        "costItem": "[ta] Cost Item"
+      },
+      "timeline": {
+        "amountLabel": "[ta] Amount ($)",
+        "loading": "[ta] Loading timeline...",
+        "showingData": "[ta] Showing data from {{start}} to {{end}}",
+        "netProfit": "[ta] Net Profit",
+        "title": "[ta] Cost Timeline",
+        "totalCost": "[ta] Total Cost",
+        "revenue": "[ta] Revenue"
+      },
+      "plSummary": {
+        "revenue": "[ta] REVENUE",
+        "totalCosts": "[ta] TOTAL COSTS",
+        "netProfitLoss": "[ta] Net Profit/Loss",
+        "margin": "[ta] margin"
+      },
+      "aiCosts": "[ta] AI Costs",
+      "percentOfTotal": "[ta] % of total",
+      "search": "[ta] Search",
+      "thirdPartyApis": "[ta] Third-party APIs",
+      "thirdParty": "[ta] Third-party",
+      "title": "[ta] Cost Dashboard",
+      "components": "[ta] Components",
+      "loadingBreakdown": "[ta] Loading breakdown...",
+      "translation": "[ta] Translation",
+      "costBreakdown": "[ta] Cost Breakdown",
+      "infrastructure": "[ta] Infrastructure"
+    },
+    "batchActions": {
+      "selectedCount_one": "[ta] {{count}} selected",
+      "clear": "[ta] Clear",
+      "selectedCount_other": "[ta] {{count}} selected",
+      "selectedCount": "[ta] {{count}} selected"
     }
   },
   "admin": {
@@ -735,7 +1424,226 @@
         "subtitles": "வசன வரிகள்"
       },
       "podcastsComingSoon": "பாட்காஸ்ட் மேலாண்மை விரைவில் வருகிறது. பாட்காஸ்ட் பகுதியைப் பயன்படுத்தவும்.",
-      "radioComingSoon": "வானொலி நிலைய மேலாண்மை விரைவில் வருகிறது. வானொலி நிலையங்கள் பகுதியைப் பயன்படுத்தவும்."
+      "radioComingSoon": "வானொலி நிலைய மேலாண்மை விரைவில் வருகிறது. வானொலி நிலையங்கள் பகுதியைப் பயன்படுத்தவும்.",
+      "import": {
+        "noSourcesDescription": "[ta] No free content sources are currently available for {{type}}",
+        "sourceTypes": {
+          "live_tv": "[ta] Live TV",
+          "vod": "[ta] Movies & VOD",
+          "radio": "[ta] Radio",
+          "podcasts": "[ta] Podcasts"
+        },
+        "subtitle": "[ta] Browse and import public content from free sources",
+        "pageTitle": "[ta] Import Free Content",
+        "loading": "[ta] Loading sources...",
+        "items": "[ta] item",
+        "noSources": "[ta] No Sources Available",
+        "selectItems": "[ta] Please select at least one item to import",
+        "selectCategory": "[ta] Select category for imported movies:",
+        "selectCategory_vod": "[ta] Please select a category for VOD imports",
+        "importButton": "[ta] Import {{count}} {{item}}",
+        "categoryPlaceholder": "[ta] Select a category...",
+        "importing": "[ta] Importing {{count}}... {{percent}}%",
+        "itemsPlural": "[ta] items"
+      },
+      "editor": {
+        "fields": {
+          "streamUrlRequired": "[ta] Stream URL is required",
+          "stationLogo": "[ta] Station Logo",
+          "isKidsContent": "[ta] Kids Content",
+          "streamUrl": "[ta] Stream URL",
+          "episode": "[ta] Episode",
+          "isSeries": "[ta] Series",
+          "rssFeed": "[ta] RSS Feed URL",
+          "podcastCategoryPlaceholder": "[ta] News, Science, etc.",
+          "ratingPlaceholder": "[ta] PG-13",
+          "publishedDate": "[ta] Published Date",
+          "description": "[ta] Description",
+          "backdrop": "[ta] Backdrop (16:9 aspect ratio)",
+          "thumbnailUrlPlaceholder": "[ta] https://example.com/thumbnail.jpg",
+          "streamType": "[ta] Stream Type",
+          "yearPlaceholder": "[ta] 2024",
+          "nextShowPlaceholder": "[ta] Show name",
+          "year": "[ta] Year",
+          "seasonNumber": "[ta] Season #",
+          "title": "[ta] Title",
+          "requiresSubscription": "[ta] Required Subscription",
+          "requiredSubscription": "[ta] Required Subscription",
+          "isSeriesLabel": "[ta] This is a series/multi-part content",
+          "durationPlaceholder": "[ta] 1:30:00",
+          "website": "[ta] Website URL",
+          "categoryRequired": "[ta] Category is required",
+          "isPublished": "[ta] Publish",
+          "authorPlaceholder": "[ta] Podcast author",
+          "publishedAt": "[ta] Published Date",
+          "posterCover": "[ta] Podcast Cover",
+          "isKidsContentLabel": "[ta] This is kids-friendly content",
+          "currentSongPlaceholder": "[ta] Song title",
+          "currentShowPlaceholder": "[ta] Show name",
+          "isActive": "[ta] Active",
+          "category": "[ta] Category",
+          "audioUrlRequired": "[ta] Audio URL is required",
+          "thumbnailUrl": "[ta] Thumbnail URL",
+          "isFeaturedLabel": "[ta] Feature this content on homepage",
+          "logo": "[ta] Logo",
+          "currentShow": "[ta] Current Show",
+          "season": "[ta] Season",
+          "isActiveLabel": "[ta] Channel is active",
+          "nextShow": "[ta] Next Show",
+          "directorPlaceholder": "[ta] Director name",
+          "isPublishedLabel": "[ta] Publish this content immediately",
+          "epgSource": "[ta] EPG Source URL",
+          "genre": "[ta] Genre",
+          "titleRequired": "[ta] Title is required",
+          "epgSourcePlaceholder": "[ta] https://example.com/epg.xml",
+          "descriptionPlaceholder": "[ta] Content description",
+          "titlePlaceholder": "[ta] Content title",
+          "rating": "[ta] Rating",
+          "drmProtected": "[ta] DRM Protected",
+          "thumbnail": "[ta] Thumbnail (3:4 aspect ratio)",
+          "audioUrlPlaceholder": "[ta] https://example.com/episode.mp3",
+          "seriesIdPlaceholder": "[ta] series-identifier",
+          "audioUrl": "[ta] Audio URL",
+          "director": "[ta] Director",
+          "rssFeedPlaceholder": "[ta] https://example.com/feed.xml",
+          "isFeatured": "[ta] Feature",
+          "duration": "[ta] Duration",
+          "episodeNumber": "[ta] Episode #",
+          "websitePlaceholder": "[ta] https://example.com",
+          "seriesId": "[ta] Series ID",
+          "backdropUrl": "[ta] Backdrop URL",
+          "drmProtectedLabel": "[ta] This content requires DRM protection",
+          "podcastCategory": "[ta] Category",
+          "author": "[ta] Author",
+          "channelLogo": "[ta] Channel Logo",
+          "currentSong": "[ta] Current Song",
+          "genrePlaceholder": "[ta] Drama"
+        },
+        "imageUpload": {
+          "errors": {
+            "tooLarge": "[ta] File size must be less than {{maxSize}}MB",
+            "invalidUrl": "[ta] Invalid URL",
+            "imageOnly": "[ta] Please select an image file",
+            "uploadFailed": "[ta] Upload failed"
+          },
+          "validateButton": "[ta] Add",
+          "urlPlaceholder": "[ta] https://example.com/image.jpg",
+          "formats": "[ta] PNG, JPG, WebP up to {{maxSize}}MB",
+          "dropHere": "[ta] Drop image here or click to upload",
+          "clear": "[ta] Remove image",
+          "uploading": "[ta] Uploading...",
+          "orPasteUrl": "[ta] Or paste image URL",
+          "success": "[ta] Image uploaded successfully",
+          "validating": "[ta] Validating..."
+        },
+        "sections": {
+          "details": "[ta] Content Details",
+          "basicInfo": "[ta] Basic Information",
+          "podcastDetails": "[ta] Podcast Details",
+          "publishing": "[ta] Publishing",
+          "episodeDetails": "[ta] Episode Details",
+          "accessControl": "[ta] Access Control",
+          "stationDetails": "[ta] Station Details",
+          "streaming": "[ta] Streaming",
+          "media": "[ta] Media",
+          "channelDetails": "[ta] Channel Details"
+        },
+        "actions": {
+          "cancel": "[ta] Cancel",
+          "saving": "[ta] Saving...",
+          "save": "[ta] Save"
+        },
+        "subscriptionTiers": {
+          "family": "[ta] Family",
+          "premium": "[ta] Premium",
+          "basic": "[ta] Basic"
+        },
+        "pageTitle": "[ta] Edit Content",
+        "pageTitleNew": "[ta] Add Content"
+      },
+      "streamUrlInput": {
+        "copyUrl": "[ta] Copy URL",
+        "validUrl": "[ta] URL is valid - detected as {{type}}",
+        "supportedFormats": {
+          "title": "[ta] Supported formats:",
+          "dash": "[ta] DASH: .mpd streams",
+          "audio": "[ta] Audio: .mp3, .aac, or audio streams",
+          "hls": "[ta] HLS: .m3u8 streams"
+        },
+        "errors": {
+          "invalidFormat": "[ta] Invalid URL format",
+          "required": "[ta] Stream URL is required"
+        },
+        "copied": "[ta] URL copied to clipboard",
+        "streamType": "[ta] Stream Type"
+      },
+      "categoryPicker": {
+        "noCategories": "[ta] No categories available",
+        "modal": {
+          "creating": "[ta] Creating...",
+          "title": "[ta] Create New Category",
+          "placeholder": "[ta] Category name (e.g., Movies, Series)",
+          "create": "[ta] Create"
+        },
+        "selectPlaceholder": "[ta] Select category...",
+        "errors": {
+          "loadFailed": "[ta] Failed to load categories",
+          "createFailed": "[ta] Failed to create category"
+        },
+        "searchPlaceholder": "[ta] Search categories...",
+        "loading": "[ta] Loading categories...",
+        "noResults": "[ta] No categories found",
+        "createNew": "[ta] Create new category"
+      },
+      "emptyMessage": "[ta] No content found",
+      "columns": {
+        "description": "[ta] Description",
+        "title": "[ta] Title",
+        "episodeNumber": "[ta] Episode #",
+        "genre": "[ta] Genre",
+        "year": "[ta] Year",
+        "duration": "[ta] Duration",
+        "episodes": "[ta] Episodes",
+        "publishedDate": "[ta] Published",
+        "status": "[ta] Status",
+        "category": "[ta] Category",
+        "epgSource": "[ta] EPG Source",
+        "views": "[ta] Views",
+        "name": "[ta] Name",
+        "rating": "[ta] Rating",
+        "slug": "[ta] Slug",
+        "order": "[ta] Order",
+        "streamUrl": "[ta] Stream URL",
+        "subtitles": "[ta] Subtitles"
+      },
+      "validation": {
+        "streamUrlRequired": "[ta] Stream URL is required",
+        "nameRequired": "[ta] Name is required",
+        "audioUrlRequired": "[ta] Audio URL is required",
+        "titleRequired": "[ta] Title is required"
+      },
+      "noEpisodes": "[ta] No episodes found",
+      "type": {
+        "movie": "[ta] Movie",
+        "series": "[ta] Series"
+      },
+      "batchUnfeature": "[ta] Unfeature",
+      "toggleCarousel": "[ta] Toggle carousel",
+      "confirmDelete": "[ta] Delete this content?",
+      "episodes_one": "[ta] episode",
+      "status": {
+        "published": "[ta] Published",
+        "draft": "[ta] Draft"
+      },
+      "batchFeature": "[ta] Feature",
+      "confirmBatchDelete": "[ta] Are you sure you want to delete {{count}} item(s)?",
+      "subtitle": "[ta] Manage movies, series, and video content",
+      "episodes_other": "[ta] episodes",
+      "searchPlaceholder": "[ta] Search content...",
+      "importFree": "[ta] Import Free Content",
+      "selectedItems": "[ta] {{count}} item(s) selected",
+      "title": "[ta] Content Library",
+      "showOnlyWithSubtitles": "[ta] Show only with subtitles"
     },
     "transactions": {
       "subtitle": "கட்டண வரலாற்றைக் காண்க",
@@ -1137,7 +2045,67 @@
       },
       "errors": {
         "pathRequired": "கோப்புறை பாதை தேவை"
-      }
+      },
+      "languagesInfo": "[ta] Supported subtitle languages: English (en), Hebrew (he), Spanish (es)",
+      "sessionIssue": "[ta] Session Issue",
+      "clearQueue": "[ta] Clear Queue",
+      "manualUpload": {
+        "clearAll": "[ta] Clear All",
+        "dropHereActive": "[ta] Drop files to add them",
+        "subtitle": "[ta] Drag and drop files or select a folder",
+        "noFilesSelected": "[ta] No files selected",
+        "title": "[ta] Manual Upload",
+        "dropHere": "[ta] Drop files here or click to browse",
+        "pendingRestoreHint": "[ta] Drop or select the same files to restore your upload queue",
+        "removeFile": "[ta] Remove",
+        "uploadingFiles": "[ta] Adding {{count}} file(s) to queue...",
+        "selectContentType": "[ta] Select content type for upload",
+        "uploadSelected": "[ta] Upload Selected",
+        "selectFolder": "[ta] Select Folder",
+        "filesCount": "[ta] {{count}} file(s) selected",
+        "uploadFailed": "[ta] Failed to add files to queue",
+        "invalidFileType": "[ta] Invalid file type. Only video files are supported.",
+        "pendingRestore": "[ta] {{count}} file(s) pending from previous session",
+        "supportedFormats": "[ta] Supports video files (mp4, mkv, avi, mov, webm)",
+        "selectedFiles": "[ta] Selected Files",
+        "fileSize": "[ta] Size",
+        "uploadSuccess": "[ta] Successfully added {{count}} file(s) to queue"
+      },
+      "sessionIssueHelp": "[ta] Your session may have expired. Please refresh the page to restore connection.",
+      "wsReconnecting": "[ta] Reconnecting to real-time updates...",
+      "sessionExpired": "[ta] Session expired. Please refresh the page or log in again.",
+      "systemInfoText": "[ta] Automatically extracts subtitles from local video files during upload for faster processing",
+      "clearQueueFailed": "[ta] Failed to clear queue",
+      "cancelUpload": "[ta] Cancel",
+      "addedAt": "[ta] Added",
+      "cacheResetFailed": "[ta] Failed to reset cache",
+      "systemInfo": "[ta] Upload System Information",
+      "unauthorized": "[ta] Session invalid. Please refresh the page.",
+      "clearQueueConfirmMessage": "[ta] This will cancel {{count}} active job(s). This action cannot be undone.",
+      "clearQueueSuccess": "[ta] Queue cleared successfully",
+      "contentTypeFiltersHelp": "[ta] Optional - Leave all unchecked to process all content types",
+      "cancelUploadFailed": "[ta] Failed to cancel upload",
+      "uploadAlreadyRunning": "[ta] Upload scan already in progress. Please wait for current uploads to complete.",
+      "moviesOnly": "[ta] Movies Only",
+      "noQueuedItems": "[ta] No items in queue",
+      "timeout": "[ta] Upload scan timed out. Try again or check monitored folders.",
+      "cancelUploadConfirm": "[ta] Cancel this upload?",
+      "clearQueueConfirmTitle": "[ta] Clear Upload Queue?",
+      "audiobooksOnly": "[ta] Audiobooks Only",
+      "seriesOnly": "[ta] Series Only",
+      "activeUpload": "[ta] Active Upload",
+      "queuedItems": "[ta] Queued",
+      "recentCompleted": "[ta] Recently Completed",
+      "wsDisconnected": "[ta] Real-time Updates Disabled",
+      "uploadsActiveNotice": "[ta] Uploads in progress ({{processing}} active, {{queued}} queued). New scan disabled until current batch completes.",
+      "resetCache": "[ta] Reset Cache",
+      "resumeQueue": "[ta] Resume",
+      "queuePaused": "[ta] Queue Paused",
+      "cacheResetSuccess": "[ta] Cache cleared: {{count}} files will be rescanned on next scan",
+      "endpointNotFound": "[ta] Upload service not available. Check server configuration.",
+      "wsDisconnectedHelp": "[ta] WebSocket connection failed. Queue status may be outdated. Page will auto-retry.",
+      "cancelUploadSuccess": "[ta] Upload cancelled",
+      "contentTypeFilters": "[ta] Content Type Filters"
     },
     "pushNotifications": {
       "subtitle": "பயனர்களுக்கு அறிவிப்புகளை உருவாக்கி அனுப்பவும்",
@@ -1535,7 +2503,14 @@
         "failedToTrigger": "தணிக்கையைத் தூண்ட முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
         "failedToLoadDetails": "அறிக்கை விவரங்களை ஏற்ற முடியவில்லை.",
         "failedToRollback": "செயலை மீட்க முடியவில்லை.",
-        "auditAlreadyRunning": "ஒரு தணிக்கை ஏற்கனவே இயங்குகிறது. புதியதைத் தொடங்குவதற்கு முன் அது முடியும் வரை காத்திருக்கவும் அல்லது ரத்து செய்யவும்."
+        "auditAlreadyRunning": "ஒரு தணிக்கை ஏற்கனவே இயங்குகிறது. புதியதைத் தொடங்குவதற்கு முன் அது முடியும் வரை காத்திருக்கவும் அல்லது ரத்து செய்யவும்.",
+        "failedToClearReports": "[ta] Failed to clear audit reports. Please try again.",
+        "budgetExceeded": "[ta] Monthly budget limit exceeded. Cannot run audit.",
+        "failedToPause": "[ta] Failed to pause audit",
+        "contactAdmin": "[ta] The Librarian page cannot load without proper configuration.\nPlease contact your administrator.",
+        "failedToInterject": "[ta] Failed to send message to AI agent",
+        "failedToCancel": "[ta] Failed to cancel audit",
+        "failedToResume": "[ta] Failed to resume audit"
       },
       "stats": {
         "systemHealth": "அமைப்பு நலம்",
@@ -1561,7 +2536,39 @@
         "dryRun": "முன்னோட்ட முறை",
         "dryRunHelp": "மாற்றங்கள் செய்யாமல் என்ன மாறும் என்பதைக் காட்டு",
         "triggerDaily": "தினசரி தணிக்கையை இயக்கு",
-        "triggerAI": "AI ஏஜெண்ட் தணிக்கையை இயக்கு"
+        "triggerAI": "AI ஏஜெண்ட் தணிக்கையை இயக்கு",
+        "auditTypeHelp": "[ta] Choose between rule-based or AI-powered audit",
+        "purgeDuplicates": "[ta] Remove Duplicates",
+        "scopeFilters": "[ta] Audit Capabilities",
+        "cybTitlesOnlyHelp": "[ta] Remove file extensions, quality markers, and release tags from titles",
+        "cybTitlesOnly": "[ta] Clean Dirty Titles",
+        "aiAgentAudit": "[ta] AI Agent Audit",
+        "aiAgentDescription": "[ta] Autonomous AI agent (Claude) makes intelligent decisions about what to check and fix. More comprehensive but uses API budget.",
+        "last24HoursHelp": "[ta] Limit audit to content added in the last 24 hours",
+        "classifyOnly": "[ta] Verify Classification",
+        "budgetWarning": "[ta] Running this audit would exceed monthly budget limit",
+        "classifyOnlyHelp": "[ta] Check and fix movie vs series classification errors",
+        "dryRunMode": "[ta] (Dry run mode)",
+        "auditRunningNotice": "[ta] An audit is currently running. Buttons will be enabled when it completes.",
+        "aiAgentBadge": "[ta] AI-Powered • Intelligent • Uses Budget",
+        "tmdbPostersOnlyHelp": "[ta] Fetch missing posters, descriptions, and metadata from TMDB",
+        "dailyBadge": "[ta] Rule-Based • Fast • Free",
+        "monthlyBudgetLimit": "[ta] / ${{limit}} monthly",
+        "scopeFiltersHelp": "[ta] Select capabilities to enable (multiple can be combined)",
+        "purgeDuplicatesHelp": "[ta] Find and remove duplicate content items",
+        "rollbackSuccess": "[ta] Action rolled back successfully.",
+        "openSubtitlesEnabledHelp": "[ta] Download missing subtitles from OpenSubtitles (HE/EN/ES)",
+        "monthlyBudgetUsed": "[ta] Budget Used (30d)",
+        "auditType": "[ta] Audit Type",
+        "dailyAuditSuccess": "[ta] Daily audit triggered successfully. {{dryRun}}",
+        "dailyDescription": "[ta] Runs predefined checks on content modified in the last 7 days. Fast and predictable, no AI costs.",
+        "dailyAudit": "[ta] Daily Audit",
+        "last24Hours": "[ta] Recent Content Only",
+        "tmdbPostersOnly": "[ta] TMDB Posters & Metadata",
+        "openSubtitlesEnabled": "[ta] Acquire Subtitles",
+        "budgetPerAudit": "[ta] Budget per Audit",
+        "aiAuditSuccess": "[ta] AI Agent audit triggered successfully. {{dryRun}}",
+        "budgetLabel": "[ta] AI Agent Budget Limit: ${{budget}}"
       },
       "reports": {
         "title": "சமீபத்திய தணிக்கை அறிக்கைகள்",
@@ -1577,7 +2584,28 @@
           "issues": "சிக்கல்கள்",
           "fixes": "திருத்தங்கள்",
           "actions": "செயல்கள்"
-        }
+        },
+        "detailModal": {
+          "healthyItems": "[ta] Healthy Items",
+          "summary": "[ta] Summary",
+          "misclassifications": "[ta] Misclassifications",
+          "title": "[ta] Audit Report: {{id}}",
+          "executionTime": "[ta] Execution Time",
+          "orphanedItems": "[ta] Orphaned Items",
+          "brokenStreams": "[ta] Broken Streams",
+          "totalFixes": "[ta] {{count}} total fixes",
+          "aiInsights": "[ta] AI Insights",
+          "totalItems": "[ta] Total Items",
+          "missingMetadata": "[ta] Missing Metadata",
+          "fixesApplied": "[ta] Fixes Applied",
+          "status": "[ta] Status",
+          "totalIssues": "[ta] Total Issues Found",
+          "issuesFound": "[ta] Issues Found",
+          "seeInsightsBelow": "[ta] See AI Insights below for details"
+        },
+        "clearedSuccessfully": "[ta] All audit reports cleared successfully",
+        "confirmClearAll": "[ta] Are you sure you want to clear all audit reports? This action cannot be undone.",
+        "viewLogs": "[ta] View Logs"
       },
       "status": {
         "enabled": "இயக்கப்பட்டது",
@@ -1586,7 +2614,171 @@
         "failed": "தணிக்கை தோல்வி",
         "in_progress": "செயலில்",
         "pending": "நிலுவையில்",
-        "running": "இயங்குகிறது"
+        "running": "இயங்குகிறது",
+        "partial": "[ta] Partially Complete"
+      },
+      "schedules": {
+        "days": {
+          "wednesday": "[ta] Wednesday",
+          "thursday": "[ta] Thursday",
+          "monday": "[ta] Monday",
+          "saturday": "[ta] Saturday",
+          "friday": "[ta] Friday",
+          "tuesday": "[ta] Tuesday",
+          "sunday": "[ta] Sunday"
+        },
+        "mode": "[ta] Mode",
+        "modifyNote": "[ta] To modify schedules, use Google Cloud Console",
+        "editTitle": "[ta] Edit Schedule",
+        "cronExpression": "[ta] Cron Expression",
+        "editNotAvailableMessage": "[ta] Schedule modifications require Cloud Scheduler API integration. Please use the 'View in Cloud Console' button to modify schedules directly in Google Cloud Console.",
+        "subtitle": "[ta] Configure daily and weekly audit schedules",
+        "cost": "[ta] Est. Cost",
+        "description": "[ta] Description",
+        "dailyTitle": "[ta] Daily Audit",
+        "time": "[ta] Time",
+        "viewInConsole": "[ta] View in Cloud Console",
+        "weeklyTitle": "[ta] Weekly AI Audit",
+        "cronHint": "[ta] Format: minute hour day month weekday (e.g., 0 2 * * * = daily at 2:00 AM)",
+        "title": "[ta] Scheduled Audits",
+        "status": "[ta] Status",
+        "schedule": "[ta] Schedule",
+        "patterns": {
+          "weekly": "[ta] Every {{day}} at {{hour}}:{{minute}}",
+          "daily": "[ta] Daily at {{hour}}:{{minute}}"
+        },
+        "editNotAvailable": "[ta] Schedule Editing Not Available"
+      },
+      "modal": {
+        "retry": "[ta] Retry",
+        "close": "[ta] Close",
+        "cancel": "[ta] Cancel",
+        "confirmAI": {
+          "dryRunNote": "[ta] Running in DRY RUN mode (no changes will be made).",
+          "message": "[ta] This will trigger an autonomous AI agent audit with a budget limit of ${{budget}}. The agent will make decisions about what to check and fix. {{dryRun}}",
+          "title": "[ta] Trigger AI Agent Audit?"
+        },
+        "confirm": "[ta] Confirm"
+      },
+      "audit": {
+        "resume": "[ta] Resume",
+        "pauseSuccess": "[ta] Audit paused successfully",
+        "pause": "[ta] Pause",
+        "types": {
+          "dailyIncremental": "[ta] Daily Incremental",
+          "aiAgent": "[ta] AI Agent"
+        },
+        "sendInterject": "[ta] Send",
+        "cancelSuccess": "[ta] Audit cancelled successfully",
+        "interjectHint": "[ta] This message will be injected into the AI agent conversation at the next iteration. Use it to provide additional context, redirect focus, or give specific instructions.",
+        "interject": "[ta] Interject",
+        "interjectTitle": "[ta] Send Message to AI Agent",
+        "cancel": "[ta] Cancel",
+        "resumeSuccess": "[ta] Audit resumed successfully",
+        "interjectSuccess": "[ta] Message sent to AI agent successfully",
+        "interjectPlaceholder": "[ta] e.g., Focus only on movies, skip series for now..."
+      },
+      "voice": {
+        "commandFailed": "[ta] Failed to execute command. Please try again.",
+        "listening": "[ta] Listening...",
+        "example3": "[ta] Scan for broken streaming URLs",
+        "microphoneBlocked": "[ta] Microphone access was blocked. Please enable it in your browser settings.",
+        "title": "[ta] Voice Control",
+        "error": "[ta] Speech recognition error: {{error}}",
+        "example2": "[ta] Fix metadata for CYB titles",
+        "startFailed": "[ta] Failed to start voice recognition. Please try again.",
+        "description": "[ta] Use your voice to give commands to the librarian. Just press the button and speak naturally.",
+        "pressToSpeak": "[ta] Press to Speak",
+        "speaking": "[ta] Librarian is responding...",
+        "example1": "[ta] Check for missing posters in the last 24 hours",
+        "notAvailable": "[ta] Voice control is not available",
+        "transcript": "[ta] Transcript",
+        "examples": "[ta] Example Commands",
+        "noSpeech": "[ta] No speech detected. Please try again.",
+        "processing": "[ta] Processing your command...",
+        "example4": "[ta] Extract subtitles from movies",
+        "noMicrophone": "[ta] No microphone detected. Please check your device.",
+        "notSupported": "[ta] Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari."
+      },
+      "logs": {
+        "fixesApplied": "[ta] Applied {{count}} fix(es)",
+        "completed": "[ta] Completed",
+        "levels": {
+          "trace": "[ta] TRACE",
+          "warn": "[ta] WARN",
+          "debug": "[ta] DEBUG",
+          "error": "[ta] ERROR",
+          "info": "[ta] INFO",
+          "success": "[ta] SUCCESS"
+        },
+        "searchPlaceholder": "[ta] Search logs...",
+        "connecting": "[ta] Connecting to live audit log...",
+        "budgetSet": "[ta] 💰 Budget limit: ${{budget}}",
+        "noLogs": "[ta] No logs to display",
+        "liveMode": "[ta] ✅ Running in LIVE mode - changes will be applied",
+        "executionLog": "[ta] Audit Execution Log",
+        "title": "[ta] Execution Logs",
+        "connectingToAgent": "[ta] 🔗 Connecting to Claude AI Agent...",
+        "auditCompleted": "[ta] Audit {{status}} in {{duration}}s",
+        "triggerAuditToSee": "[ta] Trigger an audit to see live execution logs here",
+        "auditType": "[ta] Audit Type",
+        "liveAuditLog": "[ta] Live Audit Log",
+        "auditInitializing": "[ta] 🚀 Initializing {{auditType}} audit...",
+        "staleWarning": "[ta] No new logs for {{seconds}}s - job may be processing or stuck",
+        "dryRunMode": "[ta] ⚠️ Running in DRY RUN mode - no changes will be made",
+        "noActiveAudit": "[ta] No Active Audit",
+        "misclassificationsFound": "[ta] Found {{count}} misclassified item(s)",
+        "pollingStatus": "[ta] Polling active • Last checked",
+        "source": {
+          "aiAgent": "[ta] AI Agent",
+          "librarian": "[ta] Librarian"
+        },
+        "brokenStreamsFound": "[ta] Found {{count}} broken stream(s)",
+        "aiInsightPrefix": "[ta] AI Insight",
+        "orphanedItemsFound": "[ta] Found {{count}} orphaned item(s)",
+        "started": "[ta] Started",
+        "missingMetadataFound": "[ta] Found {{count}} item(s) with missing metadata",
+        "auditStarted": "[ta] Audit started",
+        "lastLog": "[ta] Last log"
+      },
+      "activityLog": {
+        "actionTypes": {
+          "classify": "[ta] Classify",
+          "cleanTitle": "[ta] Clean Title",
+          "fixUrl": "[ta] Fix URL",
+          "updateMetadata": "[ta] Update Metadata",
+          "recategorize": "[ta] Recategorize",
+          "addPoster": "[ta] Add Poster"
+        },
+        "filterByType": "[ta] Filter by type",
+        "rolledBack": "[ta] Rolled Back",
+        "title": "[ta] Activity Log",
+        "confirmRollback": {
+          "message": "[ta] Are you sure you want to rollback this action? This will restore the previous state.",
+          "title": "[ta] Confirm Rollback"
+        },
+        "content": "[ta] Content",
+        "emptyMessage": "[ta] No actions found",
+        "pagination": "[ta] Page {{page}} of {{totalPages}}",
+        "rollback": "[ta] Rollback",
+        "issueType": "[ta] Issue Type",
+        "allActions": "[ta] All Actions",
+        "updatedFields": "[ta] Updated {{fields}}",
+        "noDescription": "[ta] No description available",
+        "confidence": "[ta] Confidence",
+        "autoApproved": "[ta] Auto-approved",
+        "subtitle": "[ta] {{count}} actions recorded",
+        "changes": "[ta] Changes"
+      },
+      "progress": {
+        "items": "[ta] {{processed}} of {{total}} items",
+        "batch": "[ta] Batch {{current}} of {{total}}",
+        "finishing": "[ta] Finishing up...",
+        "finalizing": "[ta] Generating report and applying fixes"
+      },
+      "auditTypes": {
+        "daily_incremental": "[ta] daily incremental",
+        "ai_agent": "[ta] AI Agent"
       }
     }
   },
@@ -1596,32 +2788,60 @@
     "weekend": "வார இறுதி"
   },
   "voiceOnboarding": {
-    "title": "குரல் பயிற்சி",
-    "stepProgress": "படி {{step}} / {{total}}",
     "welcome": {
-      "title": "குரல் பயிற்சி",
-      "description": "தனிப்பயனாக்கப்பட்ட குரல் அடையாளம் மற்றும் குரல் கட்டளைகளுக்கு உங்கள் குரல் சுயவிவரத்தை பயிற்சி செய்யுங்கள்."
+      "title": "[ta] Welcome to Voice Control",
+      "description": "[ta] Control Bayit+ with your voice for a hands-free experience."
     },
-    "recording": {
-      "micButton": "மைக்",
-      "recButton": "பதிவு",
-      "tapToStart": "பதிவு தொடங்க தட்டவும்",
-      "tapToStop": "பதிவு செய்கிறது... நிறுத்த தட்டவும்",
-      "recordButton": "பதிவு செய்",
-      "stopButton": "நிறுத்து"
+    "features": {
+      "voiceCommands": "குரல் கட்டளைகள்",
+      "voiceCommandsDesc": "இயற்கையான பேச்சுடன் வழிசெலுத்தவும், தேடவும், பின்னணியை கட்டுப்படுத்தவும்",
+      "tts": "உரை-இருந்து-பேச்சு",
+      "ttsDesc": "பதில்களையும் உள்ளடக்க விவரங்களையும் சத்தமாகக் கேளுங்கள்",
+      "wakeWord": "எழுப்பு வார்த்தை",
+      "wakeWordDesc": "எப்போது வேண்டுமானாலும் குரல் கட்டுப்பாட்டை செயல்படுத்த 'Bayit' என்று சொல்லுங்கள்"
     },
-    "training": {
-      "title": "பயிற்சி நடந்து கொண்டிருக்கிறது",
-      "message": "உங்கள் குரல் சுயவிவரம் பயிற்சி பெறுகிறது. இது சிறிது நேரம் எடுக்கலாம்."
+    "getStarted": "தொடங்குங்கள்",
+    "permissions": {
+      "title": "மைக்ரோஃபோன் அணுகல்",
+      "description": "உங்கள் கட்டளைகளைக் கேட்க குரல் கட்டுப்பாட்டிற்கு மைக்ரோஃபோன் அணுகல் தேவை",
+      "privacy": "உங்கள் குரல் தரவு பாதுகாப்பாக செயலாக்கப்பட்டு ஒருபோதும் சேமிக்கப்படாது"
+    },
+    "permissionsGranted": "மைக்ரோஃபோன் அணுகல் வழங்கப்பட்டது",
+    "permissionRequired": {
+      "title": "அனுமதி தேவை",
+      "message": "குரல் கட்டுப்பாட்டைப் பயன்படுத்த உங்கள் சாதன அமைப்புகளில் மைக்ரோஃபோன் அணுகலை இயக்கவும்"
+    },
+    "grantPermissions": "அனுமதிகளை வழங்கு",
+    "testWakeWord": {
+      "title": "எழுப்பு வார்த்தையை சோதியுங்கள்",
+      "description": "குரல் செயல்படுத்தலை சோதிக்க 'Bayit' என்று சொல்லுங்கள்",
+      "success": "அருமை! குரல் செயல்படுத்தல் வேலை செய்கிறது"
+    },
+    "startTest": "சோதனையைத் தொடங்கு",
+    "complete": {
+      "title": "எல்லாம் தயார்!",
+      "description": "குரல் கட்டுப்பாடு இப்போது இயக்கப்பட்டது. இந்த கட்டளைகளை முயற்சிக்கவும்:",
+      "tryCommands": "இந்த கட்டளைகளை முயற்சிக்கவும்",
+      "examples": {
+        "search": "\"Fauda தேடு\"",
+        "play": "\"செய்திகளை இயக்கு\"",
+        "navigate": "\"நேரடி டிவிக்கு செல்\"",
+        "control": "\"இடைநிறுத்து\" அல்லது \"ஒலியை அதிகரி\""
+      },
+      "startUsing": "குரல் கட்டுப்பாட்டைப் பயன்படுத்தத் தொடங்குங்கள்"
+    },
+    "skip": "இப்போது தவிர்",
+    "buttons": {
+      "back": "[ta] Back"
     },
     "completion": {
-      "title": "குரல் சுயவிவரம் தயார்!",
-      "message": "உங்கள் குரல் சுயவிவரம் உருவாக்கப்பட்டது. இப்போது நீங்கள் குரல் கட்டளைகள் மற்றும் தனிப்பயனாக்கப்பட்ட பேச்சு அம்சங்களைப் பயன்படுத்தலாம்."
+      "message": "[ta] Voice features are ready to use.",
+      "title": "[ta] Voice Setup Complete"
     },
-    "buttons": {
-      "back": "பின்செல்",
-      "next": "அடுத்து",
-      "finish": "முடி"
+    "title": "[ta] Voice Setup",
+    "training": {
+      "message": "[ta] Read the phrases aloud to train voice recognition.",
+      "title": "[ta] Voice Training"
     }
   },
   "portal": {
@@ -1771,7 +2991,10 @@
       "languageHint": "ஒவ்வொரு உண்மைக்கும் 1-3 மொழிகளைத் தேர்ந்தெடுக்கவும்",
       "language": "மொழி",
       "selectLanguage": "இந்த மொழியைத் தேர்ந்தெடுக்கவும்",
-      "deselectLanguage": "இந்த மொழியை நீக்கவும்"
+      "deselectLanguage": "இந்த மொழியை நீக்கவும்",
+      "enableDescription": "[ta] Show trivia questions while watching content.",
+      "enableTrivia": "[ta] Enable Trivia",
+      "title": "[ta] Trivia Settings"
     },
     "aiTrivia": "AI Trivia",
     "tellMeMore": "Tell me more",
@@ -1891,266 +3114,1733 @@
   },
   "chapters": {
     "chapterLabel": "Chapter {{number}}",
-    "chapter_number": "அத்தியாயம் {{number}}"
+    "chapter_number": "அத்தியாயம் {{number}}",
+    "noChapters": "[ta] No chapters available",
+    "categories": {
+      "conclusion": "[ta] Conclusion",
+      "economy": "[ta] Economy",
+      "weather": "[ta] Weather",
+      "news": "[ta] News",
+      "security": "[ta] Security",
+      "culture": "[ta] Culture",
+      "intro": "[ta] Introduction",
+      "politics": "[ta] Politics",
+      "sports": "[ta] Sports"
+    },
+    "title": "[ta] Chapters",
+    "current": "[ta] Now",
+    "jumpTo": "[ta] Jump to",
+    "generating": "[ta] Generating chapters..."
   },
   "recording": {
     "stop": "பதிவை நிறுத்து",
     "start": "பதிவைத் தொடங்கு"
   },
-  "aiOnboarding": {
-    "title": "AI உதவியாளர் அமைப்பு",
-    "stepProgress": "படி {{step}} / {{total}}",
-    "welcome": {
-      "title": "AI உதவியாளருக்கு வரவேற்பு",
-      "description": "சொற்பொருள் தேடல், சாட்பாட் உதவி மற்றும் அறிவார்ந்த பரிந்துரைகளுக்கான உங்கள் AI துணை."
+  "discover": {
+    "subtitle": "19 AI-சார்ந்த அம்சங்களை ஆராயுங்கள்",
+    "description": "Bayit+ உங்கள் பார்வை, கேட்கும் மற்றும் கற்றல் அனுபவத்தை மேம்படுத்த AI பயன்படுத்துகிறது. உங்கள் தளத்தில் என்ன கிடைக்கிறது என்பதைக் கண்டறியுங்கள்.",
+    "featureCount": "{{count}} அம்சங்கள்",
+    "tryIt": "முயற்சி செய்க",
+    "startWalkthrough": "வழிகாட்டுதலைத் தொடங்கு",
+    "availableOn": "இதில் கிடைக்கும்",
+    "prerequisites": "முன்தேவைகள்",
+    "setup": "அமைக்கவும்",
+    "error": {
+      "fetchFailed": "Discover அம்சங்களை ஏற்றுவதில் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "unknownFeature": "அம்சம் கண்டறியப்படவில்லை.",
+      "featureDisabled": "இந்த அம்சம் தற்போது முடக்கப்பட்டுள்ளது."
     },
-    "permissions": {
-      "title": "அனுமதிகள்",
-      "description": "AI உதவியாளருக்கு இதற்கான அணுகல் தேவை:\n\n• உங்கள் பார்வை வரலாறு (தனிப்பயனாக்கப்பட்ட பரிந்துரைகளுக்கு)\n• தேடல் வினவல்கள் (முடிவுகளை மேம்படுத்த)\n• விருப்பத்தேர்வுகள் (பதில்களை தனிப்பயனாக்க)"
+    "availability": {
+      "ready": "தயார்",
+      "setupNeeded": "அமைப்பு தேவை",
+      "premiumRequired": "பிரீமியம் தேவை",
+      "notAvailable": "கிடைக்கவில்லை",
+      "platformOnly": "மற்ற தளம்"
     },
-    "personalization": {
-      "title": "தனிப்பயனாக்கம்",
-      "description": "AI உங்கள் தொடர்புகளிலிருந்து கற்று வழங்கும்:\n\n• சிறந்த உள்ளடக்க பரிந்துரைகள்\n• மேலும் துல்லியமான தேடல் முடிவுகள்\n• சூழல்சார் சாட்பாட் பதில்கள்"
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "tvos": "Apple TV",
+      "android": "Android"
     },
-    "completion": {
-      "title": "அனைத்தும் தயார்!",
-      "message": "உங்கள் AI உதவியாளர் உள்ளடக்கத்தைக் கண்டறிந்து அனுபவிக்க உங்களுக்கு உதவ தயாராக உள்ளது."
+    "category": {
+      "watching_movies": "திரைப்படங்கள் பார்க்கவும்",
+      "watching_live_tv": "நேரடி தொலைக்காட்சி பார்க்கவும்",
+      "learn_hebrew": "ஹீப்ரு கற்கவும்",
+      "search_discovery": "தேடல் & கண்டுபிடிப்பு",
+      "chat_assistants": "சாட் உதவியாளர்கள்"
     },
-    "buttons": {
-      "back": "பின்செல்",
-      "next": "அடுத்து",
-      "finish": "முடி"
+    "feature": {
+      "pause_ask": {
+        "name": "நிறுத்தி கேளுங்கள்",
+        "tagline": "எந்த காட்சியையும் நிறுத்தி உங்கள் AI தோழரிடம் கேளுங்கள்",
+        "description": "பார்க்கும்போது, வீடியோவை நிறுத்தி தற்போதைய காட்சியைப் பற்றி கேள்விகள் கேளுங்கள். உங்கள் AI கதாபாத்திரம் கலாச்சார குறிப்புகளை விளக்கும், உரையாடலை மொழிபெயர்க்கும் அல்லது கதைப்பகுதியை விவாதிக்கும்."
+      },
+      "interactive_subtitles": {
+        "name": "ஊடாடும் வசனங்கள்",
+        "tagline": "உடனடி மொழிபெயர்ப்பு மற்றும் சூழலுக்காக எந்த வசன வார்த்தையையும் தட்டுங்கள்",
+        "description": "வசனங்களில் எந்த வார்த்தையிலும் கிளிக் செய்து அதன் மொழிபெயர்ப்பு பார்க்கவும், உச்சரிப்பு கேட்கவும் மற்றும் பயன்பாட்டு எடுத்துக்காட்டுகளைப் பெறவும். உங்கள் விருப்பமான நிகழ்ச்சிகள் பார்க்கும்போது சொல்வளம் உருவாக்குங்கள்."
+      },
+      "vocabulary": {
+        "name": "சொல்வளம் கட்டுவோம்",
+        "tagline": "நீங்கள் பார்க்கும் நிகழ்ச்சிகளிலிருந்து புதிய வார்த்தைகளைக் கற்கவும்",
+        "description": "வசனங்களிலிருந்து தானாக புதிய ஹீப்ரு வார்த்தைகளை சேகரிக்கவும். ஃப்ளாஷ்கார்டுகளை மதிப்பாய்வு செய்யவும், முன்னேற்றத்தை கண்காணிக்கவும், நீங்கள் விரும்பும் உள்ளடக்கத்தின் மூலம் சொல்வளம் உருவாக்குங்கள்."
+      },
+      "vod_moments": {
+        "name": "VOD தருணங்கள்",
+        "tagline": "உங்கள் விருப்பமான உள்ளடக்கத்திலிருந்து AI-தேர்ந்தெடுத்த சிறந்த தருணங்கள்",
+        "description": "திரைப்படங்கள் மற்றும் நிகழ்ச்சிகளிலிருந்து AI-உருவாக்கிய சிறந்த கிளிப்கள் மற்றும் முக்கிய தருணங்களைப் பெறுங்கள். நினைவில் நிற்கும் காட்சிகளை பகிரவும் மற்றும் சிறந்த பகுதிகளை மீண்டும் பார்க்கவும்."
+      },
+      "cultural_context": {
+        "name": "கலாச்சார சூழல்",
+        "tagline": "ஒவ்வொரு காட்சிக்கும் பின்னால் உள்ள கலாச்சார பின்னணியை புரிந்துகொள்ளுங்கள்",
+        "description": "நீங்கள் பார்க்கும் உள்ளடக்கத்தில் தோன்றும் இஸ்ரேலி வழக்கங்கள், விழாக்கள், நகைச்சுவை மற்றும் சமூக நடைமுறைகளை விளக்கும் நிகழ்நேர கலாச்சார குறிப்புகளைப் பெறுங்கள்."
+      },
+      "bilingual_bridge": {
+        "name": "இருமொழி பாலம்",
+        "tagline": "பார்க்கும்போது ஹீப்ரு-தமிழில் பக்கவாட்டில் கற்கவும்",
+        "description": "முன்னிலைப்படுத்தப்பட்ட சொல்வளத்துடன் இரட்டை மொழி வசனங்களைப் பாருங்கள். இயல்பாகவே புரிதலை வளர்க்க ஹீப்ருவுக்கும் உங்கள் தாய்மொழிக்கும் இடையில் மாறுங்கள்."
+      },
+      "ai_companion": {
+        "name": "AI தோழர்",
+        "tagline": "இஸ்ரேலி உள்ளடக்கத்தில் உங்கள் தனிப்பட்ட AI வழிகாட்டி",
+        "description": "உங்களுடன் பார்க்கும் ஒரு AI கதாபாத்திரம், கருத்துரைகள் வழங்கி, கேள்விகளுக்கு பதில் அளித்து, இஸ்ரேலி ஊடகத்தின் நுணுக்கங்களை புரிந்துகொள்ள உதவுகிறது."
+      },
+      "live_dubbing": {
+        "name": "நேரடி குரல் மாற்றம்",
+        "tagline": "நேரடி இஸ்ரேலி தொலைக்காட்சி சேனல்களின் நிகழ்நேர AI குரல் மாற்றம்",
+        "description": "உங்கள் விருப்பமான மொழியில் AI-இயக்கும் நிகழ்நேர குரல் மாற்றத்துடன் நேரடி இஸ்ரேலி தொலைக்காட்சி பாருங்கள். மொழி தடைகள் இல்லாமல் செய்திகள், பேச்சு நிகழ்ச்சிகள் மற்றும் பொழுதுபோக்கை அனுபவியுங்கள்."
+      },
+      "live_subtitles": {
+        "name": "நேரடி வசனங்கள்",
+        "tagline": "நேரடி ஒளிபரப்புகளுக்கு நிகழ்நேர AI வசனங்கள்",
+        "description": "நேரடி இஸ்ரேலி தொலைக்காட்சி பார்க்கும்போது நிகழ்நேரத்தில் AI-உருவாக்கிய வசனங்களைப் பெறுங்கள். நேரடி உள்ளடக்கத்தை உடனடியாக மொழிபெயர்க்க உங்கள் விருப்பமான மொழியை தேர்ந்தெடுங்கள்."
+      },
+      "live_trivia": {
+        "name": "நேரடி வினாட்டி",
+        "tagline": "நேரடியில் ஒளிபரப்பாவதன் அடிப்படையில் வினாட்டி விளையாடுங்கள்",
+        "description": "AI நேரடி ஒளிபரப்புகளிலிருந்து தலைப்புகளை கண்டறிந்து நிகழ்நேரத்தில் வினாட்டி கேள்விகளை உருவாக்குகிறது. நண்பர்களுடன் போட்டியிடுங்கள் மற்றும் தொலைக்காட்சி பார்க்கும்போது இஸ்ரேலி கலாச்சாரத்தைப் பற்றி அறியுங்கள்."
+      },
+      "catch_up": {
+        "name": "தொடர்ந்து பார்க்கவும்",
+        "tagline": "நேரடி தொலைக்காட்சியில் நீங்கள் தவறவிட்டதின் AI சுருக்கங்கள்",
+        "description": "நேரடி ஒளிபரப்பின் ஒரு பகுதியை தவறவிட்டீர்களா? என்ன நடந்தது என்று உங்களுக்கு புரிய வைக்கும் AI-உருவாக்கிய சுருக்கங்களைப் பெறுங்கள், விரைவு மதிப்பாய்வுக்கு முக்கிய தருணங்கள் முன்னிலைப்படுத்தப்பட்டுள்ளன."
+      },
+      "scene_search": {
+        "name": "காட்சி தேடல்",
+        "tagline": "அனைத்து உள்ளடக்கங்களிலும் குறிப்பிட்ட காட்சிகளை தேடுங்கள்",
+        "description": "நீங்கள் நினைவில் வைத்திருக்கும் ஒரு காட்சியை விவரிக்கவும், AI அதை அனைத்து கிடைக்கும் உள்ளடக்கங்களிலும் கண்டுபிடிக்கும். உரையாடல், காட்சி கூறுகள் அல்லது கதைப்பகுதி விவரணங்கள் மூலம் தேடுங்கள்."
+      },
+      "phonetic_mirror": {
+        "name": "ஒலிப்பு கண்ணாடி",
+        "tagline": "AI கருத்துரையுடன் ஹீப்ரு உச்சரிப்பை பயிற்சி செய்யுங்கள்",
+        "description": "ஹீப்ரு பேசும்போது உங்களை பதிவு செய்து உச்சரிப்பில் உடனடி AI கருத்துரையைப் பெறுங்கள். உங்கள் பேச்சை தாய்மொழி பேசுவோரிடம் ஒப்பிட்டு காலப்போக்கில் முன்னேற்றத்தை கண்காணிக்கவும்."
+      },
+      "talk_back": {
+        "name": "திரும்பி பேசுங்கள்",
+        "tagline": "உங்கள் AI கதாபாத்திரத்துடன் ஹீப்ருவில் குரல் உரையாடல்கள் நடத்துங்கள்",
+        "description": "உங்கள் AI கதாபாத்திரத்துடன் பேசி உரையாடல் ஹீப்ருவை பயிற்சி செய்யுங்கள். இயல்பான உரையாடலில் இலக்கணம், சொல்வளம் மற்றும் உச்சரிப்பில் நிகழ்நேர கருத்துரையைப் பெறுங்கள்."
+      },
+      "interactive_mission": {
+        "name": "ஊடாடும் பணிகள்",
+        "tagline": "AI வழிகாட்டுதலுடன் வேடிக்கையான ஹீப்ரு கற்றல் சவால்கள்",
+        "description": "உள்ளடக்கம் பார்ப்பதை ஹீப்ரு கற்றல் பயிற்சிகளுடன் இணைக்கும் AI-வழிகாட்டப்பட்ட பணிகளை நிறைவு செய்யுங்கள். பரிசுகளை வெல்லுங்கள் மற்றும் உங்கள் மொழி பயணத்தை கண்காணிக்கவும்."
+      },
+      "glossary": {
+        "name": "தனிப்பட்ட சொல்லகராதி",
+        "tagline": "உள்ளடக்கத்திலிருந்து கட்டமைக்கப்பட்ட உங்கள் தனிப்பயன் ஹீப்ரு அகராதி",
+        "description": "நீங்கள் சந்தித்த மற்றும் சேமித்த அனைத்து ஹீப்ரு வார்த்தைகளும், வகை, அதிர்வெண் மற்றும் தேர்ச்சி நிலையின்படி ஒழுங்கமைக்கப்பட்டுள்ளன. எந்த நேரத்திலும் மதிப்பாய்வு செய்யவும் பயிற்சி செய்யவும்."
+      },
+      "llm_search": {
+        "name": "AI தேடல்",
+        "tagline": "இயல்பு மொழி வினவல்களுடன் உள்ளடக்கம் கண்டுபிடியுங்கள்",
+        "description": "இயல்பு மொழியைப் பயன்படுத்தி முழு Bayit+ நூலகத்தையும் தேடுங்கள். 'குடும்பத்தைப் பற்றிய வேடிக்கையான இஸ்ரேலி நகைச்சுவை' அல்லது 'தெல் அவீவ் பற்றிய ஆவணப்படங்கள்' கேளுங்கள் மற்றும் AI-தேர்ந்தெடுத்த முடிவுகளைப் பெறுங்கள்."
+      },
+      "proactive_voice": {
+        "name": "செயலில் குரல்",
+        "tagline": "உங்கள் தேவைகளை முன்கூட்டியே அறிந்து செயல்படும் குரல்-முதல் AI உதவியாளர்",
+        "description": "நீங்கள் பார்ப்பதன் அடிப்படையில் தொடர்புடைய உள்ளடக்க பரிந்துரைகள், மொழிபெயர்ப்புகள் மற்றும் கற்றல் வாய்ப்புகளை முன்முயற்சியாக வழங்கும் AI உதவியாளர்."
+      },
+      "chatbot": {
+        "name": "Bayit Chat",
+        "tagline": "இஸ்ரேலி உள்ளடக்கம் தொடர்பான எதையும் AI உடன் அரட்டையடியுங்கள்",
+        "description": "இஸ்ரேலி கலாச்சாரத்தைப் பற்றி கேள்விகள் கேளுங்கள், உள்ளடக்க பரிந்துரைகள் பெறுங்கள், ஹீப்ரு பயிற்சி செய்யுங்கள், அல்லது நீங்கள் பார்த்தது பற்றி விவாதிக்கவும். உங்கள் AI தோழர் எப்போதும் கிடைக்கும்."
+      }
+    },
+    "prereq": {
+      "avatar": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+      "subscription": "பிரீமியம் சந்தா தேவை",
+      "microphone": "மைக்ரோஃபோன் அணுகல் தேவை",
+      "contentType": "உங்கள் உள்ளடக்க விருப்பங்களை தேர்ந்தெடுங்கள்",
+      "preference": "உங்கள் மொழி விருப்பங்களை அமைக்கவும்",
+      "voiceClone": "உங்கள் குரல் நகலை அமைக்கவும்"
+    },
+    "walkthrough": {
+      "tryItNow": "[ta] Try it now",
+      "watchDemo": "[ta] Watch demo",
+      "skip": "[ta] Skip",
+      "next": "[ta] Next",
+      "done": "[ta] Done",
+      "complete": "[ta] Walkthrough complete",
+      "stepCounter": "[ta] {{current}} of {{total}}",
+      "pause_ask": {
+        "step1": "[ta] Navigate to a movie with interactive moments",
+        "step2": "[ta] Pause the movie during a scene",
+        "step3": "[ta] Tap the Ask a Character button",
+        "step4": "[ta] Watch the character respond to you"
+      },
+      "interactive_subtitles": {
+        "step1": "[ta] Start playing a movie with subtitles",
+        "step2": "[ta] Tap the Interactive button in the control bar",
+        "step3": "[ta] Select your subtitle language",
+        "step4": "[ta] Tap any word in the subtitles to learn more"
+      },
+      "vocabulary": {
+        "step1": "[ta] Open a movie with interactive subtitles enabled",
+        "step2": "[ta] Tap a word you want to learn",
+        "step3": "[ta] Tap Save to Vocabulary",
+        "step4": "[ta] Review your saved words in the Vocabulary section"
+      },
+      "vod_moments": {
+        "step1": "[ta] Start watching a movie with interactive moments",
+        "step2": "[ta] Wait for an interactive prompt to appear",
+        "step3": "[ta] See the AI-generated interaction"
+      },
+      "cultural_context": {
+        "step1": "[ta] Play a movie with Hebrew dialogue",
+        "step2": "[ta] Tap on a subtitle with cultural significance",
+        "step3": "[ta] Read the AI-generated cultural explanation"
+      },
+      "bilingual_bridge": {
+        "step1": "[ta] Open a movie with bilingual support",
+        "step2": "[ta] Select the bilingual subtitle mode",
+        "step3": "[ta] Tap a highlighted phrase to see the translation",
+        "step4": "[ta] Watch both languages side by side"
+      },
+      "ai_companion": {
+        "step1": "[ta] Start watching any movie",
+        "step2": "[ta] Tap the AI Companion button",
+        "step3": "[ta] Type a question about the movie",
+        "step4": "[ta] Read the contextual AI response"
+      },
+      "live_dubbing": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the dubbing button in the control bar",
+        "step3": "[ta] Select your preferred language",
+        "step4": "[ta] Listen to the real-time AI dubbing"
+      },
+      "live_subtitles": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the subtitles button",
+        "step3": "[ta] Select your subtitle language",
+        "step4": "[ta] Watch the real-time subtitles appear"
+      },
+      "live_trivia": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the trivia button",
+        "step3": "[ta] Answer the AI-generated questions"
+      },
+      "catch_up": {
+        "step1": "[ta] Navigate to a live broadcast",
+        "step2": "[ta] Select the catch-up option",
+        "step3": "[ta] Tap to generate an AI summary",
+        "step4": "[ta] Read the summary of what you missed"
+      },
+      "scene_search": {
+        "step1": "[ta] Navigate to a recorded broadcast",
+        "step2": "[ta] Type what you are looking for",
+        "step3": "[ta] Tap on the matching scene",
+        "step4": "[ta] Watch the scene from that point"
+      },
+      "phonetic_mirror": {
+        "step1": "[ta] Open the Phonetic Mirror in Zeh Ani",
+        "step2": "[ta] Read the Hebrew phrase shown",
+        "step3": "[ta] Speak the phrase into your microphone",
+        "step4": "[ta] Review the AI pronunciation feedback"
+      },
+      "talk_back": {
+        "step1": "[ta] Open Talk Back in Zeh Ani",
+        "step2": "[ta] Listen to your avatar speak Hebrew",
+        "step3": "[ta] Respond in Hebrew using your microphone",
+        "step4": "[ta] Review the AI feedback on your response"
+      },
+      "interactive_mission": {
+        "step1": "[ta] Open Interactive Missions",
+        "step2": "[ta] Select a mission level",
+        "step3": "[ta] Follow the AI-guided exercises",
+        "step4": "[ta] Complete the mission and earn rewards"
+      },
+      "glossary": {
+        "step1": "[ta] Open the Hebrew Glossary",
+        "step2": "[ta] Search for a Hebrew word",
+        "step3": "[ta] Listen to the pronunciation"
+      },
+      "llm_search": {
+        "step1": "[ta] Open the Search tab",
+        "step2": "[ta] Type a natural language query",
+        "step3": "[ta] Browse the AI-curated results"
+      },
+      "proactive_voice": {
+        "step1": "[ta] Open the Voice Suggestions feature",
+        "step2": "[ta] Tap and hold to speak",
+        "step3": "[ta] Hear the personalized recommendations"
+      },
+      "chatbot": {
+        "step1": "[ta] Open the AI Assistant",
+        "step2": "[ta] Type your question or request",
+        "step3": "[ta] Read the AI response"
+      }
+    },
+    "title": "[ta] Discover"
+  },
+  "byoc": {
+    "pageSubtitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள் - IPTV மற்றும் ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்",
+    "addSource": "மூலத்தை சேர்க்கவும்",
+    "sync": "ஒத்திசைவு",
+    "remove": "அகற்று",
+    "channelCount": "{{count}} சேனல்கள்",
+    "empty": {
+      "title": "எந்த மூலமும் சேர்க்கப்படவில்லை",
+      "subtitle": "Bayit+ உடன் உங்கள் சொந்த உள்ளடக்கத்தை பார்க்க உங்கள் IPTV, Xtream அல்லது ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்"
+    },
+    "source": {
+      "iptv": "IPTV மூலம்",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTV மூலத்தை சேர்க்கவும்",
+      "subtitle": "M3U அல்லது M3U8 பிளேலிஸ்ட் கோப்பிற்கான URL ஐ உள்ளிடவும்",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "சரிபார்க்கவும்",
+      "add": "மூலத்தை சேர்க்கவும்"
+    },
+    "addXtream": {
+      "title": "Xtream Codes இணைக்கவும்",
+      "subtitle": "உங்கள் Xtream Codes சர்வர் நற்சான்றிதழ்களை உள்ளிடவும்",
+      "serverUrl": "சர்வர் URL",
+      "username": "பயனர்பெயர்",
+      "password": "கடவுச்சொல்",
+      "connect": "இணைக்கவும்"
+    },
+    "preview": {
+      "title": "முன்னோட்டம்",
+      "channelCount": "{{count}} சேனல்கள் கண்டுபிடிக்கப்பட்டன"
+    },
+    "providers": {
+      "title": "பிரபலமான வழங்குநர்கள்"
+    },
+    "wizard": {
+      "step1": "மூலத்தை சேர்க்கவும்",
+      "step2": "செயலாக்கம்",
+      "step3": "மதிப்பாய்வு",
+      "selectSource": "மூல வகையை தேர்ந்தெடுக்கவும்"
+    },
+    "normalization": {
+      "title": "உங்கள் உள்ளடக்கம் செயலாக்கப்படுகிறது",
+      "total": "மொத்தம் {{count}} சேனல்கள்",
+      "matched": "{{count}} பொருந்தின",
+      "stage": {
+        "parsing": "பிளேலிஸ்ட் பகுப்பாய்வு செய்யப்படுகிறது...",
+        "matching": "சேனல்கள் பொருத்தப்படுகின்றன...",
+        "enriching": "மெட்டாடேட்டா செறிவூட்டப்படுகிறது...",
+        "finalizing": "இறுதிப்படுத்தப்படுகிறது..."
+      }
+    },
+    "review": {
+      "title": "இறக்குமதி செய்யப்பட்ட உள்ளடக்கத்தை மதிப்பாய்வு செய்யவும்",
+      "subtitle": "{{matched}} பொருந்தின, {{unmatched}} சேனல்கள் பொருந்தவில்லை",
+      "matchedChannels": "பொருந்திய சேனல்கள்",
+      "unmatchedChannels": "பொருந்தாத சேனல்கள்",
+      "apply": "பயன்படுத்து மற்றும் இறக்குமதி செய்"
+    },
+    "error": {
+      "urlRequired": "தயவுசெய்து URL ஐ உள்ளிடவும்",
+      "noChannels": "இந்த பிளேலிஸ்டில் சேனல்கள் எதுவும் கண்டுபிடிக்கப்படவில்லை",
+      "invalidUrl": "இந்த URL இலிருந்து பிளேலிஸ்டை ஏற்ற முடியவில்லை",
+      "allFieldsRequired": "அனைத்து புலங்களும் தேவை",
+      "enrichFailed": "மூலத்தை பகுப்பாய்வு செய்ய முடியவில்லை",
+      "syncFailed": "மூலத்தை ஒத்திசைக்க முடியவில்லை",
+      "normalizationFailed": "உள்ளடக்க செயலாக்கம் தோல்வியடைந்தது",
+      "normalizationPollFailed": "செயலாக்கத்தின் போது இணைப்பு துண்டிக்கப்பட்டது"
+    },
+    "home": {
+      "title": "[ta] Bring Your Own Content",
+      "subtitle": "[ta] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "[ta] Connect Sources",
+      "aiFeatures": {
+        "dubbing": "[ta] AI Dubbing available",
+        "subtitles": "[ta] Live Subtitles available"
+      }
     }
   },
-  "voiceAssistant": {
-    "fabLabel": "குரல் உதவியாளர்",
-    "modal": {
-      "title": "குரல் உதவியாளர்",
-      "setupRequired": "குரல் உதவியாளர் அமைப்பு தேவை",
-      "setupMessage": "குரல் அம்சங்களைப் பயன்படுத்த AI உதவியாளர் அமைப்பை முடிக்கவும்.",
-      "startSetup": "அமைப்பை தொடங்கு",
-      "cancel": "ரத்து செய்"
+  "onboarding": {
+    "welcome": {
+      "title": "Bayit+-க்கு வரவேற்கிறோம்",
+      "subtitle": "இஸ்ரேலிய உள்ளடக்கம், கலாச்சாரம் மற்றும் மொழி கற்றலுக்கான உங்கள் AI-இயங்கும் நுழைவாயில்",
+      "getStarted": "தொடங்குங்கள்"
     },
-    "state": {
-      "idle": "பேச தட்டவும்",
-      "listening": "கேட்கிறது...",
-      "processing": "செயலாக்கம்...",
-      "speaking": "பேசுகிறது...",
-      "error": "ஏதோ தவறு நடந்தது"
+    "highlight": {
+      "dubbing": "நேரடி AI டப்பிங்",
+      "subtitles": "ஊடாடும் வசனங்கள்",
+      "ai": "AI தோழர்கள்",
+      "learning": "ஹீப்ரு கற்றல்"
     },
-    "a11y": {
-      "startListening": "குரல் உள்ளீட்டைத் தொடங்கு",
-      "stopListening": "கேட்பதை நிறுத்தி செயலாக்கு",
-      "processing": "குரல் உள்ளீடு செயலாக்கம்",
-      "interrupt": "பேசுவதை நிறுத்து"
+    "voice": {
+      "title": "குரல் அமைப்பு",
+      "subtitle": "குரல் கட்டளைகள், ஹீப்ரு உச்சரிப்பு பயிற்சி மற்றும் கைகளில்லாத வழிசெலுத்தலுக்கு உங்கள் மைக்ரோஃபோனை இயக்குங்கள்",
+      "enable": "மைக்ரோஃபோனை இயக்கு",
+      "granted": "மைக்ரோஃபோன் வெற்றிகரமாக இயக்கப்பட்டது"
+    },
+    "tour": {
+      "done": "முடிந்தது"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "நேரடி AI டப்பிங்",
+        "description": "உங்கள் விருப்பமான மொழியில் நிகழ்நேர AI டப்பிங்குடன் இஸ்ரேலிய தொலைக்காட்சி பாருங்கள்",
+        "hebrew": "ஹீப்ரு",
+        "english": "ஆங்கிலம்"
+      },
+      "subtitles": {
+        "title": "ஊடாடும் வசனங்கள்",
+        "description": "உடனடி மொழிபெயர்ப்பு மற்றும் உச்சரிப்புக்காக வசனங்களில் எந்த வார்த்தையையும் தட்டவும்",
+        "sample": "குடும்பம் Shabbat இரவு உணவுக்காக கூடியது",
+        "word": "Shabbat",
+        "translation": "சபத் - வாராந்திர ஓய்வு நாள்"
+      },
+      "interaction": {
+        "title": "AI கதாபாத்திர தொடர்பு",
+        "description": "எந்த காட்சியையும் இடைநிறுத்தி கலாச்சார சூழல் பற்றி உங்கள் AI தோழரிடம் கேளுங்கள்",
+        "userMsg": "அவர்கள் என்ன திருவிழா கொண்டாடுகிறார்கள்?",
+        "aiMsg": "அவர்கள் Sukkot, கூடாரத் திருவிழா கொண்டாடுகிறார்கள். நீங்கள் பார்க்கும் தற்காலிக குடிசை sukkah என்று அழைக்கப்படுகிறது."
+      },
+      "trivia": {
+        "title": "நேரடி ட்ரிவியா",
+        "description": "AI நேரலையில் ஒளிபரப்பாகும் உள்ளடக்கத்திலிருந்து ட்ரிவியா கேள்விகள் உருவாக்குகிறது. போட்டியிடுங்கள் மற்றும் கற்றுக்கொள்ளுங்கள்!",
+        "question": "இஸ்ரேலின் அதிகாரப்பூர்வ மொழி என்ன?",
+        "optionA": "அரபிக்",
+        "optionB": "ஹீப்ரு",
+        "optionC": "ஆங்கிலம்"
+      },
+      "catchup": {
+        "title": "ஸ்மார்ட் கேட்ச் அப்",
+        "description": "நேரலை ஒளிபரப்பின் ஒரு பகுதியை தவறவிட்டீர்களா? AI தவறவிட்டதை சுருக்கமாக கூறுகிறது",
+        "missed": "தவறவிட்டது",
+        "summary": "AI சுருக்கம்",
+        "live": "இப்போது நேரலை"
+      },
+      "byoc": {
+        "title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+        "description": "உங்கள் IPTV மூலங்களை இறக்குமதி செய்து Bayit+ உள்ளடக்கத்துடன் பாருங்கள்",
+        "step1": "மூலத்தை சேர்க்கவும்",
+        "step2": "AI செறிவூட்டல்",
+        "step3": "பாருங்கள்"
+      },
+      "zehAni": {
+        "title": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+        "description": "உங்களுடன் கற்கும் தனிப்பயனாக்கப்பட்ட AI அவதாரை உருவாக்குங்கள்",
+        "generated": "AI அவதார்"
+      }
+    }
+  },
+  "household": {
+    "empty": {
+      "title": "இன்னும் ஒரு குடும்பம் இல்லை",
+      "subtitle": "உங்கள் குடும்பத்தை நிர்வகிக்க ஒரு குடும்பத்தை உருவாக்குங்கள்"
+    },
+    "create": {
+      "namePlaceholder": "குடும்ப பெயர்",
+      "button": "குடும்பத்தை உருவாக்கு"
+    },
+    "members": "உறுப்பினர்",
+    "role": {
+      "owner": "உரிமையாளர்",
+      "guardian": "பாதுகாவலர்",
+      "child": "குழந்தை"
+    },
+    "invite": {
+      "title": "உறுப்பினரை அழைக்குங்கள்",
+      "emailPlaceholder": "மின்னஞ்சல் முகவரி",
+      "send": "அழைப்பை அனுப்பு",
+      "pending": "நிலுவிலுள்ள அழைப்புகள்"
+    },
+    "removeMember": "நீக்கு",
+    "error": {
+      "fetchFailed": "குடும்பத்தை ஏற்றமுடியவில்லை",
+      "createFailed": "குடும்பத்தை உருவாக்கமுடியவில்லை",
+      "updateFailed": "குடும்பத்தை பதிக்கமுடியவில்லை",
+      "deleteFailed": "குடும்பத்தை நீக்கமுடியவில்லை",
+      "inviteFailed": "அழைப்பை அனுப்பமுடியவில்லை",
+      "removeFailed": "உறுப்பினரை நீக்கமுடியவில்லை"
+    }
+  },
+  "dm": {
+    "title": "செய்திகள்",
+    "conversations": "உரையாடல்கள்",
+    "conversation": "உரையாடல்",
+    "empty": {
+      "title": "இன்னும் செய்திகள் இல்லை",
+      "subtitle": "ஒரு நண்பருடன் உரையாடலை தொடங்குங்கள்"
+    },
+    "input": {
+      "placeholder": "ஒரு செய்தி தட்டச்சு செய்யுங்கள்...",
+      "send": "அனுப்பு"
+    },
+    "translate": "மொழிபெயர்",
+    "react": "எதிர்வினை",
+    "read": "படிக்கப்பட்டது",
+    "sent": "அனுப்பப்பட்டது",
+    "loadMore": "முந்தைய செய்திகளை ஏற்று",
+    "startConversation": "உரையாடலை தொடங்க ஒரு செய்தி அனுப்புங்கள்",
+    "reaction": {
+      "like": "விரும்பு",
+      "love": "காதல்",
+      "laugh": "ஹாஹா",
+      "surprise": "வாவ்",
+      "sad": "சோகம்"
+    },
+    "error": {
+      "fetchFailed": "செய்திகளை ஏற்றுவதில் தோல்வி",
+      "sendFailed": "செய்தி அனுப்புவதில் தோல்வி"
     }
   },
   "aiChat": {
-    "title": "AI அரட்டை",
-    "inputPlaceholder": "AIயிடம் எதையும் கேளுங்கள்...",
-    "sendButton": "அனுப்பு",
-    "retryButton": "மீண்டும் முயற்சிக்கவும்"
+    "retryButton": "[ta] Retry",
+    "sendButton": "[ta] Send",
+    "title": "[ta] AI Chat",
+    "voiceButton": "[ta] Voice"
   },
-  "chess": {
-    "title": "சதுரங்கம்",
-    "welcome": "சதுரங்கத்திற்கு வரவேற்கிறோம்",
-    "subtitle": "உலகம் முழுவதும் நண்பர்கள் மற்றும் குடும்பத்தினருடன் சதுரங்கம் விளையாடுங்கள்",
-    "createGame": "புதிய விளையாட்டை உருவாக்கு",
-    "joinGame": "விளையாட்டில் சேரவும்",
-    "gameCode": "விளையாட்டு குறியீடு",
-    "enterGameCode": "விளையாட்டு குறியீட்டை உள்ளிடவும்",
-    "invalidGameCode": "தவறான விளையாட்டு குறியீடு. 6 எழுத்துக்கள் இருக்க வேண்டும்.",
-    "joinFailed": "விளையாட்டில் சேர முடியவில்லை",
-    "join": "சேரவும்",
-    "create": "உருவாக்கு",
-    "chooseColor": "உங்கள் நிறத்தை தேர்ந்தெடுக்கவும்",
-    "white": "வெள்ளை",
-    "black": "கருப்பு",
-    "chatPlaceholder": "செய்தி எழுதுங்கள்... (ஆலோசனைக்கு @bot)",
-    "botHint": "எங்கள் AI உதவியாளரிடமிருந்து சதுரங்க ஆலோசனை பெற உங்கள் செய்தியில் @bot குறியிடுங்கள்",
-    "bot": "சதுரங்க உதவியாளர்",
-    "mute": "ஒலியடக்கு",
-    "unmute": "ஒலி இயக்கு",
-    "speaking": "பங்கேற்பாளர்கள்",
-    "resign": "விலகு",
-    "offerDraw": "சமன் முன்மொழி",
-    "newGame": "புதிய விளையாட்டு",
-    "checkmate": "செக்மேட்!",
-    "stalemate": "ஸ்டேல்மேட்",
-    "draw": "சமன்",
-    "resigned": "விளையாட்டு விலகல்",
-    "reconnecting": "மீண்டும் இணைக்கிறது...",
-    "moveHistory": "நகர்வு வரலாறு",
-    "noMoves": "இன்னும் நகர்வுகள் இல்லை",
-    "showHints": "வழிகாட்டி குறிப்புகளைக் காட்டு",
-    "yourTurn": "உங்கள் முறை",
-    "opponentTurn": "எதிராளியின் முறை",
-    "waitingForOpponent": "எதிராளிக்காக காத்திருக்கிறது...",
-    "gameOver": "விளையாட்டு முடிந்தது",
-    "sendingInvite": "{{name}}-க்கு விளையாட்டு அழைப்பு அனுப்புகிறது...",
-    "inviteSent": "{{name}}-க்கு விளையாட்டு அழைப்பு அனுப்பப்பட்டது! விளையாட்டு குறியீடு: {{code}}",
-    "inviteFailed": "பயனர் கிடைக்கவில்லை. பெயரை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
-    "inviteReceived": "{{name}} உங்களை சதுரங்க விளையாட்டுக்கு அழைத்திருக்கிறார்!",
-    "joinInvite": "விளையாட்டில் சேரவும்",
-    "challenge": "சவால்",
-    "challengeFriend": "நண்பரை சவால் விடு",
-    "noFriendsYet": "சவால் விட நண்பர்களைச் சேர்க்கவும்",
-    "acceptInvite": "ஏற்கவும்",
-    "declineInvite": "மறுக்கவும்",
-    "playedAsWhite": "வெள்ளையாக விளையாடியது",
-    "playedAsBlack": "கருப்பாக விளையாடியது",
-    "gameMode": "விளையாட்டு முறை",
-    "playVsFriend": "நண்பருக்கு எதிராக விளையாடு",
-    "playVsBot": "போட்டுக்கு எதிராக விளையாடு",
-    "difficulty": "கடினத்தன்மை",
-    "easy": "எளிது",
-    "medium": "நடுத்தரம்",
-    "hard": "கடினம்",
-    "chessBot": "சதுரங்க போட்",
-    "disconnected": "துண்டிக்கப்பட்டது",
-    "theirTurn": "அவர்களின் முறை",
-    "copyCode": "குறியீட்டை நகலெடு",
-    "whiteTurn": "வெள்ளையின் முறை",
-    "blackTurn": "கருப்பின் முறை",
-    "you": "நீங்கள்",
-    "opponent": "எதிரி",
-    "acceptDraw": "சமன் ஏற்கவும்",
-    "declineDraw": "சமன் நிராகரிக்கவும்",
-    "whiteCaptured": "வெள்ளை பிடித்தவை",
-    "blackCaptured": "கருப்பு பிடித்தவை",
-    "online": "ஆன்லைன்",
-    "offline": "ஆஃப்லைன்",
-    "joinByGameCode": "விளையாட்டு குறியீட்டில் சேரவும்",
-    "timeout": "நேரம் முடிந்தது",
-    "drawOffered": "சமநிலை முன்மொழிவு",
-    "chat": {
-      "title": "அரட்டை",
-      "inputPlaceholder": "செய்தி எழுதவும்..."
+  "aiOnboarding": {
+    "buttons": {
+      "back": "[ta] Back"
     },
-    "timeControl": "நேர கட்டுப்பாடு",
-    "unlimited": "வரம்பற்ற",
-    "bullet1": "1 நிமிடம்",
-    "blitz3": "3 நிமிடங்கள்",
-    "blitz5": "5 நிமிடங்கள்",
-    "rapid10": "10 நிமிடங்கள்",
-    "classical30": "30 நிமிடங்கள்",
-    "challengeViaWhatsApp": "WhatsApp வழியாக சவால் விடுங்கள்",
-    "whatsAppMessage": "Bayit+-ல் சதுரங்கத்தில் உங்களுக்கு சவால் விடுகிறேன்! குறியீடு: {{code}} - விளையாட தட்டவும்: {{link}}"
+    "completion": {
+      "message": "[ta] You're all set! Start exploring AI features.",
+      "title": "[ta] Setup Complete"
+    },
+    "permissions": {
+      "description": "[ta] Grant permissions to enable AI features like voice and camera.",
+      "title": "[ta] Permissions"
+    },
+    "personalization": {
+      "description": "[ta] Tell us your preferences to personalize your AI experience.",
+      "title": "[ta] Personalization"
+    },
+    "title": "[ta] AI Setup",
+    "welcome": {
+      "description": "[ta] Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
+      "title": "[ta] Welcome to Bayit+ AI"
+    }
   },
-  "byoc": {
-    "home": {
-      "title": "உங்கள் சொந்த உள்ளடக்கத்தைக் கொண்டு வாருங்கள்",
-      "subtitle": "உங்கள் விருப்பமான உள்ளடக்க ஆதாரங்களை இணைத்து AI டப்பிங், வசனங்கள் மற்றும் பலவற்றுடன் மேம்படுத்துங்கள்",
-      "connectButton": "உங்கள் உள்ளடக்கத்தை இணைக்கவும்",
-      "aiFeatures": {
-        "dubbing": "AI டப்பிங்",
-        "subtitles": "AI வசனங்கள்"
+  "auth": {
+    "biometricEnrollEnable": "[ta] Enable",
+    "biometricEnrollMessage": "[ta] Use Face ID or fingerprint for faster sign-in next time.",
+    "biometricEnrollSkip": "[ta] Skip",
+    "biometricEnrollTitle": "[ta] Enable Biometric Sign-In",
+    "biometricSignIn": "[ta] Sign in with Biometrics",
+    "signOut": "[ta] Sign Out",
+    "loginRequired": "[ta] Login Required",
+    "loginToWatch": "[ta] Please sign in to watch {{title}}",
+    "signUp": "[ta] Sign Up",
+    "login": "[ta] Login"
+  },
+  "auth_device_authorized": "[ta] Device authorized",
+  "auth_device_code_expired": "[ta] Code expired",
+  "auth_device_get_new_code": "[ta] Get new code",
+  "auth_device_manual_login": "[ta] Sign in manually",
+  "auth_device_visit_uri": "[ta] Visit the URL shown on your TV",
+  "avatar": {
+    "tapToSpeak": "[ta] Tap to speak",
+    "title": "[ta] Avatar"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "[ta] Dubbed Audio",
+      "originalAudio": "[ta] Original Audio",
+      "title": "[ta] Audio Mixer"
+    },
+    "settings_title": "[ta] Dubbing Settings",
+    "target_language": "[ta] Target Language",
+    "voiceSelector": {
+      "selected": "[ta] Selected",
+      "subtitle": "[ta] Choose a voice for dubbing",
+      "title": "[ta] Voice Selection"
+    }
+  },
+  "go_back": "[ta] Go Back",
+  "miniPlayer": {
+    "closePlayer": "[ta] Close Player",
+    "skipBackward": "[ta] Skip Backward",
+    "skipForward": "[ta] Skip Forward"
+  },
+  "retry": "[ta] Retry",
+  "search_hint": "[ta] Search channels, movies, shows...",
+  "search_no_results": "[ta] No results found",
+  "search_prompt": "[ta] What are you looking for?",
+  "subscription_required": "[ta] Subscription Required",
+  "subscription_upsell_tv": "[ta] Upgrade to watch on TV",
+  "talkback": {
+    "title": "[ta] Talkback"
+  },
+  "tvLogin": {
+    "almostThere": "[ta] Almost there!",
+    "authenticating": "[ta] Authenticating...",
+    "connected": "[ta] Connected",
+    "expired": "[ta] Code Expired",
+    "expiredMessage": "[ta] Your sign-in code has expired. Please request a new one.",
+    "header": "[ta] Sign In to TV",
+    "pleaseSignIn": "[ta] Please sign in on your phone or computer",
+    "signInButton": "[ta] Sign In",
+    "signInToTV": "[ta] Sign In to TV",
+    "subtitle": "[ta] Enter the code shown on your TV screen",
+    "tvSignedIn": "[ta] TV signed in successfully",
+    "footer": "[ta] Having trouble? Make sure you scanned a fresh QR code from your TV.",
+    "verificationFailed": "[ta] Failed to verify session. Please try again.",
+    "verifying": "[ta] Verifying...",
+    "invalidQR": "[ta] Invalid QR code. Please scan again from your TV.",
+    "authFailed": "[ta] Authorization failed.",
+    "authorizeTV": "[ta] Authorize TV",
+    "sessionInvalid": "[ta] This QR code has expired. Please generate a new one on your TV.",
+    "success": "[ta] Success!",
+    "authorizing": "[ta] Authorizing...",
+    "enterCredentials": "[ta] Please enter your credentials to authorize your TV.",
+    "loginDescription": "[ta] Enter your credentials to authorize your TV",
+    "authorizingDescription": "[ta] Logging you in on your TV...",
+    "loginTitle": "[ta] Login to Your TV",
+    "tryAgain": "[ta] Try Again",
+    "verifyingDescription": "[ta] Connecting to your TV...",
+    "successDescription": "[ta] Your TV is now logged in. You can close this page.",
+    "goToHome": "[ta] Go to Home",
+    "fillAllFields": "[ta] Please fill in all fields",
+    "error": "[ta] Something went wrong",
+    "loginFailed": "[ta] Login failed. Please check your credentials.",
+    "securityNote": "[ta] Your credentials are sent securely and are never stored on the TV.",
+    "notLoggedIn": "[ta] You are not logged in on this device."
+  },
+  "voiceAssistant": {
+    "fabLabel": "[ta] Voice Assistant",
+    "modal": {
+      "cancel": "[ta] Cancel",
+      "setupMessage": "[ta] Set up voice recognition to use the voice assistant.",
+      "setupRequired": "[ta] Setup Required",
+      "startSetup": "[ta] Start Setup",
+      "title": "[ta] Voice Assistant"
+    }
+  },
+  "voiceCommand": {
+    "executing": "[ta] Executing...",
+    "listening": "[ta] Listening...",
+    "noMatch": "[ta] No match found",
+    "recognized": "[ta] Recognized"
+  },
+  "voiceDecision": {
+    "cancel": "[ta] Cancel",
+    "confirm": "[ta] Confirm",
+    "matched": "[ta] Matched"
+  },
+  "voiceSearch": {
+    "listening": "[ta] Listening...",
+    "noResults": "[ta] No results found",
+    "tapToSpeak": "[ta] Tap to speak",
+    "title": "[ta] Voice Search"
+  },
+  "voiceSettings": {
+    "language": "[ta] Language",
+    "speechRate": "[ta] Speech Rate",
+    "title": "[ta] Voice Settings",
+    "ttsProvider": "[ta] TTS Provider",
+    "voiceMode": "[ta] Voice Mode",
+    "voiceSelection": "[ta] Voice Selection",
+    "wakeWord": "[ta] Wake Word"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "[ta] Back"
+    },
+    "calibration": {
+      "description": "[ta] Speak normally to calibrate the microphone.",
+      "listening": "[ta] Listening...",
+      "micButton": "[ta] Start Recording",
+      "resultTitle": "[ta] Calibration Result",
+      "stopButton": "[ta] Stop Recording",
+      "tapToStart": "[ta] Tap to start calibration",
+      "title": "[ta] Microphone Calibration"
+    },
+    "complete": {
+      "message": "[ta] Voice wizard setup is complete. You can now use voice features.",
+      "title": "[ta] Setup Complete"
+    },
+    "language": {
+      "description": "[ta] Select your preferred language for voice commands.",
+      "title": "[ta] Voice Language"
+    },
+    "permission": {
+      "description": "[ta] Microphone access is needed for voice features.",
+      "granted": "[ta] Permission Granted",
+      "requestButton": "[ta] Grant Permission",
+      "title": "[ta] Microphone Permission"
+    },
+    "title": "[ta] Voice Wizard"
+  },
+  "watch_now": "[ta] Watch Now",
+  "watch": {
+    "confirmDeleteEpisode": "[ta] Delete this episode?",
+    "addToList": "[ta] Add to List",
+    "deleteEpisode": "[ta] Delete Episode",
+    "backToHome": "[ta] Back to Home",
+    "notFound": "[ta] Content not found",
+    "cast": "[ta] Cast",
+    "episodes": "[ta] Episodes",
+    "like": "[ta] Like",
+    "episodesList": "[ta] Episodes",
+    "now": "[ta] Now",
+    "schedule": "[ta] Schedule",
+    "related": "[ta] Related Content",
+    "share": "[ta] Share"
+  },
+  "taxonomy": {
+    "subcategories": {
+      "coding": "[ta] Coding",
+      "kids-series": "[ta] Kids Series",
+      "teen-torah": "[ta] Teen Torah",
+      "bedtime-stories": "[ta] Bedtime Stories",
+      "math-fun": "[ta] Fun Math",
+      "interactive": "[ta] Interactive",
+      "jewish-history": "[ta] Jewish History",
+      "israel-news": "[ta] Israel News",
+      "tiktok-trends": "[ta] TikTok Trends",
+      "bar-bat-mitzvah": "[ta] Bar/Bat Mitzvah",
+      "film-culture": "[ta] Film Culture",
+      "art-culture": "[ta] Art Culture",
+      "torah-stories": "[ta] Torah Stories",
+      "nursery-rhymes": "[ta] Nursery Rhymes",
+      "teen-movies": "[ta] Teen Movies",
+      "career-prep": "[ta] Career Prep",
+      "memes": "[ta] Memes",
+      "sports-news": "[ta] Sports News",
+      "life-skills": "[ta] Life Skills",
+      "jewish-holidays": "[ta] Jewish Holidays",
+      "music-culture": "[ta] Music Culture",
+      "nature-animals": "[ta] Nature & Animals",
+      "food-culture": "[ta] Food Culture",
+      "viral-videos": "[ta] Viral Videos",
+      "kids-movies": "[ta] Kids Movies",
+      "gaming": "[ta] Gaming",
+      "study-help": "[ta] Study Help",
+      "science-news": "[ta] Science News",
+      "hebrew-songs": "[ta] Hebrew Songs",
+      "learning-hebrew": "[ta] Learning Hebrew",
+      "gadgets": "[ta] Gadgets",
+      "young-science": "[ta] Young Science",
+      "world-news": "[ta] World News",
+      "teen-series": "[ta] Teen Series"
+    },
+    "sections": {
+      "live": "[ta] Live TV",
+      "youngsters": "[ta] Youngsters",
+      "documentaries": "[ta] Documentaries",
+      "movies": "[ta] Movies",
+      "series": "[ta] Series",
+      "music": "[ta] Music",
+      "kids": "[ta] Kids",
+      "podcasts": "[ta] Podcasts"
+    }
+  },
+  "help": {
+    "openTooltip": "[ta] Open help tooltip",
+    "onboarding": {
+      "profiles": {
+        "description": "[ta] Create profiles for each family member with personalized recommendations",
+        "title": "[ta] Family Profiles"
+      },
+      "welcome": {
+        "title": "[ta] Welcome to Bayit+",
+        "description": "[ta] Your home for Israeli entertainment, anywhere in the world"
+      },
+      "liveTv": {
+        "description": "[ta] Watch Israeli channels live, including news, sports, and entertainment",
+        "title": "[ta] Live TV"
+      },
+      "voice": {
+        "description": "[ta] Say 'Bayit' to control the app with your voice",
+        "title": "[ta] Voice Control"
+      },
+      "vod": {
+        "title": "[ta] On-Demand Content",
+        "description": "[ta] Browse movies, series, and documentaries anytime"
       }
     },
-    "yourChannels": "உங்கள் சேனல்கள்",
-    "iptv": "IPTV",
-    "plex": "Plex",
-    "youtube": "YouTube",
-    "addIPTV": "IPTV சேர்க்கவும்",
-    "addPlex": "Plex சேர்க்கவும்",
-    "addYouTube": "YouTube சேர்க்கவும்",
-    "playlistURL": "பிளேலிஸ்ட் URL",
-    "playlistName": "பிளேலிஸ்ட் பெயர்",
-    "noChannels": "சானல்கள் கண்டறியவில்லை",
-    "refreshing": "புதுப்பிக்கிறது...",
-    "sourceAdded": "மூலம் சேர்க்கப்பட்டது",
-    "sourceRemoved": "மூலம் நீக்கப்பட்டது",
-    "connectedSources": "இணைக்கப்பட்ட மூலங்கள்",
-    "aiAvailable": "AI கிடைக்கிறது",
-    "audioAIOnly": "ஆடியோ AI மட்டும்",
-    "aiDubbing": "AI டப்பிங்",
-    "aiSubtitles": "AI வசனங்கள்",
-    "connectContent": "உள்ளடக்கத்தை இணைக்கவும்",
-    "connectContentDesc": "உங்கள் IPTV, Plex அல்லது YouTube மூலங்களை சேர்க்கவும்",
-    "removeSource": "மூலத்தை நீக்கு",
-    "removeConfirm": "இந்த மூலத்தை நீக்க விரும்புகிறீர்களா?",
-    "channelCount": "%d சேனல்கள்",
-    "fromPlex": "Plex-இலிருந்து",
-    "enterURL": "பிளேலிஸ்ட் URL அல்லது கோப்பை உள்ளிடவும்",
-    "validating": "சரிபார்க்கிறது...",
-    "invalidURL": "சரியான URL-ஐ உள்ளிடவும்",
-    "fetchFailed": "பிளேலிஸ்ட்டை பெற இயலவில்லை",
-    "plexVisitLink": "plex.tv/link-ஐ பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
-    "plexEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
-    "plexWaiting": "Plex அங்கீகாரத்திற்காக காத்திருக்கிறது...",
-    "plexRequestingPin": "Plex PIN கோருகிறது...",
-    "plexSelectServer": "சேவையகத்தைத் தேர்ந்தெடுக்கவும்",
-    "plexSelectServerDesc": "எந்த Plex சேவையகத்தை இணைக்க வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்",
-    "plexDiscovering": "சேவையகங்களைக் கண்டறிகிறது...",
-    "plexNoServers": "Plex சேவையகங்கள் எதுவும் கிடைக்கவில்லை",
-    "plexLocal": "உள்ளூர்",
-    "plexRemote": "தொலைநிலை",
-    "plexItemCount": "Plex-இலிருந்து %d உருப்படிகள்",
-    "plexConnectDesc": "உங்கள் Plex Media Server-ஐ இணைக்கவும்",
-    "youtubeVisitLink": "கீழே உள்ள இணைப்பைப் பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
-    "youtubeEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
-    "youtubeWaiting": "அங்கீகாரத்திற்காக காத்திருக்கிறது...",
-    "youtubeRequestingCode": "சாதன குறியீடு கோருகிறது...",
-    "youtubeConnected": "YouTube இணைக்கப்பட்டது",
-    "youtubeVideoCount": "வீடியோக்கள் கண்டறியப்பட்டன",
-    "youtubeOpenApp": "YouTube-இல் திறக்கவும்",
-    "youtubeAudioAINote": "YouTube உள்ளடக்கத்திற்கு ஆடியோ AI அம்சங்கள் கிடைக்கும்",
-    "fromYouTube": "YouTube-இலிருந்து",
-    "youtubeConnectDesc": "உங்கள் YouTube கணக்கை இணைக்கவும்",
-    "bannerTitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
-    "bannerSubtitle": "AI-மேம்படுத்தப்பட்ட பார்வைக்கு உங்கள் ஸ்ட்ரீமிங் மூலங்களை இணைக்கவும்",
-    "bannerConnect": "இணைக்க",
-    "bannerDismiss": "நிராகரி",
-    "itemsLoaded": "உருப்படிகள் ஏற்றப்பட்டன",
-    "enriching": "செறிவூட்டுகிறது...",
-    "findingSubtitles": "வசனங்களைத் தேடுகிறது...",
-    "subtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்பட்டன",
-    "noSubtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்படவில்லை",
-    "interactionMoments": "ஊடாடும் தருணங்கள்",
-    "interactionMomentsDescription": "கதாபாத்திர தொடர்புகளுக்கான முக்கிய தருணங்களை AI கண்டறியும்",
-    "enrichmentFailed": "செறிவூட்டல் தோல்வியடைந்தது",
-    "browsePlexLibrary": "Plex நூலகத்தை உலாவுக",
-    "addXtream": "Xtream Codes",
-    "xtreamServer": "சேவையக URL",
-    "xtreamUsername": "பயனர்பெயர்",
-    "xtreamPassword": "கடவுச்சொல்",
-    "xtreamConnectDesc": "Xtream Codes வழங்குநரை இணைக்கவும்",
-    "xtreamAuthFailed": "அங்கீகாரம் தோல்வியடைந்தது",
-    "sourceName": "மூலத்தின் பெயர்",
-    "selectProvider": "வழங்குநரைத் தேர்ந்தெடுக்கவும்",
-    "manualEntry": "கைமுறை உள்ளீடு",
-    "onboarding.title": "உள்ளடக்க அமைப்பு",
-    "onboarding.connectSource": "ஒரு மூலத்தை இணைக்கவும்",
-    "onboarding.connectDesc": "தொடங்குவதற்கு உங்கள் முதல் உள்ளடக்க மூலத்தை சேர்க்கவும்",
-    "onboarding.sourceAdded": "மூலம் சேர்க்கப்பட்டது",
-    "onboarding.analyzing": "உள்ளடக்கத்தை பகுப்பாய்வு செய்கிறது...",
-    "onboarding.analyze": "உள்ளடக்கத்தை பகுப்பாய்வு செய்",
-    "onboarding.analysisComplete": "பகுப்பாய்வு முடிந்தது",
-    "onboarding.channelsIdentified": "சேனல்கள் அடையாளம் காணப்பட்டன",
-    "onboarding.vodMatched": "VOD பொருத்தப்பட்டது",
-    "onboarding.duplicatesFound": "நகல்கள் கண்டறியப்பட்டன",
-    "onboarding.streamsHealthy": "ஸ்ட்ரீம்கள் ஆரோக்கியமானவை",
-    "onboarding.languages": "மொழிகள்",
-    "onboarding.topCategories": "முக்கிய வகைகள்",
-    "onboarding.cleanupTitle": "உள்ளடக்க சுத்தம்",
-    "onboarding.autoBestQuality": "சிறந்த தரத்தை தானாக தேர்ந்தெடு",
-    "onboarding.autoBestQualityDesc": "ஒவ்வொரு சேனலுக்கும் மிக உயர்ந்த தரமான ஸ்ட்ரீமை தானாகத் தேர்ந்தெடுக்கவும்",
-    "onboarding.applyCleanup": "சுத்தம் பயன்படுத்து",
-    "onboarding.personalizeTitle": "தனிப்பயனாக்கு",
-    "onboarding.personalizeDesc": "முகப்புத் திரைக்கான உங்கள் விருப்பங்களைத் தேர்ந்தெடுக்கவும்",
-    "onboarding.languagePriority": "மொழி முன்னுரிமை",
-    "onboarding.homeCategories": "முகப்பு வகைகள்",
-    "onboarding.ready": "தயார்",
-    "home.title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
-    "home.subtitle": "உங்கள் IPTV, Plex, YouTube அல்லது Xtream மூலங்களை இணைக்கவும்",
-    "home.connectButton": "மூலங்களை இணைக்கவும்",
-    "home.aiFeatures.dubbing": "AI டப்பிங்",
-    "home.aiFeatures.subtitles": "AI வசனங்கள்",
-    "tapToOpen": "திறக்க தட்டவும்",
-    "aiTrivia": "AI ட்ரிவியா",
-    "ai.dubbing": "AI டப்பிங்",
-    "ai.subtitles": "AI வசனங்கள்",
-    "ai.trivia": "AI ட்ரிவியா",
-    "ai.audioOverlay": "ஆடியோ மேலடுக்கு"
+    "search": {
+      "popular": "[ta] Popular",
+      "noResultsHint": "[ta] Try different keywords or browse categories",
+      "placeholder": "[ta] Search help...",
+      "recent": "[ta] Recent",
+      "noResults": "[ta] No results found for \"{{query}}\""
+    },
+    "faq": {
+      "a3": "[ta] Check your internet connection. If the problem persists, try clearing the app cache or restarting the app.",
+      "q3": "[ta] Why isn't my video playing?",
+      "a1": "[ta] Go to Settings > Subscription to view and change your current plan. You can upgrade or downgrade at any time.",
+      "title": "[ta] Frequently Asked Questions",
+      "q4": "[ta] How do I cancel my subscription?",
+      "a4": "[ta] You can cancel your subscription anytime through Settings > Subscription > Cancel Plan. You'll continue to have access until the end of your billing period.",
+      "a2": "[ta] Tap the download icon on any content to save it for offline viewing. Downloads are available on mobile devices only.",
+      "q2": "[ta] How do I download content for offline viewing?",
+      "q1": "[ta] How do I change my subscription plan?"
+    },
+    "howTo": "[ta] How to use",
+    "actions": {
+      "support": "[ta] Contact Support",
+      "faq": "[ta] FAQ",
+      "docs": "[ta] Documentation",
+      "tutorial": "[ta] View Tutorial",
+      "search": "[ta] Search Help"
+    },
+    "categories": {
+      "account": "[ta] Account",
+      "parents": "[ta] For Parents",
+      "features": "[ta] Features",
+      "getting-started": "[ta] Getting Started",
+      "admin": "[ta] Admin Guide",
+      "troubleshooting": "[ta] Troubleshooting",
+      "platform-guides": "[ta] Platform Guides",
+      "judaism": "[ta] Judaism",
+      "developer": "[ta] Developer API"
+    },
+    "email": "[ta] Email Support",
+    "subtitle": "[ta] How can we help you?",
+    "relatedArticles": "[ta] Related articles",
+    "contactSupport": "[ta] Contact Support",
+    "next": "[ta] Next",
+    "skipTutorial": "[ta] Skip tutorial",
+    "chatAvailable": "[ta] Available 24/7",
+    "openHelp": "[ta] Open help menu",
+    "chat": "[ta] Live Chat",
+    "getStarted": "[ta] Get Started",
+    "stillNeedHelp": "[ta] Still need help?",
+    "phone": "[ta] Phone Support",
+    "previous": "[ta] Previous"
+  },
+  "friends": {
+    "requestFailed": "[ta] Failed to send request",
+    "searchFailed": "[ta] Failed to search users",
+    "requests": "[ta] Requests",
+    "pendingLabel": "[ta] Pending",
+    "noOutgoing": "[ta] No outgoing requests",
+    "myFriends": "[ta] My Friends",
+    "lastGame": "[ta] Last game: {{time}}",
+    "remove": "[ta] Remove",
+    "noFriends": "[ta] No friends yet",
+    "reject": "[ta] Reject",
+    "rejectFailed": "[ta] Failed to reject request",
+    "outgoingRequests": "[ta] Outgoing Requests",
+    "noResults": "[ta] No players found",
+    "requestCancelled": "[ta] Friend request cancelled",
+    "sentAt": "[ta] Sent {{time}}",
+    "add": "[ta] Add Friend",
+    "findPlayers": "[ta] Find Players",
+    "cancel": "[ta] Cancel",
+    "friendRemoved": "[ta] Friend removed",
+    "requestRejected": "[ta] Friend request rejected",
+    "incomingRequests": "[ta] Incoming Requests",
+    "noIncoming": "[ta] No incoming requests",
+    "friendsCount": "[ta] {{count}} friends",
+    "alreadyFriends": "[ta] Friends",
+    "acceptFailed": "[ta] Failed to accept request",
+    "noResultsDesc": "[ta] Try searching with a different name",
+    "requestSent": "[ta] Friend request sent!",
+    "accept": "[ta] Accept",
+    "friendsLabel": "[ta] Friends",
+    "searchPlaceholder": "[ta] Search by name...",
+    "noFriendsDesc": "[ta] Search for players and send friend requests",
+    "removeFailed": "[ta] Failed to remove friend",
+    "friendsSince": "[ta] Friends since {{date}}",
+    "gamesCount": "[ta] {{count}} games",
+    "requestAccepted": "[ta] Friend request accepted!",
+    "subtitle": "[ta] Connect with players and challenge friends",
+    "title": "[ta] Friends & Opponents",
+    "cancelFailed": "[ta] Failed to cancel request"
+  },
+  "trending": {
+    "categories": {
+      "weather": "[ta] Weather",
+      "tech": "[ta] Tech",
+      "culture": "[ta] Culture",
+      "entertainment": "[ta] Entertainment",
+      "sports": "[ta] Sports",
+      "economy": "[ta] Economy",
+      "security": "[ta] Security",
+      "health": "[ta] Health",
+      "general": "[ta] General",
+      "politics": "[ta] Politics"
+    },
+    "topStory": "[ta] TOP STORY",
+    "title": "[ta] What's Trending in Israel",
+    "sources": "[ta] Sources",
+    "noTopics": "[ta] No trending topics available"
+  },
+  "chess": {
+    "showHints": "[ta] Show Guide Hints",
+    "gameOver": "[ta] Game Over",
+    "botHint": "[ta] Tag @bot in your message to get chess advice from our AI assistant",
+    "joinGame": "[ta] Join Game",
+    "opponentTurn": "[ta] Opponent's Turn",
+    "declineInvite": "[ta] Decline Invite",
+    "challengeViaWhatsApp": "[ta] Challenge via WhatsApp",
+    "join": "[ta] Join",
+    "white": "[ta] White",
+    "gameCode": "[ta] Game Code",
+    "chat": {
+      "title": "[ta] Chat",
+      "inputPlaceholder": "[ta] Type a message..."
+    },
+    "resign": "[ta] Resign",
+    "noFriendsYet": "[ta] No friends yet",
+    "whiteTurn": "[ta] White's Turn",
+    "medium": "[ta] Medium",
+    "createGame": "[ta] Create New Game",
+    "whiteCaptured": "[ta] White Captured",
+    "hard": "[ta] Hard",
+    "noMoves": "[ta] No moves yet",
+    "resigned": "[ta] Game Resigned",
+    "enterGameCode": "[ta] Enter Game Code",
+    "chatPlaceholder": "[ta] Type a message... (@bot for advice)",
+    "draw": "[ta] Draw",
+    "reconnecting": "[ta] Reconnecting...",
+    "playVsBot": "[ta] Play vs Bot",
+    "joinFailed": "[ta] Failed to join game",
+    "chessBot": "[ta] Chess Bot",
+    "difficulty": "[ta] Difficulty",
+    "sendingInvite": "[ta] Sending game invite to {{name}}...",
+    "playedAsWhite": "[ta] Played as White",
+    "playVsFriend": "[ta] Play vs Friend",
+    "unmute": "[ta] Unmute",
+    "offline": "[ta] Offline",
+    "declineDraw": "[ta] Decline Draw",
+    "gameMode": "[ta] Game Mode",
+    "blackTurn": "[ta] Black's Turn",
+    "blackCaptured": "[ta] Black Captured",
+    "bot": "[ta] Chess Assistant",
+    "mute": "[ta] Mute",
+    "moveHistory": "[ta] Move History",
+    "subtitle": "[ta] Play chess with friends and family around the world",
+    "acceptInvite": "[ta] Accept Invite",
+    "inviteSent": "[ta] Game invite sent to {{name}}! Game code: {{code}}",
+    "copyCode": "[ta] Copy Code",
+    "opponent": "[ta] Opponent",
+    "joinByGameCode": "[ta] Join by Game Code",
+    "stalemate": "[ta] Stalemate",
+    "newGame": "[ta] New Game",
+    "create": "[ta] Create",
+    "waitingForOpponent": "[ta] Waiting for opponent...",
+    "black": "[ta] Black",
+    "title": "[ta] Chess",
+    "welcome": "[ta] Welcome to Chess",
+    "online": "[ta] Online",
+    "playedAsBlack": "[ta] Played as Black",
+    "challenge": "[ta] Challenge",
+    "checkmate": "[ta] Checkmate!",
+    "offerDraw": "[ta] Offer Draw",
+    "yourTurn": "[ta] Your Turn",
+    "speaking": "[ta] participants",
+    "inviteFailed": "[ta] Could not find that user. Please check the name and try again.",
+    "joinInvite": "[ta] Join Game",
+    "chooseColor": "[ta] Choose Your Color",
+    "you": "[ta] You",
+    "acceptDraw": "[ta] Accept Draw",
+    "challengeFriend": "[ta] Challenge Friend",
+    "inviteReceived": "[ta] {{name}} invited you to a chess game!",
+    "easy": "[ta] Easy",
+    "drawOffered": "[ta] Draw Offered",
+    "invalidGameCode": "[ta] Invalid game code. Must be 6 characters."
+  },
+  "watchParty": {
+    "errors": {
+      "partyFull": "[ta] Party is full",
+      "createFailed": "[ta] Failed to create party",
+      "invalidCode": "[ta] Invalid code",
+      "partyEnded": "[ta] Party has ended",
+      "joinFailed": "[ta] Failed to join party",
+      "connectionError": "[ta] Connection error"
+    },
+    "hostPaused": "[ta] Host Paused",
+    "title": "[ta] Watch Party",
+    "codeCopied": "[ta] Code Copied!",
+    "userLeft": "[ta] {{name}} left",
+    "leave": "[ta] Leave Party",
+    "partyEnded": "[ta] The party has ended",
+    "audio": {
+      "noAudio": "[ta] Audio not available",
+      "connecting": "[ta] Connecting to audio...",
+      "unmute": "[ta] Unmute",
+      "mute": "[ta] Mute",
+      "speaking": "[ta] Speaking"
+    },
+    "options": {
+      "chatEnabled": "[ta] Enable Chat",
+      "syncPlayback": "[ta] Sync Playback"
+    },
+    "joinTitle": "[ta] Join Party",
+    "copyCode": "[ta] Copy Code",
+    "end": "[ta] End Party",
+    "sendMessage": "[ta] Send Message",
+    "participants": "[ta] Participants",
+    "textOnlyMode": "[ta] Text Chat Only",
+    "roomCode": "[ta] Room Code",
+    "syncing": "[ta] Syncing...",
+    "connecting": "[ta] Connecting...",
+    "synced": "[ta] Synced",
+    "create": "[ta] Create Party",
+    "active": "[ta] Party Active",
+    "chat": "[ta] Chat",
+    "host": "[ta] Host",
+    "userJoined": "[ta] {{name}} joined",
+    "enterCode": "[ta] Enter Room Code",
+    "createTitle": "[ta] Create Watch Party",
+    "you": "[ta] You",
+    "typeMessage": "[ta] Type a message...",
+    "endParty": "[ta] End Party",
+    "join": "[ta] Join Party"
+  },
+  "widgets": {
+    "contentTypes": {
+      "radio": "[ta] Radio",
+      "podcast": "[ta] Podcast",
+      "widget": "[ta] Widget",
+      "liveChannel": "[ta] Live Channel",
+      "custom": "[ta] Custom",
+      "iframe": "[ta] Web Content",
+      "vod": "[ta] Video"
+    },
+    "form": {
+      "positionSize": "[ta] Position & Size",
+      "iframeTitle": "[ta] iFrame Title",
+      "iframe": "[ta] iFrame",
+      "change": "[ta] Change",
+      "closable": "[ta] Closable",
+      "iframeUrlRequired": "[ta] iFrame URL is required",
+      "content": "[ta] Content",
+      "fromLibrary": "[ta] From Library",
+      "iconPlaceholder": "[ta] Icon emoji (e.g., 📺)",
+      "basicInfo": "[ta] Basic Information",
+      "mutedByDefault": "[ta] Muted by Default",
+      "orderPlaceholder": "[ta] Order (0 = first)",
+      "widgetOrder": "[ta] Widget Order",
+      "behavior": "[ta] Behavior",
+      "saveWidget": "[ta] Save Widget",
+      "titleRequired": "[ta] Widget Title is required",
+      "cancel": "[ta] Cancel",
+      "title": "[ta] Create Widget",
+      "saving": "[ta] Saving...",
+      "titlePlaceholder": "[ta] Widget Title",
+      "iframeUrl": "[ta] iFrame URL",
+      "selectContent": "[ta] Select Content (Channels, Podcasts, Shows, etc.)",
+      "descriptionPlaceholder": "[ta] Description (optional)",
+      "draggable": "[ta] Draggable"
+    },
+    "systemWidgetsHint": "[ta] Browse and add widgets to your collection",
+    "added": "[ta] Added",
+    "empty": "[ta] No widgets yet",
+    "addToCollection": "[ta] Add to My Widgets",
+    "emptyPersonal": "[ta] No personal widgets yet",
+    "removeFromCollection": "[ta] Remove from My Widgets",
+    "hidden": "[ta] Hidden",
+    "personalWidgets": "[ta] My Widgets",
+    "myWidgetsHint": "[ta] Widgets you have created",
+    "noSystemWidgets": "[ta] No system widgets available",
+    "myWidgets": "[ta] My Personal Widgets",
+    "emptyHint": "[ta] Your widgets will appear here",
+    "show": "[ta] Show",
+    "remove": "[ta] Remove",
+    "systemWidgets": "[ta] System Widgets",
+    "emptyPersonalHint": "[ta] Create your first personal widget or add system widgets above",
+    "itemsTotal": "[ta] total widgets",
+    "add": "[ta] Add"
+  },
+  "telAviv": {
+    "categories": {
+      "culture": "[ta] Culture & Art",
+      "tech": "[ta] Tech & Startups",
+      "events": "[ta] Events",
+      "beaches": "[ta] Beaches",
+      "food": "[ta] Food & Dining",
+      "music": "[ta] Music Scene",
+      "nightlife": "[ta] Nightlife",
+      "general": "[ta] Tel Aviv"
+    },
+    "beachLive": "[ta] Beach Webcam",
+    "noContent": "[ta] No Tel Aviv content available",
+    "sources": "[ta] Sources",
+    "title": "[ta] Tel Aviv Connection",
+    "subtitle": "[ta] The city that never stops"
+  },
+  "stats": {
+    "statistics": "[ta] Statistics",
+    "wins": "[ta] Wins",
+    "achievements": "[ta] Achievements",
+    "won": "[ta] Won",
+    "winRate": "[ta] Win Rate",
+    "moves": "[ta] moves",
+    "draw": "[ta] Draw",
+    "yourWins": "[ta] Your Wins",
+    "bestStreak": "[ta] Best Streak",
+    "draws": "[ta] Draws",
+    "totalGames": "[ta] Total Games",
+    "noGames": "[ta] No games played yet",
+    "gamesPlayed": "[ta] Games Played",
+    "winStreak": "[ta] Win Streak",
+    "recentGames": "[ta] Recent Games",
+    "peakRating": "[ta] Peak Rating",
+    "matchHistory": "[ta] Match History",
+    "losses": "[ta] Losses",
+    "currentStreak": "[ta] Current Streak",
+    "peak": "[ta] Peak",
+    "lost": "[ta] Lost",
+    "overall": "[ta] Overall Record",
+    "totalGamesPlayed": "[ta] Total: {{count}} games",
+    "theirWins": "[ta] Their Wins",
+    "headToHead": "[ta] Head to Head",
+    "rating": "[ta] Rating",
+    "currentRating": "[ta] Current Rating",
+    "performance": "[ta] Performance"
+  },
+  "cultureTrending": {
+    "categories": {
+      "technology": "[ta] Technology",
+      "expat": "[ta] Expat Life",
+      "entertainment": "[ta] Entertainment",
+      "politics": "[ta] Politics",
+      "history": "[ta] History",
+      "finance": "[ta] Finance",
+      "health": "[ta] Health",
+      "fashion": "[ta] Fashion",
+      "general": "[ta] General",
+      "weather": "[ta] Weather",
+      "tech": "[ta] Tech",
+      "security": "[ta] Security",
+      "food": "[ta] Food",
+      "sports": "[ta] Sports",
+      "culture": "[ta] Culture",
+      "travel": "[ta] Travel",
+      "economy": "[ta] Economy"
+    },
+    "noTopics": "[ta] No trending topics available",
+    "whatsHotIn": "[ta] What's Hot in {{location}}",
+    "sources": "[ta] Sources"
+  },
+  "voiceMode": {
+    "classicDesc": "[ta] No voice - remote control only",
+    "classic": "[ta] Classic",
+    "voiceOnly": "[ta] Voice Only",
+    "hybrid": "[ta] Hybrid",
+    "voiceOnlyDesc": "[ta] No remote control - full voice navigation",
+    "hybridDesc": "[ta] Voice + Remote - voice feedback on actions"
+  },
+  "flows": {
+    "aiBrief": "[ta] AI Brief",
+    "flowItems": {
+      "title": "[ta] Flow Content",
+      "confirmRemove": "[ta] Click again to confirm removal",
+      "remove": "[ta] Remove",
+      "count": "[ta] {{count}} items",
+      "empty": "[ta] No content yet. Click Add Content to get started.",
+      "maxReached": "[ta] Maximum {{max}} items reached",
+      "order": "[ta] Order",
+      "moveDown": "[ta] Move Down",
+      "moveUp": "[ta] Move Up",
+      "more": "[ta] more items"
+    },
+    "contentPicker": {
+      "addSelected": "[ta] Add Selected",
+      "loadMore": "[ta] Load More",
+      "tabs": {
+        "vod": "[ta] On Demand",
+        "podcast": "[ta] Podcasts",
+        "live": "[ta] Live TV",
+        "radio": "[ta] Radio"
+      },
+      "selected": "[ta] {{count}} selected",
+      "alreadyAdded": "[ta] Already in flow",
+      "title": "[ta] Add Content to Flow",
+      "search": "[ta] Search content...",
+      "noResults": "[ta] No content found"
+    },
+    "deleteFlow": "[ta] Delete Flow",
+    "days": {
+      "deselectAll": "[ta] Deselect All",
+      "everyday": "[ta] Every day",
+      "wednesdayShort": "[ta] Wed",
+      "mondayShort": "[ta] Mon",
+      "sundayShort": "[ta] Sun",
+      "wednesday": "[ta] Wednesday",
+      "fridayShort": "[ta] Fri",
+      "title": "[ta] Active Days",
+      "weekends": "[ta] Weekends",
+      "thursdayShort": "[ta] Thu",
+      "tuesday": "[ta] Tuesday",
+      "thursday": "[ta] Thursday",
+      "weekdays": "[ta] Weekdays",
+      "selectedCount": "[ta] {{count}} days selected",
+      "saturdayShort": "[ta] Sat",
+      "friday": "[ta] Friday",
+      "selectAll": "[ta] Select All",
+      "saturday": "[ta] Saturday",
+      "noneSelected": "[ta] No days selected",
+      "sunday": "[ta] Sunday",
+      "monday": "[ta] Monday",
+      "tuesdayShort": "[ta] Tue",
+      "everyDay": "[ta] Every day"
+    },
+    "content": "[ta] Content",
+    "systemFlow": "[ta] System Flow",
+    "start": "[ta] Start",
+    "editFlowDesc": "[ta] Update your flow settings and content",
+    "startTime": "[ta] Start Time",
+    "examples": {
+      "eveningWindDown": {
+        "desc": "[ta] Relax with calming music and light entertainment",
+        "name": "[ta] Evening Wind Down"
+      },
+      "coffeeBreak": {
+        "name": "[ta] Coffee Break",
+        "desc": "[ta] Quick entertainment for a short break"
+      },
+      "shabbatPrep": {
+        "name": "[ta] Shabbat Preparation",
+        "desc": "[ta] Set the mood for Shabbat with special content"
+      },
+      "title": "[ta] Example Flows",
+      "subtitle": "[ta] Tap to use as a template",
+      "sunsetVibes": {
+        "name": "[ta] Sunset Vibes",
+        "desc": "[ta] Weekend relaxation with music and ambient content"
+      },
+      "morningRoutine": {
+        "desc": "[ta] Start your day with news, weather, and uplifting content",
+        "name": "[ta] Morning Routine"
+      }
+    },
+    "trigger": {
+      "shabbatOffsetDesc": "[ta] How many minutes before Shabbat should this flow start?",
+      "locationBased": "[ta] Times based on your location",
+      "comingSoon": "[ta] Holiday triggers coming soon",
+      "time": "[ta] Time-based",
+      "calculatedTime": "[ta] Calculated time",
+      "skipShabbatDesc": "[ta] Don't run this flow on Friday evening or Saturday",
+      "thisWeek": "[ta] This week: {{day}} at {{time}}",
+      "skipShabbat": "[ta] Skip on Shabbat",
+      "holiday": "[ta] Holiday",
+      "shabbat": "[ta] Shabbat Evening",
+      "shabbatOffset": "[ta] Minutes before candle lighting",
+      "type": "[ta] Trigger Type"
+    },
+    "manual": "[ta] Manual",
+    "activeNow": "[ta] Active Now",
+    "createCustom": "[ta] Create Custom Flow",
+    "createHint": "[ta] Create your first personalized flow",
+    "subtitle": "[ta] Personalized content experiences for every moment",
+    "items": "[ta] items",
+    "custom": "[ta] Custom",
+    "validation": {
+      "endTimeRequired": "[ta] End time is required",
+      "daysRequired": "[ta] Select at least one day",
+      "contentRequired": "[ta] Add content or enable AI",
+      "startTimeRequired": "[ta] Start time is required",
+      "timeRange": "[ta] End time must be after start time",
+      "nameRequired": "[ta] Flow name is required"
+    },
+    "aiBriefDesc": "[ta] Get a personalized AI-generated summary before the flow starts",
+    "descriptionPlaceholder": "[ta] What is this flow for?",
+    "morning": "[ta] Morning",
+    "description": "[ta] Description",
+    "aiEnabled": "[ta] AI Curation",
+    "tv": {
+      "useCompanion": "[ta] For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer."
+    },
+    "editFlow": "[ta] Edit Flow",
+    "endTime": "[ta] End Time",
+    "noCustomFlows": "[ta] No custom flows yet",
+    "customFlows": "[ta] My Flows",
+    "actions": "[ta] Actions",
+    "startFlow": "[ta] Start Flow",
+    "system": "[ta] System",
+    "shabbatTrigger": "[ta] Shabbat Evening",
+    "systemFlows": "[ta] Ready-Made Flows",
+    "options": "[ta] Options",
+    "flowName": "[ta] Flow Name",
+    "skipToday": "[ta] Skip Today",
+    "aiGenerated": "[ta] AI Generated",
+    "basicInfo": "[ta] Basic Information",
+    "addContent": "[ta] Add Content",
+    "autoPlay": "[ta] Auto Play",
+    "autoPlayDesc": "[ta] Automatically play next item when current one ends",
+    "shabbat": "[ta] Shabbat",
+    "aiEnabledDesc": "[ta] Let AI curate content based on your preferences",
+    "aiBriefEnabled": "[ta] AI Brief Enabled",
+    "title": "[ta] Flows",
+    "createFlow": "[ta] Create Flow",
+    "customFlow": "[ta] Custom Flow",
+    "schedule": "[ta] Schedule",
+    "details": "[ta] Details",
+    "evening": "[ta] Evening",
+    "createFlowDesc": "[ta] Design your personalized content experience",
+    "flowNamePlaceholder": "[ta] e.g., My Morning Routine",
+    "type": "[ta] Type"
+  },
+  "olorin": {
+    "errors": {
+      "invalid_api_key": "[ta] Invalid API key",
+      "search_failed": "[ta] Search failed",
+      "source_language_not_supported": "[ta] Source language '{language}' not supported. Supported: {supported}",
+      "partner_not_found": "[ta] Partner not found",
+      "no_updates_provided": "[ta] No updates provided",
+      "session_different_partner": "[ta] Session belongs to different partner",
+      "explanation_failed": "[ta] Failed to get explanation",
+      "max_sessions_reached": "[ta] Maximum concurrent sessions ({limit}) reached",
+      "target_language_not_supported": "[ta] Target language '{language}' not supported. Supported: {supported}",
+      "session_not_found": "[ta] Session not found",
+      "create_session_failed": "[ta] Failed to create session",
+      "capability_not_enabled": "[ta] Capability '{capability}' not enabled for this partner",
+      "session_invalid_status": "[ta] Session is {status}, cannot add transcript",
+      "indexing_failed": "[ta] Indexing failed",
+      "capability_disabled": "[ta] Capability '{capability}' is currently disabled",
+      "webhook_secret_not_configured": "[ta] Webhook secret not configured",
+      "add_transcript_failed": "[ta] Failed to add transcript",
+      "webhook_url_not_configured": "[ta] Webhook URL not configured",
+      "generate_recap_failed": "[ta] Failed to generate recap",
+      "get_references_failed": "[ta] Failed to get references",
+      "missing_api_key": "[ta] Missing {header} header",
+      "enrichment_failed": "[ta] Enrichment failed",
+      "detection_failed": "[ta] Detection failed",
+      "webhook_config_failed": "[ta] Failed to configure webhook",
+      "reference_not_found": "[ta] Reference '{reference_id}' not found",
+      "partner_registration_failed": "[ta] Failed to register partner"
+    }
+  },
+  "passkey": {
+    "qr": {
+      "scanWithPhone": "[ta] Scan with your phone",
+      "useQR": "[ta] Use Phone to Unlock",
+      "expired": "[ta] QR code expired. Please try again.",
+      "instruction": "[ta] Open the camera on your phone and scan the QR code to authenticate",
+      "error": "[ta] Failed to generate QR code"
+    },
+    "created": "[ta] Created",
+    "manager": {
+      "title": "[ta] Passkeys",
+      "subtitle": "[ta] Manage your passkeys for secure content access"
+    },
+    "auth": {
+      "error": "[ta] Authentication failed. Please try again.",
+      "title": "[ta] Unlock Content",
+      "unlock": "[ta] Unlock with Passkey",
+      "success": "[ta] Content Unlocked!",
+      "cancelled": "[ta] Authentication was cancelled",
+      "description": "[ta] Use your fingerprint, face, or device PIN to unlock private movies and series.",
+      "authenticating": "[ta] Authenticating..."
+    },
+    "cancelled": "[ta] Passkey operation was cancelled",
+    "deleteConfirmTitle": "[ta] Delete Passkey?",
+    "addPasskey": "[ta] Add Passkey",
+    "deleteConfirmText": "[ta] This passkey will no longer be able to unlock content. You can always add it again later.",
+    "unsupported": "[ta] Passkeys are not supported on this device",
+    "never": "[ta] Never",
+    "noPasskeys": "[ta] No passkeys registered yet. Add one to unlock private content.",
+    "lastUsed": "[ta] Last used",
+    "deleteError": "[ta] Failed to delete passkey",
+    "unlockDescription": "[ta] Use your passkey to access private movies and series",
+    "unlock": "[ta] Unlock",
+    "registerError": "[ta] Failed to register passkey",
+    "fetchError": "[ta] Failed to load passkeys",
+    "unlockContent": "[ta] Unlock Private Content",
+    "unknownDevice": "[ta] Unknown Device"
+  },
+  "googleLogin": {
+    "connecting": "[ta] Connecting with Google...",
+    "redirecting": "[ta] Redirecting to login page...",
+    "cancelledError": "[ta] Google sign-in was cancelled",
+    "missingCode": "[ta] Authentication code is missing",
+    "loginError": "[ta] Error signing in with Google"
+  },
+  "breadcrumbs": {
+    "station": "[ta] Station",
+    "watchlist": "[ta] Watchlist",
+    "downloads": "[ta] Downloads",
+    "channel": "[ta] Channel",
+    "movie": "[ta] Movie",
+    "series": "[ta] Series",
+    "watching": "[ta] Watching",
+    "podcast": "[ta] Podcast"
+  },
+  "cultureCities": {
+    "categories": {
+      "tech": "[ta] Tech",
+      "food": "[ta] Food",
+      "finance": "[ta] Finance",
+      "all": "[ta] All",
+      "culture": "[ta] Culture",
+      "entertainment": "[ta] Entertainment",
+      "news": "[ta] News",
+      "expat": "[ta] Expat Life",
+      "history": "[ta] History"
+    },
+    "connectionTo": "[ta] {{city}} Connection",
+    "noContent": "[ta] No content available for this city",
+    "explore": "[ta] Explore {{city}}"
+  },
+  "profiles": {
+    "addProfile": "[ta] Add Profile",
+    "wrongPin": "[ta] Incorrect PIN",
+    "manage": "[ta] Manage Profiles",
+    "selectError": "[ta] Error selecting profile",
+    "manageProfiles": "[ta] Manage Profiles",
+    "enterPin": "[ta] Enter PIN",
+    "loading": "[ta] Loading profiles...",
+    "whoIsWatching": "[ta] Who's Watching?"
+  },
+  "cultures": {
+    "korean": {
+      "description": "[ta] Korean community content",
+      "name": "[ta] Korean"
+    },
+    "changeCulture": "[ta] Change Culture",
+    "selectCultureDescription": "[ta] Select your cultural community to personalize your experience",
+    "chinese": {
+      "description": "[ta] Chinese community content",
+      "name": "[ta] Chinese"
+    },
+    "select": "[ta] Select Culture",
+    "japanese": {
+      "description": "[ta] Japanese community content",
+      "name": "[ta] Japanese"
+    },
+    "israeli": {
+      "name": "[ta] Israeli",
+      "description": "[ta] Israeli expat community content"
+    },
+    "selectCulture": "[ta] Choose Your Culture",
+    "indian": {
+      "description": "[ta] Indian community content",
+      "name": "[ta] Indian"
+    },
+    "title": "[ta] Select Your Culture"
+  },
+  "youngsters": {
+    "categories": {
+      "culture": "[ta] Culture",
+      "sports": "[ta] Sports",
+      "all": "[ta] All",
+      "entertainment": "[ta] Entertainment",
+      "news": "[ta] News",
+      "tech": "[ta] Technology",
+      "music": "[ta] Music",
+      "educational": "[ta] Educational",
+      "judaism": "[ta] Judaism",
+      "trending": "[ta] Trending"
+    },
+    "ageGroups": {
+      "high-school": "[ta] High School (15-17)",
+      "middle-school": "[ta] Middle School (12-14)"
+    },
+    "admin": {
+      "syncPodcasts": "[ta] Sync Podcasts",
+      "stats": "[ta] Youngsters Content Manager",
+      "importArchive": "[ta] Import Archive.org",
+      "tagVod": "[ta] Tag VOD",
+      "syncYouTube": "[ta] Sync YouTube",
+      "seedContent": "[ta] Seed Content",
+      "pendingModeration": "[ta] Pending Moderation"
+    },
+    "confirm": "[ta] Confirm",
+    "exitDescription": "[ta] Enter parent code to exit",
+    "noContent": "[ta] No content available",
+    "tryAnotherCategory": "[ta] Try selecting another category",
+    "moderation": {
+      "pending": "[ta] Pending Review",
+      "rejected": "[ta] Rejected",
+      "approved": "[ta] Approved"
+    },
+    "wrongCode": "[ta] Incorrect code",
+    "items": "[ta] items",
+    "title": "[ta] Youngsters",
+    "exitYoungstersMode": "[ta] Exit Youngsters Mode",
+    "parentCode": "[ta] Parent code",
+    "emptyHint": "[ta] Try another category",
+    "empty": "[ta] No content available"
+  },
+  "chat": {
+    "title": "[ta] Bayit+ Assistant",
+    "greeting": "[ta] Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message."
+  },
+  "placeholder": {
+    "chatMessage": "[ta] Type here...",
+    "roomCode": "[ta] ABCD1234",
+    "pin": "[ta] ••••",
+    "number": "[ta] 0",
+    "email": "[ta] your@email.com",
+    "chat": "[ta] Type your message...",
+    "dateRange": {
+      "to": "[ta] To (YYYY-MM-DD)",
+      "from": "[ta] From (YYYY-MM-DD)"
+    },
+    "filter": {
+      "userId": "[ta] Enter user ID"
+    },
+    "deepLink": "[ta] bayitplus://content/123",
+    "time": {
+      "end": "[ta] 10:00",
+      "start": "[ta] 08:00"
+    },
+    "amount": {
+      "max": "[ta] Max",
+      "price": "[ta] 0.00",
+      "min": "[ta] Min"
+    },
+    "password": "[ta] ••••••••",
+    "datetime": "[ta] YYYY-MM-DDTHH:mm",
+    "scheduleDateTime": "[ta] YYYY-MM-DDTHH:mm"
+  },
+  "live": {
+    "title": "[ta] Live TV",
+    "next": "[ta] Next:",
+    "categories": {
+      "news": "[ta] News",
+      "music": "[ta] Music",
+      "kids": "[ta] Kids",
+      "entertainment": "[ta] Entertainment",
+      "sports": "[ta] Sports",
+      "all": "[ta] All"
+    },
+    "noChannels": "[ta] No channels available",
+    "tryLater": "[ta] Try again later"
+  },
+  "ritual": {
+    "day": "[ta] Day",
+    "letsStart": "[ta] Let's Start",
+    "typeLive": "[ta] Live",
+    "noContentNow": "[ta] No content available right now",
+    "title": "[ta] Morning Ritual",
+    "finish": "[ta] Finish",
+    "israelUpdate": "[ta] It's afternoon in Israel, news is reporting on ongoing developments",
+    "greeting": "[ta] Good Morning!",
+    "typeVideo": "[ta] Video",
+    "preparingRitual": "[ta] Preparing your morning ritual...",
+    "israelTime": "[ta] Israel Time",
+    "skipToday": "[ta] Skip for Today",
+    "typeRadio": "[ta] Radio",
+    "recommendation": "[ta] We recommend starting with morning news then switching to radio"
+  },
+  "jerusalem": {
+    "categories": {
+      "holy-sites": "[ta] Holy Sites",
+      "diaspora-connection": "[ta] Diaspora Connection",
+      "kotel": "[ta] Western Wall",
+      "idf-ceremony": "[ta] IDF Ceremonies",
+      "jerusalem-events": "[ta] Jerusalem Events",
+      "general": "[ta] Jerusalem"
+    },
+    "title": "[ta] Jerusalem Connection",
+    "subtitle": "[ta] Stay connected to the heart of Israel",
+    "noContent": "[ta] No Jerusalem content available",
+    "sources": "[ta] Sources",
+    "kotelLive": "[ta] Western Wall Live"
+  },
+  "empty": {
+    "tryLater": "[ta] Try again later",
+    "noPodcasts": "[ta] No podcasts available",
+    "noResults": "[ta] No results found",
+    "noContent": "[ta] No content available",
+    "tryAnotherCategory": "[ta] Try selecting another category"
+  },
+  "video": {
+    "deleteConfirm": "[ta] Delete this episode?",
+    "watchTrailer": "[ta] Watch Trailer",
+    "closeTrailer": "[ta] Close Trailer"
+  },
+  "clock": {
+    "shabbatShalom": "[ta] Shabbat Shalom!",
+    "local": "[ta] Local",
+    "erevShabbat": "[ta] Erev Shabbat",
+    "parasha": "[ta] Parasha",
+    "israel": "[ta] Israel",
+    "candleLighting": "[ta] Candle Lighting"
+  },
+  "components": {
+    "select": {
+      "default": "[ta] Select..."
+    }
+  },
+  "culture": {
+    "title": "Israeli Culture",
+    "description": "Jerusalem, Tel Aviv, and Israeli heritage",
+    "shabbat": {
+      "title": "Shabbat Mode",
+      "enableShabbatMode": "Enable Shabbat Mode",
+      "shabbatTimes": "Shabbat Times",
+      "timesDescription": "Candle Lighting and Havdalah times will be displayed here",
+      "aboutTitle": "About Shabbat Mode",
+      "aboutDescription": "When enabled, Shabbat Mode will pause notifications, reduce screen brightness, and enable a simplified interface during Shabbat hours."
+    },
+    "judaism": {
+      "holidaysAndTorah": "Holidays & Torah",
+      "parashaOfTheWeek": "Parasha of the Week",
+      "parashaDescription": "Weekly Torah reading and commentary"
+    },
+    "morning": {
+      "title": "Morning Ritual",
+      "description": "Start your day with intention and gratitude",
+      "dailyInspiration": "Daily Inspiration",
+      "dailyInspirationDescription": "Curated content for your morning routine",
+      "modehAni": "Modeh Ani",
+      "modehAniDescription": "Morning gratitude prayer",
+      "netilatYadayim": "Netilat Yadayim",
+      "netilatYadayimDescription": "Ritual hand washing",
+      "shacharit": "Shacharit",
+      "shacharitDescription": "Morning prayer service"
+    },
+    "glossary": {
+      "termDetail": "Term Detail",
+      "definition": "Definition",
+      "pronunciation": "Pronunciation",
+      "examples": "Examples"
+    },
+    "jerusalem": {
+      "title": "Jerusalem"
+    },
+    "telaviv": {
+      "title": "Tel Aviv"
+    }
+  },
+  "zehAni": {
+    "dashboard": {
+      "title": "Zeh Ani",
+      "biometricConsent": "Biometric Consent",
+      "activeConsents": "{{count}} active consents",
+      "magicMirror": "Magic Mirror",
+      "magicMirrorDescription": "Daily greetings and face ID",
+      "v2vPractice": "V2V Practice",
+      "v2vPracticeDescription": "Voice-to-voice pronunciation",
+      "avatar3d": "3D Avatar",
+      "avatar3dDescription": "Your personalized avatar mesh",
+      "movieInteractions": "Movie Interactions",
+      "movieInteractionsDescription": "Browse and talk to movie characters",
+      "contacts": "Contacts",
+      "contactsDescription": "WhatsApp sharing contacts",
+      "feedback": "Feedback",
+      "feedbackDescription": "Share your experience",
+      "consent": "Consent",
+      "consentDescription": "Biometric consent management",
+      "chess": "Chess",
+      "chessDescription": "Play chess with friends and family"
+    },
+    "mirror": {
+      "title": "Magic Mirror",
+      "avatarContentDescription": "Avatar",
+      "wordOfTheDay": "Word of the Day",
+      "playLipsync": "Play Lipsync",
+      "noAvatarYet": "No avatar yet",
+      "noAvatarDescription": "Create a 3D avatar to see yourself in the story",
+      "createAvatar": "Create Avatar"
+    },
+    "mode": {
+      "title": "Avatar Mode",
+      "enableAvatarMode": "Enable Avatar Mode",
+      "enableDescription": "Show your avatar reacting to content",
+      "avatarPreview": "Avatar Preview",
+      "avatarPreviewContentDescription": "Avatar preview",
+      "noAvatarConfigured": "No avatar configured",
+      "reactionStyle": "Reaction Style"
+    },
+    "wardrobe": {
+      "title": "Wardrobe",
+      "equippedContentDescription": "Equipped"
+    },
+    "settings": {
+      "title": "Avatar Settings",
+      "privacy": "Privacy",
+      "privateAvatarMode": "Private Avatar Mode",
+      "privateAvatarDescription": "Hide your avatar from other users",
+      "appearance": "Appearance",
+      "enableAnimations": "Enable Animations",
+      "animationsDescription": "Animate avatar movements and expressions",
+      "availableOutfits": "Available Outfits"
+    },
+    "selfie": {
+      "title": "Video Selfie",
+      "camera": "Camera",
+      "cameraPreview": "Camera Preview",
+      "startRecording": "Start Recording",
+      "stopRecording": "Stop Recording",
+      "rec": "REC",
+      "enterPin": "Enter your PIN to create avatar",
+      "pinLabel": "PIN",
+      "retake": "Retake",
+      "creatingAvatar": "Creating your avatar...",
+      "avatarCreated": "Avatar created successfully",
+      "avatarPreviewContentDescription": "Avatar Preview",
+      "createAnother": "Create Another"
+    },
+    "mesh": {
+      "title": "3D Avatar",
+      "meshViewer": "3D Mesh Viewer",
+      "meshViewerDescription": "3D mesh viewer requires WebView or GLSurfaceView integration",
+      "skinTone": "Skin Tone",
+      "hairStyle": "Hair Style",
+      "accessories": "Accessories",
+      "saveChanges": "Save Changes"
+    },
+    "v2v": {
+      "title": "Voice Practice",
+      "nextPhrase": "Next Phrase",
+      "stop": "Stop",
+      "record": "Record",
+      "mic": "MIC",
+      "viewProgress": "View Progress",
+      "analyzingPronunciation": "Analyzing pronunciation...",
+      "pronunciationFeedback": "Pronunciation Feedback",
+      "similarity": "Similarity: {{score}}%",
+      "yourProgress": "Your Progress",
+      "transforms": "Transforms: {{count}}",
+      "improvement": "Improvement: {{score}}%",
+      "continuePracticing": "Continue Practicing"
+    },
+    "characters": {
+      "title": "Characters",
+      "noCharactersFound": "No characters found for this movie",
+      "characterCount": "{{count}} characters"
+    },
+    "interactions": {
+      "title": "Movie Interactions",
+      "noInteractableMovies": "No interactable movies available"
+    },
+    "feedbackInbox": {
+      "title": "Feedback Inbox",
+      "refreshContentDescription": "Refresh",
+      "noFeedbackYet": "No feedback yet",
+      "feedbackAppearHere": "Feedback from your contacts will appear here",
+      "playVoiceMessage": "Play Voice Message"
+    },
+    "addContact": {
+      "title": "Add Contact",
+      "nameLabel": "Name",
+      "phoneLabel": "Phone",
+      "relationship": "Relationship",
+      "language": "Language"
+    },
+    "avatar3d": {
+      "title": "3D Avatar",
+      "glbMeshViewer": "GLB Mesh Viewer",
+      "controls": "Controls",
+      "animate": "Animate",
+      "vertices": "Vertices",
+      "bones": "Bones",
+      "blendShapes": "Blend Shapes",
+      "hasGlb": "Has GLB",
+      "status": "Status: {{value}}"
+    }
   }
 }

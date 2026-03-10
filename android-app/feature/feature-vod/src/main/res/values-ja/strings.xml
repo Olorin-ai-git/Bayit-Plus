@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vod_filter_all">すべて</string>
+    <string name="vod_filter_collections">コレクション</string>
+    <string name="vod_filter_movies">映画</string>
+    <string name="vod_filter_series">ドラマ</string>
+    <string name="vod_filter_israeli_movies">イスラエル映画</string>
+    <string name="vod_filter_israeli_series">イスラエルドラマ</string>
+    <string name="vod_filter_music">音楽</string>
+    <string name="vod_filter_documentary">ドキュメンタリー</string>
+</resources>

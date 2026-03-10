@@ -35,22 +35,38 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface NowPlayingWidgetEntryPoint {
+    fun bayitStringProvider(): BayitStringProvider
+}
 
 class NowPlayingWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val dataProvider = WidgetDataProvider(kotlinx.serialization.json.Json { ignoreUnknownKeys = true })
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            NowPlayingWidgetEntryPoint::class.java,
+        )
+        val sp = entryPoint.bayitStringProvider()
         val isLoggedIn = dataProvider.isLoggedIn(context)
         val nowPlaying = if (isLoggedIn) dataProvider.getNowPlaying(context) else null
 
         provideContent {
             GlanceTheme {
                 if (!isLoggedIn) {
-                    SignInPrompt()
+                    SignInPrompt(sp)
                 } else if (nowPlaying != null) {
                     NowPlayingContent(nowPlaying)
                 } else {
-                    EmptyNowPlaying()
+                    EmptyNowPlaying(sp)
                 }
             }
         }
@@ -103,7 +119,7 @@ private fun NowPlayingContent(data: NowPlayingData) {
 }
 
 @Composable
-private fun EmptyNowPlaying() {
+private fun EmptyNowPlaying(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -112,7 +128,7 @@ private fun EmptyNowPlaying() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Nothing playing",
+            text = sp.string("widgets.nothingPlaying"),
             style = TextStyle(
                 fontSize = 14.sp,
                 color = GlanceTheme.colors.secondary,
@@ -122,7 +138,7 @@ private fun EmptyNowPlaying() {
 }
 
 @Composable
-private fun SignInPrompt() {
+private fun SignInPrompt(sp: BayitStringProvider) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -131,7 +147,7 @@ private fun SignInPrompt() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Sign in to Bayit+",
+            text = sp.string("widgets.signInToBayit"),
             style = TextStyle(
                 fontSize = 14.sp,
                 color = GlanceTheme.colors.primary,

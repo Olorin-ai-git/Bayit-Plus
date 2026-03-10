@@ -1,6 +1,7 @@
 import Foundation
 
-public struct WalkthroughSession: Sendable {
+@MainActor
+public struct WalkthroughSession {
     public let featureId: String
     public let sessionToken: String
     public let stateMachine: WalkthroughStateMachine

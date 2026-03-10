@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -44,20 +45,26 @@ fun ProfileAvatar(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val profileLabel = bayitString("nav.profile")
+    val avatarDescription = bayitString(
+        "a11y.openProfile",
+        mapOf("name" to (userName ?: profileLabel)),
+    )
+    val imageDescription = userName ?: profileLabel
     Box(
         modifier = modifier
             .size(32.dp)
             .clip(CircleShape)
             .background(DesignTokens.Colors.Glass.bgStrong, CircleShape)
             .border(1.dp, DesignTokens.Colors.Glass.border, CircleShape)
-            .semantics { contentDescription = (userName ?: "Profile") + ", open profile" }
+            .semantics { contentDescription = avatarDescription }
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         if (photoUrl != null) {
             CachedAsyncImage(
                 url = photoUrl,
-                contentDescription = userName ?: "Profile",
+                contentDescription = imageDescription,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(32.dp)
@@ -66,7 +73,7 @@ fun ProfileAvatar(
         } else {
             Icon(
                 imageVector = Icons.Default.AccountCircle,
-                contentDescription = userName ?: "Profile",
+                contentDescription = imageDescription,
                 tint = DesignTokens.Colors.Text.secondary,
                 modifier = Modifier.size(24.dp),
             )
@@ -85,6 +92,11 @@ fun LanguageSelector(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val languageDescription = bayitString(
+        "a11y.languageCurrent",
+        mapOf("language" to currentLanguage.uppercase()),
+    )
+    val selectLanguageLabel = bayitString("a11y.selectLanguage")
 
     val languages = listOf(
         "en" to "English",
@@ -109,7 +121,7 @@ fun LanguageSelector(
                     DesignTokens.Colors.Glass.border,
                     androidx.compose.foundation.shape.RoundedCornerShape(DesignTokens.Radius.full),
                 )
-                .semantics { contentDescription = "Language: ${currentLanguage.uppercase()}, tap to change" }
+                .semantics { contentDescription = languageDescription }
                 .clickable { expanded = true }
                 .padding(
                     horizontal = DesignTokens.Spacing.sm,
@@ -119,7 +131,7 @@ fun LanguageSelector(
         ) {
             Icon(
                 imageVector = Icons.Default.Language,
-                contentDescription = "Select language",
+                contentDescription = selectLanguageLabel,
                 tint = DesignTokens.Colors.Text.secondary,
                 modifier = Modifier.size(16.dp),
             )

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import tv.bayit.plus.R
 import tv.bayit.plus.designsystem.component.LanguageSelector
 import tv.bayit.plus.designsystem.component.ProfileAvatar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.navigation.BreadcrumbEntry
@@ -68,7 +69,7 @@ fun TopAppBar(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.splash_logo),
-                contentDescription = "Bayit+",
+                contentDescription = bayitString("a11y.homeLogo"),
                 modifier = Modifier
                     .height(30.dp)
                     .clickable { onHomeClick() },
@@ -82,7 +83,7 @@ fun TopAppBar(
             IconButton(onClick = onPlaylistClick) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.QueueMusic,
-                    contentDescription = "Playlist",
+                    contentDescription = bayitString("nav.playlist"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(28.dp),
                 )
@@ -91,7 +92,7 @@ fun TopAppBar(
             IconButton(onClick = onZehAniClick) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Zeh Ani",
+                    contentDescription = bayitString("nav.zehAniHub"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(28.dp),
                 )
@@ -100,7 +101,7 @@ fun TopAppBar(
             IconButton(onClick = onBYOCClick) {
                 Icon(
                     imageVector = Icons.Default.SettingsInputAntenna,
-                    contentDescription = "Your Content",
+                    contentDescription = bayitString("nav.byoc"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(24.dp),
                 )
@@ -109,7 +110,7 @@ fun TopAppBar(
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = bayitString("nav.settings"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(24.dp),
                 )

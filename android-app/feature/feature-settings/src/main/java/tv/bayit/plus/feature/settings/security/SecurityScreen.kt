@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SecurityRoute(
@@ -60,10 +61,10 @@ internal fun SecurityScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Security",
+            title = bayitString("settings.security.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -90,8 +91,8 @@ private fun SecurityContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "Two-Factor Authentication", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Add an extra layer of security to your account", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                        Text(text = bayitString("settings.security.twoFactor"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+                        Text(text = bayitString("settings.security.twoFactorDescription"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     }
                     Switch(
                         checked = state.twoFactorEnabled,
@@ -109,7 +110,7 @@ private fun SecurityContent(
         }
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Active Sessions", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+                Text(text = bayitString("settings.security.activeSessions"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
                 GlassBadge(count = state.activeSessions.size, modifier = Modifier.padding(start = DesignTokens.Spacing.sm))
             }
         }
@@ -117,13 +118,13 @@ private fun SecurityContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Text(text = session.toString(), color = DesignTokens.Colors.Text.secondary, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                    GlassButton(text = "Revoke", onClick = { onRevokeSession(session.hashCode().toString()) }, isPrimary = false)
+                    GlassButton(text = bayitString("settings.security.revoke"), onClick = { onRevokeSession(session.hashCode().toString()) }, isPrimary = false)
                 }
             }
         }
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            Text(text = "Login History", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+            Text(text = bayitString("settings.security.loginHistory"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
         }
         items(items = state.loginHistory, key = { it.hashCode() }) { entry ->
             GlassCard(modifier = Modifier.fillMaxWidth()) {
@@ -139,7 +140,7 @@ private fun SecurityErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

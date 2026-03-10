@@ -18,6 +18,7 @@ import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 internal fun FeedbackSection(feedback: V2VTransformResult, onReset: () -> Unit, onNextPhrase: () -> Unit) {
@@ -28,13 +29,13 @@ internal fun FeedbackSection(feedback: V2VTransformResult, onReset: () -> Unit, 
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 Text(
-                    text = "Pronunciation Feedback",
+                    text = bayitString("zehAni.v2v.pronunciationFeedback"),
                     style = MaterialTheme.typography.titleMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = "Similarity: ${(feedback.similarityScore * 100).toInt()}%",
+                    text = bayitString("zehAni.v2v.similarity", mapOf("score" to (feedback.similarityScore * 100).toInt().toString())),
                     style = MaterialTheme.typography.bodyLarge,
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
@@ -45,8 +46,8 @@ internal fun FeedbackSection(feedback: V2VTransformResult, onReset: () -> Unit, 
             }
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            GlassButton(text = "Try Again", onClick = onReset, isPrimary = false, modifier = Modifier.weight(1f))
-            GlassButton(text = "Next Phrase", onClick = { onNextPhrase(); onReset() }, modifier = Modifier.weight(1f))
+            GlassButton(text = bayitString("common.tryAgain"), onClick = onReset, isPrimary = false, modifier = Modifier.weight(1f))
+            GlassButton(text = bayitString("zehAni.v2v.nextPhrase"), onClick = { onNextPhrase(); onReset() }, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -59,7 +60,7 @@ internal fun ProgressSection(sessions: List<V2VSession>, onReset: () -> Unit) {
     ) {
         item {
             Text(
-                text = "Your Progress",
+                text = bayitString("zehAni.v2v.yourProgress"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -69,13 +70,13 @@ internal fun ProgressSection(sessions: List<V2VSession>, onReset: () -> Unit) {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column {
-                        Text(text = "Transforms: ${session.totalTransforms}", color = DesignTokens.Colors.Text.primary)
-                        Text(text = "Improvement: ${(session.scoreImprovement * 100).toInt()}%", color = DesignTokens.Colors.Text.secondary)
+                        Text(text = bayitString("zehAni.v2v.transforms", mapOf("count" to session.totalTransforms.toString())), color = DesignTokens.Colors.Text.primary)
+                        Text(text = bayitString("zehAni.v2v.improvement", mapOf("score" to (session.scoreImprovement * 100).toInt().toString())), color = DesignTokens.Colors.Text.secondary)
                     }
                     Text(text = session.status, color = DesignTokens.Colors.Text.muted, fontSize = DesignTokens.FontSize.sm)
                 }
             }
         }
-        item { GlassButton(text = "Continue Practicing", onClick = onReset) }
+        item { GlassButton(text = bayitString("zehAni.v2v.continuePracticing"), onClick = onReset) }
     }
 }

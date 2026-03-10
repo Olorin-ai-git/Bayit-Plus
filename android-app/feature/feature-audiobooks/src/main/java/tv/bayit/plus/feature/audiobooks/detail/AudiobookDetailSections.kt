@@ -32,6 +32,7 @@ import tv.bayit.plus.core.model.AudiobookChapter
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val HERO_ASPECT_RATIO = 2f / 3f
@@ -57,7 +58,7 @@ internal fun AudiobookHeroSection(state: AudiobookDetailUiState.Success, onBack:
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
+                contentDescription = bayitString("common.back"),
                 tint = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
             )
@@ -76,11 +77,11 @@ internal fun AudiobookHeroSection(state: AudiobookDetailUiState.Success, onBack:
 internal fun AudiobookMetadataSection(state: AudiobookDetailUiState.Success) {
     Column(modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base)) {
         state.author?.let { author ->
-            Text("By $author", style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
+            Text(bayitString("audiobooks.detail.byAuthor", mapOf("author" to author)), style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
         }
         state.narrator?.let { narrator ->
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
-            Text("Narrated by $narrator", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
+            Text(bayitString("audiobooks.detail.narratedBy", mapOf("narrator" to narrator)), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
         }
         state.duration?.let { duration ->
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxs))
@@ -98,11 +99,11 @@ internal fun AudiobookActionSection(audiobookId: String, bookmarkCount: Int, onP
     Column(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
     ) {
-        GlassButton(text = "Play", onClick = { onPlay(audiobookId) }, modifier = Modifier.fillMaxWidth())
+        GlassButton(text = bayitString("common.play"), onClick = { onPlay(audiobookId) }, modifier = Modifier.fillMaxWidth())
         if (bookmarkCount > 0) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "$bookmarkCount bookmarks",
+                text = bayitString("audiobooks.detail.bookmarks", mapOf("count" to bookmarkCount.toString())),
                 style = MaterialTheme.typography.labelSmall,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -113,7 +114,7 @@ internal fun AudiobookActionSection(audiobookId: String, bookmarkCount: Int, onP
 @Composable
 internal fun ChapterListHeader(chapterCount: Int) {
     Text(
-        text = "Chapters ($chapterCount)",
+        text = bayitString("audiobooks.detail.chapters", mapOf("count" to chapterCount.toString())),
         style = MaterialTheme.typography.titleMedium,
         color = DesignTokens.Colors.Text.primary,
         fontWeight = FontWeight.SemiBold,
@@ -123,12 +124,16 @@ internal fun ChapterListHeader(chapterCount: Int) {
 
 @Composable
 internal fun ChapterRow(chapter: AudiobookChapter, onPlay: () -> Unit, modifier: Modifier = Modifier) {
+    val chapterFallback = bayitString("audiobooks.detail.chapter")
+    val chapterTitle = chapter.title ?: chapterFallback
+    val playLabel = bayitString("common.play")
+
     GlassCard(
         modifier = modifier.fillMaxWidth().padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.xs),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
-                .semantics { contentDescription = "Play ${chapter.title ?: "chapter"}" }
+                .semantics { contentDescription = chapterTitle }
                 .clickable(onClick = onPlay)
                 .padding(DesignTokens.Spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
@@ -136,7 +141,7 @@ internal fun ChapterRow(chapter: AudiobookChapter, onPlay: () -> Unit, modifier:
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = chapter.title ?: "Chapter",
+                    text = chapterTitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Medium,
@@ -151,7 +156,7 @@ internal fun ChapterRow(chapter: AudiobookChapter, onPlay: () -> Unit, modifier:
                     )
                 }
             }
-            GlassButton(text = "Play", onClick = onPlay)
+            GlassButton(text = playLabel, onClick = onPlay)
         }
     }
 }
@@ -176,8 +181,8 @@ internal fun AudiobookErrorContent(message: String, onBack: () -> Unit, onRetry:
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
-            GlassButton(text = "Go Back", onClick = onBack, isPrimary = false)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
+            GlassButton(text = bayitString("common.back"), onClick = onBack, isPrimary = false)
         }
     }
 }

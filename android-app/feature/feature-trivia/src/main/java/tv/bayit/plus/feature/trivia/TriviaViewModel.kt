@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.TriviaRepository
 import tv.bayit.plus.core.model.TriviaQuestion
@@ -25,6 +26,7 @@ class TriviaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val triviaRepository: TriviaRepository,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val contentId: String = savedStateHandle["contentId"] ?: ""
@@ -60,7 +62,7 @@ class TriviaViewModel @Inject constructor(
                         startTimer()
                     } else {
                         _uiState.value = TriviaUiState.Error(
-                            message = "No questions available for this session",
+                            message = stringProvider.string("trivia.noQuestionsError"),
                         )
                     }
                 }

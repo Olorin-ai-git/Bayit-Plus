@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.SubscriptionRepository
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class SubscriptionGateViewModel @Inject constructor(
     private val subscriptionRepository: SubscriptionRepository,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SubscriptionGateUiState>(SubscriptionGateUiState.Loading)
@@ -38,7 +40,7 @@ class SubscriptionGateViewModel @Inject constructor(
                     val subscription = result.data
                     logger.info("Subscription status retrieved", mapOf("hasSubscription" to (subscription != null).toString()))
                     _uiState.value = SubscriptionGateUiState.GateRequired(
-                        featureName = "Bayit+ Content",
+                        featureName = stringProvider.string("subscription.gate.defaultFeature"),
                         requiresSubscription = subscription == null,
                     )
                 }

@@ -60,7 +60,7 @@ internal fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Bayit+",
+                text = bayitString("common.appName"),
                 style = MaterialTheme.typography.displayLarge,
                 color = DesignTokens.Colors.Primary.base,
             )
@@ -73,7 +73,7 @@ internal fun LoginScreen(
                     if (uiState is LoginUiState.Error) onDismissError()
                     onEmailChange(value)
                 },
-                label = "Email",
+                label = bayitString("login.email"),
                 enabled = !isLoading,
             )
 
@@ -85,7 +85,7 @@ internal fun LoginScreen(
                     if (uiState is LoginUiState.Error) onDismissError()
                     onPasswordChange(value)
                 },
-                label = "Password",
+                label = bayitString("login.password"),
                 enabled = !isLoading,
             )
 
@@ -101,7 +101,7 @@ internal fun LoginScreen(
             }
 
             GlassButton(
-                text = "Sign In",
+                text = bayitString("login.submit"),
                 onClick = {
                     keyboardController?.hide()
                     onLoginClick()
@@ -113,7 +113,7 @@ internal fun LoginScreen(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
             GlassButton(
-                text = "Sign in with Google",
+                text = bayitString("login.continueWithGoogle"),
                 onClick = {
                     keyboardController?.hide()
                     onGoogleSignInClick()
@@ -138,7 +138,7 @@ internal fun LoginScreen(
 
             TextButton(onClick = onForgotPasswordClick) {
                 Text(
-                    text = "Forgot Password?",
+                    text = bayitString("login.forgotPassword"),
                     color = DesignTokens.Colors.Text.secondary,
                 )
             }
@@ -147,7 +147,7 @@ internal fun LoginScreen(
 
             TextButton(onClick = onRegisterClick) {
                 Text(
-                    text = "Don't have an account? Register",
+                    text = bayitString("login.noAccount"),
                     color = DesignTokens.Colors.Primary.light,
                 )
             }

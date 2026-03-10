@@ -1,6 +1,7 @@
 package tv.bayit.plus.core.auth
 
 import androidx.biometric.BiometricPrompt
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 
 /**
  * Data types and enumerations for [BiometricAuthService].
@@ -41,20 +42,24 @@ enum class BiometricType {
 /**
  * Maps [BiometricPrompt] error codes to user-facing messages.
  */
-internal fun mapBiometricErrorMessage(errorCode: Int, errString: CharSequence): String =
+internal fun mapBiometricErrorMessage(
+    errorCode: Int,
+    errString: CharSequence,
+    stringProvider: BayitStringProvider,
+): String =
     when (errorCode) {
-        BiometricPrompt.ERROR_CANCELED -> "Authentication cancelled"
-        BiometricPrompt.ERROR_HW_UNAVAILABLE -> "Biometric hardware unavailable"
-        BiometricPrompt.ERROR_HW_NOT_PRESENT -> "No biometric hardware"
-        BiometricPrompt.ERROR_LOCKOUT -> "Too many attempts - locked out"
-        BiometricPrompt.ERROR_LOCKOUT_PERMANENT -> "Permanently locked out"
-        BiometricPrompt.ERROR_NEGATIVE_BUTTON -> "User cancelled"
-        BiometricPrompt.ERROR_NO_BIOMETRICS -> "No biometric enrolled"
-        BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> "No device credential"
-        BiometricPrompt.ERROR_NO_SPACE -> "No space for biometric"
-        BiometricPrompt.ERROR_SECURITY_UPDATE_REQUIRED -> "Security update required"
-        BiometricPrompt.ERROR_TIMEOUT -> "Authentication timeout"
-        BiometricPrompt.ERROR_UNABLE_TO_PROCESS -> "Unable to process biometric"
-        BiometricPrompt.ERROR_USER_CANCELED -> "User cancelled"
-        else -> "Biometric error: $errString"
+        BiometricPrompt.ERROR_CANCELED -> stringProvider.string("biometric.error.cancelled")
+        BiometricPrompt.ERROR_HW_UNAVAILABLE -> stringProvider.string("biometric.error.hwUnavailable")
+        BiometricPrompt.ERROR_HW_NOT_PRESENT -> stringProvider.string("biometric.error.hwNotPresent")
+        BiometricPrompt.ERROR_LOCKOUT -> stringProvider.string("biometric.error.lockout")
+        BiometricPrompt.ERROR_LOCKOUT_PERMANENT -> stringProvider.string("biometric.error.lockoutPermanent")
+        BiometricPrompt.ERROR_NEGATIVE_BUTTON -> stringProvider.string("biometric.error.userCancelled")
+        BiometricPrompt.ERROR_NO_BIOMETRICS -> stringProvider.string("biometric.error.noBiometrics")
+        BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> stringProvider.string("biometric.error.noCredential")
+        BiometricPrompt.ERROR_NO_SPACE -> stringProvider.string("biometric.error.noSpace")
+        BiometricPrompt.ERROR_SECURITY_UPDATE_REQUIRED -> stringProvider.string("biometric.error.securityUpdate")
+        BiometricPrompt.ERROR_TIMEOUT -> stringProvider.string("biometric.error.timeout")
+        BiometricPrompt.ERROR_UNABLE_TO_PROCESS -> stringProvider.string("biometric.error.unableToProcess")
+        BiometricPrompt.ERROR_USER_CANCELED -> stringProvider.string("biometric.error.userCancelled")
+        else -> stringProvider.string("biometric.error.unknown", mapOf("error" to errString.toString()))
     }

@@ -3681,7 +3681,17 @@
       "invalidChannel": "无效的频道 ID"
     },
     "initializationFailed": "初始化失败",
-    "reloadButton": "重新加载"
+    "reloadButton": "重新加载",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "请登录以使用 Bayit+ Companion",
@@ -4359,7 +4369,8 @@
     "menu": "菜单",
     "more": "更多",
     "playlist": "播放列表",
-    "byoc": "BYOC"
+    "byoc": "你的内容",
+    "zehAniHub": "Zeh Ani"
   },
   "onboarding": {
     "welcome": {
@@ -4451,8 +4462,17 @@
   "plans": {
     "basic": {
       "name": "基础版",
-      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
-      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
+      "features": [
+        "所有点播内容",
+        "广播与播客",
+        "1台设备观看",
+        "标清画质"
+      ],
+      "notIncluded": [
+        "直播频道",
+        "AI 助手",
+        "离线观看"
+      ]
     },
     "premium": {
       "name": "高级版",
@@ -4464,7 +4484,10 @@
         "2台设备观看",
         "高清画质"
       ],
-      "notIncluded": ["离线观看", "家庭档案"]
+      "notIncluded": [
+        "离线观看",
+        "家庭档案"
+      ]
     },
     "family": {
       "name": "家庭版",
@@ -4521,7 +4544,9 @@
     "noStream": "流不可用",
     "loadError": "加载流失败",
     "settings": "设置",
-    "subtitles": "字幕",
+    "subtitles": {
+      "language": "语言"
+    },
     "playbackSpeed": "播放速度",
     "quality": "画质",
     "auto": "自动",
@@ -4775,7 +4800,9 @@
     "radio": "Radio",
     "playLatest": "播放最新",
     "subscribe": "订阅",
-    "unsubscribe": "取消订阅"
+    "unsubscribe": "取消订阅",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "集"
   },
   "miniPlayer": {
     "skipBackward": "后退15秒",
@@ -5086,7 +5113,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "儿童",
+    "addIcon": "+"
   },
   "radio": {
     "title": "广播",
@@ -5372,7 +5401,11 @@
     "results": "结果",
     "previousPage": "上一页",
     "nextPage": "下一页",
-    "pageIndicator": "第 {{current}} 页，共 {{total}} 页"
+    "pageIndicator": "第 {{current}} 页，共 {{total}} 页",
+    "llm": {
+      "title": "AI 搜索",
+      "placeholder": "描述您想看什么..."
+    }
   },
   "settings": {
     "title": "设置",
@@ -5488,7 +5521,10 @@
       "signOutAll": "退出所有设备",
       "signOutAllDesc": "这将使您从除此设备外的所有设备退出",
       "thisDevice": "此设备",
-      "lastActive": "最后活跃 {{time}}"
+      "lastActive": "最后活跃 {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "AI功能",
@@ -5767,7 +5803,8 @@
         "features": "功能",
         "support": "支持"
       }
-    }
+    },
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "希伯来语标点",
@@ -6014,7 +6051,8 @@
       "subtitle": "了解如何使用Bayit+功能",
       "widgetsIntro": "小组件入门",
       "widgetsDescription": "了解如何创建、自定义和管理浮动小组件"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "telAviv": {
     "title": "特拉维夫连接",
@@ -6130,7 +6168,14 @@
   "vod": {
     "title": "电影与剧集",
     "movies": "电影",
-    "series": "剧集",
+    "series": {
+      "seasonsCount": "{{count}} 季",
+      "episodesCount": "{{count}} 集",
+      "playAll": "全部播放",
+      "removeFromFavorites": "从收藏中移除",
+      "addToFavorites": "添加到收藏",
+      "seasonNumber": "第 {{number}} 季"
+    },
     "searchPlaceholder": "搜索电影和剧集...",
     "noMovies": "未找到电影",
     "noSeries": "未找到剧集",
@@ -6554,7 +6599,9 @@
     "error": {
       "failed": "无法生成摘要",
       "retry": "重试",
-      "insufficientCredits": "积分不足"
+      "insufficientCredits": "积分不足",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "timeline": {
       "title": "字幕时间线",
@@ -6737,6 +6784,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "作者: {{author}}",
+      "narratedBy": "朗读者: {{narrator}}",
+      "bookmarks": "{{count}} 个书签",
+      "chapters": "章节 ({{count}})",
+      "chapter": "章节"
     }
   },
   "podcast": {
@@ -7693,7 +7747,21 @@
     "biometricEnrollTitle": "启用生物识别登录",
     "biometricEnrollMessage": "使用指纹或面部识别更快速地登录",
     "biometricEnrollEnable": "启用",
-    "biometricEnrollSkip": "稍后"
+    "biometricEnrollSkip": "稍后",
+    "register": {
+      "createAccount": "创建账户",
+      "email": "电子邮件",
+      "password": "密码",
+      "confirmPassword": "确认密码",
+      "register": "注册",
+      "alreadyHaveAccount": "已有账户? 登录",
+      "passwordStrength": {
+        "weak": "弱",
+        "medium": "中",
+        "strong": "强"
+      }
+    },
+    "logout": "退出登录"
   },
   "email": {
     "greeting": "您好",
@@ -8347,7 +8415,8 @@
     "translationBeta": "翻译（测试版）",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -8777,7 +8846,8 @@
       "errors": {
         "noControlsAvailable": "没有可用的家庭控制。请先创建控制。"
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "翻译",
@@ -9565,12 +9635,13 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "由 Olorin.ai 提供支持"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9607,7 +9678,10 @@
       "genericQuestions": "通用问题",
       "placeholder": "提问...",
       "send": "发送",
-      "you": "你"
+      "you": "你",
+      "title": "对话",
+      "askQuestion": "提问...",
+      "sendQuestion": "发送问题"
     },
     "subtitle": "你的互动身份",
     "hub": {
@@ -9623,6 +9697,156 @@
       "feedbackDesc": "来自家人和朋友的消息",
       "chess": "国际象棋",
       "chessDesc": "与家人和朋友下象棋"
+    },
+    "contacts": {
+      "title": "联系人",
+      "addContact": "添加联系人",
+      "searchPlaceholder": "搜索联系人...",
+      "noContacts": "还没有联系人",
+      "noMatchingContacts": "没有匹配的联系人",
+      "reelsShared": "已分享 {{count}} 个短视频",
+      "remove": "移除"
+    },
+    "feedback": {
+      "title": "反馈",
+      "rateQuestion": "您如何评价 Zeh Ani?",
+      "tellUsMore": "告诉我们更多",
+      "sharePlaceholder": "分享您使用 Zeh Ani 功能的体验...",
+      "submit": "提交反馈",
+      "thankYou": "感谢您的反馈!",
+      "appreciateInput": "我们重视您的意见,并将用于改进。",
+      "sendMore": "发送更多反馈"
+    },
+    "consent": {
+      "title": "生物识别同意",
+      "familyPin": "家庭PIN码",
+      "enterPin": "输入家庭PIN码...",
+      "consentTypes": "同意类型",
+      "active": "已激活",
+      "notGranted": "未授予",
+      "grant": "授予",
+      "granted": "已授予"
+    },
+    "highlights": {
+      "title": "精彩时刻",
+      "shareHighlight": "分享精彩时刻",
+      "sentTo": "已发送给 {{sentCount}} 位家庭联系人",
+      "generateReel": "生成新短视频",
+      "noHighlights": "还没有精彩时刻",
+      "momentsCount": "{{count}} 个时刻",
+      "sendToFamily": "发送给家人"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "双重认证设置",
+      "scanQrCode": "扫描二维码",
+      "scanQrDescription": "使用您的身份验证应用扫描此二维码",
+      "qrLabel": "二维码",
+      "enterCode": "输入验证码",
+      "codePlaceholder": "6位验证码",
+      "enable": "启用双重认证",
+      "verified": "双重认证已启用!"
+    },
+    "passkey": {
+      "title": "通行密钥管理",
+      "addPasskey": "添加通行密钥",
+      "empty": "未配置通行密钥。\n添加您的第一个通行密钥!",
+      "lastUsedNa": "上次使用: 不适用"
+    },
+    "phone": {
+      "title": "手机验证",
+      "enterNumber": "输入手机号码",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "发送验证码",
+      "enterCode": "输入验证码",
+      "codePlaceholder": "6位验证码",
+      "verify": "验证",
+      "verified": "手机已验证!"
+    },
+    "devices": {
+      "title": "设备配对",
+      "pairingCode": "配对码",
+      "enterCodeOnTv": "在您的电视设备上输入此代码",
+      "pairNewDevice": "配对新设备",
+      "empty": "没有已配对的设备。\n配对您的第一台设备!",
+      "lastActiveNa": "最后活跃: 不适用",
+      "remove": "移除"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "一起看",
+      "create": "创建一起看",
+      "contentId": "内容ID",
+      "enterContent": "输入要观看的内容",
+      "createButton": "创建派对",
+      "join": "加入一起看",
+      "partyCode": "派对代码",
+      "enterCode": "输入派对代码",
+      "joinButton": "加入"
+    },
+    "grandparent": {
+      "title": "邀请祖父母",
+      "createInvite": "创建邀请",
+      "createInviteDescription": "输入您祖父母的姓名...",
+      "nameLabel": "祖父母姓名",
+      "enterName": "输入姓名",
+      "generateCode": "生成邀请码",
+      "codeGenerated": "邀请码已生成",
+      "shareCode": "将此代码分享给您的祖父母",
+      "codeInstructions": "他们可以在Bayit+应用中输入此代码进行连接",
+      "createAnother": "创建另一个"
+    },
+    "conversation": {
+      "title": "对话"
+    },
+    "friends": {
+      "online": "在线"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "术语表",
+      "searchPlaceholder": "搜索术语..."
+    },
+    "shabbat": {
+      "shabbatShalom": "安息日快乐",
+      "modeActivated": "安息日模式已启用",
+      "shavuaTov": "新周快乐",
+      "modeDeactivated": "安息日模式已停用",
+      "channelName": "安息日模式"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "连接 Plex",
+      "enterCodeAt": "在以下位置输入此代码",
+      "waitingForAuth": "等待授权...",
+      "selectServer": "选择 Plex 服务器",
+      "connecting": "正在连接到 {{serverName}}...",
+      "connected": "已连接",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "我的内容源",
+      "refresh": "刷新",
+      "noSources": "没有内容源",
+      "noSourcesSubtitle": "添加您的 Plex、YouTube 或 IPTV 源",
+      "removeSource": "移除源",
+      "plexSubtitle": "电影、节目、音乐",
+      "youtubeSubtitle": "视频、播放列表、频道",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "直播频道、点播、系列",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, 打开个人资料",
+    "languageCurrent": "语言: {{lang}}, 点击更改",
+    "selectLanguage": "选择语言",
+    "homeLogo": "Bayit+"
   }
 }

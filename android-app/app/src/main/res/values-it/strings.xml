@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">Guarda la TV in diretta</string>
+    <string name="shortcut_search">Cerca contenuti</string>
+    <string name="shortcut_resume">Continua a guardare</string>
+    <string name="shortcut_radio">Ascolta la radio</string>
+    <string name="shortcut_podcasts">Sfoglia i podcast</string>
+    <string name="widget_now_playing_description">Mostra cosa e in riproduzione su Bayit+</string>
+    <string name="widget_continue_watching_description">Mostra i contenuti in corso con barre di avanzamento</string>
+    <string name="widget_live_channels_description">Mostra i tuoi canali in diretta preferiti con i programmi attuali</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">Home</string>
+    <string name="tv_continue_watching">Continua a guardare</string>
+    <string name="tv_live_channels">TV in diretta</string>
+    <string name="tv_vod_title">Film e serie</string>
+    <string name="tv_radio_title">Radio</string>
+    <string name="tv_podcasts_title">Podcast</string>
+    <string name="tv_featured_title">In evidenza</string>
+    <string name="tv_login_title">Accedi a Bayit+</string>
+    <string name="tv_scan_qr">Scansiona il codice QR con il telefono per accedere</string>
+    <string name="tv_enter_code">Oppure visita %1$s e inserisci il codice:</string>
+    <string name="tv_code_expires">Il codice scade tra %1$s</string>
+    <string name="tv_manual_login">Accedi con e-mail</string>
+    <string name="tv_search_hint">Cerca canali, serie, film...</string>
+    <string name="tv_connection_lost">Connessione persa. Nuovo tentativo...</string>
+    <string name="tv_subscribe_prompt">Abbonati per guardare questo contenuto</string>
+    <string name="tv_subscribe_on_phone">Visita bayit.tv o usa l\'app Bayit+ sul telefono per abbonarti</string>
+    <string name="tv_byoc_title">I tuoi contenuti</string>
+</resources>

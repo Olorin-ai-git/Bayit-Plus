@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">ライブTVを見る</string>
+    <string name="shortcut_search">コンテンツを検索</string>
+    <string name="shortcut_resume">視聴を続ける</string>
+    <string name="shortcut_radio">ラジオを聴く</string>
+    <string name="shortcut_podcasts">ポッドキャストを探す</string>
+    <string name="widget_now_playing_description">Bayit+ で現在再生中のコンテンツを表示します</string>
+    <string name="widget_continue_watching_description">進行状況バー付きで視聴中のコンテンツを表示します</string>
+    <string name="widget_live_channels_description">現在の番組と共にお気に入りのライブチャンネルを表示します</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">ホーム</string>
+    <string name="tv_continue_watching">視聴を続ける</string>
+    <string name="tv_live_channels">ライブTV</string>
+    <string name="tv_vod_title">映画とドラマ</string>
+    <string name="tv_radio_title">ラジオ</string>
+    <string name="tv_podcasts_title">ポッドキャスト</string>
+    <string name="tv_featured_title">おすすめ</string>
+    <string name="tv_login_title">Bayit+ にサインイン</string>
+    <string name="tv_scan_qr">スマートフォンでQRコードをスキャンしてサインインしてください</string>
+    <string name="tv_enter_code">または %1$s にアクセスしてコードを入力してください：</string>
+    <string name="tv_code_expires">コードは %1$s で期限切れになります</string>
+    <string name="tv_manual_login">メールでサインイン</string>
+    <string name="tv_search_hint">チャンネル、ドラマ、映画を検索...</string>
+    <string name="tv_connection_lost">接続が切断されました。再試行中...</string>
+    <string name="tv_subscribe_prompt">このコンテンツを視聴するには登録してください</string>
+    <string name="tv_subscribe_on_phone">bayit.tv にアクセスするかスマートフォンの Bayit+ アプリで登録してください</string>
+    <string name="tv_byoc_title">あなたのコンテンツ</string>
+</resources>

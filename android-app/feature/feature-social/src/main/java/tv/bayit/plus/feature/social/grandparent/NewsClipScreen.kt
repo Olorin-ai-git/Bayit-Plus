@@ -36,6 +36,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val THUMBNAIL_SIZE = 120.dp
 
@@ -71,12 +72,12 @@ internal fun NewsClipScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "News Clips",
+            title = bayitString("social.newsClips.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -129,7 +130,7 @@ private fun NewsClipCard(clip: NewsClipItem, onClick: () -> Unit, onShareClick: 
                 Text(text = clip.publishedAt, style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
             }
             IconButton(onClick = onShareClick) {
-                Icon(Icons.Default.Share, contentDescription = "Share", tint = DesignTokens.Colors.Text.secondary)
+                Icon(Icons.Default.Share, contentDescription = bayitString("social.newsClips.share"), tint = DesignTokens.Colors.Text.secondary)
             }
         }
     }
@@ -138,7 +139,7 @@ private fun NewsClipCard(clip: NewsClipItem, onClick: () -> Unit, onShareClick: 
 @Composable
 private fun EmptyContent() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "No news clips available", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
+        Text(text = bayitString("social.newsClips.empty"), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
     }
 }
 
@@ -147,7 +148,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

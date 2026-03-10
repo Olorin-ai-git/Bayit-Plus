@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">观看直播电视</string>
+    <string name="shortcut_search">搜索内容</string>
+    <string name="shortcut_resume">继续观看</string>
+    <string name="shortcut_radio">收听广播</string>
+    <string name="shortcut_podcasts">浏览播客</string>
+    <string name="widget_now_playing_description">显示 Bayit+ 中正在播放的内容</string>
+    <string name="widget_continue_watching_description">显示正在观看的内容及进度条</string>
+    <string name="widget_live_channels_description">显示收藏的直播频道及当前节目</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">首页</string>
+    <string name="tv_continue_watching">继续观看</string>
+    <string name="tv_live_channels">直播电视</string>
+    <string name="tv_vod_title">电影和剧集</string>
+    <string name="tv_radio_title">广播</string>
+    <string name="tv_podcasts_title">播客</string>
+    <string name="tv_featured_title">精选</string>
+    <string name="tv_login_title">登录 Bayit+</string>
+    <string name="tv_scan_qr">用手机扫描二维码以登录</string>
+    <string name="tv_enter_code">或访问 %1$s 并输入代码：</string>
+    <string name="tv_code_expires">代码将在 %1$s 后过期</string>
+    <string name="tv_manual_login">使用电子邮件登录</string>
+    <string name="tv_search_hint">搜索频道、剧集、电影...</string>
+    <string name="tv_connection_lost">连接已断开，正在重试...</string>
+    <string name="tv_subscribe_prompt">订阅以观看此内容</string>
+    <string name="tv_subscribe_on_phone">访问 bayit.tv 或使用手机上的 Bayit+ 应用进行订阅</string>
+    <string name="tv_byoc_title">你的内容</string>
+</resources>

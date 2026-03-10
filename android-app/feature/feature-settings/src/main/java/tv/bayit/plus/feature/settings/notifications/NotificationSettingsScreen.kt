@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun NotificationSettingsRoute(
@@ -59,10 +60,10 @@ internal fun NotificationSettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Notifications",
+            title = bayitString("settings.notifications"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
             actions = {
@@ -88,16 +89,16 @@ private fun NotifContent(state: NotificationUiState.Success, onUpdate: (Notifica
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
-        item { NotifToggle("Live TV Alerts", "Get notified when live channels go on air", s.liveAlerts, saving) { onUpdate(s.copy(liveAlerts = it)) } }
-        item { NotifToggle("Download Complete", "Notify when downloads finish", s.downloadComplete, saving) { onUpdate(s.copy(downloadComplete = it)) } }
-        item { NotifToggle("Social Updates", "Friend requests, watch party invites", s.socialUpdates, saving) { onUpdate(s.copy(socialUpdates = it)) } }
-        item { NotifToggle("Content Recommendations", "Personalized content suggestions", s.contentRecommendations, saving) { onUpdate(s.copy(contentRecommendations = it)) } }
-        item { NotifToggle("Credits Alerts", "Notify when credits are low", s.creditsAlerts, saving) { onUpdate(s.copy(creditsAlerts = it)) } }
-        item { NotifToggle("Email Digest", "Receive content updates via email", s.emailDigest, saving) { onUpdate(s.copy(emailDigest = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.liveAlerts"), bayitString("settings.notifications.liveAlertsDescription"), s.liveAlerts, saving) { onUpdate(s.copy(liveAlerts = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.downloadComplete"), bayitString("settings.notifications.downloadCompleteDescription"), s.downloadComplete, saving) { onUpdate(s.copy(downloadComplete = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.socialUpdates"), bayitString("settings.notifications.socialUpdatesDescription"), s.socialUpdates, saving) { onUpdate(s.copy(socialUpdates = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.contentRecommendations"), bayitString("settings.notifications.contentRecommendationsDescription"), s.contentRecommendations, saving) { onUpdate(s.copy(contentRecommendations = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.creditsAlerts"), bayitString("settings.notifications.creditsAlertsDescription"), s.creditsAlerts, saving) { onUpdate(s.copy(creditsAlerts = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.emailDigest"), bayitString("settings.notifications.emailDigestDescription"), s.emailDigest, saving) { onUpdate(s.copy(emailDigest = it)) } }
         if (s.emailDigest) {
             item { FrequencySelect(s.emailDigestFrequency, saving) { onUpdate(s.copy(emailDigestFrequency = it)) } }
         }
-        item { NotifToggle("Quiet Hours", "Mute notifications during set hours", s.quietHoursEnabled, saving) { onUpdate(s.copy(quietHoursEnabled = it)) } }
+        item { NotifToggle(bayitString("settings.notifications.quietHours"), bayitString("settings.notifications.quietHoursDescription"), s.quietHoursEnabled, saving) { onUpdate(s.copy(quietHoursEnabled = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }
@@ -123,7 +124,7 @@ private fun FrequencySelect(selected: String, isSaving: Boolean, onSelect: (Stri
     val options = listOf("daily", "weekly", "monthly")
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(text = "Digest Frequency", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+            Text(text = bayitString("settings.notifications.digestFrequency"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
             Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 options.forEach { option ->
@@ -139,7 +140,7 @@ private fun NotifErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

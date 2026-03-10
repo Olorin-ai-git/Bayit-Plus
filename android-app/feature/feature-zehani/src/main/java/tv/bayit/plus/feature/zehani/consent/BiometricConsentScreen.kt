@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -60,7 +61,7 @@ internal fun BiometricConsentScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Biometric Consent")
+        GlassTopBar(title = bayitString("zehAni.consent.title"))
         when (uiState) {
             is ConsentUiState.Loading -> GlassLoadingIndicator()
             is ConsentUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -91,7 +92,7 @@ private fun ConsentContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(
-                        text = "Family PIN",
+                        text = bayitString("zehAni.consent.familyPin"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -99,7 +100,7 @@ private fun ConsentContent(
                     GlassTextField(
                         value = pinInput,
                         onValueChange = onPinChange,
-                        placeholder = "Enter family PIN...",
+                        placeholder = bayitString("zehAni.consent.enterPin"),
                         singleLine = true,
                     )
                 }
@@ -108,19 +109,19 @@ private fun ConsentContent(
 
         item {
             Text(
-                text = "Consent Types",
+                text = bayitString("zehAni.consent.consentTypes"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.Bold,
             )
         }
 
-        items(CONSENT_TYPES, key = { it.first }) { (typeKey, typeLabel) ->
+        items(CONSENT_TYPES, key = { it.first }) { (typeKey, typeI18nKey) ->
             val existingConsent = consents.find { it.consentType == typeKey }
             val isActive = existingConsent?.active == true
 
             ConsentTypeCard(
-                label = typeLabel,
+                label = bayitString(typeI18nKey),
                 isActive = isActive,
                 onGrant = { onGrantConsent(typeKey) },
             )
@@ -150,17 +151,17 @@ private fun ConsentTypeCard(
                     fontWeight = FontWeight.Medium,
                 )
                 Text(
-                    text = if (isActive) "Active" else "Not granted",
+                    text = if (isActive) bayitString("zehAni.consent.active") else bayitString("zehAni.consent.notGranted"),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isActive) DesignTokens.Colors.Semantic.success
                     else DesignTokens.Colors.Text.muted,
                 )
             }
             if (!isActive) {
-                GlassButton(text = "Grant", onClick = onGrant)
+                GlassButton(text = bayitString("zehAni.consent.grant"), onClick = onGrant)
             } else {
                 Text(
-                    text = "Granted",
+                    text = bayitString("zehAni.consent.granted"),
                     color = DesignTokens.Colors.Semantic.success,
                     fontWeight = FontWeight.Bold,
                     fontSize = DesignTokens.FontSize.sm,
@@ -178,7 +179,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

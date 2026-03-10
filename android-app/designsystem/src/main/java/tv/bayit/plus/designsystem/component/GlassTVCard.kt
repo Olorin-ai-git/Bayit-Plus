@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -84,7 +85,7 @@ fun GlassTVCard(
                             ),
                     ) {
                         androidx.compose.material3.Text(
-                            text = "LIVE",
+                            text = bayitString("common.live"),
                             style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                             color = Color.White,
                         )

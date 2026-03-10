@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -65,12 +66,12 @@ internal fun AddSourceScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Add Source",
+            title = bayitString("byoc.addSource.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -102,12 +103,12 @@ private fun TypeSelector(selected: SourceInputType, onSelect: (SourceInputType) 
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassButton(
-            text = "M3U Playlist",
+            text = bayitString("byoc.addSource.m3uPlaylist"),
             onClick = { onSelect(SourceInputType.M3U) },
             modifier = Modifier.weight(1f),
         )
         GlassButton(
-            text = "Xtream Codes",
+            text = bayitString("byoc.settings.xtreamCodes"),
             onClick = { onSelect(SourceInputType.XTREAM) },
             modifier = Modifier.weight(1f),
         )
@@ -121,16 +122,16 @@ private fun M3UForm(uiState: AddSourceUiState, onSubmit: (String, String) -> Uni
 
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(DesignTokens.Spacing.md)) {
-            GlassTextField(value = name, onValueChange = { name = it }, label = "Source Name")
+            GlassTextField(value = name, onValueChange = { name = it }, label = bayitString("byoc.addSource.sourceName"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassTextField(value = url, onValueChange = { url = it }, label = "M3U URL")
+            GlassTextField(value = url, onValueChange = { url = it }, label = bayitString("byoc.addSource.m3uUrl"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             ErrorMessage(uiState)
             if (uiState is AddSourceUiState.Validating) {
                 GlassLoadingIndicator()
             } else {
                 GlassButton(
-                    text = "Add Source",
+                    text = bayitString("byoc.addSource.submit"),
                     onClick = { onSubmit(name, url) },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -151,20 +152,20 @@ private fun XtreamForm(
 
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(DesignTokens.Spacing.md)) {
-            GlassTextField(value = name, onValueChange = { name = it }, label = "Source Name")
+            GlassTextField(value = name, onValueChange = { name = it }, label = bayitString("byoc.addSource.sourceName"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassTextField(value = server, onValueChange = { server = it }, label = "Server URL")
+            GlassTextField(value = server, onValueChange = { server = it }, label = bayitString("byoc.addSource.serverUrl"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassTextField(value = username, onValueChange = { username = it }, label = "Username")
+            GlassTextField(value = username, onValueChange = { username = it }, label = bayitString("byoc.addSource.username"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassTextField(value = password, onValueChange = { password = it }, label = "Password")
+            GlassTextField(value = password, onValueChange = { password = it }, label = bayitString("byoc.addSource.password"))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             ErrorMessage(uiState)
             if (uiState is AddSourceUiState.Validating) {
                 GlassLoadingIndicator()
             } else {
                 GlassButton(
-                    text = "Add Source",
+                    text = bayitString("byoc.addSource.submit"),
                     onClick = { onSubmit(name, server, username, password) },
                     modifier = Modifier.fillMaxWidth(),
                 )

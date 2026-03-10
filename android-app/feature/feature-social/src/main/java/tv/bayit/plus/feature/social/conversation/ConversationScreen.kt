@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -60,7 +61,7 @@ internal fun ConversationScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Conversation")
+        GlassTopBar(title = bayitString("social.conversation.title"))
 
         when (uiState) {
             is ConversationUiState.Loading -> GlassLoadingIndicator(modifier = Modifier.weight(1f))
@@ -159,11 +160,11 @@ private fun MessageInputBar(
             value = text,
             onValueChange = onTextChanged,
             modifier = Modifier.weight(1f),
-            placeholder = "Type a message",
+            placeholder = bayitString("messages.input.placeholder"),
             singleLine = true,
         )
         GlassButton(
-            text = "Send",
+            text = bayitString("messages.input.send"),
             onClick = onSend,
             enabled = text.isNotBlank(),
         )

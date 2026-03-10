@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 /**
  * Route composable for Grandparent Bridge screen.
@@ -66,7 +67,7 @@ internal fun GrandparentBridgeScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Grandparent Bridge")
+        GlassTopBar(title = bayitString("social.grandparent.title"))
 
         when (uiState) {
             is GrandparentBridgeUiState.Loading -> {
@@ -104,7 +105,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -14,6 +14,7 @@ import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.billing.BillingConnectionState
 import tv.bayit.plus.core.data.billing.BillingManager
 import tv.bayit.plus.core.data.billing.PurchaseResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.data.billing.SubscriptionProduct
 import javax.inject.Inject
 
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class SubscribeViewModel @Inject constructor(
     private val billingManager: BillingManager,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SubscribeUiState>(SubscribeUiState.Loading)
@@ -46,7 +48,7 @@ class SubscribeViewModel @Inject constructor(
     fun startPurchase(activity: Activity) {
         val product = _selectedProduct.value
         if (product == null) {
-            updateSuccessState { copy(purchaseError = "Please select a plan") }
+            updateSuccessState { copy(purchaseError = stringProvider.string("subscription.selectPlan")) }
             return
         }
         logger.debug("Starting native purchase", mapOf("productId" to product.productId))

@@ -26,6 +26,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun YouTubeAuthRoute(
@@ -58,12 +59,12 @@ internal fun YouTubeAuthScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Connect YouTube",
+            title = bayitString("byoc.youtube.connectTitle"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -95,7 +96,7 @@ private fun YouTubeDeviceCodeContent(userCode: String, verificationUrl: String) 
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Visit this URL on any device:",
+            text = bayitString("byoc.youtube.visitUrl"),
             style = MaterialTheme.typography.bodyLarge,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -107,7 +108,7 @@ private fun YouTubeDeviceCodeContent(userCode: String, verificationUrl: String) 
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
         Text(
-            text = "Then enter this code:",
+            text = bayitString("byoc.youtube.enterCode"),
             style = MaterialTheme.typography.bodyLarge,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -127,7 +128,7 @@ private fun YouTubeDeviceCodeContent(userCode: String, verificationUrl: String) 
         GlassLoadingIndicator()
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
         Text(
-            text = "Waiting for authorization...",
+            text = bayitString("byoc.youtube.waitingAuth"),
             style = MaterialTheme.typography.bodySmall,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -144,7 +145,7 @@ private fun YouTubeConnectingContent() {
         GlassLoadingIndicator()
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
         Text(
-            text = "Connecting to YouTube...",
+            text = bayitString("byoc.youtube.connecting"),
             style = MaterialTheme.typography.bodyLarge,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -159,7 +160,7 @@ private fun YouTubeSuccessContent() {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "YouTube Connected",
+            text = bayitString("byoc.youtube.connected"),
             style = MaterialTheme.typography.headlineMedium,
             color = DesignTokens.Colors.Text.primary,
         )
@@ -182,6 +183,6 @@ private fun YouTubeErrorContent(message: String, onRetry: () -> Unit) {
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
-        GlassButton(text = "Try Again", onClick = onRetry)
+        GlassButton(text = bayitString("common.tryAgain"), onClick = onRetry)
     }
 }

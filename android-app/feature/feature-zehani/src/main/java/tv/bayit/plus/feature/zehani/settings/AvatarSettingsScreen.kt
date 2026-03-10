@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun AvatarSettingsRoute(
@@ -58,7 +59,7 @@ internal fun AvatarSettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Avatar Settings")
+        GlassTopBar(title = bayitString("zehAni.settings.title"))
         when (uiState) {
             is AvatarSettingsUiState.Loading -> GlassLoadingIndicator()
             is AvatarSettingsUiState.Error -> AvatarSettingsErrorContent(message = uiState.message, onRetry = onRetry)
@@ -89,14 +90,14 @@ private fun AvatarSettingsContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(
-                        text = "Privacy",
+                        text = bayitString("zehAni.settings.privacy"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     SettingToggle(
-                        label = "Private Avatar Mode",
-                        description = "Hide your avatar from other users",
+                        label = bayitString("zehAni.settings.privateAvatarMode"),
+                        description = bayitString("zehAni.settings.privateAvatarDescription"),
                         checked = state.privacyEnabled,
                         onCheckedChange = onTogglePrivacy,
                     )
@@ -108,14 +109,14 @@ private fun AvatarSettingsContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(
-                        text = "Appearance",
+                        text = bayitString("zehAni.settings.appearance"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     SettingToggle(
-                        label = "Enable Animations",
-                        description = "Animate avatar movements and expressions",
+                        label = bayitString("zehAni.settings.enableAnimations"),
+                        description = bayitString("zehAni.settings.animationsDescription"),
                         checked = state.animationsEnabled,
                         onCheckedChange = onToggleAnimations,
                     )
@@ -125,7 +126,7 @@ private fun AvatarSettingsContent(
 
         item {
             Text(
-                text = "Available Outfits",
+                text = bayitString("zehAni.settings.availableOutfits"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.Bold,

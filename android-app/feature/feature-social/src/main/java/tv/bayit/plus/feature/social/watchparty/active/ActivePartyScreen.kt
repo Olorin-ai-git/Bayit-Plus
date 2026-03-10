@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -64,7 +65,7 @@ internal fun ActivePartyScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Watch Party")
+        GlassTopBar(title = bayitString("social.watchParty.title"))
 
         when (uiState) {
             is ActivePartyUiState.Loading -> GlassLoadingIndicator()
@@ -98,7 +99,7 @@ private fun ActiveContent(
         }
         item(key = "participants_header") {
             Text(
-                text = "Participants",
+                text = bayitString("social.watchParty.participants"),
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = DesignTokens.FontSize.lg,
@@ -114,7 +115,7 @@ private fun ActiveContent(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
                 GlassButton(
-                    text = "Leave Party",
+                    text = bayitString("social.watchParty.leaveParty"),
                     onClick = onLeaveParty,
                     isPrimary = false,
                 )
@@ -135,7 +136,7 @@ private fun PlayerPlaceholder(playbackUrl: String) {
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "Synchronized Player",
+                text = bayitString("social.watchParty.synchronizedPlayer"),
                 color = DesignTokens.Colors.Text.secondary,
                 fontSize = DesignTokens.FontSize.md,
             )

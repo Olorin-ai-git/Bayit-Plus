@@ -34,6 +34,7 @@ import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val POSTER_WIDTH = 100.dp
 
@@ -48,12 +49,12 @@ internal fun FavoritesScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Favorites",
+            title = bayitString("vod.favorites.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -133,7 +134,7 @@ private fun FavoriteListItem(
                     )
                 }
             }
-            GlassButton(text = "Remove", onClick = onRemove, isPrimary = false)
+            GlassButton(text = bayitString("vod.favorites.remove"), onClick = onRemove, isPrimary = false)
         }
     }
 }
@@ -146,12 +147,12 @@ private fun FavoritesEmptyContent() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
             Text(
-                text = "No favorites yet",
+                text = bayitString("vod.favorites.emptyTitle"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
             )
             Text(
-                text = "Content you favorite will appear here",
+                text = bayitString("vod.favorites.emptySubtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -171,7 +172,7 @@ private fun FavoritesErrorContent(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

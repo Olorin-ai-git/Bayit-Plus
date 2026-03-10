@@ -13,15 +13,16 @@ import tv.bayit.plus.core.model.zehani.AvatarMesh
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 internal fun MeshInfoCard(mesh: AvatarMesh) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
-            AvatarInfoRow("Vertices", mesh.vertexCount.toString())
-            AvatarInfoRow("Bones", mesh.boneCount.toString())
-            AvatarInfoRow("Blend Shapes", mesh.blendShapes.size.toString())
-            AvatarInfoRow("Has GLB", if (mesh.hasGlb) "Yes" else "No")
+            AvatarInfoRow(bayitString("zehAni.avatar3d.vertices"), mesh.vertexCount.toString())
+            AvatarInfoRow(bayitString("zehAni.avatar3d.bones"), mesh.boneCount.toString())
+            AvatarInfoRow(bayitString("zehAni.avatar3d.blendShapes"), mesh.blendShapes.size.toString())
+            AvatarInfoRow(bayitString("zehAni.avatar3d.hasGlb"), if (mesh.hasGlb) bayitString("common.yes") else bayitString("common.no"))
         }
     }
 }
@@ -36,7 +37,7 @@ internal fun ControlsCard(
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
             Text(
-                text = "Controls",
+                text = bayitString("zehAni.avatar3d.controls"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -46,12 +47,12 @@ internal fun ControlsCard(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
             ) {
                 GlassButton(
-                    text = if (state.isAnimating) "Pause" else "Animate",
+                    text = if (state.isAnimating) bayitString("common.pause") else bayitString("zehAni.avatar3d.animate"),
                     onClick = onToggleAnimation,
                     modifier = Modifier.weight(1f),
                 )
                 GlassButton(
-                    text = "Reset",
+                    text = bayitString("common.reset"),
                     onClick = { onRotate(0f, 0f); onZoom(1f) },
                     isPrimary = false,
                     modifier = Modifier.weight(1f),

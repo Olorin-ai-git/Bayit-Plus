@@ -94,14 +94,19 @@ public actor PlexAPIClient {
     private func bestConnection(
         _ connections: [[String: Any]]
     ) -> (host: String, port: Int, isLocal: Bool)? {
-        let local = connections.first {
-            $0["local"] as? Bool == true
+        let parsed: [(host: String, port: Int, isLocal: Bool)] = connections.compactMap { conn in
+            guard let host = conn["address"] as? String,
+                  let port = conn["port"] as? Int
+            else { return nil }
+            return (host, port, conn["local"] as? Bool ?? false)
         }
-        let conn = local ?? connections.first
-        guard let host = conn?["address"] as? String,
-              let port = conn?["port"] as? Int
-        else { return nil }
-        return (host, port, conn?["local"] as? Bool ?? false)
+
+        // Prefer remote (HTTPS) connections for reliability across networks.
+        // Local connections only work when the device is on the same LAN.
+        if let remote = parsed.first(where: { !$0.isLocal }) {
+            return remote
+        }
+        return parsed.first
     }
 }
 

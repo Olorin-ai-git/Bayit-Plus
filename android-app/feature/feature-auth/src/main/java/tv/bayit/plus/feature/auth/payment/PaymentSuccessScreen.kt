@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -36,7 +37,7 @@ internal fun PaymentSuccessScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Payment Successful")
+        GlassTopBar(title = bayitString("payment.success.title"))
 
         Column(
             modifier = Modifier
@@ -57,21 +58,21 @@ internal fun PaymentSuccessScreen(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = "Payment Successful!",
+                        text = bayitString("payment.success.heading"),
                         style = MaterialTheme.typography.titleLarge,
                         color = DesignTokens.Colors.Semantic.success,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        text = "Your subscription has been activated. You now have full access to all Bayit+ features!",
+                        text = bayitString("payment.success.message"),
                         style = MaterialTheme.typography.bodyLarge,
                         color = DesignTokens.Colors.Text.secondary,
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "Thank you for subscribing to Bayit+. Enjoy unlimited streaming, live TV, AI features, and more.",
+                        text = bayitString("payment.success.thankYou"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.muted,
                         textAlign = TextAlign.Center,
@@ -82,7 +83,7 @@ internal fun PaymentSuccessScreen(
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
 
             GlassButton(
-                text = "Start Watching",
+                text = bayitString("payment.success.startWatching"),
                 onClick = onNavigateToHome,
                 modifier = Modifier.fillMaxWidth(),
             )

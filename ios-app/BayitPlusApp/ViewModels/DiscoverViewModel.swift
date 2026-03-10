@@ -2,7 +2,6 @@ import BayitCore
 import Foundation
 import Observation
 
-/// ViewModel for the Discover tab - manages feature catalog, availability, and walkthroughs
 @MainActor
 @Observable
 final class DiscoverViewModel {
@@ -14,7 +13,6 @@ final class DiscoverViewModel {
     private(set) var remoteConfig: DiscoverConfigResponse?
     private(set) var availabilityStates: [String: FeatureAvailabilityState] = [:]
     var expandedFeatureId: String?
-    var activeWalkthrough: WalkthroughStateMachine?
     var pendingDemoVideoURL: URL?
 
     var categories: [DiscoverCategory] {
@@ -37,7 +35,10 @@ final class DiscoverViewModel {
         do {
             remoteConfig = try await repository.fetchConfig()
         } catch {
-            logger.warning("Remote config unavailable, using catalog defaults", context: ["error": error.localizedDescription])
+            logger.warning(
+                "Remote config unavailable, using catalog defaults",
+                context: ["error": error.localizedDescription]
+            )
         }
 
         await refreshAvailability()
@@ -84,62 +85,18 @@ final class DiscoverViewModel {
         return URL(string: urlString)
     }
 
-    /// Resolved deep link URL for "Try it now". Player features use
-    /// walkthroughContentId from remote config; standalone features
-    /// use their static deepLinkRoute.
-    func tryItURL(for feature: DiscoverFeature) -> URL? {
-        let featureConfig = remoteConfig?.features
-            .first(where: { $0.featureId == feature.id })
-
-        // Player features need a demo content ID from remote config
-        if let contentId = featureConfig?.walkthroughContentId,
-           feature.deepLinkRoute?.hasPrefix("bayitplus://play") == true
-        {
-            return URL(string: "bayitplus://play/\(contentId)?walkthrough=\(feature.id)")
-        }
-
-        // Standalone features use their static deep link route
-        if let route = feature.deepLinkRoute {
-            return URL(string: route)
-        }
-
-        return nil
-    }
-
-    func startWalkthrough(for feature: DiscoverFeature) {
-        guard !WalkthroughStateMachine.hasCompleted(featureId: feature.id) else {
-            logger.info("Walkthrough already completed", context: ["featureId": feature.id])
-            return
-        }
-        activeWalkthrough = WalkthroughStateMachine(feature: feature)
-    }
-
-    func advanceWalkthrough() {
-        activeWalkthrough?.advance()
-    }
-
-    func skipWalkthrough() {
-        activeWalkthrough?.skip()
-        activeWalkthrough = nil
-    }
-
-    func completeWalkthrough() async {
-        guard let walkthrough = activeWalkthrough else { return }
-        walkthrough.complete()
-
+    func recordWalkthroughCompletion(featureId: String, stepsCompleted: Int, skipped: Bool) async {
         do {
             try await repository.recordWalkthroughComplete(
-                featureId: walkthrough.feature.id,
-                stepsCompleted: walkthrough.totalSteps,
-                skipped: false
+                featureId: featureId,
+                stepsCompleted: stepsCompleted,
+                skipped: skipped
             )
         } catch {
             logger.warning(
                 "Failed to record walkthrough completion",
-                context: ["featureId": walkthrough.feature.id, "error": error.localizedDescription]
+                context: ["featureId": featureId, "error": error.localizedDescription]
             )
         }
-
-        activeWalkthrough = nil
     }
 }

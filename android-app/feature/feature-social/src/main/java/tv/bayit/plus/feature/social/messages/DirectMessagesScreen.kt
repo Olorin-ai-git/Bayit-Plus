@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -58,7 +59,7 @@ internal fun DirectMessagesScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Messages")
+        GlassTopBar(title = bayitString("messages.title"))
         when (uiState) {
             is DirectMessagesUiState.Loading -> GlassLoadingIndicator()
             is DirectMessagesUiState.Success -> ConversationList(
@@ -142,7 +143,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                 color = DesignTokens.Colors.Semantic.error,
                 style = MaterialTheme.typography.bodyLarge,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

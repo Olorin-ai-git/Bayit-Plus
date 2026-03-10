@@ -114,7 +114,7 @@ internal fun BusinessLocationRow(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Israeli Businesses Near You",
+                    text = bayitString("home.israeliBusinessesNearYou"),
                     style = MaterialTheme.typography.titleLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Bold,

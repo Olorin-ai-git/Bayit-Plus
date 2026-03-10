@@ -22,6 +22,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassCarousel
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -53,7 +54,7 @@ internal fun HeroCarousel(
                         )
                         if (page == 0) {
                             Text(
-                                text = "NEW",
+                                text = bayitString("common.new"),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = DesignTokens.Colors.Text.primary,
                                 fontWeight = FontWeight.Bold,
@@ -93,13 +94,13 @@ internal fun HeroCarousel(
                         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
                         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                             GlassButton(
-                                text = "Watch Now",
+                                text = bayitString("common.watchNow"),
                                 onClick = { onItemClick(item) },
                                 modifier = Modifier.weight(1f),
                                 isPrimary = true,
                             )
                             GlassButton(
-                                text = "More Info",
+                                text = bayitString("common.moreInfo"),
                                 onClick = { onMoreInfoClick(item) },
                                 modifier = Modifier.weight(1f),
                                 isPrimary = false,

@@ -26,8 +26,8 @@ android {
         applicationId = "tv.bayit.plus"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.1.1"
+        versionCode = 6
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -181,6 +181,7 @@ dependencies {
     implementation(project(":feature:feature-social"))
     implementation(project(":feature:feature-voice"))
     implementation(project(":feature:feature-culture"))
+    implementation(project(":feature:feature-discover"))
     implementation(project(":feature:feature-kids"))
     implementation(project(":feature:feature-audiobooks"))
     implementation(project(":feature:feature-trivia"))

@@ -3457,7 +3457,17 @@
       "invalidChannel": "অবৈধ চ্যানেল আইডি"
     },
     "initializationFailed": "সূচনা ব্যর্থ হয়েছে",
-    "reloadButton": "পুনরায় লোড করুন"
+    "reloadButton": "পুনরায় লোড করুন",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companion ব্যবহার করতে লগ ইন করুন",
@@ -3827,7 +3837,8 @@
     "menu": "মেনু",
     "more": "আরও",
     "playlist": "প্লেলিস্ট",
-    "byoc": "BYOC"
+    "byoc": "আপনার কন্টেন্ট",
+    "zehAniHub": "জে অনী"
   },
   "onboarding": {
     "welcome": {
@@ -3897,7 +3908,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্রিমিয়াম",
@@ -3909,7 +3924,10 @@
         "২টি ডিভাইসে দেখুন",
         "HD মান"
       ],
-      "notIncluded": ["অফলাইন দেখা", "পরিবার প্রোফাইল"]
+      "notIncluded": [
+        "অফলাইন দেখা",
+        "পরিবার প্রোফাইল"
+      ]
     },
     "family": {
       "name": "ফ্যামিলি",
@@ -3962,7 +3980,9 @@
     "liveBadge": "লাইভ",
     "noStream": "স্ট্রিম নেই",
     "settings": "সেটিংস",
-    "subtitles": "সাবটাইটেল",
+    "subtitles": {
+      "language": "ভাষা"
+    },
     "quality": "মান",
     "auto": "অটো",
     "restart": "পুনরায় শুরু করুন",
@@ -4217,7 +4237,9 @@
     "radio": "Radio",
     "playLatest": "সর্বশেষ চালান",
     "subscribe": "সাবস্ক্রাইব",
-    "unsubscribe": "আনসাবস্ক্রাইব"
+    "unsubscribe": "আনসাবস্ক্রাইব",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "এপিসোড"
   },
   "miniPlayer": {
     "skipBackward": "15 সেকেন্ড পিছনে",
@@ -4782,7 +4804,11 @@
     "results": "ফলাফল",
     "previousPage": "আগের",
     "nextPage": "পরের",
-    "pageIndicator": "পৃষ্ঠা {{current}} / {{total}}"
+    "pageIndicator": "পৃষ্ঠা {{current}} / {{total}}",
+    "llm": {
+      "title": "AI অনুসন্ধান",
+      "placeholder": "আপনি কী দেখতে চান তা বর্ণনা করুন..."
+    }
   },
   "settings": {
     "title": "সেটিংস",
@@ -4898,7 +4924,10 @@
       "signOutAll": "সকল ডিভাইস থেকে সাইন আউট করুন",
       "signOutAllDesc": "এটি এই ডিভাইস ছাড়া সর্বত্র আপনাকে সাইন আউট করবে",
       "thisDevice": "এই ডিভাইস",
-      "lastActive": "সর্বশেষ সক্রিয় {{time}}"
+      "lastActive": "সর্বশেষ সক্রিয় {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "AI বৈশিষ্ট্য",
@@ -5147,7 +5176,8 @@
     "perYear": "/বছর",
     "selected": "নির্বাচিত",
     "processing": "প্রক্রিয়াকরণ হচ্ছে...",
-    "noCharge": "ট্রায়াল সময়কালে আপনার ক্রেডিট কার্ড চার্জ হবে না"
+    "noCharge": "ট্রায়াল সময়কালে আপনার ক্রেডিট কার্ড চার্জ হবে না",
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "নিকুদ",
@@ -5394,7 +5424,8 @@
     },
     "wizard": {
       "role": "আপনার গাইড"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "trivia": {
     "didYouKnow": "আপনি কি জানেন?",
@@ -5446,7 +5477,14 @@
   "vod": {
     "title": "সিনেমা ও সিরিজ",
     "movies": "সিনেমা",
-    "series": "সিরিজ",
+    "series": {
+      "seasonsCount": "{{count}} সিজন",
+      "episodesCount": "{{count}} এপিসোড",
+      "playAll": "সব চালান",
+      "removeFromFavorites": "পছন্দ থেকে সরান",
+      "addToFavorites": "পছন্দে যোগ করুন",
+      "seasonNumber": "সিজন {{number}}"
+    },
     "searchPlaceholder": "সিনেমা ও সিরিজ খুঁজুন...",
     "noMovies": "কোনো সিনেমা নেই",
     "noSeries": "কোনো সিরিজ নেই",
@@ -5638,7 +5676,9 @@
     "error": {
       "failed": "সারসংক্ষেপ তৈরি করা যায়নি",
       "retry": "আবার চেষ্টা করুন",
-      "insufficientCredits": "অপর্যাপ্ত ক্রেডিট"
+      "insufficientCredits": "অপর্যাপ্ত ক্রেডিট",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "timeline": {
       "title": "ট্রান্সক্রিপ্ট টাইমলাইন",
@@ -6086,6 +6126,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "{{author}} দ্বারা",
+      "narratedBy": "বর্ণনাকারী: {{narrator}}",
+      "bookmarks": "{{count}} বুকমার্ক",
+      "chapters": "অধ্যায় ({{count}})",
+      "chapter": "অধ্যায়"
     }
   },
   "breadcrumbs": {
@@ -6506,7 +6553,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "শিশু",
+    "addIcon": "+"
   },
   "watch": {
     "notFound": "কন্টেন্ট পাওয়া যায়নি",
@@ -7677,7 +7726,21 @@
     "biometricEnrollTitle": "বায়োমেট্রিক সাইন-ইন সক্ষম করুন",
     "biometricEnrollMessage": "পরের বার দ্রুত সাইন ইন করতে আঙুলের ছাপ বা মুখ ব্যবহার করুন",
     "biometricEnrollEnable": "সক্ষম করুন",
-    "biometricEnrollSkip": "এখন নয়"
+    "biometricEnrollSkip": "এখন নয়",
+    "register": {
+      "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+      "email": "ইমেইল",
+      "password": "পাসওয়ার্ড",
+      "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+      "register": "নিবন্ধন",
+      "alreadyHaveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে? সাইন ইন করুন",
+      "passwordStrength": {
+        "weak": "দুর্বল",
+        "medium": "মাঝারি",
+        "strong": "শক্তিশালী"
+      }
+    },
+    "logout": "সাইন আউট"
   },
   "email": {
     "greeting": "নমস্কার",
@@ -8331,7 +8394,8 @@
     "translationBeta": "অনুবাদ (বেটা)",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -8761,7 +8825,8 @@
       "errors": {
         "noControlsAvailable": "কোনো পারিবারিক নিয়ন্ত্রণ উপলব্ধ নেই। প্রথমে নিয়ন্ত্রণ তৈরি করুন।"
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "অনুবাদ করুন",
@@ -9549,12 +9614,13 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Olorin.ai দ্বারা পরিচালিত"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9591,7 +9657,10 @@
       "genericQuestions": "সাধারণ প্রশ্ন",
       "placeholder": "প্রশ্ন করুন...",
       "send": "পাঠান",
-      "you": "আপনি"
+      "you": "আপনি",
+      "title": "সংলাপ",
+      "askQuestion": "প্রশ্ন করুন...",
+      "sendQuestion": "প্রশ্ন পাঠান"
     },
     "subtitle": "আপনার ইন্টার‍্যাক্টিভ পরিচয়",
     "hub": {
@@ -9607,6 +9676,156 @@
       "feedbackDesc": "পরিবার এবং বন্ধুদের বার্তা",
       "chess": "দাবা",
       "chessDesc": "পরিবার ও বন্ধুদের সাথে দাবা খেলুন"
+    },
+    "contacts": {
+      "title": "পরিচিতি",
+      "addContact": "পরিচিতি যোগ করুন",
+      "searchPlaceholder": "পরিচিতি খুঁজুন...",
+      "noContacts": "এখনো কোনো পরিচিতি নেই",
+      "noMatchingContacts": "কোনো মিলে যাওয়া পরিচিতি নেই",
+      "reelsShared": "{{count}} রিল শেয়ার করা হয়েছে",
+      "remove": "সরান"
+    },
+    "feedback": {
+      "title": "মতামত",
+      "rateQuestion": "আপনি Zeh Ani-কে কিভাবে রেট করবেন?",
+      "tellUsMore": "আরো বলুন",
+      "sharePlaceholder": "Zeh Ani বৈশিষ্ট্যগুলির সাথে আপনার অভিজ্ঞতা শেয়ার করুন...",
+      "submit": "মতামত জমা দিন",
+      "thankYou": "আপনার মতামতের জন্য ধন্যবাদ!",
+      "appreciateInput": "আমরা আপনার মতামতকে মূল্য দিই এবং উন্নতির জন্য ব্যবহার করব।",
+      "sendMore": "আরো মতামত পাঠান"
+    },
+    "consent": {
+      "title": "বায়োমেট্রিক সম্মতি",
+      "familyPin": "পারিবারিক PIN",
+      "enterPin": "পারিবারিক PIN লিখুন...",
+      "consentTypes": "সম্মতির ধরন",
+      "active": "সক্রিয়",
+      "notGranted": "প্রদান করা হয়নি",
+      "grant": "প্রদান করুন",
+      "granted": "প্রদান করা হয়েছে"
+    },
+    "highlights": {
+      "title": "হাইলাইটস",
+      "shareHighlight": "হাইলাইট শেয়ার করুন",
+      "sentTo": "{{sentCount}} পারিবারিক পরিচিতিতে পাঠানো হয়েছে",
+      "generateReel": "নতুন রিল তৈরি করুন",
+      "noHighlights": "এখনো কোনো হাইলাইট নেই",
+      "momentsCount": "{{count}} মুহূর্ত",
+      "sendToFamily": "পরিবারে পাঠান"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "2FA সেটআপ",
+      "scanQrCode": "QR কোড স্ক্যান করুন",
+      "scanQrDescription": "আপনার অথেন্টিকেটর অ্যাপ দিয়ে এই QR কোড স্ক্যান করুন",
+      "qrLabel": "QR",
+      "enterCode": "যাচাইকরণ কোড লিখুন",
+      "codePlaceholder": "৬ সংখ্যার কোড",
+      "enable": "2FA সক্রিয় করুন",
+      "verified": "2FA সক্রিয়!"
+    },
+    "passkey": {
+      "title": "পাসকি ব্যবস্থাপনা",
+      "addPasskey": "পাসকি যোগ করুন",
+      "empty": "কোনো পাসকি কনফিগার করা হয়নি।\nআপনার প্রথম পাসকি যোগ করুন!",
+      "lastUsedNa": "সর্বশেষ ব্যবহার: প্রযোজ্য নয়"
+    },
+    "phone": {
+      "title": "ফোন যাচাইকরণ",
+      "enterNumber": "ফোন নম্বর লিখুন",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "কোড পাঠান",
+      "enterCode": "যাচাইকরণ কোড লিখুন",
+      "codePlaceholder": "৬ সংখ্যার কোড",
+      "verify": "যাচাই করুন",
+      "verified": "ফোন যাচাই করা হয়েছে!"
+    },
+    "devices": {
+      "title": "ডিভাইস পেয়ারিং",
+      "pairingCode": "পেয়ারিং কোড",
+      "enterCodeOnTv": "আপনার টিভি ডিভাইসে এই কোড লিখুন",
+      "pairNewDevice": "নতুন ডিভাইস পেয়ার করুন",
+      "empty": "কোনো ডিভাইস পেয়ার করা হয়নি।\nআপনার প্রথম ডিভাইস পেয়ার করুন!",
+      "lastActiveNa": "সর্বশেষ সক্রিয়: প্রযোজ্য নয়",
+      "remove": "সরান"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "ওয়াচ পার্টি",
+      "create": "ওয়াচ পার্টি তৈরি করুন",
+      "contentId": "কন্টেন্ট আইডি",
+      "enterContent": "দেখার জন্য কন্টেন্ট লিখুন",
+      "createButton": "পার্টি তৈরি করুন",
+      "join": "ওয়াচ পার্টিতে যোগ দিন",
+      "partyCode": "পার্টি কোড",
+      "enterCode": "পার্টি কোড লিখুন",
+      "joinButton": "যোগ দিন"
+    },
+    "grandparent": {
+      "title": "দাদা-দাদিকে আমন্ত্রণ",
+      "createInvite": "আমন্ত্রণ তৈরি করুন",
+      "createInviteDescription": "আপনার দাদা-দাদির নাম লিখুন...",
+      "nameLabel": "দাদা-দাদির নাম",
+      "enterName": "নাম লিখুন",
+      "generateCode": "আমন্ত্রণ কোড তৈরি করুন",
+      "codeGenerated": "আমন্ত্রণ কোড তৈরি হয়েছে",
+      "shareCode": "এই কোডটি আপনার দাদা-দাদির সাথে শেয়ার করুন",
+      "codeInstructions": "তারা সংযুক্ত হতে তাদের Bayit+ অ্যাপে এই কোড লিখতে পারেন",
+      "createAnother": "আরেকটি তৈরি করুন"
+    },
+    "conversation": {
+      "title": "কথোপকথন"
+    },
+    "friends": {
+      "online": "অনলাইন"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "শব্দকোষ",
+      "searchPlaceholder": "শব্দ খুঁজুন..."
+    },
+    "shabbat": {
+      "shabbatShalom": "শাব্বাত শালোম",
+      "modeActivated": "শাব্বাত মোড সক্রিয় করা হয়েছে",
+      "shavuaTov": "শাভুআ তোভ",
+      "modeDeactivated": "শাব্বাত মোড নিষ্ক্রিয় করা হয়েছে",
+      "channelName": "শাব্বাত মোড"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "Plex সংযুক্ত করুন",
+      "enterCodeAt": "এই কোড এখানে লিখুন",
+      "waitingForAuth": "অনুমোদনের জন্য অপেক্ষা করা হচ্ছে...",
+      "selectServer": "Plex সার্ভার নির্বাচন করুন",
+      "connecting": "{{serverName}}-এ সংযুক্ত হচ্ছে...",
+      "connected": "সংযুক্ত",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "আমার কন্টেন্ট উৎস",
+      "refresh": "রিফ্রেশ",
+      "noSources": "কোনো কন্টেন্ট উৎস নেই",
+      "noSourcesSubtitle": "আপনার Plex, YouTube বা IPTV উৎস যোগ করুন",
+      "removeSource": "উৎস সরান",
+      "plexSubtitle": "সিনেমা, শো, সঙ্গীত",
+      "youtubeSubtitle": "ভিডিও, প্লেলিস্ট, চ্যানেল",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "লাইভ চ্যানেল, VOD, সিরিজ",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, প্রোফাইল খুলুন",
+    "languageCurrent": "ভাষা: {{lang}}, পরিবর্তন করতে ট্যাপ করুন",
+    "selectLanguage": "ভাষা নির্বাচন করুন",
+    "homeLogo": "Bayit+"
   }
 }

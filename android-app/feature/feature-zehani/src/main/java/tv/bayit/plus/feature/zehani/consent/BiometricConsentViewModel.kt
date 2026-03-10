@@ -98,9 +98,9 @@ sealed interface ConsentUiState {
 }
 
 val CONSENT_TYPES = listOf(
-    BiometricConsentType.MESH_GENERATION to "3D Mesh Generation",
-    BiometricConsentType.VOICE_V2V to "Voice-to-Voice Transform",
-    BiometricConsentType.VIDEO_SELFIE to "Video Selfie Capture",
-    BiometricConsentType.HIGHLIGHT_SHARE to "Highlight Reel Sharing",
-    BiometricConsentType.WHATSAPP_CONTACT to "WhatsApp Contact Sharing",
+    BiometricConsentType.MESH_GENERATION to "zehAni.consent.type.meshGeneration",
+    BiometricConsentType.VOICE_V2V to "zehAni.consent.type.voiceTransform",
+    BiometricConsentType.VIDEO_SELFIE to "zehAni.consent.type.videoSelfie",
+    BiometricConsentType.HIGHLIGHT_SHARE to "zehAni.consent.type.highlightShare",
+    BiometricConsentType.WHATSAPP_CONTACT to "zehAni.consent.type.whatsappContact",
 )

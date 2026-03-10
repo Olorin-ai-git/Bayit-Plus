@@ -38,6 +38,7 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val WAVEFORM_DOT_SIZE = 4.dp
 
@@ -74,10 +75,10 @@ internal fun FeedbackInboxScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Feedback Inbox",
+            title = bayitString("zehAni.feedbackInbox.title"),
             actions = {
                 IconButton(onClick = onRefresh) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.Default.Refresh, contentDescription = bayitString("zehAni.feedbackInbox.refreshContentDescription"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -116,7 +117,7 @@ private fun FeedbackCard(item: FeedbackItem, isPlaying: Boolean, onToggleAudio: 
             }
             if (item.audioUrl != null) {
                 GlassButton(
-                    text = if (isPlaying) "Pause" else "Play Voice Message",
+                    text = if (isPlaying) bayitString("common.pause") else bayitString("zehAni.feedbackInbox.playVoiceMessage"),
                     onClick = onToggleAudio,
                     modifier = Modifier.fillMaxWidth(),
                     isPrimary = false,
@@ -136,8 +137,8 @@ private fun FeedbackCard(item: FeedbackItem, isPlaying: Boolean, onToggleAudio: 
 private fun EmptyInboxContent() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            Text(text = "No feedback yet", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.muted)
-            Text(text = "Feedback from your contacts will appear here", style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
+            Text(text = bayitString("zehAni.feedbackInbox.noFeedbackYet"), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.muted)
+            Text(text = bayitString("zehAni.feedbackInbox.feedbackAppearHere"), style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
         }
     }
 }
@@ -147,7 +148,7 @@ private fun InboxErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

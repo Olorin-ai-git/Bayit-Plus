@@ -82,16 +82,9 @@ struct DiscoverFeatureDetailView: View {
             if let route = prereq.fixRoute, !prerequisiteMet(prereq),
                let url = URL(string: route)
             {
-                Button {
+                GlassButton(localization.t(prereq.labelKey), variant: .ghost, size: .small) {
                     dismiss()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        coordinator.handleDeepLink(url)
-                    }
-                } label: {
-                    Text(localization.t(prereq.labelKey))
-                        .font(DesignTokens.Typography.callout)
-                        .foregroundStyle(DesignTokens.Primary.default)
-                        .underline()
+                    UIApplication.shared.open(url)
                 }
             } else {
                 Text(localization.t(prereq.labelKey))
@@ -110,7 +103,9 @@ struct DiscoverFeatureDetailView: View {
                     image.resizable().aspectRatio(16 / 9, contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                 } else if case .empty = phase {
-                    ProgressView().frame(maxWidth: .infinity).frame(height: 180)
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(16 / 9, contentMode: .fit)
                 }
             }
         }
@@ -119,45 +114,27 @@ struct DiscoverFeatureDetailView: View {
     private var actionButtons: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             if let url = viewModel.walkthroughURL(for: feature) {
-                Button(action: {
+                GlassButton(
+                    localization.t("discover.action.tryIt"),
+                    variant: .primary,
+                    size: .large
+                ) {
                     viewModel.startWalkthroughSession(for: feature)
                     dismiss()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        coordinator.handleDeepLink(url)
-                    }
-                }) {
-                    Text(localization.t("discover.action.tryIt"))
-                        .font(DesignTokens.Typography.headline)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.md)
-                        .background(DesignTokens.Primary.default)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                        )
+                    UIApplication.shared.open(url)
                 }
                 .accessibilityIdentifier("discover_action_tryIt")
                 .accessibilityLabel(localization.t("discover.action.tryIt"))
             }
 
             if let demoURL = viewModel.demoVideoURL(for: feature.id) {
-                Button(action: {
+                GlassButton(
+                    localization.t("discover.action.watchDemo"),
+                    variant: .secondary,
+                    size: .large
+                ) {
                     dismiss()
                     viewModel.pendingDemoVideoURL = demoURL
-                }) {
-                    Text(localization.t("discover.action.watchDemo"))
-                        .font(DesignTokens.Typography.headline)
-                        .foregroundStyle(DesignTokens.Text.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, DesignTokens.Spacing.md)
-                        .background(DesignTokens.Glass.bgMedium)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                                .strokeBorder(DesignTokens.Glass.border, lineWidth: 1)
-                        )
                 }
                 .accessibilityIdentifier("discover_action_watchDemo")
                 .accessibilityLabel(localization.t("discover.action.watchDemo"))

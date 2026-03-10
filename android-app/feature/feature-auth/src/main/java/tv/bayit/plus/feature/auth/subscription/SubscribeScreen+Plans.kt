@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 /**
  * Card displaying a Google Play subscription product with price and period.
@@ -99,7 +100,7 @@ internal fun SubscribeCheckoutFooter(
         GlassSpinner(size = SpinnerSize.MEDIUM, modifier = Modifier.padding(DesignTokens.Spacing.lg))
     } else {
         GlassButton(
-            text = "Subscribe",
+            text = bayitString("subscription.subscribe"),
             onClick = onStartCheckout,
             enabled = selectedPlanId != null,
             modifier = Modifier.fillMaxWidth(),
@@ -119,7 +120,7 @@ internal fun SubscribeErrorContent(message: String, onRetry: () -> Unit) {
                 color = DesignTokens.Colors.Semantic.error,
                 style = MaterialTheme.typography.bodyLarge,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

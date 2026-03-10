@@ -36,6 +36,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -89,7 +90,7 @@ private fun LoadedContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxxxl))
-        Text("Who's Watching?", style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Text.primary)
+        Text(bayitString("profiles.whoIsWatching"), style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Text.primary)
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxl))
         if (errorMessage != null) {
             Text(errorMessage, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodySmall)
@@ -123,7 +124,7 @@ private fun ProfileCard(profile: AccountProfile, isSelecting: Boolean, onClick: 
             )
             if (profile.isKidsProfile) {
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
-                Text("Kids", style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Semantic.info)
+                Text(bayitString("profiles.kids"), style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Semantic.info)
             }
             if (isSelecting) {
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
@@ -156,10 +157,10 @@ private fun AddProfileCard(onClick: () -> Unit) {
                 modifier = Modifier.size(72.dp).clip(CircleShape).background(DesignTokens.Colors.Glass.bgLight),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("+", style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Text.secondary)
+                Text(bayitString("profiles.addIcon"), style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Text.secondary)
             }
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            Text("Add Profile", style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.secondary, textAlign = TextAlign.Center)
+            Text(bayitString("profiles.addProfile"), style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.secondary, textAlign = TextAlign.Center)
         }
     }
 }
@@ -173,7 +174,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     ) {
         Text(message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.base))
-        GlassButton(text = "Retry", onClick = onRetry)
+        GlassButton(text = bayitString("common.retry"), onClick = onRetry)
     }
 }
 

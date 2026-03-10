@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -75,12 +76,12 @@ internal fun ForgotPasswordScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Reset Password",
+            title = bayitString("auth.forgot.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -97,7 +98,7 @@ internal fun ForgotPasswordScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Forgot your password?",
+                    text = bayitString("auth.forgot.heading"),
                     style = MaterialTheme.typography.headlineMedium,
                     color = DesignTokens.Colors.Text.primary,
                 )
@@ -105,7 +106,7 @@ internal fun ForgotPasswordScreen(
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
 
                 Text(
-                    text = "Enter your email address and we will send you a link to reset your password.",
+                    text = bayitString("auth.forgot.instructions"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                 )
@@ -118,7 +119,7 @@ internal fun ForgotPasswordScreen(
                         if (uiState is ForgotPasswordUiState.Error) onDismissError()
                         onEmailChange(value)
                     },
-                    label = "Email",
+                    label = bayitString("login.email"),
                     enabled = !isLoading,
                 )
 
@@ -139,7 +140,7 @@ internal fun ForgotPasswordScreen(
                 }
 
                 GlassButton(
-                    text = "Send Reset Link",
+                    text = bayitString("auth.forgot.sendLink"),
                     onClick = {
                         keyboardController?.hide()
                         onSendResetClick()
@@ -161,13 +162,13 @@ private fun SuccessConfirmation() {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(DesignTokens.Spacing.md)) {
             Text(
-                text = "Reset link sent",
+                text = bayitString("auth.forgot.successTitle"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Semantic.success,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Check your inbox for a password reset link. If you do not see it, check your spam folder.",
+                text = bayitString("auth.forgot.successMessage"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )

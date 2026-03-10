@@ -26,6 +26,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun BillingRoute(
@@ -51,10 +52,10 @@ internal fun BillingScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Billing",
+            title = bayitString("settings.billing.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -76,7 +77,7 @@ private fun BillingContent(email: String, createdAt: String) {
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(text = "Account Email", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                    Text(text = bayitString("settings.billing.accountEmail"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     Text(text = email, color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
                 }
             }
@@ -84,7 +85,7 @@ private fun BillingContent(email: String, createdAt: String) {
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(text = "Member Since", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                    Text(text = bayitString("settings.billing.memberSince"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     Text(text = createdAt, color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
                 }
             }
@@ -93,13 +94,13 @@ private fun BillingContent(email: String, createdAt: String) {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     Text(
-                        text = "Payment History",
+                        text = bayitString("settings.billing.paymentHistory"),
                         color = DesignTokens.Colors.Text.primary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "Your payment history is managed through your app store subscription. Visit the Google Play Store to view transaction details.",
+                        text = bayitString("settings.billing.paymentHistoryDescription"),
                         color = DesignTokens.Colors.Text.secondary,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -115,7 +116,7 @@ private fun BillingErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

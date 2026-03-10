@@ -4279,7 +4279,17 @@
       "invalidChannel": "無効なチャンネルID"
     },
     "initializationFailed": "初期化に失敗しました",
-    "reloadButton": "再読み込み"
+    "reloadButton": "再読み込み",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companionを使用するにはログインしてください",
@@ -4826,7 +4836,8 @@
     "liveChannels": "ライブチャンネル",
     "playlist": "プレイリスト",
     "flows": "Flows",
-    "byoc": "BYOC"
+    "byoc": "あなたのコンテンツ",
+    "zehAniHub": "Zeh Ani"
   },
   "onboarding": {
     "welcome": {
@@ -4905,7 +4916,11 @@
         "SD quality"
       ],
       "name": "Basic",
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "standard": "スタンダード",
     "premium": {
@@ -4918,7 +4933,10 @@
         "HD quality"
       ],
       "name": "Premium",
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "features": [
@@ -5013,7 +5031,9 @@
     "settings": "設定",
     "quality": "画質",
     "speed": "速度",
-    "subtitles": "字幕",
+    "subtitles": {
+      "language": "言語"
+    },
     "audio": "音声",
     "off": "オフ",
     "auto": "自動",
@@ -5336,7 +5356,8 @@
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
     "radio": "Radio",
-    "playLatest": "最新を再生"
+    "playLatest": "最新を再生",
+    "removeFailed": "Failed to remove podcast"
   },
   "miniPlayer": {
     "skipBackward": "15秒戻る",
@@ -6008,7 +6029,11 @@
     "results": "結果",
     "previousPage": "前へ",
     "nextPage": "次へ",
-    "pageIndicator": "{{current}} / {{total}} ページ"
+    "pageIndicator": "{{current}} / {{total}} ページ",
+    "llm": {
+      "title": "AI検索",
+      "placeholder": "見たいものを説明してください..."
+    }
   },
   "settings": {
     "title": "設定",
@@ -6068,7 +6093,10 @@
       "signOutAll": "すべてのデバイスからサインアウト",
       "signOutAllDesc": "このデバイス以外のすべての場所からサインアウトします",
       "thisDevice": "このデバイス",
-      "lastActive": "最終アクティブ {{time}}"
+      "lastActive": "最終アクティブ {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "accessibility": {
       "small": "小",
@@ -6453,7 +6481,8 @@
     "period": "/月",
     "select": "プランを選択",
     "selected": "選択済み",
-    "noCharge": "トライアル期間中はクレジットカードに課金されません"
+    "noCharge": "トライアル期間中はクレジットカードに課金されません",
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "ニクド",
@@ -6735,7 +6764,8 @@
     },
     "wizard": {
       "role": "あなたのガイド"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "trivia": {
     "didYouKnow": "知っていますか？",
@@ -6791,7 +6821,14 @@
     "subtitle": "ビデオライブラリ",
     "movies": "映画",
     "shows": "番組",
-    "series": "シリーズ",
+    "series": {
+      "seasonsCount": "{{count}}シーズン",
+      "episodesCount": "{{count}}エピソード",
+      "playAll": "すべて再生",
+      "removeFromFavorites": "お気に入りから削除",
+      "addToFavorites": "お気に入りに追加",
+      "seasonNumber": "シーズン {{number}}"
+    },
     "documentaries": "ドキュメンタリー",
     "allContent": "すべてのコンテンツ",
     "genres": "ジャンル",
@@ -7074,7 +7111,9 @@
     "error": {
       "failed": "要約を生成できませんでした",
       "retry": "再試行",
-      "insufficientCredits": "クレジットが不足しています"
+      "insufficientCredits": "クレジットが不足しています",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "title": "見逃し視聴",
     "description": "見逃した番組を視聴",
@@ -7524,6 +7563,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "著者: {{author}}",
+      "narratedBy": "ナレーター: {{narrator}}",
+      "bookmarks": "{{count}}件のブックマーク",
+      "chapters": "チャプター ({{count}})",
+      "chapter": "チャプター"
     }
   },
   "breadcrumbs": {
@@ -7944,7 +7990,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "キッズ",
+    "addIcon": "+"
   },
   "watch": {
     "notFound": "コンテンツが見つかりません",
@@ -9123,7 +9171,21 @@
     "biometricEnrollTitle": "生体認証サインインを有効にする",
     "biometricEnrollMessage": "次回から指紋や顔を使って素早くサインインできます",
     "biometricEnrollEnable": "有効にする",
-    "biometricEnrollSkip": "後で"
+    "biometricEnrollSkip": "後で",
+    "register": {
+      "createAccount": "アカウント作成",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirmPassword": "パスワードの確認",
+      "register": "登録",
+      "alreadyHaveAccount": "アカウントをお持ちですか? サインイン",
+      "passwordStrength": {
+        "weak": "弱い",
+        "medium": "普通",
+        "strong": "強い"
+      }
+    },
+    "logout": "サインアウト"
   },
   "email": {
     "greeting": "こんにちは",
@@ -9777,7 +9839,8 @@
     "translationBeta": "翻訳（ベータ版）",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -10207,7 +10270,8 @@
       "errors": {
         "noControlsAvailable": "利用可能なファミリーコントロールがありません。最初にコントロールを作成してください。"
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "翻訳",
@@ -10995,7 +11059,8 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
@@ -11037,7 +11102,10 @@
       "genericQuestions": "一般的な質問",
       "placeholder": "質問をどうぞ...",
       "send": "送信",
-      "you": "あなた"
+      "you": "あなた",
+      "title": "対話",
+      "askQuestion": "質問する...",
+      "sendQuestion": "質問を送信"
     },
     "subtitle": "あなたのインタラクティブアイデンティティ",
     "hub": {
@@ -11053,6 +11121,156 @@
       "feedbackDesc": "家族や友人からのメッセージ",
       "chess": "チェス",
       "chessDesc": "家族や友人とチェスを楽しもう"
+    },
+    "contacts": {
+      "title": "連絡先",
+      "addContact": "連絡先を追加",
+      "searchPlaceholder": "連絡先を検索...",
+      "noContacts": "連絡先がまだありません",
+      "noMatchingContacts": "一致する連絡先がありません",
+      "reelsShared": "{{count}}件のリールを共有",
+      "remove": "削除"
+    },
+    "feedback": {
+      "title": "フィードバック",
+      "rateQuestion": "Zeh Aniをどう評価しますか?",
+      "tellUsMore": "詳しく教えてください",
+      "sharePlaceholder": "Zeh Aniの機能についての体験を共有...",
+      "submit": "フィードバックを送信",
+      "thankYou": "フィードバックありがとうございます!",
+      "appreciateInput": "ご意見を大切にし、改善に活用します。",
+      "sendMore": "さらにフィードバックを送信"
+    },
+    "consent": {
+      "title": "生体認証の同意",
+      "familyPin": "ファミリーPIN",
+      "enterPin": "ファミリーPINを入力...",
+      "consentTypes": "同意の種類",
+      "active": "有効",
+      "notGranted": "未付与",
+      "grant": "付与",
+      "granted": "付与済み"
+    },
+    "highlights": {
+      "title": "ハイライト",
+      "shareHighlight": "ハイライトを共有",
+      "sentTo": "{{sentCount}}人の家族連絡先に送信済み",
+      "generateReel": "新しいリールを生成",
+      "noHighlights": "ハイライトがまだありません",
+      "momentsCount": "{{count}}の瞬間",
+      "sendToFamily": "家族に送信"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "2FA設定",
+      "scanQrCode": "QRコードをスキャン",
+      "scanQrDescription": "認証アプリでこのQRコードをスキャンしてください",
+      "qrLabel": "QR",
+      "enterCode": "認証コードを入力",
+      "codePlaceholder": "6桁のコード",
+      "enable": "2FAを有効にする",
+      "verified": "2FAが有効になりました!"
+    },
+    "passkey": {
+      "title": "パスキー管理",
+      "addPasskey": "パスキーを追加",
+      "empty": "パスキーが設定されていません。\n最初のパスキーを追加してください!",
+      "lastUsedNa": "最終使用: なし"
+    },
+    "phone": {
+      "title": "電話番号の確認",
+      "enterNumber": "電話番号を入力",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "コードを送信",
+      "enterCode": "認証コードを入力",
+      "codePlaceholder": "6桁のコード",
+      "verify": "確認",
+      "verified": "電話番号が確認されました!"
+    },
+    "devices": {
+      "title": "デバイスペアリング",
+      "pairingCode": "ペアリングコード",
+      "enterCodeOnTv": "TVデバイスでこのコードを入力してください",
+      "pairNewDevice": "新しいデバイスをペアリング",
+      "empty": "ペアリングされたデバイスがありません。\n最初のデバイスをペアリングしてください!",
+      "lastActiveNa": "最終アクティブ: なし",
+      "remove": "削除"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "ウォッチパーティー",
+      "create": "ウォッチパーティーを作成",
+      "contentId": "コンテンツID",
+      "enterContent": "視聴するコンテンツを入力",
+      "createButton": "パーティーを作成",
+      "join": "ウォッチパーティーに参加",
+      "partyCode": "パーティーコード",
+      "enterCode": "パーティーコードを入力",
+      "joinButton": "参加"
+    },
+    "grandparent": {
+      "title": "祖父母を招待",
+      "createInvite": "招待を作成",
+      "createInviteDescription": "祖父母の名前を入力...",
+      "nameLabel": "祖父母の名前",
+      "enterName": "名前を入力",
+      "generateCode": "招待コードを生成",
+      "codeGenerated": "招待コードが生成されました",
+      "shareCode": "このコードを祖父母と共有してください",
+      "codeInstructions": "Bayit+アプリでこのコードを入力して接続できます",
+      "createAnother": "もう一つ作成"
+    },
+    "conversation": {
+      "title": "会話"
+    },
+    "friends": {
+      "online": "オンライン"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "用語集",
+      "searchPlaceholder": "用語を検索..."
+    },
+    "shabbat": {
+      "shabbatShalom": "シャバット シャローム",
+      "modeActivated": "シャバットモードが有効になりました",
+      "shavuaTov": "シャヴア トヴ",
+      "modeDeactivated": "シャバットモードが無効になりました",
+      "channelName": "シャバットモード"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "Plexに接続",
+      "enterCodeAt": "このコードを入力してください",
+      "waitingForAuth": "認証待ち...",
+      "selectServer": "Plexサーバーを選択",
+      "connecting": "{{serverName}}に接続中...",
+      "connected": "接続済み",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "マイコンテンツソース",
+      "refresh": "更新",
+      "noSources": "コンテンツソースがありません",
+      "noSourcesSubtitle": "Plex、YouTube、またはIPTVソースを追加",
+      "removeSource": "ソースを削除",
+      "plexSubtitle": "映画、番組、音楽",
+      "youtubeSubtitle": "動画、プレイリスト、チャンネル",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "ライブチャンネル、VOD、シリーズ",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}、プロフィールを開く",
+    "languageCurrent": "言語: {{lang}}、タップして変更",
+    "selectLanguage": "言語を選択",
+    "homeLogo": "Bayit+"
   }
 }

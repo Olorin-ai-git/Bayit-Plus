@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 
+@MainActor
 @Observable
 public final class WalkthroughStateMachine {
     public let feature: DiscoverFeature
@@ -10,6 +11,8 @@ public final class WalkthroughStateMachine {
     public private(set) var isComplete: Bool
     public private(set) var isAwaitingPrerequisite: Bool = false
     public private(set) var awaitingPrerequisiteType: String?
+
+    private let defaults: UserDefaults
 
     public var currentStep: WalkthroughStep? {
         guard currentStepIndex < feature.walkthroughSteps.count else { return nil }
@@ -34,8 +37,9 @@ public final class WalkthroughStateMachine {
         currentStepIndex >= feature.walkthroughSteps.count - 1
     }
 
-    public init(feature: DiscoverFeature) {
+    public init(feature: DiscoverFeature, defaults: UserDefaults = .standard) {
         self.feature = feature
+        self.defaults = defaults
         var start = 0
         while start < feature.walkthroughSteps.count,
               feature.walkthroughSteps[start].expectedAction == .navigate
@@ -50,8 +54,8 @@ public final class WalkthroughStateMachine {
 
     public func advance() {
         guard isActive, !isComplete else { return }
-        if let step = currentStep, step.expectedAction == .createAvatar, !isAwaitingPrerequisite {
-            pauseForPrerequisite("avatar")
+        if let step = currentStep, let prereqType = step.prerequisiteType, !isAwaitingPrerequisite {
+            pauseForPrerequisite(prereqType)
             return
         }
         if currentStepIndex < feature.walkthroughSteps.count - 1 {
@@ -69,7 +73,11 @@ public final class WalkthroughStateMachine {
     public func resumeFromPrerequisite() {
         isAwaitingPrerequisite = false
         awaitingPrerequisiteType = nil
-        advance()
+        if currentStepIndex < feature.walkthroughSteps.count - 1 {
+            currentStepIndex += 1
+        } else {
+            complete()
+        }
     }
 
     public func skip() {
@@ -85,15 +93,21 @@ public final class WalkthroughStateMachine {
 
     private func persistCompletion() {
         let key = Self.completionKey(for: feature.id)
-        UserDefaults.standard.set(true, forKey: key)
+        defaults.set(true, forKey: key)
     }
 
-    public static func hasCompleted(featureId: String) -> Bool {
-        UserDefaults.standard.bool(forKey: completionKey(for: featureId))
+    public static func hasCompleted(
+        featureId: String,
+        defaults: UserDefaults = .standard
+    ) -> Bool {
+        defaults.bool(forKey: completionKey(for: featureId))
     }
 
-    public static func resetCompletion(featureId: String) {
-        UserDefaults.standard.removeObject(forKey: completionKey(for: featureId))
+    public static func resetCompletion(
+        featureId: String,
+        defaults: UserDefaults = .standard
+    ) {
+        defaults.removeObject(forKey: completionKey(for: featureId))
     }
 
     private static func completionKey(for featureId: String) -> String {

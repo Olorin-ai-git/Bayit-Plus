@@ -18,6 +18,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -28,7 +29,7 @@ internal fun PointsBalanceCard(points: Int, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = "Your Points",
+                text = bayitString("rewards.yourPoints"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -80,7 +81,7 @@ internal fun RewardGridItem(
                 GlassSpinner(size = SpinnerSize.SMALL)
             } else {
                 GlassButton(
-                    text = "Claim",
+                    text = bayitString("rewards.claim"),
                     onClick = onClaim,
                     enabled = canAfford && !reward.isUnlocked,
                     modifier = Modifier.fillMaxWidth(),

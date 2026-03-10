@@ -10,7 +10,7 @@
             GlassLiveControlButton(
                 icon: "captions.bubble",
                 activeIcon: "captions.bubble.fill",
-                label: localization.t("subtitles.liveTranslate"),
+                label: localization.t("subtitles.translate"),
                 state: subtitleControlState,
                 onTap: onSubtitlesTap
             )
@@ -24,7 +24,7 @@
             GlassLiveControlButton(
                 icon: "square.split.2x1",
                 activeIcon: "square.split.2x1.fill",
-                label: localization.t("subtitles.splitScreen.title"),
+                label: localization.t("subtitles.split"),
                 state: splitSubtitleControlState,
                 onTap: onSplitSubtitlesTap
             )
@@ -44,7 +44,7 @@
             GlassLiveControlButton(
                 icon: "waveform",
                 activeIcon: "waveform.fill",
-                label: localization.t("dubbing.title"),
+                label: localization.t("dubbing.short"),
                 state: dubbingControlState,
                 onTap: onDubbingTap
             )
@@ -63,7 +63,7 @@
             GlassLiveControlButton(
                 icon: "lightbulb",
                 activeIcon: "lightbulb.fill",
-                label: localization.t("player.liveTrivia"),
+                label: localization.t("player.trivia"),
                 state: triviaControlState,
                 onTap: onTriviaTap
             )

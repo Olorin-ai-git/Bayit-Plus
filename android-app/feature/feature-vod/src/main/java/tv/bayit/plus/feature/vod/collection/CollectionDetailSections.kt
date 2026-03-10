@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val HERO_ASPECT_RATIO = 16f / 9f
 private const val POSTER_ASPECT_RATIO = 2f / 3f
@@ -56,7 +57,7 @@ internal fun CollectionHeroSection(state: CollectionDetailUiState.Success, onBac
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
+                contentDescription = bayitString("common.back"),
                 tint = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
             )
@@ -81,7 +82,7 @@ internal fun CollectionMetadataSection(
             state.availableMovies?.let { available ->
                 val total = state.totalMovies ?: available
                 Text(
-                    text = "$available of $total movies",
+                    text = bayitString("vod.collection.movieCount", mapOf("available" to available.toString(), "total" to total.toString())),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                 )
@@ -93,7 +94,7 @@ internal fun CollectionMetadataSection(
         }
         if (onPlayAll != null) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-            GlassButton(text = "Play All", onClick = onPlayAll)
+            GlassButton(text = bayitString("vod.collection.playAll"), onClick = onPlayAll)
         }
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
     }
@@ -145,8 +146,8 @@ internal fun CollectionErrorContent(message: String, onBack: () -> Unit, onRetry
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
-            GlassButton(text = "Go Back", onClick = onBack, isPrimary = false)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
+            GlassButton(text = bayitString("common.goBack"), onClick = onBack, isPrimary = false)
         }
     }
 }

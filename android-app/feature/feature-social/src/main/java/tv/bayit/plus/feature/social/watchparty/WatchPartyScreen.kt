@@ -24,6 +24,7 @@ import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.component.GlassSpinner
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -69,7 +70,7 @@ internal fun WatchPartyScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Watch Party")
+        GlassTopBar(title = bayitString("social.watchParty.title"))
 
         Column(
             modifier = Modifier
@@ -110,7 +111,7 @@ private fun CreatePartySection(
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(
-                text = "Create a Watch Party",
+                text = bayitString("social.watchParty.create"),
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = DesignTokens.FontSize.lg,
@@ -118,8 +119,8 @@ private fun CreatePartySection(
             GlassTextField(
                 value = mediaId,
                 onValueChange = onMediaIdChanged,
-                label = "Content ID",
-                placeholder = "Enter content to watch",
+                label = bayitString("social.watchParty.contentId"),
+                placeholder = bayitString("social.watchParty.enterContent"),
             )
             if (isCreating) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -127,7 +128,7 @@ private fun CreatePartySection(
                 }
             } else {
                 GlassButton(
-                    text = "Create Party",
+                    text = bayitString("social.watchParty.createButton"),
                     onClick = onCreate,
                     enabled = mediaId.isNotBlank(),
                 )
@@ -146,7 +147,7 @@ private fun JoinPartySection(
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(
-                text = "Join a Watch Party",
+                text = bayitString("social.watchParty.join"),
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = DesignTokens.FontSize.lg,
@@ -154,8 +155,8 @@ private fun JoinPartySection(
             GlassTextField(
                 value = code,
                 onValueChange = onCodeChanged,
-                label = "Party Code",
-                placeholder = "Enter party code",
+                label = bayitString("social.watchParty.partyCode"),
+                placeholder = bayitString("social.watchParty.enterCode"),
             )
             if (isJoining) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -163,7 +164,7 @@ private fun JoinPartySection(
                 }
             } else {
                 GlassButton(
-                    text = "Join Party",
+                    text = bayitString("social.watchParty.joinButton"),
                     onClick = onJoin,
                     enabled = code.isNotBlank(),
                     isPrimary = false,

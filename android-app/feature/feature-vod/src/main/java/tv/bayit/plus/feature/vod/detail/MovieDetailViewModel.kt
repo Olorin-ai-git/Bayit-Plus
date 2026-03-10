@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.download.BayitDownloadManager
 import tv.bayit.plus.core.data.repository.ContentRepository
@@ -32,6 +33,7 @@ class MovieDetailViewModel @Inject constructor(
     private val mediaRepository: MediaRepository,
     private val downloadManager: BayitDownloadManager,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val movieId: String = checkNotNull(savedStateHandle["movieId"])
@@ -56,7 +58,7 @@ class MovieDetailViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val detail = result.data as? ContentDetail
                     if (detail == null) {
-                        _uiState.value = MovieDetailUiState.Error("Content not found")
+                        _uiState.value = MovieDetailUiState.Error(stringProvider.string("vod.detail.contentNotFound"))
                         return@launch
                     }
                     logger.info("Movie detail loaded", mapOf(

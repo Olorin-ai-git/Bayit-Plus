@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun MissionsDashboardRoute(
@@ -105,7 +106,7 @@ private fun MissionsContent(
             }
             item(key = "star_story_link") {
                 GlassButton(
-                    text = "Star Stories",
+                    text = bayitString("missions.starStories"),
                     onClick = onStarStoryClick,
                     isPrimary = false,
                     modifier = Modifier.fillMaxWidth(),
@@ -139,7 +140,7 @@ private fun MissionsErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

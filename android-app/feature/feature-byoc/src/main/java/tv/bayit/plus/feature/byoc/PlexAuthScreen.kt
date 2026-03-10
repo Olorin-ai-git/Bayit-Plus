@@ -23,6 +23,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -58,12 +59,12 @@ internal fun PlexAuthScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Connect Plex",
+            title = bayitString("byoc.plex.connectPlex"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -96,7 +97,7 @@ private fun DeviceCodeContent(code: String, verificationUrl: String) {
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Enter this code at",
+            text = bayitString("byoc.plex.enterCodeAt"),
             style = MaterialTheme.typography.bodyLarge,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -122,7 +123,7 @@ private fun DeviceCodeContent(code: String, verificationUrl: String) {
         GlassLoadingIndicator()
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
         Text(
-            text = "Waiting for authorization...",
+            text = bayitString("byoc.plex.waitingForAuth"),
             style = MaterialTheme.typography.bodySmall,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -140,7 +141,7 @@ private fun ServerSelectionContent(
             .padding(DesignTokens.Spacing.lg),
     ) {
         Text(
-            text = "Select a Plex server",
+            text = bayitString("byoc.plex.selectServer"),
             style = MaterialTheme.typography.headlineSmall,
             color = DesignTokens.Colors.Text.primary,
         )
@@ -175,14 +176,14 @@ private fun ConnectingContent(serverName: String) {
     Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
         GlassLoadingIndicator()
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-        Text("Connecting to $serverName...", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
+        Text(bayitString("byoc.plex.connecting", mapOf("serverName" to serverName)), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
     }
 }
 
 @Composable
 private fun SuccessContent() {
     Column(Modifier.fillMaxSize(), Arrangement.Center, Alignment.CenterHorizontally) {
-        Text("Connected", style = MaterialTheme.typography.headlineMedium, color = DesignTokens.Colors.Text.primary)
+        Text(bayitString("byoc.plex.connected"), style = MaterialTheme.typography.headlineMedium, color = DesignTokens.Colors.Text.primary)
     }
 }
 
@@ -191,6 +192,6 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(DesignTokens.Spacing.lg), Arrangement.Center, Alignment.CenterHorizontally) {
         Text(message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
-        GlassButton(text = "Try Again", onClick = onRetry)
+        GlassButton(text = bayitString("common.tryAgain"), onClick = onRetry)
     }
 }

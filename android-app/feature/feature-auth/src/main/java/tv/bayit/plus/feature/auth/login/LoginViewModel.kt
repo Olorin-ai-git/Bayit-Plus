@@ -13,6 +13,7 @@ import tv.bayit.plus.core.auth.SecureStorageService
 import tv.bayit.plus.core.common.DebugLoginConfig
 import tv.bayit.plus.core.common.IsDebug
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class LoginViewModel @Inject constructor(
     private val logger: BayitLogger,
     @IsDebug private val isDebug: Boolean,
     private val debugLoginConfig: DebugLoginConfig,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<LoginUiState>(
@@ -67,7 +69,7 @@ class LoginViewModel @Inject constructor(
 
         if (current.email.isBlank() || current.password.isBlank()) {
             _uiState.value = LoginUiState.Error(
-                message = "Email and password are required",
+                message = stringProvider.string("login.errors.fillAllFields"),
                 previousEmail = current.email,
                 previousPassword = current.password,
             )
@@ -114,7 +116,7 @@ class LoginViewModel @Inject constructor(
     fun loginWithGoogle(idToken: String) {
         if (idToken.isBlank()) {
             _uiState.value = LoginUiState.Error(
-                message = "Google Sign-In was cancelled or failed. Please try again.",
+                message = stringProvider.string("login.errors.googleFailed"),
                 previousEmail = "",
                 previousPassword = "",
             )
@@ -174,7 +176,7 @@ class LoginViewModel @Inject constructor(
         }
         val refreshToken = secureStorage.getRefreshToken() ?: run {
             _uiState.value = LoginUiState.Error(
-                message = "Session expired. Please sign in again.",
+                message = stringProvider.string("login.errors.sessionExpired"),
                 previousEmail = "", previousPassword = "",
             )
             return
@@ -194,7 +196,7 @@ class LoginViewModel @Inject constructor(
                         error = result.error.cause,
                     )
                     _uiState.value = LoginUiState.Error(
-                        message = "Session expired. Please sign in again.",
+                        message = stringProvider.string("login.errors.sessionExpired"),
                         previousEmail = "", previousPassword = "",
                     )
                 }

@@ -25,6 +25,7 @@ import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -133,7 +134,7 @@ internal fun PopularSearchesSection(
 ) {
     Column(modifier = modifier.padding(DesignTokens.Spacing.base)) {
         Text(
-            text = "Popular Searches",
+            text = bayitString("search.popularSearches"),
             style = MaterialTheme.typography.titleMedium,
             color = DesignTokens.Colors.Text.primary,
             fontWeight = FontWeight.SemiBold,

@@ -21,6 +21,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -58,7 +59,7 @@ internal fun InviteGrandparentScreen(
     var grandparentName by remember { mutableStateOf("") }
 
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Invite Grandparent")
+        GlassTopBar(title = bayitString("social.grandparent.title"))
 
         if (inviteCode != null) {
             InviteCodeDisplay(inviteCode = inviteCode, onClearInvite = onClearInvite)
@@ -88,13 +89,13 @@ private fun InviteForm(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
                 Text(
-                    text = "Create Invite",
+                    text = bayitString("social.grandparent.createInvite"),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Text(
-                    text = "Enter your grandparent's name to create an invite code they can use to connect.",
+                    text = bayitString("social.grandparent.createInviteDescription"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -102,13 +103,13 @@ private fun InviteForm(
                 GlassTextField(
                     value = grandparentName,
                     onValueChange = onNameChange,
-                    label = "Grandparent Name",
-                    placeholder = "Enter name",
+                    label = bayitString("social.grandparent.nameLabel"),
+                    placeholder = bayitString("social.grandparent.enterName"),
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 GlassButton(
-                    text = "Generate Invite Code",
+                    text = bayitString("social.grandparent.generateCode"),
                     onClick = onCreateInvite,
                     enabled = grandparentName.isNotBlank(),
                     modifier = Modifier.fillMaxWidth(),
@@ -128,13 +129,13 @@ private fun InviteCodeDisplay(inviteCode: String, onClearInvite: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             ) {
                 Text(
-                    text = "Invite Code Generated",
+                    text = bayitString("social.grandparent.codeGenerated"),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
 
                 Text(
-                    text = "Share this code with your grandparent",
+                    text = bayitString("social.grandparent.shareCode"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -149,12 +150,12 @@ private fun InviteCodeDisplay(inviteCode: String, onClearInvite: () -> Unit) {
                 }
 
                 Text(
-                    text = "They can enter this code in their app to connect with you.",
+                    text = bayitString("social.grandparent.codeInstructions"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                GlassButton(text = "Create Another", onClick = onClearInvite, modifier = Modifier.fillMaxWidth())
+                GlassButton(text = bayitString("social.grandparent.createAnother"), onClick = onClearInvite, modifier = Modifier.fillMaxWidth())
             }
         }
     }

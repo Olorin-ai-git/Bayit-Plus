@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun HelpRoute(
@@ -58,10 +59,10 @@ internal fun HelpScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Help",
+            title = bayitString("settings.help.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -72,7 +73,7 @@ internal fun HelpScreen(
             item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
             item {
                 Text(
-                    text = "Frequently Asked Questions",
+                    text = bayitString("settings.help.faq"),
                     color = DesignTokens.Colors.Text.primary,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -85,19 +86,19 @@ internal fun HelpScreen(
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Column {
                         Text(
-                            text = "Need more help?",
+                            text = bayitString("settings.help.needMoreHelp"),
                             color = DesignTokens.Colors.Text.primary,
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(Modifier.height(DesignTokens.Spacing.sm))
                         Text(
-                            text = "Contact our support team for personalized assistance with your Bayit+ account.",
+                            text = bayitString("settings.help.contactDescription"),
                             color = DesignTokens.Colors.Text.secondary,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(Modifier.height(DesignTokens.Spacing.md))
                         GlassButton(
-                            text = "Contact Support",
+                            text = bayitString("settings.help.contactSupport"),
                             onClick = onNavigateToSupport,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -122,7 +123,7 @@ private fun FaqCard(item: FaqItem, onToggle: () -> Unit) {
                 )
                 Icon(
                     imageVector = if (item.isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = if (item.isExpanded) "Collapse" else "Expand",
+                    contentDescription = if (item.isExpanded) bayitString("common.collapse") else bayitString("common.expand"),
                     tint = DesignTokens.Colors.Text.muted,
                 )
             }

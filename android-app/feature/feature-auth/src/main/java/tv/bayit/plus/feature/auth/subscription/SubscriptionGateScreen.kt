@@ -23,6 +23,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SubscriptionGateRoute(
@@ -50,7 +51,7 @@ internal fun SubscriptionGateScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Bayit+ Feature")
+        GlassTopBar(title = bayitString("subscription.gate.title"))
         when (uiState) {
             is SubscriptionGateUiState.Loading -> GlassLoadingIndicator()
             is SubscriptionGateUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -63,7 +64,7 @@ internal fun SubscriptionGateScreen(
                     )
                 } else {
                     Text(
-                        text = "You have access to this feature!",
+                        text = bayitString("subscription.gate.hasAccess"),
                         color = DesignTokens.Colors.Semantic.success,
                         modifier = Modifier.padding(DesignTokens.Spacing.base),
                     )
@@ -96,21 +97,21 @@ private fun GateContent(
                     fontSize = DesignTokens.FontSize.xxxl,
                 )
                 Text(
-                    text = "Bayit+ Feature",
+                    text = bayitString("subscription.gate.title"),
                     style = MaterialTheme.typography.titleLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "$featureName is available with a Bayit+ subscription.",
+                    text = bayitString("subscription.gate.featureRequires", mapOf("feature" to featureName)),
                     style = MaterialTheme.typography.bodyLarge,
                     color = DesignTokens.Colors.Text.secondary,
                     textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(DesignTokens.Spacing.md))
                 Text(
-                    text = "Upgrade to unlock:\n\n• Unlimited streaming\n• Offline downloads\n• Live TV with dubbing\n• AI features\n• And much more!",
+                    text = bayitString("subscription.gate.upgradeList"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                     textAlign = TextAlign.Start,
@@ -121,7 +122,7 @@ private fun GateContent(
         Spacer(Modifier.height(DesignTokens.Spacing.xl))
 
         GlassButton(
-            text = "Subscribe Now",
+            text = bayitString("subscription.gate.subscribeNow"),
             onClick = onNavigateToSubscribe,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -129,7 +130,7 @@ private fun GateContent(
         Spacer(Modifier.height(DesignTokens.Spacing.sm))
 
         GlassButton(
-            text = "Go Back",
+            text = bayitString("common.goBack"),
             onClick = onNavigateBack,
             isPrimary = false,
             modifier = Modifier.fillMaxWidth(),
@@ -145,7 +146,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

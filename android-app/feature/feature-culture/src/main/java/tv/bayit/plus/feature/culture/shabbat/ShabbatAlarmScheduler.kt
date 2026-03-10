@@ -6,6 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -84,14 +89,26 @@ class ShabbatAlarmScheduler @Inject constructor(
     }
 }
 
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface ShabbatAlarmEntryPoint {
+    fun bayitStringProvider(): BayitStringProvider
+}
+
 class ShabbatAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            ShabbatAlarmEntryPoint::class.java,
+        )
+        val stringProvider = entryPoint.bayitStringProvider()
+
         when (intent.action) {
             ShabbatAlarmScheduler.ACTION_CANDLE_LIGHTING -> {
-                ShabbatNotificationHelper.showShabbatActivated(context)
+                ShabbatNotificationHelper.showShabbatActivated(context, stringProvider)
             }
             ShabbatAlarmScheduler.ACTION_HAVDALAH -> {
-                ShabbatNotificationHelper.showShabbatDeactivated(context)
+                ShabbatNotificationHelper.showShabbatDeactivated(context, stringProvider)
             }
         }
     }

@@ -18,6 +18,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun PaymentCancelledRoute(
@@ -39,7 +40,7 @@ internal fun PaymentCancelledScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Payment Cancelled")
+        GlassTopBar(title = bayitString("payment.cancelled.title"))
 
         Column(
             modifier = Modifier
@@ -60,21 +61,21 @@ internal fun PaymentCancelledScreen(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = "Payment Cancelled",
+                        text = bayitString("payment.cancelled.title"),
                         style = MaterialTheme.typography.titleLarge,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        text = "Your payment was cancelled. No charges were made to your account.",
+                        text = bayitString("payment.cancelled.message"),
                         style = MaterialTheme.typography.bodyLarge,
                         color = DesignTokens.Colors.Text.secondary,
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "You can try again anytime to unlock all Bayit+ Plus features.",
+                        text = bayitString("payment.cancelled.tryAgainMessage"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.muted,
                         textAlign = TextAlign.Center,
@@ -85,7 +86,7 @@ internal fun PaymentCancelledScreen(
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
 
             GlassButton(
-                text = "Try Again",
+                text = bayitString("common.tryAgain"),
                 onClick = onNavigateToSubscribe,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -93,7 +94,7 @@ internal fun PaymentCancelledScreen(
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
 
             GlassButton(
-                text = "Go Back",
+                text = bayitString("common.goBack"),
                 onClick = onNavigateBack,
                 isPrimary = false,
                 modifier = Modifier.fillMaxWidth(),

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.WidgetItem
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -154,7 +155,7 @@ private fun CloseButton(
     ) {
         Icon(
             imageVector = Icons.Default.Close,
-            contentDescription = "Hide Dock",
+            contentDescription = bayitString("widgets.hideDock"),
             tint = DesignTokens.Colors.Text.muted,
             modifier = Modifier.size(12.dp)
         )

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val PODCAST_HERO_ASPECT_RATIO = 1f
 
@@ -46,7 +47,7 @@ internal fun PodcastHeroSection(state: PodcastDetailUiState.Success, onBack: () 
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
+                contentDescription = bayitString("common.back"),
                 tint = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
             )

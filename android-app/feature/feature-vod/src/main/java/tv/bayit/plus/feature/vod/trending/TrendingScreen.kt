@@ -33,6 +33,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 3
 
@@ -88,7 +89,7 @@ internal fun TrendingScreen(
                             span = { GridItemSpan(GRID_COLUMNS) },
                         ) {
                             Text(
-                                text = "Most Watched",
+                                text = bayitString("vod.trending.mostWatched"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = DesignTokens.Colors.Text.primary,
                                 fontWeight = FontWeight.Bold,
@@ -121,14 +122,14 @@ private fun TrendingHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Trending Now",
+                text = bayitString("vod.trending.title"),
                 style = MaterialTheme.typography.headlineMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Popular topics and most watched content",
+                text = bayitString("vod.trending.subtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -193,7 +194,7 @@ private fun TrendingErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

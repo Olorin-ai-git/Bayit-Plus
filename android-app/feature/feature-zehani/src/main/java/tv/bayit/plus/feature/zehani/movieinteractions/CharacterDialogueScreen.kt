@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -66,7 +67,7 @@ internal fun CharacterDialogueScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = (uiState as? CharacterDialogueUiState.Success)?.characterName ?: "Dialogue")
+        GlassTopBar(title = (uiState as? CharacterDialogueUiState.Success)?.characterName ?: bayitString("zehAni.dialogue.title"))
         when (uiState) {
             is CharacterDialogueUiState.Loading -> GlassLoadingIndicator()
             is CharacterDialogueUiState.Success -> DialogueContent(
@@ -163,13 +164,13 @@ private fun QuestionInput(text: String, onTextChanged: (String) -> Unit, onSend:
             value = text,
             onValueChange = onTextChanged,
             modifier = Modifier.weight(1f),
-            placeholder = { Text("Ask a question...") },
+            placeholder = { Text(bayitString("zehAni.dialogue.askQuestion")) },
             singleLine = true,
         )
         IconButton(onClick = onSend, enabled = text.isNotBlank()) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Send,
-                contentDescription = "Send question",
+                contentDescription = bayitString("common.send"),
                 tint = DesignTokens.Colors.Primary.base,
             )
         }
@@ -188,7 +189,7 @@ private fun DialogueError(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

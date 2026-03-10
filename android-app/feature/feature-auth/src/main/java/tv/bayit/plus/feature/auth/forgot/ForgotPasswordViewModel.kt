@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class ForgotPasswordViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ForgotPasswordUiState>(
@@ -41,7 +43,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
         if (email.isBlank()) {
             _uiState.value = ForgotPasswordUiState.Error(
-                message = "Email address is required",
+                message = stringProvider.string("login.errors.emailRequired"),
                 previousEmail = email,
             )
             return
@@ -49,7 +51,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
         if (!EMAIL_PATTERN.matches(email)) {
             _uiState.value = ForgotPasswordUiState.Error(
-                message = "Enter a valid email address",
+                message = stringProvider.string("auth.error.emailInvalid"),
                 previousEmail = email,
             )
             return

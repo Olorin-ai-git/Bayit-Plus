@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ContentRepository
 import tv.bayit.plus.core.model.CollectionDetail
@@ -27,6 +28,7 @@ class CollectionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contentRepository: ContentRepository,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val collectionId: String = checkNotNull(savedStateHandle["collectionId"])
@@ -51,7 +53,7 @@ class CollectionDetailViewModel @Inject constructor(
                 is BayitResult.Success -> {
                     val detail = result.data as? CollectionDetail
                     if (detail == null) {
-                        _uiState.value = CollectionDetailUiState.Error("Collection not found")
+                        _uiState.value = CollectionDetailUiState.Error(stringProvider.string("vod.collection.notFound"))
                         return@launch
                     }
                     logger.info("Collection detail loaded", mapOf(

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">लाइव टीवी देखें</string>
+    <string name="shortcut_search">सामग्री खोजें</string>
+    <string name="shortcut_resume">देखना जारी रखें</string>
+    <string name="shortcut_radio">रेडियो सुनें</string>
+    <string name="shortcut_podcasts">पॉडकास्ट ब्राउज़ करें</string>
+    <string name="widget_now_playing_description">Bayit+ पर वर्तमान में चल रही सामग्री दिखाता है</string>
+    <string name="widget_continue_watching_description">प्रगति पट्टियों के साथ आपकी चल रही सामग्री दिखाता है</string>
+    <string name="widget_live_channels_description">वर्तमान कार्यक्रमों के साथ आपके पसंदीदा लाइव चैनल दिखाता है</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">होम</string>
+    <string name="tv_continue_watching">देखना जारी रखें</string>
+    <string name="tv_live_channels">लाइव टीवी</string>
+    <string name="tv_vod_title">फिल्में और शो</string>
+    <string name="tv_radio_title">रेडियो</string>
+    <string name="tv_podcasts_title">पॉडकास्ट</string>
+    <string name="tv_featured_title">विशेष</string>
+    <string name="tv_login_title">Bayit+ में साइन इन करें</string>
+    <string name="tv_scan_qr">साइन इन करने के लिए अपने फ़ोन से QR कोड स्कैन करें</string>
+    <string name="tv_enter_code">या %1$s पर जाएं और कोड दर्ज करें:</string>
+    <string name="tv_code_expires">कोड %1$s में समाप्त होगा</string>
+    <string name="tv_manual_login">ईमेल से साइन इन करें</string>
+    <string name="tv_search_hint">चैनल, शो, फिल्में खोजें...</string>
+    <string name="tv_connection_lost">कनेक्शन टूट गया। पुनः प्रयास हो रहा है...</string>
+    <string name="tv_subscribe_prompt">यह सामग्री देखने के लिए सदस्यता लें</string>
+    <string name="tv_subscribe_on_phone">सदस्यता लेने के लिए bayit.tv पर जाएं या फ़ोन पर Bayit+ ऐप का उपयोग करें</string>
+    <string name="tv_byoc_title">आपकी सामग्री</string>
+</resources>

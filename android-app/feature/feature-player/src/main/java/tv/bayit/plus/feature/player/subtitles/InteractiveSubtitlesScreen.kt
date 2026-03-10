@@ -44,7 +44,7 @@ internal fun InteractiveSubtitlesScreen(
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)
                 ) {
                     Text(uiState.message, color = DesignTokens.Colors.Semantic.error)
-                    GlassButton("Retry", onClick = onRetry)
+                    GlassButton(bayitString("common.retry"), onClick = onRetry)
                 }
             }
             is InteractiveSubtitlesUiState.Success -> LazyColumn(
@@ -53,7 +53,7 @@ internal fun InteractiveSubtitlesScreen(
             ) {
                 item {
                     GlassCard(Modifier.fillMaxWidth()) {
-                        Text("Language", fontWeight = FontWeight.SemiBold, color = DesignTokens.Colors.Text.primary)
+                        Text(bayitString("player.subtitles.language"), fontWeight = FontWeight.SemiBold, color = DesignTokens.Colors.Text.primary)
                         Row(
                             modifier = Modifier,
                             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)

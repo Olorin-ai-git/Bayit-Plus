@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import tv.bayit.plus.core.model.MissionStep
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -33,7 +34,7 @@ internal fun MissionHeader(
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Step $stepNumber of $totalSteps",
+                text = bayitString("missions.stepProgress", mapOf("num" to stepNumber.toString(), "total" to totalSteps.toString())),
                 style = MaterialTheme.typography.labelLarge,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -58,7 +59,7 @@ internal fun StepCard(step: MissionStep, modifier: Modifier = Modifier) {
                 )
                 if (step.isCompleted) {
                     Text(
-                        text = "Done",
+                        text = bayitString("common.done"),
                         style = MaterialTheme.typography.labelMedium,
                         color = DesignTokens.Colors.Semantic.success,
                         fontWeight = FontWeight.Bold,

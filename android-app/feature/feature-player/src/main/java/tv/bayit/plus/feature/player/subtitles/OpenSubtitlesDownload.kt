@@ -104,14 +104,14 @@ private fun ExternalTrackRow(
                 Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     track.rating?.let { rating ->
                         Text(
-                            text = "Rating: ${"%.1f".format(rating)}",
+                            text = bayitString("subtitles.ratingLabel", mapOf("value" to "%.1f".format(rating))),
                             color = DesignTokens.Colors.Text.secondary,
                             fontSize = DesignTokens.FontSize.xs,
                         )
                     }
                     track.downloadCount?.let { count ->
                         Text(
-                            text = "Downloads: $count",
+                            text = bayitString("subtitles.downloadsLabel", mapOf("count" to count.toString())),
                             color = DesignTokens.Colors.Text.secondary,
                             fontSize = DesignTokens.FontSize.xs,
                         )
@@ -121,7 +121,7 @@ private fun ExternalTrackRow(
 
             if (track.hearingImpaired == true) {
                 Text(
-                    text = "HI",
+                    text = bayitString("subtitles.hearingImpaired"),
                     color = DesignTokens.Colors.Semantic.info,
                     fontSize = DesignTokens.FontSize.xs,
                     fontWeight = FontWeight.Bold,

@@ -33,6 +33,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 
@@ -63,12 +64,12 @@ internal fun AvatarWardrobeScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Wardrobe",
+            title = bayitString("zehAni.wardrobe.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -143,7 +144,7 @@ private fun OutfitCard(
                 if (isEquipped) {
                     Icon(
                         Icons.Default.CheckCircle,
-                        contentDescription = "Equipped",
+                        contentDescription = bayitString("zehAni.wardrobe.equippedContentDescription"),
                         tint = DesignTokens.Colors.Primary.base,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -173,7 +174,7 @@ private fun WardrobeError(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

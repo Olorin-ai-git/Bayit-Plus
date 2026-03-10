@@ -182,7 +182,7 @@ private fun LanguageColumn(
                         if (langCode == selectedLanguage) {
                             Icon(
                                 imageVector = Icons.Default.Check,
-                                contentDescription = "Selected",
+                                contentDescription = bayitString("subtitles.selected"),
                                 tint = DesignTokens.Colors.Semantic.success,
                                 modifier = Modifier.height(16.dp),
                             )

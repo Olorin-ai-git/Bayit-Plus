@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -38,7 +38,6 @@ dependencies {
     implementation(project(":core:core-model"))
     implementation(project(":core:core-data"))
     implementation(project(":core:core-network"))
-    implementation(project(":core:core-auth"))
     implementation(project(":designsystem"))
     implementation(project(":localization"))
 
@@ -47,12 +46,6 @@ dependencies {
     // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-
-    // Serialization
-    implementation(libs.kotlinx.serialization.json)
-
-    // Retrofit (for API interface annotations)
-    implementation(libs.retrofit)
 
     // Lifecycle
     implementation(libs.bundles.lifecycle)
@@ -69,23 +62,10 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
-    // Image loading
-    implementation(libs.coil.compose)
+    // Networking
+    implementation(libs.retrofit)
+    implementation(libs.kotlinx.serialization.json)
 
     // Logging
     implementation(libs.timber)
-
-    // Testing
-    testImplementation(libs.bundles.testing)
-    testImplementation(libs.hilt.testing)
-    testImplementation(project(":core:core-testing"))
-    kspTest(libs.hilt.compiler)
-
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.compose.ui.test)
-    androidTestImplementation(libs.hilt.testing)
-    kspAndroidTest(libs.hilt.compiler)
-
-    debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.compose.ui.test.manifest)
 }

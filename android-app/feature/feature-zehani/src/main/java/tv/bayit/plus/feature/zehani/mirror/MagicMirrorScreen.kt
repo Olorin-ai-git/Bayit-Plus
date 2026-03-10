@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun MagicMirrorRoute(
@@ -68,7 +69,7 @@ internal fun MagicMirrorScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Magic Mirror")
+        GlassTopBar(title = bayitString("zehAni.mirror.title"))
         when (uiState) {
             is MagicMirrorUiState.Loading -> GlassLoadingIndicator()
             is MagicMirrorUiState.GreetingReady -> GreetingContent(
@@ -103,7 +104,7 @@ private fun GreetingContent(
         } else if (avatarImageUrl != null) {
             CachedAsyncImage(
                 url = avatarImageUrl,
-                contentDescription = "Avatar",
+                contentDescription = bayitString("zehAni.mirror.avatarContentDescription"),
                 modifier = Modifier.fillMaxWidth().aspectRatio(1f),
             )
         }
@@ -125,7 +126,7 @@ private fun GreetingContent(
         greeting.vocabularyOfTheDay?.let { vocab ->
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                    Text(text = "Word of the Day", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
+                    Text(text = bayitString("zehAni.mirror.wordOfTheDay"), style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
                     Text(text = vocab, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Primary.light, fontWeight = FontWeight.Medium)
                 }
             }
@@ -137,13 +138,13 @@ private fun GreetingContent(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             if (lipsyncUrl != null) {
                 GlassButton(
-                    text = "Play Lipsync",
+                    text = bayitString("zehAni.mirror.playLipsync"),
                     onClick = { onPlayLipsyncVideo(lipsyncUrl) },
                     isPrimary = false,
                     modifier = Modifier.weight(1f),
                 )
             }
-            GlassButton(text = "Refresh", onClick = onRefresh, modifier = Modifier.weight(1f))
+            GlassButton(text = bayitString("common.refresh"), onClick = onRefresh, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -155,9 +156,9 @@ private fun NoAvatarSection(onCreateAvatar: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
-            Text(text = "No avatar yet", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
-            Text(text = "Create a 3D avatar to see yourself in the story", style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary, textAlign = TextAlign.Center)
-            GlassButton(text = "Create Avatar", onClick = onCreateAvatar, modifier = Modifier.fillMaxWidth())
+            Text(text = bayitString("zehAni.mirror.noAvatarYet"), style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
+            Text(text = bayitString("zehAni.mirror.noAvatarDescription"), style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary, textAlign = TextAlign.Center)
+            GlassButton(text = bayitString("zehAni.mirror.createAvatar"), onClick = onCreateAvatar, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -167,7 +168,7 @@ private fun ErrorSection(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Try Again", onClick = onRetry)
+            GlassButton(text = bayitString("common.tryAgain"), onClick = onRetry)
         }
     }
 }

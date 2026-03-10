@@ -22,6 +22,7 @@ import tv.bayit.plus.core.model.FriendRequest
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -57,7 +58,7 @@ fun FriendCard(friend: Friend) {
                     fontSize = DesignTokens.FontSize.md,
                 )
                 Text(
-                    text = if (friend.isOnline) "Online" else friend.lastSeen.orEmpty(),
+                    text = if (friend.isOnline) bayitString("social.friends.online") else friend.lastSeen.orEmpty(),
                     color = if (friend.isOnline) DesignTokens.Colors.Semantic.success
                     else DesignTokens.Colors.Text.muted,
                     fontSize = DesignTokens.FontSize.sm,
@@ -84,9 +85,9 @@ fun PendingRequestCard(
                 color = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.weight(1f),
             )
-            GlassButton(text = "Accept", onClick = { onAccept(request.id) })
+            GlassButton(text = bayitString("friends.accept"), onClick = { onAccept(request.id) })
             GlassButton(
-                text = "Decline",
+                text = bayitString("friends.reject"),
                 onClick = { onDecline(request.id) },
                 isPrimary = false,
             )
@@ -107,7 +108,7 @@ fun SearchResultCard(user: Friend, onSendRequest: (String) -> Unit) {
                 color = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.weight(1f),
             )
-            GlassButton(text = "Add", onClick = { onSendRequest(user.id) })
+            GlassButton(text = bayitString("friends.add"), onClick = { onSendRequest(user.id) })
         }
     }
 }

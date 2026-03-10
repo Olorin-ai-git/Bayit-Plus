@@ -39,6 +39,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.icons.BayitIcons
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -77,12 +78,12 @@ internal fun BYOCSettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Your Content Sources",
+            title = bayitString("byoc.settings.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -91,7 +92,7 @@ internal fun BYOCSettingsScreen(
                 IconButton(onClick = onRefresh) {
                     Icon(
                         Icons.Default.Refresh,
-                        contentDescription = "Refresh",
+                        contentDescription = bayitString("byoc.settings.refresh"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -131,13 +132,13 @@ private fun SourcesContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        "No content sources connected",
+                        bayitString("byoc.settings.noSources"),
                         style = MaterialTheme.typography.bodyLarge,
                         color = DesignTokens.Colors.Text.secondary,
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        "Connect your Plex, YouTube, IPTV, or Xtream provider",
+                        bayitString("byoc.settings.noSourcesSubtitle"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.secondary,
                     )
@@ -193,7 +194,7 @@ private fun SourceCard(source: BYOCSourceConfig, onRemove: () -> Unit) {
             IconButton(onClick = onRemove) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Remove source",
+                    contentDescription = bayitString("byoc.settings.removeSource"),
                     tint = DesignTokens.Colors.Semantic.error,
                 )
             }
@@ -206,25 +207,25 @@ private fun ProviderLogo(sourceType: BYOCSourceType, modifier: Modifier = Modifi
     when (sourceType) {
         BYOCSourceType.PLEX -> Image(
             painter = painterResource(R.drawable.ic_plex_logo),
-            contentDescription = "Plex",
+            contentDescription = bayitString("byoc.plex.label"),
             modifier = modifier,
             contentScale = ContentScale.FillHeight,
         )
         BYOCSourceType.YOUTUBE -> Image(
             painter = painterResource(R.drawable.ic_youtube_logo),
-            contentDescription = "YouTube",
+            contentDescription = bayitString("byoc.settings.youtube"),
             modifier = modifier,
             contentScale = ContentScale.FillHeight,
         )
         BYOCSourceType.XTREAM -> Icon(
             imageVector = BayitIcons.Xtream,
-            contentDescription = "Xtream Codes",
+            contentDescription = bayitString("byoc.settings.xtreamCodes"),
             modifier = Modifier.size(28.dp),
             tint = DesignTokens.Colors.Text.primary,
         )
         BYOCSourceType.IPTV -> Icon(
             imageVector = BayitIcons.Iptv,
-            contentDescription = "IPTV",
+            contentDescription = bayitString("byoc.settings.iptv"),
             modifier = Modifier.size(28.dp),
             tint = DesignTokens.Colors.Text.primary,
         )
@@ -243,24 +244,24 @@ private fun AddSourceButtons(
             logo = {
                 Image(
                     painter = painterResource(R.drawable.ic_plex_logo),
-                    contentDescription = "Plex",
+                    contentDescription = bayitString("byoc.plex.label"),
                     modifier = Modifier.height(24.dp),
                     contentScale = ContentScale.FillHeight,
                 )
             },
-            subtitle = "Stream from your Plex media server",
+            subtitle = bayitString("byoc.settings.plexSubtitle"),
         )
         ProviderConnectCard(
             onClick = onAddYouTube,
             logo = {
                 Image(
                     painter = painterResource(R.drawable.ic_youtube_logo),
-                    contentDescription = "YouTube",
+                    contentDescription = bayitString("byoc.settings.youtube"),
                     modifier = Modifier.height(20.dp),
                     contentScale = ContentScale.FillHeight,
                 )
             },
-            subtitle = "Access your YouTube library",
+            subtitle = bayitString("byoc.settings.youtubeSubtitle"),
         )
         ProviderConnectCard(
             onClick = onAddSource,
@@ -274,13 +275,13 @@ private fun AddSourceButtons(
                     )
                     Spacer(modifier = Modifier.width(DesignTokens.Spacing.sm))
                     Text(
-                        text = "IPTV / Xtream",
+                        text = bayitString("byoc.settings.iptvXtreamLabel"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                     )
                 }
             },
-            subtitle = "Add M3U playlist or Xtream Codes",
+            subtitle = bayitString("byoc.settings.iptvXtreamSubtitle"),
         )
     }
 }

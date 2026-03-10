@@ -53,7 +53,7 @@ fun CompanionVocabularyTab(
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Words you have looked up during playback",
+                text = bayitString("player.companion.vocabularyDescription"),
                 color = DesignTokens.Colors.Text.secondary,
                 fontSize = DesignTokens.FontSize.sm,
             )

@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun ShabbatModeRoute(
@@ -58,12 +59,12 @@ internal fun ShabbatModeScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Shabbat Mode",
+            title = bayitString("culture.shabbat.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -112,7 +113,7 @@ private fun ShabbatModeContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Enable Shabbat Mode",
+                    text = bayitString("culture.shabbat.enableShabbatMode"),
                     style = MaterialTheme.typography.bodyLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -129,14 +130,14 @@ private fun ShabbatModeContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                     Text(
-                        text = "Shabbat Times",
+                        text = bayitString("culture.shabbat.shabbatTimes"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Primary.light,
                         fontWeight = FontWeight.Bold,
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
                     Text(
-                        text = "Candle Lighting and Havdalah times will be displayed here",
+                        text = bayitString("culture.shabbat.timesDescription"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.secondary,
                     )
@@ -147,14 +148,14 @@ private fun ShabbatModeContent(
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 Text(
-                    text = "About Shabbat Mode",
+                    text = bayitString("culture.shabbat.aboutTitle"),
                     style = MaterialTheme.typography.titleMedium,
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
                 Text(
-                    text = "When enabled, Shabbat Mode will pause notifications, reduce screen brightness, and enable a simplified interface during Shabbat hours.",
+                    text = bayitString("culture.shabbat.aboutDescription"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.secondary,
                 )
@@ -181,7 +182,7 @@ private fun ShabbatModeErrorContent(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

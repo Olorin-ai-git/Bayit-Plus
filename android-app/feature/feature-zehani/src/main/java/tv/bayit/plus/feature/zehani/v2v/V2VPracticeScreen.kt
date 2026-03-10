@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val RECORD_BUTTON_SIZE = 80.dp
 
@@ -71,7 +72,7 @@ internal fun V2VPracticeScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Voice Practice")
+        GlassTopBar(title = bayitString("zehAni.v2v.title"))
         when (uiState) {
             is V2VPracticeUiState.Ready -> RecordingSection(
                 isRecording = isRecording,
@@ -121,7 +122,7 @@ private fun RecordingSection(
                     )
                     Text(text = phrase.transliteration, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Primary.light)
                     Text(text = phrase.translation, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.secondary)
-                    GlassButton(text = "Next Phrase", onClick = onNextPhrase, isPrimary = false, modifier = Modifier.fillMaxWidth())
+                    GlassButton(text = bayitString("zehAni.v2v.nextPhrase"), onClick = onNextPhrase, isPrimary = false, modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -135,16 +136,16 @@ private fun RecordingSection(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = if (isRecording) "REC" else "MIC", color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.Bold)
+            Text(text = if (isRecording) bayitString("zehAni.selfie.rec") else bayitString("zehAni.v2v.mic"), color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.Bold)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             if (isRecording) {
-                GlassButton(text = "Stop", onClick = { onStopRecording(ByteArray(0), currentPhrase?.phraseHe ?: "") })
+                GlassButton(text = bayitString("zehAni.v2v.stop"), onClick = { onStopRecording(ByteArray(0), currentPhrase?.phraseHe ?: "") })
             } else {
-                GlassButton(text = "Record", onClick = onStartRecording)
+                GlassButton(text = bayitString("zehAni.v2v.record"), onClick = onStartRecording)
             }
         }
-        GlassButton(text = "View Progress", onClick = onLoadProgress, isPrimary = false)
+        GlassButton(text = bayitString("zehAni.v2v.viewProgress"), onClick = onLoadProgress, isPrimary = false)
     }
 }
 
@@ -154,7 +155,7 @@ private fun AnalyzingSection() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             GlassLoadingIndicator()
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-            Text(text = "Analyzing pronunciation...", color = DesignTokens.Colors.Text.secondary)
+            Text(text = bayitString("zehAni.v2v.analyzingPronunciation"), color = DesignTokens.Colors.Text.secondary)
         }
     }
 }
@@ -164,7 +165,7 @@ private fun ErrorSection(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

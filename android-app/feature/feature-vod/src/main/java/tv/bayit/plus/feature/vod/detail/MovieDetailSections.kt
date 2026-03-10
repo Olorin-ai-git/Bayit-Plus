@@ -41,6 +41,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val HERO_ASPECT_RATIO = 16f / 9f
 private const val HERO_LANDSCAPE_MAX_HEIGHT_FRACTION = 0.4f
@@ -81,7 +82,7 @@ internal fun MovieHeroSection(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Navigate back",
+                    contentDescription = bayitString("common.back"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
                 )
@@ -89,7 +90,7 @@ internal fun MovieHeroSection(
             IconButton(onClick = onFavoriteToggle) {
                 Icon(
                     imageVector = if (state.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = if (state.isFavorite) "Remove favorite" else "Add favorite",
+                    contentDescription = if (state.isFavorite) bayitString("vod.detail.removeFavorite") else bayitString("vod.detail.addFavorite"),
                     tint = if (state.isFavorite) DesignTokens.Colors.Semantic.error else DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
                 )
@@ -138,7 +139,7 @@ internal fun MovieActionSection(
         modifier = Modifier.padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.md),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
-        GlassButton(text = "Play", onClick = { onPlay(movieId) }, modifier = Modifier.fillMaxWidth())
+        GlassButton(text = bayitString("common.play"), onClick = { onPlay(movieId) }, modifier = Modifier.fillMaxWidth())
         Row(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             verticalAlignment = Alignment.CenterVertically,
@@ -146,9 +147,9 @@ internal fun MovieActionSection(
         ) {
             GlassButton(
                 text = when {
-                    isDownloaded -> "Downloaded"
-                    isDownloading -> "Downloading..."
-                    else -> "Download"
+                    isDownloaded -> bayitString("vod.detail.downloaded")
+                    isDownloading -> bayitString("vod.detail.downloading")
+                    else -> bayitString("vod.detail.download")
                 },
                 onClick = onDownload,
                 isPrimary = false,
@@ -164,7 +165,7 @@ internal fun MovieActionSection(
             }
             if (hasTrailer) {
                 GlassButton(
-                    text = "Trailer",
+                    text = bayitString("vod.detail.trailer"),
                     onClick = onTrailerClick,
                     isPrimary = false,
                 )

@@ -1,25 +1,31 @@
 import SwiftUI
 
-/// Step indicator displaying progress through coach mark steps
-/// as "currentStep of totalSteps" text.
 public struct CoachMarkStep: View {
     let currentStep: Int
     let totalSteps: Int
+    let localize: (String) -> String
 
-    public init(currentStep: Int, totalSteps: Int) {
+    public init(currentStep: Int, totalSteps: Int, localize: @escaping (String) -> String) {
         self.currentStep = currentStep
         self.totalSteps = totalSteps
+        self.localize = localize
     }
 
     public var body: some View {
-        Text("\(currentStep) of \(totalSteps)")
+        let counter = localize("discover.walkthrough.stepCounter")
+            .replacingOccurrences(of: "{{current}}", with: "\(currentStep)")
+            .replacingOccurrences(of: "{{total}}", with: "\(totalSteps)")
+        let a11y = localize("discover.walkthrough.stepAccessibility")
+            .replacingOccurrences(of: "{{current}}", with: "\(currentStep)")
+            .replacingOccurrences(of: "{{total}}", with: "\(totalSteps)")
+        Text(counter)
             .font(.system(size: fontSize, weight: .medium))
             .foregroundStyle(DesignTokens.Text.muted)
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
             .background(DesignTokens.Glass.bgMedium)
             .clipShape(Capsule())
-            .accessibilityLabel("Step \(currentStep) of \(totalSteps)")
+            .accessibilityLabel(a11y)
     }
 
     private var fontSize: CGFloat {

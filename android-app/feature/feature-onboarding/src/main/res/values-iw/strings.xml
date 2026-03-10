@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Feature Tour Card Titles -->
+    <string name="tour_card_live_dubbing_title">דיבוב חי</string>
+    <string name="tour_card_live_trivia_title">טריוויה חיה</string>
+    <string name="tour_card_subtitles_split_title">כתוביות במסך מפוצל</string>
+    <string name="tour_card_engrew_heblish_title">אנגרו / היבליש</string>
+    <string name="tour_card_pause_and_ask_title">עצור ושאל</string>
+    <string name="tour_card_movie_interaction_title">אינטראקציה עם סרט</string>
+    <string name="tour_card_zeh_ani_title">זה אני</string>
+    <string name="tour_card_catchup_title">השלמה</string>
+    <string name="tour_card_byoc_title">הבא תוכן משלך</string>
+
+    <!-- Feature Tour Card Taglines -->
+    <string name="tour_card_live_dubbing_tagline">צפו בטלוויזיה ישראלית מדובבת בשידור חי בשפה שלכם</string>
+    <string name="tour_card_live_trivia_tagline">שחקו טריוויה חיה במהלך השידורים</string>
+    <string name="tour_card_subtitles_split_tagline">ראו כתוביות מקוריות ומתורגמות זו לצד זו</string>
+    <string name="tour_card_engrew_heblish_tagline">למדו עברית באופן טבעי עם כתוביות משולבות</string>
+    <string name="tour_card_pause_and_ask_tagline">עצרו כל סצנה ושאלו שאלות לגביה</string>
+    <string name="tour_card_movie_interaction_tagline">שוחחו עם דמויות מהסרט באמצעות בינה מלאכותית</string>
+    <string name="tour_card_zeh_ani_tagline">ראו את עצמכם בסיפור עם מיפוי פנים</string>
+    <string name="tour_card_catchup_tagline">פספסתם משהו? השלימו תוכניות חיות</string>
+    <string name="tour_card_byoc_tagline">הוסיפו תוכן משלכם מ-Plex ו-YouTube</string>
+
+    <!-- Tour UI Strings -->
+    <string name="tour_skip">דלג על הסיור</string>
+    <string name="tour_try_it_now">נסו עכשיו</string>
+    <string name="tour_get_started">בואו נתחיל</string>
+    <string name="tour_next">הבא</string>
+    <string name="tour_progress_description">כרטיס %1$d מתוך %2$d</string>
+
+    <!-- Demo: Dubbing (T042) -->
+    <string name="demo_dubbing_original">מקורי</string>
+    <string name="demo_dubbing_dubbed">מדובב</string>
+    <string name="demo_dubbing_label_original">שמע מקורי</string>
+    <string name="demo_dubbing_label_dubbed">שמע מדובב</string>
+
+    <!-- Demo: Trivia (T043) -->
+    <string name="demo_trivia_question">באיזו עיר מתרחשת הסצנה?</string>
+    <string name="demo_trivia_answer_a">ירושלים</string>
+    <string name="demo_trivia_answer_b">תל אביב</string>
+    <string name="demo_trivia_answer_c">חיפה</string>
+    <string name="demo_trivia_answer_d">אילת</string>
+    <string name="demo_trivia_correct">נכון!</string>
+    <string name="demo_trivia_wrong">לא בדיוק -- נסו שוב</string>
+    <string name="demo_trivia_label">טריוויה חיה</string>
+
+    <!-- Demo: Subtitles (T044) -->
+    <string name="demo_subtitle_mode_original">מקורי</string>
+    <string name="demo_subtitle_mode_nikud">ניקוד</string>
+    <string name="demo_subtitle_mode_engrew">אנגרו</string>
+    <string name="demo_subtitle_mode_heblish">היבליש</string>
+    <string name="demo_subtitle_original_text">\u05D0\u05E0\u05D9 \u05E8\u05D5\u05E6\u05D4 \u05DC\u05DC\u05DB\u05EA \u05D4\u05D1\u05D9\u05EA\u05D4</string>
+    <string name="demo_subtitle_nikud_text">\u05D0\u05B2\u05E0\u05B4\u05D9 \u05E8\u05D5\u05B9\u05E6\u05B6\u05D4 \u05DC\u05B8\u05DC\u05B6\u05DB\u05B6\u05EA \u05D4\u05B7\u05D1\u05B7\u05BC\u05D9\u05B4\u05EA\u05B8\u05D4</string>
+    <string name="demo_subtitle_engrew_text">Ani rotzeh lalechet ha-BAYTA</string>
+    <string name="demo_subtitle_heblish_text">The shomer watched the mishpacha from the mirpeset</string>
+
+    <!-- Demo: Interaction (T045) -->
+    <string name="demo_interaction_tap_hint">הקישו על הדמות המודגשת</string>
+    <string name="demo_interaction_msg_1">שלום! אני יעל מהתוכנית.</string>
+    <string name="demo_interaction_msg_2">שאלו אותי כל דבר על הסצנה הזו.</string>
+    <string name="demo_interaction_msg_3">אני יכולה להסביר מה קרה עכשיו.</string>
+    <string name="demo_interaction_character_name">יעל</string>
+
+    <!-- Demo: Zeh Ani (T046) -->
+    <string name="demo_zeh_ani_grant_camera">אפשרו גישה למצלמה</string>
+    <string name="demo_zeh_ani_camera_needed">נדרשת גישה למצלמה כדי למפות את הפנים שלכם לסיפור</string>
+    <string name="demo_zeh_ani_preview_label">תצוגה מקדימה של המצלמה הקדמית</string>
+    <string name="demo_zeh_ani_face_detected">זוהו פנים -- מוכן למיפוי</string>
+    <string name="demo_zeh_ani_no_face">מקמו את הפנים בתוך המסגרת</string>
+
+    <!-- Demo: Catchup (T047) -->
+    <string name="demo_catchup_timeline_label">מוקדם יותר היום</string>
+    <string name="demo_catchup_program_1">חדשות הבוקר</string>
+    <string name="demo_catchup_program_2">תוכנית בישול</string>
+    <string name="demo_catchup_program_3">סדרת דרמה</string>
+    <string name="demo_catchup_program_4">סיכום ספורט</string>
+    <string name="demo_catchup_program_5">שיחת ערב</string>
+    <string name="demo_catchup_time_1">06:00</string>
+    <string name="demo_catchup_time_2">08:30</string>
+    <string name="demo_catchup_time_3">10:00</string>
+    <string name="demo_catchup_time_4">12:00</string>
+    <string name="demo_catchup_time_5">14:00</string>
+    <string name="demo_catchup_summary_title">סיכום בינה מלאכותית</string>
+    <string name="demo_catchup_summary_1">הכתבות המובילות סקרו את שיחות הקואליציה האחרונות ועדכוני מזג אוויר אזוריים.</string>
+    <string name="demo_catchup_summary_2">השף אמיר הכין שקשוקה עם טוויסט מודרני עם פלפלים קלויים וזעתר.</string>
+    <string name="demo_catchup_summary_3">נועה גילתה את האמת על היעלמות אחותה. סוף עם מתח רב.</string>
+    <string name="demo_catchup_summary_4">מכבי תל אביב ניצחו 3-1. הדגשים מהסיבוב האחרון של ליגת הכדורסל.</string>
+    <string name="demo_catchup_summary_5">ראיון עם סופרת עטורת פרסים על הרומן החדש שלה על סיפורי הגירה.</string>
+
+    <!-- Demo: BYOC (T048) -->
+    <string name="demo_byoc_step_1_title">הוסיפו מקור</string>
+    <string name="demo_byoc_step_1_desc">חברו את ספריית ה-Plex או YouTube שלכם</string>
+    <string name="demo_byoc_step_2_title">סיווג בינה מלאכותית</string>
+    <string name="demo_byoc_step_2_desc">הבינה המלאכותית שלנו מסווגת ומעשירה את התוכן שלכם</string>
+    <string name="demo_byoc_step_3_title">שילוב בספרייה</string>
+    <string name="demo_byoc_step_3_desc">התוכן שלכם מופיע לצד תכני המקור של Bayit+</string>
+    <string name="demo_byoc_step_indicator">שלב %1$d מתוך %2$d</string>
+
+    <!-- Demo: Common -->
+    <string name="demo_close">סגור</string>
+    <string name="demo_banner_label"># DEMO-ONLY</string>
+
+    <!-- Demo: Interaction (T067) -->
+    <string name="demo_interaction_curated_moments">חפשו את סמל הכוכב במהלך הצפייה כדי למצוא רגעים מיוחדים לאינטראקציה עם דמויות.</string>
+    <string name="demo_interaction_credit_info">אינטראקציות משתמשות בקרדיטים של בינה מלאכותית. משתמשים חינמיים מקבלים 5 ביום.</string>
+
+    <!-- Demo: Zeh Ani (T070) -->
+    <string name="demo_zeh_ani_vocab_word">\u05E9\u05DC\u05D5\u05DD</string>
+    <string name="demo_zeh_ani_vocab_transliteration">שלום</string>
+    <string name="demo_zeh_ani_vocab_translation">שלום / שלווה</string>
+    <string name="demo_zeh_ani_vocab_label">הדגשת מילים</string>
+
+    <!-- Personalization Step (T072) -->
+    <string name="personalization_title">התאימו אישית את החוויה שלכם</string>
+    <string name="personalization_subtitle">ספרו לנו מה אתם אוהבים כדי שנוכל להתאים את הפיד שלכם</string>
+    <string name="personalization_languages_label">שפות תוכן</string>
+    <string name="personalization_genres_label">ז\'אנרים מועדפים</string>
+    <string name="personalization_children_label">יש לכם ילדים?</string>
+    <string name="personalization_done">סיום</string>
+    <string name="personalization_lang_en">אנגלית</string>
+    <string name="personalization_lang_he">עברית</string>
+    <string name="personalization_lang_fr">צרפתית</string>
+    <string name="personalization_lang_es">ספרדית</string>
+    <string name="personalization_lang_it">איטלקית</string>
+    <string name="personalization_lang_bn">בנגלית</string>
+    <string name="personalization_lang_hi">הינדית</string>
+    <string name="personalization_lang_ja">יפנית</string>
+    <string name="personalization_lang_ta">טמילית</string>
+    <string name="personalization_lang_zh">סינית</string>
+    <string name="personalization_genre_drama">דרמה</string>
+    <string name="personalization_genre_comedy">קומדיה</string>
+    <string name="personalization_genre_action">אקשן</string>
+    <string name="personalization_genre_documentary">תיעודי</string>
+    <string name="personalization_genre_kids">ילדים</string>
+    <string name="personalization_genre_thriller">מותחן</string>
+    <string name="personalization_genre_romance">רומנטיקה</string>
+    <string name="personalization_genre_scifi">מדע בדיוני</string>
+    <string name="personalization_genre_horror">אימה</string>
+    <string name="personalization_genre_music">מוזיקה</string>
+    <string name="personalization_genre_sports">ספורט</string>
+    <string name="personalization_genre_news">חדשות</string>
+
+    <!-- Continue Tour Banner (T078) -->
+    <string name="continue_tour_title">המשיכו בסיור</string>
+    <string name="continue_tour_prompt">חזרו למקום שבו עצרתם וגלו עוד תכונות</string>
+    <string name="continue_tour_button">המשך</string>
+    <string name="continue_tour_dismiss_description">סגרו את באנר הסיור</string>
+
+    <!-- Feature Tooltips (T087) -->
+    <string name="tooltip_live_dubbing">הקישו על סמל הגלובוס כדי לעבור בין שמע מקורי למדובב בזמן אמת</string>
+    <string name="tooltip_pause_and_ask">עצרו כל סצנה והקישו על שאל כדי לשוחח עם דמויות על מה שקורה</string>
+    <string name="tooltip_zeh_ani">השתמשו במצלמה הקדמית כדי למפות את הפנים שלכם לסיפור עם זה אני</string>
+    <string name="tooltip_catchup">גללו בציר הזמן כדי להשלים תוכניות קודמות עם סיכומי בינה מלאכותית</string>
+
+    <!-- Settings: Feature Tour (T027, T089) -->
+    <string name="settings_replay_tour">הפעל שוב את סיור התכונות</string>
+    <string name="settings_tips_label">הצג טיפים לתכונות</string>
+
+    <!-- Onboarding Intro Flow -->
+    <string name="onboarding_welcome_title">ברוכים הבאים ל-Bayit+</string>
+    <string name="onboarding_welcome_subtitle">טלוויזיה ישראלית, בשפה שלכם</string>
+    <string name="onboarding_continue">המשך</string>
+    <string name="onboarding_skip">דלג</string>
+    <string name="onboarding_back">חזרה</string>
+
+    <string name="onboarding_ai_language_title">צפו ב-%1$s</string>
+    <string name="onboarding_ai_language_subtitle">דיבוב בינה מלאכותית, כתוביות בזמן אמת ולימוד עברית -- הכל מובנה</string>
+    <string name="onboarding_ai_language_dubbing">דיבוב חי</string>
+    <string name="onboarding_ai_language_subtitles">כתוביות חכמות</string>
+    <string name="onboarding_ai_language_engrew">אנגרו</string>
+
+    <string name="onboarding_pause_ask_title">עצרו ושאלו כל דבר</string>
+    <string name="onboarding_pause_ask_subtitle">סקרנים לגבי סצנה, שחקן או הפניה? פשוט שאלו -- הבינה המלאכותית יודעת מה אתם צופים</string>
+    <string name="onboarding_pause_ask_pill">עצור ושאל</string>
+
+    <string name="onboarding_interactive_title">צפו בתוכניות שמדברות חזרה</string>
+    <string name="onboarding_interactive_subtitle">שוחחו עם דמויות, הצביעו בסצנות וחקרו עלילות מסתעפות</string>
+    <string name="onboarding_interactive_moments">רגעים אינטראקטיביים</string>
+    <string name="onboarding_interactive_trivia">טריוויה חיה</string>
+
+    <string name="onboarding_never_miss_title">אל תפספסו רגע</string>
+    <string name="onboarding_never_miss_subtitle">השלימו תוכניות חיות והוסיפו תוכן משלכם מ-Plex, YouTube או IPTV</string>
+    <string name="onboarding_never_miss_catchup">השלמה</string>
+    <string name="onboarding_never_miss_byoc">הבא תוכן משלך</string>
+
+    <string name="onboarding_zeh_ani_title">זה אני -- Zeh Ani</string>
+    <string name="onboarding_zeh_ani_subtitle">ראו את עצמכם בסיפור עם מיפוי פנים בבינה מלאכותית וצפייה מותאמת אישית</string>
+    <string name="onboarding_zeh_ani_pill">זה אני</string>
+
+    <string name="onboarding_voice_title">שלטו בקול</string>
+    <string name="onboarding_voice_subtitle">אמרו \'היי בית\' כדי להחליף ערוצים, לחפש או לשאול שאלות</string>
+    <string name="onboarding_voice_or_type">או הקלידו את שמכם</string>
+
+    <string name="onboarding_complete_title">הכל מוכן!</string>
+    <string name="onboarding_complete_subtitle">החוויה המותאמת אישית שלכם מוכנה. תהנו מ-Bayit+!</string>
+    <string name="onboarding_complete_language">שפה</string>
+    <string name="onboarding_complete_name">שם</string>
+    <string name="onboarding_complete_start_watching">התחילו לצפות</string>
+    <string name="onboarding_complete_saving">שומר\u2026</string>
+
+    <!-- Accessibility / TalkBack Descriptions (T091) -->
+    <string name="a11y_feature_card_title">תכונה: %1$s</string>
+    <string name="a11y_feature_card_tagline">%1$s</string>
+    <string name="a11y_try_it_now_button">נסו הדגמה אינטראקטיבית עבור %1$s</string>
+    <string name="a11y_skip_tour_button">דלגו על סיור התכונות</string>
+    <string name="a11y_get_started_button">סיימו את הסיור והתחילו</string>
+    <string name="a11y_demo_close_button">סגרו את ההדגמה וחזרו לסיור</string>
+</resources>

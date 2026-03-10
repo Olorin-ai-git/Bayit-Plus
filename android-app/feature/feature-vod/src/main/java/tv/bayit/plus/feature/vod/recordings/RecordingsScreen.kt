@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun RecordingsRoute(
@@ -158,12 +159,12 @@ private fun EmptyRecordingsSection(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
             Text(
-                text = "No recordings yet",
+                text = bayitString("vod.recordings.emptyTitle"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
             )
             Text(
-                text = "Your DVR recordings will appear here",
+                text = bayitString("vod.recordings.emptySubtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -190,7 +191,7 @@ private fun RecordingsErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -34,6 +34,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SubtitleSettingsRoute(
@@ -61,10 +62,10 @@ internal fun SubtitleSettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Subtitles",
+            title = bayitString("settings.subtitles"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
             actions = {
@@ -90,12 +91,12 @@ private fun SubtitleContent(state: SubtitleUiState.Success, onUpdate: (SubtitleS
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
-        item { ToggleRow("Show Subtitles", "Display subtitles during playback", s.enabled, saving) { onUpdate(s.copy(enabled = it)) } }
-        item { SelectionRow("Position", listOf("bottom", "top"), s.position, saving && s.enabled) { onUpdate(s.copy(position = it)) } }
-        item { SliderRow("Font Size", s.fontSize.toFloat(), 12f, 32f, "${s.fontSize}px", saving) { onUpdate(s.copy(fontSize = it.toInt())) } }
-        item { SliderRow("Background Opacity", s.backgroundOpacity * 100f, 0f, 100f, "${(s.backgroundOpacity * 100).toInt()}%", saving) { onUpdate(s.copy(backgroundOpacity = it / 100f)) } }
-        item { SelectionRow("Font Style", listOf("normal", "bold", "italic"), s.fontStyle, saving) { onUpdate(s.copy(fontStyle = it)) } }
-        item { ToggleRow("AI Translation", "Auto-translate subtitles using AI", s.aiTranslationEnabled, saving) { onUpdate(s.copy(aiTranslationEnabled = it)) } }
+        item { ToggleRow(bayitString("settings.subtitles.show"), bayitString("settings.subtitles.showDescription"), s.enabled, saving) { onUpdate(s.copy(enabled = it)) } }
+        item { SelectionRow(bayitString("settings.subtitles.position"), listOf("bottom", "top"), s.position, saving && s.enabled) { onUpdate(s.copy(position = it)) } }
+        item { SliderRow(bayitString("settings.subtitles.fontSize"), s.fontSize.toFloat(), 12f, 32f, "${s.fontSize}px", saving) { onUpdate(s.copy(fontSize = it.toInt())) } }
+        item { SliderRow(bayitString("settings.subtitles.backgroundOpacity"), s.backgroundOpacity * 100f, 0f, 100f, "${(s.backgroundOpacity * 100).toInt()}%", saving) { onUpdate(s.copy(backgroundOpacity = it / 100f)) } }
+        item { SelectionRow(bayitString("settings.subtitles.fontStyle"), listOf("normal", "bold", "italic"), s.fontStyle, saving) { onUpdate(s.copy(fontStyle = it)) } }
+        item { ToggleRow(bayitString("settings.subtitles.aiTranslation"), bayitString("settings.subtitles.aiTranslationDescription"), s.aiTranslationEnabled, saving) { onUpdate(s.copy(aiTranslationEnabled = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }
@@ -105,7 +106,7 @@ private fun SubtitleErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

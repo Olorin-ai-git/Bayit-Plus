@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val RELATED_CARD_WIDTH = 140.dp
 private const val RELATED_POSTER_RATIO = 2f / 3f
@@ -39,7 +40,7 @@ internal fun RelatedContentShelf(
 ) {
     Column(modifier = modifier.padding(top = DesignTokens.Spacing.lg)) {
         Text(
-            text = "Related",
+            text = bayitString("vod.detail.related"),
             style = MaterialTheme.typography.titleMedium,
             color = DesignTokens.Colors.Text.primary,
             fontWeight = FontWeight.SemiBold,
@@ -83,8 +84,8 @@ internal fun MovieErrorContent(message: String, onBack: () -> Unit, onRetry: () 
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
-            GlassButton(text = "Go Back", onClick = onBack, isPrimary = false)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
+            GlassButton(text = bayitString("common.goBack"), onClick = onBack, isPrimary = false)
         }
     }
 }
