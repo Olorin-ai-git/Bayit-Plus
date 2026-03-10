@@ -41,17 +41,27 @@ extension TVSubtitleLanguagePickerView {
         }
     }
 
-    func triggerEngrewGeneration() async {
+    func triggerEnglishGeneration(mode: SubtitleEnglishMode) async {
         guard !contentId.isEmpty,
               let repo = repository as? APISubtitleRepository
         else { return }
 
-        generatingMode = SubtitleEnglishMode.engrew.rawValue
+        generatingMode = mode.rawValue
         generationError = nil
         jobProgress = 0
 
         do {
-            let result = try await repo.generateEngrew(contentId: contentId)
+            let result: AIGenerationJobResponse
+            switch mode {
+            case .engrew:
+                result = try await repo.generateEngrew(contentId: contentId)
+            case .grammarFlip:
+                result = try await repo.generateGrammarFlip(contentId: contentId)
+            case .slangSynthesis:
+                result = try await repo.generateSlangSynthesis(contentId: contentId)
+            case .standard:
+                return
+            }
 
             if result.status == .completed {
                 generatingMode = nil
@@ -60,15 +70,16 @@ extension TVSubtitleLanguagePickerView {
             }
             if let jobId = result.jobId {
                 currentJobId = jobId
-                startGenerationPolling(
-                    jobId: jobId,
-                    modeKey: SubtitleEnglishMode.engrew.rawValue
-                )
+                startGenerationPolling(jobId: jobId, modeKey: mode.rawValue)
             }
         } catch {
-            generationError = "Failed to start Engrew generation"
+            generationError = "Failed to start \(mode.displayName) generation"
             generatingMode = nil
         }
+    }
+
+    func triggerEngrewGeneration() async {
+        await triggerEnglishGeneration(mode: .engrew)
     }
 
     func startGenerationPolling(jobId: String, modeKey: String) {
@@ -143,22 +154,19 @@ extension TVSubtitleLanguagePickerView {
                 let active = try await repo.getActiveJobs(
                     contentId: contentId
                 )
-                if let job = active.nikudJob,
-                   job.status == .pending || job.status == .processing
-                {
-                    resumeActiveJob(job, modeKey: "nikud")
-                } else if let job = active.shoreshJob,
-                          job.status == .pending || job.status == .processing
-                {
-                    resumeActiveJob(job, modeKey: "shoresh")
-                } else if let job = active.heblishJob,
-                          job.status == .pending || job.status == .processing
-                {
-                    resumeActiveJob(job, modeKey: "heblish")
-                } else if let job = active.engrewJob,
-                          job.status == .pending || job.status == .processing
-                {
-                    resumeActiveJob(job, modeKey: "engrew")
+                let jobChecks: [(AIGenerationJobResponse?, String)] = [
+                    (active.nikudJob, "nikud"),
+                    (active.shoreshJob, "shoresh"),
+                    (active.heblishJob, "heblish"),
+                    (active.engrewJob, "engrew"),
+                    (active.grammarFlipJob, "grammarFlip"),
+                    (active.slangSynthesisJob, "slangSynthesis"),
+                ]
+                for (job, key) in jobChecks {
+                    if let job, job.status == .pending || job.status == .processing {
+                        resumeActiveJob(job, modeKey: key)
+                        break
+                    }
                 }
             } catch {
                 // Non-critical: active job check is supplementary

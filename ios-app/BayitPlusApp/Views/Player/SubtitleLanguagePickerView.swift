@@ -23,6 +23,8 @@ struct SubtitleLanguagePickerView: View {
     var hasShoresh: Bool = false
     var hasHeblish: Bool = false
     var hasEngrew: Bool = false
+    var hasGrammarFlip: Bool = false
+    var hasSlangSynthesis: Bool = false
     var isAdmin: Bool = false
     var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
     var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?

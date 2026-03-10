@@ -4,7 +4,6 @@ import Foundation
 /// Extension to SubtitleRepository adding AI subtitle generation capabilities.
 /// These methods call the backend AI generation endpoints that already exist.
 extension APISubtitleRepository {
-
     // MARK: - AI Generation Job Management
 
     /// Start AI generation for nikud (vowel marks) subtitles.
@@ -28,7 +27,7 @@ extension APISubtitleRepository {
             body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
-                URLQueryItem(name: "force", value: String(force))
+                URLQueryItem(name: "force", value: String(force)),
             ],
             as: AIGenerationJobResponse.self
         )
@@ -50,7 +49,7 @@ extension APISubtitleRepository {
             body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
-                URLQueryItem(name: "force", value: String(force))
+                URLQueryItem(name: "force", value: String(force)),
             ],
             as: AIGenerationJobResponse.self
         )
@@ -72,18 +71,13 @@ extension APISubtitleRepository {
             body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
-                URLQueryItem(name: "force", value: String(force))
+                URLQueryItem(name: "force", value: String(force)),
             ],
             as: AIGenerationJobResponse.self
         )
     }
 
     /// Start AI generation for engrew (English with Hebrew words) subtitles.
-    /// - Parameters:
-    ///   - contentId: Content identifier
-    ///   - language: Language code (default: "en")
-    ///   - force: Force regeneration even if already exists
-    /// - Returns: Job status response with job_id for polling
     func generateEngrew(
         contentId: String,
         language: String = "en",
@@ -94,7 +88,41 @@ extension APISubtitleRepository {
             body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
-                URLQueryItem(name: "force", value: String(force))
+                URLQueryItem(name: "force", value: String(force)),
+            ],
+            as: AIGenerationJobResponse.self
+        )
+    }
+
+    /// Start AI generation for grammar-flip subtitles.
+    func generateGrammarFlip(
+        contentId: String,
+        language: String = "en",
+        force: Bool = false
+    ) async throws -> AIGenerationJobResponse {
+        return try await client.post(
+            "/api/v1/subtitles/\(contentId)/grammar-flip",
+            body: EmptyRequest(),
+            queryItems: [
+                URLQueryItem(name: "language", value: language),
+                URLQueryItem(name: "force", value: String(force)),
+            ],
+            as: AIGenerationJobResponse.self
+        )
+    }
+
+    /// Start AI generation for slang-synthesis subtitles.
+    func generateSlangSynthesis(
+        contentId: String,
+        language: String = "en",
+        force: Bool = false
+    ) async throws -> AIGenerationJobResponse {
+        return try await client.post(
+            "/api/v1/subtitles/\(contentId)/slang-synthesis",
+            body: EmptyRequest(),
+            queryItems: [
+                URLQueryItem(name: "language", value: language),
+                URLQueryItem(name: "force", value: String(force)),
             ],
             as: AIGenerationJobResponse.self
         )
@@ -190,6 +218,8 @@ struct ActiveJobsResponse: Decodable, Sendable {
     let shoreshJob: AIGenerationJobResponse?
     let heblishJob: AIGenerationJobResponse?
     let engrewJob: AIGenerationJobResponse?
+    let grammarFlipJob: AIGenerationJobResponse?
+    let slangSynthesisJob: AIGenerationJobResponse?
 }
 
 // MARK: - Helper Types

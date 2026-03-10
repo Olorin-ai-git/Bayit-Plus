@@ -27,6 +27,8 @@ extension TVPlayerView {
             hasShoresh: state.subtitlesVM?.hasShoresh ?? false,
             hasHeblish: state.subtitlesVM?.hasHeblish ?? false,
             hasEngrew: state.subtitlesVM?.hasEngrew ?? false,
+            hasGrammarFlip: state.subtitlesVM?.hasGrammarFlip ?? false,
+            hasSlangSynthesis: state.subtitlesVM?.hasSlangSynthesis ?? false,
             isAdmin: authManager.user?.role.isAdmin ?? false,
             onHebrewModeSelect: { mode in
                 Task {

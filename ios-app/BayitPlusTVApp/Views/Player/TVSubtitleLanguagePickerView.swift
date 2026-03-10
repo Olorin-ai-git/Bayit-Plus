@@ -22,6 +22,8 @@ struct TVSubtitleLanguagePickerView: View {
     var hasShoresh: Bool = false
     var hasHeblish: Bool = false
     var hasEngrew: Bool = false
+    var hasGrammarFlip: Bool = false
+    var hasSlangSynthesis: Bool = false
     var isAdmin: Bool = false
     var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
     var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?
@@ -33,6 +35,7 @@ struct TVSubtitleLanguagePickerView: View {
     @State var generationError: String?
     @State var pollingTask: Task<Void, Never>?
     @State var isCancelling = false
+    @State var pendingGenerationItem: SubtitlePickerItem?
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
@@ -94,6 +97,26 @@ struct TVSubtitleLanguagePickerView: View {
         .onExitCommand { onDismiss() }
         .onAppear { checkActiveJobs() }
         .onDisappear { pollingTask?.cancel() }
+        .overlay {
+            if let item = pendingGenerationItem {
+                TVAIGenerationConfirmDialog(
+                    modeName: item.displayLabel,
+                    modeDescription: aiModeDescription(for: item),
+                    onConfirm: {
+                        let captured = item
+                        pendingGenerationItem = nil
+                        confirmAndGenerate(captured)
+                    },
+                    onDismiss: { pendingGenerationItem = nil }
+                )
+            }
+        }
+    }
+
+    private func aiModeDescription(for item: SubtitlePickerItem) -> String {
+        if let hm = item.hebrewMode { return hm.description }
+        if let em = item.englishMode { return em.description }
+        return ""
     }
 
     // MARK: - Error View

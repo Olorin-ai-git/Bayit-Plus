@@ -19,6 +19,8 @@ final class InteractiveSubtitlesViewModel {
     private(set) var hasShoresh = false
     private(set) var hasHeblish = false
     private(set) var hasEngrew = false
+    private(set) var hasGrammarFlip = false
+    private(set) var hasSlangSynthesis = false
 
     var isAdmin: Bool {
         authManager?.user?.role.isAdmin ?? false

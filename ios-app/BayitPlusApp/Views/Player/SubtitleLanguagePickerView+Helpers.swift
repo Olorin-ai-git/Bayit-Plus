@@ -108,6 +108,8 @@ extension SubtitleLanguagePickerView {
         switch mode {
         case .standard: return true
         case .engrew: return hasEngrew
+        case .grammarFlip: return hasGrammarFlip
+        case .slangSynthesis: return hasSlangSynthesis
         }
     }
 

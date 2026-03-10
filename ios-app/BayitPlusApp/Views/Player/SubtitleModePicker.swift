@@ -160,6 +160,8 @@ struct SubtitleModePicker: View {
             switch englishMode {
             case .standard: return true
             case .engrew: return cue.hasEngrewVersion == true
+            case .grammarFlip: return cue.hasGrammarFlipVersion == true
+            case .slangSynthesis: return cue.hasSlangSynthesisVersion == true
             }
         }
 
@@ -170,7 +172,7 @@ struct SubtitleModePicker: View {
         if let hebrewMode = mode as? SubtitleHebrewMode {
             return hebrewMode == .nikud || hebrewMode == .shoresh || hebrewMode == .heblish
         } else if let englishMode = mode as? SubtitleEnglishMode {
-            return englishMode == .engrew
+            return englishMode != .standard
         }
         return false
     }

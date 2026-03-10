@@ -70,6 +70,8 @@ extension TVSubtitleLanguagePickerView {
         switch mode {
         case .standard: return true
         case .engrew: return hasEngrew
+        case .grammarFlip: return hasGrammarFlip
+        case .slangSynthesis: return hasSlangSynthesis
         }
     }
 
@@ -83,9 +85,9 @@ extension TVSubtitleLanguagePickerView {
 
         if item.isAI, !isAvailable {
             if let hm = item.hebrewMode, hm != .standard {
-                Task { await triggerHebrewGeneration(mode: hm) }
-            } else if item.englishMode == .engrew {
-                Task { await triggerEngrewGeneration() }
+                pendingGenerationItem = item
+            } else if let em = item.englishMode, em != .standard {
+                pendingGenerationItem = item
             }
             return
         }
@@ -94,5 +96,13 @@ extension TVSubtitleLanguagePickerView {
         if let hm = item.hebrewMode { onHebrewModeSelect?(hm) }
         if let em = item.englishMode { onEnglishModeSelect?(em) }
         onDismiss()
+    }
+
+    func confirmAndGenerate(_ item: SubtitlePickerItem) {
+        if let hm = item.hebrewMode, hm != .standard {
+            Task { await triggerHebrewGeneration(mode: hm) }
+        } else if let em = item.englishMode, em != .standard {
+            Task { await triggerEnglishGeneration(mode: em) }
+        }
     }
 }
