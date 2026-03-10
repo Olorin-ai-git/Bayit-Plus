@@ -2,16 +2,16 @@ import SwiftUI
 
 /// Data describing a single step in the coach mark overlay.
 public struct CoachMarkOverlayStep {
-    public let instructionKey: String
+    public let instructionText: String
     public let targetFrame: CGRect
     public let targetCornerRadius: CGFloat
 
     public init(
-        instructionKey: String,
+        instructionText: String,
         targetFrame: CGRect,
         targetCornerRadius: CGFloat
     ) {
-        self.instructionKey = instructionKey
+        self.instructionText = instructionText
         self.targetFrame = targetFrame
         self.targetCornerRadius = targetCornerRadius
     }
@@ -65,7 +65,7 @@ public struct CoachMarkOverlay: View {
             cornerRadius: step.targetCornerRadius
         )
         .fill(style: FillStyle(eoFill: true))
-        .foregroundStyle(DesignTokens.Glass.bg.opacity(Metrics.overlayOpacity))
+        .foregroundStyle(Color.black.opacity(Metrics.overlayOpacity))
         .accessibilityHidden(true)
     }
 
@@ -88,7 +88,7 @@ public struct CoachMarkOverlay: View {
 
     private func instructionCard(step: CoachMarkOverlayStep) -> some View {
         VStack(spacing: Metrics.innerSpacing) {
-            Text(LocalizedStringKey(step.instructionKey))
+            Text(step.instructionText)
                 .font(.system(size: Metrics.instructionFontSize, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .multilineTextAlignment(.center)
@@ -150,7 +150,7 @@ public struct CoachMarkOverlay: View {
 // MARK: - Platform-Adaptive Metrics
 
 private enum Metrics {
-    static let overlayOpacity: Double = 0.85
+    static let overlayOpacity: Double = 0.92
     #if os(tvOS)
         static let contentSpacing: CGFloat = TVDesignTokens.Spacing.lg
         static let innerSpacing: CGFloat = TVDesignTokens.Spacing.md

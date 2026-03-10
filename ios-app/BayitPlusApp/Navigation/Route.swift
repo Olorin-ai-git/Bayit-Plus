@@ -63,6 +63,9 @@ public enum Route: Hashable {
     /// LLM Search
     case llmSearch
 
+    /// Hebrew Glossary
+    case glossary
+
     /// Family Controls
     case familyControls
 

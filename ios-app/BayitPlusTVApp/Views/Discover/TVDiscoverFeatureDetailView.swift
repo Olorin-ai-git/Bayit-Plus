@@ -9,6 +9,7 @@
         let viewModel: DiscoverViewModel
         let onDismiss: () -> Void
         @Environment(LocalizationManager.self) private var localization
+        @Environment(TVNavigationCoordinator.self) private var coordinator
         @FocusState private var focusedButton: DetailButton?
 
         private enum DetailButton: Hashable { case tryIt, watchDemo, back }
@@ -17,7 +18,6 @@
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
                 glassPanel
-                walkthroughOverlay
             }
             .onExitCommand(perform: onDismiss)
         }
@@ -97,11 +97,24 @@
 
         private var actionButtons: some View {
             HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                focusButton("discover.detail.tryIt", tag: .tryIt,
-                            bg: DesignTokens.Primary.default) { viewModel.startWalkthrough(for: feature) }
+                if let url = viewModel.walkthroughURL(for: feature) {
+                    focusButton("discover.detail.tryIt", tag: .tryIt,
+                                bg: DesignTokens.Primary.default)
+                    {
+                        viewModel.startWalkthroughSession(for: feature)
+                        onDismiss()
+                        coordinator.handleDeepLink(url)
+                    }
+                }
                 if viewModel.demoVideoURL(for: feature.id) != nil {
                     focusButton("discover.detail.watchDemo", tag: .watchDemo,
-                                bg: DesignTokens.Glass.bgMedium, bordered: true) { viewModel.toggleExpanded(featureId: feature.id) }
+                                bg: DesignTokens.Glass.bgMedium, bordered: true)
+                    {
+                        onDismiss()
+                        if let demoURL = viewModel.demoVideoURL(for: feature.id) {
+                            viewModel.pendingDemoVideoURL = demoURL
+                        }
+                    }
                 }
                 focusButton("discover.detail.back", tag: .back,
                             bg: DesignTokens.Glass.bg, fg: DesignTokens.Text.secondary) { onDismiss() }
@@ -155,27 +168,6 @@
                 }
                 .frame(maxWidth: .infinity)
             } else { thumbnailFallback }
-        }
-
-        @ViewBuilder
-        private var walkthroughOverlay: some View {
-            if let wt = viewModel.activeWalkthrough,
-               wt.feature.id == feature.id, wt.isActive
-            {
-                CoachMarkOverlay(
-                    steps: wt.feature.walkthroughSteps.map {
-                        CoachMarkOverlayStep(
-                            instructionKey: $0.instructionKey,
-                            targetFrame: .zero,
-                            targetCornerRadius: TVDesignTokens.Radius.default
-                        )
-                    },
-                    currentStepIndex: wt.currentStepIndex,
-                    onNext: { viewModel.advanceWalkthrough() },
-                    onSkip: { viewModel.skipWalkthrough() },
-                    onDone: { Task { await viewModel.completeWalkthrough() } }
-                )
-            }
         }
 
         private func accessibilityId(for button: DetailButton) -> String {

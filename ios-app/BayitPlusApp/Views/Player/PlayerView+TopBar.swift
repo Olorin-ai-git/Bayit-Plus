@@ -53,6 +53,7 @@ extension PlayerView {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel(localization.t("player.subtitles"))
+                .walkthroughTarget(id: "discover_vocabulary_step2")
 
                 splitSubtitleToggle
             }
@@ -117,6 +118,8 @@ extension PlayerView {
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel(localization.t("player.pauseAsk.title"))
+                .walkthroughTarget(id: "discover_pause_ask_step3")
+                .walkthroughTarget(id: "discover_ai_companion_step2")
                 .featureTooltip(
                     featureKey: "pause_and_ask",
                     titleKey: "tooltip.pauseAndAsk.title",

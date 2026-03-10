@@ -3,19 +3,24 @@ import BayitLocalization
 import SwiftUI
 
 struct GlossaryView: View {
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel = GlossaryViewModel()
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
                 searchField
+                    .walkthroughTarget(id: "discover_glossary_step2")
                 categoryChips
+                    .walkthroughTarget(id: "discover_glossary_step1")
                 entriesList
+                    .walkthroughTarget(id: "discover_glossary_step3")
             }
             .padding(.vertical, DesignTokens.Spacing.lg)
             .padding(.horizontal, DesignTokens.Spacing.md)
         }
         .background(DesignTokens.Background.primary)
+        .walkthroughOverlay(featureId: "glossary", localize: localization.t)
         .navigationTitle("Hebrew Glossary")
         .task {
             await viewModel.fetchEntries(reset: true)

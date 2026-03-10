@@ -1,6 +1,7 @@
 import AVKit
 import BayitAuth
 import BayitCast
+import BayitCore
 import BayitDesignSystem
 import BayitLocalization
 import BayitMedia

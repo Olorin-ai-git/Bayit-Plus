@@ -24,6 +24,7 @@
                     onDismiss: { viewModel.player.avPlayer.play(); vm.dismiss() }
                 )
                 .onAppear { viewModel.player.avPlayer.pause() }
+                .walkthroughTarget(id: "discover_vod_moments_step2")
             }
 
             if showNoAvatarWarning {
@@ -117,6 +118,9 @@
                         Task { await dismissPauseAsk() }
                     }
                 )
+                .walkthroughTarget(id: "discover_pause_ask_step4")
+                .walkthroughTarget(id: "discover_ai_companion_step4")
+                .walkthroughTarget(id: "discover_cultural_context_step2")
             }
         }
 

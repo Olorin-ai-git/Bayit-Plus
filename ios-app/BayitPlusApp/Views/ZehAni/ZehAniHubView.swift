@@ -28,6 +28,12 @@ struct ZehAniHubView: View {
                 hubContent(profileId: profileId)
             }
         }
+        .walkthroughOverlay(
+            featureIds: ["phonetic_mirror", "talk_back"],
+            localize: localization.t
+        )
+        .walkthroughTarget(id: "discover_phonetic_mirror_step1")
+        .walkthroughTarget(id: "discover_talk_back_step1")
         .navigationTitle(localization.t("zehAni.hub.title"))
         .navigationBarTitleDisplayMode(.large)
         .task { await loadProfile() }
@@ -42,6 +48,8 @@ struct ZehAniHubView: View {
                     descKey: "zehAni.hub.magicMirrorDesc",
                     destination: .zehAniMagicMirror(profileId: profileId)
                 )
+                .walkthroughTarget(id: "discover_phonetic_mirror_step2")
+                .walkthroughTarget(id: "discover_talk_back_step2")
                 .featureTooltip(
                     featureKey: "zeh_ani_avatar",
                     titleKey: "tooltip.zehAni.title",
@@ -56,6 +64,8 @@ struct ZehAniHubView: View {
                     descKey: "zehAni.hub.movieInteractionsDesc",
                     destination: .zehAniMovieInteractions(profileId: profileId)
                 )
+                .walkthroughTarget(id: "discover_phonetic_mirror_step3")
+                .walkthroughTarget(id: "discover_talk_back_step3")
 
                 featureCard(
                     icon: "person.2.fill",
@@ -63,6 +73,8 @@ struct ZehAniHubView: View {
                     descKey: "zehAni.hub.contactsDesc",
                     destination: .zehAniContacts(profileId: profileId)
                 )
+                .walkthroughTarget(id: "discover_phonetic_mirror_step4")
+                .walkthroughTarget(id: "discover_talk_back_step4")
 
                 featureCard(
                     icon: "tray.full.fill",

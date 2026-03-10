@@ -24,13 +24,17 @@ struct MissionsDashboardView: View {
             } else if let profile = profile {
                 LazyVStack(spacing: DesignTokens.Spacing.lg) {
                     levelCard(profile)
+                        .walkthroughTarget(id: "discover_interactive_mission_step1")
                     perksSection(profile)
+                        .walkthroughTarget(id: "discover_interactive_mission_step2")
                     activitySection(profile)
+                        .walkthroughTarget(id: "discover_interactive_mission_step4")
                 }
                 .padding(.vertical, DesignTokens.Spacing.lg)
             }
         }
         .background(DesignTokens.Background.primary)
+        .walkthroughOverlay(featureId: "interactive_mission", localize: localization.t)
         .sheet(item: $selectedPerk) { perk in
             PerkUnlockSheet(perk: perk, onClaim: handleClaimPerk)
         }
@@ -56,6 +60,7 @@ struct MissionsDashboardView: View {
                     level: profile.currentLevel,
                     title: localization.layoutDirection == .rightToLeft ? profile.levelTitleHe : profile.levelTitle
                 )
+                .walkthroughTarget(id: "discover_interactive_mission_step3")
             }
             .padding(.vertical, DesignTokens.Spacing.md)
         }
@@ -78,7 +83,7 @@ struct MissionsDashboardView: View {
                 let columns = [
                     GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
                     GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-                    GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+                    GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
                 ]
 
                 LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
@@ -177,7 +182,7 @@ struct MissionsDashboardView: View {
         isLoading = false
     }
 
-    private func handleClaimPerk(_ perkId: String) {
+    private func handleClaimPerk(_: String) {
         Task {
             await load()
         }

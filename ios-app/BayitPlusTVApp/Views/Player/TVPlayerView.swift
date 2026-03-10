@@ -77,6 +77,15 @@ struct TVPlayerView: View {
                 mediaPlayer.play()
             }
         }
+        .walkthroughOverlay(
+            featureIds: [
+                "pause_ask", "interactive_subtitles", "vocabulary", "vod_moments",
+                "cultural_context", "bilingual_bridge", "ai_companion",
+                "live_dubbing", "live_subtitles", "live_trivia", "catch_up", "scene_search",
+            ],
+            localize: localization.t,
+            isReady: !state.isResolvingStream && mediaPlayer.state != .preBuffering
+        )
         .focusScope(playerFocus)
         .onDisappear { cleanup() }
         .task { await resolveAndPlay() }

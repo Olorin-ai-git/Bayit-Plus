@@ -8,7 +8,6 @@ struct DiscoverFeatureDetailView: View {
     @Bindable var viewModel: DiscoverViewModel
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
-    @State private var showAvatarPrerequisite = false
 
     private var availability: FeatureAvailabilityState {
         viewModel.availability(for: feature.id)
@@ -27,26 +26,6 @@ struct DiscoverFeatureDetailView: View {
             .padding(DesignTokens.Spacing.xl)
         }
         .background(DesignTokens.Glass.bgStrong)
-        .overlay { walkthroughOverlay }
-        .sheet(isPresented: $showAvatarPrerequisite) {
-            DiscoverAvatarPrerequisiteView(
-                onCreateAvatar: {
-                    showAvatarPrerequisite = false
-                    if let url = URL(string: "bayitplus://settings/avatar") {
-                        UIApplication.shared.open(url)
-                    }
-                },
-                onSkip: {
-                    showAvatarPrerequisite = false
-                    viewModel.activeWalkthrough?.resumeFromPrerequisite()
-                }
-            )
-        }
-        .onChange(of: viewModel.activeWalkthrough?.isAwaitingPrerequisite) { _, isAwaiting in
-            if isAwaiting == true {
-                showAvatarPrerequisite = true
-            }
-        }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
@@ -99,9 +78,23 @@ struct DiscoverFeatureDetailView: View {
                 .foregroundStyle(prerequisiteColor(for: prereq))
                 .font(DesignTokens.Typography.body)
 
-            Text(localization.t(prereq.labelKey))
-                .font(DesignTokens.Typography.callout)
-                .foregroundStyle(DesignTokens.Text.secondary)
+            if let route = prereq.fixRoute, !prerequisiteMet(prereq),
+               let url = URL(string: route)
+            {
+                Button {
+                    dismiss()
+                    UIApplication.shared.open(url)
+                } label: {
+                    Text(localization.t(prereq.labelKey))
+                        .font(DesignTokens.Typography.callout)
+                        .foregroundStyle(DesignTokens.Primary.default)
+                        .underline()
+                }
+            } else {
+                Text(localization.t(prereq.labelKey))
+                    .font(DesignTokens.Typography.callout)
+                    .foregroundStyle(DesignTokens.Text.secondary)
+            }
         }
         .accessibilityElement(children: .combine)
     }
@@ -122,8 +115,12 @@ struct DiscoverFeatureDetailView: View {
 
     private var actionButtons: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            if !feature.walkthroughSteps.isEmpty {
-                Button(action: { viewModel.startWalkthrough(for: feature) }) {
+            if let url = viewModel.walkthroughURL(for: feature) {
+                Button(action: {
+                    viewModel.startWalkthroughSession(for: feature)
+                    dismiss()
+                    UIApplication.shared.open(url)
+                }) {
                     Text(localization.t("discover.action.tryIt"))
                         .font(DesignTokens.Typography.headline)
                         .foregroundStyle(.white)
@@ -138,14 +135,17 @@ struct DiscoverFeatureDetailView: View {
                 .accessibilityLabel(localization.t("discover.action.tryIt"))
             }
 
-            if viewModel.demoVideoURL(for: feature.id) != nil {
-                Button(action: { dismiss() }) {
+            if let demoURL = viewModel.demoVideoURL(for: feature.id) {
+                Button(action: {
+                    dismiss()
+                    viewModel.pendingDemoVideoURL = demoURL
+                }) {
                     Text(localization.t("discover.action.watchDemo"))
                         .font(DesignTokens.Typography.headline)
-                        .foregroundStyle(DesignTokens.Primary.default)
+                        .foregroundStyle(DesignTokens.Text.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DesignTokens.Spacing.md)
-                        .background(DesignTokens.Glass.bg)
+                        .background(DesignTokens.Glass.bgMedium)
                         .clipShape(
                             RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                         )
@@ -157,29 +157,6 @@ struct DiscoverFeatureDetailView: View {
                 .accessibilityIdentifier("discover_action_watchDemo")
                 .accessibilityLabel(localization.t("discover.action.watchDemo"))
             }
-        }
-    }
-
-    @ViewBuilder
-    private var walkthroughOverlay: some View {
-        if let walkthrough = viewModel.activeWalkthrough,
-           walkthrough.feature.id == feature.id,
-           walkthrough.isActive
-        {
-            CoachMarkOverlay(
-                steps: walkthrough.feature.walkthroughSteps.map { step in
-                    CoachMarkOverlayStep(
-                        instructionKey: step.instructionKey,
-                        targetFrame: .zero,
-                        targetCornerRadius: DesignTokens.Radius.md
-                    )
-                },
-                currentStepIndex: walkthrough.currentStepIndex,
-                onNext: { viewModel.advanceWalkthrough() },
-                onSkip: { viewModel.skipWalkthrough() },
-                onDone: { Task { await viewModel.completeWalkthrough() } }
-            )
-            .accessibilityIdentifier("discover_walkthrough_overlay")
         }
     }
 

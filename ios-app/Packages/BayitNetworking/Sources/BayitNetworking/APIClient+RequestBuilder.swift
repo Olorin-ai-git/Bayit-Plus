@@ -1,3 +1,4 @@
+import BayitCore
 import Foundation
 
 // MARK: - Request Building, Header Injection, Response Decoding
@@ -32,6 +33,7 @@ extension APIClient {
         applyLocaleHeader(to: &urlRequest)
         urlRequest.setValue(correlationID, forHTTPHeaderField: "X-Correlation-ID")
         await applyLocationHeaders(to: &urlRequest)
+        await applyWalkthroughHeader(to: &urlRequest)
         applyPerRequestHeaders(apiRequest.headers, to: &urlRequest)
 
         if let rawProvider = apiRequest.body as? RawBodyProvider {
@@ -92,6 +94,13 @@ extension APIClient {
             if let state = location.state {
                 request.setValue(state, forHTTPHeaderField: "X-User-State")
             }
+        }
+    }
+
+    private func applyWalkthroughHeader(to request: inout URLRequest) async {
+        let token = await MainActor.run { WalkthroughSessionManager.shared.sessionToken }
+        if let token {
+            request.setValue(token, forHTTPHeaderField: "X-Walkthrough")
         }
     }
 

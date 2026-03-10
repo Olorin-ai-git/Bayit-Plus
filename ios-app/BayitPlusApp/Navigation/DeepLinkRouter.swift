@@ -24,7 +24,17 @@ public enum DeepLink {
             return .home
         }
 
-        // Try simple navigation routes first
+        // Collect remaining path components after the first
+        let rest = url.scheme == "bayitplus"
+            ? pathComponents
+            : Array(pathComponents.dropFirst())
+
+        // Try compound routes (settings/avatar, settings/subtitles, etc.)
+        if let compoundRoute = parseCompoundRoute(first: first, rest: rest) {
+            return compoundRoute
+        }
+
+        // Try simple navigation routes
         if let simpleRoute = parseSimpleRoute(first) {
             return simpleRoute
         }
@@ -41,6 +51,32 @@ public enum DeepLink {
         return .home
     }
 
+    // MARK: - Compound Routes
+
+    private static func parseCompoundRoute(first: String, rest: [String]) -> Route? {
+        guard let second = rest.first else { return nil }
+        switch first {
+        case "settings":
+            return parseSettingsSubRoute(second)
+        case "zeh-ani":
+            return .avatarMode
+        default:
+            return nil
+        }
+    }
+
+    private static func parseSettingsSubRoute(_ sub: String) -> Route? {
+        switch sub {
+        case "avatar": return .avatarMode
+        case "subtitles", "playback": return .playbackSettings
+        case "voice": return .audioSettings
+        case "consent": return .privacySettings
+        case "language": return .languageSettings
+        case "notifications": return .notificationSettings
+        default: return .settings
+        }
+    }
+
     // MARK: - Simple Routes
 
     private static func parseSimpleRoute(_ first: String) -> Route? {
@@ -55,7 +91,7 @@ public enum DeepLink {
         case "languageSettings": return .languageSettings
         case "notificationSettings": return .notificationSettings
         case "billing": return .billing
-        case "subscription": return .subscription
+        case "subscription", "subscribe": return .subscription
         case "security": return .security
         case "playbackSettings": return .playbackSettings
         case "audioSettings": return .audioSettings
@@ -86,6 +122,9 @@ public enum DeepLink {
         case "rewards": return .rewards
         case "onboardingAI": return .onboardingAI
         case "friends": return .friends
+        case "zeh-ani": return .avatarMode
+        case "missions": return .flows
+        case "glossary": return .glossary
         default: return nil
         }
     }

@@ -30,6 +30,7 @@ extension PlayerView {
                 onSkipBackward: { Task { await viewModel.player.skipBackward() } },
                 onSeek: { time in Task { await viewModel.player.seek(to: time) } }
             )
+            .walkthroughTarget(id: "discover_pause_ask_step2")
             .padding(.bottom, DesignTokens.Spacing.xs)
         }
         .background(controlsGradient)

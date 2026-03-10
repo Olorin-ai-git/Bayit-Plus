@@ -46,6 +46,7 @@ extension Route {
         case .support: return "Support"
         case .trivia: return "Trivia"
         case .llmSearch: return "AI Search"
+        case .glossary: return "Glossary"
         case .familyControls: return "Family Controls"
         case .shabbatMode: return "Shabbat"
         case .jerusalemContent: return "Jerusalem"

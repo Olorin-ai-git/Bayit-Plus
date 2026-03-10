@@ -1,3 +1,4 @@
+import BayitCore
 import BayitDesignSystem
 import BayitMedia
 import SwiftUI
@@ -151,7 +152,18 @@ extension PlayerView {
                 subtitlePickerOverlay
             }
         }
+        .walkthroughOverlay(
+            featureIds: PlayerView.walkthroughFeatureIds,
+            localize: localization.t,
+            isReady: !viewModel.isLoading && viewModel.player.state != .preBuffering
+        )
     }
+
+    static let walkthroughFeatureIds: Set<String> = [
+        "pause_ask", "interactive_subtitles", "vocabulary", "vod_moments",
+        "cultural_context", "bilingual_bridge", "ai_companion",
+        "live_dubbing", "live_subtitles", "live_trivia", "catch_up", "scene_search",
+    ]
 
     // MARK: - Lifecycle Handlers
 

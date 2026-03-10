@@ -15,16 +15,20 @@
                     VStack(spacing: 0) {
                         if vm.messages.isEmpty {
                             emptyState
+                                .walkthroughTarget(id: "discover_chatbot_step1")
                         } else {
                             messageList(vm)
+                                .walkthroughTarget(id: "discover_chatbot_step3")
                         }
 
                         suggestionChips(vm)
                         inputBar(vm)
+                            .walkthroughTarget(id: "discover_chatbot_step2")
                     }
                 }
             }
             .background(DesignTokens.Background.primary)
+            .walkthroughOverlay(featureId: "chatbot", localize: localization.t)
             .task {
                 if viewModel == nil {
                     viewModel = TVChatbotViewModel(repository: repos.chat)

@@ -15,9 +15,12 @@ struct TVLLMSearchView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: TVDesignTokens.Spacing.xl) {
                 headerSection
+                    .walkthroughTarget(id: "discover_llm_search_step1")
                 queryInput
+                    .walkthroughTarget(id: "discover_llm_search_step2")
                 suggestionsSection
                 interpretationSection
+                    .walkthroughTarget(id: "discover_llm_search_step3")
 
                 if let vm = viewModel {
                     TVLLMSearchResultsView(
@@ -33,6 +36,7 @@ struct TVLLMSearchView: View {
             .padding(.vertical, TVDesignTokens.Spacing.xxl)
         }
         .background(DesignTokens.Background.primary)
+        .walkthroughOverlay(featureId: "llm_search", localize: localization.t)
         .task {
             if viewModel == nil {
                 viewModel = LLMSearchViewModel(repository: repos.llmSearch)

@@ -125,7 +125,7 @@ public final class NavigationCoordinator {
              .accessibilitySettings, .privacySettings,
              .children, .youngsters, .judaism,
              .flows, .morningRitual, .voiceOnboarding, .support,
-             .trivia, .llmSearch, .familyControls, .shabbatMode,
+             .trivia, .llmSearch, .glossary, .familyControls, .shabbatMode,
              .jerusalemContent, .telAvivContent, .audiobooks,
              .audiobookCollections, .audiobookAuthorDetail,
              .audiobookDetail, .trending, .interactiveSubtitles,

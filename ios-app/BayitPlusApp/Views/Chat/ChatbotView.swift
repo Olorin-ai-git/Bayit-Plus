@@ -21,12 +21,15 @@ struct ChatbotView: View {
 
             VStack(spacing: 0) {
                 messageList
+                    .walkthroughTarget(id: "discover_chatbot_step3")
                 suggestionChips
                 inputBar
+                    .walkthroughTarget(id: "discover_chatbot_step2")
             }
         }
         .navigationTitle("AI Assistant")
         .navigationBarTitleDisplayMode(.inline)
+        .walkthroughOverlay(featureId: "chatbot", localize: localization.t)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -111,6 +114,7 @@ struct ChatbotView: View {
                     .font(.system(size: 32))
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
+            .walkthroughTarget(id: "discover_chatbot_step1")
 
             Text(localization.t("chatbot.welcome"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))

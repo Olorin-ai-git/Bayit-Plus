@@ -77,6 +77,8 @@ struct RouteDestinationResolver {
             QuizOverlayView(contentId: contentId, profileId: nil, onDismiss: { coordinator.pop() })
         case .llmSearch:
             LLMSearchView()
+        case .glossary:
+            GlossaryView()
         case .familyControls:
             FamilyControlsView()
         case .shabbatMode:

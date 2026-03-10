@@ -14,6 +14,7 @@ struct SearchView: View {
     var body: some View {
         VStack(spacing: 0) {
             PageHeader(icon: "magnifyingglass", title: localization.t("search.title"))
+                .walkthroughTarget(id: "discover_llm_search_step1")
             if let vm = viewModel {
                 searchBar(vm)
                 filterPills(vm)
@@ -23,8 +24,10 @@ struct SearchView: View {
                 if let vm = viewModel { searchContent(vm) }
                 else { ScreenLoadingView() }
             }
+            .walkthroughTarget(id: "discover_llm_search_step3")
         }
         .background(DesignTokens.Background.primary)
+        .walkthroughOverlay(featureId: "llm_search", localize: localization.t)
         .task {
             if viewModel == nil {
                 let vm = SearchViewModel(searchRepository: repos.search, featureFlags: featureFlags)
@@ -67,6 +70,7 @@ struct SearchView: View {
         )
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
+        .walkthroughTarget(id: "discover_llm_search_step2")
     }
 
     // MARK: - Filter Pills
