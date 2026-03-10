@@ -54,7 +54,13 @@
     "expand": "Développer",
     "collapse": "Réduire",
     "upgrade": "Passer à Premium",
-    "skip": "Passer"
+    "skip": "Passer",
+    "dismiss": "Fermer",
+    "goBack": "Retour",
+    "pause": "Pause",
+    "tryAgain": "Reessayer",
+    "backToHome": "Back to Home",
+    "thisContent": "this content"
   },
   "demo": {
     "banner": "MODE DÉMO",
@@ -157,7 +163,18 @@
     "error": "Quelque chose s'est mal passé",
     "tryAgain": "Réessayer",
     "securityNote": "Vos identifiants sont envoyés de manière sécurisée et ne sont jamais stockés sur la TV.",
-    "footer": "Des problèmes ? Assurez-vous d'avoir scanné un code QR récent depuis votre TV."
+    "footer": "Des problèmes ? Assurez-vous d'avoir scanné un code QR récent depuis votre TV.",
+    "almostThere": "Presque la !",
+    "authenticating": "Authentification...",
+    "connected": "Connecte",
+    "expired": "Code expire",
+    "expiredMessage": "Votre code a expire. Veuillez en demander un nouveau.",
+    "header": "Se connecter a la TV",
+    "pleaseSignIn": "Connectez-vous sur votre telephone ou ordinateur",
+    "signInButton": "Se connecter",
+    "signInToTV": "Se connecter a la TV",
+    "subtitle": "Entrez le code affiche sur votre TV",
+    "tvSignedIn": "TV connectee avec succes"
   },
   "googleLogin": {
     "cancelledError": "Connexion Google annulée",
@@ -334,7 +351,11 @@
         "subtitle": "Regardez maintenant",
         "description": "Actualités, affaires courantes et contenu de qualité"
       }
-    }
+    },
+    "enableLocation": "Activer la localisation",
+    "locationPermissionDeniedDescription": "L'acces a la localisation a ete refuse. Activez-le dans les Parametres.",
+    "locationPermissionDescription": "Autorisez l'acces a la localisation pour decouvrir du contenu pres de vous.",
+    "openSettings": "Ouvrir les parametres"
   },
   "search": {
     "title": "Rechercher",
@@ -426,7 +447,8 @@
       "educational": "Éducatif"
     },
     "noPodcasts": "Aucun podcast disponible",
-    "tryLater": "Réessayez plus tard"
+    "tryLater": "Réessayez plus tard",
+    "playLatest": "Lire le dernier"
   },
   "vod": {
     "title": "Films et Séries",
@@ -447,7 +469,10 @@
     },
     "allCategories": "Tout",
     "emptyTitle": "Aucun contenu disponible",
-    "emptyDescription": "Essayez de sélectionner une autre catégorie"
+    "emptyDescription": "Essayez de sélectionner une autre catégorie",
+    "noContent": "No content available",
+    "noContentInCategory": "No content found in this category",
+    "allContent": "All Content"
   },
   "account": {
     "title": "Mon compte",
@@ -522,10 +547,7 @@
     "noStream": "Flux non disponible",
     "loadError": "Échec du chargement du flux",
     "settings": "Paramètres",
-    "subtitles": {
-      "_": "Sous-titres",
-      "translateWord": "Translate word: {{word}}"
-    },
+    "subtitles": "Sous-titres",
     "playbackSpeed": "Vitesse de lecture",
     "quality": "Qualité",
     "auto": "Auto",
@@ -554,13 +576,16 @@
       "split": "Split",
       "togglePanel": "Toggle AI Panel",
       "translate": "Translate",
-      "trivia": "Trivia"
+      "trivia": "Trivia",
+      "triviaToggle": "Trivia"
     },
     "catchup": {
       "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
       "generateSummary": "Generate Summary",
       "summaryTitle": "Summary",
-      "title": "Catch Up"
+      "title": "Catch Up",
+      "keyPoints": "Points cles",
+      "transcript": "Transcription"
     },
     "chat": {
       "title": "Live Chat",
@@ -591,7 +616,14 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "close": "Fermer",
+      "exitFullscreen": "Quitter le plein ecran",
+      "fullscreen": "Plein ecran",
+      "restart": "Redemarrer",
+      "skipBackward": "Reculer",
+      "skipForward": "Avancer",
+      "volume": "Volume"
     },
     "dubbing": {
       "notNow": "Not Now",
@@ -621,7 +653,9 @@
       "set": "Définir la minuterie",
       "remaining": "Sommeil dans {{time}}",
       "extend": "+15 min",
-      "cancel": "Annuler la minuterie"
+      "cancel": "Annuler la minuterie",
+      "off": "Desactive",
+      "setTimer": "Regler la minuterie"
     },
     "openSubs": {
       "title": "Rechercher des sous-titres",
@@ -630,6 +664,28 @@
       "searchFailed": "Recherche échouée. Réessayez.",
       "downloads": "{{count}} téléchargements",
       "noResults": "Aucun sous-titre trouvé"
+    },
+    "dialogue": {
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "placeholder": "Tapez votre message...",
+      "selectCharacter": "Choisir un personnage",
+      "send": "Envoyer",
+      "sharedSession": "Session partagee",
+      "waitingForTurn": "En attente de votre tour...",
+      "yourAvatar": "Votre avatar"
+    },
+    "interaction": {
+      "next": "Suivant",
+      "previous": "Precedent"
+    },
+    "pauseAsk": {
+      "askAgain": "Redemander",
+      "placeholder": "Posez une question sur cette scene...",
+      "resume": "Reprendre",
+      "resumeMovie": "Reprendre le film",
+      "selectCharacter": "Choisir un personnage",
+      "title": "Pause et question"
     }
   },
   "content": {
@@ -741,7 +797,8 @@
     "title": "Liste de lecture",
     "items": "éléments",
     "empty": "Votre liste de lecture est vide",
-    "emptyHint": "Commencez à regarder et les éléments apparaîtront ici"
+    "emptyHint": "Commencez à regarder et les éléments apparaîtront ici",
+    "watched": "watched"
   },
   "plans": {
     "basic": {
@@ -941,7 +998,38 @@
       "licenses": "Licences"
     },
     "copyright": "© {{year}} Bayit+. Tous droits réservés.",
-    "poweredBy": "Propulsé par"
+    "poweredBy": "Propulsé par",
+    "privacyPolicy": "Privacy Policy",
+    "moviesAndSeries": "Movies & Series",
+    "termsOfUse": "Terms of Use",
+    "newsletter": {
+      "description": "Subscribe to our newsletter for the latest updates and exclusive content.",
+      "success": "Thanks for subscribing!",
+      "placeholder": "Enter your email",
+      "title": "Stay Updated"
+    },
+    "accessibility": "Accessibility",
+    "social": {
+      "facebook": "Facebook",
+      "youtube": "YouTube",
+      "twitter": "Twitter",
+      "instagram": "Instagram"
+    },
+    "radioStations": "Radio Stations",
+    "apps": {
+      "title": "Get the App",
+      "getItOn": "Get it on",
+      "appStore": "App Store",
+      "downloadOn": "Download on",
+      "googlePlay": "Google Play"
+    },
+    "contactUs": "Contact Us",
+    "sitemap": "Sitemap",
+    "navigation": "Navigation",
+    "liveTV": "Live TV",
+    "myProfile": "My Profile",
+    "helpAndSupport": "Help & Support",
+    "subscriptions": "Subscriptions"
   },
   "children": {
     "title": "Enfants",
@@ -963,6 +1051,27 @@
       "hebrew": "Hébreu",
       "stories": "Histoires",
       "jewish": "Juif"
+    },
+    "admin": {
+      "pendingModeration": "Pending Moderation",
+      "tagVod": "Tag VOD",
+      "syncPodcasts": "Sync Podcasts",
+      "syncYouTube": "Sync YouTube",
+      "importArchive": "Import Archive.org",
+      "stats": "Kids Content Manager",
+      "seedContent": "Seed Content"
+    },
+    "moderation": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending Review"
+    },
+    "ageRatings": {
+      "5": "Ages 5+",
+      "10": "Ages 10+",
+      "3": "Ages 3+",
+      "7": "Ages 7+",
+      "12": "Ages 12+"
     }
   },
   "judaism": {
@@ -986,6 +1095,19 @@
       "friday": "Vendredi",
       "saturday": "Samedi",
       "noData": "Impossible de charger les horaires du Shabbat"
+    },
+    "erevShabbat": {
+      "prepareFor": "Prepare for Shabbat",
+      "shabbatSongs": "Shabbat Songs",
+      "featuredContent": "Shabbat Content",
+      "shabbatShalom": "Shabbat Shalom!",
+      "inTime": "in {{time}}",
+      "shabbatRecipes": "Recipes",
+      "prayers": "Prayers",
+      "noContent": "Shabbat content coming soon!",
+      "parashaStudy": "Parasha",
+      "title": "Erev Shabbat",
+      "timeUntil": "Time until Shabbat"
     }
   },
   "chatbot": {
@@ -1009,7 +1131,15 @@
       "israeliMovies": "Films israéliens recommandés",
       "whatsOnNow": "Qu'est-ce qui passe maintenant ?",
       "popularPodcasts": "Podcasts populaires"
-    }
+    },
+    "voiceCommands": {
+      "playChess": "Start a chess game with...",
+      "multiContent": "Show side by side...",
+      "showChannels": "Show me channels..."
+    },
+    "showMultipleNotFound": "Could not find the requested content. Please try different names.",
+    "showMultipleSuccess": "Showing {{count}} content items in widgets",
+    "resolvingContent": "Finding your content..."
   },
   "support": {
     "title": "Centre d'aide",
@@ -1024,7 +1154,11 @@
       "title": "Parcourir la documentation",
       "loading": "Chargement de la documentation...",
       "loadError": "Échec du chargement des catégories",
-      "articleCount": "{{count}} articles"
+      "articleCount": "{{count}} articles",
+      "troubleshooting": "Troubleshooting",
+      "features": "Features",
+      "account": "Account",
+      "gettingStarted": "Getting Started"
     },
     "faq": {
       "title": "Questions fréquentes",
@@ -1047,6 +1181,76 @@
       "createTicket": "Créer un ticket",
       "emailTitle": "Support par e-mail",
       "emailDescription": "Vous préférez l'e-mail ? Contactez-nous à support@bayit.tv pour toute question ou préoccupation."
+    },
+    "voice": {
+      "thinking": "Let me think about that...",
+      "listening": "I'm listening...",
+      "listeningNow": "Listening...",
+      "ready": "What would you like to know?",
+      "wakeWordHint": "Say \"Jarvis\" to speak",
+      "speaking": "Speaking...",
+      "error": "Sorry, I didn't catch that. Try again?",
+      "title": "Voice Assistant"
+    },
+    "ticket": {
+      "messagePlaceholder": "Describe your issue in detail...",
+      "error": {
+        "submit": "Failed to create ticket. Please try again.",
+        "required": "Please fill in all required fields"
+      },
+      "categoryLabel": "Category",
+      "priorityLabel": "Priority",
+      "priority": {
+        "urgent": "Urgent",
+        "medium": "Medium",
+        "low": "Low",
+        "high": "High"
+      },
+      "status": {
+        "closed": "Closed",
+        "open": "Open",
+        "in_progress": "In Progress",
+        "resolved": "Resolved"
+      },
+      "message": "Message",
+      "created": "Created",
+      "category": {
+        "feature": "Feature Request",
+        "billing": "Billing",
+        "technical": "Technical",
+        "general": "General"
+      },
+      "subject": "Subject",
+      "submit": "Submit Ticket",
+      "subjectPlaceholder": "Brief description of your issue",
+      "title": "Create Support Ticket"
+    },
+    "wizard": {
+      "role": "Your Guide"
+    },
+    "docs": {
+      "backToList": "Back to documentation",
+      "loadError": "Failed to load document",
+      "loading": "Loading document..."
+    },
+    "tickets": {
+      "loadError": "Failed to load tickets",
+      "filter": {
+        "open": "Open",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "all": "All"
+      },
+      "create": "New Ticket",
+      "createFirst": "Create Your First Ticket",
+      "loading": "Loading tickets...",
+      "empty": "No support tickets yet",
+      "title": "My Support Tickets",
+      "emptyFilter": "No tickets with this status"
+    },
+    "search": {
+      "placeholder": "Search documentation...",
+      "noResults": "No results found"
     }
   },
   "admin": {
@@ -2451,7 +2655,26 @@
     "sources": "Sources",
     "topStory": "À la une",
     "refreshing": "Actualisation...",
-    "lastUpdated": "Dernière mise à jour"
+    "lastUpdated": "Dernière mise à jour",
+    "categories": {
+      "weather": "Weather",
+      "technology": "Technology",
+      "food": "Food",
+      "history": "History",
+      "fashion": "Fashion",
+      "entertainment": "Entertainment",
+      "economy": "Economy",
+      "travel": "Travel",
+      "general": "General",
+      "culture": "Culture",
+      "politics": "Politics",
+      "tech": "Tech",
+      "security": "Security",
+      "expat": "Expat Life",
+      "sports": "Sports",
+      "finance": "Finance",
+      "health": "Health"
+    }
   },
   "cultureClock": {
     "timeIn": "Heure à {{location}}",
@@ -2473,8 +2696,12 @@
       "tech": "Tech",
       "entertainment": "Divertissement",
       "sports": "Sports",
-      "business": "Affaires"
-    }
+      "business": "Affaires",
+      "expat": "Expat Life",
+      "finance": "Finance",
+      "history": "History"
+    },
+    "explore": "Explore {{city}}"
   },
   "profile": {
     "complimentaryPremium": "ACCÈS PREMIUM GRATUIT",
@@ -2484,12 +2711,164 @@
     "phoneUnverified": "Téléphone non vérifié",
     "completeVerification": "Complétez la vérification pour débloquer toutes les fonctionnalités",
     "unlockPremium": "Débloquer les Fonctionnalités Premium",
-    "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives"
+    "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives",
+    "voice": {
+      "operationMode": "Operation Mode",
+      "voiceOnlyDetails": "Say \"Hi Bayit\" to activate. Remote control disabled. Navigate entirely with voice commands.",
+      "constantListening": "Always Listening Mode",
+      "highContrast": "High contrast mode",
+      "operationModeDesc": "Choose how you interact with the app",
+      "voiceFeedbackDesc": "Get voice confirmation when you use the remote or click buttons",
+      "textSize": "Text size",
+      "ttsSpeed": "Speaking Speed",
+      "ttsEnabledDesc": "App will speak responses to your voice commands",
+      "sensitivityLow": "Low (fewer false triggers)",
+      "feedbackExample": "Example: Click a movie → App says \"Playing [Movie Name]\"",
+      "voiceSearchEnabled": "Enable voice search",
+      "silenceThreshold": "Silence Detection",
+      "voiceOnlyInfo": "Voice Only Mode",
+      "autoSubtitleDesc": "Automatically show subtitles when playing content",
+      "holdButtonMode": "Hold Button to Talk",
+      "textSizeSmall": "Small",
+      "wakeWord": "Wake Word Detection",
+      "tts": "Text-to-Speech",
+      "constantListeningPrivacy": "Audio is only sent to servers when speech is detected",
+      "classicDetails": "All voice features disabled. Remote control only.",
+      "sensitivityMedium": "Medium (balanced)",
+      "hybridInfo": "Hybrid Mode",
+      "description": "Hands-free navigation",
+      "accessibility": "Accessibility",
+      "voiceSearchEnabledDesc": "Search for content using your voice",
+      "textSizeMedium": "Medium",
+      "textToSpeech": "Voice Responses",
+      "sensitivity": "Voice Detection Sensitivity",
+      "wakeWordDesc": "Say \"Bayit\" to activate",
+      "ttsVolume": "Voice Volume",
+      "autoSubtitle": "Auto-enable subtitles",
+      "ttsDesc": "AI responses read aloud",
+      "hybridDetails": "Use voice or remote control. Voice feedback on non-voice actions.",
+      "voiceFeedback": "Voice feedback on actions",
+      "title": "Voice Control",
+      "enabled": "Voice Commands",
+      "language": "Voice language",
+      "textSizeLarge": "Large",
+      "highContrastDesc": "Increase contrast for better visibility",
+      "enabledDesc": "Control the app with your voice",
+      "voiceSearch": "Voice Search",
+      "silenceThresholdDesc": "How long to wait after speaking before processing",
+      "sensitivityHigh": "High (most responsive)",
+      "holdButtonModeDesc": "Press and hold the microphone button instead of always listening",
+      "sensitivityDesc": "Adjust how responsive the voice detection is",
+      "classicInfo": "Classic Mode",
+      "ttsEnabled": "Enable voice responses",
+      "constantListeningDesc": "Continuously listen for voice commands without pressing a button",
+      "hybridFeedback": "Interactive Feedback"
+    },
+    "tabs": {
+      "personal": "Personal",
+      "ai": "AI & Voice",
+      "notifications": "Notifications",
+      "security": "Security",
+      "overview": "Overview",
+      "voice": "Voice & Accessibility",
+      "subscription": "Subscription"
+    },
+    "subscription": {
+      "noActivePlan": "No active subscription",
+      "selectPlan": "Select a Plan",
+      "renewsOn": "Renews on",
+      "cancelSubscription": "Cancel Subscription",
+      "currentPlan": "Current Plan",
+      "manageSubscription": "Manage Subscription"
+    },
+    "notifications": "Notifications",
+    "remaining": "remaining",
+    "accountSecurity": "Account Security",
+    "justNow": "Just now",
+    "memberSince": "Member since",
+    "imageTooLarge": "Image is too large. Maximum size is 5MB.",
+    "accountInfo": "Account Information",
+    "ai": {
+      "personalizedRecsDesc": "Content suggestions based on history",
+      "chatbotEnabled": "Enable AI Assistant",
+      "chatbotEnabledDesc": "Get help navigating content",
+      "privacyDesc": "Your data is encrypted and secure",
+      "recommendations": "Recommendations",
+      "chatbot": "AI Assistant",
+      "saveHistoryDesc": "Remember previous conversations",
+      "dataConsent": "Usage Analytics",
+      "personalizedRecs": "Personalized Recommendations",
+      "assistantDesc": "Personalized recommendations and help",
+      "privacyNote": "Your data is encrypted and secure",
+      "dataConsentDesc": "Help improve AI features",
+      "assistant": "AI Assistant",
+      "description": "Configure AI-powered features",
+      "privacy": "Privacy & Data",
+      "title": "AI & Personalization",
+      "saveHistory": "Save Conversation History"
+    },
+    "dangerZone": "Danger Zone",
+    "address": {
+      "line2": "Tel Aviv, Israel 6100000",
+      "line1": "123 Main Street"
+    },
+    "lastLogin": "Last login",
+    "email": "Email",
+    "invalidImageType": "Please select a valid image file (JPEG, PNG, WebP, or GIF)",
+    "role": "Role",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "noRecentActivity": "No recent activity",
+    "editProfile": "Edit Profile",
+    "recentActivity": "Recent Activity",
+    "subscriptionButton": "Subscription",
+    "dropdown": {
+      "downloads": "Downloads",
+      "signOut": "Sign Out",
+      "subscription": "Subscription",
+      "favorites": "Favorites",
+      "myProfile": "My Profile"
+    },
+    "watchTime": "Watch Time",
+    "yesterday": "Yesterday",
+    "notSet": "Not set",
+    "basic": "Basic",
+    "guest": "Guest",
+    "language": "Language",
+    "minutes": "minutes",
+    "hoursAgo": "{{hours}} hours ago",
+    "security": "Security",
+    "logout": "Log Out",
+    "downloads": "Downloads",
+    "changePassword": "Change Password",
+    "aiAssistant": "AI Assistant",
+    "familyPrice": "$12.99/month",
+    "morningRitual": "Morning Ritual",
+    "name": "Name",
+    "favorites": "Favorites",
+    "premiumPrice": "$7.99/month",
+    "admin": "Admin",
+    "connectedDevices": "Connected Devices",
+    "profileDetails": "Profile Details",
+    "watchlist": "Watchlist",
+    "notificationSettings": "Notification Settings",
+    "uploadSuccess": "Avatar updated successfully!",
+    "title": "My Profile",
+    "premium": "Premium",
+    "upgrade": "Upgrade to Premium",
+    "updatePassword": "Update your password",
+    "uploadFailed": "Failed to upload avatar. Please try again.",
+    "voiceSettings": "Voice",
+    "addExtraSecurity": "Add an extra layer of security",
+    "settings": "Settings",
+    "manageDevices": "Manage devices connected to your account",
+    "hours": "hours",
+    "securityNote": "Your account is secured with encrypted authentication",
+    "free": "Free"
   },
   "voiceOnboarding": {
     "welcome": {
-      "title": "Bienvenue au Contrôle Vocal",
-      "description": "Contrôlez Bayit+ avec votre voix pour une expérience mains libres"
+      "title": "Bienvenue dans le controle vocal",
+      "description": "Controlez Bayit+ avec votre voix pour une experience mains libres."
     },
     "features": {
       "voiceCommands": "Commandes Vocales",
@@ -2529,7 +2908,19 @@
       },
       "startUsing": "Commencer à Utiliser le Contrôle Vocal"
     },
-    "skip": "Passer pour l'instant"
+    "skip": "Passer pour l'instant",
+    "buttons": {
+      "back": "Retour"
+    },
+    "completion": {
+      "message": "Les fonctionnalites vocales sont pretes.",
+      "title": "Configuration vocale terminee"
+    },
+    "title": "Configuration vocale",
+    "training": {
+      "message": "Lisez les phrases a haute voix pour entrainer la reconnaissance.",
+      "title": "Entrainement vocal"
+    }
   },
   "portal": {
     "nav": {
@@ -2789,7 +3180,10 @@
       "languageHint": "Sélectionnez 1-3 langues à afficher pour chaque fait",
       "language": "langue",
       "selectLanguage": "Sélectionner cette langue",
-      "deselectLanguage": "Désélectionner cette langue"
+      "deselectLanguage": "Désélectionner cette langue",
+      "enableDescription": "Afficher des questions trivia pendant le visionnage.",
+      "enableTrivia": "Activer le trivia",
+      "title": "Parametres trivia"
     },
     "aiTrivia": "AI Trivia",
     "tellMeMore": "Tell me more",
@@ -2798,7 +3192,23 @@
   },
   "chapters": {
     "chapterLabel": "Chapter {{number}}",
-    "chapter_number": "Chapitre {{number}}"
+    "chapter_number": "Chapitre {{number}}",
+    "categories": {
+      "sports": "Sports",
+      "security": "Security",
+      "conclusion": "Conclusion",
+      "intro": "Introduction",
+      "culture": "Culture",
+      "news": "News",
+      "weather": "Weather",
+      "economy": "Economy",
+      "politics": "Politics"
+    },
+    "current": "Now",
+    "jumpTo": "Jump to",
+    "title": "Chapters",
+    "noChapters": "No chapters available",
+    "generating": "Generating chapters..."
   },
   "recording": {
     "stop": "Arrêter l'Enregistrement",
@@ -3058,7 +3468,8 @@
         "step2": "Tapez votre question ou demande",
         "step3": "Lisez la reponse de l'IA"
       }
-    }
+    },
+    "title": "Discover"
   },
   "byoc": {
     "pageSubtitle": "Apportez votre propre contenu - ajoutez des sources IPTV et de streaming",
@@ -3133,6 +3544,15 @@
       "syncFailed": "Échec de la synchronisation de la source",
       "normalizationFailed": "Le traitement du contenu a échoué",
       "normalizationPollFailed": "Connexion perdue pendant le traitement"
+    },
+    "home": {
+      "title": "Apportez votre propre contenu",
+      "subtitle": "Connectez vos sources IPTV, Plex ou YouTube et profitez des fonctions IA de Bayit+ sur votre propre contenu",
+      "connectButton": "Connecter des sources",
+      "aiFeatures": {
+        "dubbing": "Doublage IA disponible",
+        "subtitles": "Sous-titres en direct disponibles"
+      }
     }
   },
   "voice": {
@@ -3281,6 +3701,996 @@
       "deleteFailed": "Échec de la suppression du foyer",
       "inviteFailed": "Échec de l'envoi de l'invitation",
       "removeFailed": "Échec de la suppression du membre"
+    }
+  },
+  "aiChat": {
+    "retryButton": "Reessayer",
+    "sendButton": "Envoyer",
+    "title": "Chat IA",
+    "voiceButton": "Voix"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "Retour"
+    },
+    "completion": {
+      "message": "C'est pret ! Commencez a explorer les fonctionnalites IA.",
+      "title": "Configuration terminee"
+    },
+    "permissions": {
+      "description": "Accordez les autorisations pour activer les fonctionnalites IA comme la voix et la camera.",
+      "title": "Autorisations"
+    },
+    "personalization": {
+      "description": "Indiquez vos preferences pour personnaliser votre experience IA.",
+      "title": "Personnalisation"
+    },
+    "title": "Configuration IA",
+    "welcome": {
+      "description": "Bayit+ utilise l'IA pour ameliorer votre experience avec le doublage, les sous-titres et plus.",
+      "title": "Bienvenue dans Bayit+ IA"
+    }
+  },
+  "auth": {
+    "biometricEnrollEnable": "Activer",
+    "biometricEnrollMessage": "Utilisez Face ID ou l'empreinte pour vous connecter plus vite.",
+    "biometricEnrollSkip": "Passer",
+    "biometricEnrollTitle": "Activer la connexion biometrique",
+    "biometricSignIn": "Se connecter avec la biometrie",
+    "signOut": "Se deconnecter",
+    "loginToWatch": "Please sign in to watch {{title}}",
+    "loginRequired": "Login Required",
+    "signUp": "Sign Up",
+    "login": "Login"
+  },
+  "auth_device_authorized": "Appareil autorise",
+  "auth_device_code_expired": "Code expire",
+  "auth_device_get_new_code": "Obtenir un nouveau code",
+  "auth_device_manual_login": "Se connecter manuellement",
+  "auth_device_visit_uri": "Visitez l'URL affichee sur votre TV",
+  "avatar": {
+    "tapToSpeak": "Appuyez pour parler",
+    "title": "Avatar"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "Audio double",
+      "originalAudio": "Audio original",
+      "title": "Mixeur audio"
+    },
+    "settings_title": "Parametres de doublage",
+    "target_language": "Langue cible",
+    "voiceSelector": {
+      "selected": "Selectionne",
+      "subtitle": "Choisissez une voix pour le doublage",
+      "title": "Selection de voix"
+    }
+  },
+  "go_back": "Retour",
+  "miniPlayer": {
+    "closePlayer": "Fermer le lecteur",
+    "skipBackward": "Reculer",
+    "skipForward": "Avancer"
+  },
+  "retry": "Reessayer",
+  "search_hint": "Rechercher chaines, films, series...",
+  "search_no_results": "Aucun resultat trouve",
+  "search_prompt": "Que cherchez-vous ?",
+  "subscription_required": "Abonnement requis",
+  "subscription_upsell_tv": "Mettez a niveau pour regarder sur TV",
+  "talkback": {
+    "title": "Talkback"
+  },
+  "voiceAssistant": {
+    "fabLabel": "Assistant vocal",
+    "modal": {
+      "cancel": "Annuler",
+      "setupMessage": "Configurez la reconnaissance vocale pour utiliser l'assistant.",
+      "setupRequired": "Configuration requise",
+      "startSetup": "Demarrer la configuration",
+      "title": "Assistant vocal"
+    }
+  },
+  "voiceCommand": {
+    "executing": "Execution...",
+    "listening": "Ecoute...",
+    "noMatch": "Aucune correspondance",
+    "recognized": "Reconnu"
+  },
+  "voiceDecision": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "matched": "Correspondance"
+  },
+  "voiceSearch": {
+    "listening": "Ecoute...",
+    "noResults": "Aucun resultat",
+    "tapToSpeak": "Appuyez pour parler",
+    "title": "Recherche vocale"
+  },
+  "voiceSettings": {
+    "language": "Langue",
+    "speechRate": "Vitesse de parole",
+    "title": "Parametres vocaux",
+    "ttsProvider": "Fournisseur TTS",
+    "voiceMode": "Mode vocal",
+    "voiceSelection": "Selection de voix",
+    "wakeWord": "Mot d'activation"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "Retour"
+    },
+    "calibration": {
+      "description": "Parlez normalement pour calibrer le microphone.",
+      "listening": "Ecoute...",
+      "micButton": "Demarrer l'enregistrement",
+      "resultTitle": "Resultat de calibration",
+      "stopButton": "Arreter l'enregistrement",
+      "tapToStart": "Appuyez pour commencer la calibration",
+      "title": "Calibration du microphone"
+    },
+    "complete": {
+      "message": "La configuration de l'assistant vocal est terminee.",
+      "title": "Configuration terminee"
+    },
+    "language": {
+      "description": "Selectionnez votre langue preferee pour les commandes vocales.",
+      "title": "Langue vocale"
+    },
+    "permission": {
+      "description": "L'acces au microphone est necessaire pour les fonctionnalites vocales.",
+      "granted": "Autorisation accordee",
+      "requestButton": "Accorder l'autorisation",
+      "title": "Autorisation du microphone"
+    },
+    "title": "Assistant de configuration vocale"
+  },
+  "watch_now": "Regarder maintenant",
+  "friends": {
+    "lastGame": "Last game: {{time}}",
+    "requestAccepted": "Friend request accepted!",
+    "noFriends": "No friends yet",
+    "remove": "Remove",
+    "requestRejected": "Friend request rejected",
+    "removeFailed": "Failed to remove friend",
+    "add": "Add Friend",
+    "rejectFailed": "Failed to reject request",
+    "requestSent": "Friend request sent!",
+    "noResultsDesc": "Try searching with a different name",
+    "reject": "Reject",
+    "friendsLabel": "Friends",
+    "requests": "Requests",
+    "incomingRequests": "Incoming Requests",
+    "friendsSince": "Friends since {{date}}",
+    "requestFailed": "Failed to send request",
+    "friendsCount": "{{count}} friends",
+    "myFriends": "My Friends",
+    "noFriendsDesc": "Search for players and send friend requests",
+    "requestCancelled": "Friend request cancelled",
+    "title": "Friends & Opponents",
+    "noIncoming": "No incoming requests",
+    "alreadyFriends": "Friends",
+    "noResults": "No players found",
+    "outgoingRequests": "Outgoing Requests",
+    "pendingLabel": "Pending",
+    "noOutgoing": "No outgoing requests",
+    "friendRemoved": "Friend removed",
+    "acceptFailed": "Failed to accept request",
+    "findPlayers": "Find Players",
+    "accept": "Accept",
+    "searchFailed": "Failed to search users",
+    "cancel": "Cancel",
+    "sentAt": "Sent {{time}}",
+    "subtitle": "Connect with players and challenge friends",
+    "searchPlaceholder": "Search by name...",
+    "gamesCount": "{{count}} games",
+    "cancelFailed": "Failed to cancel request"
+  },
+  "breadcrumbs": {
+    "watchlist": "Watchlist",
+    "watching": "Watching",
+    "podcast": "Podcast",
+    "movie": "Movie",
+    "station": "Station",
+    "series": "Series",
+    "downloads": "Downloads",
+    "channel": "Channel"
+  },
+  "flows": {
+    "basicInfo": "Basic Information",
+    "subtitle": "Personalized content experiences for every moment",
+    "flowName": "Flow Name",
+    "activeNow": "Active Now",
+    "examples": {
+      "shabbatPrep": {
+        "desc": "Set the mood for Shabbat with special content",
+        "name": "Shabbat Preparation"
+      },
+      "morningRoutine": {
+        "desc": "Start your day with news, weather, and uplifting content",
+        "name": "Morning Routine"
+      },
+      "title": "Example Flows",
+      "coffeeBreak": {
+        "desc": "Quick entertainment for a short break",
+        "name": "Coffee Break"
+      },
+      "eveningWindDown": {
+        "desc": "Relax with calming music and light entertainment",
+        "name": "Evening Wind Down"
+      },
+      "sunsetVibes": {
+        "name": "Sunset Vibes",
+        "desc": "Weekend relaxation with music and ambient content"
+      },
+      "subtitle": "Tap to use as a template"
+    },
+    "days": {
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "selectedCount": "{{count}} days selected",
+      "tuesday": "Tuesday",
+      "everyday": "Every day",
+      "fridayShort": "Fri",
+      "selectAll": "Select All",
+      "noneSelected": "No days selected",
+      "wednesday": "Wednesday",
+      "weekdays": "Weekdays",
+      "title": "Active Days",
+      "tuesdayShort": "Tue",
+      "deselectAll": "Deselect All",
+      "thursday": "Thursday",
+      "monday": "Monday",
+      "mondayShort": "Mon",
+      "wednesdayShort": "Wed",
+      "thursdayShort": "Thu",
+      "sundayShort": "Sun",
+      "everyDay": "Every day",
+      "saturdayShort": "Sat",
+      "weekends": "Weekends"
+    },
+    "contentPicker": {
+      "tabs": {
+        "vod": "On Demand",
+        "radio": "Radio",
+        "live": "Live TV",
+        "podcast": "Podcasts"
+      },
+      "loadMore": "Load More",
+      "title": "Add Content to Flow",
+      "noResults": "No content found",
+      "addSelected": "Add Selected",
+      "search": "Search content...",
+      "alreadyAdded": "Already in flow",
+      "selected": "{{count}} selected"
+    },
+    "trigger": {
+      "locationBased": "Times based on your location",
+      "comingSoon": "Holiday triggers coming soon",
+      "thisWeek": "This week: {{day}} at {{time}}",
+      "holiday": "Holiday",
+      "type": "Trigger Type",
+      "shabbat": "Shabbat Evening",
+      "skipShabbat": "Skip on Shabbat",
+      "time": "Time-based",
+      "skipShabbatDesc": "Don't run this flow on Friday evening or Saturday",
+      "shabbatOffset": "Minutes before candle lighting",
+      "shabbatOffsetDesc": "How many minutes before Shabbat should this flow start?",
+      "calculatedTime": "Calculated time"
+    },
+    "validation": {
+      "nameRequired": "Flow name is required",
+      "startTimeRequired": "Start time is required",
+      "daysRequired": "Select at least one day",
+      "endTimeRequired": "End time is required",
+      "contentRequired": "Add content or enable AI",
+      "timeRange": "End time must be after start time"
+    },
+    "flowItems": {
+      "maxReached": "Maximum {{max}} items reached",
+      "count": "{{count}} items",
+      "title": "Flow Content",
+      "moveUp": "Move Up",
+      "more": "more items",
+      "order": "Order",
+      "confirmRemove": "Click again to confirm removal",
+      "moveDown": "Move Down",
+      "remove": "Remove",
+      "empty": "No content yet. Click Add Content to get started."
+    },
+    "editFlowDesc": "Update your flow settings and content",
+    "endTime": "End Time",
+    "aiEnabledDesc": "Let AI curate content based on your preferences",
+    "aiGenerated": "AI Generated",
+    "autoPlay": "Auto Play",
+    "aiEnabled": "AI Curation",
+    "system": "System",
+    "items": "items",
+    "deleteFlow": "Delete Flow",
+    "editFlow": "Edit Flow",
+    "aiBrief": "AI Brief",
+    "createFlow": "Create Flow",
+    "aiBriefEnabled": "AI Brief Enabled",
+    "evening": "Evening",
+    "startTime": "Start Time",
+    "type": "Type",
+    "createFlowDesc": "Design your personalized content experience",
+    "createHint": "Create your first personalized flow",
+    "systemFlows": "Ready-Made Flows",
+    "details": "Details",
+    "shabbatTrigger": "Shabbat Evening",
+    "manual": "Manual",
+    "customFlow": "Custom Flow",
+    "autoPlayDesc": "Automatically play next item when current one ends",
+    "description": "Description",
+    "title": "Flows",
+    "options": "Options",
+    "tv": {
+      "useCompanion": "For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer."
+    },
+    "descriptionPlaceholder": "What is this flow for?",
+    "addContent": "Add Content",
+    "startFlow": "Start Flow",
+    "systemFlow": "System Flow",
+    "aiBriefDesc": "Get a personalized AI-generated summary before the flow starts",
+    "content": "Content",
+    "customFlows": "My Flows",
+    "custom": "Custom",
+    "shabbat": "Shabbat",
+    "schedule": "Schedule",
+    "actions": "Actions",
+    "flowNamePlaceholder": "e.g., My Morning Routine",
+    "createCustom": "Create Custom Flow",
+    "morning": "Morning",
+    "start": "Start",
+    "noCustomFlows": "No custom flows yet",
+    "skipToday": "Skip Today"
+  },
+  "taxonomy": {
+    "sections": {
+      "youngsters": "Youngsters",
+      "series": "Series",
+      "music": "Music",
+      "podcasts": "Podcasts",
+      "kids": "Kids",
+      "documentaries": "Documentaries",
+      "movies": "Movies",
+      "live": "Live TV"
+    },
+    "subcategories": {
+      "israel-news": "Israel News",
+      "food-culture": "Food Culture",
+      "torah-stories": "Torah Stories",
+      "bedtime-stories": "Bedtime Stories",
+      "teen-torah": "Teen Torah",
+      "film-culture": "Film Culture",
+      "learning-hebrew": "Learning Hebrew",
+      "memes": "Memes",
+      "kids-series": "Kids Series",
+      "nursery-rhymes": "Nursery Rhymes",
+      "bar-bat-mitzvah": "Bar/Bat Mitzvah",
+      "world-news": "World News",
+      "teen-series": "Teen Series",
+      "teen-movies": "Teen Movies",
+      "interactive": "Interactive",
+      "coding": "Coding",
+      "sports-news": "Sports News",
+      "young-science": "Young Science",
+      "gaming": "Gaming",
+      "art-culture": "Art Culture",
+      "career-prep": "Career Prep",
+      "jewish-history": "Jewish History",
+      "kids-movies": "Kids Movies",
+      "tiktok-trends": "TikTok Trends",
+      "life-skills": "Life Skills",
+      "jewish-holidays": "Jewish Holidays",
+      "nature-animals": "Nature & Animals",
+      "science-news": "Science News",
+      "music-culture": "Music Culture",
+      "hebrew-songs": "Hebrew Songs",
+      "study-help": "Study Help",
+      "math-fun": "Fun Math",
+      "viral-videos": "Viral Videos",
+      "gadgets": "Gadgets"
+    }
+  },
+  "youngsters": {
+    "categories": {
+      "sports": "Sports",
+      "all": "All",
+      "entertainment": "Entertainment",
+      "tech": "Technology",
+      "judaism": "Judaism",
+      "music": "Music",
+      "news": "News",
+      "trending": "Trending",
+      "educational": "Educational",
+      "culture": "Culture"
+    },
+    "moderation": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending Review"
+    },
+    "ageGroups": {
+      "middle-school": "Middle School (12-14)",
+      "high-school": "High School (15-17)"
+    },
+    "tryAnotherCategory": "Try selecting another category",
+    "admin": {
+      "stats": "Youngsters Content Manager",
+      "importArchive": "Import Archive.org",
+      "syncYouTube": "Sync YouTube",
+      "syncPodcasts": "Sync Podcasts",
+      "tagVod": "Tag VOD",
+      "pendingModeration": "Pending Moderation",
+      "seedContent": "Seed Content"
+    },
+    "confirm": "Confirm",
+    "title": "Youngsters",
+    "noContent": "No content available",
+    "items": "items",
+    "emptyHint": "Try another category",
+    "empty": "No content available",
+    "parentCode": "Parent code",
+    "wrongCode": "Incorrect code",
+    "exitYoungstersMode": "Exit Youngsters Mode",
+    "exitDescription": "Enter parent code to exit"
+  },
+  "help": {
+    "actions": {
+      "search": "Search Help",
+      "support": "Contact Support",
+      "docs": "Documentation",
+      "tutorial": "View Tutorial",
+      "faq": "FAQ"
+    },
+    "skipTutorial": "Skip tutorial",
+    "categories": {
+      "developer": "Developer API",
+      "admin": "Admin Guide",
+      "parents": "For Parents",
+      "judaism": "Judaism",
+      "platform-guides": "Platform Guides",
+      "getting-started": "Getting Started",
+      "features": "Features",
+      "troubleshooting": "Troubleshooting",
+      "account": "Account"
+    },
+    "faq": {
+      "q4": "How do I cancel my subscription?",
+      "a4": "You can cancel your subscription anytime through Settings > Subscription > Cancel Plan. You'll continue to have access until the end of your billing period.",
+      "title": "Frequently Asked Questions",
+      "q1": "How do I change my subscription plan?",
+      "q3": "Why isn't my video playing?",
+      "a3": "Check your internet connection. If the problem persists, try clearing the app cache or restarting the app.",
+      "a1": "Go to Settings > Subscription to view and change your current plan. You can upgrade or downgrade at any time.",
+      "q2": "How do I download content for offline viewing?",
+      "a2": "Tap the download icon on any content to save it for offline viewing. Downloads are available on mobile devices only."
+    },
+    "subtitle": "How can we help you?",
+    "onboarding": {
+      "profiles": {
+        "description": "Create profiles for each family member with personalized recommendations",
+        "title": "Family Profiles"
+      },
+      "voice": {
+        "title": "Voice Control",
+        "description": "Say 'Bayit' to control the app with your voice"
+      },
+      "vod": {
+        "description": "Browse movies, series, and documentaries anytime",
+        "title": "On-Demand Content"
+      },
+      "welcome": {
+        "title": "Welcome to Bayit+",
+        "description": "Your home for Israeli entertainment, anywhere in the world"
+      },
+      "liveTv": {
+        "description": "Watch Israeli channels live, including news, sports, and entertainment",
+        "title": "Live TV"
+      }
+    },
+    "openHelp": "Open help menu",
+    "howTo": "How to use",
+    "previous": "Previous",
+    "search": {
+      "noResultsHint": "Try different keywords or browse categories",
+      "popular": "Popular",
+      "recent": "Recent",
+      "placeholder": "Search help...",
+      "noResults": "No results found for \"{{query}}\""
+    },
+    "contactSupport": "Contact Support",
+    "chatAvailable": "Available 24/7",
+    "email": "Email Support",
+    "openTooltip": "Open help tooltip",
+    "getStarted": "Get Started",
+    "chat": "Live Chat",
+    "next": "Next",
+    "stillNeedHelp": "Still need help?",
+    "relatedArticles": "Related articles",
+    "phone": "Phone Support"
+  },
+  "chess": {
+    "offline": "Offline",
+    "joinFailed": "Failed to join game",
+    "sendingInvite": "Sending game invite to {{name}}...",
+    "chat": {
+      "title": "Chat",
+      "inputPlaceholder": "Type a message..."
+    },
+    "acceptInvite": "Accept Invite",
+    "bot": "Chess Assistant",
+    "copyCode": "Copy Code",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "newGame": "New Game",
+    "playVsFriend": "Play vs Friend",
+    "noFriendsYet": "No friends yet",
+    "opponentTurn": "Opponent's Turn",
+    "invalidGameCode": "Invalid game code. Must be 6 characters.",
+    "online": "Online",
+    "botHint": "Tag @bot in your message to get chess advice from our AI assistant",
+    "declineDraw": "Decline Draw",
+    "gameOver": "Game Over",
+    "yourTurn": "Your Turn",
+    "noMoves": "No moves yet",
+    "offerDraw": "Offer Draw",
+    "join": "Join",
+    "unmute": "Unmute",
+    "whiteCaptured": "White Captured",
+    "playedAsWhite": "Played as White",
+    "gameMode": "Game Mode",
+    "playedAsBlack": "Played as Black",
+    "difficulty": "Difficulty",
+    "create": "Create",
+    "playVsBot": "Play vs Bot",
+    "inviteReceived": "{{name}} invited you to a chess game!",
+    "moveHistory": "Move History",
+    "speaking": "participants",
+    "chatPlaceholder": "Type a message... (@bot for advice)",
+    "stalemate": "Stalemate",
+    "chooseColor": "Choose Your Color",
+    "joinGame": "Join Game",
+    "resign": "Resign",
+    "joinByGameCode": "Join by Game Code",
+    "acceptDraw": "Accept Draw",
+    "waitingForOpponent": "Waiting for opponent...",
+    "createGame": "Create New Game",
+    "subtitle": "Play chess with friends and family around the world",
+    "hard": "Hard",
+    "medium": "Medium",
+    "enterGameCode": "Enter Game Code",
+    "blackTurn": "Black's Turn",
+    "title": "Chess",
+    "declineInvite": "Decline Invite",
+    "draw": "Draw",
+    "black": "Black",
+    "whiteTurn": "White's Turn",
+    "resigned": "Game Resigned",
+    "checkmate": "Checkmate!",
+    "drawOffered": "Draw Offered",
+    "inviteFailed": "Could not find that user. Please check the name and try again.",
+    "challenge": "Challenge",
+    "gameCode": "Game Code",
+    "showHints": "Show Guide Hints",
+    "joinInvite": "Join Game",
+    "inviteSent": "Game invite sent to {{name}}! Game code: {{code}}",
+    "welcome": "Welcome to Chess",
+    "chessBot": "Chess Bot",
+    "challengeFriend": "Challenge Friend",
+    "white": "White",
+    "mute": "Mute",
+    "you": "You",
+    "easy": "Easy",
+    "blackCaptured": "Black Captured",
+    "reconnecting": "Reconnecting...",
+    "opponent": "Opponent"
+  },
+  "widgets": {
+    "noSystemWidgets": "No system widgets available",
+    "addToCollection": "Add to My Widgets",
+    "contentTypes": {
+      "widget": "Widget",
+      "iframe": "Web Content",
+      "podcast": "Podcast",
+      "liveChannel": "Live Channel",
+      "vod": "Video",
+      "custom": "Custom",
+      "radio": "Radio"
+    },
+    "form": {
+      "cancel": "Cancel",
+      "iframe": "iFrame",
+      "basicInfo": "Basic Information",
+      "mutedByDefault": "Muted by Default",
+      "titlePlaceholder": "Widget Title",
+      "iframeUrlRequired": "iFrame URL is required",
+      "widgetOrder": "Widget Order",
+      "iframeUrl": "iFrame URL",
+      "orderPlaceholder": "Order (0 = first)",
+      "selectContent": "Select Content (Channels, Podcasts, Shows, etc.)",
+      "content": "Content",
+      "change": "Change",
+      "closable": "Closable",
+      "draggable": "Draggable",
+      "saveWidget": "Save Widget",
+      "fromLibrary": "From Library",
+      "descriptionPlaceholder": "Description (optional)",
+      "titleRequired": "Widget Title is required",
+      "behavior": "Behavior",
+      "iframeTitle": "iFrame Title",
+      "positionSize": "Position & Size",
+      "saving": "Saving...",
+      "title": "Create Widget",
+      "iconPlaceholder": "Icon emoji (e.g., 📺)"
+    },
+    "added": "Added",
+    "systemWidgetsHint": "Browse and add widgets to your collection",
+    "add": "Add",
+    "show": "Show",
+    "myWidgetsHint": "Widgets you have created",
+    "myWidgets": "My Personal Widgets",
+    "systemWidgets": "System Widgets",
+    "emptyHint": "Your widgets will appear here",
+    "personalWidgets": "My Widgets",
+    "itemsTotal": "total widgets",
+    "empty": "No widgets yet",
+    "hidden": "Hidden",
+    "remove": "Remove",
+    "emptyPersonalHint": "Create your first personal widget or add system widgets above",
+    "removeFromCollection": "Remove from My Widgets",
+    "emptyPersonal": "No personal widgets yet"
+  },
+  "recordings": {
+    "expires": "Expires",
+    "subtitle": "View and manage your recorded live streams",
+    "noRecordingsHint": "Start recording from any live channel!",
+    "viewInMyRecordings": "View in My Recordings",
+    "startFailed": "Failed to start recording. Please try again.",
+    "error": "Recording Error",
+    "page": "Page",
+    "recording": "Recording",
+    "subtitlesAvailable": "Subtitles Available",
+    "maxDuration": "Max Duration",
+    "deleteFailed": "Failed to delete recording",
+    "totalRecordings": "Total Recordings",
+    "deleteRecording": "Delete Recording",
+    "record": "Record",
+    "savedSuccess": "Recording saved successfully! Duration: {{duration}}",
+    "confirmDelete": "Are you sure you want to delete this recording? This action cannot be undone.",
+    "storageUsed": "Storage Used",
+    "recordingSaved": "Recording Saved!",
+    "noRecordings": "No Recordings Yet",
+    "title": "My Recordings",
+    "stopFailed": "Failed to stop recording. Please try again."
+  },
+  "olorin": {
+    "errors": {
+      "create_session_failed": "Failed to create session",
+      "add_transcript_failed": "Failed to add transcript",
+      "webhook_secret_not_configured": "Webhook secret not configured",
+      "session_invalid_status": "Session is {status}, cannot add transcript",
+      "indexing_failed": "Indexing failed",
+      "get_references_failed": "Failed to get references",
+      "no_updates_provided": "No updates provided",
+      "reference_not_found": "Reference '{reference_id}' not found",
+      "enrichment_failed": "Enrichment failed",
+      "capability_not_enabled": "Capability '{capability}' not enabled for this partner",
+      "missing_api_key": "Missing {header} header",
+      "session_not_found": "Session not found",
+      "webhook_url_not_configured": "Webhook URL not configured",
+      "partner_not_found": "Partner not found",
+      "session_different_partner": "Session belongs to different partner",
+      "detection_failed": "Detection failed",
+      "generate_recap_failed": "Failed to generate recap",
+      "max_sessions_reached": "Maximum concurrent sessions ({limit}) reached",
+      "search_failed": "Search failed",
+      "explanation_failed": "Failed to get explanation",
+      "invalid_api_key": "Invalid API key",
+      "target_language_not_supported": "Target language '{language}' not supported. Supported: {supported}",
+      "webhook_config_failed": "Failed to configure webhook",
+      "source_language_not_supported": "Source language '{language}' not supported. Supported: {supported}",
+      "capability_disabled": "Capability '{capability}' is currently disabled",
+      "partner_registration_failed": "Failed to register partner"
+    }
+  },
+  "watchParty": {
+    "createTitle": "Create Watch Party",
+    "errors": {
+      "invalidCode": "Invalid code",
+      "partyFull": "Party is full",
+      "partyEnded": "Party has ended",
+      "joinFailed": "Failed to join party",
+      "createFailed": "Failed to create party",
+      "connectionError": "Connection error"
+    },
+    "textOnlyMode": "Text Chat Only",
+    "sendMessage": "Send Message",
+    "audio": {
+      "unmute": "Unmute",
+      "noAudio": "Audio not available",
+      "speaking": "Speaking",
+      "mute": "Mute",
+      "connecting": "Connecting to audio..."
+    },
+    "title": "Watch Party",
+    "endParty": "End Party",
+    "userLeft": "{{name}} left",
+    "hostPaused": "Host Paused",
+    "synced": "Synced",
+    "enterCode": "Enter Room Code",
+    "participants": "Participants",
+    "syncing": "Syncing...",
+    "options": {
+      "syncPlayback": "Sync Playback",
+      "chatEnabled": "Enable Chat"
+    },
+    "end": "End Party",
+    "copyCode": "Copy Code",
+    "userJoined": "{{name}} joined",
+    "host": "Host",
+    "join": "Join Party",
+    "connecting": "Connecting...",
+    "chat": "Chat",
+    "create": "Create Party",
+    "codeCopied": "Code Copied!",
+    "partyEnded": "The party has ended",
+    "joinTitle": "Join Party",
+    "leave": "Leave Party",
+    "active": "Party Active",
+    "typeMessage": "Type a message...",
+    "you": "You",
+    "roomCode": "Room Code"
+  },
+  "telAviv": {
+    "categories": {
+      "beaches": "Beaches",
+      "events": "Events",
+      "culture": "Culture & Art",
+      "nightlife": "Nightlife",
+      "tech": "Tech & Startups",
+      "music": "Music Scene",
+      "general": "Tel Aviv",
+      "food": "Food & Dining"
+    },
+    "noContent": "No Tel Aviv content available",
+    "subtitle": "The city that never stops",
+    "title": "Tel Aviv Connection",
+    "beachLive": "Beach Webcam",
+    "sources": "Sources"
+  },
+  "empty": {
+    "noResults": "No results found",
+    "tryAnotherCategory": "Try selecting another category",
+    "noContent": "No content available",
+    "noPodcasts": "No podcasts available",
+    "tryLater": "Try again later"
+  },
+  "stats": {
+    "rating": "Rating",
+    "lost": "Lost",
+    "achievements": "Achievements",
+    "winStreak": "Win Streak",
+    "wins": "Wins",
+    "headToHead": "Head to Head",
+    "overall": "Overall Record",
+    "draws": "Draws",
+    "winRate": "Win Rate",
+    "totalGamesPlayed": "Total: {{count}} games",
+    "yourWins": "Your Wins",
+    "noGames": "No games played yet",
+    "recentGames": "Recent Games",
+    "peakRating": "Peak Rating",
+    "peak": "Peak",
+    "draw": "Draw",
+    "matchHistory": "Match History",
+    "performance": "Performance",
+    "currentRating": "Current Rating",
+    "statistics": "Statistics",
+    "gamesPlayed": "Games Played",
+    "won": "Won",
+    "currentStreak": "Current Streak",
+    "totalGames": "Total Games",
+    "theirWins": "Their Wins",
+    "losses": "Losses",
+    "bestStreak": "Best Streak",
+    "moves": "moves"
+  },
+  "passkey": {
+    "deleteError": "Failed to delete passkey",
+    "unsupported": "Passkeys are not supported on this device",
+    "lastUsed": "Last used",
+    "qr": {
+      "expired": "QR code expired. Please try again.",
+      "scanWithPhone": "Scan with your phone",
+      "error": "Failed to generate QR code",
+      "instruction": "Open the camera on your phone and scan the QR code to authenticate",
+      "useQR": "Use Phone to Unlock"
+    },
+    "auth": {
+      "authenticating": "Authenticating...",
+      "success": "Content Unlocked!",
+      "error": "Authentication failed. Please try again.",
+      "title": "Unlock Content",
+      "description": "Use your fingerprint, face, or device PIN to unlock private movies and series.",
+      "cancelled": "Authentication was cancelled",
+      "unlock": "Unlock with Passkey"
+    },
+    "registerError": "Failed to register passkey",
+    "cancelled": "Passkey operation was cancelled",
+    "unlock": "Unlock",
+    "deleteConfirmText": "This passkey will no longer be able to unlock content. You can always add it again later.",
+    "noPasskeys": "No passkeys registered yet. Add one to unlock private content.",
+    "fetchError": "Failed to load passkeys",
+    "manager": {
+      "subtitle": "Manage your passkeys for secure content access",
+      "title": "Passkeys"
+    },
+    "unlockContent": "Unlock Private Content",
+    "never": "Never",
+    "created": "Created",
+    "addPasskey": "Add Passkey",
+    "unlockDescription": "Use your passkey to access private movies and series",
+    "unknownDevice": "Unknown Device",
+    "deleteConfirmTitle": "Delete Passkey?"
+  },
+  "placeholder": {
+    "roomCode": "ABCD1234",
+    "chat": "Type your message...",
+    "number": "0",
+    "email": "your@email.com",
+    "datetime": "YYYY-MM-DDTHH:mm",
+    "filter": {
+      "userId": "Enter user ID"
+    },
+    "chatMessage": "Type here...",
+    "pin": "••••",
+    "password": "••••••••",
+    "dateRange": {
+      "to": "To (YYYY-MM-DD)",
+      "from": "From (YYYY-MM-DD)"
+    },
+    "deepLink": "bayitplus://content/123",
+    "amount": {
+      "price": "0.00",
+      "min": "Min",
+      "max": "Max"
+    },
+    "time": {
+      "end": "10:00",
+      "start": "08:00"
+    },
+    "scheduleDateTime": "YYYY-MM-DDTHH:mm"
+  },
+  "ritual": {
+    "finish": "Finish",
+    "typeLive": "Live",
+    "israelTime": "Israel Time",
+    "greeting": "Good Morning!",
+    "recommendation": "We recommend starting with morning news then switching to radio",
+    "noContentNow": "No content available right now",
+    "typeRadio": "Radio",
+    "day": "Day",
+    "preparingRitual": "Preparing your morning ritual...",
+    "skipToday": "Skip for Today",
+    "typeVideo": "Video",
+    "israelUpdate": "It's afternoon in Israel, news is reporting on ongoing developments",
+    "letsStart": "Let's Start",
+    "title": "Morning Ritual"
+  },
+  "chat": {
+    "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
+    "title": "Bayit+ Assistant"
+  },
+  "voiceMode": {
+    "hybrid": "Hybrid",
+    "classic": "Classic",
+    "classicDesc": "No voice - remote control only",
+    "hybridDesc": "Voice + Remote - voice feedback on actions",
+    "voiceOnly": "Voice Only",
+    "voiceOnlyDesc": "No remote control - full voice navigation"
+  },
+  "watch": {
+    "episodesList": "Episodes",
+    "notFound": "Content not found",
+    "deleteEpisode": "Delete Episode",
+    "cast": "Cast",
+    "episodes": "Episodes",
+    "like": "Like",
+    "confirmDeleteEpisode": "Delete this episode?",
+    "backToHome": "Back to Home",
+    "now": "Now",
+    "addToList": "Add to List",
+    "related": "Related Content",
+    "share": "Share",
+    "schedule": "Schedule"
+  },
+  "jerusalem": {
+    "categories": {
+      "jerusalem-events": "Jerusalem Events",
+      "holy-sites": "Holy Sites",
+      "general": "Jerusalem",
+      "diaspora-connection": "Diaspora Connection",
+      "idf-ceremony": "IDF Ceremonies",
+      "kotel": "Western Wall"
+    },
+    "noContent": "No Jerusalem content available",
+    "title": "Jerusalem Connection",
+    "sources": "Sources",
+    "subtitle": "Stay connected to the heart of Israel",
+    "kotelLive": "Western Wall Live"
+  },
+  "trending": {
+    "noTopics": "No trending topics available",
+    "categories": {
+      "culture": "Culture",
+      "politics": "Politics",
+      "health": "Health",
+      "tech": "Tech",
+      "security": "Security",
+      "entertainment": "Entertainment",
+      "general": "General",
+      "sports": "Sports",
+      "weather": "Weather",
+      "economy": "Economy"
+    },
+    "title": "What's Trending in Israel",
+    "sources": "Sources",
+    "topStory": "TOP STORY"
+  },
+  "notFound": {
+    "orTry": "Or try:",
+    "title": "Page Not Found",
+    "homeButton": "Go Home",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "liveChannel": "Live",
+    "podcastsLabel": "Podcasts",
+    "searchButton": "Search",
+    "vodLabel": "Movies"
+  },
+  "live": {
+    "categories": {
+      "entertainment": "Entertainment",
+      "kids": "Kids",
+      "all": "All",
+      "news": "News",
+      "music": "Music",
+      "sports": "Sports"
+    },
+    "title": "Live TV",
+    "tryLater": "Try again later",
+    "noChannels": "No channels available",
+    "next": "Next:"
+  },
+  "profiles": {
+    "manageProfiles": "Manage Profiles",
+    "wrongPin": "Incorrect PIN",
+    "loading": "Loading profiles...",
+    "enterPin": "Enter PIN",
+    "manage": "Manage Profiles",
+    "whoIsWatching": "Who's Watching?",
+    "selectError": "Error selecting profile",
+    "addProfile": "Add Profile"
+  },
+  "clock": {
+    "israel": "Israel",
+    "erevShabbat": "Erev Shabbat",
+    "parasha": "Parasha",
+    "local": "Local",
+    "shabbatShalom": "Shabbat Shalom!",
+    "candleLighting": "Candle Lighting"
+  },
+  "video": {
+    "deleteConfirm": "Delete this episode?",
+    "closeTrailer": "Close Trailer",
+    "watchTrailer": "Watch Trailer"
+  },
+  "components": {
+    "select": {
+      "default": "Select..."
     }
   }
 }

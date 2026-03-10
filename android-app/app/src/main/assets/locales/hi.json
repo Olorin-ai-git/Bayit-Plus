@@ -54,7 +54,13 @@
     "expand": "विस्तार करें",
     "collapse": "संक्षिप्त करें",
     "upgrade": "प्रीमियम में अपग्रेड करें",
-    "skip": "छोड़ें"
+    "skip": "छोड़ें",
+    "dismiss": "[hi] Dismiss",
+    "goBack": "[hi] Go Back",
+    "pause": "[hi] Pause",
+    "tryAgain": "[hi] Try Again",
+    "backToHome": "[hi] Back to Home",
+    "thisContent": "[hi] this content"
   },
   "demo": {
     "banner": "डेमो मोड",
@@ -125,7 +131,15 @@
     "send": "भेजें",
     "createAccount": "खाता बनाएं",
     "bayitThinking": "Bayit सोच रहा है...",
-    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई"
+    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई",
+    "step3": "[hi] Login on your phone",
+    "generatingQR": "[hi] Generating QR code...",
+    "step4": "[hi] TV logs in automatically!",
+    "step1": "[hi] Open camera on your phone",
+    "voicePlaceholder": "[hi] Type your response...",
+    "howItWorks": "[hi] How it works:",
+    "qrDescription": "[hi] Scan this QR code with your phone to login without typing",
+    "step2": "[hi] Scan the QR code above"
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -138,7 +152,29 @@
     "success": "सफलता!",
     "goToHome": "होम जाएं",
     "error": "कुछ गलत हुआ",
-    "tryAgain": "पुनः प्रयास करें"
+    "tryAgain": "पुनः प्रयास करें",
+    "almostThere": "[hi] Almost there!",
+    "authenticating": "[hi] Authenticating...",
+    "connected": "[hi] Connected",
+    "expired": "[hi] Code Expired",
+    "expiredMessage": "[hi] Your sign-in code has expired. Please request a new one.",
+    "header": "[hi] Sign In to TV",
+    "pleaseSignIn": "[hi] Please sign in on your phone or computer",
+    "signInButton": "[hi] Sign In",
+    "signInToTV": "[hi] Sign In to TV",
+    "subtitle": "[hi] Enter the code shown on your TV screen",
+    "tvSignedIn": "[hi] TV signed in successfully",
+    "loginDescription": "[hi] Enter your credentials to authorize your TV",
+    "authFailed": "[hi] Authorization failed.",
+    "verifyingDescription": "[hi] Connecting to your TV...",
+    "authorizingDescription": "[hi] Logging you in on your TV...",
+    "enterCredentials": "[hi] Please enter your credentials to authorize your TV.",
+    "securityNote": "[hi] Your credentials are sent securely and are never stored on the TV.",
+    "footer": "[hi] Having trouble? Make sure you scanned a fresh QR code from your TV.",
+    "notLoggedIn": "[hi] You are not logged in on this device.",
+    "authorizing": "[hi] Authorizing...",
+    "verifying": "[hi] Verifying...",
+    "successDescription": "[hi] Your TV is now logged in. You can close this page."
   },
   "register": {
     "title": "खाता बनाएं",
@@ -168,8 +204,17 @@
       "passwordMismatch": "पासवर्ड मेल नहीं खाते",
       "acceptTerms": "आपको शर्तें स्वीकार करनी होंगी",
       "fillAllFields": "कृपया सभी फ़ील्ड भरें",
-      "registrationFailed": "पंजीकरण विफल।"
-    }
+      "registrationFailed": "पंजीकरण विफल।",
+      "googleFailed": "[hi] Sign up with Google failed. Please try again."
+    },
+    "placeholders": {
+      "confirmPassword": "[hi] Enter password again",
+      "email": "[hi] your@email.com",
+      "fullName": "[hi] John Doe",
+      "password": "[hi] At least 8 characters"
+    },
+    "fullName": "[hi] Full Name",
+    "loginLink": "[hi] Login"
   },
   "nav": {
     "home": "होम",
@@ -208,7 +253,8 @@
     "household": "परिवार",
     "messages": "संदेश",
     "myContent": "मेरी सामग्री",
-    "social": "सामाजिक"
+    "social": "सामाजिक",
+    "plans": "[hi] Plans"
   },
   "epg": {
     "title": "TV गाइड",
@@ -223,7 +269,37 @@
     "noChannels": "कोई चैनल उपलब्ध नहीं",
     "recordProgram": "प्रोग्राम रिकॉर्ड करें",
     "channel": "चैनल",
-    "searchPlaceholder": "प्रोग्राम, चैनल खोजें..."
+    "searchPlaceholder": "प्रोग्राम, चैनल खोजें...",
+    "aiDisclaimer": "[hi] Powered by Claude AI. Results may vary based on program data availability.",
+    "scheduledRecordingNotSupported": "[hi] Scheduled recordings are not yet supported. Only immediate recordings are available.",
+    "premiumRequiredMessage": "[hi] Smart Search uses AI to understand your questions. Upgrade to Premium to access this feature.",
+    "smartSearch": "[hi] Smart Search",
+    "interpretationTitle": "[hi] What I understood",
+    "subtitleLanguage": "[hi] Subtitle Language",
+    "goBack": "[hi] ← {{hours}}h",
+    "smartSearchSubtitle": "[hi] Ask questions in natural language",
+    "exampleQuery2": "[hi] What comedy shows are airing this week?",
+    "searching": "[hi] Searching...",
+    "lowStorage": "[hi] Low Storage Warning",
+    "toggleTimezone": "[hi] Toggle Timezone",
+    "exampleQuery1": "[hi] Show me all shows with actress Tali Sharon tonight",
+    "scheduleRecording": "[hi] Schedule Recording",
+    "recordingFailed": "[hi] Failed to start/schedule recording",
+    "lowStorageMessage": "[hi] You're running low on storage space. Consider deleting old recordings.",
+    "local": "[hi] Local",
+    "availableSpace": "[hi] Available Space",
+    "goForward": "[hi] {{hours}}h →",
+    "il": "[hi] IL",
+    "errorLoading": "[hi] Could not load TV guide data",
+    "smartSearchPlaceholder": "[hi] e.g., Show me all shows with actress Tali Sharon tonight",
+    "storageEstimate": "[hi] Storage Estimate",
+    "tryThese": "[hi] Try these examples",
+    "noResultsFound": "[hi] No programs found matching your query",
+    "exampleQuery4": "[hi] Show me all news programs tomorrow morning",
+    "enableSubtitles": "[hi] Enable Subtitles",
+    "exampleQuery3": "[hi] Find documentaries about history on Channel 11",
+    "premiumRequired": "[hi] Premium Feature",
+    "searchWithAI": "[hi] Search with AI"
   },
   "home": {
     "continueWatching": "देखना जारी रखें",
@@ -244,7 +320,35 @@
     "trendingInIsrael": "इज़राइल में ट्रेंडिंग",
     "categories": "श्रेणियां",
     "nearYou": "आसपास के इज़राइली",
-    "betaExclusive": "बीटा एक्सक्लूसिव"
+    "betaExclusive": "बीटा एक्सक्लूसिव",
+    "enableLocation": "[hi] Enable Location",
+    "locationPermissionDeniedDescription": "[hi] Location access was denied. Enable it in Settings to see content near you.",
+    "locationPermissionDescription": "[hi] Allow location access to discover content near you.",
+    "openSettings": "[hi] Open Settings",
+    "telAvivConnection": "[hi] Tel Aviv Connection",
+    "carousel": {
+      "shtisel": {
+        "description": "[hi] Follow the Shtisel family in the ultra-Orthodox neighborhood of Jerusalem",
+        "subtitle": "[hi] All Seasons Available",
+        "title": "[hi] Shtisel"
+      },
+      "tehran": {
+        "title": "[hi] Tehran",
+        "subtitle": "[hi] Season 2",
+        "description": "[hi] A Mossad agent deep in Iran on a dangerous mission"
+      },
+      "fauda": {
+        "subtitle": "[hi] Season 4 - Now Streaming",
+        "title": "[hi] Fauda",
+        "description": "[hi] The hit Israeli series returns for a fourth season full of suspense and action"
+      },
+      "live": {
+        "description": "[hi] News, current affairs and quality content",
+        "title": "[hi] Live - Kan 11",
+        "subtitle": "[hi] Watch Now"
+      }
+    },
+    "jerusalemConnection": "[hi] Jerusalem Connection"
   },
   "search": {
     "title": "खोजें",
@@ -263,8 +367,24 @@
       "vod": "फ़िल्में और सीरीज़",
       "live": "चैनल",
       "radio": "रेडियो",
-      "podcast": "पॉडकास्ट"
-    }
+      "podcast": "पॉडकास्ट",
+      "moviesAndSeries": "[hi] Movies & Series",
+      "channels": "[hi] Channels",
+      "podcasts": "[hi] Podcasts"
+    },
+    "tryDifferent": "[hi] Try different search terms",
+    "suggestions": {
+      "kids": "[hi] Kids",
+      "liveTV": "[hi] Live TV",
+      "news": "[hi] News",
+      "series": "[hi] Series",
+      "sports": "[hi] Sports",
+      "movies": "[hi] Movies"
+    },
+    "promptDescription": "[hi] Search for your favorite content or use voice search",
+    "promptTitle": "[hi] What are you looking for?",
+    "resultsFor": "[hi] results for",
+    "resultsFound": "[hi] {{count}} results found for \"{{query}}\""
   },
   "liveTV": {
     "title": "लाइव TV",
@@ -320,7 +440,8 @@
       "sports": "खेल",
       "history": "इतिहास",
       "educational": "शैक्षिक"
-    }
+    },
+    "playLatest": "[hi] Play Latest"
   },
   "vod": {
     "title": "फ़िल्में और सीरीज़",
@@ -341,7 +462,10 @@
       "action": "एक्शन",
       "documentary": "डॉक्यूमेंट्री",
       "kids": "बच्चे"
-    }
+    },
+    "noContent": "[hi] No content available",
+    "noContentInCategory": "[hi] No content found in this category",
+    "allContent": "[hi] All Content"
   },
   "account": {
     "title": "मेरा खाता",
@@ -370,7 +494,147 @@
     "systemFlows": "तैयार फ्लो",
     "customFlows": "मेरे फ्लो",
     "createFlow": "फ्लो बनाएं",
-    "editFlow": "फ्लो संपादित करें"
+    "editFlow": "फ्लो संपादित करें",
+    "trigger": {
+      "locationBased": "[hi] Times based on your location",
+      "holiday": "[hi] Holiday",
+      "shabbat": "[hi] Shabbat Evening",
+      "shabbatOffset": "[hi] Minutes before candle lighting",
+      "thisWeek": "[hi] This week: {{day}} at {{time}}",
+      "type": "[hi] Trigger Type",
+      "shabbatOffsetDesc": "[hi] How many minutes before Shabbat should this flow start?",
+      "calculatedTime": "[hi] Calculated time",
+      "skipShabbat": "[hi] Skip on Shabbat",
+      "comingSoon": "[hi] Holiday triggers coming soon",
+      "time": "[hi] Time-based",
+      "skipShabbatDesc": "[hi] Don't run this flow on Friday evening or Saturday"
+    },
+    "days": {
+      "everyday": "[hi] Every day",
+      "selectAll": "[hi] Select All",
+      "wednesday": "[hi] Wednesday",
+      "title": "[hi] Active Days",
+      "thursday": "[hi] Thursday",
+      "monday": "[hi] Monday",
+      "saturdayShort": "[hi] Sat",
+      "friday": "[hi] Friday",
+      "sunday": "[hi] Sunday",
+      "selectedCount": "[hi] {{count}} days selected",
+      "fridayShort": "[hi] Fri",
+      "deselectAll": "[hi] Deselect All",
+      "wednesdayShort": "[hi] Wed",
+      "tuesday": "[hi] Tuesday",
+      "weekdays": "[hi] Weekdays",
+      "thursdayShort": "[hi] Thu",
+      "everyDay": "[hi] Every day",
+      "saturday": "[hi] Saturday",
+      "noneSelected": "[hi] No days selected",
+      "tuesdayShort": "[hi] Tue",
+      "mondayShort": "[hi] Mon",
+      "sundayShort": "[hi] Sun",
+      "weekends": "[hi] Weekends"
+    },
+    "contentPicker": {
+      "loadMore": "[hi] Load More",
+      "title": "[hi] Add Content to Flow",
+      "noResults": "[hi] No content found",
+      "search": "[hi] Search content...",
+      "tabs": {
+        "radio": "[hi] Radio",
+        "podcast": "[hi] Podcasts",
+        "live": "[hi] Live TV",
+        "vod": "[hi] On Demand"
+      },
+      "addSelected": "[hi] Add Selected",
+      "alreadyAdded": "[hi] Already in flow",
+      "selected": "[hi] {{count}} selected"
+    },
+    "autoPlay": "[hi] Auto Play",
+    "examples": {
+      "coffeeBreak": {
+        "desc": "[hi] Quick entertainment for a short break",
+        "name": "[hi] Coffee Break"
+      },
+      "sunsetVibes": {
+        "name": "[hi] Sunset Vibes",
+        "desc": "[hi] Weekend relaxation with music and ambient content"
+      },
+      "subtitle": "[hi] Tap to use as a template",
+      "shabbatPrep": {
+        "desc": "[hi] Set the mood for Shabbat with special content",
+        "name": "[hi] Shabbat Preparation"
+      },
+      "morningRoutine": {
+        "desc": "[hi] Start your day with news, weather, and uplifting content",
+        "name": "[hi] Morning Routine"
+      },
+      "eveningWindDown": {
+        "desc": "[hi] Relax with calming music and light entertainment",
+        "name": "[hi] Evening Wind Down"
+      },
+      "title": "[hi] Example Flows"
+    },
+    "flowItems": {
+      "title": "[hi] Flow Content",
+      "moveUp": "[hi] Move Up",
+      "order": "[hi] Order",
+      "moveDown": "[hi] Move Down",
+      "remove": "[hi] Remove",
+      "count": "[hi] {{count}} items",
+      "maxReached": "[hi] Maximum {{max}} items reached",
+      "more": "[hi] more items",
+      "confirmRemove": "[hi] Click again to confirm removal",
+      "empty": "[hi] No content yet. Click Add Content to get started."
+    },
+    "createFlowDesc": "[hi] Design your personalized content experience",
+    "shabbatTrigger": "[hi] Shabbat Evening",
+    "customFlow": "[hi] Custom Flow",
+    "addContent": "[hi] Add Content",
+    "startFlow": "[hi] Start Flow",
+    "editFlowDesc": "[hi] Update your flow settings and content",
+    "endTime": "[hi] End Time",
+    "aiGenerated": "[hi] AI Generated",
+    "items": "[hi] items",
+    "type": "[hi] Type",
+    "manual": "[hi] Manual",
+    "options": "[hi] Options",
+    "tv": {
+      "useCompanion": "[hi] For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer."
+    },
+    "systemFlow": "[hi] System Flow",
+    "schedule": "[hi] Schedule",
+    "createCustom": "[hi] Create Custom Flow",
+    "aiBriefDesc": "[hi] Get a personalized AI-generated summary before the flow starts",
+    "basicInfo": "[hi] Basic Information",
+    "aiEnabledDesc": "[hi] Let AI curate content based on your preferences",
+    "validation": {
+      "startTimeRequired": "[hi] Start time is required",
+      "endTimeRequired": "[hi] End time is required",
+      "contentRequired": "[hi] Add content or enable AI",
+      "timeRange": "[hi] End time must be after start time",
+      "nameRequired": "[hi] Flow name is required",
+      "daysRequired": "[hi] Select at least one day"
+    },
+    "aiEnabled": "[hi] AI Curation",
+    "system": "[hi] System",
+    "createHint": "[hi] Create your first personalized flow",
+    "details": "[hi] Details",
+    "description": "[hi] Description",
+    "actions": "[hi] Actions",
+    "morning": "[hi] Morning",
+    "noCustomFlows": "[hi] No custom flows yet",
+    "flowName": "[hi] Flow Name",
+    "deleteFlow": "[hi] Delete Flow",
+    "aiBrief": "[hi] AI Brief",
+    "aiBriefEnabled": "[hi] AI Brief Enabled",
+    "evening": "[hi] Evening",
+    "startTime": "[hi] Start Time",
+    "autoPlayDesc": "[hi] Automatically play next item when current one ends",
+    "descriptionPlaceholder": "[hi] What is this flow for?",
+    "content": "[hi] Content",
+    "custom": "[hi] Custom",
+    "shabbat": "[hi] Shabbat",
+    "flowNamePlaceholder": "[hi] e.g., My Morning Routine"
   },
   "profile": {
     "title": "मेरी प्रोफ़ाइल",
@@ -394,7 +658,145 @@
     "phoneUnverified": "फोन सत्यापित नहीं",
     "completeVerification": "सभी सुविधाएं अनलॉक करने के लिए सत्यापन पूरा करें",
     "unlockPremium": "प्रीमियम सुविधाएं अनलॉक करें",
-    "unlockPremiumDescription": "विशेष सामग्री और सुविधाओं का आनंद लेने के लिए अपग्रेड करें"
+    "unlockPremiumDescription": "विशेष सामग्री और सुविधाओं का आनंद लेने के लिए अपग्रेड करें",
+    "voice": {
+      "voiceOnlyDetails": "[hi] Say \"Hi Bayit\" to activate. Remote control disabled. Navigate entirely with voice commands.",
+      "constantListening": "[hi] Always Listening Mode",
+      "highContrast": "[hi] High contrast mode",
+      "ttsSpeed": "[hi] Speaking Speed",
+      "ttsEnabledDesc": "[hi] App will speak responses to your voice commands",
+      "feedbackExample": "[hi] Example: Click a movie → App says \"Playing [Movie Name]\"",
+      "holdButtonMode": "[hi] Hold Button to Talk",
+      "textSizeSmall": "[hi] Small",
+      "wakeWord": "[hi] Wake Word Detection",
+      "constantListeningPrivacy": "[hi] Audio is only sent to servers when speech is detected",
+      "hybridInfo": "[hi] Hybrid Mode",
+      "voiceSearchEnabledDesc": "[hi] Search for content using your voice",
+      "textToSpeech": "[hi] Voice Responses",
+      "wakeWordDesc": "[hi] Say \"Bayit\" to activate",
+      "ttsVolume": "[hi] Voice Volume",
+      "hybridDetails": "[hi] Use voice or remote control. Voice feedback on non-voice actions.",
+      "enabled": "[hi] Voice Commands",
+      "language": "[hi] Voice language",
+      "voiceSearch": "[hi] Voice Search",
+      "classicInfo": "[hi] Classic Mode",
+      "constantListeningDesc": "[hi] Continuously listen for voice commands without pressing a button",
+      "sensitivityLow": "[hi] Low (fewer false triggers)",
+      "voiceOnlyInfo": "[hi] Voice Only Mode",
+      "accessibility": "[hi] Accessibility",
+      "sensitivity": "[hi] Voice Detection Sensitivity",
+      "autoSubtitle": "[hi] Auto-enable subtitles",
+      "sensitivityHigh": "[hi] High (most responsive)",
+      "hybridFeedback": "[hi] Interactive Feedback",
+      "operationModeDesc": "[hi] Choose how you interact with the app",
+      "voiceSearchEnabled": "[hi] Enable voice search",
+      "silenceThreshold": "[hi] Silence Detection",
+      "autoSubtitleDesc": "[hi] Automatically show subtitles when playing content",
+      "tts": "[hi] Text-to-Speech",
+      "classicDetails": "[hi] All voice features disabled. Remote control only.",
+      "ttsDesc": "[hi] AI responses read aloud",
+      "title": "[hi] Voice Control",
+      "textSizeLarge": "[hi] Large",
+      "highContrastDesc": "[hi] Increase contrast for better visibility",
+      "enabledDesc": "[hi] Control the app with your voice",
+      "holdButtonModeDesc": "[hi] Press and hold the microphone button instead of always listening",
+      "sensitivityDesc": "[hi] Adjust how responsive the voice detection is",
+      "ttsEnabled": "[hi] Enable voice responses",
+      "operationMode": "[hi] Operation Mode",
+      "voiceFeedbackDesc": "[hi] Get voice confirmation when you use the remote or click buttons",
+      "textSize": "[hi] Text size",
+      "sensitivityMedium": "[hi] Medium (balanced)",
+      "description": "[hi] Hands-free navigation",
+      "textSizeMedium": "[hi] Medium",
+      "voiceFeedback": "[hi] Voice feedback on actions",
+      "silenceThresholdDesc": "[hi] How long to wait after speaking before processing"
+    },
+    "remaining": "[hi] remaining",
+    "accountSecurity": "[hi] Account Security",
+    "justNow": "[hi] Just now",
+    "dangerZone": "[hi] Danger Zone",
+    "address": {
+      "line2": "[hi] Tel Aviv, Israel 6100000",
+      "line1": "[hi] 123 Main Street"
+    },
+    "lastLogin": "[hi] Last login",
+    "ai": {
+      "chatbot": "[hi] AI Assistant",
+      "personalizedRecs": "[hi] Personalized Recommendations",
+      "chatbotEnabled": "[hi] Enable AI Assistant",
+      "recommendations": "[hi] Recommendations",
+      "dataConsentDesc": "[hi] Help improve AI features",
+      "assistant": "[hi] AI Assistant",
+      "privacy": "[hi] Privacy & Data",
+      "saveHistory": "[hi] Save Conversation History",
+      "privacyDesc": "[hi] Your data is encrypted and secure",
+      "saveHistoryDesc": "[hi] Remember previous conversations",
+      "privacyNote": "[hi] Your data is encrypted and secure",
+      "personalizedRecsDesc": "[hi] Content suggestions based on history",
+      "chatbotEnabledDesc": "[hi] Get help navigating content",
+      "dataConsent": "[hi] Usage Analytics",
+      "assistantDesc": "[hi] Personalized recommendations and help",
+      "description": "[hi] Configure AI-powered features",
+      "title": "[hi] AI & Personalization"
+    },
+    "minutes": "[hi] minutes",
+    "downloads": "[hi] Downloads",
+    "aiAssistant": "[hi] AI Assistant",
+    "familyPrice": "[hi] $12.99/month",
+    "uploadSuccess": "[hi] Avatar updated successfully!",
+    "updatePassword": "[hi] Update your password",
+    "voiceSettings": "[hi] Voice",
+    "addExtraSecurity": "[hi] Add an extra layer of security",
+    "manageDevices": "[hi] Manage devices connected to your account",
+    "tabs": {
+      "personal": "[hi] Personal",
+      "subscription": "[hi] Subscription",
+      "notifications": "[hi] Notifications",
+      "security": "[hi] Security",
+      "overview": "[hi] Overview",
+      "voice": "[hi] Voice & Accessibility",
+      "ai": "[hi] AI & Voice"
+    },
+    "subscription": {
+      "selectPlan": "[hi] Select a Plan",
+      "renewsOn": "[hi] Renews on",
+      "currentPlan": "[hi] Current Plan",
+      "manageSubscription": "[hi] Manage Subscription",
+      "noActivePlan": "[hi] No active subscription",
+      "cancelSubscription": "[hi] Cancel Subscription"
+    },
+    "accountInfo": "[hi] Account Information",
+    "invalidImageType": "[hi] Please select a valid image file (JPEG, PNG, WebP, or GIF)",
+    "recentActivity": "[hi] Recent Activity",
+    "subscriptionButton": "[hi] Subscription",
+    "dropdown": {
+      "signOut": "[hi] Sign Out",
+      "myProfile": "[hi] My Profile",
+      "favorites": "[hi] Favorites",
+      "downloads": "[hi] Downloads",
+      "subscription": "[hi] Subscription"
+    },
+    "language": "[hi] Language",
+    "morningRitual": "[hi] Morning Ritual",
+    "favorites": "[hi] Favorites",
+    "admin": "[hi] Admin",
+    "connectedDevices": "[hi] Connected Devices",
+    "uploadFailed": "[hi] Failed to upload avatar. Please try again.",
+    "hours": "[hi] hours",
+    "role": "[hi] Role",
+    "noRecentActivity": "[hi] No recent activity",
+    "guest": "[hi] Guest",
+    "hoursAgo": "[hi] {{hours}} hours ago",
+    "premiumPrice": "[hi] $7.99/month",
+    "notifications": "[hi] Notifications",
+    "imageTooLarge": "[hi] Image is too large. Maximum size is 5MB.",
+    "twoFactorAuth": "[hi] Two-Factor Authentication",
+    "watchTime": "[hi] Watch Time",
+    "yesterday": "[hi] Yesterday",
+    "watchlist": "[hi] Watchlist",
+    "settings": "[hi] Settings",
+    "securityNote": "[hi] Your account is secured with encrypted authentication",
+    "free": "[hi] Free"
   },
   "settings": {
     "title": "सेटिंग्स",
@@ -425,7 +827,22 @@
     "privacyPolicy": "गोपनीयता नीति",
     "termsOfService": "सेवा की शर्तें",
     "about": "के बारे में",
-    "replayTour": "फीचर टूर दोबारा देखें"
+    "replayTour": "फीचर टूर दोबारा देखें",
+    "tapToShow": "[hi] Tap to show",
+    "chatTranslation": "[hi] Chat Translation",
+    "tapToHide": "[hi] Tap to hide",
+    "visibleSections": "[hi] Visible Sections",
+    "resetToDefault": "[hi] Reset to Default",
+    "homePageSections": "[hi] Home Page Sections",
+    "resetConfirmMessage": "[hi] Are you sure you want to reset home page sections to their default configuration?",
+    "dragToReorder": "[hi] Drag to reorder",
+    "sectionHidden": "[hi] Section hidden",
+    "autoTranslateDescription": "[hi] Automatically translate chat messages to your preferred language",
+    "autoTranslate": "[hi] Auto-translate messages",
+    "configureSections": "[hi] Configure which sections appear on your home page",
+    "sectionShown": "[hi] Section shown",
+    "hiddenSections": "[hi] Hidden Sections",
+    "display": "[hi] Display"
   },
   "player": {
     "loading": "लोड हो रहा है...",
@@ -436,10 +853,7 @@
     "noStream": "स्ट्रीम उपलब्ध नहीं",
     "loadError": "स्ट्रीम लोड करने में विफल",
     "settings": "सेटिंग्स",
-    "subtitles": {
-      "_": "सबटाइटल",
-      "translateWord": "Translate word: {{word}}"
-    },
+    "subtitles": "[hi] Subtitles",
     "playbackSpeed": "प्लेबैक स्पीड",
     "quality": "गुणवत्ता",
     "auto": "ऑटो",
@@ -458,13 +872,16 @@
       "split": "Split",
       "togglePanel": "Toggle AI Panel",
       "translate": "Translate",
-      "trivia": "Trivia"
+      "trivia": "Trivia",
+      "triviaToggle": "[hi] Trivia"
     },
     "catchup": {
       "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
       "generateSummary": "Generate Summary",
       "summaryTitle": "Summary",
-      "title": "Catch Up"
+      "title": "Catch Up",
+      "keyPoints": "[hi] Key Points",
+      "transcript": "[hi] Transcript"
     },
     "chat": {
       "title": "Live Chat",
@@ -495,7 +912,14 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "close": "[hi] Close",
+      "exitFullscreen": "[hi] Exit Fullscreen",
+      "fullscreen": "[hi] Fullscreen",
+      "restart": "[hi] Restart",
+      "skipBackward": "[hi] Skip Backward",
+      "skipForward": "[hi] Skip Forward",
+      "volume": "[hi] Volume"
     },
     "dubbing": {
       "notNow": "Not Now",
@@ -525,7 +949,9 @@
       "set": "टाइमर सेट करें",
       "remaining": "{{time}} में स्लीप",
       "extend": "+15 मिनट",
-      "cancel": "टाइमर रद्द करें"
+      "cancel": "टाइमर रद्द करें",
+      "off": "[hi] Off",
+      "setTimer": "[hi] Set Sleep Timer"
     },
     "openSubs": {
       "title": "सबटाइटल खोजें",
@@ -534,7 +960,39 @@
       "searchFailed": "खोज विफल। पुनः प्रयास करें।",
       "downloads": "{{count}} डाउनलोड",
       "noResults": "कोई सबटाइटल नहीं मिला"
-    }
+    },
+    "dialogue": {
+      "cancel": "[hi] Cancel",
+      "close": "[hi] Close",
+      "placeholder": "[hi] Type your message...",
+      "selectCharacter": "[hi] Select Character",
+      "send": "[hi] Send",
+      "sharedSession": "[hi] Shared Session",
+      "waitingForTurn": "[hi] Waiting for your turn...",
+      "yourAvatar": "[hi] Your Avatar"
+    },
+    "interaction": {
+      "next": "[hi] Next",
+      "previous": "[hi] Previous"
+    },
+    "pauseAsk": {
+      "askAgain": "[hi] Ask Again",
+      "placeholder": "[hi] Ask about this scene...",
+      "resume": "[hi] Resume",
+      "resumeMovie": "[hi] Resume Movie",
+      "selectCharacter": "[hi] Select Character",
+      "title": "[hi] Pause & Ask"
+    },
+    "nextChapter": "[hi] Next chapter",
+    "subscription": {
+      "upgradeInfo": "[hi] Upgrade your subscription to access premium content",
+      "requiredTitle": "[hi] Subscription Required",
+      "upgrade": "[hi] Upgrade Now",
+      "requiredMessage": "[hi] requires a paid subscription"
+    },
+    "previousChapter": "[hi] Previous chapter",
+    "skipBackward": "[hi] Skip backward 30 seconds",
+    "skipForward": "[hi] Skip forward 30 seconds"
   },
   "content": {
     "play": "चलाएं",
@@ -560,7 +1018,16 @@
     "watchTrailer": "ट्रेलर देखें",
     "youMayAlsoLike": "आपको यह भी पसंद आ सकता है",
     "relatedContent": "संबंधित सामग्री",
-    "notFound": "सामग्री नहीं मिली"
+    "notFound": "सामग्री नहीं मिली",
+    "availableSubtitles": "[hi] Available Subtitles",
+    "previewPlaying": "[hi] Preview playing",
+    "imdbRating": "[hi] IMDB Rating",
+    "noEpisodesAvailable": "[hi] No episodes available to play",
+    "subtitleSelected": "[hi] Selected: {{language}}",
+    "ep": "[hi] Ep",
+    "trailerPlaying": "[hi] Trailer playing",
+    "votes": "[hi] votes",
+    "loadingSeries": "[hi] Loading series information..."
   },
   "errors": {
     "networkError": "नेटवर्क त्रुटि",
@@ -568,18 +1035,45 @@
     "tryAgain": "पुनः प्रयास करें",
     "offline": {
       "title": "इंटरनेट कनेक्शन नहीं",
-      "message": "आप वर्तमान में ऑफ़लाइन हैं।"
+      "message": "आप वर्तमान में ऑफ़लाइन हैं।",
+      "ttsMessage": "[hi] No internet connection. You are now in offline mode."
     },
     "online": {
       "title": "कनेक्शन बहाल",
-      "message": "आप वापस ऑनलाइन हैं।"
+      "message": "आप वापस ऑनलाइन हैं।",
+      "ttsMessage": "[hi] Internet connection restored."
     },
     "title": "त्रुटि",
     "networkUnavailable": "नेटवर्क अनुपलब्ध",
     "no_audio_url": "ऑडियो URL उपलब्ध नहीं",
     "connection_failed": "कनेक्शन विफल",
     "quota_exceeded": "कोटा पार हो गया",
-    "server_error": "सर्वर त्रुटि"
+    "server_error": "सर्वर त्रुटि",
+    "api": {
+      "networkTimeout": "[hi] Unable to connect to our servers. Please check your connection.",
+      "unknown": "[hi] Something went wrong. Please try again.",
+      "offlineMessage": "[hi] You are offline. Please check your internet connection.",
+      "requestFailed": "[hi] Something went wrong. Please try again.",
+      "serverError": "[hi] Our servers are having issues. Please try again later.",
+      "rateLimit": "[hi] You are making too many requests. Please wait a moment.",
+      "notFound": "[hi] The content you are looking for is not available.",
+      "unauthorized": "[hi] Please log in to continue.",
+      "badRequest": "[hi] Something went wrong. Please try again.",
+      "forbidden": "[hi] You do not have permission to access this content."
+    },
+    "buttons": {
+      "cancel": "[hi] Cancel",
+      "ok": "[hi] OK",
+      "retry": "[hi] Retry"
+    },
+    "widget": {
+      "loadFailed": "[hi] Unable to load widget. Please try again."
+    },
+    "voice": {
+      "commandFailed": "[hi] Voice command failed. Please try again.",
+      "recognitionFailed": "[hi] I didn't understand that. Please try again.",
+      "permissionDenied": "[hi] Microphone access is required for voice commands. Please enable it in Settings."
+    }
   },
   "favorites": {
     "title": "पसंदीदा",
@@ -609,7 +1103,8 @@
       "judaism": "यहूदी धर्म",
       "podcasts": "पॉडकास्ट",
       "radio": "रेडियो"
-    }
+    },
+    "watched": "[hi] watched"
   },
   "children": {
     "title": "बच्चे",
@@ -625,7 +1120,34 @@
       "hebrew": "हिब्रू",
       "stories": "कहानियां",
       "jewish": "यहूदी"
-    }
+    },
+    "parentCode": "[hi] Parent code",
+    "tryAnotherCategory": "[hi] Try selecting another category",
+    "admin": {
+      "stats": "[hi] Kids Content Manager",
+      "syncPodcasts": "[hi] Sync Podcasts",
+      "pendingModeration": "[hi] Pending Moderation",
+      "syncYouTube": "[hi] Sync YouTube",
+      "seedContent": "[hi] Seed Content",
+      "tagVod": "[hi] Tag VOD",
+      "importArchive": "[hi] Import Archive.org"
+    },
+    "ageRatings": {
+      "7": "[hi] Ages 7+",
+      "12": "[hi] Ages 12+",
+      "5": "[hi] Ages 5+",
+      "3": "[hi] Ages 3+",
+      "10": "[hi] Ages 10+"
+    },
+    "moderation": {
+      "pending": "[hi] Pending Review",
+      "approved": "[hi] Approved",
+      "rejected": "[hi] Rejected"
+    },
+    "wrongCode": "[hi] Incorrect code",
+    "exitDescription": "[hi] Enter parent code to exit",
+    "noContent": "[hi] No content available",
+    "confirm": "[hi] Confirm"
   },
   "judaism": {
     "title": "यहूदी धर्म",
@@ -637,15 +1159,62 @@
       "shabbatShalom": "शब्बत शालोम!",
       "candleLighting": "मोमबत्ती जलाना",
       "havdalah": "हवदला",
-      "parashat": "पराशत"
-    }
+      "parashat": "पराशत",
+      "friday": "[hi] Friday",
+      "endsIn": "[hi] Shabbat ends in",
+      "shabbatMode": "[hi] Shabbat Mode",
+      "saturday": "[hi] Saturday",
+      "noData": "[hi] Unable to load Shabbat times"
+    },
+    "erevShabbat": {
+      "prepareFor": "[hi] Prepare for Shabbat",
+      "shabbatRecipes": "[hi] Recipes",
+      "title": "[hi] Erev Shabbat",
+      "featuredContent": "[hi] Shabbat Content",
+      "inTime": "[hi] in {{time}}",
+      "noContent": "[hi] Shabbat content coming soon!",
+      "shabbatSongs": "[hi] Shabbat Songs",
+      "shabbatShalom": "[hi] Shabbat Shalom!",
+      "prayers": "[hi] Prayers",
+      "parashaStudy": "[hi] Parasha",
+      "timeUntil": "[hi] Time until Shabbat"
+    },
+    "categories": {
+      "news": "[hi] Jewish News",
+      "community": "[hi] Community"
+    },
+    "dashboard": "[hi] Your Jewish Dashboard"
   },
   "chatbot": {
     "title": "Bayit+ सहायक",
     "greeting": "नमस्ते! मैं Bayit+ स्मार्ट सहायक हूं। आज मैं आपकी कैसे मदद कर सकता हूं?",
     "placeholder": "यहां टाइप करें...",
     "recording": "रिकॉर्डिंग...",
-    "transcribing": "ट्रांसक्राइब हो रहा है..."
+    "transcribing": "ट्रांसक्राइब हो रहा है...",
+    "voiceCommands": {
+      "playChess": "[hi] Start a chess game with...",
+      "multiContent": "[hi] Show side by side...",
+      "showChannels": "[hi] Show me channels..."
+    },
+    "showMultipleNotFound": "[hi] Could not find the requested content. Please try different names.",
+    "recommendations": "[hi] Here are some recommendations:",
+    "errors": {
+      "micPermission": "[hi] Could not access microphone. Please check microphone permissions in your browser.",
+      "general": "[hi] Sorry, something went wrong. Please try again.",
+      "transcribeFailed": "[hi] Could not transcribe the recording. Please try again."
+    },
+    "resolvingContent": "[hi] Finding your content...",
+    "stopRecording": "[hi] Stop recording",
+    "suggestions": {
+      "popularPodcasts": "[hi] Popular podcasts",
+      "whatToWatch": "[hi] What to watch today?",
+      "whatsOnNow": "[hi] What's on now?",
+      "israeliMovies": "[hi] Recommended Israeli movies"
+    },
+    "welcome": "[hi] Hello! I'm the Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
+    "startRecording": "[hi] Start voice recording",
+    "showMultipleSuccess": "[hi] Showing {{count}} content items in widgets",
+    "openChat": "[hi] Open chat"
   },
   "subscribe": {
     "title": "अपना प्लान चुनें",
@@ -659,7 +1228,8 @@
     "select": "प्लान चुनें",
     "selected": "चयनित",
     "processing": "प्रोसेसिंग...",
-    "startTrial": "मुफ्त ट्रायल शुरू करें"
+    "startTrial": "मुफ्त ट्रायल शुरू करें",
+    "noCharge": "[hi] Your credit card won't be charged during the trial period"
   },
   "footer": {
     "brandDescription": "USA में आपका घर। हिब्रू में TV प्रसारण, VOD, रेडियो और पॉडकास्ट।",
@@ -668,7 +1238,60 @@
     "support": "सहायता",
     "legal": "कानूनी",
     "copyright": "© {{year}} Bayit+. सर्वाधिकार सुरक्षित।",
-    "poweredBy": "द्वारा संचालित"
+    "poweredBy": "द्वारा संचालित",
+    "links": {
+      "terms": "[hi] Terms of Service",
+      "licenses": "[hi] Licenses",
+      "home": "[hi] Home",
+      "subscribe": "[hi] Subscribe",
+      "vod": "[hi] Movies & Series",
+      "privacy": "[hi] Privacy Policy",
+      "contact": "[hi] Contact Us",
+      "downloads": "[hi] Downloads",
+      "judaism": "[hi] Judaism",
+      "liveTV": "[hi] Live TV",
+      "podcasts": "[hi] Podcasts",
+      "feedback": "[hi] Feedback",
+      "radio": "[hi] Radio",
+      "favorites": "[hi] Favorites",
+      "watchlist": "[hi] Watchlist",
+      "profile": "[hi] My Profile",
+      "faq": "[hi] FAQ",
+      "help": "[hi] Help Center",
+      "cookies": "[hi] Cookie Policy"
+    },
+    "termsOfUse": "[hi] Terms of Use",
+    "newsletter": {
+      "description": "[hi] Subscribe to our newsletter for the latest updates and exclusive content.",
+      "success": "[hi] Thanks for subscribing!",
+      "placeholder": "[hi] Enter your email",
+      "title": "[hi] Stay Updated"
+    },
+    "apps": {
+      "title": "[hi] Get the App",
+      "getItOn": "[hi] Get it on",
+      "appStore": "[hi] App Store",
+      "downloadOn": "[hi] Download on",
+      "googlePlay": "[hi] Google Play"
+    },
+    "moviesAndSeries": "[hi] Movies & Series",
+    "social": {
+      "facebook": "[hi] Facebook",
+      "twitter": "[hi] Twitter",
+      "instagram": "[hi] Instagram",
+      "youtube": "[hi] YouTube"
+    },
+    "sitemap": "[hi] Sitemap",
+    "navigation": "[hi] Navigation",
+    "liveTV": "[hi] Live TV",
+    "myProfile": "[hi] My Profile",
+    "location": "[hi] New York, USA",
+    "subscriptions": "[hi] Subscriptions",
+    "privacyPolicy": "[hi] Privacy Policy",
+    "accessibility": "[hi] Accessibility",
+    "radioStations": "[hi] Radio Stations",
+    "contactUs": "[hi] Contact Us",
+    "helpAndSupport": "[hi] Help & Support"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -678,13 +1301,119 @@
       "faq": "FAQ",
       "contact": "संपर्क",
       "tickets": "मेरे टिकट"
+    },
+    "voice": {
+      "thinking": "[hi] Let me think about that...",
+      "ready": "[hi] What would you like to know?",
+      "error": "[hi] Sorry, I didn't catch that. Try again?",
+      "listening": "[hi] I'm listening...",
+      "wakeWordHint": "[hi] Say \"Jarvis\" to speak",
+      "speaking": "[hi] Speaking...",
+      "listeningNow": "[hi] Listening...",
+      "title": "[hi] Voice Assistant"
+    },
+    "wizard": {
+      "role": "[hi] Your Guide"
+    },
+    "tickets": {
+      "loadError": "[hi] Failed to load tickets",
+      "emptyFilter": "[hi] No tickets with this status",
+      "filter": {
+        "all": "[hi] All",
+        "inProgress": "[hi] In Progress",
+        "resolved": "[hi] Resolved",
+        "open": "[hi] Open"
+      },
+      "title": "[hi] My Support Tickets",
+      "createFirst": "[hi] Create Your First Ticket",
+      "loading": "[hi] Loading tickets...",
+      "create": "[hi] New Ticket",
+      "empty": "[hi] No support tickets yet"
+    },
+    "ticket": {
+      "priorityLabel": "[hi] Priority",
+      "status": {
+        "closed": "[hi] Closed",
+        "in_progress": "[hi] In Progress",
+        "resolved": "[hi] Resolved",
+        "open": "[hi] Open"
+      },
+      "created": "[hi] Created",
+      "category": {
+        "billing": "[hi] Billing",
+        "technical": "[hi] Technical",
+        "feature": "[hi] Feature Request",
+        "general": "[hi] General"
+      },
+      "error": {
+        "submit": "[hi] Failed to create ticket. Please try again.",
+        "required": "[hi] Please fill in all required fields"
+      },
+      "priority": {
+        "urgent": "[hi] Urgent",
+        "low": "[hi] Low",
+        "medium": "[hi] Medium",
+        "high": "[hi] High"
+      },
+      "submit": "[hi] Submit Ticket",
+      "subjectPlaceholder": "[hi] Brief description of your issue",
+      "title": "[hi] Create Support Ticket",
+      "messagePlaceholder": "[hi] Describe your issue in detail...",
+      "categoryLabel": "[hi] Category",
+      "message": "[hi] Message",
+      "subject": "[hi] Subject"
+    },
+    "categories": {
+      "troubleshooting": "[hi] Troubleshooting",
+      "articleCount": "[hi] {{count}} articles",
+      "loadError": "[hi] Failed to load categories",
+      "account": "[hi] Account",
+      "gettingStarted": "[hi] Getting Started",
+      "loading": "[hi] Loading documentation...",
+      "features": "[hi] Features",
+      "title": "[hi] Browse Documentation"
+    },
+    "contact": {
+      "voiceDescription": "[hi] Click the avatar button or say \"Jarvis\" to start a voice conversation with our AI assistant.",
+      "createTicket": "[hi] Create Ticket",
+      "emailDescription": "[hi] Prefer email? Reach us at support@bayit.tv for any questions or concerns.",
+      "voiceTitle": "[hi] Voice Support",
+      "ticketDescription": "[hi] Need human assistance? Create a support ticket and our team will respond within 24 hours.",
+      "ticketTitle": "[hi] Create Support Ticket",
+      "emailTitle": "[hi] Email Support"
+    },
+    "faq": {
+      "loadError": "[hi] Failed to load FAQ",
+      "empty": "[hi] No FAQ items in this category",
+      "categories": {
+        "features": "[hi] Features",
+        "general": "[hi] General",
+        "technical": "[hi] Technical",
+        "billing": "[hi] Billing",
+        "all": "[hi] All Topics"
+      },
+      "title": "[hi] Frequently Asked Questions",
+      "loading": "[hi] Loading FAQ..."
+    },
+    "docs": {
+      "backToList": "[hi] Back to documentation",
+      "loadError": "[hi] Failed to load document",
+      "loading": "[hi] Loading document..."
+    },
+    "search": {
+      "placeholder": "[hi] Search documentation...",
+      "noResults": "[hi] No results found"
     }
   },
   "notFound": {
     "title": "पेज नहीं मिला",
     "description": "जो पेज आप खोज रहे हैं वह मौजूद नहीं है।",
     "homeButton": "होम जाएं",
-    "searchButton": "खोजें"
+    "searchButton": "खोजें",
+    "vodLabel": "[hi] Movies",
+    "orTry": "[hi] Or try:",
+    "podcastsLabel": "[hi] Podcasts",
+    "liveChannel": "[hi] Live"
   },
   "recordings": {
     "title": "मेरी रिकॉर्डिंग",
@@ -692,7 +1421,22 @@
     "record": "रिकॉर्ड करें",
     "recording": "रिकॉर्डिंग",
     "noRecordings": "अभी तक कोई रिकॉर्डिंग नहीं",
-    "noRecordingsHint": "किसी भी लाइव चैनल से रिकॉर्डिंग शुरू करें!"
+    "noRecordingsHint": "किसी भी लाइव चैनल से रिकॉर्डिंग शुरू करें!",
+    "page": "[hi] Page",
+    "subtitlesAvailable": "[hi] Subtitles Available",
+    "maxDuration": "[hi] Max Duration",
+    "deleteFailed": "[hi] Failed to delete recording",
+    "totalRecordings": "[hi] Total Recordings",
+    "error": "[hi] Recording Error",
+    "deleteRecording": "[hi] Delete Recording",
+    "confirmDelete": "[hi] Are you sure you want to delete this recording? This action cannot be undone.",
+    "recordingSaved": "[hi] Recording Saved!",
+    "stopFailed": "[hi] Failed to stop recording. Please try again.",
+    "expires": "[hi] Expires",
+    "viewInMyRecordings": "[hi] View in My Recordings",
+    "startFailed": "[hi] Failed to start recording. Please try again.",
+    "savedSuccess": "[hi] Recording saved successfully! Duration: {{duration}}",
+    "storageUsed": "[hi] Storage Used"
   },
   "voice": {
     "panelTitle": "वॉयस असिस्टेंट",
@@ -830,7 +1574,8 @@
         "रेडियो और पॉडकास्ट",
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
-      ]
+      ],
+      "notIncluded": "[hi] ['Live channels', 'AI Assistant', 'Offline viewing']"
     },
     "premium": {
       "name": "प्रीमियम",
@@ -841,7 +1586,8 @@
         "स्मार्ट AI सहायक",
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
-      ]
+      ],
+      "notIncluded": "[hi] ['Offline viewing', 'Family profiles']"
     },
     "family": {
       "name": "फैमिली",
@@ -854,7 +1600,63 @@
         "4K गुणवत्ता",
         "5 फैमिली प्रोफाइल",
         "ऑफ़लाइन डाउनलोड"
-      ]
+      ],
+      "notIncluded": "[hi] []"
+    },
+    "batchActions": {
+      "clear": "[hi] Clear",
+      "selectedCount_other": "[hi] {{count}} selected",
+      "selectedCount_one": "[hi] {{count}} selected",
+      "selectedCount": "[hi] {{count}} selected"
+    },
+    "costDashboard": {
+      "infrastructure": "[hi] Infrastructure",
+      "thirdParty": "[hi] Third-party",
+      "categories": {
+        "permanent": "[hi] Permanent",
+        "permanentFixed": "[hi] Permanent (Fixed)",
+        "costItem": "[hi] Cost Item",
+        "transientVariable": "[hi] Transient (Variable)",
+        "detailedBreakdown": "[hi] Detailed Breakdown",
+        "category": "[hi] Category",
+        "transient": "[hi] Transient",
+        "transientDesc": "[hi] Usage-based costs that fluctuate with platform activity",
+        "permanentVsTransient": "[hi] Permanent vs Transient",
+        "permanentDesc": "[hi] Infrastructure costs that occur monthly regardless of usage",
+        "amount": "[hi] Amount"
+      },
+      "plSummary": {
+        "netProfitLoss": "[hi] Net Profit/Loss",
+        "margin": "[hi] margin",
+        "revenue": "[hi] REVENUE",
+        "totalCosts": "[hi] TOTAL COSTS"
+      },
+      "timeline": {
+        "amountLabel": "[hi] Amount ($)",
+        "totalCost": "[hi] Total Cost",
+        "showingData": "[hi] Showing data from {{start}} to {{end}}",
+        "revenue": "[hi] Revenue",
+        "title": "[hi] Cost Timeline",
+        "netProfit": "[hi] Net Profit",
+        "loading": "[hi] Loading timeline..."
+      },
+      "translation": "[hi] Translation",
+      "costBreakdown": "[hi] Cost Breakdown",
+      "components": "[hi] Components",
+      "topSpenders": {
+        "userId": "[hi] User ID",
+        "rank": "[hi] Rank",
+        "privacyNote": "[hi] User IDs are hashed and costs are aggregated into ranges for privacy protection.",
+        "costRange": "[hi] Cost Range",
+        "loading": "[hi] Loading top spenders...",
+        "title": "[hi] Top 20 Spenders (Monthly)"
+      },
+      "title": "[hi] Cost Dashboard",
+      "percentOfTotal": "[hi] % of total",
+      "thirdPartyApis": "[hi] Third-party APIs",
+      "search": "[hi] Search",
+      "aiCosts": "[hi] AI Costs",
+      "loadingBreakdown": "[hi] Loading breakdown..."
     }
   },
   "admin": {
@@ -2286,8 +3088,8 @@
   },
   "voiceOnboarding": {
     "welcome": {
-      "title": "वॉइस कंट्रोल में आपका स्वागत है",
-      "description": "हैंड्स-फ्री अनुभव के लिए अपनी आवाज से Bayit+ को नियंत्रित करें"
+      "title": "[hi] Welcome to Voice Control",
+      "description": "[hi] Control Bayit+ with your voice for a hands-free experience."
     },
     "features": {
       "voiceCommands": "वॉइस कमांड",
@@ -2327,7 +3129,19 @@
       },
       "startUsing": "वॉइस कंट्रोल उपयोग करना शुरू करें"
     },
-    "skip": "अभी छोड़ें"
+    "skip": "अभी छोड़ें",
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "completion": {
+      "message": "[hi] Voice features are ready to use.",
+      "title": "[hi] Voice Setup Complete"
+    },
+    "title": "[hi] Voice Setup",
+    "training": {
+      "message": "[hi] Read the phrases aloud to train voice recognition.",
+      "title": "[hi] Voice Training"
+    }
   },
   "portal": {
     "nav": {
@@ -2476,7 +3290,10 @@
       "languageHint": "प्रत्येक तथ्य के लिए 1-3 भाषाएं चुनें",
       "language": "भाषा",
       "selectLanguage": "इस भाषा को चुनें",
-      "deselectLanguage": "इस भाषा को अचयनित करें"
+      "deselectLanguage": "इस भाषा को अचयनित करें",
+      "enableDescription": "[hi] Show trivia questions while watching content.",
+      "enableTrivia": "[hi] Enable Trivia",
+      "title": "[hi] Trivia Settings"
     },
     "aiTrivia": "AI Trivia",
     "tellMeMore": "Tell me more",
@@ -2485,7 +3302,23 @@
   },
   "chapters": {
     "chapterLabel": "Chapter {{number}}",
-    "chapter_number": "अध्याय {{number}}"
+    "chapter_number": "अध्याय {{number}}",
+    "categories": {
+      "security": "[hi] Security",
+      "culture": "[hi] Culture",
+      "news": "[hi] News",
+      "politics": "[hi] Politics",
+      "sports": "[hi] Sports",
+      "weather": "[hi] Weather",
+      "economy": "[hi] Economy",
+      "conclusion": "[hi] Conclusion",
+      "intro": "[hi] Introduction"
+    },
+    "current": "[hi] Now",
+    "noChapters": "[hi] No chapters available",
+    "generating": "[hi] Generating chapters...",
+    "jumpTo": "[hi] Jump to",
+    "title": "[hi] Chapters"
   },
   "recording": {
     "stop": "रिकॉर्डिंग रोकें",
@@ -2745,7 +3578,8 @@
         "step2": "[hi] Type your question or request",
         "step3": "[hi] Read the AI response"
       }
-    }
+    },
+    "title": "[hi] Discover"
   },
   "byoc": {
     "pageSubtitle": "अपना खुद का कंटेंट लाएं - IPTV और स्ट्रीमिंग स्रोत जोड़ें",
@@ -2820,6 +3654,15 @@
       "syncFailed": "स्रोत सिंक विफल",
       "normalizationFailed": "कंटेंट प्रोसेसिंग विफल",
       "normalizationPollFailed": "प्रोसेसिंग के दौरान कनेक्शन खो गया"
+    },
+    "home": {
+      "title": "[hi] Bring Your Own Content",
+      "subtitle": "[hi] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "[hi] Connect Sources",
+      "aiFeatures": {
+        "dubbing": "[hi] AI Dubbing available",
+        "subtitles": "[hi] Live Subtitles available"
+      }
     }
   },
   "onboarding": {
@@ -2951,6 +3794,886 @@
     "error": {
       "fetchFailed": "संदेश लोड करने में विफल",
       "sendFailed": "संदेश भेजने में विफल"
+    }
+  },
+  "aiChat": {
+    "retryButton": "[hi] Retry",
+    "sendButton": "[hi] Send",
+    "title": "[hi] AI Chat",
+    "voiceButton": "[hi] Voice"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "completion": {
+      "message": "[hi] You're all set! Start exploring AI features.",
+      "title": "[hi] Setup Complete"
+    },
+    "permissions": {
+      "description": "[hi] Grant permissions to enable AI features like voice and camera.",
+      "title": "[hi] Permissions"
+    },
+    "personalization": {
+      "description": "[hi] Tell us your preferences to personalize your AI experience.",
+      "title": "[hi] Personalization"
+    },
+    "title": "[hi] AI Setup",
+    "welcome": {
+      "description": "[hi] Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
+      "title": "[hi] Welcome to Bayit+ AI"
+    }
+  },
+  "auth": {
+    "biometricEnrollEnable": "[hi] Enable",
+    "biometricEnrollMessage": "[hi] Use Face ID or fingerprint for faster sign-in next time.",
+    "biometricEnrollSkip": "[hi] Skip",
+    "biometricEnrollTitle": "[hi] Enable Biometric Sign-In",
+    "biometricSignIn": "[hi] Sign in with Biometrics",
+    "signOut": "[hi] Sign Out",
+    "loginToWatch": "[hi] Please sign in to watch {{title}}",
+    "loginRequired": "[hi] Login Required",
+    "signUp": "[hi] Sign Up",
+    "login": "[hi] Login"
+  },
+  "auth_device_authorized": "[hi] Device authorized",
+  "auth_device_code_expired": "[hi] Code expired",
+  "auth_device_get_new_code": "[hi] Get new code",
+  "auth_device_manual_login": "[hi] Sign in manually",
+  "auth_device_visit_uri": "[hi] Visit the URL shown on your TV",
+  "avatar": {
+    "tapToSpeak": "[hi] Tap to speak",
+    "title": "[hi] Avatar"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "[hi] Dubbed Audio",
+      "originalAudio": "[hi] Original Audio",
+      "title": "[hi] Audio Mixer"
+    },
+    "settings_title": "[hi] Dubbing Settings",
+    "target_language": "[hi] Target Language",
+    "voiceSelector": {
+      "selected": "[hi] Selected",
+      "subtitle": "[hi] Choose a voice for dubbing",
+      "title": "[hi] Voice Selection"
+    }
+  },
+  "go_back": "[hi] Go Back",
+  "miniPlayer": {
+    "closePlayer": "[hi] Close Player",
+    "skipBackward": "[hi] Skip Backward",
+    "skipForward": "[hi] Skip Forward"
+  },
+  "retry": "[hi] Retry",
+  "search_hint": "[hi] Search channels, movies, shows...",
+  "search_no_results": "[hi] No results found",
+  "search_prompt": "[hi] What are you looking for?",
+  "subscription_required": "[hi] Subscription Required",
+  "subscription_upsell_tv": "[hi] Upgrade to watch on TV",
+  "talkback": {
+    "title": "[hi] Talkback"
+  },
+  "voiceAssistant": {
+    "fabLabel": "[hi] Voice Assistant",
+    "modal": {
+      "cancel": "[hi] Cancel",
+      "setupMessage": "[hi] Set up voice recognition to use the voice assistant.",
+      "setupRequired": "[hi] Setup Required",
+      "startSetup": "[hi] Start Setup",
+      "title": "[hi] Voice Assistant"
+    }
+  },
+  "voiceCommand": {
+    "executing": "[hi] Executing...",
+    "listening": "[hi] Listening...",
+    "noMatch": "[hi] No match found",
+    "recognized": "[hi] Recognized"
+  },
+  "voiceDecision": {
+    "cancel": "[hi] Cancel",
+    "confirm": "[hi] Confirm",
+    "matched": "[hi] Matched"
+  },
+  "voiceSearch": {
+    "listening": "[hi] Listening...",
+    "noResults": "[hi] No results found",
+    "tapToSpeak": "[hi] Tap to speak",
+    "title": "[hi] Voice Search"
+  },
+  "voiceSettings": {
+    "language": "[hi] Language",
+    "speechRate": "[hi] Speech Rate",
+    "title": "[hi] Voice Settings",
+    "ttsProvider": "[hi] TTS Provider",
+    "voiceMode": "[hi] Voice Mode",
+    "voiceSelection": "[hi] Voice Selection",
+    "wakeWord": "[hi] Wake Word"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "calibration": {
+      "description": "[hi] Speak normally to calibrate the microphone.",
+      "listening": "[hi] Listening...",
+      "micButton": "[hi] Start Recording",
+      "resultTitle": "[hi] Calibration Result",
+      "stopButton": "[hi] Stop Recording",
+      "tapToStart": "[hi] Tap to start calibration",
+      "title": "[hi] Microphone Calibration"
+    },
+    "complete": {
+      "message": "[hi] Voice wizard setup is complete. You can now use voice features.",
+      "title": "[hi] Setup Complete"
+    },
+    "language": {
+      "description": "[hi] Select your preferred language for voice commands.",
+      "title": "[hi] Voice Language"
+    },
+    "permission": {
+      "description": "[hi] Microphone access is needed for voice features.",
+      "granted": "[hi] Permission Granted",
+      "requestButton": "[hi] Grant Permission",
+      "title": "[hi] Microphone Permission"
+    },
+    "title": "[hi] Voice Wizard"
+  },
+  "watch_now": "[hi] Watch Now",
+  "taxonomy": {
+    "sections": {
+      "youngsters": "[hi] Youngsters",
+      "live": "[hi] Live TV",
+      "series": "[hi] Series",
+      "podcasts": "[hi] Podcasts",
+      "music": "[hi] Music",
+      "kids": "[hi] Kids",
+      "documentaries": "[hi] Documentaries",
+      "movies": "[hi] Movies"
+    },
+    "subcategories": {
+      "food-culture": "[hi] Food Culture",
+      "bedtime-stories": "[hi] Bedtime Stories",
+      "learning-hebrew": "[hi] Learning Hebrew",
+      "memes": "[hi] Memes",
+      "art-culture": "[hi] Art Culture",
+      "career-prep": "[hi] Career Prep",
+      "study-help": "[hi] Study Help",
+      "math-fun": "[hi] Fun Math",
+      "israel-news": "[hi] Israel News",
+      "torah-stories": "[hi] Torah Stories",
+      "nursery-rhymes": "[hi] Nursery Rhymes",
+      "coding": "[hi] Coding",
+      "sports-news": "[hi] Sports News",
+      "life-skills": "[hi] Life Skills",
+      "nature-animals": "[hi] Nature & Animals",
+      "kids-series": "[hi] Kids Series",
+      "teen-movies": "[hi] Teen Movies",
+      "interactive": "[hi] Interactive",
+      "young-science": "[hi] Young Science",
+      "jewish-history": "[hi] Jewish History",
+      "tiktok-trends": "[hi] TikTok Trends",
+      "jewish-holidays": "[hi] Jewish Holidays",
+      "science-news": "[hi] Science News",
+      "gadgets": "[hi] Gadgets",
+      "teen-torah": "[hi] Teen Torah",
+      "film-culture": "[hi] Film Culture",
+      "bar-bat-mitzvah": "[hi] Bar/Bat Mitzvah",
+      "world-news": "[hi] World News",
+      "teen-series": "[hi] Teen Series",
+      "gaming": "[hi] Gaming",
+      "kids-movies": "[hi] Kids Movies",
+      "music-culture": "[hi] Music Culture",
+      "hebrew-songs": "[hi] Hebrew Songs",
+      "viral-videos": "[hi] Viral Videos"
+    }
+  },
+  "widgets": {
+    "noSystemWidgets": "[hi] No system widgets available",
+    "form": {
+      "cancel": "[hi] Cancel",
+      "mutedByDefault": "[hi] Muted by Default",
+      "iframeUrl": "[hi] iFrame URL",
+      "selectContent": "[hi] Select Content (Channels, Podcasts, Shows, etc.)",
+      "change": "[hi] Change",
+      "saveWidget": "[hi] Save Widget",
+      "fromLibrary": "[hi] From Library",
+      "titleRequired": "[hi] Widget Title is required",
+      "positionSize": "[hi] Position & Size",
+      "title": "[hi] Create Widget",
+      "iconPlaceholder": "[hi] Icon emoji (e.g., 📺)",
+      "titlePlaceholder": "[hi] Widget Title",
+      "draggable": "[hi] Draggable",
+      "descriptionPlaceholder": "[hi] Description (optional)",
+      "widgetOrder": "[hi] Widget Order",
+      "behavior": "[hi] Behavior",
+      "saving": "[hi] Saving...",
+      "iframe": "[hi] iFrame",
+      "basicInfo": "[hi] Basic Information",
+      "iframeUrlRequired": "[hi] iFrame URL is required",
+      "orderPlaceholder": "[hi] Order (0 = first)",
+      "content": "[hi] Content",
+      "closable": "[hi] Closable",
+      "iframeTitle": "[hi] iFrame Title"
+    },
+    "added": "[hi] Added",
+    "contentTypes": {
+      "iframe": "[hi] Web Content",
+      "podcast": "[hi] Podcast",
+      "vod": "[hi] Video",
+      "widget": "[hi] Widget",
+      "liveChannel": "[hi] Live Channel",
+      "custom": "[hi] Custom",
+      "radio": "[hi] Radio"
+    },
+    "empty": "[hi] No widgets yet",
+    "emptyPersonal": "[hi] No personal widgets yet",
+    "show": "[hi] Show",
+    "myWidgetsHint": "[hi] Widgets you have created",
+    "myWidgets": "[hi] My Personal Widgets",
+    "personalWidgets": "[hi] My Widgets",
+    "itemsTotal": "[hi] total widgets",
+    "emptyPersonalHint": "[hi] Create your first personal widget or add system widgets above",
+    "addToCollection": "[hi] Add to My Widgets",
+    "add": "[hi] Add",
+    "emptyHint": "[hi] Your widgets will appear here",
+    "hidden": "[hi] Hidden",
+    "remove": "[hi] Remove",
+    "systemWidgetsHint": "[hi] Browse and add widgets to your collection",
+    "systemWidgets": "[hi] System Widgets",
+    "removeFromCollection": "[hi] Remove from My Widgets"
+  },
+  "chess": {
+    "joinFailed": "[hi] Failed to join game",
+    "playVsFriend": "[hi] Play vs Friend",
+    "invalidGameCode": "[hi] Invalid game code. Must be 6 characters.",
+    "botHint": "[hi] Tag @bot in your message to get chess advice from our AI assistant",
+    "yourTurn": "[hi] Your Turn",
+    "whiteCaptured": "[hi] White Captured",
+    "playVsBot": "[hi] Play vs Bot",
+    "inviteReceived": "[hi] {{name}} invited you to a chess game!",
+    "moveHistory": "[hi] Move History",
+    "stalemate": "[hi] Stalemate",
+    "acceptDraw": "[hi] Accept Draw",
+    "enterGameCode": "[hi] Enter Game Code",
+    "resigned": "[hi] Game Resigned",
+    "checkmate": "[hi] Checkmate!",
+    "showHints": "[hi] Show Guide Hints",
+    "easy": "[hi] Easy",
+    "chat": {
+      "title": "[hi] Chat",
+      "inputPlaceholder": "[hi] Type a message..."
+    },
+    "bot": "[hi] Chess Assistant",
+    "copyCode": "[hi] Copy Code",
+    "noFriendsYet": "[hi] No friends yet",
+    "declineDraw": "[hi] Decline Draw",
+    "join": "[hi] Join",
+    "playedAsBlack": "[hi] Played as Black",
+    "difficulty": "[hi] Difficulty",
+    "chatPlaceholder": "[hi] Type a message... (@bot for advice)",
+    "chooseColor": "[hi] Choose Your Color",
+    "resign": "[hi] Resign",
+    "black": "[hi] Black",
+    "challenge": "[hi] Challenge",
+    "joinInvite": "[hi] Join Game",
+    "inviteSent": "[hi] Game invite sent to {{name}}! Game code: {{code}}",
+    "you": "[hi] You",
+    "blackCaptured": "[hi] Black Captured",
+    "reconnecting": "[hi] Reconnecting...",
+    "acceptInvite": "[hi] Accept Invite",
+    "challengeViaWhatsApp": "[hi] Challenge via WhatsApp",
+    "online": "[hi] Online",
+    "gameOver": "[hi] Game Over",
+    "unmute": "[hi] Unmute",
+    "playedAsWhite": "[hi] Played as White",
+    "create": "[hi] Create",
+    "joinGame": "[hi] Join Game",
+    "joinByGameCode": "[hi] Join by Game Code",
+    "waitingForOpponent": "[hi] Waiting for opponent...",
+    "subtitle": "[hi] Play chess with friends and family around the world",
+    "hard": "[hi] Hard",
+    "title": "[hi] Chess",
+    "draw": "[hi] Draw",
+    "inviteFailed": "[hi] Could not find that user. Please check the name and try again.",
+    "welcome": "[hi] Welcome to Chess",
+    "chessBot": "[hi] Chess Bot",
+    "challengeFriend": "[hi] Challenge Friend",
+    "opponent": "[hi] Opponent",
+    "offline": "[hi] Offline",
+    "sendingInvite": "[hi] Sending game invite to {{name}}...",
+    "noMoves": "[hi] No moves yet",
+    "newGame": "[hi] New Game",
+    "opponentTurn": "[hi] Opponent's Turn",
+    "offerDraw": "[hi] Offer Draw",
+    "gameMode": "[hi] Game Mode",
+    "speaking": "[hi] participants",
+    "createGame": "[hi] Create New Game",
+    "medium": "[hi] Medium",
+    "blackTurn": "[hi] Black's Turn",
+    "declineInvite": "[hi] Decline Invite",
+    "whiteTurn": "[hi] White's Turn",
+    "drawOffered": "[hi] Draw Offered",
+    "gameCode": "[hi] Game Code",
+    "white": "[hi] White",
+    "mute": "[hi] Mute"
+  },
+  "cultureCities": {
+    "categories": {
+      "entertainment": "[hi] Entertainment",
+      "news": "[hi] News",
+      "food": "[hi] Food",
+      "expat": "[hi] Expat Life",
+      "finance": "[hi] Finance",
+      "culture": "[hi] Culture",
+      "tech": "[hi] Tech",
+      "history": "[hi] History",
+      "all": "[hi] All"
+    },
+    "noContent": "[hi] No content available for this city",
+    "explore": "[hi] Explore {{city}}",
+    "connectionTo": "[hi] {{city}} Connection"
+  },
+  "empty": {
+    "tryAnotherCategory": "[hi] Try selecting another category",
+    "tryLater": "[hi] Try again later",
+    "noResults": "[hi] No results found",
+    "noPodcasts": "[hi] No podcasts available",
+    "noContent": "[hi] No content available"
+  },
+  "stats": {
+    "lost": "[hi] Lost",
+    "winStreak": "[hi] Win Streak",
+    "draws": "[hi] Draws",
+    "recentGames": "[hi] Recent Games",
+    "peak": "[hi] Peak",
+    "losses": "[hi] Losses",
+    "wins": "[hi] Wins",
+    "headToHead": "[hi] Head to Head",
+    "winRate": "[hi] Win Rate",
+    "totalGamesPlayed": "[hi] Total: {{count}} games",
+    "noGames": "[hi] No games played yet",
+    "peakRating": "[hi] Peak Rating",
+    "draw": "[hi] Draw",
+    "matchHistory": "[hi] Match History",
+    "performance": "[hi] Performance",
+    "won": "[hi] Won",
+    "totalGames": "[hi] Total Games",
+    "moves": "[hi] moves",
+    "rating": "[hi] Rating",
+    "achievements": "[hi] Achievements",
+    "overall": "[hi] Overall Record",
+    "yourWins": "[hi] Your Wins",
+    "gamesPlayed": "[hi] Games Played",
+    "theirWins": "[hi] Their Wins",
+    "currentRating": "[hi] Current Rating",
+    "statistics": "[hi] Statistics",
+    "currentStreak": "[hi] Current Streak",
+    "bestStreak": "[hi] Best Streak"
+  },
+  "help": {
+    "faq": {
+      "q4": "[hi] How do I cancel my subscription?",
+      "q1": "[hi] How do I change my subscription plan?",
+      "q2": "[hi] How do I download content for offline viewing?",
+      "a4": "[hi] You can cancel your subscription anytime through Settings > Subscription > Cancel Plan. You'll continue to have access until the end of your billing period.",
+      "title": "[hi] Frequently Asked Questions",
+      "q3": "[hi] Why isn't my video playing?",
+      "a3": "[hi] Check your internet connection. If the problem persists, try clearing the app cache or restarting the app.",
+      "a1": "[hi] Go to Settings > Subscription to view and change your current plan. You can upgrade or downgrade at any time.",
+      "a2": "[hi] Tap the download icon on any content to save it for offline viewing. Downloads are available on mobile devices only."
+    },
+    "subtitle": "[hi] How can we help you?",
+    "actions": {
+      "tutorial": "[hi] View Tutorial",
+      "search": "[hi] Search Help",
+      "docs": "[hi] Documentation",
+      "faq": "[hi] FAQ",
+      "support": "[hi] Contact Support"
+    },
+    "openHelp": "[hi] Open help menu",
+    "previous": "[hi] Previous",
+    "categories": {
+      "admin": "[hi] Admin Guide",
+      "parents": "[hi] For Parents",
+      "platform-guides": "[hi] Platform Guides",
+      "developer": "[hi] Developer API",
+      "troubleshooting": "[hi] Troubleshooting",
+      "getting-started": "[hi] Getting Started",
+      "judaism": "[hi] Judaism",
+      "features": "[hi] Features",
+      "account": "[hi] Account"
+    },
+    "contactSupport": "[hi] Contact Support",
+    "onboarding": {
+      "voice": {
+        "title": "[hi] Voice Control",
+        "description": "[hi] Say 'Bayit' to control the app with your voice"
+      },
+      "vod": {
+        "title": "[hi] On-Demand Content",
+        "description": "[hi] Browse movies, series, and documentaries anytime"
+      },
+      "welcome": {
+        "description": "[hi] Your home for Israeli entertainment, anywhere in the world",
+        "title": "[hi] Welcome to Bayit+"
+      },
+      "liveTv": {
+        "description": "[hi] Watch Israeli channels live, including news, sports, and entertainment",
+        "title": "[hi] Live TV"
+      },
+      "profiles": {
+        "title": "[hi] Family Profiles",
+        "description": "[hi] Create profiles for each family member with personalized recommendations"
+      }
+    },
+    "search": {
+      "recent": "[hi] Recent",
+      "placeholder": "[hi] Search help...",
+      "noResults": "[hi] No results found for \"{{query}}\"",
+      "noResultsHint": "[hi] Try different keywords or browse categories",
+      "popular": "[hi] Popular"
+    },
+    "stillNeedHelp": "[hi] Still need help?",
+    "phone": "[hi] Phone Support",
+    "skipTutorial": "[hi] Skip tutorial",
+    "chatAvailable": "[hi] Available 24/7",
+    "email": "[hi] Email Support",
+    "getStarted": "[hi] Get Started",
+    "relatedArticles": "[hi] Related articles",
+    "howTo": "[hi] How to use",
+    "openTooltip": "[hi] Open help tooltip",
+    "chat": "[hi] Live Chat",
+    "next": "[hi] Next"
+  },
+  "olorin": {
+    "errors": {
+      "webhook_secret_not_configured": "[hi] Webhook secret not configured",
+      "reference_not_found": "[hi] Reference '{reference_id}' not found",
+      "capability_not_enabled": "[hi] Capability '{capability}' not enabled for this partner",
+      "partner_not_found": "[hi] Partner not found",
+      "session_different_partner": "[hi] Session belongs to different partner",
+      "search_failed": "[hi] Search failed",
+      "capability_disabled": "[hi] Capability '{capability}' is currently disabled",
+      "partner_registration_failed": "[hi] Failed to register partner",
+      "create_session_failed": "[hi] Failed to create session",
+      "get_references_failed": "[hi] Failed to get references",
+      "no_updates_provided": "[hi] No updates provided",
+      "detection_failed": "[hi] Detection failed",
+      "invalid_api_key": "[hi] Invalid API key",
+      "session_invalid_status": "[hi] Session is {status}, cannot add transcript",
+      "indexing_failed": "[hi] Indexing failed",
+      "missing_api_key": "[hi] Missing {header} header",
+      "session_not_found": "[hi] Session not found",
+      "generate_recap_failed": "[hi] Failed to generate recap",
+      "webhook_config_failed": "[hi] Failed to configure webhook",
+      "source_language_not_supported": "[hi] Source language '{language}' not supported. Supported: {supported}",
+      "add_transcript_failed": "[hi] Failed to add transcript",
+      "enrichment_failed": "[hi] Enrichment failed",
+      "webhook_url_not_configured": "[hi] Webhook URL not configured",
+      "max_sessions_reached": "[hi] Maximum concurrent sessions ({limit}) reached",
+      "explanation_failed": "[hi] Failed to get explanation",
+      "target_language_not_supported": "[hi] Target language '{language}' not supported. Supported: {supported}"
+    }
+  },
+  "telAviv": {
+    "categories": {
+      "events": "[hi] Events",
+      "nightlife": "[hi] Nightlife",
+      "food": "[hi] Food & Dining",
+      "music": "[hi] Music Scene",
+      "general": "[hi] Tel Aviv",
+      "beaches": "[hi] Beaches",
+      "culture": "[hi] Culture & Art",
+      "tech": "[hi] Tech & Startups"
+    },
+    "sources": "[hi] Sources",
+    "title": "[hi] Tel Aviv Connection",
+    "beachLive": "[hi] Beach Webcam",
+    "noContent": "[hi] No Tel Aviv content available",
+    "subtitle": "[hi] The city that never stops"
+  },
+  "watchParty": {
+    "endParty": "[hi] End Party",
+    "syncing": "[hi] Syncing...",
+    "connecting": "[hi] Connecting...",
+    "chat": "[hi] Chat",
+    "create": "[hi] Create Party",
+    "codeCopied": "[hi] Code Copied!",
+    "typeMessage": "[hi] Type a message...",
+    "createTitle": "[hi] Create Watch Party",
+    "title": "[hi] Watch Party",
+    "audio": {
+      "mute": "[hi] Mute",
+      "noAudio": "[hi] Audio not available",
+      "speaking": "[hi] Speaking",
+      "connecting": "[hi] Connecting to audio...",
+      "unmute": "[hi] Unmute"
+    },
+    "end": "[hi] End Party",
+    "copyCode": "[hi] Copy Code",
+    "userJoined": "[hi] {{name}} joined",
+    "host": "[hi] Host",
+    "joinTitle": "[hi] Join Party",
+    "leave": "[hi] Leave Party",
+    "errors": {
+      "createFailed": "[hi] Failed to create party",
+      "invalidCode": "[hi] Invalid code",
+      "partyFull": "[hi] Party is full",
+      "joinFailed": "[hi] Failed to join party",
+      "connectionError": "[hi] Connection error",
+      "partyEnded": "[hi] Party has ended"
+    },
+    "you": "[hi] You",
+    "textOnlyMode": "[hi] Text Chat Only",
+    "hostPaused": "[hi] Host Paused",
+    "synced": "[hi] Synced",
+    "options": {
+      "syncPlayback": "[hi] Sync Playback",
+      "chatEnabled": "[hi] Enable Chat"
+    },
+    "partyEnded": "[hi] The party has ended",
+    "active": "[hi] Party Active",
+    "sendMessage": "[hi] Send Message",
+    "userLeft": "[hi] {{name}} left",
+    "enterCode": "[hi] Enter Room Code",
+    "participants": "[hi] Participants",
+    "join": "[hi] Join Party",
+    "roomCode": "[hi] Room Code"
+  },
+  "cultures": {
+    "korean": {
+      "name": "[hi] Korean",
+      "description": "[hi] Korean community content"
+    },
+    "japanese": {
+      "description": "[hi] Japanese community content",
+      "name": "[hi] Japanese"
+    },
+    "changeCulture": "[hi] Change Culture",
+    "selectCultureDescription": "[hi] Select your cultural community to personalize your experience",
+    "title": "[hi] Select Your Culture",
+    "indian": {
+      "description": "[hi] Indian community content",
+      "name": "[hi] Indian"
+    },
+    "israeli": {
+      "description": "[hi] Israeli expat community content",
+      "name": "[hi] Israeli"
+    },
+    "chinese": {
+      "name": "[hi] Chinese",
+      "description": "[hi] Chinese community content"
+    },
+    "selectCulture": "[hi] Choose Your Culture",
+    "select": "[hi] Select Culture"
+  },
+  "watch": {
+    "deleteEpisode": "[hi] Delete Episode",
+    "cast": "[hi] Cast",
+    "like": "[hi] Like",
+    "backToHome": "[hi] Back to Home",
+    "schedule": "[hi] Schedule",
+    "episodesList": "[hi] Episodes",
+    "notFound": "[hi] Content not found",
+    "share": "[hi] Share",
+    "episodes": "[hi] Episodes",
+    "confirmDeleteEpisode": "[hi] Delete this episode?",
+    "now": "[hi] Now",
+    "addToList": "[hi] Add to List",
+    "related": "[hi] Related Content"
+  },
+  "youngsters": {
+    "confirm": "[hi] Confirm",
+    "categories": {
+      "entertainment": "[hi] Entertainment",
+      "judaism": "[hi] Judaism",
+      "music": "[hi] Music",
+      "culture": "[hi] Culture",
+      "tech": "[hi] Technology",
+      "trending": "[hi] Trending",
+      "sports": "[hi] Sports",
+      "all": "[hi] All",
+      "news": "[hi] News",
+      "educational": "[hi] Educational"
+    },
+    "title": "[hi] Youngsters",
+    "noContent": "[hi] No content available",
+    "ageGroups": {
+      "high-school": "[hi] High School (15-17)",
+      "middle-school": "[hi] Middle School (12-14)"
+    },
+    "moderation": {
+      "pending": "[hi] Pending Review",
+      "approved": "[hi] Approved",
+      "rejected": "[hi] Rejected"
+    },
+    "empty": "[hi] No content available",
+    "admin": {
+      "tagVod": "[hi] Tag VOD",
+      "stats": "[hi] Youngsters Content Manager",
+      "syncYouTube": "[hi] Sync YouTube",
+      "syncPodcasts": "[hi] Sync Podcasts",
+      "seedContent": "[hi] Seed Content",
+      "importArchive": "[hi] Import Archive.org",
+      "pendingModeration": "[hi] Pending Moderation"
+    },
+    "items": "[hi] items",
+    "wrongCode": "[hi] Incorrect code",
+    "tryAnotherCategory": "[hi] Try selecting another category",
+    "emptyHint": "[hi] Try another category",
+    "parentCode": "[hi] Parent code",
+    "exitYoungstersMode": "[hi] Exit Youngsters Mode",
+    "exitDescription": "[hi] Enter parent code to exit"
+  },
+  "clock": {
+    "erevShabbat": "[hi] Erev Shabbat",
+    "parasha": "[hi] Parasha",
+    "candleLighting": "[hi] Candle Lighting",
+    "local": "[hi] Local",
+    "shabbatShalom": "[hi] Shabbat Shalom!",
+    "israel": "[hi] Israel"
+  },
+  "passkey": {
+    "qr": {
+      "expired": "[hi] QR code expired. Please try again.",
+      "useQR": "[hi] Use Phone to Unlock",
+      "error": "[hi] Failed to generate QR code",
+      "scanWithPhone": "[hi] Scan with your phone",
+      "instruction": "[hi] Open the camera on your phone and scan the QR code to authenticate"
+    },
+    "cancelled": "[hi] Passkey operation was cancelled",
+    "auth": {
+      "title": "[hi] Unlock Content",
+      "description": "[hi] Use your fingerprint, face, or device PIN to unlock private movies and series.",
+      "cancelled": "[hi] Authentication was cancelled",
+      "success": "[hi] Content Unlocked!",
+      "error": "[hi] Authentication failed. Please try again.",
+      "authenticating": "[hi] Authenticating...",
+      "unlock": "[hi] Unlock with Passkey"
+    },
+    "addPasskey": "[hi] Add Passkey",
+    "unlockDescription": "[hi] Use your passkey to access private movies and series",
+    "unknownDevice": "[hi] Unknown Device",
+    "unsupported": "[hi] Passkeys are not supported on this device",
+    "lastUsed": "[hi] Last used",
+    "deleteConfirmText": "[hi] This passkey will no longer be able to unlock content. You can always add it again later.",
+    "manager": {
+      "title": "[hi] Passkeys",
+      "subtitle": "[hi] Manage your passkeys for secure content access"
+    },
+    "deleteError": "[hi] Failed to delete passkey",
+    "registerError": "[hi] Failed to register passkey",
+    "noPasskeys": "[hi] No passkeys registered yet. Add one to unlock private content.",
+    "fetchError": "[hi] Failed to load passkeys",
+    "never": "[hi] Never",
+    "created": "[hi] Created",
+    "deleteConfirmTitle": "[hi] Delete Passkey?",
+    "unlock": "[hi] Unlock",
+    "unlockContent": "[hi] Unlock Private Content"
+  },
+  "friends": {
+    "noResultsDesc": "[hi] Try searching with a different name",
+    "alreadyFriends": "[hi] Friends",
+    "pendingLabel": "[hi] Pending",
+    "acceptFailed": "[hi] Failed to accept request",
+    "accept": "[hi] Accept",
+    "cancel": "[hi] Cancel",
+    "noFriends": "[hi] No friends yet",
+    "incomingRequests": "[hi] Incoming Requests",
+    "myFriends": "[hi] My Friends",
+    "requestCancelled": "[hi] Friend request cancelled",
+    "noOutgoing": "[hi] No outgoing requests",
+    "searchFailed": "[hi] Failed to search users",
+    "sentAt": "[hi] Sent {{time}}",
+    "lastGame": "[hi] Last game: {{time}}",
+    "remove": "[hi] Remove",
+    "requestRejected": "[hi] Friend request rejected",
+    "removeFailed": "[hi] Failed to remove friend",
+    "rejectFailed": "[hi] Failed to reject request",
+    "requestSent": "[hi] Friend request sent!",
+    "friendsLabel": "[hi] Friends",
+    "friendsSince": "[hi] Friends since {{date}}",
+    "requestFailed": "[hi] Failed to send request",
+    "friendsCount": "[hi] {{count}} friends",
+    "title": "[hi] Friends & Opponents",
+    "noIncoming": "[hi] No incoming requests",
+    "noResults": "[hi] No players found",
+    "outgoingRequests": "[hi] Outgoing Requests",
+    "friendRemoved": "[hi] Friend removed",
+    "findPlayers": "[hi] Find Players",
+    "subtitle": "[hi] Connect with players and challenge friends",
+    "searchPlaceholder": "[hi] Search by name...",
+    "requestAccepted": "[hi] Friend request accepted!",
+    "add": "[hi] Add Friend",
+    "reject": "[hi] Reject",
+    "requests": "[hi] Requests",
+    "noFriendsDesc": "[hi] Search for players and send friend requests",
+    "gamesCount": "[hi] {{count}} games",
+    "cancelFailed": "[hi] Failed to cancel request"
+  },
+  "profiles": {
+    "wrongPin": "[hi] Incorrect PIN",
+    "loading": "[hi] Loading profiles...",
+    "manageProfiles": "[hi] Manage Profiles",
+    "enterPin": "[hi] Enter PIN",
+    "whoIsWatching": "[hi] Who's Watching?",
+    "addProfile": "[hi] Add Profile",
+    "manage": "[hi] Manage Profiles",
+    "selectError": "[hi] Error selecting profile"
+  },
+  "cultureTrending": {
+    "noTopics": "[hi] No trending topics available",
+    "categories": {
+      "politics": "[hi] Politics",
+      "tech": "[hi] Tech",
+      "expat": "[hi] Expat Life",
+      "sports": "[hi] Sports",
+      "entertainment": "[hi] Entertainment",
+      "general": "[hi] General",
+      "weather": "[hi] Weather",
+      "technology": "[hi] Technology",
+      "food": "[hi] Food",
+      "fashion": "[hi] Fashion",
+      "travel": "[hi] Travel",
+      "security": "[hi] Security",
+      "health": "[hi] Health",
+      "history": "[hi] History",
+      "economy": "[hi] Economy",
+      "culture": "[hi] Culture",
+      "finance": "[hi] Finance"
+    },
+    "sources": "[hi] Sources",
+    "whatsHotIn": "[hi] What's Hot in {{location}}"
+  },
+  "placeholder": {
+    "datetime": "[hi] YYYY-MM-DDTHH:mm",
+    "filter": {
+      "userId": "[hi] Enter user ID"
+    },
+    "chatMessage": "[hi] Type here...",
+    "pin": "[hi] ••••",
+    "deepLink": "[hi] bayitplus://content/123",
+    "time": {
+      "end": "[hi] 10:00",
+      "start": "[hi] 08:00"
+    },
+    "chat": "[hi] Type your message...",
+    "email": "[hi] your@email.com",
+    "dateRange": {
+      "to": "[hi] To (YYYY-MM-DD)",
+      "from": "[hi] From (YYYY-MM-DD)"
+    },
+    "amount": {
+      "price": "[hi] 0.00",
+      "min": "[hi] Min",
+      "max": "[hi] Max"
+    },
+    "roomCode": "[hi] ABCD1234",
+    "number": "[hi] 0",
+    "password": "[hi] ••••••••",
+    "scheduleDateTime": "[hi] YYYY-MM-DDTHH:mm"
+  },
+  "ritual": {
+    "preparingRitual": "[hi] Preparing your morning ritual...",
+    "skipToday": "[hi] Skip for Today",
+    "noContentNow": "[hi] No content available right now",
+    "day": "[hi] Day",
+    "typeVideo": "[hi] Video",
+    "finish": "[hi] Finish",
+    "israelTime": "[hi] Israel Time",
+    "greeting": "[hi] Good Morning!",
+    "typeRadio": "[hi] Radio",
+    "letsStart": "[hi] Let's Start",
+    "typeLive": "[hi] Live",
+    "recommendation": "[hi] We recommend starting with morning news then switching to radio",
+    "israelUpdate": "[hi] It's afternoon in Israel, news is reporting on ongoing developments",
+    "title": "[hi] Morning Ritual"
+  },
+  "trending": {
+    "title": "[hi] What's Trending in Israel",
+    "categories": {
+      "weather": "[hi] Weather",
+      "sports": "[hi] Sports",
+      "economy": "[hi] Economy",
+      "culture": "[hi] Culture",
+      "entertainment": "[hi] Entertainment",
+      "general": "[hi] General",
+      "politics": "[hi] Politics",
+      "health": "[hi] Health",
+      "tech": "[hi] Tech",
+      "security": "[hi] Security"
+    },
+    "noTopics": "[hi] No trending topics available",
+    "sources": "[hi] Sources",
+    "topStory": "[hi] TOP STORY"
+  },
+  "jerusalem": {
+    "sources": "[hi] Sources",
+    "subtitle": "[hi] Stay connected to the heart of Israel",
+    "categories": {
+      "holy-sites": "[hi] Holy Sites",
+      "diaspora-connection": "[hi] Diaspora Connection",
+      "idf-ceremony": "[hi] IDF Ceremonies",
+      "kotel": "[hi] Western Wall",
+      "jerusalem-events": "[hi] Jerusalem Events",
+      "general": "[hi] Jerusalem"
+    },
+    "title": "[hi] Jerusalem Connection",
+    "noContent": "[hi] No Jerusalem content available",
+    "kotelLive": "[hi] Western Wall Live"
+  },
+  "voiceMode": {
+    "hybridDesc": "[hi] Voice + Remote - voice feedback on actions",
+    "voiceOnlyDesc": "[hi] No remote control - full voice navigation",
+    "hybrid": "[hi] Hybrid",
+    "classic": "[hi] Classic",
+    "classicDesc": "[hi] No voice - remote control only",
+    "voiceOnly": "[hi] Voice Only"
+  },
+  "breadcrumbs": {
+    "series": "[hi] Series",
+    "watching": "[hi] Watching",
+    "movie": "[hi] Movie",
+    "channel": "[hi] Channel",
+    "downloads": "[hi] Downloads",
+    "watchlist": "[hi] Watchlist",
+    "podcast": "[hi] Podcast",
+    "station": "[hi] Station"
+  },
+  "live": {
+    "categories": {
+      "kids": "[hi] Kids",
+      "all": "[hi] All",
+      "entertainment": "[hi] Entertainment",
+      "news": "[hi] News",
+      "music": "[hi] Music",
+      "sports": "[hi] Sports"
+    },
+    "tryLater": "[hi] Try again later",
+    "noChannels": "[hi] No channels available",
+    "next": "[hi] Next:",
+    "title": "[hi] Live TV"
+  },
+  "chat": {
+    "title": "[hi] Bayit+ Assistant",
+    "greeting": "[hi] Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message."
+  },
+  "video": {
+    "watchTrailer": "[hi] Watch Trailer",
+    "deleteConfirm": "[hi] Delete this episode?",
+    "closeTrailer": "[hi] Close Trailer"
+  },
+  "googleLogin": {
+    "redirecting": "[hi] Redirecting to login page...",
+    "cancelledError": "[hi] Google sign-in was cancelled",
+    "loginError": "[hi] Error signing in with Google",
+    "connecting": "[hi] Connecting with Google...",
+    "missingCode": "[hi] Authentication code is missing"
+  },
+  "components": {
+    "select": {
+      "default": "[hi] Select..."
     }
   }
 }

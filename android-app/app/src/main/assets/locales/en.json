@@ -56,7 +56,11 @@
     "upgrade": "Upgrade to Premium",
     "skip": "Skip",
     "thisContent": "this content",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "dismiss": "Dismiss",
+    "goBack": "Go Back",
+    "pause": "Pause",
+    "tryAgain": "Try Again"
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -159,7 +163,18 @@
     "error": "Something went wrong",
     "tryAgain": "Try Again",
     "securityNote": "Your credentials are sent securely and are never stored on the TV.",
-    "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV."
+    "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV.",
+    "almostThere": "Almost there!",
+    "authenticating": "Authenticating...",
+    "connected": "Connected",
+    "expired": "Code Expired",
+    "expiredMessage": "Your sign-in code has expired. Please request a new one.",
+    "header": "Sign In to TV",
+    "pleaseSignIn": "Please sign in on your phone or computer",
+    "signInButton": "Sign In",
+    "signInToTV": "Sign In to TV",
+    "subtitle": "Enter the code shown on your TV screen",
+    "tvSignedIn": "TV signed in successfully"
   },
   "googleLogin": {
     "cancelledError": "Google sign-in was cancelled",
@@ -336,7 +351,11 @@
         "subtitle": "Watch Now",
         "description": "News, current affairs and quality content"
       }
-    }
+    },
+    "enableLocation": "Enable Location",
+    "locationPermissionDeniedDescription": "Location access was denied. Enable it in Settings to see content near you.",
+    "locationPermissionDescription": "Allow location access to discover content near you.",
+    "openSettings": "Open Settings"
   },
   "search": {
     "title": "Search",
@@ -428,7 +447,8 @@
       "educational": "Educational"
     },
     "noPodcasts": "No podcasts available",
-    "tryLater": "Try again later"
+    "tryLater": "Try again later",
+    "playLatest": "Play Latest"
   },
   "vod": {
     "title": "Movies & Series",
@@ -915,18 +935,21 @@
     }
   },
   "voice": {
-    "listening": "Listening...",
-    "speaking": "Speaking",
-    "ready": "Ready",
-    "tapToSpeak": "Tap to speak",
-    "processing": "Processing...",
-    "transcribing": "Transcribing...",
-    "tapToStop": "Tap to stop recording",
-    "pleaseWait": "Please wait...",
-    "transcriptionNotAvailable": "Transcription not available",
-    "transcriptionFailed": "Transcription failed",
-    "micPermissionDenied": "Microphone permission denied",
-    "error": "Couldn't hear you, please try again"
+    "panelTitle": "Voice Assistant",
+    "typeCommand": "Type a command...",
+    "controlExecuted": "Executed: {{action}}",
+    "timerSet": "Timer set for {{amount}} {{unit}}",
+    "chatPending": "Processing your message...",
+    "suggestion": {
+      "watchLive": "Watch Live TV",
+      "search": "Search Content",
+      "listenRadio": "Listen to Radio"
+    },
+    "error": {
+      "micDenied": "Microphone access denied",
+      "notSupported": "Voice commands not supported in this browser",
+      "recognitionFailed": "Could not understand. Please try again."
+    }
   },
   "errors": {
     "networkError": "Network Error",
@@ -983,10 +1006,7 @@
     "noStream": "Stream not available",
     "loadError": "Failed to load stream",
     "settings": "Settings",
-    "subtitles": {
-      "_": "Subtitles",
-      "translateWord": "Translate word: {{word}}"
-    },
+    "subtitles": "Subtitles",
     "playbackSpeed": "Playback Speed",
     "quality": "Quality",
     "auto": "Auto",
@@ -1015,13 +1035,16 @@
       "split": "Split",
       "togglePanel": "Toggle AI Panel",
       "translate": "Translate",
-      "trivia": "Trivia"
+      "trivia": "Trivia",
+      "triviaToggle": "Trivia"
     },
     "catchup": {
       "description": "Missed the beginning? Get an AI-powered summary of what happened so far.",
       "generateSummary": "Generate Summary",
       "summaryTitle": "Summary",
-      "title": "Catch Up"
+      "title": "Catch Up",
+      "keyPoints": "Key Points",
+      "transcript": "Transcript"
     },
     "chat": {
       "title": "Live Chat",
@@ -1052,7 +1075,14 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip"
+      "skip": "Skip",
+      "close": "Close",
+      "exitFullscreen": "Exit Fullscreen",
+      "fullscreen": "Fullscreen",
+      "restart": "Restart",
+      "skipBackward": "Skip Backward",
+      "skipForward": "Skip Forward",
+      "volume": "Volume"
     },
     "dubbing": {
       "notNow": "Not Now",
@@ -1082,7 +1112,9 @@
       "set": "Set Timer",
       "remaining": "Sleep in {{time}}",
       "extend": "+15 min",
-      "cancel": "Cancel Timer"
+      "cancel": "Cancel Timer",
+      "off": "Off",
+      "setTimer": "Set Sleep Timer"
     },
     "openSubs": {
       "title": "Search Subtitles",
@@ -1091,6 +1123,28 @@
       "searchFailed": "Search failed. Try again.",
       "downloads": "{{count}} downloads",
       "noResults": "No subtitles found"
+    },
+    "dialogue": {
+      "cancel": "Cancel",
+      "close": "Close",
+      "placeholder": "Type your message...",
+      "selectCharacter": "Select Character",
+      "send": "Send",
+      "sharedSession": "Shared Session",
+      "waitingForTurn": "Waiting for your turn...",
+      "yourAvatar": "Your Avatar"
+    },
+    "interaction": {
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "pauseAsk": {
+      "askAgain": "Ask Again",
+      "placeholder": "Ask about this scene...",
+      "resume": "Resume",
+      "resumeMovie": "Resume Movie",
+      "selectCharacter": "Select Character",
+      "title": "Pause & Ask"
     }
   },
   "empty": {
@@ -2884,7 +2938,11 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
+      "notIncluded": [
+        "Live channels",
+        "AI Assistant",
+        "Offline viewing"
+      ]
     },
     "premium": {
       "name": "Premium",
@@ -2896,7 +2954,10 @@
         "Watch on 2 devices",
         "HD quality"
       ],
-      "notIncluded": ["Offline viewing", "Family profiles"]
+      "notIncluded": [
+        "Offline viewing",
+        "Family profiles"
+      ]
     },
     "family": {
       "name": "Family",
@@ -3383,7 +3444,25 @@
     "chat": {
       "title": "Chat",
       "inputPlaceholder": "Type a message..."
-    }
+    },
+    "acceptDraw": "Accept Draw",
+    "acceptInvite": "Accept Invite",
+    "blackCaptured": "Black Captured",
+    "blackTurn": "Black's Turn",
+    "challengeFriend": "Challenge Friend",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "copyCode": "Copy Code",
+    "declineDraw": "Decline Draw",
+    "declineInvite": "Decline Invite",
+    "drawOffered": "Draw Offered",
+    "joinByGameCode": "Join by Game Code",
+    "noFriendsYet": "No friends yet",
+    "offline": "Offline",
+    "online": "Online",
+    "opponent": "Opponent",
+    "whiteCaptured": "White Captured",
+    "whiteTurn": "White's Turn",
+    "you": "You"
   },
   "friends": {
     "title": "Friends & Opponents",
@@ -3602,7 +3681,7 @@
   "voiceOnboarding": {
     "welcome": {
       "title": "Welcome to Voice Control",
-      "description": "Control Bayit+ with your voice for a hands-free experience"
+      "description": "Control Bayit+ with your voice for a hands-free experience."
     },
     "features": {
       "voiceCommands": "Voice Commands",
@@ -3642,7 +3721,19 @@
       },
       "startUsing": "Start Using Voice Control"
     },
-    "skip": "Skip for now"
+    "skip": "Skip for now",
+    "buttons": {
+      "back": "Back"
+    },
+    "completion": {
+      "message": "Voice features are ready to use.",
+      "title": "Voice Setup Complete"
+    },
+    "title": "Voice Setup",
+    "training": {
+      "message": "Read the phrases aloud to train voice recognition.",
+      "title": "Voice Training"
+    }
   },
   "taxonomy": {
     "sections": {
@@ -3941,7 +4032,10 @@
       "languageHint": "Select 1-3 languages to display for each fact",
       "language": "language",
       "selectLanguage": "Select this language",
-      "deselectLanguage": "Deselect this language"
+      "deselectLanguage": "Deselect this language",
+      "enableDescription": "Show trivia questions while watching content.",
+      "enableTrivia": "Enable Trivia",
+      "title": "Trivia Settings"
     },
     "aiTrivia": "AI Trivia",
     "tellMeMore": "Tell me more",
@@ -3952,13 +4046,20 @@
     "loginRequired": "Login Required",
     "loginToWatch": "Please sign in to watch {{title}}",
     "login": "Login",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "biometricEnrollEnable": "Enable",
+    "biometricEnrollMessage": "Use Face ID or fingerprint for faster sign-in next time.",
+    "biometricEnrollSkip": "Skip",
+    "biometricEnrollTitle": "Enable Biometric Sign-In",
+    "biometricSignIn": "Sign in with Biometrics",
+    "signOut": "Sign Out"
   },
   "recording": {
     "stop": "Stop Recording",
     "start": "Start Recording"
   },
   "discover": {
+    "title": "Discover",
     "subtitle": "Explore 19 AI-powered features",
     "description": "Bayit+ uses AI to enhance your viewing, listening, and learning experience. Discover what's available on your platform.",
     "featureCount": "{{count}} features",
@@ -4215,6 +4316,15 @@
     }
   },
   "byoc": {
+    "home": {
+      "title": "Bring Your Own Content",
+      "subtitle": "Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "Connect Sources",
+      "aiFeatures": {
+        "dubbing": "AI Dubbing available",
+        "subtitles": "Live Subtitles available"
+      }
+    },
     "pageSubtitle": "Bring Your Own Content - add IPTV and streaming sources",
     "addSource": "Add Source",
     "sync": "Sync",
@@ -4359,23 +4469,6 @@
       }
     }
   },
-  "voice": {
-    "panelTitle": "Voice Assistant",
-    "typeCommand": "Type a command...",
-    "controlExecuted": "Executed: {{action}}",
-    "timerSet": "Timer set for {{amount}} {{unit}}",
-    "chatPending": "Processing your message...",
-    "suggestion": {
-      "watchLive": "Watch Live TV",
-      "search": "Search Content",
-      "listenRadio": "Listen to Radio"
-    },
-    "error": {
-      "micDenied": "Microphone access denied",
-      "notSupported": "Voice commands not supported in this browser",
-      "recognitionFailed": "Could not understand. Please try again."
-    }
-  },
   "dm": {
     "title": "Messages",
     "conversations": "Conversations",
@@ -4436,5 +4529,137 @@
       "inviteFailed": "Failed to send invitation",
       "removeFailed": "Failed to remove member"
     }
-  }
+  },
+  "aiChat": {
+    "retryButton": "Retry",
+    "sendButton": "Send",
+    "title": "AI Chat",
+    "voiceButton": "Voice"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "Back"
+    },
+    "completion": {
+      "message": "You're all set! Start exploring AI features.",
+      "title": "Setup Complete"
+    },
+    "permissions": {
+      "description": "Grant permissions to enable AI features like voice and camera.",
+      "title": "Permissions"
+    },
+    "personalization": {
+      "description": "Tell us your preferences to personalize your AI experience.",
+      "title": "Personalization"
+    },
+    "title": "AI Setup",
+    "welcome": {
+      "description": "Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
+      "title": "Welcome to Bayit+ AI"
+    }
+  },
+  "auth_device_authorized": "Device authorized",
+  "auth_device_code_expired": "Code expired",
+  "auth_device_get_new_code": "Get new code",
+  "auth_device_manual_login": "Sign in manually",
+  "auth_device_visit_uri": "Visit the URL shown on your TV",
+  "avatar": {
+    "tapToSpeak": "Tap to speak",
+    "title": "Avatar"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "Dubbed Audio",
+      "originalAudio": "Original Audio",
+      "title": "Audio Mixer"
+    },
+    "settings_title": "Dubbing Settings",
+    "target_language": "Target Language",
+    "voiceSelector": {
+      "selected": "Selected",
+      "subtitle": "Choose a voice for dubbing",
+      "title": "Voice Selection"
+    }
+  },
+  "go_back": "Go Back",
+  "miniPlayer": {
+    "closePlayer": "Close Player",
+    "skipBackward": "Skip Backward",
+    "skipForward": "Skip Forward"
+  },
+  "retry": "Retry",
+  "search_hint": "Search channels, movies, shows...",
+  "search_no_results": "No results found",
+  "search_prompt": "What are you looking for?",
+  "subscription_required": "Subscription Required",
+  "subscription_upsell_tv": "Upgrade to watch on TV",
+  "talkback": {
+    "title": "Talkback"
+  },
+  "voiceAssistant": {
+    "fabLabel": "Voice Assistant",
+    "modal": {
+      "cancel": "Cancel",
+      "setupMessage": "Set up voice recognition to use the voice assistant.",
+      "setupRequired": "Setup Required",
+      "startSetup": "Start Setup",
+      "title": "Voice Assistant"
+    }
+  },
+  "voiceCommand": {
+    "executing": "Executing...",
+    "listening": "Listening...",
+    "noMatch": "No match found",
+    "recognized": "Recognized"
+  },
+  "voiceDecision": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "matched": "Matched"
+  },
+  "voiceSearch": {
+    "listening": "Listening...",
+    "noResults": "No results found",
+    "tapToSpeak": "Tap to speak",
+    "title": "Voice Search"
+  },
+  "voiceSettings": {
+    "language": "Language",
+    "speechRate": "Speech Rate",
+    "title": "Voice Settings",
+    "ttsProvider": "TTS Provider",
+    "voiceMode": "Voice Mode",
+    "voiceSelection": "Voice Selection",
+    "wakeWord": "Wake Word"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "Back"
+    },
+    "calibration": {
+      "description": "Speak normally to calibrate the microphone.",
+      "listening": "Listening...",
+      "micButton": "Start Recording",
+      "resultTitle": "Calibration Result",
+      "stopButton": "Stop Recording",
+      "tapToStart": "Tap to start calibration",
+      "title": "Microphone Calibration"
+    },
+    "complete": {
+      "message": "Voice wizard setup is complete. You can now use voice features.",
+      "title": "Setup Complete"
+    },
+    "language": {
+      "description": "Select your preferred language for voice commands.",
+      "title": "Voice Language"
+    },
+    "permission": {
+      "description": "Microphone access is needed for voice features.",
+      "granted": "Permission Granted",
+      "requestButton": "Grant Permission",
+      "title": "Microphone Permission"
+    },
+    "title": "Voice Wizard"
+  },
+  "watch_now": "Watch Now"
 }

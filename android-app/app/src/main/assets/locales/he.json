@@ -55,7 +55,12 @@
     "upgrade": "שדרג לפרימיום",
     "skip": "דלג",
     "thisContent": "תוכן זה",
-    "backToHome": "חזרה לדף הבית"
+    "backToHome": "חזרה לדף הבית",
+    "dismiss": "סגור",
+    "goBack": "חזרה",
+    "pause": "השהה",
+    "tryAgain": "נסה שוב",
+    "filters": "Filters"
   },
   "demo": {
     "banner": "מצב הדמו",
@@ -108,7 +113,10 @@
     "termsNotice": "בהתחברות, אתה מסכים לתנאי השימוש ומדיניות הפרטיות שלנו",
     "errors": {
       "fillAllFields": "נא למלא את כל השדות",
-      "loginFailed": "שגיאה בהתחברות. נסה שוב."
+      "loginFailed": "שגיאה בהתחברות. נסה שוב.",
+      "emailRequired": "Email is required",
+      "googleFailed": "Google sign-in failed. Please try again.",
+      "passwordRequired": "Password is required"
     },
     "qrInstructions": "סרוק את הקוד עם הטלפון להתחברות מהירה",
     "methodQR": "קוד QR",
@@ -130,7 +138,8 @@
     "voicePlaceholder": "הקלד את תשובתך...",
     "send": "שלח",
     "createAccount": "צור חשבון",
-    "bayitThinking": "בית חושב..."
+    "bayitThinking": "בית חושב...",
+    "unexpectedError": "An unexpected error occurred"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -154,7 +163,18 @@
     "error": "משהו השתבש",
     "tryAgain": "נסה שוב",
     "securityNote": "הפרטים נשלחים בצורה מאובטחת ואינם נשמרים בטלוויזיה.",
-    "footer": "יש בעיה? וודא שסרקת קוד QR חדש מהטלוויזיה."
+    "footer": "יש בעיה? וודא שסרקת קוד QR חדש מהטלוויזיה.",
+    "almostThere": "כמעט שם!",
+    "authenticating": "מאמת...",
+    "connected": "מחובר",
+    "expired": "הקוד פג תוקף",
+    "expiredMessage": "קוד ההתחברות פג תוקף. בקש קוד חדש.",
+    "header": "התחבר לטלוויזיה",
+    "pleaseSignIn": "התחבר בטלפון או במחשב שלך",
+    "signInButton": "התחבר",
+    "signInToTV": "התחבר לטלוויזיה",
+    "subtitle": "הזן את הקוד המוצג על מסך הטלוויזיה",
+    "tvSignedIn": "הטלוויזיה חוברה בהצלחה"
   },
   "googleLogin": {
     "cancelledError": "ההתחברות עם Google בוטלה",
@@ -331,7 +351,11 @@
         "subtitle": "צפו עכשיו",
         "description": "חדשות, תוכניות אקטואליה ותוכן איכותי"
       }
-    }
+    },
+    "enableLocation": "הפעל מיקום",
+    "locationPermissionDeniedDescription": "גישה למיקום נדחתה. הפעל בהגדרות כדי לראות תוכן קרוב אליך.",
+    "locationPermissionDescription": "אפשר גישה למיקום כדי לגלות תוכן קרוב אליך.",
+    "openSettings": "פתח הגדרות"
   },
   "search": {
     "title": "חיפוש",
@@ -423,7 +447,8 @@
       "educational": "חינוכי"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
-    "tryLater": "נסה שוב מאוחר יותר"
+    "tryLater": "נסה שוב מאוחר יותר",
+    "playLatest": "נגן אחרון"
   },
   "vod": {
     "title": "סרטים וסדרות",
@@ -541,7 +566,9 @@
       "removeConfirmNo": "ביטול",
       "maxItems": "מקסימום {{max}} פריטים. הסר פריט כדי להוסיף עוד.",
       "emptyAi": "ה-AI יבחר תוכן אוטומטית בהתאם להעדפותיך.",
-      "more": "פריטים נוספים"
+      "more": "פריטים נוספים",
+      "maxReached": "Maximum {{max}} items reached",
+      "confirmRemove": "Click again to confirm removal"
     },
     "days": {
       "sunday": "ראשון",
@@ -583,7 +610,8 @@
       "thisWeek": "השבוע: {{day}} ב-{{time}}",
       "comingSoon": "טריגרים לחגים בקרוב",
       "startTime": "שעת התחלה",
-      "endTime": "שעת סיום"
+      "endTime": "שעת סיום",
+      "locationBased": "Times based on your location"
     },
     "examples": {
       "title": "רצפים לדוגמה",
@@ -616,7 +644,11 @@
       "nameRequired": "שם הרצף נדרש",
       "startTimeRequired": "שעת התחלה נדרשת לטריגר לפי זמן",
       "noDaysSelected": "בחר לפחות יום אחד",
-      "invalidTime": "פורמט זמן לא תקין"
+      "invalidTime": "פורמט זמן לא תקין",
+      "endTimeRequired": "End time is required",
+      "timeRange": "End time must be after start time",
+      "contentRequired": "Add content or enable AI",
+      "daysRequired": "Select at least one day"
     },
     "tv": {
       "useCompanion": "להתאמה מלאה, השתמש באפליקציית Bayit+ בטלפון או בקר ב-bayit.plus במחשב."
@@ -986,10 +1018,7 @@
     "noStream": "הזרם אינו זמין",
     "loadError": "שגיאה בטעינת הזרם",
     "settings": "הגדרות",
-    "subtitles": {
-      "_": "כתוביות",
-      "translateWord": "תרגם מילה: {{word}}"
-    },
+    "subtitles": "כתוביות",
     "playbackSpeed": "מהירות ניגון",
     "quality": "איכות",
     "auto": "אוטומטי",
@@ -1024,13 +1053,16 @@
       "split": "מפוצל",
       "togglePanel": "הצג/הסתר לוח AI",
       "translate": "תרגם",
-      "trivia": "טריוויה"
+      "trivia": "טריוויה",
+      "triviaToggle": "טריוויה"
     },
     "catchup": {
       "description": "פספסת את ההתחלה? קבל סיכום מבוסס AI של מה שקרה עד כה.",
       "generateSummary": "צור סיכום",
       "summaryTitle": "סיכום",
-      "title": "השלמה"
+      "title": "השלמה",
+      "keyPoints": "נקודות מפתח",
+      "transcript": "תמליל"
     },
     "chat": {
       "title": "צ'אט חי",
@@ -1061,7 +1093,14 @@
       "preview": "תצוגה מקדימה",
       "selected": "נבחר",
       "send": "שלח",
-      "skip": "דלג"
+      "skip": "דלג",
+      "close": "סגור",
+      "exitFullscreen": "צא ממסך מלא",
+      "fullscreen": "מסך מלא",
+      "restart": "התחל מחדש",
+      "skipBackward": "דלג אחורה",
+      "skipForward": "דלג קדימה",
+      "volume": "עוצמת שמע"
     },
     "dubbing": {
       "notNow": "לא עכשיו",
@@ -1091,7 +1130,9 @@
       "set": "הגדר טיימר",
       "remaining": "שינה בעוד {{time}}",
       "extend": "+15 דק'",
-      "cancel": "בטל טיימר"
+      "cancel": "בטל טיימר",
+      "off": "כבוי",
+      "setTimer": "הגדר טיימר שינה"
     },
     "openSubs": {
       "title": "חיפוש כתוביות",
@@ -1100,6 +1141,28 @@
       "searchFailed": "החיפוש נכשל. נסה שוב.",
       "downloads": "{{count}} הורדות",
       "noResults": "לא נמצאו כתוביות"
+    },
+    "dialogue": {
+      "cancel": "ביטול",
+      "close": "סגור",
+      "placeholder": "הקלד את ההודעה שלך...",
+      "selectCharacter": "בחר דמות",
+      "send": "שלח",
+      "sharedSession": "מפגש משותף",
+      "waitingForTurn": "ממתין לתורך...",
+      "yourAvatar": "האווטאר שלך"
+    },
+    "interaction": {
+      "next": "הבא",
+      "previous": "הקודם"
+    },
+    "pauseAsk": {
+      "askAgain": "שאל שוב",
+      "placeholder": "שאל על הסצנה הזו...",
+      "resume": "המשך",
+      "resumeMovie": "המשך סרט",
+      "selectCharacter": "בחר דמות",
+      "title": "השהה ושאל"
     }
   },
   "empty": {
@@ -1566,7 +1629,8 @@
       "widget_updated": "ווידג'ט עודכן",
       "widget_deleted": "ווידג'ט נמחק",
       "widget_published": "ווידג'ט פורסם",
-      "widget_unpublished": "ווידג'ט בוטל פרסומו"
+      "widget_unpublished": "ווידג'ט בוטל פרסומו",
+      "subscription_deleted": "Subscription Deleted"
     },
     "placeholder": {
       "userId": "הזן מזהה משתמש",
@@ -2292,7 +2356,8 @@
         "episodes": "פרקים",
         "order": "סדר",
         "name": "שם",
-        "slug": "מזהה"
+        "slug": "מזהה",
+        "subtitles": "Subtitles"
       },
       "validation": {
         "titleRequired": "כותרת נדרשת",
@@ -2479,8 +2544,13 @@
         "streamUrl": "כתובת הזרמה",
         "epgSource": "כתובת מקור EPG (אופציונלי)",
         "currentShow": "תוכנית נוכחית",
-        "order": "מיקום"
-      }
+        "order": "מיקום",
+        "targetLanguagesHelp": "Select which languages users can translate to in real-time",
+        "supportsSubtitles": "Enable Live Subtitles",
+        "primaryLanguage": "Primary Language (Source)",
+        "targetLanguages": "Available Translation Languages"
+      },
+      "subtitleSettings": "Live Subtitle Settings"
     },
     "radioStations": {
       "subtitle": "ניהול תחנות רדיו",
@@ -2636,7 +2706,14 @@
       "selectToDelete": "אנא בחר מנויים למחיקה",
       "confirmDeleteMultiple": "למחוק {{count}} מנויים?",
       "selected": "נבחרו",
-      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול."
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את המנוי עבור {{user}}? פעולה זו אינה ניתנת לביטול.",
+      "actions": {
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "changePlan": "Change Plan",
+        "pause": "Pause",
+        "resume": "Resume"
+      }
     },
     "marketingDashboard": {
       "subtitle": "סקירת שיווק",
@@ -3392,7 +3469,25 @@
     "chat": {
       "title": "צ'אט",
       "inputPlaceholder": "הקלד הודעה..."
-    }
+    },
+    "declineDraw": "Decline Draw",
+    "whiteCaptured": "White Captured",
+    "you": "You",
+    "offline": "Offline",
+    "noFriendsYet": "No friends yet",
+    "blackTurn": "Black's Turn",
+    "online": "Online",
+    "challengeFriend": "Challenge Friend",
+    "copyCode": "Copy Code",
+    "declineInvite": "Decline Invite",
+    "blackCaptured": "Black Captured",
+    "whiteTurn": "White's Turn",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "joinByGameCode": "Join by Game Code",
+    "opponent": "Opponent",
+    "acceptInvite": "Accept Invite",
+    "drawOffered": "Draw Offered",
+    "acceptDraw": "Accept Draw"
   },
   "friends": {
     "title": "חברים ויריבים",
@@ -3611,7 +3706,7 @@
   "voiceOnboarding": {
     "welcome": {
       "title": "ברוכים הבאים לשליטה קולית",
-      "description": "שלוט ב-Bayit+ עם הקול שלך לחוויה ללא ידיים"
+      "description": "שלוט בבית פלוס עם הקול שלך לחוויה ללא ידיים."
     },
     "features": {
       "voiceCommands": "פקודות קוליות",
@@ -3651,7 +3746,19 @@
       },
       "startUsing": "התחל להשתמש בשליטה קולית"
     },
-    "skip": "דלג לעת עתה"
+    "skip": "דלג לעת עתה",
+    "buttons": {
+      "back": "חזרה"
+    },
+    "completion": {
+      "message": "תכונות הקול מוכנות לשימוש.",
+      "title": "הגדרת הקול הושלמה"
+    },
+    "title": "הגדרת קול",
+    "training": {
+      "message": "קרא את המשפטים בקול רם כדי לאמן את זיהוי הקול.",
+      "title": "אימון קולי"
+    }
   },
   "taxonomy": {
     "sections": {
@@ -3950,7 +4057,10 @@
       "languageHint": "בחר 1-3 שפות להצגה עבור כל עובדה",
       "language": "שפה",
       "selectLanguage": "בחר שפה זו",
-      "deselectLanguage": "בטל בחירת שפה זו"
+      "deselectLanguage": "בטל בחירת שפה זו",
+      "enableDescription": "הצג שאלות טריוויה בזמן צפייה בתוכן.",
+      "enableTrivia": "הפעל טריוויה",
+      "title": "הגדרות טריוויה"
     },
     "aiTrivia": "טריוויה AI",
     "tellMeMore": "ספר לי עוד",
@@ -3961,7 +4071,13 @@
     "loginRequired": "נדרשת התחברות",
     "loginToWatch": "אנא התחבר כדי לצפות ב{{title}}",
     "login": "התחבר",
-    "signUp": "הרשם"
+    "signUp": "הרשם",
+    "biometricEnrollEnable": "הפעל",
+    "biometricEnrollMessage": "השתמש בזיהוי פנים או טביעת אצבע להתחברות מהירה.",
+    "biometricEnrollSkip": "דלג",
+    "biometricEnrollTitle": "הפעל התחברות ביומטרית",
+    "biometricSignIn": "התחבר עם ביומטריה",
+    "signOut": "התנתק"
   },
   "recording": {
     "stop": "עצור הקלטה",
@@ -4221,7 +4337,8 @@
         "step2": "הקלד את השאלה או הבקשה",
         "step3": "קרא את תגובת ה-AI"
       }
-    }
+    },
+    "title": "Discover"
   },
   "byoc": {
     "pageSubtitle": "הבא את התוכן שלך - הוסף מקורות IPTV ושידור",
@@ -4296,6 +4413,15 @@
       "syncFailed": "נכשל לסנכרן את המקור",
       "normalizationFailed": "עיבוד התוכן נכשל",
       "normalizationPollFailed": "החיבור אבד במהלך העיבוד"
+    },
+    "home": {
+      "title": "הביאו תוכן משלכם",
+      "subtitle": "חברו את מקורות ה-IPTV, Plex או YouTube שלכם ותהנו מתכונות AI של Bayit+ על התוכן שלכם",
+      "connectButton": "חבר מקורות",
+      "aiFeatures": {
+        "dubbing": "דיבוב AI זמין",
+        "subtitles": "כתוביות חיות זמינות"
+      }
     }
   },
   "onboarding": {
@@ -4428,5 +4554,137 @@
       "inviteFailed": "שליחת ההזמנה נכשלה",
       "removeFailed": "הסרת החבר נכשלה"
     }
-  }
+  },
+  "aiChat": {
+    "retryButton": "נסה שוב",
+    "sendButton": "שלח",
+    "title": "צ'אט AI",
+    "voiceButton": "קול"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "חזרה"
+    },
+    "completion": {
+      "message": "הכל מוכן! התחל לחקור תכונות AI.",
+      "title": "ההגדרה הושלמה"
+    },
+    "permissions": {
+      "description": "אשר הרשאות כדי להפעיל תכונות AI כמו קול ומצלמה.",
+      "title": "הרשאות"
+    },
+    "personalization": {
+      "description": "ספר לנו על ההעדפות שלך כדי להתאים אישית את חוויית ה-AI.",
+      "title": "התאמה אישית"
+    },
+    "title": "הגדרת AI",
+    "welcome": {
+      "description": "בית פלוס משתמש ב-AI כדי לשפר את חוויית הצפייה עם דיבוב, כתוביות ועוד.",
+      "title": "ברוכים הבאים ל-AI של בית פלוס"
+    }
+  },
+  "auth_device_authorized": "המכשיר אושר",
+  "auth_device_code_expired": "הקוד פג תוקף",
+  "auth_device_get_new_code": "קבל קוד חדש",
+  "auth_device_manual_login": "התחבר ידנית",
+  "auth_device_visit_uri": "בקר בכתובת המוצגת בטלוויזיה",
+  "avatar": {
+    "tapToSpeak": "הקש כדי לדבר",
+    "title": "אווטאר"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "שמע מדובב",
+      "originalAudio": "שמע מקורי",
+      "title": "מיקסר שמע"
+    },
+    "settings_title": "הגדרות דיבוב",
+    "target_language": "שפת יעד",
+    "voiceSelector": {
+      "selected": "נבחר",
+      "subtitle": "בחר קול לדיבוב",
+      "title": "בחירת קול"
+    }
+  },
+  "go_back": "חזרה",
+  "miniPlayer": {
+    "closePlayer": "סגור נגן",
+    "skipBackward": "דלג אחורה",
+    "skipForward": "דלג קדימה"
+  },
+  "retry": "נסה שוב",
+  "search_hint": "חפש ערוצים, סרטים, תוכניות...",
+  "search_no_results": "לא נמצאו תוצאות",
+  "search_prompt": "מה אתה מחפש?",
+  "subscription_required": "נדרש מנוי",
+  "subscription_upsell_tv": "שדרג כדי לצפות בטלוויזיה",
+  "talkback": {
+    "title": "טוקבק"
+  },
+  "voiceAssistant": {
+    "fabLabel": "עוזר קולי",
+    "modal": {
+      "cancel": "ביטול",
+      "setupMessage": "הגדר זיהוי קולי כדי להשתמש בעוזר הקולי.",
+      "setupRequired": "נדרשת הגדרה",
+      "startSetup": "התחל הגדרה",
+      "title": "עוזר קולי"
+    }
+  },
+  "voiceCommand": {
+    "executing": "מבצע...",
+    "listening": "מאזין...",
+    "noMatch": "לא נמצאה התאמה",
+    "recognized": "זוהה"
+  },
+  "voiceDecision": {
+    "cancel": "ביטול",
+    "confirm": "אישור",
+    "matched": "הותאם"
+  },
+  "voiceSearch": {
+    "listening": "מאזין...",
+    "noResults": "לא נמצאו תוצאות",
+    "tapToSpeak": "הקש כדי לדבר",
+    "title": "חיפוש קולי"
+  },
+  "voiceSettings": {
+    "language": "שפה",
+    "speechRate": "מהירות דיבור",
+    "title": "הגדרות קול",
+    "ttsProvider": "ספק TTS",
+    "voiceMode": "מצב קול",
+    "voiceSelection": "בחירת קול",
+    "wakeWord": "מילת הפעלה"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "חזרה"
+    },
+    "calibration": {
+      "description": "דבר כרגיל כדי לכייל את המיקרופון.",
+      "listening": "מאזין...",
+      "micButton": "התחל הקלטה",
+      "resultTitle": "תוצאת כיול",
+      "stopButton": "עצור הקלטה",
+      "tapToStart": "הקש כדי להתחיל כיול",
+      "title": "כיול מיקרופון"
+    },
+    "complete": {
+      "message": "הגדרת אשף הקול הושלמה. כעת ניתן להשתמש בתכונות קול.",
+      "title": "ההגדרה הושלמה"
+    },
+    "language": {
+      "description": "בחר את השפה המועדפת עליך לפקודות קוליות.",
+      "title": "שפת קול"
+    },
+    "permission": {
+      "description": "נדרשת גישה למיקרופון לתכונות קול.",
+      "granted": "ההרשאה אושרה",
+      "requestButton": "אשר הרשאה",
+      "title": "הרשאת מיקרופון"
+    },
+    "title": "אשף קול"
+  },
+  "watch_now": "צפה עכשיו"
 }

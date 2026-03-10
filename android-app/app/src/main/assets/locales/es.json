@@ -54,7 +54,13 @@
     "collapse": "Contraer",
     "skip": "Omitir",
     "thisContent": "este contenido",
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "dismiss": "Descartar",
+    "goBack": "Volver",
+    "pause": "Pausar",
+    "tryAgain": "Reintentar",
+    "filters": "Filters",
+    "upgrade": "Upgrade to Premium"
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -158,7 +164,18 @@
     "error": "Algo salió mal",
     "tryAgain": "Intentar de Nuevo",
     "securityNote": "Tus credenciales se envían de forma segura y nunca se almacenan en el TV.",
-    "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV."
+    "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV.",
+    "almostThere": "Casi listo!",
+    "authenticating": "Autenticando...",
+    "connected": "Conectado",
+    "expired": "Codigo expirado",
+    "expiredMessage": "Tu codigo ha expirado. Solicita uno nuevo.",
+    "header": "Iniciar sesion en TV",
+    "pleaseSignIn": "Inicia sesion en tu telefono o computadora",
+    "signInButton": "Iniciar sesion",
+    "signInToTV": "Iniciar sesion en TV",
+    "subtitle": "Ingresa el codigo mostrado en tu TV",
+    "tvSignedIn": "TV conectada exitosamente"
   },
   "googleLogin": {
     "cancelledError": "Inicio de sesión con Google cancelado",
@@ -335,7 +352,11 @@
         "subtitle": "Ver Ahora",
         "description": "Noticias, actualidad y contenido de calidad"
       }
-    }
+    },
+    "enableLocation": "Activar ubicacion",
+    "locationPermissionDeniedDescription": "Se denego el acceso a la ubicacion. Activalo en Ajustes para ver contenido cercano.",
+    "locationPermissionDescription": "Permite acceso a la ubicacion para descubrir contenido cercano.",
+    "openSettings": "Abrir ajustes"
   },
   "search": {
     "title": "Buscar",
@@ -427,7 +448,8 @@
       "educational": "Educativo"
     },
     "noPodcasts": "Sin podcasts disponibles",
-    "tryLater": "Intenta de nuevo más tarde"
+    "tryLater": "Intenta de nuevo más tarde",
+    "playLatest": "Reproducir ultimo"
   },
   "vod": {
     "title": "Películas y Series",
@@ -836,7 +858,10 @@
     "resetConfirmMessage": "¿Restablecer todas las secciones a la configuración predeterminada?",
     "sectionHidden": "Sección oculta",
     "sectionShown": "Sección visible",
-    "replayTour": "Repetir el tour de características"
+    "replayTour": "Repetir el tour de características",
+    "autoTranslateDescription": "Automatically translate chat messages to your preferred language",
+    "autoTranslate": "Auto-translate messages",
+    "chatTranslation": "Chat Translation"
   },
   "voice": {
     "panelTitle": "Asistente de voz",
@@ -910,10 +935,7 @@
     "noStream": "Transmisión no disponible",
     "loadError": "Error al cargar la transmisión",
     "settings": "Configuración",
-    "subtitles": {
-      "_": "Subtítulos",
-      "translateWord": "Traducir palabra: {{word}}"
-    },
+    "subtitles": "Subtitulos",
     "playbackSpeed": "Velocidad de Reproducción",
     "quality": "Calidad",
     "auto": "Automático",
@@ -937,13 +959,16 @@
       "split": "Dividir",
       "togglePanel": "Mostrar/ocultar panel de IA",
       "translate": "Traducir",
-      "trivia": "Trivia"
+      "trivia": "Trivia",
+      "triviaToggle": "Trivia"
     },
     "catchup": {
       "description": "Te perdiste el inicio? Obtene un resumen impulsado por IA de lo que paso hasta ahora.",
       "generateSummary": "Generar resumen",
       "summaryTitle": "Resumen",
-      "title": "Ponerse al dia"
+      "title": "Ponerse al dia",
+      "keyPoints": "Puntos clave",
+      "transcript": "Transcripcion"
     },
     "chat": {
       "title": "Chat en vivo",
@@ -974,7 +999,14 @@
       "preview": "Vista previa",
       "selected": "Seleccionado",
       "send": "Enviar",
-      "skip": "Omitir"
+      "skip": "Omitir",
+      "close": "Cerrar",
+      "exitFullscreen": "Salir de pantalla completa",
+      "fullscreen": "Pantalla completa",
+      "restart": "Reiniciar",
+      "skipBackward": "Retroceder",
+      "skipForward": "Avanzar",
+      "volume": "Volumen"
     },
     "dubbing": {
       "notNow": "Ahora no",
@@ -1004,7 +1036,9 @@
       "set": "Establecer temporizador",
       "remaining": "Apagado en {{time}}",
       "extend": "+15 min",
-      "cancel": "Cancelar temporizador"
+      "cancel": "Cancelar temporizador",
+      "off": "Apagado",
+      "setTimer": "Configurar temporizador"
     },
     "openSubs": {
       "title": "Buscar subtitulos",
@@ -1013,7 +1047,34 @@
       "searchFailed": "Busqueda fallida. Intentalo de nuevo.",
       "downloads": "{{count}} descargas",
       "noResults": "No se encontraron subtitulos"
-    }
+    },
+    "dialogue": {
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "placeholder": "Escribe tu mensaje...",
+      "selectCharacter": "Seleccionar personaje",
+      "send": "Enviar",
+      "sharedSession": "Sesion compartida",
+      "waitingForTurn": "Esperando tu turno...",
+      "yourAvatar": "Tu avatar"
+    },
+    "interaction": {
+      "next": "Siguiente",
+      "previous": "Anterior"
+    },
+    "pauseAsk": {
+      "askAgain": "Preguntar de nuevo",
+      "placeholder": "Pregunta sobre esta escena...",
+      "resume": "Reanudar",
+      "resumeMovie": "Reanudar pelicula",
+      "selectCharacter": "Seleccionar personaje",
+      "title": "Pausar y preguntar"
+    },
+    "nextChapter": "Next chapter",
+    "restart": "Restart from beginning",
+    "skipForward": "Skip forward 30 seconds",
+    "previousChapter": "Previous chapter",
+    "skipBackward": "Skip backward 30 seconds"
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -1053,7 +1114,9 @@
     "relatedContent": "Contenido Relacionado",
     "notFound": "Contenido no encontrado",
     "availableSubtitles": "Subtítulos Disponibles",
-    "subtitleSelected": "Seleccionado: {{language}}"
+    "subtitleSelected": "Seleccionado: {{language}}",
+    "noEpisodesAvailable": "No episodes available to play",
+    "loadingSeries": "Loading series information..."
   },
   "breadcrumbs": {
     "series": "Serie",
@@ -1438,7 +1501,8 @@
         "streamUrl": "URL de transmisión",
         "title": "Título",
         "views": "Vistas",
-        "year": "Año"
+        "year": "Año",
+        "subtitles": "Subtitles"
       },
       "confirmDelete": "¿Eliminar este contenido?",
       "confirmBatchDelete": "¿Está seguro de que desea eliminar {{count}} elemento(s)?",
@@ -1480,7 +1544,8 @@
         "sourceTypes": {
           "live_tv": "TV en vivo",
           "podcasts": "Pódcasts",
-          "vod": "Películas y VOD"
+          "vod": "Películas y VOD",
+          "radio": "Radio"
         },
         "subtitle": "Explorar e importar contenido público de fuentes gratuitas"
       },
@@ -1526,8 +1591,13 @@
         "streamUrl": "URL de transmisión",
         "epgSource": "URL de fuente EPG (opcional)",
         "currentShow": "Programa actual",
-        "order": "Orden"
-      }
+        "order": "Orden",
+        "targetLanguages": "Available Translation Languages",
+        "targetLanguagesHelp": "Select which languages users can translate to in real-time",
+        "supportsSubtitles": "Enable Live Subtitles",
+        "primaryLanguage": "Primary Language (Source)"
+      },
+      "subtitleSettings": "Live Subtitle Settings"
     },
     "radioStations": {
       "subtitle": "Administrar estaciones de radio",
@@ -1683,7 +1753,14 @@
       "selectToDelete": "Por favor seleccione suscripciones para eliminar",
       "confirmDeleteMultiple": "¿Eliminar {{count}} suscripción(es)?",
       "selected": "seleccionados",
-      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer."
+      "confirmDelete": "¿Está seguro de que desea eliminar la suscripción de {{user}}? Esta acción no se puede deshacer.",
+      "actions": {
+        "pause": "Pause",
+        "resume": "Resume",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "changePlan": "Change Plan"
+      }
     },
     "marketingDashboard": {
       "subtitle": "Resumen de Marketing",
@@ -2097,7 +2174,41 @@
         "filesCount": "{{count}} archivo(s) seleccionado(s)",
         "pendingRestore": "{{count}} archivo(s) pendiente(s) de sesión anterior",
         "pendingRestoreHint": "Arrastra o selecciona los mismos archivos para restaurar la cola de carga"
-      }
+      },
+      "contentTypeFiltersHelp": "Optional - Leave all unchecked to process all content types",
+      "endpointNotFound": "Upload service not available. Check server configuration.",
+      "stages": {
+        "imdbLookup": "Fetching IMDB info",
+        "metadataExtraction": "Extracting metadata",
+        "failed": "Failed",
+        "hashCalculation": "Calculating hash",
+        "subtitleExtraction": "Extracting subtitles",
+        "databaseInsert": "Saving to database",
+        "skipped": "Skipped",
+        "completed": "Completed",
+        "browserUpload": "Uploading to server",
+        "gcsUpload": "Uploading to cloud",
+        "duplicateCheck": "Checking for duplicates"
+      },
+      "seriesOnly": "Series Only",
+      "cancelUploadFailed": "Failed to cancel upload",
+      "moviesOnly": "Movies Only",
+      "timeout": "Upload scan timed out. Try again or check monitored folders.",
+      "sessionIssue": "Session Issue",
+      "sessionIssueHelp": "Your session may have expired. Please refresh the page to restore connection.",
+      "sessionExpired": "Session expired. Please refresh the page or log in again.",
+      "cancelUploadSuccess": "Upload cancelled",
+      "uploadAlreadyRunning": "Upload scan already in progress. Please wait for current uploads to complete.",
+      "audiobooksOnly": "Audiobooks Only",
+      "noFilesFound": "No new files found in monitored folders",
+      "wsReconnecting": "Reconnecting to real-time updates...",
+      "unauthorized": "Session invalid. Please refresh the page.",
+      "uploadsActiveNotice": "Uploads in progress ({{processing}} active, {{queued}} queued). New scan disabled until current batch completes.",
+      "wsDisconnected": "Real-time Updates Disabled",
+      "contentTypeFilters": "Content Type Filters",
+      "wsDisconnectedHelp": "WebSocket connection failed. Queue status may be outdated. Page will auto-retry.",
+      "cancelUpload": "Cancel",
+      "cancelUploadConfirm": "Cancel this upload?"
     },
     "librarian": {
       "title": "Agente Bibliotecario",
@@ -2118,7 +2229,9 @@
         "failedToCancel": "Error al cancelar auditoría",
         "failedToInterject": "Error al enviar mensaje al agente AI",
         "budgetExceeded": "Límite de presupuesto mensual excedido. No se puede ejecutar auditoría.",
-        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador."
+        "contactAdmin": "La página del Bibliotecario no puede cargarse sin la configuración adecuada.\nPor favor, contacta a tu administrador.",
+        "failedToClearReports": "Failed to clear audit reports. Please try again.",
+        "auditAlreadyRunning": "An audit is already running. Please wait for it to complete or cancel it before starting a new one."
       },
       "stats": {
         "systemHealth": "Estado del Sistema",
@@ -2165,7 +2278,18 @@
         "aiAuditSuccess": "Auditoría de Agente IA activada exitosamente. {{dryRun}}",
         "dailyAuditSuccess": "Auditoría diaria activada exitosamente. {{dryRun}}",
         "dryRunMode": "(Modo de ejecución simulada)",
-        "rollbackSuccess": "Acción revertida exitosamente."
+        "rollbackSuccess": "Acción revertida exitosamente.",
+        "auditModeHelp": "Choose what to check",
+        "auditType": "Audit Type",
+        "dailyAudit": "Daily Audit",
+        "auditRunningNotice": "An audit is currently running. Buttons will be enabled when it completes.",
+        "aiAgentAudit": "AI Agent Audit",
+        "aiAgentBadge": "AI-Powered • Intelligent • Uses Budget",
+        "dailyBadge": "Rule-Based • Fast • Free",
+        "auditTypeHelp": "Choose between rule-based or AI-powered audit",
+        "aiAgentDescription": "Autonomous AI agent (Claude) makes intelligent decisions about what to check and fix. More comprehensive but uses API budget.",
+        "dailyDescription": "Runs predefined checks on content modified in the last 7 days. Fast and predictable, no AI costs.",
+        "auditMode": "Audit Mode"
       },
       "voice": {
         "title": "Control por Voz",
@@ -2218,7 +2342,8 @@
           "thursday": "jueves",
           "friday": "viernes",
           "saturday": "sábado"
-        }
+        },
+        "subtitle": "Configure daily and weekly audit schedules"
       },
       "reports": {
         "title": "Informes de Auditoría Recientes",
@@ -2253,7 +2378,9 @@
           "fixesApplied": "Correcciones Aplicadas",
           "totalFixes": "{{count}} correcciones totales",
           "aiInsights": "Perspectivas de IA"
-        }
+        },
+        "confirmClearAll": "Are you sure you want to clear all audit reports? This action cannot be undone.",
+        "clearedSuccessfully": "All audit reports cleared successfully"
       },
       "logs": {
         "title": "Registros de Ejecución",
@@ -2291,7 +2418,10 @@
         "dryRunMode": "⚠️ Ejecutando en modo PRUEBA - no se realizarán cambios",
         "liveMode": "✅ Ejecutando en modo EN VIVO - se aplicarán cambios",
         "budgetSet": "💰 Límite de presupuesto: ${{budget}}",
-        "connectingToAgent": "🔗 Conectando al Agente Claude AI..."
+        "connectingToAgent": "🔗 Conectando al Agente Claude AI...",
+        "staleWarning": "No new logs for {{seconds}}s - job may be processing or stuck",
+        "lastLog": "Last log",
+        "pollingStatus": "Polling active • Last checked"
       },
       "audit": {
         "types": {
@@ -2313,7 +2443,9 @@
       },
       "progress": {
         "batch": "Lote {{current}} de {{total}}",
-        "items": "{{processed}} de {{total}} elementos"
+        "items": "{{processed}} de {{total}} elementos",
+        "finalizing": "Generating report and applying fixes",
+        "finishing": "Finishing up..."
       },
       "activityLog": {
         "title": "Registro de Actividad",
@@ -2339,7 +2471,10 @@
           "title": "Confirmar Reversión",
           "message": "¿Estás seguro de que quieres revertir esta acción? Esto restaurará el estado anterior."
         },
-        "emptyMessage": "No se encontraron acciones"
+        "emptyMessage": "No se encontraron acciones",
+        "subtitle": "{{count}} actions recorded",
+        "pagination": "Page {{page}} of {{totalPages}}",
+        "updatedFields": "Updated {{fields}}"
       },
       "modal": {
         "confirmAI": {
@@ -2358,7 +2493,9 @@
         "completed": "completado",
         "failed": "fallido",
         "in_progress": "en_progreso",
-        "pending": "pendiente"
+        "pending": "pendiente",
+        "running": "Running",
+        "partial": "Partially Complete"
       },
       "auditTypes": {
         "daily_incremental": "incremental diario",
@@ -2419,7 +2556,8 @@
         "date": "Fecha",
         "details": "Detalles",
         "resource": "Recurso",
-        "user": "Usuario"
+        "user": "Usuario",
+        "ip": "IP"
       }
     },
     "auditActions": {
@@ -2464,7 +2602,8 @@
       "widget_deleted": "Widget Eliminado",
       "widget_published": "Widget Publicado",
       "widget_unpublished": "Widget No Publicado",
-      "widget_updated": "Widget Actualizado"
+      "widget_updated": "Widget Actualizado",
+      "subscription_deleted": "Subscription Deleted"
     },
     "settings": {
       "actionsWarning": "Estas acciones pueden afectar el rendimiento del sistema. Úselas con precaución.",
@@ -2518,7 +2657,9 @@
         "live": "En vivo",
         "liveChannel": "Canal en Vivo",
         "vod": "Video bajo Demanda",
-        "podcast": "Pódcast"
+        "podcast": "Pódcast",
+        "radio": "Radio",
+        "iframe": "Iframe"
       },
       "editWidget": "Editar Widget",
       "emptyMessage": "No se encontraron widgets. Crea uno para comenzar.",
@@ -2550,7 +2691,8 @@
         "active": "Activo",
         "inactive": "Inactivo"
       },
-      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones"
+      "subtitle": "Gestiona widgets de superposición flotante para transmisiones en vivo e incrustaciones",
+      "title": "Widgets"
     }
   },
   "watchParty": {
@@ -2597,7 +2739,9 @@
       "speaking": "Hablando",
       "connecting": "Conectando audio...",
       "noAudio": "Audio no disponible"
-    }
+    },
+    "textOnlyMode": "Text Chat Only",
+    "endParty": "End Party"
   },
   "footer": {
     "brandDescription": "Tu hogar en EE.UU. Transmisiones de TV, VOD, radio y podcasts en hebreo.",
@@ -3022,7 +3166,15 @@
       "israeliMovies": "Películas israelíes recomendadas",
       "whatsOnNow": "¿Qué hay ahora?",
       "popularPodcasts": "Podcasts populares"
-    }
+    },
+    "voiceCommands": {
+      "multiContent": "Show side by side...",
+      "playChess": "Start a chess game with...",
+      "showChannels": "Show me channels..."
+    },
+    "showMultipleNotFound": "Could not find the requested content. Please try different names.",
+    "resolvingContent": "Finding your content...",
+    "showMultipleSuccess": "Showing {{count}} content items in widgets"
   },
   "chat": {
     "title": "Asistente Bayit+",
@@ -3293,7 +3445,39 @@
     "chat": {
       "title": "Chat",
       "inputPlaceholder": "Escribe un mensaje..."
-    }
+    },
+    "joinInvite": "Join Game",
+    "offline": "Offline",
+    "inviteSent": "Game invite sent to {{name}}! Game code: {{code}}",
+    "sendingInvite": "Sending game invite to {{name}}...",
+    "hard": "Hard",
+    "medium": "Medium",
+    "whiteCaptured": "White Captured",
+    "chessBot": "Chess Bot",
+    "blackTurn": "Black's Turn",
+    "challengeFriend": "Challenge Friend",
+    "copyCode": "Copy Code",
+    "gameMode": "Game Mode",
+    "declineInvite": "Decline Invite",
+    "challengeViaWhatsApp": "Challenge via WhatsApp",
+    "playVsFriend": "Play vs Friend",
+    "you": "You",
+    "easy": "Easy",
+    "difficulty": "Difficulty",
+    "noFriendsYet": "No friends yet",
+    "online": "Online",
+    "playVsBot": "Play vs Bot",
+    "blackCaptured": "Black Captured",
+    "inviteReceived": "{{name}} invited you to a chess game!",
+    "whiteTurn": "White's Turn",
+    "drawOffered": "Draw Offered",
+    "declineDraw": "Decline Draw",
+    "inviteFailed": "Could not find that user. Please check the name and try again.",
+    "joinByGameCode": "Join by Game Code",
+    "opponent": "Opponent",
+    "acceptInvite": "Accept Invite",
+    "acceptDraw": "Accept Draw",
+    "showHints": "Show Guide Hints"
   },
   "friends": {
     "title": "Amigos y Oponentes",
@@ -3511,8 +3695,8 @@
   },
   "voiceOnboarding": {
     "welcome": {
-      "title": "Bienvenido al Control por Voz",
-      "description": "Controla Bayit+ con tu voz para una experiencia manos libres"
+      "title": "Bienvenido al control por voz",
+      "description": "Controla Bayit+ con tu voz para una experiencia manos libres."
     },
     "features": {
       "voiceCommands": "Comandos de Voz",
@@ -3552,7 +3736,19 @@
       },
       "startUsing": "Comenzar a Usar Control por Voz"
     },
-    "skip": "Omitir por ahora"
+    "skip": "Omitir por ahora",
+    "buttons": {
+      "back": "Atras"
+    },
+    "completion": {
+      "message": "Las funciones de voz estan listas.",
+      "title": "Configuracion de voz completada"
+    },
+    "title": "Configuracion de voz",
+    "training": {
+      "message": "Lee las frases en voz alta para entrenar el reconocimiento.",
+      "title": "Entrenamiento de voz"
+    }
   },
   "taxonomy": {
     "sections": {
@@ -3851,7 +4047,10 @@
       "languageHint": "Selecciona 1-3 idiomas para mostrar en cada dato",
       "language": "idioma",
       "selectLanguage": "Seleccionar este idioma",
-      "deselectLanguage": "Deseleccionar este idioma"
+      "deselectLanguage": "Deseleccionar este idioma",
+      "enableDescription": "Mostrar preguntas de trivia mientras ves contenido.",
+      "enableTrivia": "Activar trivia",
+      "title": "Ajustes de trivia"
     },
     "aiTrivia": "Trivia IA",
     "tellMeMore": "Cuentame mas",
@@ -3862,7 +4061,13 @@
     "loginRequired": "Inicio de sesión requerido",
     "loginToWatch": "Por favor inicia sesión para ver {{title}}",
     "login": "Iniciar sesión",
-    "signUp": "Registrarse"
+    "signUp": "Registrarse",
+    "biometricEnrollEnable": "Activar",
+    "biometricEnrollMessage": "Usa Face ID o huella digital para iniciar sesion mas rapido.",
+    "biometricEnrollSkip": "Omitir",
+    "biometricEnrollTitle": "Activar inicio biometrico",
+    "biometricSignIn": "Iniciar con biometria",
+    "signOut": "Cerrar sesion"
   },
   "recording": {
     "stop": "Detener Grabación",
@@ -4122,7 +4327,8 @@
         "step2": "Escribe tu pregunta o solicitud",
         "step3": "Lee la respuesta de la IA"
       }
-    }
+    },
+    "title": "Discover"
   },
   "byoc": {
     "pageSubtitle": "Trae tu propio contenido - añade fuentes IPTV y de streaming",
@@ -4197,6 +4403,15 @@
       "syncFailed": "Error al sincronizar la fuente",
       "normalizationFailed": "El procesamiento del contenido falló",
       "normalizationPollFailed": "Se perdió la conexión durante el procesamiento"
+    },
+    "home": {
+      "title": "Trae tu propio contenido",
+      "subtitle": "Conecta tus fuentes IPTV, Plex o YouTube y disfruta de las funciones de IA de Bayit+ en tu propio contenido",
+      "connectButton": "Conectar fuentes",
+      "aiFeatures": {
+        "dubbing": "Doblaje IA disponible",
+        "subtitles": "Subtitulos en vivo disponibles"
+      }
     }
   },
   "onboarding": {
@@ -4329,5 +4544,137 @@
       "inviteFailed": "Error al enviar la invitación",
       "removeFailed": "Error al eliminar el miembro"
     }
-  }
+  },
+  "aiChat": {
+    "retryButton": "Reintentar",
+    "sendButton": "Enviar",
+    "title": "Chat IA",
+    "voiceButton": "Voz"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "Atras"
+    },
+    "completion": {
+      "message": "Todo listo! Comienza a explorar las funciones de IA.",
+      "title": "Configuracion completada"
+    },
+    "permissions": {
+      "description": "Otorga permisos para habilitar funciones de IA como voz y camara.",
+      "title": "Permisos"
+    },
+    "personalization": {
+      "description": "Cuentanos tus preferencias para personalizar tu experiencia de IA.",
+      "title": "Personalizacion"
+    },
+    "title": "Configuracion de IA",
+    "welcome": {
+      "description": "Bayit+ usa IA para mejorar tu experiencia con doblaje, subtitulos y mas.",
+      "title": "Bienvenido a Bayit+ IA"
+    }
+  },
+  "auth_device_authorized": "Dispositivo autorizado",
+  "auth_device_code_expired": "Codigo expirado",
+  "auth_device_get_new_code": "Obtener nuevo codigo",
+  "auth_device_manual_login": "Iniciar sesion manualmente",
+  "auth_device_visit_uri": "Visita la URL mostrada en tu TV",
+  "avatar": {
+    "tapToSpeak": "Toca para hablar",
+    "title": "Avatar"
+  },
+  "dubbing": {
+    "mixer": {
+      "dubbedAudio": "Audio doblado",
+      "originalAudio": "Audio original",
+      "title": "Mezclador de audio"
+    },
+    "settings_title": "Ajustes de doblaje",
+    "target_language": "Idioma destino",
+    "voiceSelector": {
+      "selected": "Seleccionado",
+      "subtitle": "Elige una voz para el doblaje",
+      "title": "Seleccion de voz"
+    }
+  },
+  "go_back": "Volver",
+  "miniPlayer": {
+    "closePlayer": "Cerrar reproductor",
+    "skipBackward": "Retroceder",
+    "skipForward": "Avanzar"
+  },
+  "retry": "Reintentar",
+  "search_hint": "Buscar canales, peliculas, series...",
+  "search_no_results": "No se encontraron resultados",
+  "search_prompt": "Que estas buscando?",
+  "subscription_required": "Suscripcion requerida",
+  "subscription_upsell_tv": "Actualiza para ver en TV",
+  "talkback": {
+    "title": "Talkback"
+  },
+  "voiceAssistant": {
+    "fabLabel": "Asistente de voz",
+    "modal": {
+      "cancel": "Cancelar",
+      "setupMessage": "Configura el reconocimiento de voz para usar el asistente.",
+      "setupRequired": "Configuracion requerida",
+      "startSetup": "Iniciar configuracion",
+      "title": "Asistente de voz"
+    }
+  },
+  "voiceCommand": {
+    "executing": "Ejecutando...",
+    "listening": "Escuchando...",
+    "noMatch": "Sin coincidencia",
+    "recognized": "Reconocido"
+  },
+  "voiceDecision": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "matched": "Coincidencia"
+  },
+  "voiceSearch": {
+    "listening": "Escuchando...",
+    "noResults": "Sin resultados",
+    "tapToSpeak": "Toca para hablar",
+    "title": "Busqueda por voz"
+  },
+  "voiceSettings": {
+    "language": "Idioma",
+    "speechRate": "Velocidad de habla",
+    "title": "Ajustes de voz",
+    "ttsProvider": "Proveedor TTS",
+    "voiceMode": "Modo de voz",
+    "voiceSelection": "Seleccion de voz",
+    "wakeWord": "Palabra de activacion"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "Atras"
+    },
+    "calibration": {
+      "description": "Habla normalmente para calibrar el microfono.",
+      "listening": "Escuchando...",
+      "micButton": "Iniciar grabacion",
+      "resultTitle": "Resultado de calibracion",
+      "stopButton": "Detener grabacion",
+      "tapToStart": "Toca para iniciar calibracion",
+      "title": "Calibracion de microfono"
+    },
+    "complete": {
+      "message": "La configuracion del asistente de voz esta completa.",
+      "title": "Configuracion completada"
+    },
+    "language": {
+      "description": "Selecciona tu idioma preferido para comandos de voz.",
+      "title": "Idioma de voz"
+    },
+    "permission": {
+      "description": "Se necesita acceso al microfono para funciones de voz.",
+      "granted": "Permiso otorgado",
+      "requestButton": "Otorgar permiso",
+      "title": "Permiso de microfono"
+    },
+    "title": "Asistente de configuracion de voz"
+  },
+  "watch_now": "Ver ahora"
 }
