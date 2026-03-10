@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Audiobooks listing screen with search, sort, autocomplete, and grid of audiobook cards
 struct AudiobooksView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: AudiobooksViewModel?
@@ -149,7 +151,7 @@ struct AudiobooksView: View {
             HStack {
                 Image(systemName: "person.2.fill")
                     .font(.system(size: DesignTokens.FontSize.md))
-                Text("Browse by Author")
+                Text(localization.t("audiobooks.browseByAuthor"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                 Spacer()
                 Image(systemName: "chevron.right")

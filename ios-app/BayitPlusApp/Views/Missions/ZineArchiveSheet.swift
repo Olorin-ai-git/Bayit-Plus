@@ -30,7 +30,7 @@ struct ZineArchiveSheet: View {
 
                                 Spacer()
 
-                                Text("\(zine.pages.count) pages")
+                                Text(localization.t("zine.pageCount", ["count": "\(zine.pages.count)"]))
                                     .font(.system(size: DesignTokens.FontSize.xs))
                                     .foregroundStyle(DesignTokens.Text.secondary)
                             }

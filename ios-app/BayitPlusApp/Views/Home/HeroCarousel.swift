@@ -31,7 +31,7 @@ struct HeroCarousel: View {
 
                         // NEW badge on first item
                         if currentIndex == 0 {
-                            Text("NEW")
+                            Text(localization.t("hero.newBadge"))
                                 .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
                                 .foregroundStyle(.black)
                                 .padding(.horizontal, DesignTokens.Spacing.sm)

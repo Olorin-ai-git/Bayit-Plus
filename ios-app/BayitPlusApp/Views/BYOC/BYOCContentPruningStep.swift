@@ -93,7 +93,7 @@ struct BYOCContentPruningStep: View {
                     .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)
-                Text("\(group.alternateIndices.count + 1) feeds")
+                Text(localization.t("byoc.feedCount", ["count": "\(group.alternateIndices.count + 1)"]))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }

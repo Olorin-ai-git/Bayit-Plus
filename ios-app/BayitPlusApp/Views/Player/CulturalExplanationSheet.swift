@@ -45,7 +45,7 @@ struct CulturalExplanationSheet: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(DesignTokens.Primary.p400)
             if !data.subcategory.isEmpty {
-                Text("/ \(data.subcategory)")
+                Text(localization.t("culturalContext.subcategory", ["name": data.subcategory]))
                     .font(.caption2)
                     .foregroundStyle(DesignTokens.Text.secondary)
             }

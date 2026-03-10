@@ -3181,7 +3181,10 @@
       "basic": "இலவசம்",
       "free": "இலவசம்",
       "premium": "பிளஸ்"
-    }
+    },
+    "browseByAuthor": "ஆசிரியர் மூலம் உலாவுக",
+    "durationMin": "{{count}} நிமிடம்",
+    "authorCount": "{{count}} ஆடியோபுக்"
   },
   "auth": {
     "loginRequired": "உள்நுழைவு தேவை",
@@ -3761,7 +3764,8 @@
       "title": "அரட்டை",
       "inputPlaceholder": "செய்தியை எழுதுங்கள்...",
       "botLimitReached": "இந்த விளையாட்டிற்கான அரட்டை வரம்பை அடைந்தது"
-    }
+    },
+    "turn": "முறை"
   },
   "children": {
     "title": "குழந்தைகள்",
@@ -5456,7 +5460,8 @@
     "watch": "பார்",
     "moreInfo": "மேலும் தகவல்",
     "addToList": "பட்டியலில் சேர்",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "புதிது"
   },
   "highlights": {
     "title": "சிறப்பம்சங்கள்",
@@ -7960,7 +7965,10 @@
     "loading": "அமைப்புகளை ஏற்றுகிறது...",
     "not_connected": "இணைக்கப்படவில்லை",
     "privacySecurity": "தனியுரிமை & Security",
-    "privacySection": "தனியுரிமை மற்றும் சட்டம்"
+    "privacySection": "தனியுரிமை மற்றும் சட்டம்",
+    "notificationsDisabled": "அறிவிப்புகள் முடக்கப்பட்டன",
+    "notificationsEnableMessage": "புதிய உள்ளடக்கம், நேரடி நிகழ்வுகள் மற்றும் பலவற்றைப் பற்றிய புதுப்பிப்புகளைப் பெற அறிவிப்புகளை இயக்கவும்.",
+    "notificationsGoToSettings": "அறிவிப்புகளைப் பெற, அமைப்புகளில் அவற்றை இயக்கவும்."
   },
   "shabbat": {
     "activate": "செயல்படுத்து",
@@ -7974,7 +7982,9 @@
     "inactive": "செயலற்றது",
     "manualToggle": "கைமுறை மாற்றம்",
     "recommendedContent": "பரிந்துரைக்கப்பட்ட உள்ளடக்கம்",
-    "settings": "அமைப்புகள்"
+    "settings": "அமைப்புகள்",
+    "shalom": "ஷப்பத் ஷலோம்",
+    "parashat": "பராஷத் {{name}}"
   },
   "stats": {
     "statistics": "புள்ளிவிவரங்கள்",
@@ -8250,7 +8260,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} குறிப்புகள்)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "தொடர்",
@@ -8575,7 +8587,9 @@
     },
     "explanation": "விளக்கம்",
     "submit": "சமர்ப்பி",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "playerCount": "{{count}} வீரர்கள்",
+    "dayStreak": "{{count}} நாள் தொடர்"
   },
   "tvLogin": {
     "invalidQR": "தவறான QR குறியீடு. உங்கள் TV-யில் இருந்து மீண்டும் ஸ்கேன் செய்யவும்.",
@@ -8980,7 +8994,8 @@
       "bornIn": "பிறந்த இடம்",
       "featuredActors": "சிறப்பு நடிகர்கள்"
     },
-    "trending": "பிரபலமானவை"
+    "trending": "பிரபலமானவை",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "கேட்கிறது...",
@@ -9374,7 +9389,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame URL"
   },
   "youngsters": {
     "title": "இளைஞர்கள்",
@@ -10014,7 +10030,8 @@
       "totalSpent": "மொத்த செலவு",
       "recentTransactions": "சமீபத்திய பரிவர்த்தனைகள்",
       "noTransactions": "இதுவரை பரிவர்த்தனைகள் இல்லை"
-    }
+    },
+    "dayStreak": "{{count}} நாள் தொடர்"
   },
   "shekels": {
     "title": "ஷெக்கல்கள்",
@@ -10143,7 +10160,8 @@
       "usage": "பொதுவான பயன்பாடு",
       "funFact": "சுவாரஸ்யமான உண்மை"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "ஊடாடும் பணி",
@@ -10588,7 +10606,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} பக்கங்கள்"
   },
   "forgot_password": {
     "title": "கடவுச்சொல்லை மீட்டமை",
@@ -10808,7 +10827,8 @@
     "ai.dubbing": "AI டப்பிங்",
     "ai.subtitles": "AI வசனங்கள்",
     "ai.trivia": "AI ட்ரிவியா",
-    "ai.audioOverlay": "ஆடியோ மேலடுக்கு"
+    "ai.audioOverlay": "ஆடியோ மேலடுக்கு",
+    "feedCount": "{{count}} ஊட்டங்கள்"
   },
   "tooltip": {
     "dubbing": {

@@ -3093,7 +3093,10 @@
       "basic": "मुफ़्त",
       "free": "मुफ़्त",
       "premium": "प्लस"
-    }
+    },
+    "browseByAuthor": "लेखक के अनुसार ब्राउज़ करें",
+    "durationMin": "{{count}} मिनट",
+    "authorCount": "{{count}} ऑडियोबुक"
   },
   "auth": {
     "loginRequired": "लॉगिन आवश्यक",
@@ -3685,7 +3688,8 @@
       "title": "चैट",
       "inputPlaceholder": "संदेश लिखें...",
       "botLimitReached": "इस गेम के लिए चैट सीमा पूरी हो गई"
-    }
+    },
+    "turn": "बारी"
   },
   "children": {
     "title": "बच्चे",
@@ -5379,7 +5383,8 @@
     "watch": "देखें",
     "moreInfo": "अधिक जानकारी",
     "addToList": "सूची में जोड़ें",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "नया"
   },
   "highlights": {
     "title": "हाइलाइट्स",
@@ -7887,7 +7892,10 @@
     "loading": "सेटिंग्स लोड हो रही हैं...",
     "not_connected": "कनेक्ट नहीं है",
     "privacySecurity": "गोपनीयता & Security",
-    "privacySection": "गोपनीयता और कानूनी"
+    "privacySection": "गोपनीयता और कानूनी",
+    "notificationsDisabled": "सूचनाएं अक्षम",
+    "notificationsEnableMessage": "नई सामग्री, लाइव इवेंट और अधिक के बारे में अपडेट प्राप्त करने के लिए सूचनाएं सक्षम करें।",
+    "notificationsGoToSettings": "सूचनाएं प्राप्त करने के लिए, कृपया उन्हें सेटिंग्स में सक्षम करें।"
   },
   "shabbat": {
     "activate": "सक्रिय करें",
@@ -7901,7 +7909,9 @@
     "inactive": "निष्क्रिय",
     "manualToggle": "मैन्युअल टॉगल",
     "recommendedContent": "अनुशंसित सामग्री",
-    "settings": "सेटिंग्स"
+    "settings": "सेटिंग्स",
+    "shalom": "शब्बत शालोम",
+    "parashat": "पराशत {{name}}"
   },
   "stats": {
     "statistics": "आंकड़े",
@@ -8177,7 +8187,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} संकेत)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "जारी रखें",
@@ -8504,7 +8516,9 @@
     },
     "explanation": "व्याख्या",
     "submit": "जमा करें",
-    "tryAgain": "फिर से प्रयास करें"
+    "tryAgain": "फिर से प्रयास करें",
+    "playerCount": "{{count}} खिलाड़ी",
+    "dayStreak": "{{count}} दिन की स्ट्रीक"
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -8909,7 +8923,8 @@
       "bornIn": "जन्म स्थान",
       "featuredActors": "प्रमुख अभिनेता"
     },
-    "trending": "ट्रेंडिंग"
+    "trending": "ट्रेंडिंग",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "सुन रहे हैं...",
@@ -9297,7 +9312,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame URL"
   },
   "youngsters": {
     "title": "किशोर",
@@ -9937,7 +9953,8 @@
       "totalSpent": "कुल खर्च",
       "recentTransactions": "हालिया लेनदेन",
       "noTransactions": "अभी तक कोई लेनदेन नहीं"
-    }
+    },
+    "dayStreak": "{{count}} दिन की स्ट्रीक"
   },
   "shekels": {
     "title": "शेकेल",
@@ -10066,7 +10083,8 @@
       "usage": "सामान्य उपयोग",
       "funFact": "रोचक तथ्य"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "इंटरैक्टिव मिशन",
@@ -10511,7 +10529,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} पृष्ठ"
   },
   "forgot_password": {
     "title": "पासवर्ड रीसेट करें",
@@ -10731,7 +10750,8 @@
     "ai.dubbing": "AI डबिंग",
     "ai.subtitles": "AI उपशीर्षक",
     "ai.trivia": "AI ट्रिविया",
-    "ai.audioOverlay": "ऑडियो ओवरले"
+    "ai.audioOverlay": "ऑडियो ओवरले",
+    "feedCount": "{{count}} फ़ीड"
   },
   "tooltip": {
     "dubbing": {

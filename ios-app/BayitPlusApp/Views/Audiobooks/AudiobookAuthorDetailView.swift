@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Detail screen showing all audiobooks by a specific author
 struct AudiobookAuthorDetailView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: AudiobooksViewModel?
@@ -55,7 +57,7 @@ struct AudiobookAuthorDetailView: View {
 
     private func authorHeader(itemCount: Int) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text("\(itemCount) audiobooks")
+            Text(localization.t("audiobooks.authorCount", ["count": "\(itemCount)"]))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.muted)
         }

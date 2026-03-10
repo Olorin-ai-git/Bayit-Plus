@@ -3115,7 +3115,10 @@
     "by": "By",
     "speed": "Speed:",
     "continueListening": "Continue Listening",
-    "loadingAudiobooks": "Loading audiobooks..."
+    "loadingAudiobooks": "Loading audiobooks...",
+    "browseByAuthor": "Browse by Author",
+    "durationMin": "{{count}} min",
+    "authorCount": "{{count}} audiobooks"
   },
   "auth": {
     "loginRequired": "Login Required",
@@ -3705,7 +3708,8 @@
       "title": "Chat",
       "inputPlaceholder": "Type a message...",
       "botLimitReached": "Chat limit reached for this game"
-    }
+    },
+    "turn": "Turn"
   },
   "children": {
     "title": "Kids",
@@ -5233,7 +5237,8 @@
     "watch": "Watch",
     "moreInfo": "More Info",
     "addToList": "Add to List",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "NEW"
   },
   "highlights": {
     "title": "Highlights",
@@ -6169,8 +6174,41 @@
         "generic": "Something went wrong"
       },
       "noCharacters": "No characters available for this content",
+      "processing": "Processing...",
       "resumeMovie": "Resume Movie",
       "selectCharacter": "Select a Character",
+      "stages": {
+        "polishing": "Polishing your question...",
+        "thinking": "Thinking about your question...",
+        "biff1": "Biff didn't really like your question...",
+        "biff2": "Biff is flexing in front of the mirror...",
+        "biff3": "Biff is trying to spell the answer...",
+        "biff4": "Biff just called someone a butthead...",
+        "doc1": "Doc is consulting the flux capacitor...",
+        "doc2": "Great Scott! Still calculating...",
+        "doc3": "Doc is calibrating 1.21 gigawatts...",
+        "doc4": "Doc is checking the space-time continuum...",
+        "marty1": "Marty is tuning his guitar first...",
+        "marty2": "This is heavy...",
+        "marty3": "Marty is checking if he still exists...",
+        "marty4": "Marty says nobody calls him chicken...",
+        "george1": "George is gathering courage to answer...",
+        "george2": "George is writing the answer in his notebook...",
+        "george3": "George says his density brought him here...",
+        "george4": "George finally has confidence...",
+        "lorraine1": "Lorraine is fixing her hair first...",
+        "lorraine2": "Lorraine is thinking about enchantment under the sea...",
+        "lorraine3": "Lorraine says it was meant to be...",
+        "lorraine4": "Lorraine is getting ready for the dance...",
+        "jennifer1": "Jennifer is waiting in the car...",
+        "jennifer2": "Jennifer is wondering about the future...",
+        "jennifer3": "Jennifer says she can handle it...",
+        "jennifer4": "Jennifer is being patient...",
+        "generic1": "{{name}} is thinking...",
+        "generic2": "{{name}} is crafting a response...",
+        "generic3": "Almost there...",
+        "generic4": "Just a moment longer..."
+      },
       "title": "Ask a Character",
       "watchAgain": "Watch Again"
     },
@@ -7648,7 +7686,10 @@
     "loading": "Loading settings...",
     "not_connected": "Not connected",
     "privacySecurity": "Privacy & Security",
-    "privacySection": "Privacy & Legal"
+    "privacySection": "Privacy & Legal",
+    "notificationsDisabled": "Notifications Disabled",
+    "notificationsEnableMessage": "Enable notifications to receive updates about new content, live events, and more.",
+    "notificationsGoToSettings": "To receive notifications, please enable them in Settings."
   },
   "shabbat": {
     "activate": "Activate",
@@ -7662,7 +7703,9 @@
     "inactive": "Inactive",
     "manualToggle": "Manual Toggle",
     "recommendedContent": "Recommended Content",
-    "settings": "Settings"
+    "settings": "Settings",
+    "shalom": "Shabbat Shalom",
+    "parashat": "Parashat {{name}}"
   },
   "stats": {
     "statistics": "Statistics",
@@ -7927,7 +7970,9 @@
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
     "quotaExceededLabel": "Quota exceeded",
-    "splitScreenLabel": "Split Screen"
+    "splitScreenLabel": "Split Screen",
+    "cueCount": "({{count}} cues)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "Continue",
@@ -8237,7 +8282,9 @@
     },
     "explanation": "Explanation",
     "submit": "Submit",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "playerCount": "{{count}} players",
+    "dayStreak": "{{count}} day streak"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -8369,7 +8416,8 @@
     },
     "trending": "Trending Now",
     "aiCollections": "AI Collections",
-    "hebrewDub": "HEB"
+    "hebrewDub": "HEB",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "Listening...",
@@ -8666,7 +8714,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame URL"
   },
   "youngsters": {
     "title": "Youngsters",
@@ -9355,7 +9404,8 @@
       "totalSpent": "Total Spent",
       "recentTransactions": "Recent Transactions",
       "noTransactions": "No transactions yet"
-    }
+    },
+    "dayStreak": "{{count}} day streak"
   },
   "shekels": {
     "title": "Shekels",
@@ -9484,7 +9534,8 @@
       "usage": "Common Usage",
       "funFact": "Fun Fact"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "Interactive Mission",
@@ -9792,7 +9843,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} pages"
   },
   "forgot_password": {
     "title": "Reset Password",
@@ -10003,7 +10055,8 @@
     "ai.dubbing": "AI Dubbing",
     "ai.subtitles": "AI Subtitles",
     "ai.trivia": "AI Trivia",
-    "ai.audioOverlay": "Audio Overlay"
+    "ai.audioOverlay": "Audio Overlay",
+    "feedCount": "{{count}} feeds"
   },
   "tooltip": {
     "dubbing": {

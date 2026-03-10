@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Bottom sheet presenting sort options for the audiobooks grid
 struct AudiobookSortSheet: View {
+    @Environment(LocalizationManager.self) private var localization
     @Binding var selectedSort: AudiobookSortOption
     let options: [AudiobookSortOption]
     let onDismiss: () -> Void
@@ -21,7 +23,7 @@ struct AudiobookSortSheet: View {
                 .padding(.top, DesignTokens.Spacing.md)
                 .padding(.bottom, DesignTokens.Spacing.sm)
                 .accessibilityHidden(true)
-            Text("Sort By")
+            Text(localization.t("audiobooks.sortBy"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -139,7 +139,7 @@ struct AICollectionCard: View {
                         HStack(spacing: 2) {
                             Image(systemName: "sparkles")
                                 .font(.system(size: 8))
-                            Text("AI")
+                            Text(localization.t("vod.aiBadge"))
                                 .font(.system(
                                     size: DesignTokens.FontSize.xs - 1,
                                     weight: .bold

@@ -122,12 +122,12 @@ struct MissionsLeaderboardView: View {
                             .foregroundStyle(DesignTokens.Text.primary)
 
                         HStack(spacing: DesignTokens.Spacing.sm) {
-                            Text("\(rank.points) pts")
+                            Text("\(rank.points) \(localization.t("leaderboard.points"))")
                                 .font(.system(size: DesignTokens.FontSize.sm))
                                 .foregroundStyle(DesignTokens.Text.secondary)
 
                             if rank.streakDays > 0 {
-                                Text("|\(rank.streakDays) day streak")
+                                Text("| \(localization.t("missions.dayStreak", ["count": "\(rank.streakDays)"]))")
                                     .font(.system(size: DesignTokens.FontSize.sm))
                                     .foregroundStyle(DesignTokens.ErrorColor.default)
                             }

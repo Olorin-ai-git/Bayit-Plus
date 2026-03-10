@@ -41,7 +41,7 @@ struct ShabbatEveView: View {
                     }
 
                     if let parasha = getParasha(vm) {
-                        Text("Parashat \(parasha)")
+                        Text(localization.t("shabbat.parashat", ["name": parasha]))
                             .font(.system(size: DesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }

@@ -16,11 +16,11 @@ extension NotificationSettingsView {
                     .font(.system(size: 40))
                     .foregroundStyle(DesignTokens.Text.muted)
 
-                Text("Notifications Disabled")
+                Text(localization.t("settings.notificationsDisabled"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Enable notifications to receive updates about new content, live events, and more.")
+                Text(localization.t("settings.notificationsEnableMessage"))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)

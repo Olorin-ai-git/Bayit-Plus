@@ -53,7 +53,7 @@ extension AudiobookDetailView {
                             .foregroundColor(DesignTokens.Text.muted)
                     } else if let start = chapter.startTime, let end = chapter.endTime {
                         let durationMinutes = Int((end - start) / 60)
-                        Text("\(durationMinutes) min")
+                        Text(localization.t("audiobooks.durationMin", ["count": "\(durationMinutes)"]))
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundColor(DesignTokens.Text.muted)
                     }

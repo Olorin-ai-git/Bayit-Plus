@@ -137,12 +137,12 @@
                 HStack {
                     Spacer()
                     VStack(spacing: DesignTokens.Spacing.md) {
-                        Text("Channel Chat")
+                        Text(localization.t("channelChat.title"))
                             .font(.system(
                                 size: DesignTokens.FontSize.lg, weight: .semibold
                             ))
                             .foregroundStyle(DesignTokens.Text.primary)
-                        Text("Chat requires an active connection")
+                        Text(localization.t("channelChat.chatRequiresConnection"))
                             .font(.system(size: DesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)
                         GlassButton("Close", variant: .secondary, size: .small) {

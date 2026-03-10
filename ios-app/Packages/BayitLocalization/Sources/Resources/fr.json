@@ -3093,7 +3093,10 @@
       "basic": "Gratuit",
       "free": "Gratuit",
       "premium": "Plus"
-    }
+    },
+    "browseByAuthor": "Parcourir par auteur",
+    "durationMin": "{{count}} min",
+    "authorCount": "{{count}} livres audio"
   },
   "auth": {
     "loginRequired": "Connexion requise",
@@ -3738,7 +3741,8 @@
       "title": "Chat",
       "inputPlaceholder": "Tapez un message...",
       "botLimitReached": "Limite de chat atteinte pour cette partie"
-    }
+    },
+    "turn": "Tour"
   },
   "children": {
     "title": "Enfants",
@@ -5641,7 +5645,8 @@
     "watch": "Regarder",
     "moreInfo": "Plus d'infos",
     "addToList": "Ajouter à la liste",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "NOUVEAU"
   },
   "highlights": {
     "title": "Moments forts",
@@ -8413,7 +8418,10 @@
     "loading": "Chargement des parametres...",
     "not_connected": "Non connecte",
     "privacySecurity": "Confidentialite & Security",
-    "privacySection": "Confidentialite et Legal"
+    "privacySection": "Confidentialite et Legal",
+    "notificationsDisabled": "Notifications désactivées",
+    "notificationsEnableMessage": "Activez les notifications pour recevoir des mises à jour sur le nouveau contenu, les événements en direct et plus encore.",
+    "notificationsGoToSettings": "Pour recevoir des notifications, activez-les dans les Réglages."
   },
   "shabbat": {
     "activate": "Activer",
@@ -8427,7 +8435,9 @@
     "inactive": "Inactif",
     "manualToggle": "Basculer manuellement",
     "recommendedContent": "Contenu recommandé",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "shalom": "Chabbat Chalom",
+    "parashat": "Paracha {{name}}"
   },
   "stats": {
     "title": "Statistiques",
@@ -8758,7 +8768,9 @@
     "selectTwoLanguagesDescription": "Choose two languages for split screen subtitles",
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} repères)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "Continuer",
@@ -9223,7 +9235,9 @@
     },
     "explanation": "Explication",
     "submit": "Soumettre",
-    "tryAgain": "Reessayer"
+    "tryAgain": "Reessayer",
+    "playerCount": "{{count}} joueurs",
+    "dayStreak": "série de {{count}} jours"
   },
   "tvLogin": {
     "invalidQR": "Code QR invalide. Veuillez scanner à nouveau depuis votre TV.",
@@ -9632,7 +9646,8 @@
       "bornIn": "Ne a",
       "featuredActors": "Acteurs en Vedette"
     },
-    "trending": "Tendances"
+    "trending": "Tendances",
+    "aiBadge": "IA"
   },
   "voice": {
     "title": "Commande vocale",
@@ -10135,7 +10150,8 @@
     "enterTitle": "Enter widget title",
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "URL iFrame"
   },
   "youngsters": {
     "title": "Jeunes",
@@ -10807,7 +10823,8 @@
       "totalSpent": "Total Depense",
       "recentTransactions": "Transactions Recentes",
       "noTransactions": "Aucune transaction pour le moment"
-    }
+    },
+    "dayStreak": "série de {{count}} jours"
   },
   "shekels": {
     "title": "Shekels",
@@ -10936,7 +10953,8 @@
       "usage": "Usage Courant",
       "funFact": "Anecdote"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "Mission Interactive",
@@ -11381,7 +11399,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} pages"
   },
   "forgot_password": {
     "title": "Réinitialiser le Mot de Passe",
@@ -11601,7 +11620,8 @@
     "ai.dubbing": "Doublage IA",
     "ai.subtitles": "Sous-titres IA",
     "ai.trivia": "Trivia IA",
-    "ai.audioOverlay": "Superposition Audio"
+    "ai.audioOverlay": "Superposition Audio",
+    "feedCount": "{{count}} flux"
   },
   "tooltip": {
     "dubbing": {

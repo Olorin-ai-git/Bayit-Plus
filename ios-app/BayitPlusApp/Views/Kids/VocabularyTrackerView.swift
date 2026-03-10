@@ -97,7 +97,7 @@ struct VocabularyTrackerView: View {
                 variant: levelVariant(proficiency.level)
             )
             Spacer()
-            Text("\(proficiency.totalWordsLearned) words")
+            Text(localization.t("vocabulary.wordCount", ["count": "\(proficiency.totalWordsLearned)"]))
                 .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }

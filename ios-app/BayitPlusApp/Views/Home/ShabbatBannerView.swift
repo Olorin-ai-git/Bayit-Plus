@@ -27,12 +27,12 @@ struct ShabbatBannerView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                    Text("Shabbat Shalom")
+                    Text(localization.t("shabbat.shalom"))
                         .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     if let parasha = getParasha(vm) {
-                        Text("Parashat \(parasha)")
+                        Text(localization.t("shabbat.parashat", ["name": parasha]))
                             .font(.system(size: DesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
@@ -42,7 +42,8 @@ struct ShabbatBannerView: View {
 
                 VStack(alignment: .trailing, spacing: DesignTokens.Spacing.xxs) {
                     if let countdown = vm.countdown,
-                       let label = vm.countdownLabel {
+                       let label = vm.countdownLabel
+                    {
                         Text(label)
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundStyle(DesignTokens.Text.muted)
@@ -69,7 +70,7 @@ struct ShabbatBannerView: View {
                 LinearGradient(
                     colors: [
                         DesignTokens.Primary.p600.opacity(0.3),
-                        DesignTokens.Primary.p400.opacity(0.2)
+                        DesignTokens.Primary.p400.opacity(0.2),
                     ],
                     startPoint: .leading,
                     endPoint: .trailing
@@ -107,8 +108,8 @@ struct ShabbatBannerView: View {
 
     private func shouldShowBanner(_ vm: ShabbatViewModel) -> Bool {
         vm.isShabbatActive ||
-        vm.countdown != nil ||
-        vm.candleLightingTime != nil
+            vm.countdown != nil ||
+            vm.candleLightingTime != nil
     }
 
     private func getParasha(_ vm: ShabbatViewModel) -> String? {

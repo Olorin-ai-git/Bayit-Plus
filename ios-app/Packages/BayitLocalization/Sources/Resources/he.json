@@ -3115,7 +3115,10 @@
     "by": "By",
     "continueListening": "המשך להאזין",
     "loadingAudiobooks": "Loading audiobooks...",
-    "speed": "Speed:"
+    "speed": "Speed:",
+    "browseByAuthor": "חפש לפי מחבר",
+    "durationMin": "{{count}} דק׳",
+    "authorCount": "{{count}} ספרי שמע"
   },
   "auth": {
     "loginRequired": "נדרשת התחברות",
@@ -3704,7 +3707,8 @@
       "title": "צ'אט",
       "inputPlaceholder": "כתוב הודעה...",
       "botLimitReached": "הגעת למגבלת הצ'אט למשחק זה"
-    }
+    },
+    "turn": "תור"
   },
   "children": {
     "title": "ילדים",
@@ -5426,7 +5430,8 @@
     "watch": "צפייה",
     "moreInfo": "מידע נוסף",
     "addToList": "הוסף לרשימה",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "חדש"
   },
   "highlights": {
     "title": "רגעים מרכזיים",
@@ -7954,7 +7959,10 @@
     "loading": "טוען הגדרות...",
     "not_connected": "לא מחובר",
     "privacySecurity": "פרטיות & Security",
-    "privacySection": "פרטיות ומשפטי"
+    "privacySection": "פרטיות ומשפטי",
+    "notificationsDisabled": "התראות מושבתות",
+    "notificationsEnableMessage": "הפעילו התראות כדי לקבל עדכונים על תוכן חדש, אירועים בשידור חי ועוד.",
+    "notificationsGoToSettings": "כדי לקבל התראות, הפעילו אותן בהגדרות."
   },
   "shabbat": {
     "activate": "הפעל",
@@ -7968,7 +7976,9 @@
     "inactive": "לא פעיל",
     "manualToggle": "החלפה ידנית",
     "recommendedContent": "תוכן מומלץ",
-    "settings": "הגדרות"
+    "settings": "הגדרות",
+    "shalom": "שבת שלום",
+    "parashat": "פרשת {{name}}"
   },
   "stats": {
     "statistics": "סטטיסטיקות",
@@ -8244,7 +8254,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} רמזים)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "המשך",
@@ -8569,7 +8581,9 @@
     },
     "explanation": "הסבר",
     "submit": "שלח",
-    "tryAgain": "נסה שוב"
+    "tryAgain": "נסה שוב",
+    "playerCount": "{{count}} שחקנים",
+    "dayStreak": "רצף {{count}} ימים"
   },
   "tvLogin": {
     "invalidQR": "קוד QR לא תקין. סרוק שוב מהטלוויזיה.",
@@ -8977,7 +8991,8 @@
     },
     "trending": "פופולרי עכשיו",
     "aiCollections": "אוספי AI",
-    "hebrewDub": "עברית"
+    "hebrewDub": "עברית",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "מקשיב...",
@@ -9365,7 +9380,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "כתובת iFrame"
   },
   "youngsters": {
     "title": "צעירים",
@@ -10015,7 +10031,8 @@
       "totalSpent": "סה\"כ הוצא",
       "recentTransactions": "עסקאות אחרונות",
       "noTransactions": "אין עסקאות עדיין"
-    }
+    },
+    "dayStreak": "רצף {{count}} ימים"
   },
   "shekels": {
     "title": "שקלים",
@@ -10144,7 +10161,8 @@
       "usage": "שימוש נפוץ",
       "funFact": "עובדה מעניינת"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "משימה אינטראקטיבית",
@@ -10570,7 +10588,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} עמודים"
   },
   "forgot_password": {
     "title": "איפוס סיסמה",
@@ -10790,7 +10809,8 @@
     "ai.dubbing": "דיבוב AI",
     "ai.subtitles": "כתוביות AI",
     "ai.trivia": "טריוויה AI",
-    "ai.audioOverlay": "שכבת אודיו"
+    "ai.audioOverlay": "שכבת אודיו",
+    "feedCount": "{{count}} ערוצים"
   },
   "tooltip": {
     "dubbing": {

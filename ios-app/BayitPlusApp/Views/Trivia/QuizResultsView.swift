@@ -127,7 +127,7 @@ struct QuizResultsView: View {
                     .foregroundStyle(DesignTokens.Warning.default)
                     .accessibilityHidden(true)
 
-                Text("\(streak) day streak")
+                Text(localization.t("trivia.dayStreak", ["count": "\(streak)"]))
                     .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
             }

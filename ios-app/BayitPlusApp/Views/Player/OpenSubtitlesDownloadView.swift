@@ -106,7 +106,7 @@ struct OpenSubtitlesDownloadView: View {
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundStyle(DesignTokens.Text.muted)
                     if let count = track.cueCount {
-                        Text("(\(count) cues)")
+                        Text(localization.t("subtitles.cueCount", ["count": "\(count)"]))
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundStyle(DesignTokens.Text.muted)
                     }
@@ -129,7 +129,7 @@ struct OpenSubtitlesDownloadView: View {
             }
 
             ForEach(failed, id: \.language) { track in
-                Text("- \(track.language): \(track.reason ?? "Unknown")")
+                Text("- \(track.language): \(track.reason ?? "")")
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .padding(.leading, DesignTokens.Spacing.md)

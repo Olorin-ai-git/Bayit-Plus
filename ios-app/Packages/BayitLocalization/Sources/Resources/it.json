@@ -3336,7 +3336,10 @@
       "basic": "Gratuito",
       "free": "Gratuito",
       "premium": "Plus"
-    }
+    },
+    "browseByAuthor": "Sfoglia per autore",
+    "durationMin": "{{count}} min",
+    "authorCount": "{{count}} audiolibri"
   },
   "auth": {
     "loginRequired": "Accesso richiesto",
@@ -3926,7 +3929,8 @@
       "title": "Chat",
       "inputPlaceholder": "Scrivi un messaggio...",
       "botLimitReached": "Limite chat raggiunto per questa partita"
-    }
+    },
+    "turn": "Turno"
   },
   "children": {
     "title": "Bambini",
@@ -5631,7 +5635,8 @@
     "watch": "Guarda",
     "moreInfo": "Altre info",
     "addToList": "Aggiungi alla lista",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "NUOVO"
   },
   "highlights": {
     "title": "Momenti salienti",
@@ -8130,7 +8135,10 @@
     "loading": "Caricamento impostazioni...",
     "not_connected": "Non connesso",
     "privacySecurity": "Privacy & Security",
-    "privacySection": "Privacy e Legale"
+    "privacySection": "Privacy e Legale",
+    "notificationsDisabled": "Notifiche disattivate",
+    "notificationsEnableMessage": "Abilita le notifiche per ricevere aggiornamenti su nuovi contenuti, eventi in diretta e altro.",
+    "notificationsGoToSettings": "Per ricevere notifiche, abilitale nelle Impostazioni."
   },
   "shabbat": {
     "activate": "Attiva",
@@ -8144,7 +8152,9 @@
     "inactive": "Inattivo",
     "manualToggle": "Attiva/disattiva manuale",
     "recommendedContent": "Contenuto consigliato",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "shalom": "Shabbat Shalom",
+    "parashat": "Parashat {{name}}"
   },
   "stats": {
     "statistics": "Statistiche",
@@ -8420,7 +8430,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} segnali)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "Continua",
@@ -8745,7 +8757,9 @@
     },
     "explanation": "Spiegazione",
     "submit": "Invia",
-    "tryAgain": "Riprova"
+    "tryAgain": "Riprova",
+    "playerCount": "{{count}} giocatori",
+    "dayStreak": "serie di {{count}} giorni"
   },
   "tvLogin": {
     "invalidQR": "Codice QR non valido. Scansiona nuovamente dalla TV.",
@@ -9150,7 +9164,8 @@
       "bornIn": "Nato a",
       "featuredActors": "Attori in Primo Piano"
     },
-    "trending": "Di tendenza"
+    "trending": "Di tendenza",
+    "aiBadge": "IA"
   },
   "voice": {
     "listening": "In ascolto...",
@@ -9538,7 +9553,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "URL iFrame"
   },
   "youngsters": {
     "title": "Ragazzi",
@@ -10178,7 +10194,8 @@
       "totalSpent": "Totale Speso",
       "recentTransactions": "Transazioni Recenti",
       "noTransactions": "Nessuna transazione ancora"
-    }
+    },
+    "dayStreak": "serie di {{count}} giorni"
   },
   "shekels": {
     "title": "Shekel",
@@ -10307,7 +10324,8 @@
       "usage": "Uso Comune",
       "funFact": "Curiosita"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "Missione Interattiva",
@@ -10752,7 +10770,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} pagine"
   },
   "forgot_password": {
     "title": "Reimposta Password",
@@ -10972,7 +10991,8 @@
     "ai.dubbing": "Doppiaggio IA",
     "ai.subtitles": "Sottotitoli IA",
     "ai.trivia": "Trivia IA",
-    "ai.audioOverlay": "Sovrapposizione Audio"
+    "ai.audioOverlay": "Sovrapposizione Audio",
+    "feedCount": "{{count}} feed"
   },
   "tooltip": {
     "dubbing": {

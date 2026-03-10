@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Glass-styled player info bar showing name, color indicator, clock, and connection status.
 struct ChessPlayerBar: View {
+    @Environment(LocalizationManager.self) private var localization
     let player: ChessPlayer?
     let label: String
     let isCurrentTurn: Bool
@@ -68,7 +70,7 @@ struct ChessPlayerBar: View {
     }
 
     private var turnBadge: some View {
-        Text("Turn")
+        Text(localization.t("chess.turn"))
             .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
             .foregroundStyle(DesignTokens.Background.primary)
             .padding(.horizontal, DesignTokens.Spacing.sm)

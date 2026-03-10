@@ -3099,7 +3099,10 @@
       "basic": "免费",
       "free": "免费",
       "premium": "Plus"
-    }
+    },
+    "browseByAuthor": "按作者浏览",
+    "durationMin": "{{count}} 分钟",
+    "authorCount": "{{count}} 有声书"
   },
   "auth": {
     "loginRequired": "需要登录",
@@ -3679,7 +3682,8 @@
       "title": "聊天",
       "inputPlaceholder": "输入消息...",
       "botLimitReached": "此游戏的聊天限制已达到"
-    }
+    },
+    "turn": "回合"
   },
   "children": {
     "title": "儿童",
@@ -5378,7 +5382,8 @@
     "watch": "观看",
     "moreInfo": "更多信息",
     "addToList": "添加到列表",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "新"
   },
   "highlights": {
     "title": "精彩片段",
@@ -7877,7 +7882,10 @@
     "loading": "正在加载设置...",
     "not_connected": "未连接",
     "privacySecurity": "隐私 & Security",
-    "privacySection": "隐私与法律"
+    "privacySection": "隐私与法律",
+    "notificationsDisabled": "通知已禁用",
+    "notificationsEnableMessage": "启用通知以接收有关新内容、直播活动等的更新。",
+    "notificationsGoToSettings": "要接收通知，请在设置中启用。"
   },
   "shabbat": {
     "activate": "激活",
@@ -7891,7 +7899,9 @@
     "inactive": "未激活",
     "manualToggle": "手动切换",
     "recommendedContent": "推荐内容",
-    "settings": "设置"
+    "settings": "设置",
+    "shalom": "安息日平安",
+    "parashat": "本周妥拉 {{name}}"
   },
   "stats": {
     "statistics": "统计",
@@ -8167,7 +8177,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} 条字幕)",
+    "trackUnavailable": "{{language}}：{{reason}}"
   },
   "success": {
     "continue": "继续",
@@ -8492,7 +8504,9 @@
     },
     "explanation": "解释",
     "submit": "提交",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "playerCount": "{{count}} 位玩家",
+    "dayStreak": "连续 {{count}} 天"
   },
   "tvLogin": {
     "invalidQR": "无效的二维码。请从电视重新扫描。",
@@ -8897,7 +8911,8 @@
       "bornIn": "出生于",
       "featuredActors": "精选演员"
     },
-    "trending": "热门"
+    "trending": "热门",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "正在听...",
@@ -9288,7 +9303,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame 网址"
   },
   "youngsters": {
     "title": "青少年",
@@ -9928,7 +9944,8 @@
       "totalSpent": "总花费",
       "recentTransactions": "最近交易",
       "noTransactions": "暂无交易记录"
-    }
+    },
+    "dayStreak": "连续 {{count}} 天"
   },
   "shekels": {
     "title": "谢克尔",
@@ -10057,7 +10074,8 @@
       "usage": "常见用法",
       "funFact": "趣味知识"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "互动任务",
@@ -10502,7 +10520,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} 页"
   },
   "forgot_password": {
     "title": "重置密码",
@@ -10722,7 +10741,8 @@
     "ai.dubbing": "AI配音",
     "ai.subtitles": "AI字幕",
     "ai.trivia": "AI问答",
-    "ai.audioOverlay": "音频叠加"
+    "ai.audioOverlay": "音频叠加",
+    "feedCount": "{{count}} 个源"
   },
   "tooltip": {
     "dubbing": {

@@ -51,7 +51,7 @@ struct NotificationSettingsView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("To receive notifications, please enable them in Settings.")
+            Text(localization.t("settings.notificationsGoToSettings"))
         }
     }
 

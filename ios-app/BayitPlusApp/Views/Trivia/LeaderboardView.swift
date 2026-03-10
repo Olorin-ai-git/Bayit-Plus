@@ -91,7 +91,7 @@ struct LeaderboardView: View {
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("\(viewModel.entries.count) players")
+                Text(localization.t("trivia.playerCount", ["count": "\(viewModel.entries.count)"]))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }

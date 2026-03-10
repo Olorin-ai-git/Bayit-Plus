@@ -25,7 +25,7 @@ extension PiPWidgetContainerView {
                         Circle()
                             .fill(DesignTokens.live)
                             .frame(width: 6, height: 6)
-                        Text("LIVE")
+                        Text(localization.t("common.live"))
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(DesignTokens.live)
                     }

@@ -67,7 +67,7 @@
 
         var iframeFields: some View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                Text("iFrame URL")
+                Text(localization.t("widgets.iframeUrl"))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
 

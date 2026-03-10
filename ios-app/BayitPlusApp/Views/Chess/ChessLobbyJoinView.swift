@@ -25,7 +25,7 @@ struct ChessLobbyJoinView: View {
     private var divider: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             Rectangle().fill(DesignTokens.Glass.border).frame(height: 1)
-            Text("or").font(.system(size: DesignTokens.FontSize.xs))
+            Text(localization.t("common.or")).font(.system(size: DesignTokens.FontSize.xs))
                 .foregroundStyle(DesignTokens.Text.muted)
             Rectangle().fill(DesignTokens.Glass.border).frame(height: 1)
         }

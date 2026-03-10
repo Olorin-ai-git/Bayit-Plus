@@ -2856,7 +2856,10 @@
       "basic": "無料",
       "free": "無料",
       "premium": "プラス"
-    }
+    },
+    "browseByAuthor": "著者で探す",
+    "durationMin": "{{count}} 分",
+    "authorCount": "{{count}} オーディオブック"
   },
   "auth": {
     "loginRequired": "ログインが必要です",
@@ -3453,7 +3456,8 @@
       "title": "チャット",
       "inputPlaceholder": "メッセージを入力...",
       "botLimitReached": "このゲームのチャット制限に達しました"
-    }
+    },
+    "turn": "ターン"
   },
   "children": {
     "title": "キッズ",
@@ -5805,7 +5809,8 @@
     "getAccess": "アクセスを取得",
     "watch": "視聴",
     "moreInfo": "詳細情報",
-    "addToList": "リストに追加"
+    "addToList": "リストに追加",
+    "newBadge": "新着"
   },
   "highlights": {
     "title": "ハイライト",
@@ -8663,7 +8668,10 @@
     "loading": "設定を読み込み中...",
     "not_connected": "未接続",
     "privacySecurity": "プライバシー & Security",
-    "privacySection": "プライバシーと法的情報"
+    "privacySection": "プライバシーと法的情報",
+    "notificationsDisabled": "通知が無効です",
+    "notificationsEnableMessage": "新しいコンテンツ、ライブイベントなどの最新情報を受け取るには、通知を有効にしてください。",
+    "notificationsGoToSettings": "通知を受け取るには、設定で有効にしてください。"
   },
   "shabbat": {
     "activate": "有効にする",
@@ -8677,7 +8685,9 @@
     "inactive": "非アクティブ",
     "manualToggle": "手動切替",
     "recommendedContent": "おすすめコンテンツ",
-    "settings": "設定"
+    "settings": "設定",
+    "shalom": "シャバットシャローム",
+    "parashat": "パラシャット {{name}}"
   },
   "stats": {
     "statistics": "統計",
@@ -8986,7 +8996,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} キュー)",
+    "trackUnavailable": "{{language}}：{{reason}}"
   },
   "success": {
     "continue": "続行",
@@ -9345,7 +9357,9 @@
     },
     "explanation": "説明",
     "submit": "送信",
-    "tryAgain": "もう一度試す"
+    "tryAgain": "もう一度試す",
+    "playerCount": "{{count}} 人",
+    "dayStreak": "{{count}} 日連続"
   },
   "tvLogin": {
     "invalidQR": "無効なQRコードです。TVから再度スキャンしてください。",
@@ -9801,7 +9815,8 @@
       "bornIn": "出身地",
       "featuredActors": "注目の俳優"
     },
-    "trending": "トレンド"
+    "trending": "トレンド",
+    "aiBadge": "AI"
   },
   "voice": {
     "title": "音声",
@@ -10218,7 +10233,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame URL"
   },
   "youngsters": {
     "title": "ヤングスター",
@@ -10858,7 +10874,8 @@
       "totalSpent": "合計使用",
       "recentTransactions": "最近の取引",
       "noTransactions": "まだ取引はありません"
-    }
+    },
+    "dayStreak": "{{count}} 日連続"
   },
   "shekels": {
     "title": "シェケル",
@@ -10987,7 +11004,8 @@
       "usage": "一般的な用法",
       "funFact": "豆知識"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "インタラクティブミッション",
@@ -11432,7 +11450,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} ページ"
   },
   "forgot_password": {
     "title": "パスワードをリセット",
@@ -11652,7 +11671,8 @@
     "ai.dubbing": "AI吹き替え",
     "ai.subtitles": "AI字幕",
     "ai.trivia": "AIトリビア",
-    "ai.audioOverlay": "オーディオオーバーレイ"
+    "ai.audioOverlay": "オーディオオーバーレイ",
+    "feedCount": "{{count}} フィード"
   },
   "tooltip": {
     "dubbing": {

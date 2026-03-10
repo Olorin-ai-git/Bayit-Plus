@@ -3093,7 +3093,10 @@
       "basic": "বিনামূল্যে",
       "free": "বিনামূল্যে",
       "premium": "প্লাস"
-    }
+    },
+    "browseByAuthor": "লেখক অনুসারে ব্রাউজ করুন",
+    "durationMin": "{{count}} মিনিট",
+    "authorCount": "{{count}} অডিওবুক"
   },
   "auth": {
     "loginRequired": "লগইন প্রয়োজন",
@@ -3673,7 +3676,8 @@
       "title": "চ্যাট",
       "inputPlaceholder": "একটি বার্তা লিখুন...",
       "botLimitReached": "এই গেমের জন্য চ্যাট সীমা পৌঁছে গেছে"
-    }
+    },
+    "turn": "পালা"
   },
   "children": {
     "title": "শিশু",
@@ -5369,7 +5373,8 @@
     "watch": "দেখুন",
     "moreInfo": "আরও তথ্য",
     "addToList": "তালিকায় যোগ করুন",
-    "watchNow": "Watch Now"
+    "watchNow": "Watch Now",
+    "newBadge": "নতুন"
   },
   "highlights": {
     "title": "হাইলাইটস",
@@ -7868,7 +7873,10 @@
     "loading": "সেটিংস লোড হচ্ছে...",
     "not_connected": "সংযুক্ত নয়",
     "privacySecurity": "গোপনীয়তা & Security",
-    "privacySection": "গোপনীয়তা এবং আইনি"
+    "privacySection": "গোপনীয়তা এবং আইনি",
+    "notificationsDisabled": "বিজ্ঞপ্তি নিষ্ক্রিয়",
+    "notificationsEnableMessage": "নতুন কন্টেন্ট, লাইভ ইভেন্ট এবং আরও অনেক কিছু সম্পর্কে আপডেট পেতে বিজ্ঞপ্তি সক্রিয় করুন।",
+    "notificationsGoToSettings": "বিজ্ঞপ্তি পেতে, সেটিংসে সেগুলি সক্রিয় করুন।"
   },
   "shabbat": {
     "activate": "সক্রিয় করুন",
@@ -7882,7 +7890,9 @@
     "inactive": "নিষ্ক্রিয়",
     "manualToggle": "ম্যানুয়াল টগল",
     "recommendedContent": "প্রস্তাবিত কন্টেন্ট",
-    "settings": "সেটিংস"
+    "settings": "সেটিংস",
+    "shalom": "শাব্বাত শালোম",
+    "parashat": "পারাশাত {{name}}"
   },
   "stats": {
     "statistics": "পরিসংখ্যান",
@@ -8158,7 +8168,9 @@
     "skipped": "Skipped: {{count}} (already exists)",
     "splitDisplayDescription": "Show two languages side by side",
     "title": "Subtitles",
-    "quotaExceededLabel": "Quota exceeded"
+    "quotaExceededLabel": "Quota exceeded",
+    "cueCount": "({{count}} কিউ)",
+    "trackUnavailable": "{{language}}: {{reason}}"
   },
   "success": {
     "continue": "চালিয়ে যান",
@@ -8483,7 +8495,9 @@
     },
     "explanation": "ব্যাখ্যা",
     "submit": "জমা দিন",
-    "tryAgain": "আবার চেষ্টা করুন"
+    "tryAgain": "আবার চেষ্টা করুন",
+    "playerCount": "{{count}} খেলোয়াড়",
+    "dayStreak": "{{count}} দিনের স্ট্রিক"
   },
   "tvLogin": {
     "invalidQR": "অবৈধ QR কোড। আপনার TV থেকে আবার স্ক্যান করুন।",
@@ -8888,7 +8902,8 @@
       "bornIn": "জন্মস্থান",
       "featuredActors": "বিশেষ অভিনেতা"
     },
-    "trending": "ট্রেন্ডিং"
+    "trending": "ট্রেন্ডিং",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "শুনছে...",
@@ -9276,7 +9291,8 @@
     "loading": "Loading Widgets...",
     "noContentFound": "No content found",
     "selectContent": "Select Content",
-    "ynetBreakingNews": "Ynet Breaking News"
+    "ynetBreakingNews": "Ynet Breaking News",
+    "iframeUrl": "iFrame URL"
   },
   "youngsters": {
     "title": "তরুণ",
@@ -9916,7 +9932,8 @@
       "totalSpent": "মোট ব্যয়",
       "recentTransactions": "সাম্প্রতিক লেনদেন",
       "noTransactions": "এখনো কোনো লেনদেন নেই"
-    }
+    },
+    "dayStreak": "{{count}} দিনের স্ট্রিক"
   },
   "shekels": {
     "title": "শেকেল",
@@ -10045,7 +10062,8 @@
       "usage": "সাধারণ ব্যবহার",
       "funFact": "মজার তথ্য"
     },
-    "funFact": "Fun Fact"
+    "funFact": "Fun Fact",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "ইন্টারেক্টিভ মিশন",
@@ -10490,7 +10508,8 @@
     "noCurrentZine": "No current zine available",
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
-    "pageIndicator": "Page {{current}} of {{total}}"
+    "pageIndicator": "Page {{current}} of {{total}}",
+    "pageCount": "{{count}} পৃষ্ঠা"
   },
   "forgot_password": {
     "title": "পাসওয়ার্ড রিসেট করুন",
@@ -10710,7 +10729,8 @@
     "ai.dubbing": "AI ডাবিং",
     "ai.subtitles": "AI সাবটাইটেল",
     "ai.trivia": "AI ট্রিভিয়া",
-    "ai.audioOverlay": "অডিও ওভারলে"
+    "ai.audioOverlay": "অডিও ওভারলে",
+    "feedCount": "{{count}} ফিড"
   },
   "tooltip": {
     "dubbing": {
