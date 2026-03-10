@@ -101,9 +101,14 @@ async def websocket_live_dubbing(
     Server sends: connected, dubbed_audio, transcript, latency_report, buffer_status, error
     """
     # SECURITY: Step 0 - Enforce wss:// in production (allow ws:// for localhost)
+    # Cloud Run terminates TLS at the load balancer, so the ASGI scope sees
+    # ws:// even though clients connect over wss://. Check X-Forwarded-Proto
+    # to determine the original client protocol.
     is_localhost = websocket.client and websocket.client.host in ("127.0.0.1", "::1", "localhost")
     if settings.olorin.dubbing.require_secure_websocket and not settings.DEBUG and not is_localhost:
-        if websocket.url.scheme != "wss":
+        forwarded_proto = websocket.headers.get("x-forwarded-proto", "")
+        is_secure = websocket.url.scheme == "wss" or forwarded_proto == "https"
+        if not is_secure:
             await websocket.close(
                 code=4000,
                 reason="Secure WebSocket (wss://) required in production",

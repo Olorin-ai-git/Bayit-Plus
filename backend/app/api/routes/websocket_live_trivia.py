@@ -34,16 +34,21 @@ async def websocket_live_trivia(websocket: WebSocket, channel_id: str):
     Server sends: connected, trivia_fact, quota_exceeded, error
     """
     # SECURITY: Enforce wss:// in production (allow ws:// for localhost)
+    # Cloud Run terminates TLS at the load balancer, so the ASGI scope sees
+    # ws:// even though clients connect over wss://. Check X-Forwarded-Proto
+    # to determine the original client protocol.
     is_localhost = websocket.client and websocket.client.host in (
         "127.0.0.1",
         "::1",
         "localhost",
     )
+    forwarded_proto = websocket.headers.get("x-forwarded-proto", "")
+    is_secure = websocket.url.scheme == "wss" or forwarded_proto == "https"
     if (
         settings.olorin.dubbing.require_secure_websocket
         and not settings.DEBUG
         and not is_localhost
-        and websocket.url.scheme != "wss"
+        and not is_secure
     ):
         await websocket.close(
             code=4000, reason="Secure WebSocket (wss://) required in production"
