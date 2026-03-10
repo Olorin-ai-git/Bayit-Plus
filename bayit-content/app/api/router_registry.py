@@ -33,6 +33,7 @@ from app.models.subtitles import (
 from app.models.subtitle_preferences import SubtitlePreference
 from app.models.recording_subtitle_cue import RecordingSubtitleCue
 from app.models.chat_translation import ChatTranslationCacheDoc
+from app.models.ai_generation_job import AIGenerationJob
 from app.models.audio_tracks import AudioTrackDoc
 from app.models.content_taxonomy import ContentSection, SectionSubcategory, Genre, Audience
 from app.models.chapters import VideoChapters
@@ -47,6 +48,7 @@ from app.models.kids_content import KidsContentSource
 from app.models.youngsters_content import YoungstersContentSource
 
 SERVICE_MODELS: List[Type[Document]] = [
+    AIGenerationJob,
     Content,
     LiveChannel,
     EPGEntry,
