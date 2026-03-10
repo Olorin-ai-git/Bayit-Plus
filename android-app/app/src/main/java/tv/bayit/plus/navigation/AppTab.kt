@@ -9,6 +9,7 @@ enum class AppTab(
     HOME(Route.Home, "nav.home", "home"),
     LIVE_TV(Route.LiveTV, "nav.liveTV", "tv"),
     VOD(Route.Vod, "nav.vod", "film", requiresOwnerMode = true),
+    DISCOVER(Route.Discover, "nav.discover", "auto_awesome"),
     ZEH_ANI(Route.ZehAni, "nav.zehAni", "person"),
     PODCASTS(Route.Podcasts, "nav.podcasts", "headphones"),
     SEARCH(Route.Search, "nav.search", "search"),

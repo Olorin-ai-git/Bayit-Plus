@@ -10,6 +10,7 @@ sealed class Route {
     @Serializable data object Vod : Route()
     @Serializable data object Radio : Route()
     @Serializable data object Podcasts : Route()
+    @Serializable data object Discover : Route()
 
     // Content detail
     @Serializable data class Player(val contentId: String, val contentType: String, val resumePositionMs: Long = 0L) : Route()

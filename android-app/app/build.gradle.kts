@@ -189,6 +189,7 @@ dependencies {
     implementation(project(":feature:feature-downloads"))
     implementation(project(":feature:feature-widgets"))
     implementation(project(":feature:feature-byoc"))
+    implementation(project(":feature:feature-discover"))
     implementation(project(":feature:feature-onboarding"))
     implementation(project(":feature:feature-tv"))
     implementation(project(":widget"))

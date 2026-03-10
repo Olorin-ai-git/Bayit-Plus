@@ -23,6 +23,7 @@ import tv.bayit.plus.feature.vod.collection.CollectionDetailRoute
 import tv.bayit.plus.feature.onboarding.FeatureTourRoute
 import tv.bayit.plus.feature.onboarding.intro.OnboardingIntroRoute
 import tv.bayit.plus.feature.onboarding.R as OnboardingR
+import tv.bayit.plus.feature.discover.ui.DiscoverRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.favorites.FavoritesRoute
 import tv.bayit.plus.feature.vod.playlist.PlaylistRoute
@@ -73,6 +74,12 @@ fun NavGraphBuilder.contentNavGraph(navController: NavController) {
     }
     composable<Route.Podcasts> {
         PodcastsRoute(onNavigateToPodcast = { id -> navController.navigate(Route.PodcastDetail(showId = id)) })
+    }
+    composable<Route.Discover> {
+        DiscoverRoute(
+            onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+            onNavigateToZehAni = { navController.navigate(Route.ZehAni) },
+        )
     }
     composable<Route.Search> {
         SearchRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })

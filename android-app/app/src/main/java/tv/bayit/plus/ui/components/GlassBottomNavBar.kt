@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -105,6 +106,7 @@ private fun getTabIcon(tab: AppTab): ImageVector {
         "headphones" -> BayitIcons.Headphones
         "search" -> Icons.Default.Search
         "download" -> Icons.Default.Download
+        "auto_awesome" -> Icons.Default.AutoAwesome
         else -> Icons.Default.Home
     }
 }

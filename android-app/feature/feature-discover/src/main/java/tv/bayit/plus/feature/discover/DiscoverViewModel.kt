@@ -63,14 +63,24 @@ class DiscoverViewModel @Inject constructor(
         val route = feature.deepLinkRoute
 
         return when {
-            walkthroughContentId != null && route == "player" ->
-                WalkthroughNavTarget.Player(walkthroughContentId, "movie")
-            walkthroughContentId != null && route == "live_tv" ->
-                WalkthroughNavTarget.Player(walkthroughContentId, "live")
+            route == "player" || route == "live_tv" -> {
+                val contentType = if (route == "live_tv") "live" else "movie"
+                val contentId = walkthroughContentId ?: DEMO_CONTENT_ID
+                WalkthroughNavTarget.Player(contentId, contentType)
+            }
+            route == "epg" -> {
+                val contentId = walkthroughContentId ?: DEMO_LIVE_CONTENT_ID
+                WalkthroughNavTarget.Player(contentId, "live")
+            }
             route == "zeh_ani" -> WalkthroughNavTarget.ZehAni
             route != null -> WalkthroughNavTarget.DeepLink(route, feature.id)
             else -> null
         }
+    }
+
+    companion object {
+        private const val DEMO_CONTENT_ID = "demo_walkthrough"
+        private const val DEMO_LIVE_CONTENT_ID = "demo_live_walkthrough"
     }
 
     fun recordWalkthroughComplete(featureId: String, steps: Int, skipped: Boolean) {
