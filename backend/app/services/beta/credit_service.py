@@ -88,6 +88,7 @@ class BetaCreditService:
             "3d_mesh": self.settings.CREDIT_RATE_3D_MESH,
             "magic_mirror": self.settings.CREDIT_RATE_MAGIC_MIRROR,
             "highlight_reel": self.settings.CREDIT_RATE_HIGHLIGHT_REEL,
+            "character_generation": self.settings.CREDIT_RATE_CHARACTER_GENERATION,
         }
 
     async def get_credit_rate(self, feature: str) -> float:

@@ -139,6 +139,9 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import device_code
     # Internal cron endpoints (Cloud Scheduler)
     from app.api.routes import credit_refill
+    # Discover tab config (AI features hub)
+    from app.api.routes import discover
+    from app.api.routes import discover_characters
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -421,6 +424,14 @@ def register_all_routers(app: FastAPI) -> None:
         cultural_context_user.router,
         prefix=prefix,
         tags=["cultural-context"],
+    )
+    app.include_router(
+        discover.router, prefix=f"{prefix}/discover", tags=["discover"]
+    )
+    app.include_router(
+        discover_characters.router,
+        prefix=f"{prefix}/discover",
+        tags=["discover-characters"],
     )
     logger.debug("Registered feature routes")
 

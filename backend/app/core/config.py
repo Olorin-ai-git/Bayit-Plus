@@ -2360,6 +2360,16 @@ class Settings(BaseSettings):
         env="CREDIT_RATE_STAR_STORY_AVATAR",
         description="Beta credits per avatar generation",
     )
+    CREDIT_RATE_CHARACTER_GENERATION: int = Field(
+        default=25,
+        env="CREDIT_RATE_CHARACTER_GENERATION",
+        description="Beta credits per character generation (after free quota)",
+    )
+    CHARACTER_GENERATION_FREE_LIMIT: int = Field(
+        default=5,
+        env="CHARACTER_GENERATION_FREE_LIMIT",
+        description="Free character generation movies per user",
+    )
     STAR_STORY_PHOTO_RETENTION_DAYS: int = Field(
         default=7, ge=1,
         env="STAR_STORY_PHOTO_RETENTION_DAYS",

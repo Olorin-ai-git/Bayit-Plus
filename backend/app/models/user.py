@@ -252,6 +252,9 @@ class User(Document):
         }
     )
 
+    # Discover: character generation free quota tracking
+    character_generation_count: int = 0
+
     # Extended preferences for new features
     preferences: dict = Field(
         default_factory=lambda: {
