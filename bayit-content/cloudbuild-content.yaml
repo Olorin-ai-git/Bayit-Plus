@@ -91,7 +91,7 @@ images:
 substitutions:
   _BUILD_ID: 'latest'
   _REGION: 'us-east1'
-  _MEMORY: '1Gi'
+  _MEMORY: '2Gi'
   _CPU: '2'
   _TIMEOUT: '30'
   _MIN_INSTANCES: '2'
