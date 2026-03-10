@@ -6041,6 +6041,44 @@
       "name": "নাম",
       "startWatching": "দেখা শুরু করুন",
       "saving": "সংরক্ষণ হচ্ছে..."
+    },
+    "language": {
+      "title": "Choose Your Languages",
+      "subtitle": "Select your primary language and the content languages you enjoy",
+      "primary": "Primary Language",
+      "content": "Content Languages"
+    },
+    "interests": {
+      "title": "What Do You Love?",
+      "subtitle": "Choose at least 3 content categories to personalize your experience",
+      "selected": "%d of %d selected",
+      "live_tv": "Live TV",
+      "movies": "Movies",
+      "series": "Series",
+      "kids": "Kids",
+      "music": "Music",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "audiobooks": "Audiobooks",
+      "news": "News",
+      "sports": "Sports"
+    },
+    "culture": {
+      "title": "Your Cultural Vibe",
+      "subtitle": "Help us tailor content to your cultural background",
+      "israeli": "Israeli",
+      "american": "American",
+      "european": "European",
+      "mixed": "Global Mix"
+    },
+    "byoc": {
+      "title": "Bring Your Own Content",
+      "subtitle": "Connect your existing media sources and enjoy them with Bayit+ AI features",
+      "iptvDesc": "Live TV from any IPTV provider",
+      "plexDesc": "Your Plex library with AI subtitles",
+      "youtubeDesc": "YouTube with Hebrew tools",
+      "connectNow": "Connect a Source",
+      "skipForNow": "Skip for Now"
     }
   },
   "pairing": {
@@ -6178,7 +6216,11 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
+      "notIncluded": [
+        "লাইভ চ্যানেল",
+        "AI সহায়ক",
+        "অফলাইন দেখা"
+      ]
     },
     "premium": {
       "name": "প্লাস",
