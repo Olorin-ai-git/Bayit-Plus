@@ -19,6 +19,7 @@ import tv.bayit.plus.core.network.interceptor.CorrelationIdInterceptor
 import tv.bayit.plus.core.network.interceptor.LocaleInterceptor
 import tv.bayit.plus.core.network.interceptor.RateLimitInterceptor
 import tv.bayit.plus.core.network.interceptor.RetryInterceptor
+import tv.bayit.plus.core.network.interceptor.WalkthroughInterceptor
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -30,12 +31,13 @@ import javax.inject.Singleton
  * 0. Authenticator -- handles 401 responses with token refresh (before interceptors)
  *
  * Interceptor order (matching iOS APIClient header injection order):
- * 1. Auth       -- injects Bearer token
- * 2. Correlation -- injects X-Correlation-ID UUID
- * 3. Locale     -- injects Accept-Language from device
- * 4. RateLimit  -- handles 429 with Retry-After
- * 5. Retry      -- exponential backoff for 5xx / network errors
- * 6. Logging    -- HTTP body logging (last, sees final request)
+ * 1. Auth         -- injects Bearer token
+ * 2. Walkthrough  -- injects X-Walkthrough session token when active
+ * 3. Correlation  -- injects X-Correlation-ID UUID
+ * 4. Locale       -- injects Accept-Language from device
+ * 5. RateLimit    -- handles 429 with Retry-After
+ * 6. Retry        -- exponential backoff for 5xx / network errors
+ * 7. Logging      -- HTTP body logging (last, sees final request)
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -69,6 +71,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         tokenAuthenticator: TokenAuthenticator,
         authInterceptor: AuthInterceptor,
+        walkthroughInterceptor: WalkthroughInterceptor,
         correlationIdInterceptor: CorrelationIdInterceptor,
         localeInterceptor: LocaleInterceptor,
         rateLimitInterceptor: RateLimitInterceptor,
@@ -78,6 +81,7 @@ object NetworkModule {
     ): OkHttpClient = OkHttpClient.Builder()
         .authenticator(tokenAuthenticator)
         .addInterceptor(authInterceptor)
+        .addInterceptor(walkthroughInterceptor)
         .addInterceptor(correlationIdInterceptor)
         .addInterceptor(localeInterceptor)
         .addInterceptor(rateLimitInterceptor)
