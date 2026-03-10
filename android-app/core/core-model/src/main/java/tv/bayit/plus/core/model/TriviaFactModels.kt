@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class TriviaFact(
-    val id: String,
+    @SerialName("fact_id") val id: String,
     @SerialName("text_he") val textHe: String? = null,
     @SerialName("text_en") val textEn: String? = null,
     @SerialName("text_es") val textEs: String? = null,
