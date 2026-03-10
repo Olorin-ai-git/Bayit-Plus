@@ -135,6 +135,32 @@ class PlayerFeaturesDelegate @Inject constructor(
         }
     }
 
+    fun startPauseAndAsk(
+        contentId: String,
+        scope: CoroutineScope,
+        pausePlayback: () -> Unit,
+        update: (PlayerExtendedState.() -> PlayerExtendedState) -> Unit,
+    ) {
+        scope.launch {
+            val avatarStatus = runCatching { vodInteractionApi.getAvatarStatus("any") }.getOrNull()
+            if (avatarStatus == null || avatarStatus.status != "ready" || avatarStatus.avatarImageUrl == null) {
+                logger.info("Avatar not ready, skipping pause-and-ask", mapOf("contentId" to contentId, "avatarStatus" to (avatarStatus?.status ?: "null")))
+                return@launch
+            }
+            val characters = runCatching { vodInteractionApi.getInteractiveCharacters(contentId) }.getOrElse { emptyList<ContentCharacter>() }
+            pausePlayback()
+            update {
+                copy(
+                    vodInteractionCharacters = characters,
+                    showPauseAskOverlay = true,
+                    avatarId = avatarStatus.avatarId,
+                    avatarImageUrl = avatarStatus.avatarImageUrl,
+                )
+            }
+            logger.debug("Started pause-and-ask", mapOf("contentId" to contentId, "characters" to characters.size.toString()))
+        }
+    }
+
     fun toggleRecording(
         state: PlayerExtendedState,
         contentId: String?,

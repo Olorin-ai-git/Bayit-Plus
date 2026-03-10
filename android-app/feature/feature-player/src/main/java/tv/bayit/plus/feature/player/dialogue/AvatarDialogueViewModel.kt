@@ -46,6 +46,9 @@ class AvatarDialogueViewModel @Inject constructor(
     internal val _pauseAskResponse = MutableStateFlow<PauseAskResponse?>(null)
     val pauseAskResponse: StateFlow<PauseAskResponse?> = _pauseAskResponse.asStateFlow()
 
+    private val _pauseAskError = MutableStateFlow<String?>(null)
+    val pauseAskError: StateFlow<String?> = _pauseAskError.asStateFlow()
+
     fun updateAvatarPlacement(placement: AvatarPlacement?) {
         _avatarPlacement.value = placement
     }
@@ -120,6 +123,7 @@ class AvatarDialogueViewModel @Inject constructor(
         val activeSessionId = _sessionId.value ?: return
         if (text.isBlank()) return
 
+        _pauseAskError.value = null
         _pauseAskPhase.value = PauseAskPhase.POLISHING
         viewModelScope.launch {
             try {
@@ -145,6 +149,7 @@ class AvatarDialogueViewModel @Inject constructor(
                     error = e,
                     metadata = mapOf("sessionId" to activeSessionId),
                 )
+                _pauseAskError.value = "player.pauseAsk.error.generic"
                 _pauseAskPhase.value = PauseAskPhase.INPUT
             }
         }
@@ -157,6 +162,7 @@ class AvatarDialogueViewModel @Inject constructor(
     fun resetPauseAsk() {
         _pauseAskPhase.value = PauseAskPhase.IDLE
         _pauseAskResponse.value = null
+        _pauseAskError.value = null
     }
 
     override fun onCleared() {

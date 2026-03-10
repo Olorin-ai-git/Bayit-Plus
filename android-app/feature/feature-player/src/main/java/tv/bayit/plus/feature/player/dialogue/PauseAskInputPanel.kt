@@ -36,6 +36,7 @@ internal fun PauseAskInputPanel(
     characterName: String,
     onSend: (String) -> Unit,
     modifier: Modifier = Modifier,
+    errorMessage: String? = null,
 ) {
     var questionText by remember { mutableStateOf("") }
 
@@ -49,6 +50,15 @@ internal fun PauseAskInputPanel(
             fontSize = DesignTokens.FontSize.lg,
             fontWeight = FontWeight.Bold,
         )
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
+            Text(
+                text = bayitString(errorMessage),
+                color = DesignTokens.Colors.Semantic.error,
+                fontSize = DesignTokens.FontSize.sm,
+            )
+        }
 
         Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
 

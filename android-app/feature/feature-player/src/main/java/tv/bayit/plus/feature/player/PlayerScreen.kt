@@ -53,6 +53,7 @@ fun PlayerRoute(
     val dialoguePlacement by dialogueViewModel.avatarPlacement.collectAsStateWithLifecycle()
     val pauseAskPhase by dialogueViewModel.pauseAskPhase.collectAsStateWithLifecycle()
     val pauseAskResponse by dialogueViewModel.pauseAskResponse.collectAsStateWithLifecycle()
+    val pauseAskError by dialogueViewModel.pauseAskError.collectAsStateWithLifecycle()
 
     var showLanguagePicker by remember { mutableStateOf(false) }
     var showSubtitlePicker by remember { mutableStateOf(false) }
@@ -65,6 +66,12 @@ fun PlayerRoute(
             showOpenSubtitles = false
             showSubtitlePicker = true
             viewModel._extendedState.update { it.copy(shouldDismissOpenSubtitles = false) }
+        }
+    }
+
+    LaunchedEffect(extendedState.showPauseAskOverlay) {
+        if (extendedState.showPauseAskOverlay) {
+            dialogueViewModel.advancePauseAskPhase(PauseAskPhase.SELECTING)
         }
     }
 
@@ -141,7 +148,7 @@ fun PlayerRoute(
         onRestart = viewModel::restartContent,
         onVolumeChange = viewModel::setVolume,
         onSpeedChange = viewModel::setPlaybackSpeed,
-        onInteract = viewModel::startVodInteraction,
+        onInteract = viewModel::startPauseAsk,
         onPreviousInteraction = viewModel::navigateToPreviousInteraction,
         onNextInteraction = viewModel::navigateToNextInteraction,
         onDismissVodInteractionSheet = viewModel::dismissVodInteractionSheet,
@@ -160,6 +167,7 @@ fun PlayerRoute(
         onSendDialogueMessage = { text -> dialogueViewModel.sendMessage(text) },
         onDismissDialogue = { dialogueViewModel.endSession() },
         onDismissPauseAsk = {
+            dialogueViewModel.endSession()
             dialogueViewModel.resetPauseAsk()
             viewModel.dismissPauseAsk()
         },
@@ -169,6 +177,7 @@ fun PlayerRoute(
         onDismissMoment = viewModel::dismissMoment,
         pauseAskPhase = pauseAskPhase,
         pauseAskResponse = pauseAskResponse,
+        pauseAskError = pauseAskError,
         dialogueIsActive = dialogueIsActive,
         dialogueCharacter = dialogueCharacter,
         dialogueExchanges = dialogueExchanges,

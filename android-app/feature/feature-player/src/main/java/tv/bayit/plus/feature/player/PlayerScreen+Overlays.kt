@@ -34,6 +34,7 @@ internal fun PlayerScreenDialogueOverlays(
     dialoguePlacement: AvatarPlacement?,
     pauseAskPhase: PauseAskPhase,
     pauseAskResponse: PauseAskResponse?,
+    pauseAskError: String? = null,
     showSleepTimerPicker: Boolean,
     momentModifier: Modifier,
     sleepTimerBannerModifier: Modifier,
@@ -73,7 +74,7 @@ internal fun PlayerScreenDialogueOverlays(
     }
 
     AvatarDialogueOverlay(
-        isActive = dialogueIsActive,
+        isActive = dialogueIsActive && !extendedState.showPauseAskOverlay,
         selectedCharacter = dialogueCharacter,
         avatarUrl = extendedState.avatarImageUrl,
         exchanges = dialogueExchanges,
@@ -90,6 +91,7 @@ internal fun PlayerScreenDialogueOverlays(
         characters = extendedState.vodInteractionCharacters,
         selectedCharacter = dialogueCharacter,
         pauseAskResponse = pauseAskResponse,
+        errorMessage = pauseAskError,
         onCharacterSelected = { character ->
             onStartDialogue?.invoke(character)
             onAdvancePauseAskPhase?.invoke(PauseAskPhase.INPUT)

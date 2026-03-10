@@ -46,6 +46,7 @@ fun PauseAskDialogueOverlay(
     characters: List<ContentCharacter>,
     selectedCharacter: ContentCharacter?,
     pauseAskResponse: PauseAskResponse?,
+    errorMessage: String? = null,
     onCharacterSelected: (ContentCharacter) -> Unit,
     onSendQuestion: (String) -> Unit,
     onPhaseAdvance: (PauseAskPhase) -> Unit,
@@ -85,6 +86,7 @@ fun PauseAskDialogueOverlay(
                             PauseAskInputPanel(
                                 characterName = it.name,
                                 onSend = onSendQuestion,
+                                errorMessage = errorMessage,
                             )
                         }
                     }

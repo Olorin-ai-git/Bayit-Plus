@@ -84,10 +84,10 @@ fun PlayerViewModel.dismissVodInteractionSheet() {
 }
 
 // Pause-to-Ask
-fun PlayerViewModel.startPauseAsk() {
-    mediaPlayer.pause()
-    _extendedState.update { it.copy(showPauseAskOverlay = true) }
-}
+fun PlayerViewModel.startPauseAsk() =
+    currentContentId?.let { id ->
+        featuresDelegate.startPauseAndAsk(id, viewModelScope, { mediaPlayer.pause() }) { t -> _extendedState.update(t) }
+    }
 
 fun PlayerViewModel.dismissPauseAsk() {
     _extendedState.update { it.copy(showPauseAskOverlay = false) }
