@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.vod.detail
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val HERO_ASPECT_RATIO = 16f / 9f
+private const val HERO_LANDSCAPE_MAX_HEIGHT_FRACTION = 0.4f
 private val RELATED_CARD_WIDTH = 140.dp
 private const val RELATED_POSTER_RATIO = 2f / 3f
 
@@ -50,7 +53,15 @@ internal fun MovieHeroSection(
     onBack: () -> Unit,
     onFavoriteToggle: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxWidth().aspectRatio(HERO_ASPECT_RATIO)) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val heroModifier = if (isLandscape) {
+        val maxHeroHeight = (configuration.screenHeightDp * HERO_LANDSCAPE_MAX_HEIGHT_FRACTION).dp
+        Modifier.fillMaxWidth().height(maxHeroHeight)
+    } else {
+        Modifier.fillMaxWidth().aspectRatio(HERO_ASPECT_RATIO)
+    }
+    Box(modifier = heroModifier) {
         CachedAsyncImage(
             url = state.backdrop ?: state.thumbnail,
             contentDescription = state.title,
