@@ -16,7 +16,7 @@ extension PlayerView {
             VideoPlayerView(
                 player: viewModel.player.avPlayer,
                 allowsPiP: PiPController.isSupported,
-                videoGravity: mediaContentType.isLive ? .resizeAspectFill : .resizeAspect,
+                videoGravity: .resizeAspect,
                 isPiPActive: $isPiPActive,
                 onRestoreUserInterface: { [weak coordinator] completion in
                     guard let coordinator else {
@@ -38,6 +38,18 @@ extension PlayerView {
             .onPreferenceChange(PlayerWidthKey.self) { playerWidth = $0 }
             .onTapGesture { toggleControls() }
             .simultaneousGesture(doubleTapSkipGesture)
+            .walkthroughTarget(id: "discover_interactive_subtitles_step4")
+            .walkthroughTarget(id: "discover_vocabulary_step4")
+            .walkthroughTarget(id: "discover_vod_moments_step3")
+            .walkthroughTarget(id: "discover_cultural_context_step3")
+            .walkthroughTarget(id: "discover_bilingual_bridge_step4")
+            .walkthroughTarget(id: "discover_live_dubbing_step4")
+            .walkthroughTarget(id: "discover_live_subtitles_step4")
+            .walkthroughTarget(id: "discover_live_trivia_step3")
+            .walkthroughTarget(id: "discover_catch_up_step4")
+            .walkthroughTarget(id: "discover_scene_search_step4")
+            .walkthroughTarget(id: "discover_ai_companion_step4")
+            .walkthroughTarget(id: "discover_pause_ask_step4")
 
             if viewModel.isLoading {
                 loadingOverlay
