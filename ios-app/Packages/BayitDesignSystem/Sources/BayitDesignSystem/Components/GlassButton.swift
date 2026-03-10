@@ -91,17 +91,23 @@ public struct GlassButton: View {
         self.action = action
     }
 
+    @Environment(\.isEnabled) private var isEnabled
+
+    private var effectivelyDisabled: Bool {
+        isDisabled || isLoading || !isEnabled
+    }
+
     public var body: some View {
         Button(action: action) {
             buttonLabel
         }
         .disabled(isDisabled || isLoading)
-        .opacity(isDisabled ? 0.5 : 1.0)
+        .opacity(effectivelyDisabled ? 0.5 : 1.0)
         #if os(tvOS)
             .buttonStyle(GlassButtonTVStyle())
             .focusEffectDisabled()
         #else
-            .buttonStyle(.plain)
+            .buttonStyle(GlassPressStyle())
         #endif
     }
 
@@ -206,6 +212,19 @@ public struct GlassButton: View {
         }
     }
 }
+
+// MARK: - iOS Press Style
+
+#if !os(tvOS)
+    struct GlassPressStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+                .brightness(configuration.isPressed ? -0.05 : 0)
+                .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+        }
+    }
+#endif
 
 // MARK: - tvOS Button Style
 
