@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vod_filter_all">सभी</string>
+    <string name="vod_filter_collections">संग्रह</string>
+    <string name="vod_filter_movies">फिल्में</string>
+    <string name="vod_filter_series">सीरीज़</string>
+    <string name="vod_filter_israeli_movies">इज़राइली फिल्में</string>
+    <string name="vod_filter_israeli_series">इज़राइली सीरीज़</string>
+    <string name="vod_filter_music">संगीत</string>
+    <string name="vod_filter_documentary">डॉक्यूमेंट्री</string>
+</resources>

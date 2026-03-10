@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun AccessibilitySettingsRoute(
@@ -59,10 +60,10 @@ internal fun AccessibilitySettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Accessibility",
+            title = bayitString("settings.accessibility.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
             actions = {
@@ -88,12 +89,12 @@ private fun A11yContent(state: AccessibilityUiState.Success, onUpdate: (Accessib
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
-        item { A11yToggle("Large Text", "Increase text size throughout the app", s.largeText, saving) { onUpdate(s.copy(largeText = it)) } }
-        item { A11yToggle("Bold Text", "Use bolder fonts for better readability", s.boldText, saving) { onUpdate(s.copy(boldText = it)) } }
-        item { A11yToggle("High Contrast", "Increase contrast for better visibility", s.highContrast, saving) { onUpdate(s.copy(highContrast = it)) } }
-        item { A11yToggle("Reduce Motion", "Minimize animations and transitions", s.reduceMotion, saving) { onUpdate(s.copy(reduceMotion = it)) } }
-        item { A11yToggle("Audio Descriptions", "Narrated descriptions of visual content", s.audioDescriptions, saving) { onUpdate(s.copy(audioDescriptions = it)) } }
-        item { A11yToggle("Closed Captions", "Show captions for hearing accessibility", s.closedCaptions, saving) { onUpdate(s.copy(closedCaptions = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.largeText"), bayitString("settings.accessibility.largeTextDescription"), s.largeText, saving) { onUpdate(s.copy(largeText = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.boldText"), bayitString("settings.accessibility.boldTextDescription"), s.boldText, saving) { onUpdate(s.copy(boldText = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.highContrast"), bayitString("settings.accessibility.highContrastDescription"), s.highContrast, saving) { onUpdate(s.copy(highContrast = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.reduceMotion"), bayitString("settings.accessibility.reduceMotionDescription"), s.reduceMotion, saving) { onUpdate(s.copy(reduceMotion = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.audioDescriptions"), bayitString("settings.accessibility.audioDescriptionsDescription"), s.audioDescriptions, saving) { onUpdate(s.copy(audioDescriptions = it)) } }
+        item { A11yToggle(bayitString("settings.accessibility.closedCaptions"), bayitString("settings.accessibility.closedCaptionsDescription"), s.closedCaptions, saving) { onUpdate(s.copy(closedCaptions = it)) } }
         item { ColorBlindRow(selected = s.colorBlindMode, isSaving = saving) { onUpdate(s.copy(colorBlindMode = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
@@ -120,8 +121,8 @@ private fun ColorBlindRow(selected: String, isSaving: Boolean, onSelect: (String
     val options = listOf("none", "protanopia", "deuteranopia", "tritanopia")
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(text = "Color Blind Mode", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Adjust colors for color vision deficiency", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+            Text(text = bayitString("settings.accessibility.colorBlindMode"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+            Text(text = bayitString("settings.accessibility.colorBlindModeDescription"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                 options.forEach { option ->
@@ -142,7 +143,7 @@ private fun A11yErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

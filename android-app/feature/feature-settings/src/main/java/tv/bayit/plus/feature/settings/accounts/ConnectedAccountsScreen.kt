@@ -27,6 +27,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun ConnectedAccountsRoute(
@@ -58,10 +59,10 @@ internal fun ConnectedAccountsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Connected Accounts",
+            title = bayitString("settings.accounts.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -118,10 +119,10 @@ private fun AccountsContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(text = "Email Verified", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+                        Text(text = bayitString("settings.accounts.emailVerified"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
                     }
                     Text(
-                        text = if (state.emailVerified) "Verified" else "Not Verified",
+                        text = if (state.emailVerified) bayitString("settings.accounts.verified") else bayitString("settings.accounts.notVerified"),
                         color = if (state.emailVerified) DesignTokens.Colors.Semantic.success else DesignTokens.Colors.Semantic.warning,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -139,13 +140,13 @@ private fun AccountRow(provider: String, isConnected: Boolean, isProcessing: Boo
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = provider, color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    text = if (isConnected) "Connected" else "Not connected",
+                    text = if (isConnected) bayitString("settings.accounts.connected") else bayitString("settings.accounts.notConnected"),
                     color = if (isConnected) DesignTokens.Colors.Semantic.success else DesignTokens.Colors.Text.muted,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
             GlassButton(
-                text = if (isConnected) "Disconnect" else "Connect",
+                text = if (isConnected) bayitString("settings.accounts.disconnect") else bayitString("settings.accounts.connect"),
                 onClick = onLink,
                 isPrimary = !isConnected,
                 enabled = !isProcessing,
@@ -159,7 +160,7 @@ private fun AccountsErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

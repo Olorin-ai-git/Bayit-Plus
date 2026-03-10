@@ -35,6 +35,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 
@@ -70,12 +71,12 @@ internal fun PlaylistScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "My Playlist",
+            title = bayitString("vod.playlist.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -167,12 +168,12 @@ private fun PlaylistEmptyContent() {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
             Text(
-                text = "Your playlist is empty",
+                text = bayitString("vod.playlist.emptyTitle"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
             )
             Text(
-                text = "Add content to your playlist to watch later",
+                text = bayitString("vod.playlist.emptySubtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -192,7 +193,7 @@ private fun PlaylistErrorContent(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vod_filter_all">全部</string>
+    <string name="vod_filter_collections">合集</string>
+    <string name="vod_filter_movies">电影</string>
+    <string name="vod_filter_series">剧集</string>
+    <string name="vod_filter_israeli_movies">以色列电影</string>
+    <string name="vod_filter_israeli_series">以色列剧集</string>
+    <string name="vod_filter_music">音乐</string>
+    <string name="vod_filter_documentary">纪录片</string>
+</resources>

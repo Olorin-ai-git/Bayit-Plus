@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun FamilyControlsRoute(
@@ -53,10 +54,10 @@ internal fun FamilyControlsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Family Controls",
+            title = bayitString("settings.family.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -77,7 +78,7 @@ private fun FamilyContent(state: FamilyControlsUiState.Success) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
         item {
             Text(
-                text = "Profile Restrictions",
+                text = bayitString("settings.family.profileRestrictions"),
                 color = DesignTokens.Colors.Text.primary,
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -86,7 +87,7 @@ private fun FamilyContent(state: FamilyControlsUiState.Success) {
             item {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "No family profiles configured. Set up content restrictions to protect younger viewers.",
+                        text = bayitString("settings.family.emptyProfiles"),
                         color = DesignTokens.Colors.Text.secondary,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -103,7 +104,7 @@ private fun FamilyContent(state: FamilyControlsUiState.Success) {
         }
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.md))
-            Text(text = "Screen Time", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+            Text(text = bayitString("settings.family.screenTime"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
         }
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
@@ -112,7 +113,7 @@ private fun FamilyContent(state: FamilyControlsUiState.Success) {
                         Text(text = state.screenTimeInfo, color = DesignTokens.Colors.Text.secondary, style = MaterialTheme.typography.bodyMedium)
                     } else {
                         Text(
-                            text = "No screen time rules configured. Set viewing hour limits to manage content access.",
+                            text = bayitString("settings.family.emptyScreenTime"),
                             color = DesignTokens.Colors.Text.secondary,
                             style = MaterialTheme.typography.bodyMedium,
                         )
@@ -129,7 +130,7 @@ private fun FamilyErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

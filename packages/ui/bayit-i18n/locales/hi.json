@@ -3457,7 +3457,17 @@
       "invalidChannel": "अमान्य चैनल आईडी"
     },
     "initializationFailed": "आरंभीकरण विफल",
-    "reloadButton": "पुनः लोड करें"
+    "reloadButton": "पुनः लोड करें",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companion का उपयोग करने के लिए कृपया लॉग इन करें",
@@ -3978,7 +3988,8 @@
     "menu": "मेनू",
     "more": "और",
     "playlist": "प्लेलिस्ट",
-    "byoc": "BYOC"
+    "byoc": "आपका कंटेंट",
+    "zehAniHub": "ज़ेह अनी"
   },
   "onboarding": {
     "welcome": {
@@ -4048,7 +4059,11 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
     },
     "premium": {
       "name": "प्रीमियम",
@@ -4060,7 +4075,10 @@
         "2 डिवाइस पर देखें",
         "HD गुणवत्ता"
       ],
-      "notIncluded": ["ऑफ़लाइन देखना", "फैमिली प्रोफाइल"]
+      "notIncluded": [
+        "ऑफ़लाइन देखना",
+        "फैमिली प्रोफाइल"
+      ]
     },
     "family": {
       "name": "फैमिली",
@@ -4118,7 +4136,9 @@
     "noStream": "स्ट्रीम उपलब्ध नहीं",
     "loadError": "स्ट्रीम लोड करने में विफल",
     "settings": "सेटिंग्स",
-    "subtitles": "सबटाइटल",
+    "subtitles": {
+      "language": "भाषा"
+    },
     "playbackSpeed": "प्लेबैक स्पीड",
     "quality": "गुणवत्ता",
     "auto": "ऑटो",
@@ -4372,7 +4392,9 @@
     "radio": "Radio",
     "playLatest": "नवीनतम चलाएं",
     "subscribe": "सदस्यता लें",
-    "unsubscribe": "सदस्यता रद्द करें"
+    "unsubscribe": "सदस्यता रद्द करें",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "एपिसोड"
   },
   "miniPlayer": {
     "skipBackward": "15 सेकंड पीछे",
@@ -4937,7 +4959,11 @@
     "results": "परिणाम",
     "previousPage": "पिछला",
     "nextPage": "अगला",
-    "pageIndicator": "पृष्ठ {{current}} / {{total}}"
+    "pageIndicator": "पृष्ठ {{current}} / {{total}}",
+    "llm": {
+      "title": "AI खोज",
+      "placeholder": "बताएं आप क्या देखना चाहते हैं..."
+    }
   },
   "settings": {
     "title": "सेटिंग्स",
@@ -5053,7 +5079,10 @@
       "signOutAll": "सभी डिवाइस से साइन आउट करें",
       "signOutAllDesc": "यह आपको इस डिवाइस को छोड़कर हर जगह से साइन आउट कर देगा",
       "thisDevice": "यह डिवाइस",
-      "lastActive": "अंतिम सक्रिय {{time}}"
+      "lastActive": "अंतिम सक्रिय {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "AI सुविधाएं",
@@ -5302,7 +5331,8 @@
         "support": "सहायता"
       }
     },
-    "noCharge": "ट्रायल अवधि के दौरान आपके क्रेडिट कार्ड से शुल्क नहीं लिया जाएगा"
+    "noCharge": "ट्रायल अवधि के दौरान आपके क्रेडिट कार्ड से शुल्क नहीं लिया जाएगा",
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "off": "बंद",
@@ -5551,7 +5581,8 @@
     },
     "wizard": {
       "role": "आपका गाइड"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "trivia": {
     "didYouKnow": "क्या आप जानते हैं?",
@@ -5627,7 +5658,14 @@
   "vod": {
     "title": "फ़िल्में और सीरीज़",
     "movies": "फ़िल्में",
-    "series": "सीरीज़",
+    "series": {
+      "seasonsCount": "{{count}} सीज़न",
+      "episodesCount": "{{count}} एपिसोड",
+      "playAll": "सभी चलाएं",
+      "removeFromFavorites": "पसंदीदा से हटाएं",
+      "addToFavorites": "पसंदीदा में जोड़ें",
+      "seasonNumber": "सीज़न {{number}}"
+    },
     "searchPlaceholder": "फ़िल्में और सीरीज़ खोजें...",
     "noMovies": "कोई फ़िल्म नहीं मिली",
     "noSeries": "कोई सीरीज़ नहीं मिली",
@@ -5819,7 +5857,9 @@
     "error": {
       "failed": "सारांश नहीं बनाया जा सका",
       "retry": "पुनः प्रयास करें",
-      "insufficientCredits": "अपर्याप्त क्रेडिट"
+      "insufficientCredits": "अपर्याप्त क्रेडिट",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "title": "कैचअप",
     "subtitle": "चूके हुए प्रोग्राम देखें",
@@ -6101,6 +6141,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "{{author}} द्वारा",
+      "narratedBy": "वाचक: {{narrator}}",
+      "bookmarks": "{{count}} बुकमार्क",
+      "chapters": "अध्याय ({{count}})",
+      "chapter": "अध्याय"
     }
   },
   "breadcrumbs": {
@@ -6521,7 +6568,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "बच्चे",
+    "addIcon": "+"
   },
   "watch": {
     "notFound": "सामग्री नहीं मिली",
@@ -7698,7 +7747,21 @@
     "biometricEnrollTitle": "बायोमेट्रिक साइन-इन सक्षम करें",
     "biometricEnrollMessage": "अगली बार तेज़ साइन इन के लिए अपनी उंगली या चेहरे का उपयोग करें",
     "biometricEnrollEnable": "सक्षम करें",
-    "biometricEnrollSkip": "अभी नहीं"
+    "biometricEnrollSkip": "अभी नहीं",
+    "register": {
+      "createAccount": "खाता बनाएं",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "confirmPassword": "पासवर्ड की पुष्टि करें",
+      "register": "पंजीकरण",
+      "alreadyHaveAccount": "पहले से खाता है? साइन इन करें",
+      "passwordStrength": {
+        "weak": "कमज़ोर",
+        "medium": "मध्यम",
+        "strong": "मज़बूत"
+      }
+    },
+    "logout": "साइन आउट"
   },
   "email": {
     "greeting": "नमस्ते",
@@ -8355,7 +8418,8 @@
     "translationBeta": "अनुवाद (बीटा)",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -8785,7 +8849,8 @@
       "errors": {
         "noControlsAvailable": "कोई पारिवारिक नियंत्रण उपलब्ध नहीं है। पहले नियंत्रण बनाएं।"
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "अनुवाद करें",
@@ -9573,12 +9638,13 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Olorin.ai द्वारा संचालित"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9615,7 +9681,10 @@
       "genericQuestions": "सामान्य सवाल",
       "placeholder": "सवाल पूछें...",
       "send": "भेजें",
-      "you": "आप"
+      "you": "आप",
+      "title": "संवाद",
+      "askQuestion": "सवाल पूछें...",
+      "sendQuestion": "सवाल भेजें"
     },
     "subtitle": "आपकी इंटरैक्टिव पहचान",
     "hub": {
@@ -9631,6 +9700,156 @@
       "feedbackDesc": "परिवार और दोस्तों के संदेश",
       "chess": "शतरंज",
       "chessDesc": "परिवार और दोस्तों के साथ शतरंज खेलें"
+    },
+    "contacts": {
+      "title": "संपर्क",
+      "addContact": "संपर्क जोड़ें",
+      "searchPlaceholder": "संपर्क खोजें...",
+      "noContacts": "अभी तक कोई संपर्क नहीं",
+      "noMatchingContacts": "कोई मिलान संपर्क नहीं",
+      "reelsShared": "{{count}} रील साझा किए",
+      "remove": "हटाएं"
+    },
+    "feedback": {
+      "title": "प्रतिक्रिया",
+      "rateQuestion": "आप Zeh Ani को कैसे रेट करेंगे?",
+      "tellUsMore": "हमें और बताएं",
+      "sharePlaceholder": "Zeh Ani सुविधाओं के साथ अपना अनुभव साझा करें...",
+      "submit": "प्रतिक्रिया सबमिट करें",
+      "thankYou": "आपकी प्रतिक्रिया के लिए धन्यवाद!",
+      "appreciateInput": "हम आपके इनपुट की सराहना करते हैं और इसे सुधार के लिए उपयोग करेंगे।",
+      "sendMore": "और प्रतिक्रिया भेजें"
+    },
+    "consent": {
+      "title": "बायोमेट्रिक सहमति",
+      "familyPin": "पारिवारिक PIN",
+      "enterPin": "पारिवारिक PIN दर्ज करें...",
+      "consentTypes": "सहमति प्रकार",
+      "active": "सक्रिय",
+      "notGranted": "प्रदान नहीं किया गया",
+      "grant": "प्रदान करें",
+      "granted": "प्रदान किया गया"
+    },
+    "highlights": {
+      "title": "मुख्य अंश",
+      "shareHighlight": "मुख्य अंश साझा करें",
+      "sentTo": "{{sentCount}} पारिवारिक संपर्कों को भेजा गया",
+      "generateReel": "नया रील बनाएं",
+      "noHighlights": "अभी तक कोई मुख्य अंश नहीं",
+      "momentsCount": "{{count}} पल",
+      "sendToFamily": "परिवार को भेजें"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "2FA सेटअप",
+      "scanQrCode": "QR कोड स्कैन करें",
+      "scanQrDescription": "इस QR कोड को अपने ऑथेंटिकेटर ऐप से स्कैन करें",
+      "qrLabel": "QR",
+      "enterCode": "सत्यापन कोड दर्ज करें",
+      "codePlaceholder": "6 अंकों का कोड",
+      "enable": "2FA सक्षम करें",
+      "verified": "2FA सक्षम!"
+    },
+    "passkey": {
+      "title": "पासकी प्रबंधन",
+      "addPasskey": "पासकी जोड़ें",
+      "empty": "कोई पासकी कॉन्फ़िगर नहीं है।\nअपनी पहली पासकी जोड़ें!",
+      "lastUsedNa": "अंतिम उपयोग: उपलब्ध नहीं"
+    },
+    "phone": {
+      "title": "फ़ोन सत्यापन",
+      "enterNumber": "फ़ोन नंबर दर्ज करें",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "कोड भेजें",
+      "enterCode": "सत्यापन कोड दर्ज करें",
+      "codePlaceholder": "6 अंकों का कोड",
+      "verify": "सत्यापित करें",
+      "verified": "फ़ोन सत्यापित!"
+    },
+    "devices": {
+      "title": "डिवाइस पेयरिंग",
+      "pairingCode": "पेयरिंग कोड",
+      "enterCodeOnTv": "यह कोड अपने टीवी डिवाइस पर दर्ज करें",
+      "pairNewDevice": "नया डिवाइस पेयर करें",
+      "empty": "कोई डिवाइस पेयर नहीं है।\nअपना पहला डिवाइस पेयर करें!",
+      "lastActiveNa": "अंतिम सक्रिय: उपलब्ध नहीं",
+      "remove": "हटाएं"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "वॉच पार्टी",
+      "create": "वॉच पार्टी बनाएं",
+      "contentId": "कंटेंट आईडी",
+      "enterContent": "देखने के लिए कंटेंट दर्ज करें",
+      "createButton": "पार्टी बनाएं",
+      "join": "वॉच पार्टी में शामिल हों",
+      "partyCode": "पार्टी कोड",
+      "enterCode": "पार्टी कोड दर्ज करें",
+      "joinButton": "शामिल हों"
+    },
+    "grandparent": {
+      "title": "दादा-दादी को आमंत्रित करें",
+      "createInvite": "आमंत्रण बनाएं",
+      "createInviteDescription": "अपने दादा-दादी का नाम दर्ज करें...",
+      "nameLabel": "दादा-दादी का नाम",
+      "enterName": "नाम दर्ज करें",
+      "generateCode": "आमंत्रण कोड बनाएं",
+      "codeGenerated": "आमंत्रण कोड बनाया गया",
+      "shareCode": "यह कोड अपने दादा-दादी के साथ साझा करें",
+      "codeInstructions": "वे कनेक्ट करने के लिए अपने Bayit+ ऐप में यह कोड दर्ज कर सकते हैं",
+      "createAnother": "एक और बनाएं"
+    },
+    "conversation": {
+      "title": "बातचीत"
+    },
+    "friends": {
+      "online": "ऑनलाइन"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "शब्दावली",
+      "searchPlaceholder": "शब्द खोजें..."
+    },
+    "shabbat": {
+      "shabbatShalom": "शब्बत शालोम",
+      "modeActivated": "शब्बत मोड सक्रिय किया गया है",
+      "shavuaTov": "शावुआ तोव",
+      "modeDeactivated": "शब्बत मोड निष्क्रिय किया गया है",
+      "channelName": "शब्बत मोड"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "Plex कनेक्ट करें",
+      "enterCodeAt": "यह कोड यहां दर्ज करें",
+      "waitingForAuth": "प्राधिकरण की प्रतीक्षा...",
+      "selectServer": "Plex सर्वर चुनें",
+      "connecting": "{{serverName}} से कनेक्ट हो रहा है...",
+      "connected": "कनेक्टेड",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "मेरे कंटेंट स्रोत",
+      "refresh": "रीफ़्रेश",
+      "noSources": "कोई कंटेंट स्रोत नहीं",
+      "noSourcesSubtitle": "अपने Plex, YouTube या IPTV स्रोत जोड़ें",
+      "removeSource": "स्रोत हटाएं",
+      "plexSubtitle": "फ़िल्में, शो, संगीत",
+      "youtubeSubtitle": "वीडियो, प्लेलिस्ट, चैनल",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "लाइव चैनल, VOD, सीरीज़",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, प्रोफ़ाइल खोलें",
+    "languageCurrent": "भाषा: {{lang}}, बदलने के लिए टैप करें",
+    "selectLanguage": "भाषा चुनें",
+    "homeLogo": "Bayit+"
   }
 }

@@ -26,6 +26,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassProgressBar
 import tv.bayit.plus.designsystem.component.GlassTextField
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -77,13 +78,13 @@ internal fun RegisterScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("Create Account", style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Primary.base)
+            Text(bayitString("auth.register.createAccount"), style = MaterialTheme.typography.headlineLarge, color = DesignTokens.Colors.Primary.base)
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xxxl))
 
             GlassTextField(
                 value = input?.email.orEmpty(),
                 onValueChange = { if (uiState is RegisterUiState.Error) onDismissError(); onEmailChange(it) },
-                label = "Email", enabled = !isLoading,
+                label = bayitString("auth.register.email"), enabled = !isLoading,
             )
             FieldErrorText(input?.fieldError, "email")
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
@@ -91,7 +92,7 @@ internal fun RegisterScreen(
             GlassTextField(
                 value = input?.password.orEmpty(),
                 onValueChange = { if (uiState is RegisterUiState.Error) onDismissError(); onPasswordChange(it) },
-                label = "Password", enabled = !isLoading,
+                label = bayitString("auth.register.password"), enabled = !isLoading,
             )
             FieldErrorText(input?.fieldError, "password")
             if ((input?.password?.length ?: 0) > 0) {
@@ -103,7 +104,7 @@ internal fun RegisterScreen(
             GlassTextField(
                 value = input?.confirmPassword.orEmpty(),
                 onValueChange = { if (uiState is RegisterUiState.Error) onDismissError(); onConfirmPasswordChange(it) },
-                label = "Confirm Password", enabled = !isLoading,
+                label = bayitString("auth.register.confirmPassword"), enabled = !isLoading,
             )
             FieldErrorText(input?.fieldError, "confirmPassword")
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.base))
@@ -114,14 +115,14 @@ internal fun RegisterScreen(
             }
 
             GlassButton(
-                text = "Register",
+                text = bayitString("auth.register.register"),
                 onClick = { keyboardController?.hide(); onRegisterClick() },
                 enabled = !isLoading, modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.lg))
 
             TextButton(onClick = onLoginClick) {
-                Text("Already have an account? Sign In", color = DesignTokens.Colors.Primary.light)
+                Text(bayitString("auth.register.alreadyHaveAccount"), color = DesignTokens.Colors.Primary.light)
             }
         }
         if (isLoading) GlassLoadingIndicator()
@@ -144,9 +145,9 @@ private fun PasswordStrengthIndicator(strength: PasswordStrength, modifier: Modi
         PasswordStrength.STRONG -> 1f
     }
     val label = when (strength) {
-        PasswordStrength.WEAK -> "Weak"
-        PasswordStrength.MEDIUM -> "Medium"
-        PasswordStrength.STRONG -> "Strong"
+        PasswordStrength.WEAK -> bayitString("auth.register.passwordStrength.weak")
+        PasswordStrength.MEDIUM -> bayitString("auth.register.passwordStrength.medium")
+        PasswordStrength.STRONG -> bayitString("auth.register.passwordStrength.strong")
     }
     val color = when (strength) {
         PasswordStrength.WEAK -> DesignTokens.Colors.Semantic.error

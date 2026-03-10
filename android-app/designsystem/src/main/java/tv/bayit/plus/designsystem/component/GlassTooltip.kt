@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import androidx.compose.foundation.Canvas
 
@@ -128,7 +129,7 @@ private fun TooltipBody(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
-                    contentDescription = "Dismiss tooltip",
+                    contentDescription = bayitString("widgets.dismissTooltip"),
                     tint = DesignTokens.Colors.Text.secondary,
                     modifier = Modifier.size(DesignTokens.Spacing.base),
                 )

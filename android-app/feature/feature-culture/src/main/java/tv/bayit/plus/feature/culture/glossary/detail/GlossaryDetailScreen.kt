@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun GlossaryDetailRoute(
@@ -53,10 +54,10 @@ internal fun GlossaryDetailScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Term Detail",
+            title = bayitString("culture.glossary.termDetail"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -80,7 +81,7 @@ private fun GlossaryDetailContent(termData: Any) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 Text(
-                    text = "Definition",
+                    text = bayitString("culture.glossary.definition"),
                     style = MaterialTheme.typography.titleMedium,
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
@@ -95,7 +96,7 @@ private fun GlossaryDetailContent(termData: Any) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                 Text(
-                    text = "Pronunciation",
+                    text = bayitString("culture.glossary.pronunciation"),
                     style = MaterialTheme.typography.titleMedium,
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
@@ -110,7 +111,7 @@ private fun GlossaryDetailContent(termData: Any) {
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                 Text(
-                    text = "Examples",
+                    text = bayitString("culture.glossary.examples"),
                     style = MaterialTheme.typography.titleMedium,
                     color = DesignTokens.Colors.Primary.light,
                     fontWeight = FontWeight.Bold,
@@ -131,7 +132,7 @@ private fun GlossaryDetailErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

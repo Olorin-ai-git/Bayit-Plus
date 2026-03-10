@@ -116,7 +116,7 @@ internal fun PodcastEpisodeRow(
                     .padding(start = DesignTokens.Spacing.md),
             ) {
                 Text(
-                    text = buildEpisodeLabel(episode),
+                    text = buildEpisodeLabel(episode).ifEmpty { bayitString("podcasts.episode") },
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Medium,
@@ -162,7 +162,7 @@ internal fun PodcastEpisodeRow(
 
 private fun buildEpisodeLabel(episode: PodcastEpisodeItem): String {
     val prefix = episode.episodeNumber?.let { "E$it" }
-    return listOfNotNull(prefix, episode.title).joinToString(" - ").ifEmpty { "Episode" }
+    return listOfNotNull(prefix, episode.title).joinToString(" - ")
 }
 
 @Composable

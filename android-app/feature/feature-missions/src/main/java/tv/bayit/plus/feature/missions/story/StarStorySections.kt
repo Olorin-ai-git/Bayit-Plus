@@ -23,6 +23,7 @@ import tv.bayit.plus.core.model.StarStory
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val REACTION_LIKE = "like"
@@ -34,14 +35,14 @@ internal fun StoryHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Star Stories",
+                text = bayitString("missions.starStories"),
                 style = MaterialTheme.typography.headlineMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Behind the scenes with your favorite stars",
+                text = bayitString("missions.starStoriesSubtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -63,7 +64,7 @@ internal fun StarProfilesRow(profiles: List<Any>, modifier: Modifier = Modifier)
                     modifier = Modifier.padding(horizontal = DesignTokens.Spacing.sm),
                 ) {
                     Text(
-                        text = "Star",
+                        text = bayitString("missions.star"),
                         style = MaterialTheme.typography.labelMedium,
                         color = DesignTokens.Colors.Primary.light,
                         fontWeight = FontWeight.SemiBold,
@@ -123,8 +124,8 @@ private fun ReactionRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
     ) {
-        GlassButton(text = "Like", onClick = { onReaction(REACTION_LIKE) }, isPrimary = false)
-        GlassButton(text = "Love", onClick = { onReaction(REACTION_LOVE) }, isPrimary = false)
-        GlassButton(text = "Wow", onClick = { onReaction(REACTION_WOW) }, isPrimary = false)
+        GlassButton(text = bayitString("missions.reactionLike"), onClick = { onReaction(REACTION_LIKE) }, isPrimary = false)
+        GlassButton(text = bayitString("missions.reactionLove"), onClick = { onReaction(REACTION_LOVE) }, isPrimary = false)
+        GlassButton(text = bayitString("missions.reactionWow"), onClick = { onReaction(REACTION_WOW) }, isPrimary = false)
     }
 }

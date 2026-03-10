@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private val STAR_SIZE = 40.dp
@@ -69,7 +70,7 @@ internal fun FeedbackScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Feedback")
+        GlassTopBar(title = bayitString("zehAni.feedback.title"))
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,7 +80,7 @@ internal fun FeedbackScreen(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(
-                        text = "How would you rate Zeh Ani?",
+                        text = bayitString("zehAni.feedback.rateQuestion"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -91,7 +92,7 @@ internal fun FeedbackScreen(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                     Text(
-                        text = "Tell us more",
+                        text = bayitString("zehAni.feedback.tellUsMore"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -99,7 +100,7 @@ internal fun FeedbackScreen(
                     GlassTextField(
                         value = feedbackText,
                         onValueChange = onFeedbackTextChange,
-                        placeholder = "Share your experience with Zeh Ani features...",
+                        placeholder = bayitString("zehAni.feedback.sharePlaceholder"),
                         singleLine = false,
                     )
                 }
@@ -108,7 +109,7 @@ internal fun FeedbackScreen(
             when (uiState) {
                 is FeedbackUiState.Idle -> {
                     GlassButton(
-                        text = "Submit Feedback",
+                        text = bayitString("zehAni.feedback.submit"),
                         onClick = onSubmit,
                         enabled = feedbackText.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
@@ -121,20 +122,20 @@ internal fun FeedbackScreen(
                     GlassCard(modifier = Modifier.fillMaxWidth()) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Thank you for your feedback!",
+                                text = bayitString("zehAni.feedback.thankYou"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = DesignTokens.Colors.Semantic.success,
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(Modifier.height(DesignTokens.Spacing.sm))
                             Text(
-                                text = "We appreciate your input and will use it to improve Zeh Ani.",
+                                text = bayitString("zehAni.feedback.appreciateInput"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = DesignTokens.Colors.Text.secondary,
                             )
                             Spacer(Modifier.height(DesignTokens.Spacing.md))
                             GlassButton(
-                                text = "Send More Feedback",
+                                text = bayitString("zehAni.feedback.sendMore"),
                                 onClick = onResetToIdle,
                                 modifier = Modifier.fillMaxWidth(),
                             )
@@ -148,7 +149,7 @@ internal fun FeedbackScreen(
                         color = DesignTokens.Colors.Semantic.error,
                     )
                     GlassButton(
-                        text = "Try Again",
+                        text = bayitString("common.tryAgain"),
                         onClick = onSubmit,
                         modifier = Modifier.fillMaxWidth(),
                     )

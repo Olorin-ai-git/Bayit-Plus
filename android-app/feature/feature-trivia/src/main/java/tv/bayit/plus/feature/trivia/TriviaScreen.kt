@@ -23,6 +23,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassProgressBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun TriviaRoute(
@@ -104,7 +105,7 @@ private fun PlayingSection(
         )
         if (uiState.selectedAnswer != null) {
             GlassButton(
-                text = "Next",
+                text = bayitString("common.next"),
                 onClick = onNextQuestion,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -131,7 +132,7 @@ private fun FinishedSection(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Trivia Complete",
+                        text = bayitString("trivia.complete"),
                         style = MaterialTheme.typography.headlineMedium,
                         color = DesignTokens.Colors.Primary.light,
                         fontWeight = FontWeight.Bold,
@@ -149,7 +150,7 @@ private fun FinishedSection(
         if (uiState.leaderboard.isNotEmpty()) {
             item(key = "leaderboard_header") {
                 Text(
-                    text = "Leaderboard",
+                    text = bayitString("trivia.leaderboard"),
                     style = MaterialTheme.typography.titleLarge,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.Bold,
@@ -157,7 +158,7 @@ private fun FinishedSection(
             }
         }
         item(key = "finish_button") {
-            GlassButton(text = "Done", onClick = onFinish, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("common.done"), onClick = onFinish, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -178,7 +179,7 @@ private fun TriviaErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

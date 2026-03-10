@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import tv.bayit.plus.core.model.SeasonSummary
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassChip
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val HERO_ASPECT_RATIO = 16f / 9f
@@ -60,7 +61,7 @@ internal fun SeriesHeroSection(state: SeriesDetailUiState.Success, onBack: () ->
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Navigate back",
+                contentDescription = bayitString("common.back"),
                 tint = DesignTokens.Colors.Text.primary,
                 modifier = Modifier.size(DesignTokens.TouchTarget.minimum),
             )
@@ -76,8 +77,8 @@ internal fun SeriesHeroSection(state: SeriesDetailUiState.Success, onBack: () ->
             )
             Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
                 state.year?.let { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary) }
-                state.totalSeasons?.let { Text("$it Seasons", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary) }
-                state.totalEpisodes?.let { Text("$it Episodes", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary) }
+                state.totalSeasons?.let { Text(bayitString("vod.series.seasonsCount", mapOf("count" to it.toString())), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary) }
+                state.totalEpisodes?.let { Text(bayitString("vod.series.episodesCount", mapOf("count" to it.toString())), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary) }
             }
         }
     }
@@ -144,12 +145,12 @@ internal fun SeriesActionRow(isFavorite: Boolean, onToggleFavorite: () -> Unit, 
         ) {
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                contentDescription = if (isFavorite) bayitString("vod.series.removeFromFavorites") else bayitString("vod.series.addToFavorites"),
                 tint = if (isFavorite) DesignTokens.Colors.Primary.base else DesignTokens.Colors.Text.secondary,
                 modifier = Modifier.size(18.dp),
             )
             Text(
-                text = if (isFavorite) "Remove from Favorites" else "Add to Favorites",
+                text = if (isFavorite) bayitString("vod.series.removeFromFavorites") else bayitString("vod.series.addToFavorites"),
                 style = MaterialTheme.typography.labelMedium,
                 color = DesignTokens.Colors.Text.primary,
             )
@@ -163,8 +164,8 @@ internal fun SeriesActionRow(isFavorite: Boolean, onToggleFavorite: () -> Unit, 
                 .clickable(onClick = onPlayAll)
                 .padding(horizontal = DesignTokens.Spacing.base, vertical = DesignTokens.Spacing.sm),
         ) {
-            Icon(Icons.Filled.PlayArrow, contentDescription = "Play all", tint = Color.White, modifier = Modifier.size(18.dp))
-            Text("Play All", style = MaterialTheme.typography.labelMedium, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Icon(Icons.Filled.PlayArrow, contentDescription = bayitString("vod.series.playAll"), tint = Color.White, modifier = Modifier.size(18.dp))
+            Text(bayitString("vod.series.playAll"), style = MaterialTheme.typography.labelMedium, color = Color.White, fontWeight = FontWeight.SemiBold)
         }
     }
 }
@@ -177,7 +178,7 @@ internal fun SeasonTabRow(seasons: List<SeasonSummary>, selectedSeason: Int, onS
         modifier = modifier.padding(vertical = DesignTokens.Spacing.md),
     ) {
         items(items = seasons, key = { it.seasonNumber }) { season ->
-            GlassChip(label = "Season ${season.seasonNumber}", isSelected = selectedSeason == season.seasonNumber, onClick = { onSeasonSelected(season.seasonNumber) })
+            GlassChip(label = bayitString("vod.series.seasonNumber", mapOf("number" to season.seasonNumber.toString())), isSelected = selectedSeason == season.seasonNumber, onClick = { onSeasonSelected(season.seasonNumber) })
         }
     }
 }

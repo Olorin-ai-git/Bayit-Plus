@@ -34,6 +34,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun AIFeaturesRoute(
@@ -61,10 +62,10 @@ internal fun AIFeaturesScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "AI Features",
+            title = bayitString("settings.aiFeatures.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
             actions = {
@@ -91,16 +92,16 @@ private fun AIContent(state: AIFeaturesUiState.Success, onUpdate: (AIFeaturesSet
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
         item { CreditsCard(balance = state.creditsBalance) }
-        item { AIToggle("AI Assistant", "Enable AI-powered chatbot", s.chatbotEnabled, saving) { onUpdate(s.copy(chatbotEnabled = it)) } }
-        item { AIToggle("Personalized Recommendations", "AI-powered content suggestions", s.personalizedRecommendations, saving) { onUpdate(s.copy(personalizedRecommendations = it)) } }
-        item { SectionHeader("Dubbing") }
-        item { AIToggle("Auto-Dub", "Automatically dub content", s.autoDub, saving) { onUpdate(s.copy(autoDub = it)) } }
-        item { AISelect("Voice Preference", listOf("default", "male", "female"), s.voicePreference, saving) { onUpdate(s.copy(voicePreference = it)) } }
-        item { AISlider("Original Audio Mix", s.originalAudioMix.toFloat(), 0f, 100f, "${s.originalAudioMix}%", saving) { onUpdate(s.copy(originalAudioMix = it.toInt())) } }
-        item { SectionHeader("Trivia") }
-        item { AIToggle("Enable Trivia", "Show trivia during content", s.triviaEnabled, saving) { onUpdate(s.copy(triviaEnabled = it)) } }
-        item { AIToggle("Auto-Show Trivia", "Display trivia automatically", s.triviaAutoShow, saving && s.triviaEnabled) { onUpdate(s.copy(triviaAutoShow = it)) } }
-        item { AISelect("Difficulty", listOf("easy", "medium", "hard"), s.triviaDifficulty, saving) { onUpdate(s.copy(triviaDifficulty = it)) } }
+        item { AIToggle(bayitString("settings.aiFeatures.assistant"), bayitString("settings.aiFeatures.assistantDescription"), s.chatbotEnabled, saving) { onUpdate(s.copy(chatbotEnabled = it)) } }
+        item { AIToggle(bayitString("settings.aiFeatures.recommendations"), bayitString("settings.aiFeatures.recommendationsDescription"), s.personalizedRecommendations, saving) { onUpdate(s.copy(personalizedRecommendations = it)) } }
+        item { SectionHeader(bayitString("settings.aiFeatures.dubbing")) }
+        item { AIToggle(bayitString("settings.aiFeatures.autoDub"), bayitString("settings.aiFeatures.autoDubDescription"), s.autoDub, saving) { onUpdate(s.copy(autoDub = it)) } }
+        item { AISelect(bayitString("settings.aiFeatures.voicePreference"), listOf("default", "male", "female"), s.voicePreference, saving) { onUpdate(s.copy(voicePreference = it)) } }
+        item { AISlider(bayitString("settings.aiFeatures.originalAudioMix"), s.originalAudioMix.toFloat(), 0f, 100f, "${s.originalAudioMix}%", saving) { onUpdate(s.copy(originalAudioMix = it.toInt())) } }
+        item { SectionHeader(bayitString("settings.aiFeatures.trivia")) }
+        item { AIToggle(bayitString("settings.aiFeatures.enableTrivia"), bayitString("settings.aiFeatures.enableTriviaDescription"), s.triviaEnabled, saving) { onUpdate(s.copy(triviaEnabled = it)) } }
+        item { AIToggle(bayitString("settings.aiFeatures.autoShowTrivia"), bayitString("settings.aiFeatures.autoShowTriviaDescription"), s.triviaAutoShow, saving && s.triviaEnabled) { onUpdate(s.copy(triviaAutoShow = it)) } }
+        item { AISelect(bayitString("settings.aiFeatures.difficulty"), listOf("easy", "medium", "hard"), s.triviaDifficulty, saving) { onUpdate(s.copy(triviaDifficulty = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }
@@ -110,8 +111,8 @@ private fun CreditsCard(balance: Int) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Beta Credits", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
-                Text(text = "Available balance", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                Text(text = bayitString("settings.aiFeatures.betaCredits"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+                Text(text = bayitString("settings.aiFeatures.availableBalance"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
             }
             Text(text = balance.toString(), color = DesignTokens.Colors.Primary.light, style = MaterialTheme.typography.headlineMedium)
         }
@@ -180,7 +181,7 @@ private fun AIErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

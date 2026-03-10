@@ -34,6 +34,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val CAMERA_PREVIEW_HEIGHT = 400.dp
 
@@ -78,10 +79,10 @@ internal fun VideoSelfieScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Video Selfie",
+            title = bayitString("zehAni.selfie.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -108,12 +109,12 @@ private fun ReadyContent(onStartRecording: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Box(modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Camera", style = MaterialTheme.typography.displayLarge, color = DesignTokens.Colors.Text.muted)
+                    Text(text = bayitString("zehAni.selfie.camera"), style = MaterialTheme.typography.displayLarge, color = DesignTokens.Colors.Text.muted)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
-                    Text(text = "Camera Preview", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
+                    Text(text = bayitString("zehAni.selfie.cameraPreview"), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
                 }
             }
-            GlassButton(text = "Start Recording", onClick = onStartRecording, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("zehAni.selfie.startRecording"), onClick = onStartRecording, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -124,10 +125,10 @@ private fun RecordingContent(duration: Long, onStopRecording: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 Box(modifier = Modifier.size(16.dp))
-                Text(text = "REC ${formatDuration(duration)}", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Semantic.error, fontWeight = FontWeight.Bold)
+                Text(text = "${bayitString("zehAni.selfie.rec")} ${formatDuration(duration)}", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Semantic.error, fontWeight = FontWeight.Bold)
             }
             Box(modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT))
-            GlassButton(text = "Stop Recording", onClick = onStopRecording, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("zehAni.selfie.stopRecording"), onClick = onStopRecording, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -136,17 +137,17 @@ private fun RecordingContent(duration: Long, onStopRecording: () -> Unit) {
 private fun PinEntryContent(pinInput: String, onUpdatePin: (String) -> Unit, onConfirm: () -> Unit, onRetake: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-            Text(text = "Enter your PIN to create avatar", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
+            Text(text = bayitString("zehAni.selfie.enterPin"), style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold)
             GlassTextField(
                 value = pinInput,
                 onValueChange = onUpdatePin,
-                label = "PIN",
+                label = bayitString("zehAni.selfie.pinLabel"),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                 visualTransformation = PasswordVisualTransformation(),
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
-                GlassButton(text = "Retake", onClick = onRetake, isPrimary = false, modifier = Modifier.weight(1f))
-                GlassButton(text = "Confirm", onClick = onConfirm, modifier = Modifier.weight(1f))
+                GlassButton(text = bayitString("zehAni.selfie.retake"), onClick = onRetake, isPrimary = false, modifier = Modifier.weight(1f))
+                GlassButton(text = bayitString("common.confirm"), onClick = onConfirm, modifier = Modifier.weight(1f))
             }
         }
     }
@@ -157,7 +158,7 @@ private fun ProcessingContent() {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             GlassLoadingIndicator()
-            Text(text = "Creating your avatar...", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
+            Text(text = bayitString("zehAni.selfie.creatingAvatar"), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Text.secondary)
         }
     }
 }
@@ -167,11 +168,11 @@ private fun CompleteContent(resultUrl: String, onRetake: () -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             if (resultUrl.isNotBlank()) {
-                CachedAsyncImage(url = resultUrl, contentDescription = "Avatar Preview", modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT))
+                CachedAsyncImage(url = resultUrl, contentDescription = bayitString("zehAni.selfie.avatarPreviewContentDescription"), modifier = Modifier.fillMaxWidth().height(CAMERA_PREVIEW_HEIGHT))
             } else {
-                Text(text = "Avatar created successfully", style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.success)
+                Text(text = bayitString("zehAni.selfie.avatarCreated"), style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.success)
             }
-            GlassButton(text = "Create Another", onClick = onRetake, isPrimary = false, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("zehAni.selfie.createAnother"), onClick = onRetake, isPrimary = false, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -180,7 +181,7 @@ private fun CompleteContent(resultUrl: String, onRetake: () -> Unit) {
 private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
         Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-        GlassButton(text = "Retry", onClick = onRetry)
+        GlassButton(text = bayitString("common.retry"), onClick = onRetry)
     }
 }
 

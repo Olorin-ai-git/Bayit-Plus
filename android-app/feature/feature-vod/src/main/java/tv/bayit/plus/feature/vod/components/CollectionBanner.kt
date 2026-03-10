@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.model.CollectionDetail
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 /**
@@ -118,7 +119,7 @@ fun CollectionBanner(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Dismiss banner",
+                    contentDescription = bayitString("vod.collection.dismissBanner"),
                     tint = DesignTokens.Colors.Text.secondary,
                     modifier = Modifier.size(16.dp),
                 )

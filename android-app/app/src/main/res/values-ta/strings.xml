@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">நேரடி டிவி பார்க்கவும்</string>
+    <string name="shortcut_search">உள்ளடக்கத்தைத் தேடுங்கள்</string>
+    <string name="shortcut_resume">தொடர்ந்து பாருங்கள்</string>
+    <string name="shortcut_radio">வானொலி கேளுங்கள்</string>
+    <string name="shortcut_podcasts">பாட்காஸ்ட்களை உலாவுங்கள்</string>
+    <string name="widget_now_playing_description">Bayit+ இல் தற்போது இயங்குவதைக் காட்டுகிறது</string>
+    <string name="widget_continue_watching_description">முன்னேற்றப் பட்டைகளுடன் உங்கள் நடப்பு உள்ளடக்கத்தைக் காட்டுகிறது</string>
+    <string name="widget_live_channels_description">தற்போதைய நிகழ்ச்சிகளுடன் உங்கள் விருப்ப நேரடி சேனல்களைக் காட்டுகிறது</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">முகப்பு</string>
+    <string name="tv_continue_watching">தொடர்ந்து பாருங்கள்</string>
+    <string name="tv_live_channels">நேரடி டிவி</string>
+    <string name="tv_vod_title">திரைப்படங்கள் மற்றும் தொடர்கள்</string>
+    <string name="tv_radio_title">வானொலி</string>
+    <string name="tv_podcasts_title">பாட்காஸ்ட்கள்</string>
+    <string name="tv_featured_title">சிறப்பு</string>
+    <string name="tv_login_title">Bayit+ இல் உள்நுழையவும்</string>
+    <string name="tv_scan_qr">உள்நுழைய உங்கள் தொலைபேசியில் QR குறியீட்டை ஸ்கேன் செய்யவும்</string>
+    <string name="tv_enter_code">அல்லது %1$s க்குச் சென்று குறியீட்டை உள்ளிடவும்:</string>
+    <string name="tv_code_expires">குறியீடு %1$s இல் காலாவதியாகும்</string>
+    <string name="tv_manual_login">மின்னஞ்சல் மூலம் உள்நுழையவும்</string>
+    <string name="tv_search_hint">சேனல்கள், தொடர்கள், திரைப்படங்களைத் தேடுங்கள்...</string>
+    <string name="tv_connection_lost">இணைப்பு துண்டிக்கப்பட்டது. மீண்டும் முயற்சிக்கிறது...</string>
+    <string name="tv_subscribe_prompt">இந்த உள்ளடக்கத்தைப் பார்க்க சந்தா செலுத்துங்கள்</string>
+    <string name="tv_subscribe_on_phone">சந்தா செலுத்த bayit.tv க்குச் செல்லுங்கள் அல்லது தொலைபேசியில் Bayit+ பயன்பாட்டைப் பயன்படுத்துங்கள்</string>
+    <string name="tv_byoc_title">உங்கள் உள்ளடக்கம்</string>
+</resources>

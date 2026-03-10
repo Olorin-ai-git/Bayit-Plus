@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun BetaCreditsRoute(
@@ -61,10 +62,10 @@ internal fun BetaCreditsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Beta 500 Credits",
+            title = bayitString("rewards.beta.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -94,7 +95,7 @@ private fun CreditContent(
             if (state.eligibleFeatures.isNotEmpty()) {
                 item(key = "redeem_header") {
                     Text(
-                        text = "Redeem Credits",
+                        text = bayitString("rewards.beta.redeemCredits"),
                         style = MaterialTheme.typography.titleLarge,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.Bold,
@@ -113,7 +114,7 @@ private fun CreditContent(
             if (state.transactions.isNotEmpty()) {
                 item(key = "history_header") {
                     Text(
-                        text = "Usage History",
+                        text = bayitString("rewards.beta.usageHistory"),
                         style = MaterialTheme.typography.titleLarge,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.Bold,
@@ -133,7 +134,7 @@ private fun CreditContent(
 private fun BalanceCard(balance: Int) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Credits Available", style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.secondary)
+            Text(text = bayitString("rewards.beta.creditsAvailable"), style = MaterialTheme.typography.titleMedium, color = DesignTokens.Colors.Text.secondary)
             Spacer(Modifier.height(DesignTokens.Spacing.xs))
             Text(
                 text = balance.toString(),
@@ -142,7 +143,7 @@ private fun BalanceCard(balance: Int) {
                 fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.height(DesignTokens.Spacing.xs))
-            Text(text = "Beta 500 AI Program", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
+            Text(text = bayitString("rewards.beta.programName"), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
         }
     }
 }
@@ -157,7 +158,7 @@ private fun FeatureRedeemItem(feature: Any, balance: Int, isRedeeming: Boolean, 
             if (isRedeeming) {
                 GlassSpinner(size = SpinnerSize.SMALL)
             } else {
-                GlassButton(text = "Redeem", onClick = { onRedeem(1, feature.hashCode().toString()) }, enabled = balance > 0)
+                GlassButton(text = bayitString("rewards.beta.redeem"), onClick = { onRedeem(1, feature.hashCode().toString()) }, enabled = balance > 0)
             }
         }
     }
@@ -175,7 +176,7 @@ private fun CreditErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

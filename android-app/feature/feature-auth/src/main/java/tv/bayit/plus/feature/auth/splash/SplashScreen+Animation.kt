@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -45,7 +46,7 @@ internal fun SplashLogoBlock(
     ) {
         Image(
             painter = painterResource(id = tv.bayit.plus.feature.auth.R.drawable.splash_logo),
-            contentDescription = "Bayit+ Logo",
+            contentDescription = bayitString("splash.logoContentDescription"),
             modifier = Modifier
                 .width(120.dp)
                 .height(60.dp),
@@ -119,10 +120,10 @@ internal fun SplashPoweredByText(logoAlpha: Float) {
     Text(
         text = buildAnnotatedString {
             withStyle(style = SpanStyle(color = DesignTokens.Colors.Text.muted)) {
-                append("Powered by Olorin")
+                append(bayitString("splash.poweredBy"))
             }
             withStyle(style = SpanStyle(color = Color(0xFF6B46C1))) {
-                append(".ai")
+                append(bayitString("splash.poweredBySuffix"))
             }
         },
         style = MaterialTheme.typography.bodySmall,

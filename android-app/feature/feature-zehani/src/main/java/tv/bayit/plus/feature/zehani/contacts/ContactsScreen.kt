@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSearchBar
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -73,10 +74,10 @@ internal fun ContactsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Contacts",
+            title = bayitString("zehAni.contacts.title"),
             actions = {
                 IconButton(onClick = onShowAddContact) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Contact", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.Default.Add, contentDescription = bayitString("zehAni.contacts.addContact"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -113,7 +114,7 @@ private fun ContactsContent(
     ) {
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            GlassSearchBar(query = searchQuery, onQueryChange = onSearchQueryChange, placeholder = "Search contacts...")
+            GlassSearchBar(query = searchQuery, onQueryChange = onSearchQueryChange, placeholder = bayitString("zehAni.contacts.searchPlaceholder"))
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
         }
 
@@ -121,7 +122,7 @@ private fun ContactsContent(
             item {
                 Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
                     Text(
-                        text = if (searchQuery.isBlank()) "No contacts yet" else "No matching contacts",
+                        text = if (searchQuery.isBlank()) bayitString("zehAni.contacts.noContacts") else bayitString("zehAni.contacts.noMatching"),
                         color = DesignTokens.Colors.Text.muted,
                         style = MaterialTheme.typography.bodyLarge,
                     )
@@ -147,10 +148,10 @@ private fun ContactCard(contact: WhatsAppContact, onDelete: () -> Unit) {
                 Text(text = contact.displayName, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.Medium)
                 Text(text = "${contact.relationship} - ${contact.language}", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary)
                 if (contact.totalReelsSent > 0) {
-                    Text(text = "${contact.totalReelsSent} reels shared", style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
+                    Text(text = bayitString("zehAni.contacts.reelsShared", mapOf("count" to contact.totalReelsSent.toString())), style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.muted)
                 }
             }
-            GlassButton(text = "Remove", onClick = onDelete, isPrimary = false)
+            GlassButton(text = bayitString("zehAni.contacts.remove"), onClick = onDelete, isPrimary = false)
         }
     }
 }
@@ -160,7 +161,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

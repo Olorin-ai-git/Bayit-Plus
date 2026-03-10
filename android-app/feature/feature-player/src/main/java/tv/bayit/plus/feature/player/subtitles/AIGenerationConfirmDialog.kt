@@ -23,6 +23,7 @@ import tv.bayit.plus.designsystem.component.GlassModal
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 /**
  * Confirmation dialog shown before starting AI subtitle generation.
@@ -55,7 +56,7 @@ fun AIGenerationConfirmDialog(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
 
             Text(
-                text = "Generate $modeDisplayName Subtitles",
+                text = bayitString("player.ai.generateSubtitles", mapOf("mode" to modeDisplayName)),
                 color = DesignTokens.Colors.Text.primary,
                 fontSize = DesignTokens.FontSize.lg,
                 fontWeight = FontWeight.Bold,
@@ -91,7 +92,7 @@ fun AIGenerationConfirmDialog(
                     modifier = Modifier.size(16.dp),
                 )
                 Text(
-                    text = "This will use 1 AI credit from your balance",
+                    text = bayitString("player.ai.aiCreditCost"),
                     color = DesignTokens.Colors.Text.secondary,
                     fontSize = DesignTokens.FontSize.sm,
                     modifier = Modifier.padding(start = DesignTokens.Spacing.xs),
@@ -108,7 +109,7 @@ fun AIGenerationConfirmDialog(
                     GlassSpinner(modifier = Modifier.size(40.dp))
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "Generating $modeDisplayName subtitles...",
+                        text = bayitString("player.ai.generatingSubtitles", mapOf("mode" to modeDisplayName)),
                         color = DesignTokens.Colors.Text.secondary,
                         fontSize = DesignTokens.FontSize.sm,
                     )
@@ -119,12 +120,12 @@ fun AIGenerationConfirmDialog(
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                 ) {
                     GlassButton(
-                        text = "Cancel",
+                        text = bayitString("common.cancel"),
                         onClick = onDismiss,
                         modifier = Modifier.weight(1f),
                     )
                     GlassButton(
-                        text = "Generate",
+                        text = bayitString("player.ai.generate"),
                         onClick = onConfirm,
                         modifier = Modifier.weight(1f),
                     )

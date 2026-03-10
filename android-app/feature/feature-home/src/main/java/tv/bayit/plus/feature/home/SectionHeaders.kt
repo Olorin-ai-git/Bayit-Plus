@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -51,7 +52,7 @@ internal fun SectionRowHeaderWithAction(
         IconButton(onClick = onShowAllClick) {
             Icon(
                 painter = painterResource(id = android.R.drawable.ic_menu_more),
-                contentDescription = "Show all $title",
+                contentDescription = bayitString("home.sectionShowAll", mapOf("title" to title)),
                 tint = DesignTokens.Colors.Primary.p400,
             )
         }

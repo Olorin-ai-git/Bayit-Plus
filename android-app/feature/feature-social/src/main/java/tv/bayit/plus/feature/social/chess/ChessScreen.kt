@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.core.model.Friend
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -109,7 +110,7 @@ internal fun ChessScreen(
     onChallengeViaWhatsApp: (String, Int?) -> Unit = { _, _ -> },
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Chess")
+        GlassTopBar(title = bayitString("social.chess.title"))
         when (uiState) {
             is ChessUiState.Loading -> GlassLoadingIndicator()
             is ChessUiState.Lobby -> ChessLobbyScreen(

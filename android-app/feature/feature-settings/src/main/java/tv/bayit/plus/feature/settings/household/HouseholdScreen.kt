@@ -30,6 +30,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun HouseholdRoute(
@@ -61,10 +62,10 @@ internal fun HouseholdScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Household",
+            title = bayitString("settings.household.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -96,17 +97,17 @@ private fun HouseholdContent(
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(text = "Invite Member", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+                    Text(text = bayitString("settings.household.inviteMember"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     GlassTextField(
                         value = state.inviteEmail,
                         onValueChange = onInviteEmailChange,
-                        label = "Email Address",
+                        label = bayitString("settings.household.emailAddress"),
                         enabled = !state.isProcessing,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     GlassButton(
-                        text = "Send Invite",
+                        text = bayitString("settings.household.sendInvite"),
                         onClick = onInvite,
                         enabled = state.inviteEmail.isNotBlank() && !state.isProcessing,
                         modifier = Modifier.fillMaxWidth(),
@@ -116,7 +117,7 @@ private fun HouseholdContent(
         }
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Members", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+                Text(text = bayitString("settings.household.members"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
                 GlassBadge(count = state.members.size, modifier = Modifier.padding(start = DesignTokens.Spacing.sm))
             }
         }
@@ -124,7 +125,7 @@ private fun HouseholdContent(
             item {
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "No household members yet. Invite family members to share your Bayit+ subscription.",
+                        text = bayitString("settings.household.emptyMessage"),
                         color = DesignTokens.Colors.Text.secondary,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -135,7 +136,7 @@ private fun HouseholdContent(
                 GlassCard(modifier = Modifier.fillMaxWidth()) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         Text(text = member.toString(), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                        GlassButton(text = "Remove", onClick = { onRemoveMember(member.hashCode().toString()) }, isPrimary = false, enabled = !state.isProcessing)
+                        GlassButton(text = bayitString("common.remove"), onClick = { onRemoveMember(member.hashCode().toString()) }, isPrimary = false, enabled = !state.isProcessing)
                     }
                 }
             }
@@ -149,7 +150,7 @@ private fun HouseholdErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

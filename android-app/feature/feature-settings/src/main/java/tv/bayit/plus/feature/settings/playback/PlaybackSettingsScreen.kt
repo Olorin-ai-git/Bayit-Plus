@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun PlaybackSettingsRoute(
@@ -59,10 +60,10 @@ internal fun PlaybackSettingsScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Playback",
+            title = bayitString("settings.playback"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
             actions = {
@@ -91,14 +92,14 @@ private fun PlaybackContent(state: PlaybackUiState.Success, onUpdate: (PlaybackS
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         item { Spacer(Modifier.height(DesignTokens.Spacing.base)) }
-        item { PlaybackSelect("Video Quality", qualityOptions, s.videoQuality, saving) { onUpdate(s.copy(videoQuality = it)) } }
-        item { PlaybackToggle("Autoplay", "Automatically play content", s.autoplay, saving) { onUpdate(s.copy(autoplay = it)) } }
-        item { PlaybackToggle("Autoplay Next Episode", "Play next episode automatically", s.autoplayNextEpisode, saving) { onUpdate(s.copy(autoplayNextEpisode = it)) } }
-        item { PlaybackToggle("Continue Watching", "Resume from where you left off", s.continueWatching, saving) { onUpdate(s.copy(continueWatching = it)) } }
-        item { PlaybackToggle("Skip Intro", "Automatically skip content intros", s.skipIntro, saving) { onUpdate(s.copy(skipIntro = it)) } }
-        item { PlaybackToggle("Skip Credits", "Automatically skip end credits", s.skipCredits, saving) { onUpdate(s.copy(skipCredits = it)) } }
+        item { PlaybackSelect(bayitString("settings.playback.videoQuality"), qualityOptions, s.videoQuality, saving) { onUpdate(s.copy(videoQuality = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.autoplay"), bayitString("settings.playback.autoplayDescription"), s.autoplay, saving) { onUpdate(s.copy(autoplay = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.autoplayNextEpisode"), bayitString("settings.playback.autoplayNextEpisodeDescription"), s.autoplayNextEpisode, saving) { onUpdate(s.copy(autoplayNextEpisode = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.continueWatching"), bayitString("settings.playback.continueWatchingDescription"), s.continueWatching, saving) { onUpdate(s.copy(continueWatching = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.skipIntro"), bayitString("settings.playback.skipIntroDescription"), s.skipIntro, saving) { onUpdate(s.copy(skipIntro = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.skipCredits"), bayitString("settings.playback.skipCreditsDescription"), s.skipCredits, saving) { onUpdate(s.copy(skipCredits = it)) } }
         item { SpeedSelect(speedOptions, s.playbackSpeed, saving) { onUpdate(s.copy(playbackSpeed = it)) } }
-        item { PlaybackToggle("Hardware Acceleration", "Use GPU for video decoding", s.hardwareAcceleration, saving) { onUpdate(s.copy(hardwareAcceleration = it)) } }
+        item { PlaybackToggle(bayitString("settings.playback.hardwareAcceleration"), bayitString("settings.playback.hardwareAccelerationDescription"), s.hardwareAcceleration, saving) { onUpdate(s.copy(hardwareAcceleration = it)) } }
         item { Spacer(Modifier.height(DesignTokens.Spacing.xxl)) }
     }
 }
@@ -138,7 +139,7 @@ private fun PlaybackSelect(label: String, options: List<String>, selected: Strin
 private fun SpeedSelect(options: List<String>, current: Float, isSaving: Boolean, onSelect: (Float) -> Unit) {
     GlassCard(modifier = Modifier.fillMaxWidth()) {
         Column {
-            Text(text = "Playback Speed", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
+            Text(text = bayitString("settings.playback.speed"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyLarge)
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
             Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                 options.forEach { option ->
@@ -155,7 +156,7 @@ private fun PlaybackErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -24,6 +24,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun MorningRitualRoute(
@@ -66,20 +67,20 @@ internal fun MorningRitualScreen(
                     }
                     item(key = "modeh_ani") {
                         RitualSection(
-                            title = "Modeh Ani",
-                            subtitle = "Morning gratitude prayer",
+                            title = bayitString("culture.morning.modehAni"),
+                            subtitle = bayitString("culture.morning.modehAniDescription"),
                         )
                     }
                     item(key = "netilat_yadayim") {
                         RitualSection(
-                            title = "Netilat Yadayim",
-                            subtitle = "Ritual hand washing",
+                            title = bayitString("culture.morning.netilatYadayim"),
+                            subtitle = bayitString("culture.morning.netilatYadayimDescription"),
                         )
                     }
                     item(key = "shacharit") {
                         RitualSection(
-                            title = "Shacharit",
-                            subtitle = "Morning prayer service",
+                            title = bayitString("culture.morning.shacharit"),
+                            subtitle = bayitString("culture.morning.shacharitDescription"),
                         )
                     }
                 }
@@ -98,14 +99,14 @@ private fun MorningHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Morning Ritual",
+                text = bayitString("culture.morning.title"),
                 style = MaterialTheme.typography.headlineMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Start your day with intention and gratitude",
+                text = bayitString("culture.morning.description"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -118,14 +119,14 @@ private fun DailyContentSection(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Daily Inspiration",
+                text = bayitString("culture.morning.dailyInspiration"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Curated content for your morning routine",
+                text = bayitString("culture.morning.dailyInspirationDescription"),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -176,7 +177,7 @@ private fun MorningRitualErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -30,6 +30,8 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.LocalBayitStrings
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import java.time.Instant
 import java.time.ZoneId
@@ -43,6 +45,7 @@ fun HighlightsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val stringProvider = LocalBayitStrings.current
 
     LaunchedEffect(Unit) {
         viewModel.shareEvents.collect { shareToken ->
@@ -50,14 +53,15 @@ fun HighlightsRoute(
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, shareToken)
             }
-            context.startActivity(Intent.createChooser(intent, "Share Highlight"))
+            context.startActivity(Intent.createChooser(intent, stringProvider.string("zehAni.highlights.shareHighlight")))
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.sendResult.collect { result ->
             if (result is SendResult.Success) {
-                Toast.makeText(context, "Sent to ${result.sentCount} family contacts", Toast.LENGTH_SHORT).show()
+                val msg = stringProvider.string("zehAni.highlights.sentTo", mapOf("sentCount" to result.sentCount.toString()))
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -84,7 +88,7 @@ internal fun HighlightsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Highlights")
+        GlassTopBar(title = bayitString("zehAni.highlights.title"))
         when (uiState) {
             is HighlightsUiState.Loading -> GlassLoadingIndicator()
             is HighlightsUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -112,12 +116,12 @@ private fun HighlightsContent(
             modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
-            item { GlassButton(text = "Generate New Reel", onClick = onGenerate, modifier = Modifier.fillMaxWidth()) }
+            item { GlassButton(text = bayitString("zehAni.highlights.generateNewReel"), onClick = onGenerate, modifier = Modifier.fillMaxWidth()) }
 
             if (highlights.isEmpty()) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
-                        Text(text = "No highlights yet", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodyLarge)
+                        Text(text = bayitString("zehAni.highlights.noHighlights"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
@@ -164,13 +168,13 @@ private fun ReelCard(reel: HighlightReel, onShare: () -> Unit) {
                 )
             }
             Text(
-                text = "${reel.momentCount} moments",
+                text = bayitString("zehAni.highlights.moments", mapOf("count" to reel.momentCount.toString())),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.secondary,
             )
             if (reel.shareToken != null && reel.status == "ready") {
                 GlassButton(
-                    text = "Send to Family",
+                    text = bayitString("zehAni.highlights.sendToFamily"),
                     onClick = onShare,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -190,7 +194,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

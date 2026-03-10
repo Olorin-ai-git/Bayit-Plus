@@ -128,7 +128,7 @@ private fun LiveIndicator(modifier: Modifier = Modifier) {
                 .background(DesignTokens.Colors.Text.primary),
         )
         Text(
-            text = "LIVE",
+            text = bayitString("common.live"),
             color = DesignTokens.Colors.Text.primary,
             fontSize = DesignTokens.FontSize.xs,
             fontWeight = FontWeight.Bold,

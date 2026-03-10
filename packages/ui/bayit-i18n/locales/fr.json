@@ -3580,7 +3580,17 @@
       "invalidChannel": "ID de chaîne invalide"
     },
     "initializationFailed": "Échec de l'initialisation",
-    "reloadButton": "Recharger"
+    "reloadButton": "Recharger",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "Veuillez vous connecter pour utiliser Bayit+ Companion",
@@ -3957,7 +3967,7 @@
     "children": "Enfants",
     "profile": "Profil",
     "search": "Rechercher",
-    "settings": "Paramètres",
+    "settings": "Parametres",
     "favorites": "Favoris",
     "downloads": "Téléchargements",
     "recordings": "Mes enregistrements",
@@ -3976,8 +3986,9 @@
     "liveChannels": "Chaînes en direct",
     "menu": "Menu",
     "more": "Plus",
-    "playlist": "Liste de lecture",
-    "byoc": "BYOC"
+    "playlist": "Playlist",
+    "byoc": "Votre Contenu",
+    "zehAniHub": "Zeh Ani"
   },
   "onboarding": {
     "welcome": {
@@ -4053,7 +4064,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -4110,7 +4124,9 @@
     "noStream": "Flux non disponible",
     "loadError": "Échec du chargement du flux",
     "settings": "Paramètres",
-    "subtitles": "Sous-titres",
+    "subtitles": {
+      "language": "Langue"
+    },
     "playbackSpeed": "Vitesse de lecture",
     "quality": "Qualité",
     "auto": "Auto",
@@ -4409,7 +4425,9 @@
     "podcastNotFound": "Podcast not found",
     "podcastRssUrl": "Podcast RSS URL",
     "radio": "Radio",
-    "playLatest": "Lire le dernier"
+    "playLatest": "Lire le dernier",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "Episode"
   },
   "miniPlayer": {
     "skipBackward": "Reculer de 15 secondes",
@@ -4966,7 +4984,11 @@
     "results": "Resultats",
     "previousPage": "Precedent",
     "nextPage": "Suivant",
-    "pageIndicator": "Page {{current}} sur {{total}}"
+    "pageIndicator": "Page {{current}} sur {{total}}",
+    "llm": {
+      "title": "Recherche IA",
+      "placeholder": "Decrivez ce que vous voulez regarder..."
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -5082,7 +5104,10 @@
       "signOutAll": "Se deconnecter de tous les appareils",
       "signOutAllDesc": "Cela vous deconnectera partout sauf sur cet appareil",
       "thisDevice": "Cet appareil",
-      "lastActive": "Derniere activite {{time}}"
+      "lastActive": "Derniere activite {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "Fonctionnalites IA",
@@ -5331,7 +5356,8 @@
         "features": "Fonctionnalités",
         "support": "Assistance"
       }
-    }
+    },
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -5658,7 +5684,8 @@
     },
     "wizard": {
       "role": "Votre guide"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "trivia": {
     "didYouKnow": "Le Saviez-Vous?",
@@ -5735,7 +5762,14 @@
   "vod": {
     "title": "Films et Séries",
     "movies": "Films",
-    "series": "Séries",
+    "series": {
+      "seasonsCount": "{{count}} Saisons",
+      "episodesCount": "{{count}} Episodes",
+      "playAll": "Tout Lire",
+      "removeFromFavorites": "Retirer des Favoris",
+      "addToFavorites": "Ajouter aux Favoris",
+      "seasonNumber": "Saison {{number}}"
+    },
     "searchPlaceholder": "Rechercher des films et séries...",
     "noMovies": "Aucun film trouvé",
     "noSeries": "Aucune série trouvée",
@@ -5902,7 +5936,9 @@
     "error": {
       "failed": "Impossible de générer le résumé",
       "retry": "Réessayer",
-      "insufficientCredits": "Crédits insuffisants"
+      "insufficientCredits": "Crédits insuffisants",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "title": "Rattrapage",
     "subtitle": "Regardez les émissions des 7 derniers jours",
@@ -6167,6 +6203,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "Par {{author}}",
+      "narratedBy": "Lu par {{narrator}}",
+      "bookmarks": "{{count}} signets",
+      "chapters": "Chapitres ({{count}})",
+      "chapter": "Chapitre"
     }
   },
   "breadcrumbs": {
@@ -7054,7 +7097,9 @@
     "enterName": "Enter name",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "Enfants",
+    "addIcon": "+"
   },
   "quota": {
     "exceeded": "Quota dépassé",
@@ -8612,7 +8657,21 @@
     "biometricEnrollTitle": "Activer la connexion biométrique",
     "biometricEnrollMessage": "Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement",
     "biometricEnrollEnable": "Activer",
-    "biometricEnrollSkip": "Pas maintenant"
+    "biometricEnrollSkip": "Pas maintenant",
+    "register": {
+      "createAccount": "Creer un Compte",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "register": "S'inscrire",
+      "alreadyHaveAccount": "Vous avez deja un compte ? Connectez-vous",
+      "passwordStrength": {
+        "weak": "Faible",
+        "medium": "Moyen",
+        "strong": "Fort"
+      }
+    },
+    "logout": "Se Deconnecter"
   },
   "email": {
     "greeting": "Bonjour",
@@ -9266,7 +9325,8 @@
     "translationBeta": "Traduction (Bêta)",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -9696,7 +9756,8 @@
       "errors": {
         "noControlsAvailable": "Aucun contrôle familial disponible. Créez d'abord des contrôles."
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "Traduire",
@@ -10484,12 +10545,13 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Propulsé par Olorin.ai"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -10526,7 +10588,10 @@
       "genericQuestions": "Questions generales",
       "placeholder": "Posez une question...",
       "send": "Envoyer",
-      "you": "Vous"
+      "you": "Vous",
+      "title": "Dialogue",
+      "askQuestion": "Poser une question...",
+      "sendQuestion": "Envoyer la question"
     },
     "subtitle": "Votre identite interactive",
     "hub": {
@@ -10542,6 +10607,156 @@
       "feedbackDesc": "Messages de la famille et des amis",
       "chess": "Échecs",
       "chessDesc": "Jouez aux échecs avec famille et amis"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "addContact": "Ajouter un Contact",
+      "searchPlaceholder": "Rechercher des contacts...",
+      "noContacts": "Pas encore de contacts",
+      "noMatchingContacts": "Aucun contact correspondant",
+      "reelsShared": "{{count}} reels partages",
+      "remove": "Supprimer"
+    },
+    "feedback": {
+      "title": "Commentaires",
+      "rateQuestion": "Comment evalueriez-vous Zeh Ani ?",
+      "tellUsMore": "Dites-nous en plus",
+      "sharePlaceholder": "Partagez votre experience avec les fonctionnalites de Zeh Ani...",
+      "submit": "Envoyer les Commentaires",
+      "thankYou": "Merci pour vos commentaires !",
+      "appreciateInput": "Nous apprecions votre contribution et l'utiliserons pour ameliorer.",
+      "sendMore": "Envoyer Plus de Commentaires"
+    },
+    "consent": {
+      "title": "Consentement Biometrique",
+      "familyPin": "PIN Familial",
+      "enterPin": "Entrez le PIN familial...",
+      "consentTypes": "Types de Consentement",
+      "active": "Actif",
+      "notGranted": "Non accorde",
+      "grant": "Accorder",
+      "granted": "Accorde"
+    },
+    "highlights": {
+      "title": "Moments Forts",
+      "shareHighlight": "Partager un Moment Fort",
+      "sentTo": "Envoye a {{sentCount}} contacts familiaux",
+      "generateReel": "Generer un Nouveau Reel",
+      "noHighlights": "Pas encore de moments forts",
+      "momentsCount": "{{count}} moments",
+      "sendToFamily": "Envoyer a la Famille"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "Configuration 2FA",
+      "scanQrCode": "Scanner le code QR",
+      "scanQrDescription": "Scannez ce code QR avec votre application d'authentification",
+      "qrLabel": "QR",
+      "enterCode": "Entrez le code de verification",
+      "codePlaceholder": "Code a 6 chiffres",
+      "enable": "Activer la 2FA",
+      "verified": "2FA Activee !"
+    },
+    "passkey": {
+      "title": "Gestion des Passkeys",
+      "addPasskey": "Ajouter un Passkey",
+      "empty": "Aucun passkey configure.\nAjoutez votre premier passkey !",
+      "lastUsedNa": "Derniere utilisation : N/D"
+    },
+    "phone": {
+      "title": "Verification du Telephone",
+      "enterNumber": "Entrez le numero de telephone",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "Envoyer le code",
+      "enterCode": "Entrez le code de verification",
+      "codePlaceholder": "Code a 6 chiffres",
+      "verify": "Verifier",
+      "verified": "Telephone Verifie !"
+    },
+    "devices": {
+      "title": "Appairage d'Appareils",
+      "pairingCode": "Code d'Appairage",
+      "enterCodeOnTv": "Entrez ce code sur votre appareil TV",
+      "pairNewDevice": "Appairer un Nouvel Appareil",
+      "empty": "Aucun appareil appaire.\nAppairez votre premier appareil !",
+      "lastActiveNa": "Derniere activite : N/D",
+      "remove": "Supprimer"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "Soiree Visionnage",
+      "create": "Creer une Soiree Visionnage",
+      "contentId": "ID du Contenu",
+      "enterContent": "Entrez le contenu a regarder",
+      "createButton": "Creer la Soiree",
+      "join": "Rejoindre une Soiree Visionnage",
+      "partyCode": "Code de Soiree",
+      "enterCode": "Entrez le code de soiree",
+      "joinButton": "Rejoindre"
+    },
+    "grandparent": {
+      "title": "Inviter un Grand-parent",
+      "createInvite": "Creer une Invitation",
+      "createInviteDescription": "Entrez le nom de votre grand-parent...",
+      "nameLabel": "Nom du Grand-parent",
+      "enterName": "Entrez le nom",
+      "generateCode": "Generer un Code d'Invitation",
+      "codeGenerated": "Code d'Invitation Genere",
+      "shareCode": "Partagez ce code avec votre grand-parent",
+      "codeInstructions": "Ils peuvent entrer ce code dans leur application Bayit+ pour se connecter",
+      "createAnother": "Creer une Autre"
+    },
+    "conversation": {
+      "title": "Conversation"
+    },
+    "friends": {
+      "online": "En ligne"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "Glossaire",
+      "searchPlaceholder": "Rechercher des termes..."
+    },
+    "shabbat": {
+      "shabbatShalom": "Shabbat Shalom",
+      "modeActivated": "Le mode Shabbat a ete active",
+      "shavuaTov": "Shavua Tov",
+      "modeDeactivated": "Le mode Shabbat a ete desactive",
+      "channelName": "Mode Shabbat"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "Connecter Plex",
+      "enterCodeAt": "Entrez ce code sur",
+      "waitingForAuth": "En attente d'autorisation...",
+      "selectServer": "Selectionnez un serveur Plex",
+      "connecting": "Connexion a {{serverName}}...",
+      "connected": "Connecte",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "Mes Sources de Contenu",
+      "refresh": "Actualiser",
+      "noSources": "Aucune source de contenu",
+      "noSourcesSubtitle": "Ajoutez vos sources Plex, YouTube ou IPTV",
+      "removeSource": "Supprimer la source",
+      "plexSubtitle": "Films, Series, Musique",
+      "youtubeSubtitle": "Videos, Playlists, Chaines",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "Chaines en Direct, VOD, Series",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, ouvrir le profil",
+    "languageCurrent": "Langue : {{lang}}, appuyez pour changer",
+    "selectLanguage": "Choisir la langue",
+    "homeLogo": "Bayit+"
   }
 }

@@ -60,7 +60,8 @@
     "pause": "[hi] Pause",
     "tryAgain": "[hi] Try Again",
     "backToHome": "[hi] Back to Home",
-    "thisContent": "[hi] this content"
+    "thisContent": "[hi] this content",
+    "refresh": "रिफ्रेश"
   },
   "demo": {
     "banner": "डेमो मोड",
@@ -4674,6 +4675,175 @@
   "components": {
     "select": {
       "default": "[hi] Select..."
+    }
+  },
+  "culture": {
+    "title": "Israeli Culture",
+    "description": "Jerusalem, Tel Aviv, and Israeli heritage",
+    "shabbat": {
+      "title": "Shabbat Mode",
+      "enableShabbatMode": "Enable Shabbat Mode",
+      "shabbatTimes": "Shabbat Times",
+      "timesDescription": "Candle Lighting and Havdalah times will be displayed here",
+      "aboutTitle": "About Shabbat Mode",
+      "aboutDescription": "When enabled, Shabbat Mode will pause notifications, reduce screen brightness, and enable a simplified interface during Shabbat hours."
+    },
+    "judaism": {
+      "holidaysAndTorah": "Holidays & Torah",
+      "parashaOfTheWeek": "Parasha of the Week",
+      "parashaDescription": "Weekly Torah reading and commentary"
+    },
+    "morning": {
+      "title": "Morning Ritual",
+      "description": "Start your day with intention and gratitude",
+      "dailyInspiration": "Daily Inspiration",
+      "dailyInspirationDescription": "Curated content for your morning routine",
+      "modehAni": "Modeh Ani",
+      "modehAniDescription": "Morning gratitude prayer",
+      "netilatYadayim": "Netilat Yadayim",
+      "netilatYadayimDescription": "Ritual hand washing",
+      "shacharit": "Shacharit",
+      "shacharitDescription": "Morning prayer service"
+    },
+    "glossary": {
+      "termDetail": "Term Detail",
+      "definition": "Definition",
+      "pronunciation": "Pronunciation",
+      "examples": "Examples"
+    },
+    "jerusalem": {
+      "title": "Jerusalem"
+    },
+    "telaviv": {
+      "title": "Tel Aviv"
+    }
+  },
+  "zehAni": {
+    "dashboard": {
+      "title": "Zeh Ani",
+      "biometricConsent": "Biometric Consent",
+      "activeConsents": "{{count}} active consents",
+      "magicMirror": "Magic Mirror",
+      "magicMirrorDescription": "Daily greetings and face ID",
+      "v2vPractice": "V2V Practice",
+      "v2vPracticeDescription": "Voice-to-voice pronunciation",
+      "avatar3d": "3D Avatar",
+      "avatar3dDescription": "Your personalized avatar mesh",
+      "movieInteractions": "Movie Interactions",
+      "movieInteractionsDescription": "Browse and talk to movie characters",
+      "contacts": "Contacts",
+      "contactsDescription": "WhatsApp sharing contacts",
+      "feedback": "Feedback",
+      "feedbackDescription": "Share your experience",
+      "consent": "Consent",
+      "consentDescription": "Biometric consent management",
+      "chess": "Chess",
+      "chessDescription": "Play chess with friends and family"
+    },
+    "mirror": {
+      "title": "Magic Mirror",
+      "avatarContentDescription": "Avatar",
+      "wordOfTheDay": "Word of the Day",
+      "playLipsync": "Play Lipsync",
+      "noAvatarYet": "No avatar yet",
+      "noAvatarDescription": "Create a 3D avatar to see yourself in the story",
+      "createAvatar": "Create Avatar"
+    },
+    "mode": {
+      "title": "Avatar Mode",
+      "enableAvatarMode": "Enable Avatar Mode",
+      "enableDescription": "Show your avatar reacting to content",
+      "avatarPreview": "Avatar Preview",
+      "avatarPreviewContentDescription": "Avatar preview",
+      "noAvatarConfigured": "No avatar configured",
+      "reactionStyle": "Reaction Style"
+    },
+    "wardrobe": {
+      "title": "Wardrobe",
+      "equippedContentDescription": "Equipped"
+    },
+    "settings": {
+      "title": "Avatar Settings",
+      "privacy": "Privacy",
+      "privateAvatarMode": "Private Avatar Mode",
+      "privateAvatarDescription": "Hide your avatar from other users",
+      "appearance": "Appearance",
+      "enableAnimations": "Enable Animations",
+      "animationsDescription": "Animate avatar movements and expressions",
+      "availableOutfits": "Available Outfits"
+    },
+    "selfie": {
+      "title": "Video Selfie",
+      "camera": "Camera",
+      "cameraPreview": "Camera Preview",
+      "startRecording": "Start Recording",
+      "stopRecording": "Stop Recording",
+      "rec": "REC",
+      "enterPin": "Enter your PIN to create avatar",
+      "pinLabel": "PIN",
+      "retake": "Retake",
+      "creatingAvatar": "Creating your avatar...",
+      "avatarCreated": "Avatar created successfully",
+      "avatarPreviewContentDescription": "Avatar Preview",
+      "createAnother": "Create Another"
+    },
+    "mesh": {
+      "title": "3D Avatar",
+      "meshViewer": "3D Mesh Viewer",
+      "meshViewerDescription": "3D mesh viewer requires WebView or GLSurfaceView integration",
+      "skinTone": "Skin Tone",
+      "hairStyle": "Hair Style",
+      "accessories": "Accessories",
+      "saveChanges": "Save Changes"
+    },
+    "v2v": {
+      "title": "Voice Practice",
+      "nextPhrase": "Next Phrase",
+      "stop": "Stop",
+      "record": "Record",
+      "mic": "MIC",
+      "viewProgress": "View Progress",
+      "analyzingPronunciation": "Analyzing pronunciation...",
+      "pronunciationFeedback": "Pronunciation Feedback",
+      "similarity": "Similarity: {{score}}%",
+      "yourProgress": "Your Progress",
+      "transforms": "Transforms: {{count}}",
+      "improvement": "Improvement: {{score}}%",
+      "continuePracticing": "Continue Practicing"
+    },
+    "characters": {
+      "title": "Characters",
+      "noCharactersFound": "No characters found for this movie",
+      "characterCount": "{{count}} characters"
+    },
+    "interactions": {
+      "title": "Movie Interactions",
+      "noInteractableMovies": "No interactable movies available"
+    },
+    "feedbackInbox": {
+      "title": "Feedback Inbox",
+      "refreshContentDescription": "Refresh",
+      "noFeedbackYet": "No feedback yet",
+      "feedbackAppearHere": "Feedback from your contacts will appear here",
+      "playVoiceMessage": "Play Voice Message"
+    },
+    "addContact": {
+      "title": "Add Contact",
+      "nameLabel": "Name",
+      "phoneLabel": "Phone",
+      "relationship": "Relationship",
+      "language": "Language"
+    },
+    "avatar3d": {
+      "title": "3D Avatar",
+      "glbMeshViewer": "GLB Mesh Viewer",
+      "controls": "Controls",
+      "animate": "Animate",
+      "vertices": "Vertices",
+      "bones": "Bones",
+      "blendShapes": "Blend Shapes",
+      "hasGlb": "Has GLB",
+      "status": "Status: {{value}}"
     }
   }
 }

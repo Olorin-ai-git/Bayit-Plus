@@ -33,6 +33,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 private val CHARACTER_IMAGE_SIZE = 80.dp
@@ -66,7 +67,7 @@ internal fun MovieCharactersScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Characters")
+        GlassTopBar(title = bayitString("zehAni.characters.title"))
         when (uiState) {
             is MovieCharactersUiState.Loading -> GlassLoadingIndicator()
             is MovieCharactersUiState.Success -> CharactersGrid(
@@ -92,7 +93,7 @@ private fun CharactersGrid(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "No characters found for this movie",
+                text = bayitString("zehAni.characters.noCharactersFound"),
                 color = DesignTokens.Colors.Text.muted,
                 style = MaterialTheme.typography.bodyLarge,
             )
@@ -165,7 +166,7 @@ private fun CharactersError(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

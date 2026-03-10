@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Feature Tour Card Titles -->
+    <string name="tour_card_live_dubbing_title">\u5B9E\u65F6\u914D\u97F3</string>
+    <string name="tour_card_live_trivia_title">\u5B9E\u65F6\u95EE\u7B54</string>
+    <string name="tour_card_subtitles_split_title">\u5206\u5C4F\u5B57\u5E55</string>
+    <string name="tour_card_engrew_heblish_title">Engrew / Heblish</string>
+    <string name="tour_card_pause_and_ask_title">\u6682\u505C\u63D0\u95EE</string>
+    <string name="tour_card_movie_interaction_title">\u7535\u5F71\u4E92\u52A8</string>
+    <string name="tour_card_zeh_ani_title">Zeh Ani</string>
+    <string name="tour_card_catchup_title">\u56DE\u770B</string>
+    <string name="tour_card_byoc_title">\u81EA\u5E26\u5185\u5BB9</string>
+
+    <!-- Feature Tour Card Taglines -->
+    <string name="tour_card_live_dubbing_tagline">\u7528\u60A8\u7684\u8BED\u8A00\u89C2\u770B\u5B9E\u65F6\u914D\u97F3\u7684\u4EE5\u8272\u5217\u7535\u89C6</string>
+    <string name="tour_card_live_trivia_tagline">\u5728\u76F4\u64AD\u671F\u95F4\u53C2\u4E0E\u5B9E\u65F6\u95EE\u7B54</string>
+    <string name="tour_card_subtitles_split_tagline">\u5E76\u6392\u67E5\u770B\u539F\u6587\u548C\u8BD1\u6587\u5B57\u5E55</string>
+    <string name="tour_card_engrew_heblish_tagline">\u901A\u8FC7\u6DF7\u5408\u5B57\u5E55\u81EA\u7136\u5730\u5B66\u4E60\u5E0C\u4F2F\u6765\u8BED</string>
+    <string name="tour_card_pause_and_ask_tagline">\u6682\u505C\u4EFB\u4F55\u573A\u666F\u5E76\u63D0\u95EE\u76F8\u5173\u95EE\u9898</string>
+    <string name="tour_card_movie_interaction_tagline">\u4F7F\u7528\u4EBA\u5DE5\u667A\u80FD\u4E0E\u7535\u5F71\u89D2\u8272\u804A\u5929</string>
+    <string name="tour_card_zeh_ani_tagline">\u901A\u8FC7\u9762\u90E8\u6620\u5C04\u5728\u6545\u4E8B\u4E2D\u770B\u5230\u81EA\u5DF1</string>
+    <string name="tour_card_catchup_tagline">\u9519\u8FC7\u4E86\u4EC0\u4E48\uFF1F\u56DE\u770B\u76F4\u64AD\u8282\u76EE</string>
+    <string name="tour_card_byoc_tagline">\u6DFB\u52A0\u60A8\u81EA\u5DF1\u7684 Plex \u548C YouTube \u5185\u5BB9</string>
+
+    <!-- Tour UI Strings -->
+    <string name="tour_skip">\u8DF3\u8FC7\u5BFC\u89C8</string>
+    <string name="tour_try_it_now">\u7ACB\u5373\u5C1D\u8BD5</string>
+    <string name="tour_get_started">\u5F00\u59CB\u4F7F\u7528</string>
+    <string name="tour_next">\u4E0B\u4E00\u4E2A</string>
+    <string name="tour_progress_description">\u7B2C %1$d \u5F20\uFF0C\u5171 %2$d \u5F20</string>
+
+    <!-- Demo: Dubbing (T042) -->
+    <string name="demo_dubbing_original">\u539F\u7248</string>
+    <string name="demo_dubbing_dubbed">\u914D\u97F3</string>
+    <string name="demo_dubbing_label_original">\u539F\u59CB\u97F3\u9891</string>
+    <string name="demo_dubbing_label_dubbed">\u914D\u97F3\u97F3\u9891</string>
+
+    <!-- Demo: Trivia (T043) -->
+    <string name="demo_trivia_question">\u8FD9\u4E2A\u573A\u666F\u53D1\u751F\u5728\u54EA\u4E2A\u57CE\u5E02\uFF1F</string>
+    <string name="demo_trivia_answer_a">\u8036\u8DEF\u6492\u51B7</string>
+    <string name="demo_trivia_answer_b">\u7279\u62C9\u7EF4\u592B</string>
+    <string name="demo_trivia_answer_c">\u6D77\u6CD5</string>
+    <string name="demo_trivia_answer_d">\u57C3\u62C9\u7279</string>
+    <string name="demo_trivia_correct">\u6B63\u786E\uFF01</string>
+    <string name="demo_trivia_wrong">\u4E0D\u592A\u5BF9 -- \u518D\u8BD5\u4E00\u6B21</string>
+    <string name="demo_trivia_label">\u5B9E\u65F6\u95EE\u7B54</string>
+
+    <!-- Demo: Subtitles (T044) -->
+    <string name="demo_subtitle_mode_original">\u539F\u6587</string>
+    <string name="demo_subtitle_mode_nikud">\u5C3C\u5E93\u5FB7</string>
+    <string name="demo_subtitle_mode_engrew">Engrew</string>
+    <string name="demo_subtitle_mode_heblish">Heblish</string>
+    <string name="demo_subtitle_original_text">\u05D0\u05E0\u05D9 \u05E8\u05D5\u05E6\u05D4 \u05DC\u05DC\u05DB\u05EA \u05D4\u05D1\u05D9\u05EA\u05D4</string>
+    <string name="demo_subtitle_nikud_text">\u05D0\u05B2\u05E0\u05B4\u05D9 \u05E8\u05D5\u05B9\u05E6\u05B6\u05D4 \u05DC\u05B8\u05DC\u05B6\u05DB\u05B6\u05EA \u05D4\u05B7\u05D1\u05B7\u05BC\u05D9\u05B4\u05EA\u05B8\u05D4</string>
+    <string name="demo_subtitle_engrew_text">Ani rotzeh lalechet ha-BAYTA</string>
+    <string name="demo_subtitle_heblish_text">The shomer watched the mishpacha from the mirpeset</string>
+
+    <!-- Demo: Interaction (T045) -->
+    <string name="demo_interaction_tap_hint">\u70B9\u51FB\u9AD8\u4EAE\u663E\u793A\u7684\u89D2\u8272</string>
+    <string name="demo_interaction_msg_1">\u4F60\u597D\uFF01\u6211\u662F\u8282\u76EE\u4E2D\u7684 Yael\u3002</string>
+    <string name="demo_interaction_msg_2">\u5173\u4E8E\u8FD9\u4E2A\u573A\u666F\uFF0C\u4F60\u53EF\u4EE5\u95EE\u6211\u4EFB\u4F55\u95EE\u9898\u3002</string>
+    <string name="demo_interaction_msg_3">\u6211\u53EF\u4EE5\u89E3\u91CA\u521A\u624D\u53D1\u751F\u4E86\u4EC0\u4E48\u3002</string>
+    <string name="demo_interaction_character_name">Yael</string>
+
+    <!-- Demo: Zeh Ani (T046) -->
+    <string name="demo_zeh_ani_grant_camera">\u6388\u4E88\u76F8\u673A\u6743\u9650</string>
+    <string name="demo_zeh_ani_camera_needed">\u9700\u8981\u76F8\u673A\u6743\u9650\u6765\u5C06\u60A8\u7684\u9762\u90E8\u6620\u5C04\u5230\u6545\u4E8B\u4E2D</string>
+    <string name="demo_zeh_ani_preview_label">\u524D\u7F6E\u6444\u50CF\u5934\u9884\u89C8</string>
+    <string name="demo_zeh_ani_face_detected">\u5DF2\u68C0\u6D4B\u5230\u9762\u90E8 -- \u51C6\u5907\u6620\u5C04</string>
+    <string name="demo_zeh_ani_no_face">\u8BF7\u5C06\u9762\u90E8\u7F6E\u4E8E\u53D6\u666F\u6846\u5185</string>
+
+    <!-- Demo: Catchup (T047) -->
+    <string name="demo_catchup_timeline_label">\u4ECA\u5929\u65E9\u4E9B\u65F6\u5019</string>
+    <string name="demo_catchup_program_1">\u65E9\u95F4\u65B0\u95FB</string>
+    <string name="demo_catchup_program_2">\u70F9\u996A\u8282\u76EE</string>
+    <string name="demo_catchup_program_3">\u7535\u89C6\u5267</string>
+    <string name="demo_catchup_program_4">\u4F53\u80B2\u7EFC\u8FF0</string>
+    <string name="demo_catchup_program_5">\u665A\u95F4\u8BBF\u8C08</string>
+    <string name="demo_catchup_time_1">06:00</string>
+    <string name="demo_catchup_time_2">08:30</string>
+    <string name="demo_catchup_time_3">10:00</string>
+    <string name="demo_catchup_time_4">12:00</string>
+    <string name="demo_catchup_time_5">14:00</string>
+    <string name="demo_catchup_summary_title">AI \u6458\u8981</string>
+    <string name="demo_catchup_summary_1">\u5934\u6761\u65B0\u95FB\u62A5\u9053\u4E86\u6700\u65B0\u7684\u653F\u5E9C\u8054\u5408\u8C08\u5224\u548C\u533A\u57DF\u5929\u6C14\u66F4\u65B0\u3002</string>
+    <string name="demo_catchup_summary_2">\u53A8\u5E08 Amir \u7528\u70E4\u8FA3\u6912\u548C\u624E\u963F\u5854\u5236\u4F5C\u4E86\u73B0\u4EE3\u98CE\u683C\u7684\u6C99\u514B\u80E1\u5361\u3002</string>
+    <string name="demo_catchup_summary_3">Noa \u53D1\u73B0\u4E86\u59D0\u59D0\u5931\u8E2A\u7684\u771F\u76F8\u3002\u60AC\u5FF5\u7ED3\u5C3E\u3002</string>
+    <string name="demo_catchup_summary_4">\u9A6C\u5361\u6BD4\u7279\u62C9\u7EF4\u592B 3-1 \u83B7\u80DC\u3002\u7BEE\u7403\u8054\u8D5B\u6700\u540E\u4E00\u8F6E\u96C6\u9526\u3002</string>
+    <string name="demo_catchup_summary_5">\u91C7\u8BBF\u83B7\u5956\u4F5C\u5BB6\uFF0C\u8C08\u8BBA\u5979\u5173\u4E8E\u79FB\u6C11\u6545\u4E8B\u7684\u65B0\u5C0F\u8BF4\u3002</string>
+
+    <!-- Demo: BYOC (T048) -->
+    <string name="demo_byoc_step_1_title">\u6DFB\u52A0\u6E90</string>
+    <string name="demo_byoc_step_1_desc">\u8FDE\u63A5\u60A8\u7684 Plex \u6216 YouTube \u5A92\u4F53\u5E93</string>
+    <string name="demo_byoc_step_2_title">AI \u5206\u7C7B</string>
+    <string name="demo_byoc_step_2_desc">\u6211\u4EEC\u7684 AI \u5BF9\u60A8\u7684\u5185\u5BB9\u8FDB\u884C\u5206\u7C7B\u548C\u4E30\u5BCC</string>
+    <string name="demo_byoc_step_3_title">\u5A92\u4F53\u5E93\u6574\u5408</string>
+    <string name="demo_byoc_step_3_desc">\u60A8\u7684\u5185\u5BB9\u4E0E Bayit+ \u539F\u521B\u5185\u5BB9\u4E00\u8D77\u663E\u793A</string>
+    <string name="demo_byoc_step_indicator">\u7B2C %1$d \u6B65\uFF0C\u5171 %2$d \u6B65</string>
+
+    <!-- Demo: Common -->
+    <string name="demo_close">\u5173\u95ED</string>
+    <string name="demo_banner_label"># DEMO-ONLY</string>
+
+    <!-- Demo: Interaction (T067) -->
+    <string name="demo_interaction_curated_moments">\u5728\u64AD\u653E\u671F\u95F4\u5BFB\u627E\u661F\u6807\u56FE\u6807\uFF0C\u53D1\u73B0\u7CBE\u9009\u7684\u89D2\u8272\u4E92\u52A8\u65F6\u523B\u3002</string>
+    <string name="demo_interaction_credit_info">\u4E92\u52A8\u4F7F\u7528 AI \u79EF\u5206\u3002\u514D\u8D39\u7528\u6237\u6BCF\u5929\u83B7\u5F97 5 \u4E2A\u3002</string>
+
+    <!-- Demo: Zeh Ani (T070) -->
+    <string name="demo_zeh_ani_vocab_word">\u05E9\u05DC\u05D5\u05DD</string>
+    <string name="demo_zeh_ani_vocab_transliteration">Shalom</string>
+    <string name="demo_zeh_ani_vocab_translation">\u4F60\u597D / \u548C\u5E73</string>
+    <string name="demo_zeh_ani_vocab_label">\u8BCD\u6C47\u9AD8\u4EAE</string>
+
+    <!-- Personalization Step (T072) -->
+    <string name="personalization_title">\u4E2A\u6027\u5316\u60A8\u7684\u4F53\u9A8C</string>
+    <string name="personalization_subtitle">\u544A\u8BC9\u6211\u4EEC\u60A8\u7684\u559C\u597D\uFF0C\u4EE5\u4FBF\u6211\u4EEC\u4E3A\u60A8\u5B9A\u5236\u63A8\u8350</string>
+    <string name="personalization_languages_label">\u5185\u5BB9\u8BED\u8A00</string>
+    <string name="personalization_genres_label">\u559C\u7231\u7684\u7C7B\u578B</string>
+    <string name="personalization_children_label">\u60A8\u6709\u5B69\u5B50\u5417\uFF1F</string>
+    <string name="personalization_done">\u5B8C\u6210</string>
+    <string name="personalization_lang_en">\u82F1\u8BED</string>
+    <string name="personalization_lang_he">\u5E0C\u4F2F\u6765\u8BED</string>
+    <string name="personalization_lang_fr">\u6CD5\u8BED</string>
+    <string name="personalization_lang_es">\u897F\u73ED\u7259\u8BED</string>
+    <string name="personalization_lang_it">\u610F\u5927\u5229\u8BED</string>
+    <string name="personalization_lang_bn">\u5B5F\u52A0\u62C9\u8BED</string>
+    <string name="personalization_lang_hi">\u5370\u5730\u8BED</string>
+    <string name="personalization_lang_ja">\u65E5\u8BED</string>
+    <string name="personalization_lang_ta">\u6CF0\u7C73\u5C14\u8BED</string>
+    <string name="personalization_lang_zh">\u4E2D\u6587</string>
+    <string name="personalization_genre_drama">\u5267\u60C5</string>
+    <string name="personalization_genre_comedy">\u559C\u5267</string>
+    <string name="personalization_genre_action">\u52A8\u4F5C</string>
+    <string name="personalization_genre_documentary">\u7EAA\u5F55\u7247</string>
+    <string name="personalization_genre_kids">\u513F\u7AE5</string>
+    <string name="personalization_genre_thriller">\u60CA\u609A</string>
+    <string name="personalization_genre_romance">\u7231\u60C5</string>
+    <string name="personalization_genre_scifi">\u79D1\u5E7B</string>
+    <string name="personalization_genre_horror">\u6050\u6016</string>
+    <string name="personalization_genre_music">\u97F3\u4E50</string>
+    <string name="personalization_genre_sports">\u4F53\u80B2</string>
+    <string name="personalization_genre_news">\u65B0\u95FB</string>
+
+    <!-- Continue Tour Banner (T078) -->
+    <string name="continue_tour_title">\u7EE7\u7EED\u60A8\u7684\u5BFC\u89C8</string>
+    <string name="continue_tour_prompt">\u4ECE\u4E0A\u6B21\u79BB\u5F00\u7684\u5730\u65B9\u7EE7\u7EED\uFF0C\u53D1\u73B0\u66F4\u591A\u529F\u80FD</string>
+    <string name="continue_tour_button">\u7EE7\u7EED</string>
+    <string name="continue_tour_dismiss_description">\u5173\u95ED\u5BFC\u89C8\u6A2A\u5E45</string>
+
+    <!-- Feature Tooltips (T087) -->
+    <string name="tooltip_live_dubbing">\u70B9\u51FB\u5730\u7403\u56FE\u6807\u5728\u539F\u58F0\u548C\u914D\u97F3\u4E4B\u95F4\u5B9E\u65F6\u5207\u6362</string>
+    <string name="tooltip_pause_and_ask">\u6682\u505C\u4EFB\u4F55\u573A\u666F\uFF0C\u70B9\u51FB\u63D0\u95EE\u4E0E\u89D2\u8272\u804A\u804A\u6B63\u5728\u53D1\u751F\u7684\u4E8B\u60C5</string>
+    <string name="tooltip_zeh_ani">\u4F7F\u7528\u524D\u7F6E\u6444\u50CF\u5934\u901A\u8FC7 Zeh Ani \u5C06\u60A8\u7684\u9762\u90E8\u6620\u5C04\u5230\u6545\u4E8B\u4E2D</string>
+    <string name="tooltip_catchup">\u6EDA\u52A8\u65F6\u95F4\u7EBF\uFF0C\u901A\u8FC7 AI \u6458\u8981\u56DE\u770B\u65E9\u524D\u7684\u8282\u76EE</string>
+
+    <!-- Settings: Feature Tour (T027, T089) -->
+    <string name="settings_replay_tour">\u91CD\u64AD\u529F\u80FD\u5BFC\u89C8</string>
+    <string name="settings_tips_label">\u663E\u793A\u529F\u80FD\u63D0\u793A</string>
+
+    <!-- Onboarding Intro Flow -->
+    <string name="onboarding_welcome_title">\u6B22\u8FCE\u6765\u5230 Bayit+</string>
+    <string name="onboarding_welcome_subtitle">\u4EE5\u8272\u5217\u7535\u89C6\uFF0C\u7528\u60A8\u7684\u8BED\u8A00</string>
+    <string name="onboarding_continue">\u7EE7\u7EED</string>
+    <string name="onboarding_skip">\u8DF3\u8FC7</string>
+    <string name="onboarding_back">\u8FD4\u56DE</string>
+
+    <string name="onboarding_ai_language_title">\u7528 %1$s \u89C2\u770B</string>
+    <string name="onboarding_ai_language_subtitle">AI \u914D\u97F3\u3001\u5B9E\u65F6\u5B57\u5E55\u548C\u5E0C\u4F2F\u6765\u8BED\u5B66\u4E60 -- \u5168\u90E8\u5185\u7F6E</string>
+    <string name="onboarding_ai_language_dubbing">\u5B9E\u65F6\u914D\u97F3</string>
+    <string name="onboarding_ai_language_subtitles">\u667A\u80FD\u5B57\u5E55</string>
+    <string name="onboarding_ai_language_engrew">Engrew</string>
+
+    <string name="onboarding_pause_ask_title">\u6682\u505C\u5E76\u63D0\u95EE\u4EFB\u4F55\u95EE\u9898</string>
+    <string name="onboarding_pause_ask_subtitle">\u5BF9\u573A\u666F\u3001\u6F14\u5458\u6216\u53C2\u8003\u5185\u5BB9\u611F\u5230\u597D\u5947\uFF1F\u76F4\u63A5\u63D0\u95EE -- AI \u77E5\u9053\u60A8\u5728\u770B\u4EC0\u4E48</string>
+    <string name="onboarding_pause_ask_pill">\u6682\u505C\u63D0\u95EE</string>
+
+    <string name="onboarding_interactive_title">\u89C2\u770B\u4F1A\u56DE\u5E94\u7684\u8282\u76EE</string>
+    <string name="onboarding_interactive_subtitle">\u4E0E\u89D2\u8272\u804A\u5929\u3001\u5728\u573A\u666F\u4E2D\u6295\u7968\u3001\u63A2\u7D22\u5206\u652F\u6545\u4E8B\u7EBF</string>
+    <string name="onboarding_interactive_moments">\u4E92\u52A8\u65F6\u523B</string>
+    <string name="onboarding_interactive_trivia">\u5B9E\u65F6\u95EE\u7B54</string>
+
+    <string name="onboarding_never_miss_title">\u4E0D\u9519\u8FC7\u4EFB\u4F55\u65F6\u523B</string>
+    <string name="onboarding_never_miss_subtitle">\u56DE\u770B\u76F4\u64AD\u8282\u76EE\uFF0C\u6DFB\u52A0\u60A8\u81EA\u5DF1\u7684 Plex\u3001YouTube \u6216 IPTV \u5185\u5BB9</string>
+    <string name="onboarding_never_miss_catchup">\u56DE\u770B</string>
+    <string name="onboarding_never_miss_byoc">\u81EA\u5E26\u5185\u5BB9</string>
+
+    <string name="onboarding_zeh_ani_title">\u8FD9\u5C31\u662F\u6211 -- Zeh Ani</string>
+    <string name="onboarding_zeh_ani_subtitle">\u901A\u8FC7 AI \u9762\u90E8\u6620\u5C04\u548C\u4E2A\u6027\u5316\u89C2\u770B\u5728\u6545\u4E8B\u4E2D\u770B\u5230\u81EA\u5DF1</string>
+    <string name="onboarding_zeh_ani_pill">Zeh Ani</string>
+
+    <string name="onboarding_voice_title">\u7528\u8BED\u97F3\u63A7\u5236</string>
+    <string name="onboarding_voice_subtitle">\u8BF4\u201CHey Bayit\u201D\u6765\u6362\u53F0\u3001\u641C\u7D22\u6216\u63D0\u95EE</string>
+    <string name="onboarding_voice_or_type">\u6216\u8F93\u5165\u60A8\u7684\u540D\u5B57</string>
+
+    <string name="onboarding_complete_title">\u4E00\u5207\u5C31\u7EEA\uFF01</string>
+    <string name="onboarding_complete_subtitle">\u60A8\u7684\u4E2A\u6027\u5316\u4F53\u9A8C\u5DF2\u51C6\u5907\u5C31\u7EEA\u3002\u5C3D\u60C5\u4EAB\u53D7 Bayit+\uFF01</string>
+    <string name="onboarding_complete_language">\u8BED\u8A00</string>
+    <string name="onboarding_complete_name">\u59D3\u540D</string>
+    <string name="onboarding_complete_start_watching">\u5F00\u59CB\u89C2\u770B</string>
+    <string name="onboarding_complete_saving">\u4FDD\u5B58\u4E2D\u2026</string>
+
+    <!-- Accessibility / TalkBack Descriptions (T091) -->
+    <string name="a11y_feature_card_title">\u529F\u80FD\uFF1A%1$s</string>
+    <string name="a11y_feature_card_tagline">%1$s</string>
+    <string name="a11y_try_it_now_button">\u5C1D\u8BD5 %1$s \u7684\u4E92\u52A8\u6F14\u793A</string>
+    <string name="a11y_skip_tour_button">\u8DF3\u8FC7\u529F\u80FD\u5BFC\u89C8</string>
+    <string name="a11y_get_started_button">\u5B8C\u6210\u5BFC\u89C8\u5E76\u5F00\u59CB</string>
+    <string name="a11y_demo_close_button">\u5173\u95ED\u6F14\u793A\u5E76\u8FD4\u56DE\u5BFC\u89C8</string>
+</resources>

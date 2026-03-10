@@ -35,6 +35,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun RadioRoute(
@@ -105,7 +106,7 @@ private fun NowPlayingBar(uiState: RadioUiState.Success) {
             )
             Spacer(modifier = Modifier.width(DesignTokens.Spacing.md))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Now Playing", style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Primary.light)
+                Text(text = bayitString("radio.nowPlaying"), style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Primary.light)
                 station.name?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 station.currentSong?.let { Text(text = it, style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
@@ -123,7 +124,7 @@ private fun RadioGridItem(station: RadioStationItem, isFavorite: Boolean, onClic
             station.genre?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Text.secondary, maxLines = 1) }
             station.currentShow?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Text.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassButton(text = if (isFavorite) "Favorited" else "Favorite", onClick = onFavoriteClick, isPrimary = !isFavorite)
+            GlassButton(text = if (isFavorite) bayitString("common.favorited") else bayitString("radio.favorite"), onClick = onFavoriteClick, isPrimary = !isFavorite)
         }
     }
 }
@@ -133,7 +134,7 @@ private fun RadioErrorSection(message: String, onRetry: () -> Unit, modifier: Mo
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

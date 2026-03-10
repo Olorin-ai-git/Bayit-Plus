@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">צפייה בשידור חי</string>
+    <string name="shortcut_search">חיפוש תוכן</string>
+    <string name="shortcut_resume">המשך צפייה</string>
+    <string name="shortcut_radio">האזנה לרדיו</string>
+    <string name="shortcut_podcasts">עיון בפודקאסטים</string>
+    <string name="widget_now_playing_description">מציג מה מתנגן כרגע ב-Bayit+</string>
+    <string name="widget_continue_watching_description">מציג את התוכן שבצפייה עם סרגלי התקדמות</string>
+    <string name="widget_live_channels_description">מציג את ערוצי השידור החי המועדפים עם התוכניות הנוכחיות</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">בית</string>
+    <string name="tv_continue_watching">המשך צפייה</string>
+    <string name="tv_live_channels">שידור חי</string>
+    <string name="tv_vod_title">סרטים וסדרות</string>
+    <string name="tv_radio_title">רדיו</string>
+    <string name="tv_podcasts_title">פודקאסטים</string>
+    <string name="tv_featured_title">מומלצים</string>
+    <string name="tv_login_title">התחברות ל-Bayit+</string>
+    <string name="tv_scan_qr">סרקו את קוד ה-QR עם הטלפון כדי להתחבר</string>
+    <string name="tv_enter_code">או בקרו ב-%1$s והזינו את הקוד:</string>
+    <string name="tv_code_expires">הקוד פג תוקף בעוד %1$s</string>
+    <string name="tv_manual_login">התחברות עם דוא\"ל</string>
+    <string name="tv_search_hint">חיפוש ערוצים, סדרות, סרטים...</string>
+    <string name="tv_connection_lost">החיבור אבד. מנסה שוב...</string>
+    <string name="tv_subscribe_prompt">הירשמו למנוי כדי לצפות בתוכן זה</string>
+    <string name="tv_subscribe_on_phone">בקרו ב-bayit.tv או השתמשו באפליקציית Bayit+ בטלפון כדי להירשם</string>
+    <string name="tv_byoc_title">התוכן שלך</string>
+</resources>

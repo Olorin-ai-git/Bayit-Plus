@@ -37,6 +37,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -69,10 +70,10 @@ internal fun EditProfileScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Edit Profile",
+            title = bayitString("profiles.editProfile"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -84,9 +85,9 @@ internal fun EditProfileScreen(
                     Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = DesignTokens.Spacing.xl),
                 ) {
                     Spacer(Modifier.height(DesignTokens.Spacing.xl))
-                    GlassTextField(value = uiState.name, onValueChange = onNameChange, label = "Profile Name", singleLine = true)
+                    GlassTextField(value = uiState.name, onValueChange = onNameChange, label = bayitString("profiles.profileName"), singleLine = true)
                     Spacer(Modifier.height(DesignTokens.Spacing.lg))
-                    Text(text = "Choose Avatar", style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.primary)
+                    Text(text = bayitString("profiles.chooseAvatar"), style = MaterialTheme.typography.titleSmall, color = DesignTokens.Colors.Text.primary)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
@@ -103,7 +104,7 @@ internal fun EditProfileScreen(
                         }
                     }
                     Spacer(Modifier.height(DesignTokens.Spacing.xl))
-                    GlassButton("Save Changes", onSaveClick, enabled = uiState.name.isNotBlank(), modifier = Modifier.fillMaxWidth())
+                    GlassButton(bayitString("profiles.saveChanges"), onSaveClick, enabled = uiState.name.isNotBlank(), modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(DesignTokens.Spacing.xxl))
                 }
                 is EditProfileUiState.Error -> Column(
@@ -113,7 +114,7 @@ internal fun EditProfileScreen(
                     Spacer(Modifier.height(DesignTokens.Spacing.xxl))
                     Text(uiState.message, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Semantic.error)
                     Spacer(Modifier.height(DesignTokens.Spacing.xl))
-                    GlassButton("Retry", onDismissError, modifier = Modifier.fillMaxWidth())
+                    GlassButton(bayitString("common.retry"), onDismissError, modifier = Modifier.fillMaxWidth())
                 }
                 is EditProfileUiState.Saved -> Unit
             }

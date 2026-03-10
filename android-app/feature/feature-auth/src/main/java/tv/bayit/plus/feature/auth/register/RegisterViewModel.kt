@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.common.result.BayitResult
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RegisterUiState>(
@@ -100,22 +102,25 @@ class RegisterViewModel @Inject constructor(
 
     private fun validateFields(input: RegisterUiState.Input): FieldError? {
         if (input.name.isBlank()) {
-            return FieldError(field = "name", message = "Name is required")
+            return FieldError(field = "name", message = stringProvider.string("auth.register.errors.nameRequired"))
         }
         if (input.email.isBlank()) {
-            return FieldError(field = "email", message = "Email is required")
+            return FieldError(field = "email", message = stringProvider.string("login.errors.emailRequired"))
         }
         if (!EMAIL_PATTERN.matches(input.email)) {
-            return FieldError(field = "email", message = "Enter a valid email address")
+            return FieldError(field = "email", message = stringProvider.string("auth.error.emailInvalid"))
         }
         if (input.password.length < MIN_PASSWORD_LENGTH) {
             return FieldError(
                 field = "password",
-                message = "Password must be at least $MIN_PASSWORD_LENGTH characters",
+                message = stringProvider.string(
+                    "auth.register.errors.passwordMinLength",
+                    mapOf("count" to MIN_PASSWORD_LENGTH.toString()),
+                ),
             )
         }
         if (input.password != input.confirmPassword) {
-            return FieldError(field = "confirmPassword", message = "Passwords do not match")
+            return FieldError(field = "confirmPassword", message = stringProvider.string("auth.register.errors.passwordMismatch"))
         }
         return null
     }

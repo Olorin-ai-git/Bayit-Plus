@@ -41,6 +41,7 @@ import tv.bayit.plus.core.model.WidgetItem
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import kotlin.math.roundToInt
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 /**
  * Floating PiP widget container that can be dragged and repositioned.
@@ -134,7 +135,7 @@ private fun HeaderBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Remove,
-                    contentDescription = "Minimize",
+                    contentDescription = bayitString("widgets.minimize"),
                     tint = DesignTokens.Colors.Text.secondary
                 )
             }
@@ -145,7 +146,7 @@ private fun HeaderBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    contentDescription = bayitString("common.close"),
                     tint = DesignTokens.Colors.Text.secondary
                 )
             }
@@ -166,7 +167,7 @@ private fun ContentArea(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = widget.content?.contentType?.displayLabel ?: "Widget Content",
+            text = widget.content?.contentType?.displayLabel ?: bayitString("widgets.widgetContent"),
             style = MaterialTheme.typography.bodyMedium,
             color = DesignTokens.Colors.Text.secondary
         )

@@ -23,6 +23,7 @@ import tv.bayit.plus.core.data.billing.SubscriptionProduct
 import tv.bayit.plus.core.data.billing.billingPeriodLabel
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -67,7 +68,7 @@ internal fun SubscribeScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Subscribe to Bayit+")
+        GlassTopBar(title = bayitString("subscription.title"))
         when (uiState) {
             is SubscribeUiState.Loading -> GlassLoadingIndicator()
             is SubscribeUiState.Error -> SubscribeErrorContent(
@@ -101,7 +102,7 @@ private fun SubscribeContent(
         item { Spacer(Modifier.height(DesignTokens.Spacing.sm)) }
         item {
             Text(
-                text = "Choose Your Plan",
+                text = bayitString("subscription.choosePlan"),
                 style = MaterialTheme.typography.titleLarge,
                 color = DesignTokens.Colors.Text.primary,
                 fontWeight = FontWeight.Bold,
@@ -117,7 +118,7 @@ private fun SubscribeContent(
         if (products.isEmpty()) {
             item {
                 Text(
-                    text = "Loading available plans...",
+                    text = bayitString("subscription.loadingPlans"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = DesignTokens.Colors.Text.muted,
                 )

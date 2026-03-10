@@ -3540,7 +3540,17 @@
       "invalidChannel": "தவறான சேனல் ஐடி"
     },
     "initializationFailed": "துவக்கம் தோல்வியடைந்தது",
-    "reloadButton": "மீண்டும் ஏற்று"
+    "reloadButton": "மீண்டும் ஏற்று",
+    "invalidStreamUrl": "Invalid stream URL",
+    "invalidSession": "Invalid or expired session",
+    "signInRequired": "Please sign in first",
+    "speechRecognitionFailed": "Could not start speech recognition",
+    "noResponse": "Could not get a response",
+    "websocketUrlFailed": "Failed to construct WebSocket URL",
+    "noAuthToken": "No auth token available",
+    "noDownloadUrl": "No download URL available for this content",
+    "purchaseVerificationFailed": "Purchase verification failed",
+    "invalidUrl": "Invalid URL"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companion பயன்படுத்த உள்நுழையவும்",
@@ -3910,7 +3920,8 @@
     "menu": "பட்டியல்",
     "more": "மேலும்",
     "playlist": "பிளேலிஸ்ட்",
-    "byoc": "BYOC"
+    "byoc": "உங்கள் உள்ளடக்கம்",
+    "zehAniHub": "ஜே அனீ"
   },
   "onboarding": {
     "welcome": {
@@ -3980,7 +3991,11 @@
         "1 சாதனத்தில் பார்",
         "SD தரம்"
       ],
-      "notIncluded": ["நேரலை சேனல்கள்", "AI உதவியாளர்", "ஆஃப்லைன் பார்வை"]
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
     },
     "premium": {
       "name": "பிரீமியம்",
@@ -3992,7 +4007,10 @@
         "2 சாதனங்களில் பார்",
         "HD தரம்"
       ],
-      "notIncluded": ["ஆஃப்லைன் பார்வை", "குடும்ப சுயவிவரங்கள்"]
+      "notIncluded": [
+        "ஆஃப்லைன் பார்வை",
+        "குடும்ப சுயவிவரங்கள்"
+      ]
     },
     "family": {
       "name": "குடும்பம்",
@@ -4045,7 +4063,9 @@
     "liveBadge": "நேரலை",
     "noStream": "ஸ்ட்ரீம் இல்லை",
     "settings": "அமைப்புகள்",
-    "subtitles": "வசனங்கள்",
+    "subtitles": {
+      "language": "மொழி"
+    },
     "quality": "தரம்",
     "auto": "தானியங்கி",
     "subtitlesOff": "அணைக்கவும்",
@@ -4305,7 +4325,9 @@
     "radio": "Radio",
     "playLatest": "சமீபத்தியதை இயக்கு",
     "subscribe": "சந்தா செய்",
-    "unsubscribe": "சந்தா நீக்கு"
+    "unsubscribe": "சந்தா நீக்கு",
+    "removeFailed": "Failed to remove podcast",
+    "episode": "எபிசோடு"
   },
   "miniPlayer": {
     "skipBackward": "15 வினாடி பின்னால்",
@@ -4870,7 +4892,11 @@
     "results": "முடிவுகள்",
     "previousPage": "முந்தையது",
     "nextPage": "அடுத்தது",
-    "pageIndicator": "பக்கம் {{current}} / {{total}}"
+    "pageIndicator": "பக்கம் {{current}} / {{total}}",
+    "llm": {
+      "title": "AI தேடல்",
+      "placeholder": "நீங்கள் என்ன பார்க்க விரும்புகிறீர்கள் என்று விவரிக்கவும்..."
+    }
   },
   "settings": {
     "title": "அமைப்புகள்",
@@ -4986,7 +5012,10 @@
       "signOutAll": "அனைத்து சாதனங்களிலிருந்தும் வெளியேறு",
       "signOutAllDesc": "இது இந்த சாதனம் தவிர எல்லா இடங்களிலும் உங்களை வெளியேற்றும்",
       "thisDevice": "இந்த சாதனம்",
-      "lastActive": "கடைசியாக செயலில் {{time}}"
+      "lastActive": "கடைசியாக செயலில் {{time}}",
+      "passwordEmpty": "Password cannot be empty",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully"
     },
     "aiFeatures": {
       "title": "AI அம்சங்கள்",
@@ -5235,7 +5264,8 @@
     "selected": "தேர்ந்தெடுக்கப்பட்டது",
     "processing": "செயலாக்குகிறது...",
     "perYear": "/வருடம்",
-    "noCharge": "சோதனை காலத்தில் உங்கள் கிரெடிட் கார்டு கட்டணம் விதிக்கப்படாது"
+    "noCharge": "சோதனை காலத்தில் உங்கள் கிரெடிட் கார்டு கட்டணம் விதிக்கப்படாது",
+    "noProductSelected": "No product selected"
   },
   "subtitles": {
     "nikud": "நிகுத்",
@@ -5482,7 +5512,8 @@
     },
     "wizard": {
       "role": "உங்கள் வழிகாட்டி"
-    }
+    },
+    "fieldsRequired": "Subject and message are required"
   },
   "trivia": {
     "didYouKnow": "உங்களுக்குத் தெரியுமா?",
@@ -5534,7 +5565,14 @@
   "vod": {
     "title": "திரைப்படங்கள் & தொடர்கள்",
     "movies": "திரைப்படங்கள்",
-    "series": "தொடர்கள்",
+    "series": {
+      "seasonsCount": "{{count}} சீசன்கள்",
+      "episodesCount": "{{count}} எபிசோடுகள்",
+      "playAll": "அனைத்தையும் இயக்கு",
+      "removeFromFavorites": "பிடித்தவையிலிருந்து நீக்கு",
+      "addToFavorites": "பிடித்தவைக்குச் சேர்",
+      "seasonNumber": "சீசன் {{number}}"
+    },
     "searchPlaceholder": "திரைப்படங்கள் & தொடர்களைத் தேடு...",
     "noMovies": "திரைப்படங்கள் இல்லை",
     "noSeries": "தொடர்கள் இல்லை",
@@ -5726,7 +5764,9 @@
     "error": {
       "failed": "சுருக்கத்தை உருவாக்க முடியவில்லை",
       "retry": "மீண்டும் முயற்சிக்கவும்",
-      "insufficientCredits": "போதுமான கிரெடிட்கள் இல்லை"
+      "insufficientCredits": "போதுமான கிரெடிட்கள் இல்லை",
+      "loadFailed": "Unable to load catch-up content",
+      "serviceUnavailable": "Catch-up service is temporarily unavailable"
     },
     "timeline": {
       "title": "டிரான்ஸ்கிரிப்ட் காலவரிசை",
@@ -6174,6 +6214,13 @@
       "family": "Family",
       "free": "Free",
       "premium": "Premium"
+    },
+    "detail": {
+      "byAuthor": "{{author}} எழுதியது",
+      "narratedBy": "விவரிப்பவர்: {{narrator}}",
+      "bookmarks": "{{count}} புத்தகக்குறிகள்",
+      "chapters": "அத்தியாயங்கள் ({{count}})",
+      "chapter": "அத்தியாயம்"
     }
   },
   "breadcrumbs": {
@@ -6600,7 +6647,9 @@
     "kidsProfile": "Kids Profile",
     "kidsProfileDescription": "Restricts content to kid-friendly selections",
     "profileName": "Profile Name",
-    "whosWatching": "Who's watching?"
+    "whosWatching": "Who's watching?",
+    "kids": "குழந்தைகள்",
+    "addIcon": "+"
   },
   "watch": {
     "notFound": "உள்ளடக்கம் இல்லை",
@@ -7769,7 +7818,21 @@
     "biometricEnrollTitle": "பயோமெட்ரிக் உள்நுழைவை இயக்கு",
     "biometricEnrollMessage": "அடுத்த முறை விரைவாக உள்நுழைய உங்கள் கைரேகை அல்லது முகத்தைப் பயன்படுத்தவும்",
     "biometricEnrollEnable": "இயக்கு",
-    "biometricEnrollSkip": "இப்போது வேண்டாம்"
+    "biometricEnrollSkip": "இப்போது வேண்டாம்",
+    "register": {
+      "createAccount": "கணக்கு உருவாக்கு",
+      "email": "மின்னஞ்சல்",
+      "password": "கடவுச்சொல்",
+      "confirmPassword": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
+      "register": "பதிவு செய்",
+      "alreadyHaveAccount": "ஏற்கனவே கணக்கு உள்ளதா? உள்நுழையவும்",
+      "passwordStrength": {
+        "weak": "பலவீனம்",
+        "medium": "நடுத்தரம்",
+        "strong": "வலுவான"
+      }
+    },
+    "logout": "வெளியேறு"
   },
   "email": {
     "greeting": "வணக்கம்",
@@ -8423,7 +8486,8 @@
     "translationBeta": "மொழிபெயர்ப்பு (பீட்டா)",
     "chatPlaceholder": "Say something...",
     "chatRequiresConnection": "Chat requires an active connection",
-    "liveChat": "Live Chat"
+    "liveChat": "Live Chat",
+    "connectionFailed": "Unable to connect to chat"
   },
   "avatar": {
     "dialogue": {
@@ -8853,7 +8917,8 @@
       "errors": {
         "noControlsAvailable": "குடும்ப கட்டுப்பாடுகள் எதுவும் கிடைக்கவில்லை. முதலில் கட்டுப்பாடுகளை உருவாக்கவும்."
       }
-    }
+    },
+    "settingsSaved": "Settings saved"
   },
   "bar": {
     "translate": "மொழிபெயர்",
@@ -9641,12 +9706,13 @@
   "sceneSearch": {
     "noScenesFound": "No scenes found",
     "placeholder": "Search for a topic or scene...",
-    "title": "Scene Search"
+    "title": "Scene Search",
+    "searchFailed": "Search failed"
   },
   "splash": {
     "bayit": "Bayit",
     "plus": "+",
-    "poweredBy": "Powered by Olorin.ai"
+    "poweredBy": "Olorin.ai ஆல் இயக்கப்படுகிறது"
   },
   "streamLimit": {
     "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue.",
@@ -9683,7 +9749,10 @@
       "genericQuestions": "பொதுவான கேள்விகள்",
       "placeholder": "கேள்வி கேளுங்கள்...",
       "send": "அனுப்பு",
-      "you": "நீங்கள்"
+      "you": "நீங்கள்",
+      "title": "உரையாடல்",
+      "askQuestion": "கேள்வி கேளுங்கள்...",
+      "sendQuestion": "கேள்வி அனுப்பு"
     },
     "subtitle": "உங்கள் இடையொழிப்பு அடையாளம்",
     "hub": {
@@ -9699,6 +9768,156 @@
       "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்",
       "chess": "சதுரங்கம்",
       "chessDesc": "குடும்பம் மற்றும் நண்பர்களுடன் சதுரங்கம் விளையாடுங்கள்"
+    },
+    "contacts": {
+      "title": "தொடர்புகள்",
+      "addContact": "தொடர்பு சேர்",
+      "searchPlaceholder": "தொடர்புகளைத் தேடு...",
+      "noContacts": "இன்னும் தொடர்புகள் இல்லை",
+      "noMatchingContacts": "பொருந்தும் தொடர்புகள் இல்லை",
+      "reelsShared": "{{count}} ரீல்கள் பகிரப்பட்டன",
+      "remove": "நீக்கு"
+    },
+    "feedback": {
+      "title": "கருத்து",
+      "rateQuestion": "Zeh Ani-ஐ எப்படி மதிப்பிடுவீர்கள்?",
+      "tellUsMore": "மேலும் சொல்லுங்கள்",
+      "sharePlaceholder": "Zeh Ani அம்சங்களுடன் உங்கள் அனுபவத்தைப் பகிரவும்...",
+      "submit": "கருத்தை சமர்ப்பிக்கவும்",
+      "thankYou": "உங்கள் கருத்துக்கு நன்றி!",
+      "appreciateInput": "உங்கள் பங்களிப்பை நாங்கள் மதிக்கிறோம், மேம்படுத்த பயன்படுத்துவோம்.",
+      "sendMore": "மேலும் கருத்து அனுப்பு"
+    },
+    "consent": {
+      "title": "பயோமெட்ரிக் ஒப்புதல்",
+      "familyPin": "குடும்ப PIN",
+      "enterPin": "குடும்ப PIN உள்ளிடவும்...",
+      "consentTypes": "ஒப்புதல் வகைகள்",
+      "active": "செயலில்",
+      "notGranted": "வழங்கப்படவில்லை",
+      "grant": "வழங்கு",
+      "granted": "வழங்கப்பட்டது"
+    },
+    "highlights": {
+      "title": "சிறப்பம்சங்கள்",
+      "shareHighlight": "சிறப்பம்சத்தைப் பகிர்",
+      "sentTo": "{{sentCount}} குடும்பத் தொடர்புகளுக்கு அனுப்பப்பட்டது",
+      "generateReel": "புதிய ரீல் உருவாக்கு",
+      "noHighlights": "இன்னும் சிறப்பம்சங்கள் இல்லை",
+      "momentsCount": "{{count}} தருணங்கள்",
+      "sendToFamily": "குடும்பத்திற்கு அனுப்பு"
     }
+  },
+  "security": {
+    "mfa": {
+      "title": "2FA அமைப்பு",
+      "scanQrCode": "QR குறியீட்டை ஸ்கேன் செய்யவும்",
+      "scanQrDescription": "இந்த QR குறியீட்டை உங்கள் அங்கீகார பயன்பாட்டில் ஸ்கேன் செய்யவும்",
+      "qrLabel": "QR",
+      "enterCode": "சரிபார்ப்பு குறியீட்டை உள்ளிடவும்",
+      "codePlaceholder": "6 இலக்க குறியீடு",
+      "enable": "2FA இயக்கவும்",
+      "verified": "2FA இயக்கப்பட்டது!"
+    },
+    "passkey": {
+      "title": "பாஸ்கீ மேலாண்மை",
+      "addPasskey": "பாஸ்கீ சேர்",
+      "empty": "பாஸ்கீகள் எதுவும் கட்டமைக்கப்படவில்லை.\nஉங்கள் முதல் பாஸ்கீயைச் சேர்க்கவும்!",
+      "lastUsedNa": "கடைசி பயன்பாடு: கிடைக்கவில்லை"
+    },
+    "phone": {
+      "title": "தொலைபேசி சரிபார்ப்பு",
+      "enterNumber": "தொலைபேசி எண்ணை உள்ளிடவும்",
+      "phonePlaceholder": "+1234567890",
+      "sendCode": "குறியீடு அனுப்பு",
+      "enterCode": "சரிபார்ப்பு குறியீட்டை உள்ளிடவும்",
+      "codePlaceholder": "6 இலக்க குறியீடு",
+      "verify": "சரிபார்",
+      "verified": "தொலைபேசி சரிபார்க்கப்பட்டது!"
+    },
+    "devices": {
+      "title": "சாதன இணைப்பு",
+      "pairingCode": "இணைப்புக் குறியீடு",
+      "enterCodeOnTv": "இந்தக் குறியீட்டை உங்கள் டிவி சாதனத்தில் உள்ளிடவும்",
+      "pairNewDevice": "புதிய சாதனத்தை இணை",
+      "empty": "சாதனங்கள் எதுவும் இணைக்கப்படவில்லை.\nஉங்கள் முதல் சாதனத்தை இணைக்கவும்!",
+      "lastActiveNa": "கடைசி செயலில்: கிடைக்கவில்லை",
+      "remove": "நீக்கு"
+    }
+  },
+  "social": {
+    "watchParty": {
+      "title": "வாட்ச் பார்ட்டி",
+      "create": "வாட்ச் பார்ட்டி உருவாக்கு",
+      "contentId": "உள்ளடக்க ஐடி",
+      "enterContent": "பார்க்க உள்ளடக்கத்தை உள்ளிடவும்",
+      "createButton": "பார்ட்டி உருவாக்கு",
+      "join": "வாட்ச் பார்ட்டியில் சேர",
+      "partyCode": "பார்ட்டி குறியீடு",
+      "enterCode": "பார்ட்டி குறியீட்டை உள்ளிடவும்",
+      "joinButton": "சேர"
+    },
+    "grandparent": {
+      "title": "தாத்தா/பாட்டியை அழை",
+      "createInvite": "அழைப்பு உருவாக்கு",
+      "createInviteDescription": "உங்கள் தாத்தா/பாட்டியின் பெயரை உள்ளிடவும்...",
+      "nameLabel": "தாத்தா/பாட்டி பெயர்",
+      "enterName": "பெயரை உள்ளிடவும்",
+      "generateCode": "அழைப்புக் குறியீடு உருவாக்கு",
+      "codeGenerated": "அழைப்புக் குறியீடு உருவாக்கப்பட்டது",
+      "shareCode": "இந்தக் குறியீட்டை உங்கள் தாத்தா/பாட்டியுடன் பகிரவும்",
+      "codeInstructions": "இணைக்க அவர்கள் தங்கள் Bayit+ ஆப்பில் இந்தக் குறியீட்டை உள்ளிடலாம்",
+      "createAnother": "மற்றொன்றை உருவாக்கு"
+    },
+    "conversation": {
+      "title": "உரையாடல்"
+    },
+    "friends": {
+      "online": "ஆன்லைன்"
+    }
+  },
+  "culture": {
+    "glossary": {
+      "title": "சொல்லகராதி",
+      "searchPlaceholder": "சொற்களைத் தேடு..."
+    },
+    "shabbat": {
+      "shabbatShalom": "ஷப்பாத் ஷாலோம்",
+      "modeActivated": "ஷப்பாத் பயன்முறை இயக்கப்பட்டது",
+      "shavuaTov": "ஷாவுவா டோவ்",
+      "modeDeactivated": "ஷப்பாத் பயன்முறை முடக்கப்பட்டது",
+      "channelName": "ஷப்பாத் பயன்முறை"
+    }
+  },
+  "byoc": {
+    "plex": {
+      "connectPlex": "Plex இணை",
+      "enterCodeAt": "இந்தக் குறியீட்டை இங்கே உள்ளிடவும்",
+      "waitingForAuth": "அங்கீகாரத்திற்காகக் காத்திருக்கிறது...",
+      "selectServer": "Plex சர்வரைத் தேர்வு செய்யவும்",
+      "connecting": "{{serverName}}-உடன் இணைக்கிறது...",
+      "connected": "இணைக்கப்பட்டது",
+      "label": "Plex"
+    },
+    "settings": {
+      "title": "எனது உள்ளடக்க ஆதாரங்கள்",
+      "refresh": "புதுப்பி",
+      "noSources": "உள்ளடக்க ஆதாரங்கள் இல்லை",
+      "noSourcesSubtitle": "உங்கள் Plex, YouTube அல்லது IPTV ஆதாரங்களைச் சேர்க்கவும்",
+      "removeSource": "ஆதாரத்தை நீக்கு",
+      "plexSubtitle": "திரைப்படங்கள், நிகழ்ச்சிகள், இசை",
+      "youtubeSubtitle": "வீடியோக்கள், பிளேலிஸ்ட்கள், சேனல்கள்",
+      "iptvXtreamLabel": "IPTV / Xtream Codes",
+      "iptvXtreamSubtitle": "நேரடி சேனல்கள், VOD, தொடர்கள்",
+      "youtube": "YouTube",
+      "xtreamCodes": "Xtream Codes",
+      "iptv": "IPTV"
+    }
+  },
+  "a11y": {
+    "openProfile": "{{name}}, சுயவிவரத்தைத் திற",
+    "languageCurrent": "மொழி: {{lang}}, மாற்ற தட்டவும்",
+    "selectLanguage": "மொழியைத் தேர்வு செய்யவும்",
+    "homeLogo": "Bayit+"
   }
 }

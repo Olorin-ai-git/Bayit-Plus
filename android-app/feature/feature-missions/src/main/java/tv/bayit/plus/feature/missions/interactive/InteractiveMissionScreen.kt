@@ -26,6 +26,7 @@ import tv.bayit.plus.designsystem.component.GlassProgressBar
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun InteractiveMissionRoute(
@@ -105,9 +106,9 @@ private fun InProgressSection(
                 GlassSpinner(size = SpinnerSize.MEDIUM)
             }
         } else {
-            GlassButton(text = "Submit Step", onClick = onSubmitStep, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("missions.submitStep"), onClick = onSubmitStep, modifier = Modifier.fillMaxWidth())
         }
-        GlassButton(text = "Abandon Mission", onClick = onAbandon, isPrimary = false, modifier = Modifier.fillMaxWidth())
+        GlassButton(text = bayitString("missions.abandonMission"), onClick = onAbandon, isPrimary = false, modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -133,7 +134,7 @@ private fun CompletedSection(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Mission Complete",
+                        text = bayitString("missions.missionComplete"),
                         style = MaterialTheme.typography.headlineMedium,
                         color = DesignTokens.Colors.Semantic.success,
                         fontWeight = FontWeight.Bold,
@@ -148,13 +149,13 @@ private fun CompletedSection(
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
                     Text(
-                        text = "${mission.totalSteps} steps completed",
+                        text = bayitString("missions.stepsCompleted", mapOf("count" to mission.totalSteps.toString())),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.secondary,
                     )
                 }
             }
-            GlassButton(text = "Done", onClick = onFinish, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("common.done"), onClick = onFinish, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -175,7 +176,7 @@ private fun MissionErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">লাইভ টিভি দেখুন</string>
+    <string name="shortcut_search">বিষয়বস্তু অনুসন্ধান করুন</string>
+    <string name="shortcut_resume">দেখা চালিয়ে যান</string>
+    <string name="shortcut_radio">রেডিও শুনুন</string>
+    <string name="shortcut_podcasts">পডকাস্ট ব্রাউজ করুন</string>
+    <string name="widget_now_playing_description">Bayit+ এ বর্তমানে যা চলছে তা দেখায়</string>
+    <string name="widget_continue_watching_description">অগ্রগতি বার সহ আপনার চলমান বিষয়বস্তু দেখায়</string>
+    <string name="widget_live_channels_description">বর্তমান অনুষ্ঠানসহ আপনার প্রিয় লাইভ চ্যানেলগুলো দেখায়</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">হোম</string>
+    <string name="tv_continue_watching">দেখা চালিয়ে যান</string>
+    <string name="tv_live_channels">লাইভ টিভি</string>
+    <string name="tv_vod_title">চলচ্চিত্র ও সিরিজ</string>
+    <string name="tv_radio_title">রেডিও</string>
+    <string name="tv_podcasts_title">পডকাস্ট</string>
+    <string name="tv_featured_title">বিশেষ</string>
+    <string name="tv_login_title">Bayit+ এ সাইন ইন করুন</string>
+    <string name="tv_scan_qr">সাইন ইন করতে আপনার ফোন দিয়ে QR কোড স্ক্যান করুন</string>
+    <string name="tv_enter_code">অথবা %1$s এ যান এবং কোড দিন:</string>
+    <string name="tv_code_expires">কোডের মেয়াদ %1$s এ শেষ হবে</string>
+    <string name="tv_manual_login">ইমেল দিয়ে সাইন ইন করুন</string>
+    <string name="tv_search_hint">চ্যানেল, সিরিজ, চলচ্চিত্র অনুসন্ধান করুন...</string>
+    <string name="tv_connection_lost">সংযোগ বিচ্ছিন্ন হয়েছে। পুনরায় চেষ্টা করা হচ্ছে...</string>
+    <string name="tv_subscribe_prompt">এই বিষয়বস্তু দেখতে সাবস্ক্রাইব করুন</string>
+    <string name="tv_subscribe_on_phone">সাবস্ক্রাইব করতে bayit.tv তে যান অথবা ফোনে Bayit+ অ্যাপ ব্যবহার করুন</string>
+    <string name="tv_byoc_title">আপনার বিষয়বস্তু</string>
+</resources>

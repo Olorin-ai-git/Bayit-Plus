@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.navigation.BreadcrumbEntry
 import tv.bayit.plus.navigation.isTabRootPattern
@@ -61,7 +62,7 @@ fun BreadcrumbRow(
             IconButton(onClick = onBack, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
+                    contentDescription = bayitString("common.back"),
                     tint = DesignTokens.Colors.Text.primary,
                     modifier = Modifier.size(20.dp),
                 )
@@ -94,6 +95,11 @@ private fun BreadcrumbItem(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(DesignTokens.Radius.default)
+    val semanticLabel = if (isActive) {
+        bayitString("navigation.currentScreen", mapOf("label" to label))
+    } else {
+        bayitString("navigation.navigateTo", mapOf("label" to label))
+    }
     Text(
         text = label,
         color = if (isActive) {
@@ -126,11 +132,7 @@ private fun BreadcrumbItem(
                 vertical = DesignTokens.Spacing.xs,
             )
             .semantics {
-                contentDescription = if (isActive) {
-                    "$label, current screen"
-                } else {
-                    "Navigate to $label"
-                }
+                contentDescription = semanticLabel
             },
     )
 }

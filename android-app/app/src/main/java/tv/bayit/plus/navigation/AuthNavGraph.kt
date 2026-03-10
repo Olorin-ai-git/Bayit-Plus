@@ -35,6 +35,7 @@ import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavController,
@@ -61,6 +62,8 @@ fun NavGraphBuilder.authNavGraph(
     }
     composable<Route.Login> {
         val context = androidx.compose.ui.platform.LocalContext.current
+        val biometricTitle = bayitString("common.appName")
+        val biometricSubtitle = bayitString("auth.biometricSignIn")
         LoginRoute(
             onNavigateToHome = {
                 navController.navigate(Route.Home) {
@@ -94,8 +97,8 @@ fun NavGraphBuilder.authNavGraph(
                     val activity = context as? FragmentActivity ?: run { onResult(false); return@launch }
                     val result = biometricAuthService.authenticate(
                         activity = activity,
-                        title = "Bayit+",
-                        subtitle = "Sign in with biometric",
+                        title = biometricTitle,
+                        subtitle = biometricSubtitle,
                     )
                     onResult(result is BayitResult.Success)
                 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">Regarder la TV en direct</string>
+    <string name="shortcut_search">Rechercher du contenu</string>
+    <string name="shortcut_resume">Continuer a regarder</string>
+    <string name="shortcut_radio">Ecouter la radio</string>
+    <string name="shortcut_podcasts">Parcourir les podcasts</string>
+    <string name="widget_now_playing_description">Affiche ce qui est en cours de lecture sur Bayit+</string>
+    <string name="widget_continue_watching_description">Affiche votre contenu en cours avec des barres de progression</string>
+    <string name="widget_live_channels_description">Affiche vos chaines en direct favorites avec les programmes en cours</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">Accueil</string>
+    <string name="tv_continue_watching">Continuer a regarder</string>
+    <string name="tv_live_channels">TV en direct</string>
+    <string name="tv_vod_title">Films et series</string>
+    <string name="tv_radio_title">Radio</string>
+    <string name="tv_podcasts_title">Podcasts</string>
+    <string name="tv_featured_title">A la une</string>
+    <string name="tv_login_title">Se connecter a Bayit+</string>
+    <string name="tv_scan_qr">Scannez le code QR avec votre telephone pour vous connecter</string>
+    <string name="tv_enter_code">Ou visitez %1$s et entrez le code :</string>
+    <string name="tv_code_expires">Le code expire dans %1$s</string>
+    <string name="tv_manual_login">Se connecter avec un e-mail</string>
+    <string name="tv_search_hint">Rechercher des chaines, series, films...</string>
+    <string name="tv_connection_lost">Connexion perdue. Nouvelle tentative...</string>
+    <string name="tv_subscribe_prompt">Abonnez-vous pour regarder ce contenu</string>
+    <string name="tv_subscribe_on_phone">Visitez bayit.tv ou utilisez l\'application Bayit+ sur votre telephone pour vous abonner</string>
+    <string name="tv_byoc_title">Votre contenu</string>
+</resources>

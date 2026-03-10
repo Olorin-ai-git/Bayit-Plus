@@ -22,6 +22,7 @@ import tv.bayit.plus.designsystem.component.GlassSearchBar
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -61,12 +62,12 @@ internal fun LLMSearchScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "AI Search")
+        GlassTopBar(title = bayitString("search.llm.title"))
 
         GlassSearchBar(
             query = uiState.query,
             onQueryChange = onQueryChange,
-            placeholder = "Describe what you want to watch...",
+            placeholder = bayitString("search.llm.placeholder"),
             modifier = Modifier.padding(
                 horizontal = DesignTokens.Spacing.base,
                 vertical = DesignTokens.Spacing.sm,

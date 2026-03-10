@@ -31,6 +31,7 @@ import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.modifier.glassMorphism
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private val AVATAR_VIEWPORT_SIZE = 320.dp
 
@@ -63,7 +64,7 @@ internal fun Avatar3DScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "3D Avatar")
+        GlassTopBar(title = bayitString("zehAni.avatar3d.title"))
         when (uiState) {
             is Avatar3DUiState.Loading -> GlassLoadingIndicator()
             is Avatar3DUiState.Error -> ErrorContent(message = uiState.message, onRetry = onRetry)
@@ -116,12 +117,12 @@ private fun Avatar3DContent(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "GLB Mesh Viewer",
+                    text = bayitString("zehAni.avatar3d.glbMeshViewer"),
                     color = DesignTokens.Colors.Text.muted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    text = "Status: ${state.mesh.status}",
+                    text = bayitString("zehAni.avatar3d.status", mapOf("value" to state.mesh.status)),
                     color = DesignTokens.Colors.Text.secondary,
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -149,7 +150,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

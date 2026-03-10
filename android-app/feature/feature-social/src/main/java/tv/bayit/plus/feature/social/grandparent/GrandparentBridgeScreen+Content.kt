@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -33,7 +34,7 @@ internal fun SuccessContent(
     ) {
         item {
             Text(
-                text = "Connected Grandparents",
+                text = bayitString("social.grandparent.connectedTitle"),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -54,7 +55,7 @@ internal fun SuccessContent(
 
         item {
             GlassButton(
-                text = "Invite Grandparent",
+                text = bayitString("social.grandparent.invite"),
                 onClick = onNavigateToInvite,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -71,16 +72,16 @@ private fun EmptyConnectionsState(onNavigateToInvite: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(
-                text = "No connections yet",
+                text = bayitString("social.grandparent.emptyTitle"),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = "Invite a grandparent to start sharing moments together",
+                text = bayitString("social.grandparent.emptySubtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            GlassButton(text = "Invite Grandparent", onClick = onNavigateToInvite)
+            GlassButton(text = bayitString("social.grandparent.invite"), onClick = onNavigateToInvite)
         }
     }
 }
@@ -95,22 +96,22 @@ private fun ConnectionCard(connection: Any, onViewSharedMoments: () -> Unit) {
         ) {
             CachedAsyncImage(
                 url = null,
-                contentDescription = "Grandparent avatar",
+                contentDescription = bayitString("social.grandparent.avatar"),
                 modifier = Modifier.size(56.dp).clip(CircleShape),
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Grandparent",
+                    text = bayitString("social.grandparent.label"),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Connected",
+                    text = bayitString("social.grandparent.connected"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            GlassButton(text = "Shared Moments", onClick = onViewSharedMoments)
+            GlassButton(text = bayitString("social.sharedMoments.title"), onClick = onViewSharedMoments)
         }
     }
 }

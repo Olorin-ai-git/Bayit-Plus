@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.profile.add
 
+import tv.bayit.plus.designsystem.i18n.bayitString
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,7 +58,7 @@ internal fun AvatarSelector(
             ) {
                 CachedAsyncImage(
                     url = avatarUrl,
-                    contentDescription = "Avatar option",
+                    contentDescription = bayitString("profile.avatarOption"),
                     modifier = Modifier.size(60.dp).clip(CircleShape),
                 )
             }
@@ -72,7 +73,7 @@ internal fun AgeGroupPicker(
     enabled: Boolean,
 ) {
     Text(
-        "Age Group",
+        bayitString("profile.ageGroup"),
         style = MaterialTheme.typography.titleSmall,
         color = DesignTokens.Colors.Text.primary,
     )

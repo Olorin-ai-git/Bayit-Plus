@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 
@@ -84,7 +85,7 @@ internal fun JudaismScreen(
                     if (uiState.holidays.isNotEmpty()) {
                         item(key = "holidays_header", span = { GridItemSpan(GRID_COLUMNS) }) {
                             Text(
-                                text = "Holidays & Torah",
+                                text = bayitString("culture.judaism.holidaysAndTorah"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = DesignTokens.Colors.Text.primary,
                                 fontWeight = FontWeight.Bold,
@@ -117,14 +118,14 @@ private fun ParashaHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Parasha of the Week",
+                text = bayitString("culture.judaism.parashaOfTheWeek"),
                 style = MaterialTheme.typography.titleMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Weekly Torah reading and commentary",
+                text = bayitString("culture.judaism.parashaDescription"),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -190,7 +191,7 @@ private fun JudaismErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

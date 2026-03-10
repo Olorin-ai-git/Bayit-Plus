@@ -20,6 +20,7 @@ import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassProgressBar
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.SpinnerSize
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val COMPLETED_STATUS = "completed"
@@ -31,14 +32,14 @@ internal fun MissionsHeader(modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "Missions",
+                text = bayitString("missions.title"),
                 style = MaterialTheme.typography.headlineMedium,
                 color = DesignTokens.Colors.Primary.light,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
             Text(
-                text = "Complete missions to earn rewards",
+                text = bayitString("missions.subtitle"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -57,12 +58,12 @@ internal fun MissionTabSelector(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassChip(
-            label = "Daily",
+            label = bayitString("missions.daily"),
             isSelected = selectedTab == MissionTab.DAILY,
             onClick = { onTabSelected(MissionTab.DAILY) },
         )
         GlassChip(
-            label = "Weekly",
+            label = bayitString("missions.weekly"),
             isSelected = selectedTab == MissionTab.WEEKLY,
             onClick = { onTabSelected(MissionTab.WEEKLY) },
         )
@@ -101,7 +102,7 @@ internal fun MissionCard(
             }
             GlassProgressBar(progress = mission.progress)
             Text(
-                text = "${(mission.progress * PERCENT_MULTIPLIER).toInt()}% complete",
+                text = bayitString("missions.progressPercent", mapOf("percent" to (mission.progress * PERCENT_MULTIPLIER).toInt().toString())),
                 style = MaterialTheme.typography.labelSmall,
                 color = DesignTokens.Colors.Text.muted,
             )
@@ -121,12 +122,12 @@ internal fun MissionCard(
                 when {
                     isClaiming -> GlassSpinner(size = SpinnerSize.SMALL)
                     isClaimed -> Text(
-                        text = "Claimed",
+                        text = bayitString("missions.claimed"),
                         style = MaterialTheme.typography.labelMedium,
                         color = DesignTokens.Colors.Semantic.success,
                     )
-                    isComplete -> GlassButton(text = "Claim", onClick = onClaimReward)
-                    else -> GlassButton(text = "Start", onClick = onClick, isPrimary = false)
+                    isComplete -> GlassButton(text = bayitString("missions.claim"), onClick = onClaimReward)
+                    else -> GlassButton(text = bayitString("missions.start"), onClick = onClick, isPrimary = false)
                 }
             }
         }

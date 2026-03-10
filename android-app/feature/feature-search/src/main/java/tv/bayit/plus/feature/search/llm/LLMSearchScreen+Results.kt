@@ -24,6 +24,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 internal fun SearchActionRow(
@@ -39,13 +40,13 @@ internal fun SearchActionRow(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GlassButton(
-            text = "Search",
+            text = bayitString("common.search"),
             onClick = onSearch,
             enabled = !isSearching,
             modifier = Modifier.weight(1f),
         )
         GlassButton(
-            text = "Ask AI",
+            text = bayitString("search.askAi"),
             onClick = onAsk,
             enabled = !isAsking,
             isPrimary = false,
@@ -72,7 +73,7 @@ internal fun AiAnswerCard(answer: String) {
     GlassCard {
         Column {
             Text(
-                "AI Answer",
+                bayitString("search.aiAnswer"),
                 fontWeight = FontWeight.SemiBold,
                 color = DesignTokens.Colors.Primary.light,
                 fontSize = DesignTokens.FontSize.sm,
@@ -132,11 +133,11 @@ internal fun HistoryHeader(onClearHistory: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "Recent AI Searches",
+            bayitString("search.recentAiSearches"),
             fontWeight = FontWeight.SemiBold,
             color = DesignTokens.Colors.Text.primary,
             style = MaterialTheme.typography.titleMedium,
         )
-        GlassButton(text = "Clear", onClick = onClearHistory, isPrimary = false)
+        GlassButton(text = bayitString("common.clear"), onClick = onClearHistory, isPrimary = false)
     }
 }

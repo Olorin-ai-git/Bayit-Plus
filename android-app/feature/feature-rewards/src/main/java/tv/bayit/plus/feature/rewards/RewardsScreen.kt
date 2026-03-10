@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 
@@ -92,7 +93,7 @@ private fun RewardsContent(
             }
             if (uiState.availableRewards.isNotEmpty()) {
                 item(key = "available_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Available Rewards")
+                    SectionLabel(text = bayitString("rewards.availableRewards"))
                 }
                 items(items = uiState.availableRewards, key = { it.id }) { reward ->
                     RewardGridItem(
@@ -105,7 +106,7 @@ private fun RewardsContent(
             }
             if (uiState.earnedRewards.isNotEmpty()) {
                 item(key = "earned_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Earned Rewards")
+                    SectionLabel(text = bayitString("rewards.earnedRewards"))
                 }
                 items(items = uiState.earnedRewards, key = { "earned_${it.id}" }) { reward ->
                     EarnedRewardItem(reward = reward)
@@ -142,7 +143,7 @@ private fun RewardsErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

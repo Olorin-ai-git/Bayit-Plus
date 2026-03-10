@@ -89,7 +89,7 @@ private fun ProfileEditContent(
         Spacer(Modifier.height(DesignTokens.Spacing.base))
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column {
-                Text(text = "Email", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                Text(text = bayitString("profile.email"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                 Text(text = state.email, color = DesignTokens.Colors.Text.secondary, style = MaterialTheme.typography.bodyMedium)
             }
         }
@@ -97,21 +97,21 @@ private fun ProfileEditContent(
         GlassTextField(
             value = state.displayName,
             onValueChange = onDisplayNameChange,
-            label = "Display Name",
+            label = bayitString("profile.displayName"),
             enabled = !state.isSaving,
         )
         Spacer(Modifier.height(DesignTokens.Spacing.md))
         GlassTextField(
             value = state.avatarUrl,
             onValueChange = onAvatarUrlChange,
-            label = "Avatar URL",
+            label = bayitString("profile.avatarUrl"),
             enabled = !state.isSaving,
         )
         Spacer(Modifier.height(DesignTokens.Spacing.md))
         if (state.language.isNotEmpty()) {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(text = "Language", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                    Text(text = bayitString("settings.language"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     Text(text = state.language, color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.bodyMedium)
                 }
             }

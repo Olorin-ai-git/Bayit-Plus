@@ -14,6 +14,7 @@ import retrofit2.http.POST
 import tv.bayit.plus.core.auth.AuthState
 import tv.bayit.plus.core.auth.OlorinAuthService
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.common.i18n.BayitStringProvider
 import tv.bayit.plus.core.network.api.BayitApiClient
 import javax.inject.Inject
 
@@ -22,6 +23,7 @@ class TVLoginViewModel @Inject constructor(
     private val olorinAuthService: OlorinAuthService,
     private val apiClient: BayitApiClient,
     private val logger: BayitLogger,
+    private val stringProvider: BayitStringProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TVLoginUiState>(TVLoginUiState.Idle)
@@ -42,7 +44,7 @@ class TVLoginViewModel @Inject constructor(
     fun completeAuthentication(sessionId: String) {
         if (olorinAuthService.authState.value !is AuthState.Authenticated) {
             logger.warning("User not authenticated for TV login completion")
-            _uiState.value = TVLoginUiState.Failed("Please sign in first")
+            _uiState.value = TVLoginUiState.Failed(stringProvider.string("auth.tvLogin.signInFirst"))
             return
         }
         viewModelScope.launch {
@@ -55,7 +57,7 @@ class TVLoginViewModel @Inject constructor(
                 _uiState.value = TVLoginUiState.Authenticated
             } catch (e: Exception) {
                 logger.error("TV login completion failed", error = e, metadata = mapOf("session_id" to sessionId))
-                _uiState.value = TVLoginUiState.Failed(e.message ?: "Failed to complete sign-in")
+                _uiState.value = TVLoginUiState.Failed(e.message ?: stringProvider.string("auth.tvLogin.completionFailed"))
             }
         }
     }
@@ -68,7 +70,7 @@ class TVLoginViewModel @Inject constructor(
             }
             if (!verified.valid) {
                 _uiState.value = if (verified.status == "expired") TVLoginUiState.Expired
-                    else TVLoginUiState.Failed("Invalid or expired session")
+                    else TVLoginUiState.Failed(stringProvider.string("auth.tvLogin.invalidSession"))
                 return
             }
             apiClient.safeApiCall {
@@ -80,7 +82,7 @@ class TVLoginViewModel @Inject constructor(
             _uiState.value = TVLoginUiState.CompanionConnected
         } catch (e: Exception) {
             logger.error("TV login verification failed", error = e, metadata = mapOf("session_id" to sessionId))
-            _uiState.value = TVLoginUiState.Failed(e.message ?: "Verification failed")
+            _uiState.value = TVLoginUiState.Failed(e.message ?: stringProvider.string("auth.tvLogin.verificationFailed"))
         }
     }
 

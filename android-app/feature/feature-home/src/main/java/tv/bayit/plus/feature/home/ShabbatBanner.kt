@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import tv.bayit.plus.core.model.ShabbatInfo
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -58,9 +59,9 @@ fun ShabbatBanner(
 
     val timeRemaining = calculateTimeRemaining(shabbatInfo, currentTime)
     val statusText = if (shabbatInfo.isShabbat) {
-        "Shabbat ends in"
+        bayitString("home.shabbatBanner.endsIn")
     } else {
-        "Shabbat begins in"
+        bayitString("home.shabbatBanner.beginsIn")
     }
 
     AnimatedVisibility(
@@ -98,14 +99,14 @@ fun ShabbatBanner(
                     Spacer(modifier = Modifier.width(DesignTokens.Spacing.md))
                     Column {
                         Text(
-                            text = "Shabbat Shalom",
+                            text = bayitString("culture.shabbat.shabbatShalom"),
                             style = MaterialTheme.typography.titleLarge,
                             color = DesignTokens.Colors.Text.primary,
                             fontWeight = FontWeight.Bold,
                         )
                         if (shabbatInfo.parashat != null) {
                             Text(
-                                text = "Parashat ${shabbatInfo.parashat}",
+                                text = bayitString("home.parashat", mapOf("name" to (shabbatInfo.parashat ?: ""))),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = DesignTokens.Colors.Text.secondary,
                             )
@@ -118,7 +119,7 @@ fun ShabbatBanner(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Dismiss Shabbat banner",
+                        contentDescription = bayitString("home.shabbatBanner.dismiss"),
                         tint = DesignTokens.Colors.Text.secondary,
                     )
                 }

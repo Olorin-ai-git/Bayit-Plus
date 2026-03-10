@@ -66,7 +66,7 @@ fun LiveDubbingControls(
         ) {
             Icon(
                 imageVector = Icons.Default.VolumeUp,
-                contentDescription = "Volume",
+                contentDescription = bayitString("dubbing.volume"),
                 tint = DesignTokens.Colors.Text.secondary,
                 modifier = Modifier.height(20.dp),
             )
@@ -111,7 +111,7 @@ fun LiveDubbingControls(
         if (availableVoices.isNotEmpty()) {
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
             Text(
-                text = "Voice",
+                text = bayitString("dubbing.voice"),
                 color = DesignTokens.Colors.Text.secondary,
                 fontSize = DesignTokens.FontSize.sm,
                 fontWeight = FontWeight.SemiBold,

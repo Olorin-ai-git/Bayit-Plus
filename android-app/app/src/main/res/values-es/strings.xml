@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bayit+</string>
+    <string name="shortcut_live_tv">Ver TV en vivo</string>
+    <string name="shortcut_search">Buscar contenido</string>
+    <string name="shortcut_resume">Continuar viendo</string>
+    <string name="shortcut_radio">Escuchar radio</string>
+    <string name="shortcut_podcasts">Explorar podcasts</string>
+    <string name="widget_now_playing_description">Muestra lo que se reproduce actualmente en Bayit+</string>
+    <string name="widget_continue_watching_description">Muestra tu contenido en progreso con barras de avance</string>
+    <string name="widget_live_channels_description">Muestra tus canales en vivo favoritos con los programas actuales</string>
+
+    <!-- TV-specific strings -->
+    <string name="tv_app_name">Bayit+</string>
+    <string name="tv_home_title">Inicio</string>
+    <string name="tv_continue_watching">Continuar viendo</string>
+    <string name="tv_live_channels">TV en vivo</string>
+    <string name="tv_vod_title">Peliculas y series</string>
+    <string name="tv_radio_title">Radio</string>
+    <string name="tv_podcasts_title">Podcasts</string>
+    <string name="tv_featured_title">Destacados</string>
+    <string name="tv_login_title">Iniciar sesion en Bayit+</string>
+    <string name="tv_scan_qr">Escanea el codigo QR con tu telefono para iniciar sesion</string>
+    <string name="tv_enter_code">O visita %1$s e ingresa el codigo:</string>
+    <string name="tv_code_expires">El codigo expira en %1$s</string>
+    <string name="tv_manual_login">Iniciar sesion con correo electronico</string>
+    <string name="tv_search_hint">Buscar canales, series, peliculas...</string>
+    <string name="tv_connection_lost">Conexion perdida. Reintentando...</string>
+    <string name="tv_subscribe_prompt">Suscribete para ver este contenido</string>
+    <string name="tv_subscribe_on_phone">Visita bayit.tv o usa la aplicacion Bayit+ en tu telefono para suscribirte</string>
+    <string name="tv_byoc_title">Tu contenido</string>
+</resources>

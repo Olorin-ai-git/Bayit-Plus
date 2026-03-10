@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
 import tv.bayit.plus.feature.onboarding.FeatureTooltipOverlay
 import tv.bayit.plus.feature.onboarding.TooltipManager
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun EPGRoute(
@@ -69,7 +70,7 @@ internal fun EPGScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "TV Guide")
+        GlassTopBar(title = bayitString("epg.title"))
         if (tooltipManager != null) {
             FeatureTooltipOverlay(
                 tooltipManager = tooltipManager,
@@ -129,14 +130,14 @@ private fun EPGContent(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             )
                             Text(
-                                text = "Now Playing • Next: TBA",
+                                text = bayitString("epg.nowPlayingNext"),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = DesignTokens.Colors.Text.muted,
                             )
                         }
                         if (isSelected) {
                             Text(
-                                text = "LIVE",
+                                text = bayitString("common.live"),
                                 color = DesignTokens.Colors.Semantic.error,
                                 fontSize = DesignTokens.FontSize.xs,
                                 fontWeight = FontWeight.Bold,
@@ -157,7 +158,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

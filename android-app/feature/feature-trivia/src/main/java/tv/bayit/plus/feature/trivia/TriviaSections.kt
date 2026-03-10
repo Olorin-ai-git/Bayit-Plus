@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 private const val LOW_TIME_THRESHOLD = 5
@@ -31,7 +32,7 @@ internal fun TimerAndScoreBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Q$questionNumber/$totalQuestions",
+            text = bayitString("trivia.questionProgress", mapOf("num" to questionNumber.toString(), "total" to totalQuestions.toString())),
             style = MaterialTheme.typography.labelLarge,
             color = DesignTokens.Colors.Text.secondary,
         )
@@ -48,7 +49,7 @@ internal fun TimerAndScoreBar(
             )
         }
         Text(
-            text = "Score: $score",
+            text = bayitString("trivia.score", mapOf("score" to score.toString())),
             style = MaterialTheme.typography.labelLarge,
             color = DesignTokens.Colors.gold,
             fontWeight = FontWeight.SemiBold,

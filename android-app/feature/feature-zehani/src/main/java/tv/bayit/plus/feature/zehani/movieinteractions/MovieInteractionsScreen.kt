@@ -29,6 +29,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 private const val GRID_COLUMNS = 2
 private const val POSTER_ASPECT_RATIO = 2f / 3f
@@ -60,7 +61,7 @@ internal fun MovieInteractionsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Movie Interactions")
+        GlassTopBar(title = bayitString("zehAni.interactions.title"))
         when (uiState) {
             is MovieInteractionsUiState.Loading -> GlassLoadingIndicator()
             is MovieInteractionsUiState.Success -> MoviesGrid(
@@ -86,7 +87,7 @@ private fun MoviesGrid(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "No interactable movies available",
+                text = bayitString("zehAni.interactions.noInteractableMovies"),
                 color = DesignTokens.Colors.Text.muted,
                 style = MaterialTheme.typography.bodyLarge,
             )
@@ -125,7 +126,7 @@ private fun MovieTile(movie: InteractableMovie, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "${movie.characterCount} characters",
+                text = bayitString("zehAni.characters.characterCount", mapOf("count" to movie.characterCount.toString())),
                 style = MaterialTheme.typography.bodySmall,
                 color = DesignTokens.Colors.Text.secondary,
             )
@@ -145,7 +146,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

@@ -32,6 +32,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun ActivityFeedRoute(
@@ -55,7 +56,7 @@ internal fun ActivityFeedScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Activity Feed")
+        GlassTopBar(title = bayitString("social.activityFeed.title"))
         when (uiState) {
             is ActivityFeedUiState.Loading -> GlassLoadingIndicator()
             is ActivityFeedUiState.Success -> ActivityList(
@@ -158,7 +159,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                 color = DesignTokens.Colors.Semantic.error,
                 style = MaterialTheme.typography.bodyLarge,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

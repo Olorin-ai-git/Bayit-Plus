@@ -24,6 +24,7 @@ import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassSearchBar
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -66,7 +67,7 @@ internal fun FriendsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Friends")
+        GlassTopBar(title = bayitString("friends.title"))
         TabRow(selectedTab = selectedTab, onTabSelected = onTabSelected)
 
         when (uiState) {
@@ -94,7 +95,7 @@ private fun TabRow(selectedTab: FriendsTab, onTabSelected: (FriendsTab) -> Unit)
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         FriendsTab.entries.forEach { tab ->
-            GlassChip(label = tab.label, isSelected = tab == selectedTab, onClick = { onTabSelected(tab) })
+            GlassChip(label = bayitString(tab.labelKey), isSelected = tab == selectedTab, onClick = { onTabSelected(tab) })
         }
     }
 }
@@ -137,8 +138,8 @@ private fun SearchContent(
         modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
     ) {
-        GlassSearchBar(query = query, onQueryChange = onQueryChanged, placeholder = "Search users")
-        GlassButton(text = "Search", onClick = onSearch)
+        GlassSearchBar(query = query, onQueryChange = onQueryChanged, placeholder = bayitString("friends.findPlayers"))
+        GlassButton(text = bayitString("common.search"), onClick = onSearch)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
             items(results, key = { it.id }) { user ->
                 SearchResultCard(user = user, onSendRequest = onSendRequest)
@@ -154,9 +155,9 @@ private fun ErrorContent(message: String) {
     }
 }
 
-private val FriendsTab.label: String
+private val FriendsTab.labelKey: String
     get() = when (this) {
-        FriendsTab.FRIENDS -> "Friends"
-        FriendsTab.PENDING -> "Pending"
-        FriendsTab.SEARCH -> "Search"
+        FriendsTab.FRIENDS -> "friends.title"
+        FriendsTab.PENDING -> "friends.requests"
+        FriendsTab.SEARCH -> "common.search"
     }

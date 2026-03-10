@@ -27,12 +27,13 @@ import tv.bayit.plus.designsystem.component.CachedAsyncImage
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 internal fun SeriesRelatedShelf(related: List<RelatedItem>, onRelatedClick: (String) -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(top = DesignTokens.Spacing.lg)) {
         Text(
-            "Related",
+            bayitString("vod.detail.related"),
             style = MaterialTheme.typography.titleMedium,
             color = DesignTokens.Colors.Text.primary,
             fontWeight = FontWeight.SemiBold,
@@ -79,8 +80,8 @@ internal fun SeriesErrorContent(message: String, onBack: () -> Unit, onRetry: ()
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             Text(message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
-            GlassButton(text = "Go Back", onClick = onBack, isPrimary = false)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
+            GlassButton(text = bayitString("common.goBack"), onClick = onBack, isPrimary = false)
         }
     }
 }

@@ -28,6 +28,7 @@ import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun SubscriptionRoute(
@@ -59,10 +60,10 @@ internal fun SubscriptionScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Subscription",
+            title = bayitString("settings.subscription.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = DesignTokens.Colors.Text.primary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = bayitString("common.back"), tint = DesignTokens.Colors.Text.primary)
                 }
             },
         )
@@ -91,7 +92,7 @@ private fun SubscriptionContent(
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Current Plan", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                        Text(text = bayitString("settings.subscription.currentPlan"), color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                         if (state.isBetaUser) {
                             GlassBadge(count = 1, modifier = Modifier.padding(start = DesignTokens.Spacing.sm))
                         }
@@ -102,12 +103,12 @@ private fun SubscriptionContent(
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.xs))
-                    Text(text = "Status: ${state.status}", color = DesignTokens.Colors.Text.secondary, style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "${bayitString("settings.subscription.status")}: ${state.status}", color = DesignTokens.Colors.Text.secondary, style = MaterialTheme.typography.bodyMedium)
                     if (state.startDate.isNotEmpty()) {
-                        Text(text = "Since: ${state.startDate}", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                        Text(text = "${bayitString("settings.subscription.since")}: ${state.startDate}", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     }
                     if (state.endDate.isNotEmpty()) {
-                        Text(text = "Renews: ${state.endDate}", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
+                        Text(text = "${bayitString("settings.subscription.renews")}: ${state.endDate}", color = DesignTokens.Colors.Text.muted, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -115,23 +116,23 @@ private fun SubscriptionContent(
         item {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
-                    Text(text = "Features Included", color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
+                    Text(text = bayitString("settings.subscription.featuresIncluded"), color = DesignTokens.Colors.Text.primary, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
-                    FeatureRow(text = "Live TV with dubbing in 10 languages")
-                    FeatureRow(text = "VOD library access")
-                    FeatureRow(text = "Radio and podcast streaming")
-                    FeatureRow(text = "Offline downloads")
+                    FeatureRow(text = bayitString("settings.subscription.featureLiveTV"))
+                    FeatureRow(text = bayitString("settings.subscription.featureVOD"))
+                    FeatureRow(text = bayitString("settings.subscription.featureRadio"))
+                    FeatureRow(text = bayitString("settings.subscription.featureDownloads"))
                     if (state.isBetaUser) {
-                        FeatureRow(text = "Beta 500 AI credits program")
+                        FeatureRow(text = bayitString("settings.subscription.featureBeta500"))
                     }
                 }
             }
         }
         item {
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            GlassButton(text = "Upgrade Plan", onClick = onUpgrade, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("common.upgrade"), onClick = onUpgrade, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            GlassButton(text = "Manage on Google Play", onClick = onManageSubscription, modifier = Modifier.fillMaxWidth())
+            GlassButton(text = bayitString("settings.subscription.manageOnGooglePlay"), onClick = onManageSubscription, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
         }
     }
@@ -150,7 +151,7 @@ private fun SubscriptionErrorContent(message: String, onRetry: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
             Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

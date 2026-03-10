@@ -35,6 +35,7 @@ import tv.bayit.plus.designsystem.component.GlassChip
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTopBar
 import tv.bayit.plus.designsystem.theme.DesignTokens
+import tv.bayit.plus.designsystem.i18n.bayitString
 
 @Composable
 fun AvatarModeRoute(
@@ -65,12 +66,12 @@ internal fun AvatarModeScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Avatar Mode",
+            title = bayitString("zehAni.mode.title"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -113,14 +114,14 @@ private fun AvatarModeContent(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Enable Avatar Mode",
+                        text = bayitString("zehAni.mode.enableAvatarMode"),
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
                     Text(
-                        text = "Show your avatar reacting to content",
+                        text = bayitString("zehAni.mode.enableDescription"),
                         style = MaterialTheme.typography.bodySmall,
                         color = DesignTokens.Colors.Text.secondary,
                     )
@@ -131,7 +132,7 @@ private fun AvatarModeContent(
         GlassCard(modifier = Modifier.fillMaxWidth()) {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
                 Text(
-                    text = "Avatar Preview",
+                    text = bayitString("zehAni.mode.avatarPreview"),
                     style = MaterialTheme.typography.titleSmall,
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -140,14 +141,14 @@ private fun AvatarModeContent(
                     if (avatarPreviewUrl != null) {
                         CachedAsyncImage(
                             url = avatarPreviewUrl,
-                            contentDescription = "Avatar preview",
+                            contentDescription = bayitString("zehAni.mode.avatarPreviewContentDescription"),
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit,
                         )
                     } else {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
-                                text = "No avatar configured",
+                                text = bayitString("zehAni.mode.noAvatarConfigured"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = DesignTokens.Colors.Text.muted,
                             )
@@ -157,7 +158,7 @@ private fun AvatarModeContent(
             }
         }
         Text(
-            text = "Reaction Style",
+            text = bayitString("zehAni.mode.reactionStyle"),
             style = MaterialTheme.typography.titleSmall,
             color = DesignTokens.Colors.Text.primary,
             fontWeight = FontWeight.SemiBold,
@@ -191,7 +192,7 @@ private fun AvatarModeError(message: String, onRetry: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(text = "Retry", onClick = onRetry)
+            GlassButton(text = bayitString("common.retry"), onClick = onRetry)
         }
     }
 }

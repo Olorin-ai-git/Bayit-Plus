@@ -26,6 +26,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassTextField
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
@@ -78,12 +79,12 @@ internal fun AddProfileScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         GlassTopBar(
-            title = "Add Profile",
+            title = bayitString("profiles.addProfile"),
             navigationIcon = {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = bayitString("common.back"),
                         tint = DesignTokens.Colors.Text.primary,
                     )
                 }
@@ -105,7 +106,7 @@ internal fun AddProfileScreen(
                         if (uiState is AddProfileUiState.Error) onDismissError()
                         onNameChange(it)
                     },
-                    label = "Profile Name",
+                    label = bayitString("profiles.profileName"),
                     enabled = !isLoading,
                 )
 
@@ -147,7 +148,7 @@ internal fun AddProfileScreen(
                 }
 
                 GlassButton(
-                    text = "Create Profile",
+                    text = bayitString("profiles.createProfile"),
                     onClick = { keyboardController?.hide(); onCreateClick() },
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth(),

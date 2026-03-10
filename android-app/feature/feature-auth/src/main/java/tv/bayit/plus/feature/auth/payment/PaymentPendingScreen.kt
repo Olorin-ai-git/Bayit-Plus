@@ -18,6 +18,7 @@ import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassSpinner
 import tv.bayit.plus.designsystem.component.GlassTopBar
+import tv.bayit.plus.designsystem.i18n.bayitString
 import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
@@ -38,7 +39,7 @@ internal fun PaymentPendingScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        GlassTopBar(title = "Payment Processing")
+        GlassTopBar(title = bayitString("payment.pending.title"))
 
         Column(
             modifier = Modifier
@@ -54,21 +55,21 @@ internal fun PaymentPendingScreen(
                 ) {
                     GlassSpinner(size = SpinnerSize.LARGE)
                     Text(
-                        text = "Payment Processing",
+                        text = bayitString("payment.pending.title"),
                         style = MaterialTheme.typography.titleLarge,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        text = "Your payment is being processed. This may take a few moments.",
+                        text = bayitString("payment.pending.message"),
                         style = MaterialTheme.typography.bodyLarge,
                         color = DesignTokens.Colors.Text.secondary,
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "Please don't close this window. You will be redirected automatically once the payment is confirmed.",
+                        text = bayitString("payment.pending.doNotClose"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.muted,
                         textAlign = TextAlign.Center,
@@ -79,7 +80,7 @@ internal fun PaymentPendingScreen(
             Spacer(Modifier.height(DesignTokens.Spacing.xxl))
 
             GlassButton(
-                text = "Return to Home",
+                text = bayitString("payment.returnToHome"),
                 onClick = onNavigateToHome,
                 isPrimary = false,
                 modifier = Modifier.fillMaxWidth(),
