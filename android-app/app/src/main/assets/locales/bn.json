@@ -13,7 +13,6 @@
     "watchNow": "এখনই দেখুন",
     "playNow": "এখনই চালান",
     "play": "চালান",
-    "pause": "বিরতি",
     "moreInfo": "আরও তথ্য",
     "seeAll": "সব দেখুন",
     "new": "নতুন",
@@ -54,20 +53,7 @@
     "expand": "বিস্তারিত দেখুন",
     "collapse": "সংক্ষিপ্ত করুন",
     "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
-    "skip": "এড়িয়ে যান",
-    "tryAgain": "আবার চেষ্টা করুন"
-  },
-  "auth": {
-    "loginRequired": "লগইন প্রয়োজন",
-    "loginToWatch": "{{title}} দেখতে সাইন ইন করুন",
-    "login": "লগইন",
-    "signUp": "সাইন আপ",
-    "biometricSignIn": "আঙুলের ছাপ দিয়ে সাইন ইন করুন",
-    "biometricEnrollTitle": "বায়োমেট্রিক সাইন-ইন সক্ষম করুন",
-    "biometricEnrollMessage": "পরের বার দ্রুত সাইন ইন করতে আঙুলের ছাপ বা মুখ ব্যবহার করুন",
-    "biometricEnrollEnable": "সক্ষম করুন",
-    "biometricEnrollSkip": "এখন নয়",
-    "signOut": "সাইন আউট"
+    "skip": "এড়িয়ে যান"
   },
   "demo": {
     "banner": "ডেমো মোড",
@@ -156,7 +142,20 @@
     "subscribe": "সাবস্ক্রাইব করুন",
     "admin": "অ্যাডমিন",
     "games": "গেমস",
-    "friends": "বন্ধুরা"
+    "friends": "বন্ধুরা",
+    "glossary": "শব্দকোষ",
+    "missions": "মিশন",
+    "audiobooks": "অডিওবুক",
+    "playlist": "প্লেলিস্ট",
+    "zehAniHub": "Zeh Ani",
+    "support": "সহায়তা",
+    "discoverHub": "AI আবিষ্কার",
+    "listen": "শুনুন",
+    "byoc": "আমার উৎস",
+    "household": "পরিবার",
+    "messages": "বার্তা",
+    "myContent": "আমার বিষয়বস্তু",
+    "social": "সামাজিক"
   },
   "epg": {
     "title": "TV গাইড",
@@ -184,11 +183,7 @@
     "liveNow": "এখন লাইভ",
     "categories": "বিভাগ",
     "nearYou": "কাছাকাছি ইসরায়েলীয়",
-    "betaExclusive": "বিটা এক্সক্লুসিভ",
-    "locationPermissionDescription": "আপনার কাছের ইসরায়েলি বিষয়বস্তু এবং ব্যবসা দেখতে অবস্থান সক্ষম করুন",
-    "enableLocation": "অবস্থান সক্ষম করুন",
-    "locationPermissionDeniedDescription": "অবস্থান অ্যাক্সেস অস্বীকৃত হয়েছে। এটি সক্ষম করতে এবং আপনার কাছের ইসরায়েলি বিষয়বস্তু দেখতে সেটিংস খুলুন।",
-    "openSettings": "সেটিংস খুলুন"
+    "betaExclusive": "বিটা এক্সক্লুসিভ"
   },
   "search": {
     "title": "খুঁজুন",
@@ -221,6 +216,15 @@
       "documentary": "ডকুমেন্টারি"
     }
   },
+  "listen": {
+    "title": "শুনুন",
+    "subtitle": "রেডিও, পডকাস্ট ও অডিওবুক",
+    "tab": {
+      "radio": "রেডিও",
+      "podcasts": "পডকাস্ট",
+      "audiobooks": "অডিওবুক"
+    }
+  },
   "radio": {
     "title": "রেডিও",
     "noStations": "কোনো রেডিও স্টেশন নেই",
@@ -251,15 +255,7 @@
       "sports": "খেলাধুলা",
       "history": "ইতিহাস",
       "educational": "শিক্ষামূলক"
-    },
-    "playLatest": "চালান",
-    "subscribe": "সাবস্ক্রাইব",
-    "unsubscribe": "আনসাবস্ক্রাইব"
-  },
-  "miniPlayer": {
-    "skipBackward": "15 সেকেন্ড পিছনে",
-    "skipForward": "30 সেকেন্ড সামনে",
-    "closePlayer": "প্লেয়ার বন্ধ করুন"
+    }
   },
   "vod": {
     "title": "সিনেমা ও সিরিজ",
@@ -335,7 +331,8 @@
     "privacy": "গোপনীয়তা",
     "privacyPolicy": "গোপনীয়তা নীতি",
     "termsOfService": "সেবার শর্তাবলী",
-    "about": "সম্পর্কে"
+    "about": "সম্পর্কে",
+    "replayTour": "ফিচার ট্যুর আবার দেখুন"
   },
   "player": {
     "loading": "লোড হচ্ছে...",
@@ -403,14 +400,12 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip",
-      "fullscreen": "Enter full screen",
-      "exitFullscreen": "Exit full screen"
+      "skip": "Skip"
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
-      "premiumTitle": "Bayit+ Feature",
+      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
+      "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "লাইভ ডাবিং সেটিংস",
@@ -429,78 +424,21 @@
     "go_back": "ফিরে যান",
     "sleepTimer": {
       "title": "স্লিপ টাইমার",
-      "setTimer": "টাইমার সেট করুন",
-      "minutesFormat": "{{minutes}} মিনিট",
-      "remaining": "{{time}} বাকি",
-      "extend": "+{{minutes}} মিনিট",
-      "cancel": "টাইমার বাতিল",
-      "off": "বন্ধ",
-      "timerSet": "{{minutes}} মিনিটের জন্য স্লিপ টাইমার সেট",
-      "timerExtended": "টাইমার {{minutes}} মিনিট বাড়ানো হয়েছে",
-      "timerCancelled": "স্লিপ টাইমার বাতিল হয়েছে"
+      "subtitle": "নির্ধারিত সময়ের পরে প্লেব্যাক স্বয়ংক্রিয়ভাবে বিরতি দিন",
+      "minutes": "{{count}} মিনিট",
+      "customPlaceholder": "কাস্টম মিনিট",
+      "set": "টাইমার সেট করুন",
+      "remaining": "{{time}} এ স্লিপ",
+      "extend": "+15 মিনিট",
+      "cancel": "টাইমার বাতিল করুন"
     },
-    "dialogue": {
-      "selectCharacter": "একটি চরিত্র নির্বাচন করুন",
-      "cancel": "বাতিল",
-      "placeholder": "একটি প্রশ্ন লিখুন...",
-      "send": "পাঠান",
-      "close": "বন্ধ করুন",
-      "yourAvatar": "আপনার অ্যাভাটার",
-      "sharedSession": "শেয়ার্ড সেশন",
-      "waitingForTurn": "আপনার পালার জন্য অপেক্ষা করছে..."
-    },
-    "pauseAsk": {
-      "title": "চরিত্রকে জিজ্ঞাসা করুন",
-      "selectCharacter": "আপনি কাকে জিজ্ঞাসা করতে চান?",
-      "resumeMovie": "চলচ্চিত্র চালু রাখুন",
-      "processing": "আপনার প্রশ্ন প্রক্রিয়া করা হচ্ছে...",
-      "askAgain": "আরেকটি প্রশ্ন করুন",
-      "resume": "চালু রাখুন",
-      "watchAgain": "আবার দেখুন",
-      "placeholder": "আপনার প্রশ্ন করুন...",
-      "stages": {
-        "polishing": "আপনার প্রশ্ন পালিশ করা হচ্ছে...",
-        "thinking": "আপনার প্রশ্ন নিয়ে ভাবছে...",
-        "biff1": "বিফের আপনার প্রশ্নটা পছন্দ হয়নি...",
-        "biff2": "বিফ আয়নায় মাসল দেখাচ্ছে...",
-        "biff3": "বিফ উত্তর বানান করার চেষ্টা করছে...",
-        "biff4": "বিফ কাউকে বোকা বলে দিল...",
-        "doc1": "ডক ফ্লাক্স ক্যাপাসিটর দেখছে...",
-        "doc2": "গ্রেট স্কট! এখনও হিসাব হচ্ছে...",
-        "doc3": "ডক 1.21 গিগাওয়াট অ্যাডজাস্ট করছে...",
-        "doc4": "ডক স্পেস-টাইম কন্টিনিউয়াম চেক করছে...",
-        "marty1": "মার্টি আগে গিটার টিউন করছে...",
-        "marty2": "এটা ভারী...",
-        "marty3": "মার্টি দেখছে সে এখনও আছে কিনা...",
-        "marty4": "মার্টি বলে কেউ তাকে ভীতু বলতে পারে না...",
-        "george1": "জর্জ উত্তর দেওয়ার সাহস জোগাড় করছে...",
-        "george2": "জর্জ নোটবুকে উত্তর লিখছে...",
-        "george3": "জর্জ বলে তার ঘনত্ব তাকে এখানে এনেছে...",
-        "george4": "জর্জ অবশেষে আত্মবিশ্বাস পেয়েছে...",
-        "lorraine1": "লরেন আগে চুল ঠিক করছে...",
-        "lorraine2": "লরেন সমুদ্রের নিচে মায়াজালের কথা ভাবছে...",
-        "lorraine3": "লরেন বলে এটা হওয়ার কথা ছিল...",
-        "lorraine4": "লরেন নাচের জন্য তৈরি হচ্ছে...",
-        "jennifer1": "জেনিফার গাড়িতে অপেক্ষা করছে...",
-        "jennifer2": "জেনিফার ভবিষ্যৎ নিয়ে ভাবছে...",
-        "jennifer3": "জেনিফার বলে সে সামলাতে পারবে...",
-        "jennifer4": "জেনিফার ধৈর্য ধরছে...",
-        "generic1": "{{name}} ভাবছে...",
-        "generic2": "{{name}} উত্তর তৈরি করছে...",
-        "generic3": "প্রায় হয়ে গেছে...",
-        "generic4": "আর একটু..."
-      },
-      "error": {
-        "generic": "কিছু ভুল হয়েছে",
-        "anthropic": "AI পরিষেবা অনুপলব্ধ",
-        "falAi": "ভিডিও পরিষেবা অনুপলব্ধ",
-        "elevenlabs": "ভয়েস পরিষেবা অনুপলব্ধ",
-        "credits": "অপর্যাপ্ত ক্রেডিট"
-      }
-    },
-    "interaction": {
-      "previous": "পূর্ববর্তী ইন্টার্যাকশন",
-      "next": "পরবর্তী ইন্টার্যাকশন"
+    "openSubs": {
+      "title": "সাবটাইটেল অনুসন্ধান",
+      "searchPlaceholder": "শিরোনাম দিয়ে অনুসন্ধান করুন...",
+      "search": "অনুসন্ধান",
+      "searchFailed": "অনুসন্ধান ব্যর্থ। আবার চেষ্টা করুন।",
+      "downloads": "{{count}} ডাউনলোড",
+      "noResults": "কোনো সাবটাইটেল পাওয়া যায়নি"
     }
   },
   "content": {
@@ -634,11 +572,21 @@
     "noRecordings": "কোনো রেকর্ডিং নেই"
   },
   "voice": {
-    "listening": "শুনছে...",
-    "speaking": "বলছে",
-    "ready": "প্রস্তুত",
-    "tapToSpeak": "বলতে ট্যাপ করুন",
-    "processing": "প্রক্রিয়াকরণ হচ্ছে..."
+    "panelTitle": "ভয়েস সহকারী",
+    "typeCommand": "একটি কমান্ড টাইপ করুন...",
+    "controlExecuted": "সম্পাদিত: {{action}}",
+    "timerSet": "{{amount}} {{unit}} এর জন্য টাইমার সেট করা হয়েছে",
+    "chatPending": "আপনার বার্তা প্রক্রিয়া করা হচ্ছে...",
+    "suggestion": {
+      "watchLive": "লাইভ টিভি দেখুন",
+      "search": "কন্টেন্ট অনুসন্ধান করুন",
+      "listenRadio": "রেডিও শুনুন"
+    },
+    "error": {
+      "micDenied": "মাইক্রোফোন অ্যাক্সেস অস্বীকৃত",
+      "notSupported": "এই ব্রাউজারে ভয়েস কমান্ড সমর্থিত নয়",
+      "recognitionFailed": "বুঝতে পারিনি। আবার চেষ্টা করুন।"
+    }
   },
   "plans": {
     "basic": {
@@ -1864,33 +1812,49 @@
     "weekend": "সপ্তাহান্ত"
   },
   "voiceOnboarding": {
-    "title": "ভয়েস প্রশিক্ষণ",
-    "stepProgress": "ধাপ {{step}} এর {{total}}",
     "welcome": {
-      "title": "ভয়েস প্রশিক্ষণ",
-      "description": "ব্যক্তিগত ভয়েস সনাক্তকরণ এবং ভয়েস কমান্ডের জন্য আপনার ভয়েস প্রোফাইল প্রশিক্ষণ করুন।"
+      "title": "ভয়েস কন্ট্রোলে স্বাগতম",
+      "description": "হ্যান্ডস-ফ্রি অভিজ্ঞতার জন্য আপনার কণ্ঠ দিয়ে Bayit+ নিয়ন্ত্রণ করুন"
     },
-    "recording": {
-      "micButton": "মাইক",
-      "recButton": "রেক",
-      "tapToStart": "রেকর্ডিং শুরু করতে ট্যাপ করুন",
-      "tapToStop": "রেকর্ডিং... বন্ধ করতে ট্যাপ করুন",
-      "recordButton": "রেকর্ড",
-      "stopButton": "বন্ধ করুন"
+    "features": {
+      "voiceCommands": "ভয়েস কমান্ড",
+      "voiceCommandsDesc": "স্বাভাবিক কথার মাধ্যমে নেভিগেট করুন, অনুসন্ধান করুন এবং প্লেব্যাক নিয়ন্ত্রণ করুন",
+      "tts": "টেক্সট-টু-স্পিচ",
+      "ttsDesc": "উচ্চস্বরে প্রতিক্রিয়া এবং বিষয়বস্তু বিবরণ শুনুন",
+      "wakeWord": "ওয়েক ওয়ার্ড",
+      "wakeWordDesc": "যেকোনো সময় ভয়েস কন্ট্রোল সক্রিয় করতে 'Bayit' বলুন"
     },
-    "training": {
-      "title": "প্রশিক্ষণ চলছে",
-      "message": "আপনার ভয়েস প্রোফাইল প্রশিক্ষিত হচ্ছে। এটি একটু সময় নিতে পারে।"
+    "getStarted": "শুরু করুন",
+    "permissions": {
+      "title": "মাইক্রোফোন অ্যাক্সেস",
+      "description": "আপনার কমান্ড শুনতে ভয়েস কন্ট্রোলের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
+      "privacy": "আপনার ভয়েস ডেটা নিরাপদে প্রক্রিয়া করা হয় এবং কখনও সংরক্ষণ করা হয় না"
     },
-    "completion": {
-      "title": "ভয়েস প্রোফাইল প্রস্তুত!",
-      "message": "আপনার ভয়েস প্রোফাইল তৈরি করা হয়েছে। এখন আপনি ভয়েস কমান্ড এবং ব্যক্তিগত স্পিচ ফিচার ব্যবহার করতে পারবেন।"
+    "permissionsGranted": "মাইক্রোফোন অ্যাক্সেস দেওয়া হয়েছে",
+    "permissionRequired": {
+      "title": "অনুমতি প্রয়োজন",
+      "message": "ভয়েস কন্ট্রোল ব্যবহার করতে আপনার ডিভাইস সেটিংসে মাইক্রোফোন অ্যাক্সেস সক্ষম করুন"
     },
-    "buttons": {
-      "back": "পিছনে",
-      "next": "পরবর্তী",
-      "finish": "সমাপ্ত"
-    }
+    "grantPermissions": "অনুমতি দিন",
+    "testWakeWord": {
+      "title": "ওয়েক ওয়ার্ড পরীক্ষা করুন",
+      "description": "ভয়েস অ্যাক্টিভেশন পরীক্ষা করতে 'Bayit' বলুন",
+      "success": "চমৎকার! ভয়েস অ্যাক্টিভেশন কাজ করছে"
+    },
+    "startTest": "পরীক্ষা শুরু করুন",
+    "complete": {
+      "title": "সব প্রস্তুত!",
+      "description": "ভয়েস কন্ট্রোল এখন সক্রিয়। এই কমান্ডগুলি চেষ্টা করুন:",
+      "tryCommands": "এই কমান্ডগুলি চেষ্টা করুন",
+      "examples": {
+        "search": "\"Fauda খুঁজুন\"",
+        "play": "\"সংবাদ চালান\"",
+        "navigate": "\"লাইভ টিভিতে যান\"",
+        "control": "\"থামুন\" বা \"ভলিউম বাড়ান\""
+      },
+      "startUsing": "ভয়েস কন্ট্রোল ব্যবহার শুরু করুন"
+    },
+    "skip": "এখন এড়িয়ে যান"
   },
   "portal": {
     "nav": {
@@ -2165,260 +2129,466 @@
     "stop": "রেকর্ডিং বন্ধ করুন",
     "start": "রেকর্ডিং শুরু করুন"
   },
-  "aiOnboarding": {
-    "title": "AI সহায়ক সেটআপ",
-    "stepProgress": "ধাপ {{step}} এর {{total}}",
-    "welcome": {
-      "title": "AI সহায়কে স্বাগতম",
-      "description": "শব্দার্থিক অনুসন্ধান, চ্যাটবট সহায়তা এবং বুদ্ধিমান সুপারিশের জন্য আপনার AI সঙ্গী।"
+  "discover": {
+    "subtitle": "১৯টি AI-চালিত বৈশিষ্ট্য অন্বেষণ করুন",
+    "description": "Bayit+ আপনার দেখা, শোনা এবং শেখার অভিজ্ঞতা উন্নত করতে AI ব্যবহার করে। আপনার প্ল্যাটফর্মে কী পাওয়া যায় তা আবিষ্কার করুন।",
+    "featureCount": "{{count}}টি বৈশিষ্ট্য",
+    "tryIt": "চেষ্টা করুন",
+    "startWalkthrough": "ওয়াকথ্রু শুরু করুন",
+    "availableOn": "এতে পাওয়া যায়",
+    "prerequisites": "পূর্বশর্তসমূহ",
+    "setup": "সেট আপ করুন",
+    "error": {
+      "fetchFailed": "Discover বৈশিষ্ট্য লোড করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+      "unknownFeature": "বৈশিষ্ট্য পাওয়া যায়নি।",
+      "featureDisabled": "এই বৈশিষ্ট্যটি বর্তমানে অক্ষম।"
     },
-    "permissions": {
-      "title": "অনুমতি",
-      "description": "AI সহায়কের প্রয়োজন:\n\n• আপনার দেখার ইতিহাস (ব্যক্তিগত সুপারিশের জন্য)\n• অনুসন্ধান প্রশ্ন (ফলাফল উন্নত করতে)\n• পছন্দ (প্রতিক্রিয়া কাস্টমাইজ করতে)"
+    "availability": {
+      "ready": "প্রস্তুত",
+      "setupNeeded": "সেটআপ প্রয়োজন",
+      "premiumRequired": "প্রিমিয়াম প্রয়োজন",
+      "notAvailable": "পাওয়া যাচ্ছে না",
+      "platformOnly": "অন্য প্ল্যাটফর্ম"
     },
-    "personalization": {
-      "title": "ব্যক্তিগতকরণ",
-      "description": "AI আপনার মিথস্ক্রিয়া থেকে শিখবে এবং প্রদান করবে:\n\n• আরও ভাল বিষয়বস্তু সুপারিশ\n• আরও সঠিক অনুসন্ধান ফলাফল\n• প্রসঙ্গিক চ্যাটবট প্রতিক্রিয়া"
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "tvos": "Apple TV",
+      "android": "Android"
     },
-    "completion": {
-      "title": "সব প্রস্তুত!",
-      "message": "আপনার AI সহায়ক বিষয়বস্তু আবিষ্কার এবং উপভোগ করতে আপনাকে সাহায্য করার জন্য প্রস্তুত।"
+    "category": {
+      "watching_movies": "সিনেমা দেখা",
+      "watching_live_tv": "লাইভ টিভি দেখা",
+      "learn_hebrew": "হিব্রু শিখুন",
+      "search_discovery": "অনুসন্ধান ও আবিষ্কার",
+      "chat_assistants": "চ্যাট সহকারী"
     },
-    "buttons": {
-      "back": "পিছনে",
-      "next": "পরবর্তী",
-      "finish": "সমাপ্ত"
-    }
-  },
-  "voiceAssistant": {
-    "fabLabel": "ভয়েস সহায়ক",
-    "modal": {
-      "title": "ভয়েস সহায়ক",
-      "setupRequired": "ভয়েস সহায়ক সেটআপ প্রয়োজন",
-      "setupMessage": "ভয়েস ফিচার ব্যবহার করতে AI সহায়ক সেটআপ সম্পূর্ণ করুন।",
-      "startSetup": "সেটআপ শুরু করুন",
-      "cancel": "বাতিল"
-    },
-    "state": {
-      "idle": "কথা বলতে ট্যাপ করুন",
-      "listening": "শুনছে...",
-      "processing": "প্রক্রিয়াকরণ হচ্ছে...",
-      "speaking": "বলছে...",
-      "error": "কিছু ভুল হয়েছে"
-    },
-    "a11y": {
-      "startListening": "ভয়েস ইনপুট শুরু করুন",
-      "stopListening": "শোনা বন্ধ করুন এবং প্রক্রিয়া করুন",
-      "processing": "ভয়েস ইনপুট প্রক্রিয়াকরণ হচ্ছে",
-      "interrupt": "বলা বন্ধ করুন"
-    }
-  },
-  "aiChat": {
-    "title": "AI চ্যাট",
-    "inputPlaceholder": "AIকে কিছু জিজ্ঞাসা করুন...",
-    "sendButton": "পাঠান",
-    "retryButton": "পুনরায় চেষ্টা করুন"
-  },
-  "chess": {
-    "title": "দাবা",
-    "welcome": "দাবায় স্বাগতম",
-    "subtitle": "বিশ্বজুড়ে বন্ধু ও পরিবারের সাথে দাবা খেলুন",
-    "createGame": "নতুন গেম তৈরি করুন",
-    "joinGame": "গেমে যোগ দিন",
-    "gameCode": "গেম কোড",
-    "enterGameCode": "গেম কোড লিখুন",
-    "invalidGameCode": "অবৈধ গেম কোড। ৬ অক্ষর হতে হবে।",
-    "joinFailed": "গেমে যোগদান ব্যর্থ",
-    "join": "যোগ দিন",
-    "create": "তৈরি করুন",
-    "chooseColor": "আপনার রঙ বেছে নিন",
-    "white": "সাদা",
-    "black": "কালো",
-    "chatPlaceholder": "একটি বার্তা লিখুন... (পরামর্শের জন্য @bot)",
-    "botHint": "আমাদের AI সহকারীর কাছ থেকে দাবা পরামর্শ পেতে আপনার বার্তায় @bot ট্যাগ করুন",
-    "bot": "দাবা সহকারী",
-    "mute": "মিউট",
-    "unmute": "আনমিউট",
-    "speaking": "অংশগ্রহণকারী",
-    "resign": "পরাজয় স্বীকার",
-    "offerDraw": "ড্র প্রস্তাব",
-    "newGame": "নতুন গেম",
-    "checkmate": "চেকমেট!",
-    "stalemate": "অচলাবস্থা",
-    "draw": "ড্র",
-    "resigned": "গেম ত্যাগ করা হয়েছে",
-    "reconnecting": "পুনরায় সংযোগ হচ্ছে...",
-    "moveHistory": "চাল ইতিহাস",
-    "noMoves": "এখনও কোনো চাল হয়নি",
-    "showHints": "গাইড সংকেত দেখান",
-    "yourTurn": "আপনার পালা",
-    "opponentTurn": "প্রতিপক্ষের পালা",
-    "waitingForOpponent": "প্রতিপক্ষের জন্য অপেক্ষা করা হচ্ছে...",
-    "gameOver": "গেম শেষ",
-    "sendingInvite": "{{name}}-কে গেম আমন্ত্রণ পাঠানো হচ্ছে...",
-    "inviteSent": "{{name}}-কে গেম আমন্ত্রণ পাঠানো হয়েছে! গেম কোড: {{code}}",
-    "inviteFailed": "ব্যবহারকারী খুঁজে পাওয়া যায়নি। অনুগ্রহ করে নাম পরীক্ষা করুন এবং আবার চেষ্টা করুন।",
-    "inviteReceived": "{{name}} আপনাকে দাবা খেলায় আমন্ত্রণ জানিয়েছে!",
-    "joinInvite": "গেমে যোগ দিন",
-    "challenge": "চ্যালেঞ্জ",
-    "challengeFriend": "বন্ধুকে চ্যালেঞ্জ করুন",
-    "noFriendsYet": "চ্যালেঞ্জ করতে বন্ধু যোগ করুন",
-    "acceptInvite": "গ্রহণ করুন",
-    "declineInvite": "প্রত্যাখ্যান করুন",
-    "playedAsWhite": "সাদা হিসেবে খেলেছে",
-    "playedAsBlack": "কালো হিসেবে খেলেছে",
-    "gameMode": "গেম মোড",
-    "playVsFriend": "বন্ধুর বিরুদ্ধে খেলুন",
-    "playVsBot": "বটের বিরুদ্ধে খেলুন",
-    "difficulty": "কঠিনতা",
-    "easy": "সহজ",
-    "medium": "মাঝারি",
-    "hard": "কঠিন",
-    "chessBot": "দাবা বট",
-    "disconnected": "সংযোগ বিচ্ছিন্ন",
-    "theirTurn": "তাদের পালা",
-    "copyCode": "কোড কপি করুন",
-    "whiteTurn": "সাদার পালা",
-    "blackTurn": "কালোর পালা",
-    "you": "আপনি",
-    "opponent": "প্রতিপক্ষ",
-    "acceptDraw": "ড্র গ্রহণ করুন",
-    "declineDraw": "ড্র প্রত্যাখ্যান করুন",
-    "whiteCaptured": "সাদা ক্যাপচার করেছে",
-    "blackCaptured": "কালো ক্যাপচার করেছে",
-    "online": "অনলাইন",
-    "offline": "অফলাইন",
-    "joinByGameCode": "গেম কোড দিয়ে যোগ দিন",
-    "timeout": "সময় শেষ",
-    "drawOffered": "ড্র প্রস্তাব",
-    "chat": {
-      "title": "চ্যাট",
-      "inputPlaceholder": "বার্তা লিখুন..."
-    },
-    "timeControl": "সময় নিয়ন্ত্রণ",
-    "unlimited": "সীমাহীন",
-    "bullet1": "১ মিনিট",
-    "blitz3": "৩ মিনিট",
-    "blitz5": "৫ মিনিট",
-    "rapid10": "১০ মিনিট",
-    "classical30": "৩০ মিনিট",
-    "challengeViaWhatsApp": "WhatsApp-এ চ্যালেঞ্জ করুন",
-    "whatsAppMessage": "আমি আপনাকে Bayit+-এ দাবায় চ্যালেঞ্জ করছি! কোড: {{code}} - খেলতে ট্যাপ করুন: {{link}}"
-  },
-  "byoc": {
-    "home": {
-      "title": "আপনার নিজের কন্টেন্ট আনুন",
-      "subtitle": "আপনার প্রিয় কন্টেন্ট উৎসগুলি সংযুক্ত করুন এবং AI ডাবিং, সাবটাইটেল এবং আরও অনেক কিছু দিয়ে উন্নত করুন",
-      "connectButton": "আপনার কন্টেন্ট সংযুক্ত করুন",
-      "aiFeatures": {
-        "dubbing": "AI ডাবিং",
-        "subtitles": "AI সাবটাইটেল"
+    "feature": {
+      "pause_ask": {
+        "name": "বিরতি দিন ও জিজ্ঞাসা করুন",
+        "tagline": "যেকোনো দৃশ্য বিরাম দিন এবং আপনার AI সঙ্গীকে জিজ্ঞাসা করুন",
+        "description": "দেখার সময় ভিডিও বিরতি দিন এবং বর্তমান দৃশ্য সম্পর্কে প্রশ্ন করুন। আপনার AI চরিত্র সাংস্কৃতিক প্রসঙ্গ ব্যাখ্যা করবে, সংলাপ অনুবাদ করবে বা কাহিনী নিয়ে আলোচনা করবে।"
+      },
+      "interactive_subtitles": {
+        "name": "ইন্টারেক্টিভ সাবটাইটেল",
+        "tagline": "তাৎক্ষণিক অনুবাদ ও প্রেক্ষাপটের জন্য যেকোনো সাবটাইটেল শব্দ স্পর্শ করুন",
+        "description": "সাবটাইটেলে যেকোনো শব্দে ক্লিক করুন এর অনুবাদ দেখতে, উচ্চারণ শুনতে এবং ব্যবহারের উদাহরণ পেতে। আপনার পছন্দের শো দেখার সময় শব্দভান্ডার তৈরি করুন।"
+      },
+      "vocabulary": {
+        "name": "শব্দভান্ডার নির্মাতা",
+        "tagline": "আপনি যে শো দেখেন সেখান থেকে নতুন শব্দ শিখুন",
+        "description": "সাবটাইটেল থেকে স্বয়ংক্রিয়ভাবে নতুন হিব্রু শব্দ সংগ্রহ করুন। ফ্ল্যাশকার্ড পর্যালোচনা করুন, অগ্রগতি ট্র্যাক করুন এবং আপনার উপভোগের বিষয়বস্তুর মাধ্যমে শব্দভান্ডার তৈরি করুন।"
+      },
+      "vod_moments": {
+        "name": "VOD মুহূর্ত",
+        "tagline": "আপনার পছন্দের বিষয়বস্তু থেকে AI-কিউরেটেড হাইলাইট",
+        "description": "চলচ্চিত্র ও শো থেকে AI-তৈরি হাইলাইট ক্লিপ ও মূল মুহূর্ত পান। স্মরণীয় দৃশ্য শেয়ার করুন এবং সেরা অংশগুলো আবার দেখুন।"
+      },
+      "cultural_context": {
+        "name": "সাংস্কৃতিক প্রেক্ষাপট",
+        "tagline": "প্রতিটি দৃশ্যের পেছনের সাংস্কৃতিক পটভূমি বুঝুন",
+        "description": "আপনি যে বিষয়বস্তু দেখেন তাতে উপস্থিত ইসরায়েলি রীতিনীতি, উৎসব, হাস্যরস এবং সামাজিক নিয়মকানুন ব্যাখ্যা করে রিয়েল-টাইম সাংস্কৃতিক টীকা পান।"
+      },
+      "bilingual_bridge": {
+        "name": "দ্বিভাষিক সেতু",
+        "tagline": "দেখার সময় পাশাপাশি হিব্রু-বাংলা শেখা",
+        "description": "হাইলাইট করা শব্দভান্ডার সহ দ্বৈত-ভাষা সাবটাইটেল দেখুন। স্বাভাবিকভাবে বোঝার দক্ষতা বিকাশের জন্য হিব্রু এবং আপনার মাতৃভাষার মধ্যে পরিবর্তন করুন।"
+      },
+      "ai_companion": {
+        "name": "AI সঙ্গী",
+        "tagline": "ইসরায়েলি বিষয়বস্তুর মাধ্যমে আপনার ব্যক্তিগত AI গাইড",
+        "description": "একটি AI চরিত্র যা আপনার সাথে দেখে, মন্তব্য প্রদান করে, প্রশ্নের উত্তর দেয় এবং ইসরায়েলি মিডিয়ার সূক্ষ্মতা বুঝতে সাহায্য করে।"
+      },
+      "live_dubbing": {
+        "name": "লাইভ ডাবিং",
+        "tagline": "লাইভ ইসরায়েলি টিভি চ্যানেলের রিয়েল-টাইম AI ডাবিং",
+        "description": "আপনার পছন্দের ভাষায় AI-চালিত রিয়েল-টাইম ডাবিং সহ লাইভ ইসরায়েলি টিভি দেখুন। ভাষার বাধা ছাড়াই সংবাদ, টক শো এবং বিনোদন উপভোগ করুন।"
+      },
+      "live_subtitles": {
+        "name": "লাইভ সাবটাইটেল",
+        "tagline": "লাইভ সম্প্রচারের জন্য রিয়েল-টাইম AI সাবটাইটেল",
+        "description": "লাইভ ইসরায়েলি টিভি দেখার সময় রিয়েল-টাইমে AI-তৈরি সাবটাইটেল পান। লাইভ বিষয়বস্তুর তাৎক্ষণিক অনুবাদের জন্য আপনার পছন্দের ভাষা বেছে নিন।"
+      },
+      "live_trivia": {
+        "name": "লাইভ ট্রিভিয়া",
+        "tagline": "সরাসরি সম্প্রচারিত বিষয়বস্তুর উপর ট্রিভিয়া খেলুন",
+        "description": "AI লাইভ সম্প্রচার থেকে বিষয় শনাক্ত করে রিয়েল-টাইমে ট্রিভিয়া প্রশ্ন তৈরি করে। বন্ধুদের সাথে প্রতিযোগিতা করুন এবং টিভি দেখার সময় ইসরায়েলি সংস্কৃতি সম্পর্কে জানুন।"
+      },
+      "catch_up": {
+        "name": "ক্যাচ আপ",
+        "tagline": "লাইভ টিভিতে যা মিস করেছেন তার AI সারসংক্ষেপ",
+        "description": "একটি লাইভ সম্প্রচারের অংশ মিস করেছেন? AI-তৈরি সারসংক্ষেপ পান যা আপনাকে কী ঘটেছে তা জানাবে, দ্রুত পর্যালোচনার জন্য মূল মুহূর্তগুলো হাইলাইট করা আছে।"
+      },
+      "scene_search": {
+        "name": "দৃশ্য অনুসন্ধান",
+        "tagline": "সমস্ত বিষয়বস্তু জুড়ে নির্দিষ্ট দৃশ্য খুঁজুন",
+        "description": "আপনার মনে থাকা একটি দৃশ্য বর্ণনা করুন এবং AI সমস্ত উপলব্ধ বিষয়বস্তু জুড়ে তা খুঁজে পাবে। সংলাপ, দৃশ্যমান উপাদান বা কাহিনীর বর্ণনা দিয়ে অনুসন্ধান করুন।"
+      },
+      "phonetic_mirror": {
+        "name": "ফোনেটিক মিরর",
+        "tagline": "AI ফিডব্যাকের মাধ্যমে হিব্রু উচ্চারণ অনুশীলন করুন",
+        "description": "হিব্রু বলতে বলতে নিজেকে রেকর্ড করুন এবং উচ্চারণ সম্পর্কে তাৎক্ষণিক AI ফিডব্যাক পান। দেশীয় বক্তাদের সাথে আপনার কথা তুলনা করুন এবং সময়ের সাথে উন্নতি ট্র্যাক করুন।"
+      },
+      "talk_back": {
+        "name": "টক ব্যাক",
+        "tagline": "আপনার AI চরিত্রের সাথে হিব্রুতে ভয়েস কথোপকথন করুন",
+        "description": "আপনার AI চরিত্রের সাথে কথা বলে কথোপকথনমূলক হিব্রু অনুশীলন করুন। স্বাভাবিক কথোপকথনে ব্যাকরণ, শব্দভান্ডার এবং উচ্চারণ সম্পর্কে রিয়েল-টাইম ফিডব্যাক পান।"
+      },
+      "interactive_mission": {
+        "name": "ইন্টারেক্টিভ মিশন",
+        "tagline": "AI গাইডেন্সের সাথে মজাদার হিব্রু শেখার চ্যালেঞ্জ",
+        "description": "AI-পরিচালিত মিশন সম্পন্ন করুন যা বিষয়বস্তু দেখার সাথে হিব্রু শেখার অনুশীলনকে একত্রিত করে। পুরস্কার অর্জন করুন এবং আপনার ভাষা যাত্রা ট্র্যাক করুন।"
+      },
+      "glossary": {
+        "name": "ব্যক্তিগত শব্দকোষ",
+        "tagline": "বিষয়বস্তু থেকে তৈরি আপনার ব্যক্তিগতকৃত হিব্রু অভিধান",
+        "description": "আপনি যে সমস্ত হিব্রু শব্দের সম্মুখীন হয়েছেন এবং সংরক্ষণ করেছেন, বিভাগ, ফ্রিকোয়েন্সি এবং দক্ষতার স্তর অনুযায়ী সংগঠিত। যেকোনো সময় পর্যালোচনা করুন এবং অনুশীলন করুন।"
+      },
+      "llm_search": {
+        "name": "AI অনুসন্ধান",
+        "tagline": "স্বাভাবিক ভাষার প্রশ্ন দিয়ে বিষয়বস্তু খুঁজুন",
+        "description": "স্বাভাবিক ভাষা ব্যবহার করে সম্পূর্ণ Bayit+ লাইব্রেরি অনুসন্ধান করুন। 'পরিবার নিয়ে মজাদার ইসরায়েলি কমেডি' বা 'তেল আবিব সম্পর্কে ডকুমেন্টারি' চাইতে পারেন এবং AI-কিউরেটেড ফলাফল পান।"
+      },
+      "proactive_voice": {
+        "name": "সক্রিয় কণ্ঠ",
+        "tagline": "কণ্ঠ-প্রথম AI সহকারী যা আপনার প্রয়োজন আগে থেকে বোঝে",
+        "description": "একটি AI সহকারী যা শোনে এবং আপনি যা দেখছেন তার উপর ভিত্তি করে সক্রিয়ভাবে প্রাসঙ্গিক বিষয়বস্তুর পরামর্শ, অনুবাদ এবং শেখার সুযোগ প্রদান করে।"
+      },
+      "chatbot": {
+        "name": "Bayit Chat",
+        "tagline": "ইসরায়েলি বিষয়বস্তু সংক্রান্ত যেকোনো বিষয়ে AI-এর সাথে চ্যাট করুন",
+        "description": "ইসরায়েলি সংস্কৃতি সম্পর্কে প্রশ্ন করুন, বিষয়বস্তুর সুপারিশ পান, হিব্রু অনুশীলন করুন, বা আপনি যা দেখেছেন তা নিয়ে আলোচনা করুন। আপনার AI সঙ্গী সর্বদা উপলব্ধ।"
       }
     },
-    "yourChannels": "আপনার চ্যানেল",
-    "iptv": "IPTV",
-    "plex": "Plex",
-    "youtube": "YouTube",
-    "addIPTV": "IPTV যোগ করুন",
-    "addPlex": "Plex যোগ করুন",
-    "addYouTube": "YouTube যোগ করুন",
-    "playlistURL": "প্লেলিস্ট URL",
-    "playlistName": "প্লেলিস্ট নাম",
-    "noChannels": "প্লেলিস্টে কোনো চ্যানেল পাওয়া যায়নি",
-    "refreshing": "রিফ্রেশ হচ্ছে...",
-    "sourceAdded": "উৎস যোগ করা হয়েছে",
-    "sourceRemoved": "উৎস সরানো হয়েছে",
-    "connectedSources": "সংযুক্ত উৎস",
-    "aiAvailable": "AI উপলব্ধ",
-    "audioAIOnly": "শুধুমাত্র অডিও AI",
-    "aiDubbing": "AI ডাবিং",
-    "aiSubtitles": "AI সাবটাইটেল",
-    "connectContent": "কন্টেন্ট সংযুক্ত করুন",
-    "connectContentDesc": "আপনার IPTV, Plex বা YouTube উৎস যোগ করুন",
-    "removeSource": "উৎস সরান",
-    "removeConfirm": "আপনি কি নিশ্চিত যে এই উৎসটি সরাতে চান?",
-    "channelCount": "%d চ্যানেল",
-    "fromPlex": "Plex থেকে",
-    "enterURL": "প্লেলিস্ট URL বা ফাইল লিখুন",
-    "validating": "যাচাই করা হচ্ছে...",
-    "invalidURL": "অনুগ্রহ করে একটি বৈধ URL লিখুন",
-    "fetchFailed": "প্লেলিস্ট আনতে ব্যর্থ",
-    "plexVisitLink": "plex.tv/link-এ যান এবং কোড লিখুন",
-    "plexEnterCode": "উপরে দেখানো কোডটি লিখুন",
-    "plexWaiting": "Plex অনুমোদনের জন্য অপেক্ষা...",
-    "plexRequestingPin": "Plex PIN অনুরোধ করা হচ্ছে...",
-    "plexSelectServer": "সার্ভার নির্বাচন করুন",
-    "plexSelectServerDesc": "কোন Plex সার্ভার সংযুক্ত করতে হবে তা বেছে নিন",
-    "plexDiscovering": "সার্ভার আবিষ্কার করা হচ্ছে...",
-    "plexNoServers": "কোনো Plex সার্ভার পাওয়া যায়নি",
-    "plexLocal": "স্থানীয়",
-    "plexRemote": "দূরবর্তী",
-    "plexItemCount": "Plex থেকে %d আইটেম",
-    "plexConnectDesc": "আপনার Plex Media Server সংযুক্ত করুন",
-    "youtubeVisitLink": "নীচের লিঙ্কে যান এবং কোড লিখুন",
-    "youtubeEnterCode": "উপরে দেখানো কোডটি লিখুন",
-    "youtubeWaiting": "অনুমোদনের জন্য অপেক্ষা...",
-    "youtubeRequestingCode": "ডিভাইস কোড অনুরোধ করা হচ্ছে...",
-    "youtubeConnected": "YouTube সংযুক্ত",
-    "youtubeVideoCount": "টি ভিডিও পাওয়া গেছে",
-    "youtubeOpenApp": "YouTube-এ খুলুন",
-    "youtubeAudioAINote": "YouTube কন্টেন্টের জন্য অডিও AI বৈশিষ্ট্য উপলব্ধ",
-    "fromYouTube": "YouTube থেকে",
-    "youtubeConnectDesc": "আপনার YouTube অ্যাকাউন্ট সংযুক্ত করুন",
-    "bannerTitle": "আপনার নিজের কন্টেন্ট আনুন",
-    "bannerSubtitle": "AI-উন্নত দেখার জন্য আপনার স্ট্রিমিং উৎসগুলি সংযুক্ত করুন",
-    "bannerConnect": "সংযুক্ত",
-    "bannerDismiss": "বাতিল",
-    "itemsLoaded": "আইটেম লোড হয়েছে",
-    "enriching": "সমৃদ্ধ করা হচ্ছে...",
-    "findingSubtitles": "সাবটাইটেল খোঁজা হচ্ছে...",
-    "subtitlesFound": "সাবটাইটেল পাওয়া গেছে",
-    "noSubtitlesFound": "কোনো সাবটাইটেল পাওয়া যায়নি",
-    "interactionMoments": "ইন্টারেক্টিভ মুহূর্ত",
-    "interactionMomentsDescription": "AI চরিত্রের মিথস্ক্রিয়ার জন্য মূল মুহূর্তগুলি শনাক্ত করবে",
-    "enrichmentFailed": "সমৃদ্ধি ব্যর্থ হয়েছে",
-    "browsePlexLibrary": "Plex লাইব্রেরি ব্রাউজ করুন",
-    "addXtream": "Xtream Codes",
-    "xtreamServer": "সার্ভার URL",
-    "xtreamUsername": "ব্যবহারকারীর নাম",
-    "xtreamPassword": "পাসওয়ার্ড",
-    "xtreamConnectDesc": "Xtream Codes প্রদানকারী সংযুক্ত করুন",
-    "xtreamAuthFailed": "প্রমাণীকরণ ব্যর্থ",
-    "sourceName": "উৎসের নাম",
-    "selectProvider": "প্রদানকারী নির্বাচন করুন",
-    "manualEntry": "ম্যানুয়াল এন্ট্রি",
-    "onboarding.title": "কন্টেন্ট সেটআপ",
-    "onboarding.connectSource": "একটি উৎস সংযুক্ত করুন",
-    "onboarding.connectDesc": "শুরু করতে আপনার প্রথম কন্টেন্ট উৎস যোগ করুন",
-    "onboarding.sourceAdded": "উৎস যোগ করা হয়েছে",
-    "onboarding.analyzing": "কন্টেন্ট বিশ্লেষণ করা হচ্ছে...",
-    "onboarding.analyze": "কন্টেন্ট বিশ্লেষণ করুন",
-    "onboarding.analysisComplete": "বিশ্লেষণ সম্পূর্ণ",
-    "onboarding.channelsIdentified": "চ্যানেল শনাক্ত করা হয়েছে",
-    "onboarding.vodMatched": "VOD মিলেছে",
-    "onboarding.duplicatesFound": "ডুপ্লিকেট পাওয়া গেছে",
-    "onboarding.streamsHealthy": "স্ট্রিম সুস্থ",
-    "onboarding.languages": "ভাষা",
-    "onboarding.topCategories": "শীর্ষ বিভাগ",
-    "onboarding.cleanupTitle": "কন্টেন্ট ক্লিনআপ",
-    "onboarding.autoBestQuality": "স্বয়ংক্রিয়ভাবে সেরা মান নির্বাচন করুন",
-    "onboarding.autoBestQualityDesc": "প্রতিটি চ্যানেলের জন্য স্বয়ংক্রিয়ভাবে সর্বোচ্চ মানের স্ট্রিম বেছে নিন",
-    "onboarding.applyCleanup": "ক্লিনআপ প্রয়োগ করুন",
-    "onboarding.personalizeTitle": "ব্যক্তিগতকরণ",
-    "onboarding.personalizeDesc": "হোম স্ক্রিনের জন্য আপনার পছন্দ বেছে নিন",
-    "onboarding.languagePriority": "ভাষা অগ্রাধিকার",
-    "onboarding.homeCategories": "হোম বিভাগ",
-    "onboarding.ready": "প্রস্তুত",
-    "home.title": "আপনার নিজের কন্টেন্ট আনুন",
-    "home.subtitle": "আপনার IPTV, Plex, YouTube বা Xtream উৎসগুলি সংযুক্ত করুন",
-    "home.connectButton": "উৎস সংযুক্ত করুন",
-    "home.aiFeatures.dubbing": "AI ডাবিং",
-    "home.aiFeatures.subtitles": "AI সাবটাইটেল",
-    "tapToOpen": "খুলতে ট্যাপ করুন",
-    "aiTrivia": "AI ট্রিভিয়া",
-    "ai.dubbing": "AI ডাবিং",
-    "ai.subtitles": "AI সাবটাইটেল",
-    "ai.trivia": "AI ট্রিভিয়া",
-    "ai.audioOverlay": "অডিও ওভারলে"
+    "prereq": {
+      "avatar": "আপনার AI চরিত্র তৈরি করুন",
+      "subscription": "প্রিমিয়াম সদস্যতা প্রয়োজন",
+      "microphone": "মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
+      "contentType": "আপনার বিষয়বস্তুর পছন্দ নির্বাচন করুন",
+      "preference": "আপনার ভাষার পছন্দ নির্ধারণ করুন",
+      "voiceClone": "আপনার ভয়েস ক্লোন সেট আপ করুন"
+    },
+    "walkthrough": {
+      "tryItNow": "[bn] Try it now",
+      "watchDemo": "[bn] Watch demo",
+      "skip": "[bn] Skip",
+      "next": "[bn] Next",
+      "done": "[bn] Done",
+      "complete": "[bn] Walkthrough complete",
+      "stepCounter": "[bn] {{current}} of {{total}}",
+      "pause_ask": {
+        "step1": "[bn] Navigate to a movie with interactive moments",
+        "step2": "[bn] Pause the movie during a scene",
+        "step3": "[bn] Tap the Ask a Character button",
+        "step4": "[bn] Watch the character respond to you"
+      },
+      "interactive_subtitles": {
+        "step1": "[bn] Start playing a movie with subtitles",
+        "step2": "[bn] Tap the Interactive button in the control bar",
+        "step3": "[bn] Select your subtitle language",
+        "step4": "[bn] Tap any word in the subtitles to learn more"
+      },
+      "vocabulary": {
+        "step1": "[bn] Open a movie with interactive subtitles enabled",
+        "step2": "[bn] Tap a word you want to learn",
+        "step3": "[bn] Tap Save to Vocabulary",
+        "step4": "[bn] Review your saved words in the Vocabulary section"
+      },
+      "vod_moments": {
+        "step1": "[bn] Start watching a movie with interactive moments",
+        "step2": "[bn] Wait for an interactive prompt to appear",
+        "step3": "[bn] See the AI-generated interaction"
+      },
+      "cultural_context": {
+        "step1": "[bn] Play a movie with Hebrew dialogue",
+        "step2": "[bn] Tap on a subtitle with cultural significance",
+        "step3": "[bn] Read the AI-generated cultural explanation"
+      },
+      "bilingual_bridge": {
+        "step1": "[bn] Open a movie with bilingual support",
+        "step2": "[bn] Select the bilingual subtitle mode",
+        "step3": "[bn] Tap a highlighted phrase to see the translation",
+        "step4": "[bn] Watch both languages side by side"
+      },
+      "ai_companion": {
+        "step1": "[bn] Start watching any movie",
+        "step2": "[bn] Tap the AI Companion button",
+        "step3": "[bn] Type a question about the movie",
+        "step4": "[bn] Read the contextual AI response"
+      },
+      "live_dubbing": {
+        "step1": "[bn] Navigate to a live TV channel",
+        "step2": "[bn] Tap the dubbing button in the control bar",
+        "step3": "[bn] Select your preferred language",
+        "step4": "[bn] Listen to the real-time AI dubbing"
+      },
+      "live_subtitles": {
+        "step1": "[bn] Navigate to a live TV channel",
+        "step2": "[bn] Tap the subtitles button",
+        "step3": "[bn] Select your subtitle language",
+        "step4": "[bn] Watch the real-time subtitles appear"
+      },
+      "live_trivia": {
+        "step1": "[bn] Navigate to a live TV channel",
+        "step2": "[bn] Tap the trivia button",
+        "step3": "[bn] Answer the AI-generated questions"
+      },
+      "catch_up": {
+        "step1": "[bn] Navigate to a live broadcast",
+        "step2": "[bn] Select the catch-up option",
+        "step3": "[bn] Tap to generate an AI summary",
+        "step4": "[bn] Read the summary of what you missed"
+      },
+      "scene_search": {
+        "step1": "[bn] Navigate to a recorded broadcast",
+        "step2": "[bn] Type what you are looking for",
+        "step3": "[bn] Tap on the matching scene",
+        "step4": "[bn] Watch the scene from that point"
+      },
+      "phonetic_mirror": {
+        "step1": "[bn] Open the Phonetic Mirror in Zeh Ani",
+        "step2": "[bn] Read the Hebrew phrase shown",
+        "step3": "[bn] Speak the phrase into your microphone",
+        "step4": "[bn] Review the AI pronunciation feedback"
+      },
+      "talk_back": {
+        "step1": "[bn] Open Talk Back in Zeh Ani",
+        "step2": "[bn] Listen to your avatar speak Hebrew",
+        "step3": "[bn] Respond in Hebrew using your microphone",
+        "step4": "[bn] Review the AI feedback on your response"
+      },
+      "interactive_mission": {
+        "step1": "[bn] Open Interactive Missions",
+        "step2": "[bn] Select a mission level",
+        "step3": "[bn] Follow the AI-guided exercises",
+        "step4": "[bn] Complete the mission and earn rewards"
+      },
+      "glossary": {
+        "step1": "[bn] Open the Hebrew Glossary",
+        "step2": "[bn] Search for a Hebrew word",
+        "step3": "[bn] Listen to the pronunciation"
+      },
+      "llm_search": {
+        "step1": "[bn] Open the Search tab",
+        "step2": "[bn] Type a natural language query",
+        "step3": "[bn] Browse the AI-curated results"
+      },
+      "proactive_voice": {
+        "step1": "[bn] Open the Voice Suggestions feature",
+        "step2": "[bn] Tap and hold to speak",
+        "step3": "[bn] Hear the personalized recommendations"
+      },
+      "chatbot": {
+        "step1": "[bn] Open the AI Assistant",
+        "step2": "[bn] Type your question or request",
+        "step3": "[bn] Read the AI response"
+      }
+    }
+  },
+  "byoc": {
+    "pageSubtitle": "আপনার নিজের কন্টেন্ট নিয়ে আসুন - IPTV এবং স্ট্রিমিং সোর্স যোগ করুন",
+    "addSource": "সোর্স যোগ করুন",
+    "sync": "সিঙ্ক করুন",
+    "remove": "সরান",
+    "channelCount": "{{count}} চ্যানেল",
+    "empty": {
+      "title": "কোনো সোর্স যোগ করা হয়নি",
+      "subtitle": "Bayit+ এর পাশাপাশি আপনার নিজের কন্টেন্ট দেখতে আপনার IPTV, Xtream বা স্ট্রিমিং সোর্স যোগ করুন"
+    },
+    "source": {
+      "iptv": "IPTV সোর্স",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTV সোর্স যোগ করুন",
+      "subtitle": "M3U বা M3U8 প্লেলিস্ট ফাইলের URL লিখুন",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "যাচাই করুন",
+      "add": "সোর্স যোগ করুন"
+    },
+    "addXtream": {
+      "title": "Xtream Codes সংযুক্ত করুন",
+      "subtitle": "আপনার Xtream Codes সার্ভারের শংসাপত্র লিখুন",
+      "serverUrl": "সার্ভার URL",
+      "username": "ব্যবহারকারীর নাম",
+      "password": "পাসওয়ার্ড",
+      "connect": "সংযুক্ত করুন"
+    },
+    "preview": {
+      "title": "প্রিভিউ",
+      "channelCount": "{{count}} চ্যানেল পাওয়া গেছে"
+    },
+    "providers": {
+      "title": "জনপ্রিয় প্রদানকারী"
+    },
+    "wizard": {
+      "step1": "সোর্স যোগ করুন",
+      "step2": "প্রক্রিয়াকরণ",
+      "step3": "পর্যালোচনা",
+      "selectSource": "সোর্স ধরন নির্বাচন করুন"
+    },
+    "normalization": {
+      "title": "আপনার কন্টেন্ট প্রক্রিয়া করা হচ্ছে",
+      "total": "মোট {{count}} চ্যানেল",
+      "matched": "{{count}} মিলেছে",
+      "stage": {
+        "parsing": "প্লেলিস্ট বিশ্লেষণ করা হচ্ছে...",
+        "matching": "চ্যানেল মেলানো হচ্ছে...",
+        "enriching": "মেটাডেটা সমৃদ্ধ করা হচ্ছে...",
+        "finalizing": "চূড়ান্ত করা হচ্ছে..."
+      }
+    },
+    "review": {
+      "title": "আমদানি করা কন্টেন্ট পর্যালোচনা করুন",
+      "subtitle": "{{matched}} মিলেছে, {{unmatched}} চ্যানেল মেলেনি",
+      "matchedChannels": "মিলিত চ্যানেল",
+      "unmatchedChannels": "অমিলিত চ্যানেল",
+      "apply": "প্রয়োগ করুন এবং আমদানি করুন"
+    },
+    "error": {
+      "urlRequired": "অনুগ্রহ করে একটি URL লিখুন",
+      "noChannels": "এই প্লেলিস্টে কোনো চ্যানেল পাওয়া যায়নি",
+      "invalidUrl": "এই URL থেকে প্লেলিস্ট লোড করা যায়নি",
+      "allFieldsRequired": "সমস্ত ফিল্ড প্রয়োজন",
+      "enrichFailed": "সোর্স বিশ্লেষণ ব্যর্থ হয়েছে",
+      "syncFailed": "সোর্স সিঙ্ক ব্যর্থ হয়েছে",
+      "normalizationFailed": "কন্টেন্ট প্রক্রিয়াকরণ ব্যর্থ হয়েছে",
+      "normalizationPollFailed": "প্রক্রিয়াকরণের সময় সংযোগ হারিয়ে গেছে"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bayit+-এ আপনাকে স্বাগতম",
+      "subtitle": "ইসরায়েলি কন্টেন্ট, সংস্কৃতি এবং ভাষা শেখার জন্য আপনার AI-চালিত প্রবেশদ্বার",
+      "getStarted": "শুরু করুন"
+    },
+    "highlight": {
+      "dubbing": "লাইভ AI ডাবিং",
+      "subtitles": "ইন্টারেক্টিভ সাবটাইটেল",
+      "ai": "AI সঙ্গী",
+      "learning": "হিব্রু শেখা"
+    },
+    "voice": {
+      "title": "ভয়েস সেটআপ",
+      "subtitle": "ভয়েস কমান্ড, হিব্রু উচ্চারণ অনুশীলন এবং হ্যান্ডস-ফ্রি নেভিগেশনের জন্য আপনার মাইক্রোফোন সক্ষম করুন",
+      "enable": "মাইক্রোফোন সক্ষম করুন",
+      "granted": "মাইক্রোফোন সফলভাবে সক্ষম হয়েছে"
+    },
+    "tour": {
+      "done": "সম্পন্ন"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "লাইভ AI ডাবিং",
+        "description": "আপনার পছন্দের ভাষায় রিয়েল-টাইম AI ডাবিং সহ ইসরায়েলি টিভি দেখুন",
+        "hebrew": "হিব্রু",
+        "english": "ইংরেজি"
+      },
+      "subtitles": {
+        "title": "ইন্টারেক্টিভ সাবটাইটেল",
+        "description": "তাৎক্ষণিক অনুবাদ এবং উচ্চারণের জন্য সাবটাইটেলের যেকোনো শব্দ ট্যাপ করুন",
+        "sample": "পরিবার Shabbat রাতের খাবারের জন্য একত্রিত হয়েছিল",
+        "word": "Shabbat",
+        "translation": "শাব্বাত - সাপ্তাহিক বিশ্রামের দিন"
+      },
+      "interaction": {
+        "title": "AI চরিত্র ইন্টারঅ্যাকশন",
+        "description": "যেকোনো দৃশ্য বিরতি দিন এবং সাংস্কৃতিক প্রেক্ষাপট সম্পর্কে আপনার AI সঙ্গীকে জিজ্ঞেস করুন",
+        "userMsg": "তারা কোন উৎসব উদযাপন করছে?",
+        "aiMsg": "তারা Sukkot উদযাপন করছে, যা তাঁবুর উৎসব। আপনি যে অস্থায়ী কুটির দেখছেন তাকে sukkah বলা হয়।"
+      },
+      "trivia": {
+        "title": "লাইভ ট্রিভিয়া",
+        "description": "AI লাইভ সম্প্রচার থেকে ট্রিভিয়া প্রশ্ন তৈরি করে। প্রতিযোগিতা করুন এবং শিখুন!",
+        "question": "ইসরায়েলের সরকারি ভাষা কী?",
+        "optionA": "আরবি",
+        "optionB": "হিব্রু",
+        "optionC": "ইংরেজি"
+      },
+      "catchup": {
+        "title": "স্মার্ট ক্যাচ আপ",
+        "description": "লাইভ সম্প্রচারের একটি অংশ মিস করেছেন? AI আপনার মিস করা অংশ সংক্ষেপ করে",
+        "missed": "মিস করা",
+        "summary": "AI সারসংক্ষেপ",
+        "live": "এখন লাইভ"
+      },
+      "byoc": {
+        "title": "আপনার নিজস্ব কন্টেন্ট আনুন",
+        "description": "আপনার IPTV উৎস আমদানি করুন এবং Bayit+ কন্টেন্টের পাশাপাশি দেখুন",
+        "step1": "উৎস যোগ করুন",
+        "step2": "AI সমৃদ্ধিকরণ",
+        "step3": "দেখুন"
+      },
+      "zehAni": {
+        "title": "আপনার AI চরিত্র তৈরি করুন",
+        "description": "একটি ব্যক্তিগতকৃত AI অবতার তৈরি করুন যা আপনার সাথে শিখবে",
+        "generated": "AI অবতার"
+      }
+    }
+  },
+  "household": {
+    "empty": {
+      "title": "এখনো কোনো পরিবার নেই",
+      "subtitle": "আপনার পরিবার পরিচালনা করতে একটি পরিবার তৈরি করুন"
+    },
+    "create": {
+      "namePlaceholder": "পরিবারের নাম",
+      "button": "পরিবার তৈরি করুন"
+    },
+    "members": "সদস্যরা",
+    "role": {
+      "owner": "মালিক",
+      "guardian": "অভিভাবক",
+      "child": "শিশু"
+    },
+    "invite": {
+      "title": "সদস্যদের আমন্ত্রণ জানান",
+      "emailPlaceholder": "ইমেইল ঠিকানা",
+      "send": "আমন্ত্রণ পাঠান",
+      "pending": "বিচারাধীন আমন্ত্রণ"
+    },
+    "removeMember": "সরিয়ে দিন",
+    "error": {
+      "fetchFailed": "পরিবার লোড করতে ব্যর্থ",
+      "createFailed": "পরিবার তৈরি করতে ব্যর্থ",
+      "updateFailed": "পরিবার আপডেট করতে ব্যর্থ",
+      "deleteFailed": "পরিবার মুছতে ব্যর্থ",
+      "inviteFailed": "আমন্ত্রণ পাঠাতে ব্যর্থ",
+      "removeFailed": "সদস্য সরিয়ে দিতে ব্যর্থ"
+    }
+  },
+  "dm": {
+    "title": "বার্তা",
+    "conversations": "কথোপকথন",
+    "conversation": "কথোপকথন",
+    "empty": {
+      "title": "এখনো কোনো বার্তা নেই",
+      "subtitle": "একজন বন্ধুর সাথে কথোপকথন শুরু করুন"
+    },
+    "input": {
+      "placeholder": "একটি বার্তা টাইপ করুন...",
+      "send": "পাঠান"
+    },
+    "translate": "অনুবাদ করুন",
+    "react": "প্রতিক্রিয়া জানান",
+    "read": "পঠিত",
+    "sent": "পাঠানো হয়েছে",
+    "loadMore": "পুরানো বার্তা লোড করুন",
+    "startConversation": "কথোপকথন শুরু করতে একটি বার্তা পাঠান",
+    "reaction": {
+      "like": "পছন্দ",
+      "love": "ভালোবাসা",
+      "laugh": "হাহা",
+      "surprise": "ওয়াও",
+      "sad": "দুঃখিত"
+    },
+    "error": {
+      "fetchFailed": "বার্তা লোড করতে ব্যর্থ",
+      "sendFailed": "বার্তা পাঠাতে ব্যর্থ"
+    }
   }
 }

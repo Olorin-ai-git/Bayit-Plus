@@ -13,7 +13,6 @@
     "watchNow": "இப்போது பாருங்கள்",
     "playNow": "இப்போது இயக்கு",
     "play": "இயக்கு",
-    "pause": "இடைநிறுத்து",
     "moreInfo": "மேலும் தகவல்",
     "seeAll": "அனைத்தையும் காண்",
     "new": "புதிய",
@@ -54,20 +53,7 @@
     "expand": "விரிவாக்கு",
     "collapse": "சுருக்கு",
     "upgrade": "பிரீமியத்திற்கு மேம்படுத்து",
-    "skip": "தவிர்",
-    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
-  },
-  "auth": {
-    "loginRequired": "உள்நுழைவு தேவை",
-    "loginToWatch": "{{title}} பார்க்க உள்நுழையவும்",
-    "login": "உள்நுழைவு",
-    "signUp": "பதிவு செய்யவும்",
-    "biometricSignIn": "கைரேகையில் உள்நுழைக",
-    "biometricEnrollTitle": "பயோமெட்ரிக் உள்நுழைவை இயக்கு",
-    "biometricEnrollMessage": "அடுத்த முறை விரைவாக உள்நுழைய உங்கள் கைரேகை அல்லது முகத்தைப் பயன்படுத்தவும்",
-    "biometricEnrollEnable": "இயக்கு",
-    "biometricEnrollSkip": "இப்போது வேண்டாம்",
-    "signOut": "வெளியேறு"
+    "skip": "தவிர்"
   },
   "demo": {
     "banner": "டெமோ பயன்முறை",
@@ -156,7 +142,20 @@
     "subscribe": "சந்தா செலுத்து",
     "admin": "நிர்வாகி",
     "games": "விளையாட்டுகள்",
-    "friends": "நண்பர்கள்"
+    "friends": "நண்பர்கள்",
+    "glossary": "சொற்களஞ்சியம்",
+    "missions": "பணிகள்",
+    "audiobooks": "ஒலிப்புத்தகங்கள்",
+    "playlist": "பிளேலிஸ்ட்",
+    "zehAniHub": "Zeh Ani",
+    "support": "ஆதரவு",
+    "discoverHub": "AI கண்டறி",
+    "listen": "கேளுங்கள்",
+    "byoc": "என் ஆதாரங்கள்",
+    "household": "குடும்பம்",
+    "messages": "செய்திகள்",
+    "myContent": "என் உள்ளடக்கம்",
+    "social": "சமூகம்"
   },
   "epg": {
     "title": "TV வழிகாட்டி",
@@ -184,11 +183,7 @@
     "liveNow": "இப்போது நேரலை",
     "categories": "வகைகள்",
     "nearYou": "அருகிலுள்ள இஸ்ரேலியர்கள்",
-    "betaExclusive": "பீட்டா எக்ஸ்க்ளூசிவ்",
-    "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
-    "enableLocation": "இருப்பிடத்தை இயக்கு",
-    "locationPermissionDeniedDescription": "இருப்பிட அணுகல் மறுக்கப்பட்டது. அதை இயக்க மற்றும் உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கத்தைக் காண அமைப்புகளைத் திறக்கவும்.",
-    "openSettings": "அமைப்புகளைத் திற"
+    "betaExclusive": "பீட்டா எக்ஸ்க்ளூசிவ்"
   },
   "search": {
     "title": "தேடு",
@@ -221,6 +216,15 @@
       "documentary": "ஆவணப்படம்"
     }
   },
+  "listen": {
+    "title": "கேளுங்கள்",
+    "subtitle": "வானொலி, பாட்காஸ்ட் மற்றும் ஆடியோ புத்தகங்கள்",
+    "tab": {
+      "radio": "வானொலி",
+      "podcasts": "பாட்காஸ்ட்",
+      "audiobooks": "ஆடியோ புத்தகங்கள்"
+    }
+  },
   "radio": {
     "title": "வானொலி",
     "noStations": "வானொலி நிலையங்கள் இல்லை",
@@ -251,15 +255,7 @@
       "sports": "விளையாட்டு",
       "history": "வரலாறு",
       "educational": "கல்வி"
-    },
-    "playLatest": "இயக்கு",
-    "subscribe": "சந்தா செய்",
-    "unsubscribe": "சந்தா நீக்கு"
-  },
-  "miniPlayer": {
-    "skipBackward": "15 வினாடி பின்னால்",
-    "skipForward": "30 வினாடி முன்னால்",
-    "closePlayer": "பிளேயரை மூடு"
+    }
   },
   "vod": {
     "title": "திரைப்படங்கள் & தொடர்கள்",
@@ -335,7 +331,8 @@
     "privacy": "தனியுரிமை",
     "privacyPolicy": "தனியுரிமைக் கொள்கை",
     "termsOfService": "சேவை விதிமுறைகள்",
-    "about": "பற்றி"
+    "about": "பற்றி",
+    "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்"
   },
   "player": {
     "loading": "ஏற்றுகிறது...",
@@ -402,14 +399,12 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip",
-      "fullscreen": "Enter full screen",
-      "exitFullscreen": "Exit full screen"
+      "skip": "Skip"
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
-      "premiumTitle": "Bayit+ Feature",
+      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
+      "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "நேரடி டப்பிங் அமைப்புகள்",
@@ -427,79 +422,22 @@
     "language_ratio": "மொழி கற்றல் விகிதம்",
     "go_back": "திரும்பு",
     "sleepTimer": {
-      "title": "தூக்க டைமர்",
-      "setTimer": "டைமர் அமைக்கவும்",
-      "minutesFormat": "{{minutes}} நிமிடம்",
-      "remaining": "{{time}} மீதம்",
-      "extend": "+{{minutes}} நிமிடம்",
-      "cancel": "டைமர் ரத்து",
-      "off": "ஆப்",
-      "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
-      "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
-      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
+      "title": "தூக்க நேரமானி",
+      "subtitle": "நிர்ணயிக்கப்பட்ட நேரத்திற்குப் பிறகு இயக்கத்தை தானாக நிறுத்து",
+      "minutes": "{{count}} நிமி",
+      "customPlaceholder": "தனிப்பயன் நிமிடங்கள்",
+      "set": "நேரமானி அமை",
+      "remaining": "{{time}} இல் தூக்கம்",
+      "extend": "+15 நிமி",
+      "cancel": "நேரமானி ரத்து"
     },
-    "dialogue": {
-      "selectCharacter": "ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்",
-      "cancel": "ரத்துசெய்",
-      "placeholder": "கேள்வி எழுதவும்...",
-      "send": "அனுப்பு",
-      "close": "மூடு",
-      "yourAvatar": "உங்கள் அவதார்",
-      "sharedSession": "பகிர்ந்த அமர்வு",
-      "waitingForTurn": "உங்கள் இருக்கு காத்திருக்கிறேன்..."
-    },
-    "pauseAsk": {
-      "title": "கதாபாத்திரத்திடம் கேளுங்கள்",
-      "selectCharacter": "நீங்கள் யாரிடம் கேட்க விரும்புகிறீர்கள்?",
-      "resumeMovie": "திரைப்படத்தை தொடருங்கள்",
-      "processing": "உங்கள் கேள்வி செயல்படுத்தப்படுகிறது...",
-      "askAgain": "மற்றொரு கேள்வி கேளுங்கள்",
-      "resume": "தொடருங்கள்",
-      "watchAgain": "மீண்டும் பார்",
-      "placeholder": "உங்கள் கேள்வியை கேளுங்கள்...",
-      "stages": {
-        "polishing": "உங்கள் கேள்வியை மெருகேற்றுகிறது...",
-        "thinking": "உங்கள் கேள்வி பற்றி யோசிக்கிறது...",
-        "biff1": "பிஃப்புக்கு உங்கள் கேள்வி பிடிக்கவில்லை...",
-        "biff2": "பிஃப் கண்ணாடியில் தன்னைப் பார்க்கிறான்...",
-        "biff3": "பிஃப் பதிலை எழுத முயற்சிக்கிறான்...",
-        "biff4": "பிஃப் யாரையோ முட்டாள் என்று கூறிவிட்டான்...",
-        "doc1": "டாக் ஃப்ளக்ஸ் கெப்பாசிட்டரை ஆலோசிக்கிறார்...",
-        "doc2": "கிரேட் ஸ்காட்! இன்னும் கணக்கிடுகிறது...",
-        "doc3": "டாக் 1.21 ஜிகாவாட்களை சரிசெய்கிறார்...",
-        "doc4": "டாக் விண்வெளி-நேரத் தொடர்ச்சியை சரிபார்க்கிறார்...",
-        "marty1": "மார்ட்டி முதலில் கிட்டார் டியூன் செய்கிறான்...",
-        "marty2": "இது கனமானது...",
-        "marty3": "மார்ட்டி தான் இன்னும் இருக்கிறானா என்று பார்க்கிறான்...",
-        "marty4": "மார்ட்டி சொல்கிறான் யாரும் தன்னை கோழை என்று கூப்பிடக்கூடாது...",
-        "george1": "ஜார்ஜ் பதிலளிக்க தைரியம் சேகரிக்கிறான்...",
-        "george2": "ஜார்ஜ் நோட்டுப்புத்தகத்தில் பதிலை எழுதுகிறான்...",
-        "george3": "ஜார்ஜ் தன் அடர்த்தி தன்னை இங்கு கொண்டு வந்தது என்கிறான்...",
-        "george4": "ஜார்ஜுக்கு இறுதியாக நம்பிக்கை வந்தது...",
-        "lorraine1": "லோரேன் முதலில் தலைமுடியை சரிசெய்கிறாள்...",
-        "lorraine2": "லோரேன் கடலுக்கு அடியில் மந்திரத்தை நினைக்கிறாள்...",
-        "lorraine3": "லோரேன் இது விதி என்கிறாள்...",
-        "lorraine4": "லோரேன் நடனத்திற்கு தயாராகிறாள்...",
-        "jennifer1": "ஜெனிஃபர் காரில் காத்திருக்கிறாள்...",
-        "jennifer2": "ஜெனிஃபர் எதிர்காலத்தைப் பற்றி யோசிக்கிறாள்...",
-        "jennifer3": "ஜெனிஃபர் சமாளிக்க முடியும் என்கிறாள்...",
-        "jennifer4": "ஜெனிஃபர் பொறுமையாக இருக்கிறாள்...",
-        "generic1": "{{name}} யோசிக்கிறது...",
-        "generic2": "{{name}} பதிலை உருவாக்குகிறது...",
-        "generic3": "கிட்டத்தட்ட முடிந்தது...",
-        "generic4": "இன்னும் சிறிது நேரம்..."
-      },
-      "error": {
-        "generic": "ஏதோ தவறு ஏற்பட்டது",
-        "anthropic": "AI சேவை கிடைக்கவில்லை",
-        "falAi": "வீடியோ சேவை கிடைக்கவில்லை",
-        "elevenlabs": "குரல் சேவை கிடைக்கவில்லை",
-        "credits": "போதுமான கிரெடிட்கள் இல்லை"
-      }
-    },
-    "interaction": {
-      "previous": "முந்தைய இடைவினை",
-      "next": "அடுத்த இடைவினை"
+    "openSubs": {
+      "title": "வசனங்களை தேடு",
+      "searchPlaceholder": "தலைப்பு மூலம் தேடு...",
+      "search": "தேடு",
+      "searchFailed": "தேடல் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "downloads": "{{count}} பதிவிறக்கங்கள்",
+      "noResults": "வசனங்கள் எதுவும் இல்லை"
     }
   },
   "content": {
@@ -633,11 +571,21 @@
     "noRecordings": "பதிவுகள் இல்லை"
   },
   "voice": {
-    "listening": "கேட்கிறது...",
-    "speaking": "பேசுகிறது",
-    "ready": "தயார்",
-    "tapToSpeak": "பேச தட்டவும்",
-    "processing": "செயலாக்குகிறது..."
+    "panelTitle": "குரல் உதவியாளர்",
+    "typeCommand": "ஒரு கட்டளையை தட்டச்சு செய்யுங்கள்...",
+    "controlExecuted": "செயல்படுத்தப்பட்டது: {{action}}",
+    "timerSet": "{{amount}} {{unit}} க்கு டைமர் அமைக்கப்பட்டது",
+    "chatPending": "உங்கள் செய்தி செயலாக்கப்படுகிறது...",
+    "suggestion": {
+      "watchLive": "நேரடி தொலைக்காட்சி பாருங்கள்",
+      "search": "உள்ளடக்கத்தை தேடுங்கள்",
+      "listenRadio": "வானொலி கேளுங்கள்"
+    },
+    "error": {
+      "micDenied": "மைக்ரோஃபோன் அணுகல் மறுக்கப்பட்டது",
+      "notSupported": "இந்த உலாவியில் குரல் கட்டளைகள் ஆதரிக்கப்படவில்லை",
+      "recognitionFailed": "புரிந்துகொள்ள முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+    }
   },
   "plans": {
     "basic": {
@@ -1596,33 +1544,49 @@
     "weekend": "வார இறுதி"
   },
   "voiceOnboarding": {
-    "title": "குரல் பயிற்சி",
-    "stepProgress": "படி {{step}} / {{total}}",
     "welcome": {
-      "title": "குரல் பயிற்சி",
-      "description": "தனிப்பயனாக்கப்பட்ட குரல் அடையாளம் மற்றும் குரல் கட்டளைகளுக்கு உங்கள் குரல் சுயவிவரத்தை பயிற்சி செய்யுங்கள்."
+      "title": "குரல் கட்டுப்பாட்டிற்கு வரவேற்கிறோம்",
+      "description": "கைகள் இல்லாத அனுபவத்திற்காக உங்கள் குரலால் Bayit+ ஐ கட்டுப்படுத்துங்கள்"
     },
-    "recording": {
-      "micButton": "மைக்",
-      "recButton": "பதிவு",
-      "tapToStart": "பதிவு தொடங்க தட்டவும்",
-      "tapToStop": "பதிவு செய்கிறது... நிறுத்த தட்டவும்",
-      "recordButton": "பதிவு செய்",
-      "stopButton": "நிறுத்து"
+    "features": {
+      "voiceCommands": "குரல் கட்டளைகள்",
+      "voiceCommandsDesc": "இயற்கையான பேச்சுடன் வழிசெலுத்தவும், தேடவும், பின்னணியை கட்டுப்படுத்தவும்",
+      "tts": "உரை-இருந்து-பேச்சு",
+      "ttsDesc": "பதில்களையும் உள்ளடக்க விவரங்களையும் சத்தமாகக் கேளுங்கள்",
+      "wakeWord": "எழுப்பு வார்த்தை",
+      "wakeWordDesc": "எப்போது வேண்டுமானாலும் குரல் கட்டுப்பாட்டை செயல்படுத்த 'Bayit' என்று சொல்லுங்கள்"
     },
-    "training": {
-      "title": "பயிற்சி நடந்து கொண்டிருக்கிறது",
-      "message": "உங்கள் குரல் சுயவிவரம் பயிற்சி பெறுகிறது. இது சிறிது நேரம் எடுக்கலாம்."
+    "getStarted": "தொடங்குங்கள்",
+    "permissions": {
+      "title": "மைக்ரோஃபோன் அணுகல்",
+      "description": "உங்கள் கட்டளைகளைக் கேட்க குரல் கட்டுப்பாட்டிற்கு மைக்ரோஃபோன் அணுகல் தேவை",
+      "privacy": "உங்கள் குரல் தரவு பாதுகாப்பாக செயலாக்கப்பட்டு ஒருபோதும் சேமிக்கப்படாது"
     },
-    "completion": {
-      "title": "குரல் சுயவிவரம் தயார்!",
-      "message": "உங்கள் குரல் சுயவிவரம் உருவாக்கப்பட்டது. இப்போது நீங்கள் குரல் கட்டளைகள் மற்றும் தனிப்பயனாக்கப்பட்ட பேச்சு அம்சங்களைப் பயன்படுத்தலாம்."
+    "permissionsGranted": "மைக்ரோஃபோன் அணுகல் வழங்கப்பட்டது",
+    "permissionRequired": {
+      "title": "அனுமதி தேவை",
+      "message": "குரல் கட்டுப்பாட்டைப் பயன்படுத்த உங்கள் சாதன அமைப்புகளில் மைக்ரோஃபோன் அணுகலை இயக்கவும்"
     },
-    "buttons": {
-      "back": "பின்செல்",
-      "next": "அடுத்து",
-      "finish": "முடி"
-    }
+    "grantPermissions": "அனுமதிகளை வழங்கு",
+    "testWakeWord": {
+      "title": "எழுப்பு வார்த்தையை சோதியுங்கள்",
+      "description": "குரல் செயல்படுத்தலை சோதிக்க 'Bayit' என்று சொல்லுங்கள்",
+      "success": "அருமை! குரல் செயல்படுத்தல் வேலை செய்கிறது"
+    },
+    "startTest": "சோதனையைத் தொடங்கு",
+    "complete": {
+      "title": "எல்லாம் தயார்!",
+      "description": "குரல் கட்டுப்பாடு இப்போது இயக்கப்பட்டது. இந்த கட்டளைகளை முயற்சிக்கவும்:",
+      "tryCommands": "இந்த கட்டளைகளை முயற்சிக்கவும்",
+      "examples": {
+        "search": "\"Fauda தேடு\"",
+        "play": "\"செய்திகளை இயக்கு\"",
+        "navigate": "\"நேரடி டிவிக்கு செல்\"",
+        "control": "\"இடைநிறுத்து\" அல்லது \"ஒலியை அதிகரி\""
+      },
+      "startUsing": "குரல் கட்டுப்பாட்டைப் பயன்படுத்தத் தொடங்குங்கள்"
+    },
+    "skip": "இப்போது தவிர்"
   },
   "portal": {
     "nav": {
@@ -1897,260 +1861,466 @@
     "stop": "பதிவை நிறுத்து",
     "start": "பதிவைத் தொடங்கு"
   },
-  "aiOnboarding": {
-    "title": "AI உதவியாளர் அமைப்பு",
-    "stepProgress": "படி {{step}} / {{total}}",
-    "welcome": {
-      "title": "AI உதவியாளருக்கு வரவேற்பு",
-      "description": "சொற்பொருள் தேடல், சாட்பாட் உதவி மற்றும் அறிவார்ந்த பரிந்துரைகளுக்கான உங்கள் AI துணை."
+  "discover": {
+    "subtitle": "19 AI-சார்ந்த அம்சங்களை ஆராயுங்கள்",
+    "description": "Bayit+ உங்கள் பார்வை, கேட்கும் மற்றும் கற்றல் அனுபவத்தை மேம்படுத்த AI பயன்படுத்துகிறது. உங்கள் தளத்தில் என்ன கிடைக்கிறது என்பதைக் கண்டறியுங்கள்.",
+    "featureCount": "{{count}} அம்சங்கள்",
+    "tryIt": "முயற்சி செய்க",
+    "startWalkthrough": "வழிகாட்டுதலைத் தொடங்கு",
+    "availableOn": "இதில் கிடைக்கும்",
+    "prerequisites": "முன்தேவைகள்",
+    "setup": "அமைக்கவும்",
+    "error": {
+      "fetchFailed": "Discover அம்சங்களை ஏற்றுவதில் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "unknownFeature": "அம்சம் கண்டறியப்படவில்லை.",
+      "featureDisabled": "இந்த அம்சம் தற்போது முடக்கப்பட்டுள்ளது."
     },
-    "permissions": {
-      "title": "அனுமதிகள்",
-      "description": "AI உதவியாளருக்கு இதற்கான அணுகல் தேவை:\n\n• உங்கள் பார்வை வரலாறு (தனிப்பயனாக்கப்பட்ட பரிந்துரைகளுக்கு)\n• தேடல் வினவல்கள் (முடிவுகளை மேம்படுத்த)\n• விருப்பத்தேர்வுகள் (பதில்களை தனிப்பயனாக்க)"
+    "availability": {
+      "ready": "தயார்",
+      "setupNeeded": "அமைப்பு தேவை",
+      "premiumRequired": "பிரீமியம் தேவை",
+      "notAvailable": "கிடைக்கவில்லை",
+      "platformOnly": "மற்ற தளம்"
     },
-    "personalization": {
-      "title": "தனிப்பயனாக்கம்",
-      "description": "AI உங்கள் தொடர்புகளிலிருந்து கற்று வழங்கும்:\n\n• சிறந்த உள்ளடக்க பரிந்துரைகள்\n• மேலும் துல்லியமான தேடல் முடிவுகள்\n• சூழல்சார் சாட்பாட் பதில்கள்"
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "tvos": "Apple TV",
+      "android": "Android"
     },
-    "completion": {
-      "title": "அனைத்தும் தயார்!",
-      "message": "உங்கள் AI உதவியாளர் உள்ளடக்கத்தைக் கண்டறிந்து அனுபவிக்க உங்களுக்கு உதவ தயாராக உள்ளது."
+    "category": {
+      "watching_movies": "திரைப்படங்கள் பார்க்கவும்",
+      "watching_live_tv": "நேரடி தொலைக்காட்சி பார்க்கவும்",
+      "learn_hebrew": "ஹீப்ரு கற்கவும்",
+      "search_discovery": "தேடல் & கண்டுபிடிப்பு",
+      "chat_assistants": "சாட் உதவியாளர்கள்"
     },
-    "buttons": {
-      "back": "பின்செல்",
-      "next": "அடுத்து",
-      "finish": "முடி"
-    }
-  },
-  "voiceAssistant": {
-    "fabLabel": "குரல் உதவியாளர்",
-    "modal": {
-      "title": "குரல் உதவியாளர்",
-      "setupRequired": "குரல் உதவியாளர் அமைப்பு தேவை",
-      "setupMessage": "குரல் அம்சங்களைப் பயன்படுத்த AI உதவியாளர் அமைப்பை முடிக்கவும்.",
-      "startSetup": "அமைப்பை தொடங்கு",
-      "cancel": "ரத்து செய்"
-    },
-    "state": {
-      "idle": "பேச தட்டவும்",
-      "listening": "கேட்கிறது...",
-      "processing": "செயலாக்கம்...",
-      "speaking": "பேசுகிறது...",
-      "error": "ஏதோ தவறு நடந்தது"
-    },
-    "a11y": {
-      "startListening": "குரல் உள்ளீட்டைத் தொடங்கு",
-      "stopListening": "கேட்பதை நிறுத்தி செயலாக்கு",
-      "processing": "குரல் உள்ளீடு செயலாக்கம்",
-      "interrupt": "பேசுவதை நிறுத்து"
-    }
-  },
-  "aiChat": {
-    "title": "AI அரட்டை",
-    "inputPlaceholder": "AIயிடம் எதையும் கேளுங்கள்...",
-    "sendButton": "அனுப்பு",
-    "retryButton": "மீண்டும் முயற்சிக்கவும்"
-  },
-  "chess": {
-    "title": "சதுரங்கம்",
-    "welcome": "சதுரங்கத்திற்கு வரவேற்கிறோம்",
-    "subtitle": "உலகம் முழுவதும் நண்பர்கள் மற்றும் குடும்பத்தினருடன் சதுரங்கம் விளையாடுங்கள்",
-    "createGame": "புதிய விளையாட்டை உருவாக்கு",
-    "joinGame": "விளையாட்டில் சேரவும்",
-    "gameCode": "விளையாட்டு குறியீடு",
-    "enterGameCode": "விளையாட்டு குறியீட்டை உள்ளிடவும்",
-    "invalidGameCode": "தவறான விளையாட்டு குறியீடு. 6 எழுத்துக்கள் இருக்க வேண்டும்.",
-    "joinFailed": "விளையாட்டில் சேர முடியவில்லை",
-    "join": "சேரவும்",
-    "create": "உருவாக்கு",
-    "chooseColor": "உங்கள் நிறத்தை தேர்ந்தெடுக்கவும்",
-    "white": "வெள்ளை",
-    "black": "கருப்பு",
-    "chatPlaceholder": "செய்தி எழுதுங்கள்... (ஆலோசனைக்கு @bot)",
-    "botHint": "எங்கள் AI உதவியாளரிடமிருந்து சதுரங்க ஆலோசனை பெற உங்கள் செய்தியில் @bot குறியிடுங்கள்",
-    "bot": "சதுரங்க உதவியாளர்",
-    "mute": "ஒலியடக்கு",
-    "unmute": "ஒலி இயக்கு",
-    "speaking": "பங்கேற்பாளர்கள்",
-    "resign": "விலகு",
-    "offerDraw": "சமன் முன்மொழி",
-    "newGame": "புதிய விளையாட்டு",
-    "checkmate": "செக்மேட்!",
-    "stalemate": "ஸ்டேல்மேட்",
-    "draw": "சமன்",
-    "resigned": "விளையாட்டு விலகல்",
-    "reconnecting": "மீண்டும் இணைக்கிறது...",
-    "moveHistory": "நகர்வு வரலாறு",
-    "noMoves": "இன்னும் நகர்வுகள் இல்லை",
-    "showHints": "வழிகாட்டி குறிப்புகளைக் காட்டு",
-    "yourTurn": "உங்கள் முறை",
-    "opponentTurn": "எதிராளியின் முறை",
-    "waitingForOpponent": "எதிராளிக்காக காத்திருக்கிறது...",
-    "gameOver": "விளையாட்டு முடிந்தது",
-    "sendingInvite": "{{name}}-க்கு விளையாட்டு அழைப்பு அனுப்புகிறது...",
-    "inviteSent": "{{name}}-க்கு விளையாட்டு அழைப்பு அனுப்பப்பட்டது! விளையாட்டு குறியீடு: {{code}}",
-    "inviteFailed": "பயனர் கிடைக்கவில்லை. பெயரை சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
-    "inviteReceived": "{{name}} உங்களை சதுரங்க விளையாட்டுக்கு அழைத்திருக்கிறார்!",
-    "joinInvite": "விளையாட்டில் சேரவும்",
-    "challenge": "சவால்",
-    "challengeFriend": "நண்பரை சவால் விடு",
-    "noFriendsYet": "சவால் விட நண்பர்களைச் சேர்க்கவும்",
-    "acceptInvite": "ஏற்கவும்",
-    "declineInvite": "மறுக்கவும்",
-    "playedAsWhite": "வெள்ளையாக விளையாடியது",
-    "playedAsBlack": "கருப்பாக விளையாடியது",
-    "gameMode": "விளையாட்டு முறை",
-    "playVsFriend": "நண்பருக்கு எதிராக விளையாடு",
-    "playVsBot": "போட்டுக்கு எதிராக விளையாடு",
-    "difficulty": "கடினத்தன்மை",
-    "easy": "எளிது",
-    "medium": "நடுத்தரம்",
-    "hard": "கடினம்",
-    "chessBot": "சதுரங்க போட்",
-    "disconnected": "துண்டிக்கப்பட்டது",
-    "theirTurn": "அவர்களின் முறை",
-    "copyCode": "குறியீட்டை நகலெடு",
-    "whiteTurn": "வெள்ளையின் முறை",
-    "blackTurn": "கருப்பின் முறை",
-    "you": "நீங்கள்",
-    "opponent": "எதிரி",
-    "acceptDraw": "சமன் ஏற்கவும்",
-    "declineDraw": "சமன் நிராகரிக்கவும்",
-    "whiteCaptured": "வெள்ளை பிடித்தவை",
-    "blackCaptured": "கருப்பு பிடித்தவை",
-    "online": "ஆன்லைன்",
-    "offline": "ஆஃப்லைன்",
-    "joinByGameCode": "விளையாட்டு குறியீட்டில் சேரவும்",
-    "timeout": "நேரம் முடிந்தது",
-    "drawOffered": "சமநிலை முன்மொழிவு",
-    "chat": {
-      "title": "அரட்டை",
-      "inputPlaceholder": "செய்தி எழுதவும்..."
-    },
-    "timeControl": "நேர கட்டுப்பாடு",
-    "unlimited": "வரம்பற்ற",
-    "bullet1": "1 நிமிடம்",
-    "blitz3": "3 நிமிடங்கள்",
-    "blitz5": "5 நிமிடங்கள்",
-    "rapid10": "10 நிமிடங்கள்",
-    "classical30": "30 நிமிடங்கள்",
-    "challengeViaWhatsApp": "WhatsApp வழியாக சவால் விடுங்கள்",
-    "whatsAppMessage": "Bayit+-ல் சதுரங்கத்தில் உங்களுக்கு சவால் விடுகிறேன்! குறியீடு: {{code}} - விளையாட தட்டவும்: {{link}}"
-  },
-  "byoc": {
-    "home": {
-      "title": "உங்கள் சொந்த உள்ளடக்கத்தைக் கொண்டு வாருங்கள்",
-      "subtitle": "உங்கள் விருப்பமான உள்ளடக்க ஆதாரங்களை இணைத்து AI டப்பிங், வசனங்கள் மற்றும் பலவற்றுடன் மேம்படுத்துங்கள்",
-      "connectButton": "உங்கள் உள்ளடக்கத்தை இணைக்கவும்",
-      "aiFeatures": {
-        "dubbing": "AI டப்பிங்",
-        "subtitles": "AI வசனங்கள்"
+    "feature": {
+      "pause_ask": {
+        "name": "நிறுத்தி கேளுங்கள்",
+        "tagline": "எந்த காட்சியையும் நிறுத்தி உங்கள் AI தோழரிடம் கேளுங்கள்",
+        "description": "பார்க்கும்போது, வீடியோவை நிறுத்தி தற்போதைய காட்சியைப் பற்றி கேள்விகள் கேளுங்கள். உங்கள் AI கதாபாத்திரம் கலாச்சார குறிப்புகளை விளக்கும், உரையாடலை மொழிபெயர்க்கும் அல்லது கதைப்பகுதியை விவாதிக்கும்."
+      },
+      "interactive_subtitles": {
+        "name": "ஊடாடும் வசனங்கள்",
+        "tagline": "உடனடி மொழிபெயர்ப்பு மற்றும் சூழலுக்காக எந்த வசன வார்த்தையையும் தட்டுங்கள்",
+        "description": "வசனங்களில் எந்த வார்த்தையிலும் கிளிக் செய்து அதன் மொழிபெயர்ப்பு பார்க்கவும், உச்சரிப்பு கேட்கவும் மற்றும் பயன்பாட்டு எடுத்துக்காட்டுகளைப் பெறவும். உங்கள் விருப்பமான நிகழ்ச்சிகள் பார்க்கும்போது சொல்வளம் உருவாக்குங்கள்."
+      },
+      "vocabulary": {
+        "name": "சொல்வளம் கட்டுவோம்",
+        "tagline": "நீங்கள் பார்க்கும் நிகழ்ச்சிகளிலிருந்து புதிய வார்த்தைகளைக் கற்கவும்",
+        "description": "வசனங்களிலிருந்து தானாக புதிய ஹீப்ரு வார்த்தைகளை சேகரிக்கவும். ஃப்ளாஷ்கார்டுகளை மதிப்பாய்வு செய்யவும், முன்னேற்றத்தை கண்காணிக்கவும், நீங்கள் விரும்பும் உள்ளடக்கத்தின் மூலம் சொல்வளம் உருவாக்குங்கள்."
+      },
+      "vod_moments": {
+        "name": "VOD தருணங்கள்",
+        "tagline": "உங்கள் விருப்பமான உள்ளடக்கத்திலிருந்து AI-தேர்ந்தெடுத்த சிறந்த தருணங்கள்",
+        "description": "திரைப்படங்கள் மற்றும் நிகழ்ச்சிகளிலிருந்து AI-உருவாக்கிய சிறந்த கிளிப்கள் மற்றும் முக்கிய தருணங்களைப் பெறுங்கள். நினைவில் நிற்கும் காட்சிகளை பகிரவும் மற்றும் சிறந்த பகுதிகளை மீண்டும் பார்க்கவும்."
+      },
+      "cultural_context": {
+        "name": "கலாச்சார சூழல்",
+        "tagline": "ஒவ்வொரு காட்சிக்கும் பின்னால் உள்ள கலாச்சார பின்னணியை புரிந்துகொள்ளுங்கள்",
+        "description": "நீங்கள் பார்க்கும் உள்ளடக்கத்தில் தோன்றும் இஸ்ரேலி வழக்கங்கள், விழாக்கள், நகைச்சுவை மற்றும் சமூக நடைமுறைகளை விளக்கும் நிகழ்நேர கலாச்சார குறிப்புகளைப் பெறுங்கள்."
+      },
+      "bilingual_bridge": {
+        "name": "இருமொழி பாலம்",
+        "tagline": "பார்க்கும்போது ஹீப்ரு-தமிழில் பக்கவாட்டில் கற்கவும்",
+        "description": "முன்னிலைப்படுத்தப்பட்ட சொல்வளத்துடன் இரட்டை மொழி வசனங்களைப் பாருங்கள். இயல்பாகவே புரிதலை வளர்க்க ஹீப்ருவுக்கும் உங்கள் தாய்மொழிக்கும் இடையில் மாறுங்கள்."
+      },
+      "ai_companion": {
+        "name": "AI தோழர்",
+        "tagline": "இஸ்ரேலி உள்ளடக்கத்தில் உங்கள் தனிப்பட்ட AI வழிகாட்டி",
+        "description": "உங்களுடன் பார்க்கும் ஒரு AI கதாபாத்திரம், கருத்துரைகள் வழங்கி, கேள்விகளுக்கு பதில் அளித்து, இஸ்ரேலி ஊடகத்தின் நுணுக்கங்களை புரிந்துகொள்ள உதவுகிறது."
+      },
+      "live_dubbing": {
+        "name": "நேரடி குரல் மாற்றம்",
+        "tagline": "நேரடி இஸ்ரேலி தொலைக்காட்சி சேனல்களின் நிகழ்நேர AI குரல் மாற்றம்",
+        "description": "உங்கள் விருப்பமான மொழியில் AI-இயக்கும் நிகழ்நேர குரல் மாற்றத்துடன் நேரடி இஸ்ரேலி தொலைக்காட்சி பாருங்கள். மொழி தடைகள் இல்லாமல் செய்திகள், பேச்சு நிகழ்ச்சிகள் மற்றும் பொழுதுபோக்கை அனுபவியுங்கள்."
+      },
+      "live_subtitles": {
+        "name": "நேரடி வசனங்கள்",
+        "tagline": "நேரடி ஒளிபரப்புகளுக்கு நிகழ்நேர AI வசனங்கள்",
+        "description": "நேரடி இஸ்ரேலி தொலைக்காட்சி பார்க்கும்போது நிகழ்நேரத்தில் AI-உருவாக்கிய வசனங்களைப் பெறுங்கள். நேரடி உள்ளடக்கத்தை உடனடியாக மொழிபெயர்க்க உங்கள் விருப்பமான மொழியை தேர்ந்தெடுங்கள்."
+      },
+      "live_trivia": {
+        "name": "நேரடி வினாட்டி",
+        "tagline": "நேரடியில் ஒளிபரப்பாவதன் அடிப்படையில் வினாட்டி விளையாடுங்கள்",
+        "description": "AI நேரடி ஒளிபரப்புகளிலிருந்து தலைப்புகளை கண்டறிந்து நிகழ்நேரத்தில் வினாட்டி கேள்விகளை உருவாக்குகிறது. நண்பர்களுடன் போட்டியிடுங்கள் மற்றும் தொலைக்காட்சி பார்க்கும்போது இஸ்ரேலி கலாச்சாரத்தைப் பற்றி அறியுங்கள்."
+      },
+      "catch_up": {
+        "name": "தொடர்ந்து பார்க்கவும்",
+        "tagline": "நேரடி தொலைக்காட்சியில் நீங்கள் தவறவிட்டதின் AI சுருக்கங்கள்",
+        "description": "நேரடி ஒளிபரப்பின் ஒரு பகுதியை தவறவிட்டீர்களா? என்ன நடந்தது என்று உங்களுக்கு புரிய வைக்கும் AI-உருவாக்கிய சுருக்கங்களைப் பெறுங்கள், விரைவு மதிப்பாய்வுக்கு முக்கிய தருணங்கள் முன்னிலைப்படுத்தப்பட்டுள்ளன."
+      },
+      "scene_search": {
+        "name": "காட்சி தேடல்",
+        "tagline": "அனைத்து உள்ளடக்கங்களிலும் குறிப்பிட்ட காட்சிகளை தேடுங்கள்",
+        "description": "நீங்கள் நினைவில் வைத்திருக்கும் ஒரு காட்சியை விவரிக்கவும், AI அதை அனைத்து கிடைக்கும் உள்ளடக்கங்களிலும் கண்டுபிடிக்கும். உரையாடல், காட்சி கூறுகள் அல்லது கதைப்பகுதி விவரணங்கள் மூலம் தேடுங்கள்."
+      },
+      "phonetic_mirror": {
+        "name": "ஒலிப்பு கண்ணாடி",
+        "tagline": "AI கருத்துரையுடன் ஹீப்ரு உச்சரிப்பை பயிற்சி செய்யுங்கள்",
+        "description": "ஹீப்ரு பேசும்போது உங்களை பதிவு செய்து உச்சரிப்பில் உடனடி AI கருத்துரையைப் பெறுங்கள். உங்கள் பேச்சை தாய்மொழி பேசுவோரிடம் ஒப்பிட்டு காலப்போக்கில் முன்னேற்றத்தை கண்காணிக்கவும்."
+      },
+      "talk_back": {
+        "name": "திரும்பி பேசுங்கள்",
+        "tagline": "உங்கள் AI கதாபாத்திரத்துடன் ஹீப்ருவில் குரல் உரையாடல்கள் நடத்துங்கள்",
+        "description": "உங்கள் AI கதாபாத்திரத்துடன் பேசி உரையாடல் ஹீப்ருவை பயிற்சி செய்யுங்கள். இயல்பான உரையாடலில் இலக்கணம், சொல்வளம் மற்றும் உச்சரிப்பில் நிகழ்நேர கருத்துரையைப் பெறுங்கள்."
+      },
+      "interactive_mission": {
+        "name": "ஊடாடும் பணிகள்",
+        "tagline": "AI வழிகாட்டுதலுடன் வேடிக்கையான ஹீப்ரு கற்றல் சவால்கள்",
+        "description": "உள்ளடக்கம் பார்ப்பதை ஹீப்ரு கற்றல் பயிற்சிகளுடன் இணைக்கும் AI-வழிகாட்டப்பட்ட பணிகளை நிறைவு செய்யுங்கள். பரிசுகளை வெல்லுங்கள் மற்றும் உங்கள் மொழி பயணத்தை கண்காணிக்கவும்."
+      },
+      "glossary": {
+        "name": "தனிப்பட்ட சொல்லகராதி",
+        "tagline": "உள்ளடக்கத்திலிருந்து கட்டமைக்கப்பட்ட உங்கள் தனிப்பயன் ஹீப்ரு அகராதி",
+        "description": "நீங்கள் சந்தித்த மற்றும் சேமித்த அனைத்து ஹீப்ரு வார்த்தைகளும், வகை, அதிர்வெண் மற்றும் தேர்ச்சி நிலையின்படி ஒழுங்கமைக்கப்பட்டுள்ளன. எந்த நேரத்திலும் மதிப்பாய்வு செய்யவும் பயிற்சி செய்யவும்."
+      },
+      "llm_search": {
+        "name": "AI தேடல்",
+        "tagline": "இயல்பு மொழி வினவல்களுடன் உள்ளடக்கம் கண்டுபிடியுங்கள்",
+        "description": "இயல்பு மொழியைப் பயன்படுத்தி முழு Bayit+ நூலகத்தையும் தேடுங்கள். 'குடும்பத்தைப் பற்றிய வேடிக்கையான இஸ்ரேலி நகைச்சுவை' அல்லது 'தெல் அவீவ் பற்றிய ஆவணப்படங்கள்' கேளுங்கள் மற்றும் AI-தேர்ந்தெடுத்த முடிவுகளைப் பெறுங்கள்."
+      },
+      "proactive_voice": {
+        "name": "செயலில் குரல்",
+        "tagline": "உங்கள் தேவைகளை முன்கூட்டியே அறிந்து செயல்படும் குரல்-முதல் AI உதவியாளர்",
+        "description": "நீங்கள் பார்ப்பதன் அடிப்படையில் தொடர்புடைய உள்ளடக்க பரிந்துரைகள், மொழிபெயர்ப்புகள் மற்றும் கற்றல் வாய்ப்புகளை முன்முயற்சியாக வழங்கும் AI உதவியாளர்."
+      },
+      "chatbot": {
+        "name": "Bayit Chat",
+        "tagline": "இஸ்ரேலி உள்ளடக்கம் தொடர்பான எதையும் AI உடன் அரட்டையடியுங்கள்",
+        "description": "இஸ்ரேலி கலாச்சாரத்தைப் பற்றி கேள்விகள் கேளுங்கள், உள்ளடக்க பரிந்துரைகள் பெறுங்கள், ஹீப்ரு பயிற்சி செய்யுங்கள், அல்லது நீங்கள் பார்த்தது பற்றி விவாதிக்கவும். உங்கள் AI தோழர் எப்போதும் கிடைக்கும்."
       }
     },
-    "yourChannels": "உங்கள் சேனல்கள்",
-    "iptv": "IPTV",
-    "plex": "Plex",
-    "youtube": "YouTube",
-    "addIPTV": "IPTV சேர்க்கவும்",
-    "addPlex": "Plex சேர்க்கவும்",
-    "addYouTube": "YouTube சேர்க்கவும்",
-    "playlistURL": "பிளேலிஸ்ட் URL",
-    "playlistName": "பிளேலிஸ்ட் பெயர்",
-    "noChannels": "சானல்கள் கண்டறியவில்லை",
-    "refreshing": "புதுப்பிக்கிறது...",
-    "sourceAdded": "மூலம் சேர்க்கப்பட்டது",
-    "sourceRemoved": "மூலம் நீக்கப்பட்டது",
-    "connectedSources": "இணைக்கப்பட்ட மூலங்கள்",
-    "aiAvailable": "AI கிடைக்கிறது",
-    "audioAIOnly": "ஆடியோ AI மட்டும்",
-    "aiDubbing": "AI டப்பிங்",
-    "aiSubtitles": "AI வசனங்கள்",
-    "connectContent": "உள்ளடக்கத்தை இணைக்கவும்",
-    "connectContentDesc": "உங்கள் IPTV, Plex அல்லது YouTube மூலங்களை சேர்க்கவும்",
-    "removeSource": "மூலத்தை நீக்கு",
-    "removeConfirm": "இந்த மூலத்தை நீக்க விரும்புகிறீர்களா?",
-    "channelCount": "%d சேனல்கள்",
-    "fromPlex": "Plex-இலிருந்து",
-    "enterURL": "பிளேலிஸ்ட் URL அல்லது கோப்பை உள்ளிடவும்",
-    "validating": "சரிபார்க்கிறது...",
-    "invalidURL": "சரியான URL-ஐ உள்ளிடவும்",
-    "fetchFailed": "பிளேலிஸ்ட்டை பெற இயலவில்லை",
-    "plexVisitLink": "plex.tv/link-ஐ பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
-    "plexEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
-    "plexWaiting": "Plex அங்கீகாரத்திற்காக காத்திருக்கிறது...",
-    "plexRequestingPin": "Plex PIN கோருகிறது...",
-    "plexSelectServer": "சேவையகத்தைத் தேர்ந்தெடுக்கவும்",
-    "plexSelectServerDesc": "எந்த Plex சேவையகத்தை இணைக்க வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்",
-    "plexDiscovering": "சேவையகங்களைக் கண்டறிகிறது...",
-    "plexNoServers": "Plex சேவையகங்கள் எதுவும் கிடைக்கவில்லை",
-    "plexLocal": "உள்ளூர்",
-    "plexRemote": "தொலைநிலை",
-    "plexItemCount": "Plex-இலிருந்து %d உருப்படிகள்",
-    "plexConnectDesc": "உங்கள் Plex Media Server-ஐ இணைக்கவும்",
-    "youtubeVisitLink": "கீழே உள்ள இணைப்பைப் பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
-    "youtubeEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
-    "youtubeWaiting": "அங்கீகாரத்திற்காக காத்திருக்கிறது...",
-    "youtubeRequestingCode": "சாதன குறியீடு கோருகிறது...",
-    "youtubeConnected": "YouTube இணைக்கப்பட்டது",
-    "youtubeVideoCount": "வீடியோக்கள் கண்டறியப்பட்டன",
-    "youtubeOpenApp": "YouTube-இல் திறக்கவும்",
-    "youtubeAudioAINote": "YouTube உள்ளடக்கத்திற்கு ஆடியோ AI அம்சங்கள் கிடைக்கும்",
-    "fromYouTube": "YouTube-இலிருந்து",
-    "youtubeConnectDesc": "உங்கள் YouTube கணக்கை இணைக்கவும்",
-    "bannerTitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
-    "bannerSubtitle": "AI-மேம்படுத்தப்பட்ட பார்வைக்கு உங்கள் ஸ்ட்ரீமிங் மூலங்களை இணைக்கவும்",
-    "bannerConnect": "இணைக்க",
-    "bannerDismiss": "நிராகரி",
-    "itemsLoaded": "உருப்படிகள் ஏற்றப்பட்டன",
-    "enriching": "செறிவூட்டுகிறது...",
-    "findingSubtitles": "வசனங்களைத் தேடுகிறது...",
-    "subtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்பட்டன",
-    "noSubtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்படவில்லை",
-    "interactionMoments": "ஊடாடும் தருணங்கள்",
-    "interactionMomentsDescription": "கதாபாத்திர தொடர்புகளுக்கான முக்கிய தருணங்களை AI கண்டறியும்",
-    "enrichmentFailed": "செறிவூட்டல் தோல்வியடைந்தது",
-    "browsePlexLibrary": "Plex நூலகத்தை உலாவுக",
-    "addXtream": "Xtream Codes",
-    "xtreamServer": "சேவையக URL",
-    "xtreamUsername": "பயனர்பெயர்",
-    "xtreamPassword": "கடவுச்சொல்",
-    "xtreamConnectDesc": "Xtream Codes வழங்குநரை இணைக்கவும்",
-    "xtreamAuthFailed": "அங்கீகாரம் தோல்வியடைந்தது",
-    "sourceName": "மூலத்தின் பெயர்",
-    "selectProvider": "வழங்குநரைத் தேர்ந்தெடுக்கவும்",
-    "manualEntry": "கைமுறை உள்ளீடு",
-    "onboarding.title": "உள்ளடக்க அமைப்பு",
-    "onboarding.connectSource": "ஒரு மூலத்தை இணைக்கவும்",
-    "onboarding.connectDesc": "தொடங்குவதற்கு உங்கள் முதல் உள்ளடக்க மூலத்தை சேர்க்கவும்",
-    "onboarding.sourceAdded": "மூலம் சேர்க்கப்பட்டது",
-    "onboarding.analyzing": "உள்ளடக்கத்தை பகுப்பாய்வு செய்கிறது...",
-    "onboarding.analyze": "உள்ளடக்கத்தை பகுப்பாய்வு செய்",
-    "onboarding.analysisComplete": "பகுப்பாய்வு முடிந்தது",
-    "onboarding.channelsIdentified": "சேனல்கள் அடையாளம் காணப்பட்டன",
-    "onboarding.vodMatched": "VOD பொருத்தப்பட்டது",
-    "onboarding.duplicatesFound": "நகல்கள் கண்டறியப்பட்டன",
-    "onboarding.streamsHealthy": "ஸ்ட்ரீம்கள் ஆரோக்கியமானவை",
-    "onboarding.languages": "மொழிகள்",
-    "onboarding.topCategories": "முக்கிய வகைகள்",
-    "onboarding.cleanupTitle": "உள்ளடக்க சுத்தம்",
-    "onboarding.autoBestQuality": "சிறந்த தரத்தை தானாக தேர்ந்தெடு",
-    "onboarding.autoBestQualityDesc": "ஒவ்வொரு சேனலுக்கும் மிக உயர்ந்த தரமான ஸ்ட்ரீமை தானாகத் தேர்ந்தெடுக்கவும்",
-    "onboarding.applyCleanup": "சுத்தம் பயன்படுத்து",
-    "onboarding.personalizeTitle": "தனிப்பயனாக்கு",
-    "onboarding.personalizeDesc": "முகப்புத் திரைக்கான உங்கள் விருப்பங்களைத் தேர்ந்தெடுக்கவும்",
-    "onboarding.languagePriority": "மொழி முன்னுரிமை",
-    "onboarding.homeCategories": "முகப்பு வகைகள்",
-    "onboarding.ready": "தயார்",
-    "home.title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
-    "home.subtitle": "உங்கள் IPTV, Plex, YouTube அல்லது Xtream மூலங்களை இணைக்கவும்",
-    "home.connectButton": "மூலங்களை இணைக்கவும்",
-    "home.aiFeatures.dubbing": "AI டப்பிங்",
-    "home.aiFeatures.subtitles": "AI வசனங்கள்",
-    "tapToOpen": "திறக்க தட்டவும்",
-    "aiTrivia": "AI ட்ரிவியா",
-    "ai.dubbing": "AI டப்பிங்",
-    "ai.subtitles": "AI வசனங்கள்",
-    "ai.trivia": "AI ட்ரிவியா",
-    "ai.audioOverlay": "ஆடியோ மேலடுக்கு"
+    "prereq": {
+      "avatar": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+      "subscription": "பிரீமியம் சந்தா தேவை",
+      "microphone": "மைக்ரோஃபோன் அணுகல் தேவை",
+      "contentType": "உங்கள் உள்ளடக்க விருப்பங்களை தேர்ந்தெடுங்கள்",
+      "preference": "உங்கள் மொழி விருப்பங்களை அமைக்கவும்",
+      "voiceClone": "உங்கள் குரல் நகலை அமைக்கவும்"
+    },
+    "walkthrough": {
+      "tryItNow": "[ta] Try it now",
+      "watchDemo": "[ta] Watch demo",
+      "skip": "[ta] Skip",
+      "next": "[ta] Next",
+      "done": "[ta] Done",
+      "complete": "[ta] Walkthrough complete",
+      "stepCounter": "[ta] {{current}} of {{total}}",
+      "pause_ask": {
+        "step1": "[ta] Navigate to a movie with interactive moments",
+        "step2": "[ta] Pause the movie during a scene",
+        "step3": "[ta] Tap the Ask a Character button",
+        "step4": "[ta] Watch the character respond to you"
+      },
+      "interactive_subtitles": {
+        "step1": "[ta] Start playing a movie with subtitles",
+        "step2": "[ta] Tap the Interactive button in the control bar",
+        "step3": "[ta] Select your subtitle language",
+        "step4": "[ta] Tap any word in the subtitles to learn more"
+      },
+      "vocabulary": {
+        "step1": "[ta] Open a movie with interactive subtitles enabled",
+        "step2": "[ta] Tap a word you want to learn",
+        "step3": "[ta] Tap Save to Vocabulary",
+        "step4": "[ta] Review your saved words in the Vocabulary section"
+      },
+      "vod_moments": {
+        "step1": "[ta] Start watching a movie with interactive moments",
+        "step2": "[ta] Wait for an interactive prompt to appear",
+        "step3": "[ta] See the AI-generated interaction"
+      },
+      "cultural_context": {
+        "step1": "[ta] Play a movie with Hebrew dialogue",
+        "step2": "[ta] Tap on a subtitle with cultural significance",
+        "step3": "[ta] Read the AI-generated cultural explanation"
+      },
+      "bilingual_bridge": {
+        "step1": "[ta] Open a movie with bilingual support",
+        "step2": "[ta] Select the bilingual subtitle mode",
+        "step3": "[ta] Tap a highlighted phrase to see the translation",
+        "step4": "[ta] Watch both languages side by side"
+      },
+      "ai_companion": {
+        "step1": "[ta] Start watching any movie",
+        "step2": "[ta] Tap the AI Companion button",
+        "step3": "[ta] Type a question about the movie",
+        "step4": "[ta] Read the contextual AI response"
+      },
+      "live_dubbing": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the dubbing button in the control bar",
+        "step3": "[ta] Select your preferred language",
+        "step4": "[ta] Listen to the real-time AI dubbing"
+      },
+      "live_subtitles": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the subtitles button",
+        "step3": "[ta] Select your subtitle language",
+        "step4": "[ta] Watch the real-time subtitles appear"
+      },
+      "live_trivia": {
+        "step1": "[ta] Navigate to a live TV channel",
+        "step2": "[ta] Tap the trivia button",
+        "step3": "[ta] Answer the AI-generated questions"
+      },
+      "catch_up": {
+        "step1": "[ta] Navigate to a live broadcast",
+        "step2": "[ta] Select the catch-up option",
+        "step3": "[ta] Tap to generate an AI summary",
+        "step4": "[ta] Read the summary of what you missed"
+      },
+      "scene_search": {
+        "step1": "[ta] Navigate to a recorded broadcast",
+        "step2": "[ta] Type what you are looking for",
+        "step3": "[ta] Tap on the matching scene",
+        "step4": "[ta] Watch the scene from that point"
+      },
+      "phonetic_mirror": {
+        "step1": "[ta] Open the Phonetic Mirror in Zeh Ani",
+        "step2": "[ta] Read the Hebrew phrase shown",
+        "step3": "[ta] Speak the phrase into your microphone",
+        "step4": "[ta] Review the AI pronunciation feedback"
+      },
+      "talk_back": {
+        "step1": "[ta] Open Talk Back in Zeh Ani",
+        "step2": "[ta] Listen to your avatar speak Hebrew",
+        "step3": "[ta] Respond in Hebrew using your microphone",
+        "step4": "[ta] Review the AI feedback on your response"
+      },
+      "interactive_mission": {
+        "step1": "[ta] Open Interactive Missions",
+        "step2": "[ta] Select a mission level",
+        "step3": "[ta] Follow the AI-guided exercises",
+        "step4": "[ta] Complete the mission and earn rewards"
+      },
+      "glossary": {
+        "step1": "[ta] Open the Hebrew Glossary",
+        "step2": "[ta] Search for a Hebrew word",
+        "step3": "[ta] Listen to the pronunciation"
+      },
+      "llm_search": {
+        "step1": "[ta] Open the Search tab",
+        "step2": "[ta] Type a natural language query",
+        "step3": "[ta] Browse the AI-curated results"
+      },
+      "proactive_voice": {
+        "step1": "[ta] Open the Voice Suggestions feature",
+        "step2": "[ta] Tap and hold to speak",
+        "step3": "[ta] Hear the personalized recommendations"
+      },
+      "chatbot": {
+        "step1": "[ta] Open the AI Assistant",
+        "step2": "[ta] Type your question or request",
+        "step3": "[ta] Read the AI response"
+      }
+    }
+  },
+  "byoc": {
+    "pageSubtitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள் - IPTV மற்றும் ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்",
+    "addSource": "மூலத்தை சேர்க்கவும்",
+    "sync": "ஒத்திசைவு",
+    "remove": "அகற்று",
+    "channelCount": "{{count}} சேனல்கள்",
+    "empty": {
+      "title": "எந்த மூலமும் சேர்க்கப்படவில்லை",
+      "subtitle": "Bayit+ உடன் உங்கள் சொந்த உள்ளடக்கத்தை பார்க்க உங்கள் IPTV, Xtream அல்லது ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்"
+    },
+    "source": {
+      "iptv": "IPTV மூலம்",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTV மூலத்தை சேர்க்கவும்",
+      "subtitle": "M3U அல்லது M3U8 பிளேலிஸ்ட் கோப்பிற்கான URL ஐ உள்ளிடவும்",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "சரிபார்க்கவும்",
+      "add": "மூலத்தை சேர்க்கவும்"
+    },
+    "addXtream": {
+      "title": "Xtream Codes இணைக்கவும்",
+      "subtitle": "உங்கள் Xtream Codes சர்வர் நற்சான்றிதழ்களை உள்ளிடவும்",
+      "serverUrl": "சர்வர் URL",
+      "username": "பயனர்பெயர்",
+      "password": "கடவுச்சொல்",
+      "connect": "இணைக்கவும்"
+    },
+    "preview": {
+      "title": "முன்னோட்டம்",
+      "channelCount": "{{count}} சேனல்கள் கண்டுபிடிக்கப்பட்டன"
+    },
+    "providers": {
+      "title": "பிரபலமான வழங்குநர்கள்"
+    },
+    "wizard": {
+      "step1": "மூலத்தை சேர்க்கவும்",
+      "step2": "செயலாக்கம்",
+      "step3": "மதிப்பாய்வு",
+      "selectSource": "மூல வகையை தேர்ந்தெடுக்கவும்"
+    },
+    "normalization": {
+      "title": "உங்கள் உள்ளடக்கம் செயலாக்கப்படுகிறது",
+      "total": "மொத்தம் {{count}} சேனல்கள்",
+      "matched": "{{count}} பொருந்தின",
+      "stage": {
+        "parsing": "பிளேலிஸ்ட் பகுப்பாய்வு செய்யப்படுகிறது...",
+        "matching": "சேனல்கள் பொருத்தப்படுகின்றன...",
+        "enriching": "மெட்டாடேட்டா செறிவூட்டப்படுகிறது...",
+        "finalizing": "இறுதிப்படுத்தப்படுகிறது..."
+      }
+    },
+    "review": {
+      "title": "இறக்குமதி செய்யப்பட்ட உள்ளடக்கத்தை மதிப்பாய்வு செய்யவும்",
+      "subtitle": "{{matched}} பொருந்தின, {{unmatched}} சேனல்கள் பொருந்தவில்லை",
+      "matchedChannels": "பொருந்திய சேனல்கள்",
+      "unmatchedChannels": "பொருந்தாத சேனல்கள்",
+      "apply": "பயன்படுத்து மற்றும் இறக்குமதி செய்"
+    },
+    "error": {
+      "urlRequired": "தயவுசெய்து URL ஐ உள்ளிடவும்",
+      "noChannels": "இந்த பிளேலிஸ்டில் சேனல்கள் எதுவும் கண்டுபிடிக்கப்படவில்லை",
+      "invalidUrl": "இந்த URL இலிருந்து பிளேலிஸ்டை ஏற்ற முடியவில்லை",
+      "allFieldsRequired": "அனைத்து புலங்களும் தேவை",
+      "enrichFailed": "மூலத்தை பகுப்பாய்வு செய்ய முடியவில்லை",
+      "syncFailed": "மூலத்தை ஒத்திசைக்க முடியவில்லை",
+      "normalizationFailed": "உள்ளடக்க செயலாக்கம் தோல்வியடைந்தது",
+      "normalizationPollFailed": "செயலாக்கத்தின் போது இணைப்பு துண்டிக்கப்பட்டது"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bayit+-க்கு வரவேற்கிறோம்",
+      "subtitle": "இஸ்ரேலிய உள்ளடக்கம், கலாச்சாரம் மற்றும் மொழி கற்றலுக்கான உங்கள் AI-இயங்கும் நுழைவாயில்",
+      "getStarted": "தொடங்குங்கள்"
+    },
+    "highlight": {
+      "dubbing": "நேரடி AI டப்பிங்",
+      "subtitles": "ஊடாடும் வசனங்கள்",
+      "ai": "AI தோழர்கள்",
+      "learning": "ஹீப்ரு கற்றல்"
+    },
+    "voice": {
+      "title": "குரல் அமைப்பு",
+      "subtitle": "குரல் கட்டளைகள், ஹீப்ரு உச்சரிப்பு பயிற்சி மற்றும் கைகளில்லாத வழிசெலுத்தலுக்கு உங்கள் மைக்ரோஃபோனை இயக்குங்கள்",
+      "enable": "மைக்ரோஃபோனை இயக்கு",
+      "granted": "மைக்ரோஃபோன் வெற்றிகரமாக இயக்கப்பட்டது"
+    },
+    "tour": {
+      "done": "முடிந்தது"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "நேரடி AI டப்பிங்",
+        "description": "உங்கள் விருப்பமான மொழியில் நிகழ்நேர AI டப்பிங்குடன் இஸ்ரேலிய தொலைக்காட்சி பாருங்கள்",
+        "hebrew": "ஹீப்ரு",
+        "english": "ஆங்கிலம்"
+      },
+      "subtitles": {
+        "title": "ஊடாடும் வசனங்கள்",
+        "description": "உடனடி மொழிபெயர்ப்பு மற்றும் உச்சரிப்புக்காக வசனங்களில் எந்த வார்த்தையையும் தட்டவும்",
+        "sample": "குடும்பம் Shabbat இரவு உணவுக்காக கூடியது",
+        "word": "Shabbat",
+        "translation": "சபத் - வாராந்திர ஓய்வு நாள்"
+      },
+      "interaction": {
+        "title": "AI கதாபாத்திர தொடர்பு",
+        "description": "எந்த காட்சியையும் இடைநிறுத்தி கலாச்சார சூழல் பற்றி உங்கள் AI தோழரிடம் கேளுங்கள்",
+        "userMsg": "அவர்கள் என்ன திருவிழா கொண்டாடுகிறார்கள்?",
+        "aiMsg": "அவர்கள் Sukkot, கூடாரத் திருவிழா கொண்டாடுகிறார்கள். நீங்கள் பார்க்கும் தற்காலிக குடிசை sukkah என்று அழைக்கப்படுகிறது."
+      },
+      "trivia": {
+        "title": "நேரடி ட்ரிவியா",
+        "description": "AI நேரலையில் ஒளிபரப்பாகும் உள்ளடக்கத்திலிருந்து ட்ரிவியா கேள்விகள் உருவாக்குகிறது. போட்டியிடுங்கள் மற்றும் கற்றுக்கொள்ளுங்கள்!",
+        "question": "இஸ்ரேலின் அதிகாரப்பூர்வ மொழி என்ன?",
+        "optionA": "அரபிக்",
+        "optionB": "ஹீப்ரு",
+        "optionC": "ஆங்கிலம்"
+      },
+      "catchup": {
+        "title": "ஸ்மார்ட் கேட்ச் அப்",
+        "description": "நேரலை ஒளிபரப்பின் ஒரு பகுதியை தவறவிட்டீர்களா? AI தவறவிட்டதை சுருக்கமாக கூறுகிறது",
+        "missed": "தவறவிட்டது",
+        "summary": "AI சுருக்கம்",
+        "live": "இப்போது நேரலை"
+      },
+      "byoc": {
+        "title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+        "description": "உங்கள் IPTV மூலங்களை இறக்குமதி செய்து Bayit+ உள்ளடக்கத்துடன் பாருங்கள்",
+        "step1": "மூலத்தை சேர்க்கவும்",
+        "step2": "AI செறிவூட்டல்",
+        "step3": "பாருங்கள்"
+      },
+      "zehAni": {
+        "title": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+        "description": "உங்களுடன் கற்கும் தனிப்பயனாக்கப்பட்ட AI அவதாரை உருவாக்குங்கள்",
+        "generated": "AI அவதார்"
+      }
+    }
+  },
+  "household": {
+    "empty": {
+      "title": "இன்னும் ஒரு குடும்பம் இல்லை",
+      "subtitle": "உங்கள் குடும்பத்தை நிர்வகிக்க ஒரு குடும்பத்தை உருவாக்குங்கள்"
+    },
+    "create": {
+      "namePlaceholder": "குடும்ப பெயர்",
+      "button": "குடும்பத்தை உருவாக்கு"
+    },
+    "members": "உறுப்பினர்",
+    "role": {
+      "owner": "உரிமையாளர்",
+      "guardian": "பாதுகாவலர்",
+      "child": "குழந்தை"
+    },
+    "invite": {
+      "title": "உறுப்பினரை அழைக்குங்கள்",
+      "emailPlaceholder": "மின்னஞ்சல் முகவரி",
+      "send": "அழைப்பை அனுப்பு",
+      "pending": "நிலுவிலுள்ள அழைப்புகள்"
+    },
+    "removeMember": "நீக்கு",
+    "error": {
+      "fetchFailed": "குடும்பத்தை ஏற்றமுடியவில்லை",
+      "createFailed": "குடும்பத்தை உருவாக்கமுடியவில்லை",
+      "updateFailed": "குடும்பத்தை பதிக்கமுடியவில்லை",
+      "deleteFailed": "குடும்பத்தை நீக்கமுடியவில்லை",
+      "inviteFailed": "அழைப்பை அனுப்பமுடியவில்லை",
+      "removeFailed": "உறுப்பினரை நீக்கமுடியவில்லை"
+    }
+  },
+  "dm": {
+    "title": "செய்திகள்",
+    "conversations": "உரையாடல்கள்",
+    "conversation": "உரையாடல்",
+    "empty": {
+      "title": "இன்னும் செய்திகள் இல்லை",
+      "subtitle": "ஒரு நண்பருடன் உரையாடலை தொடங்குங்கள்"
+    },
+    "input": {
+      "placeholder": "ஒரு செய்தி தட்டச்சு செய்யுங்கள்...",
+      "send": "அனுப்பு"
+    },
+    "translate": "மொழிபெயர்",
+    "react": "எதிர்வினை",
+    "read": "படிக்கப்பட்டது",
+    "sent": "அனுப்பப்பட்டது",
+    "loadMore": "முந்தைய செய்திகளை ஏற்று",
+    "startConversation": "உரையாடலை தொடங்க ஒரு செய்தி அனுப்புங்கள்",
+    "reaction": {
+      "like": "விரும்பு",
+      "love": "காதல்",
+      "laugh": "ஹாஹா",
+      "surprise": "வாவ்",
+      "sad": "சோகம்"
+    },
+    "error": {
+      "fetchFailed": "செய்திகளை ஏற்றுவதில் தோல்வி",
+      "sendFailed": "செய்தி அனுப்புவதில் தோல்வி"
+    }
   }
 }

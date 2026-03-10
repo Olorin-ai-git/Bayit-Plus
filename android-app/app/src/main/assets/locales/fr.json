@@ -13,7 +13,6 @@
     "watchNow": "Regarder maintenant",
     "playNow": "Lire maintenant",
     "play": "Lire",
-    "pause": "Pause",
     "moreInfo": "Plus d'infos",
     "seeAll": "Voir tout",
     "new": "Nouveau",
@@ -55,20 +54,7 @@
     "expand": "Développer",
     "collapse": "Réduire",
     "upgrade": "Passer à Premium",
-    "skip": "Passer",
-    "tryAgain": "Veuillez reessayer"
-  },
-  "auth": {
-    "loginRequired": "Connexion requise",
-    "loginToWatch": "Veuillez vous connecter pour regarder {{title}}",
-    "login": "Connexion",
-    "signUp": "Inscription",
-    "biometricSignIn": "Se connecter avec l'empreinte digitale",
-    "biometricEnrollTitle": "Activer la connexion biométrique",
-    "biometricEnrollMessage": "Utilisez votre empreinte ou votre visage pour vous connecter plus rapidement",
-    "biometricEnrollEnable": "Activer",
-    "biometricEnrollSkip": "Pas maintenant",
-    "signOut": "Se déconnecter"
+    "skip": "Passer"
   },
   "demo": {
     "banner": "MODE DÉMO",
@@ -245,7 +231,20 @@
     "plans": "Forfaits",
     "admin": "Admin",
     "games": "Jeux",
-    "friends": "Amis"
+    "friends": "Amis",
+    "glossary": "Glossaire",
+    "missions": "Missions",
+    "audiobooks": "Livres audio",
+    "playlist": "Playlist",
+    "zehAniHub": "Zeh Ani",
+    "support": "Support",
+    "discoverHub": "Decouvrir IA",
+    "listen": "Ecouter",
+    "byoc": "Mes sources",
+    "household": "Foyer",
+    "messages": "Messages",
+    "myContent": "Mon contenu",
+    "social": "Social"
   },
   "epg": {
     "title": "Guide TV",
@@ -335,11 +334,7 @@
         "subtitle": "Regardez maintenant",
         "description": "Actualités, affaires courantes et contenu de qualité"
       }
-    },
-    "locationPermissionDescription": "Activez la localisation pour voir le contenu israélien et les commerces près de chez vous",
-    "enableLocation": "Activer la localisation",
-    "locationPermissionDeniedDescription": "L'accès à la localisation a été refusé. Ouvrez les Paramètres pour l'activer et voir le contenu israélien près de chez vous.",
-    "openSettings": "Ouvrir les Paramètres"
+    }
   },
   "search": {
     "title": "Rechercher",
@@ -391,6 +386,15 @@
       "documentary": "Documentaire"
     }
   },
+  "listen": {
+    "title": "Écouter",
+    "subtitle": "Radio, Podcasts et Livres audio",
+    "tab": {
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "audiobooks": "Livres audio"
+    }
+  },
   "radio": {
     "title": "Radio",
     "categories": {
@@ -422,15 +426,7 @@
       "educational": "Éducatif"
     },
     "noPodcasts": "Aucun podcast disponible",
-    "tryLater": "Réessayez plus tard",
-    "playLatest": "Lire",
-    "subscribe": "S'abonner",
-    "unsubscribe": "Se desabonner"
-  },
-  "miniPlayer": {
-    "skipBackward": "Reculer de 15 secondes",
-    "skipForward": "Avancer de 30 secondes",
-    "closePlayer": "Fermer le lecteur"
+    "tryLater": "Réessayez plus tard"
   },
   "vod": {
     "title": "Films et Séries",
@@ -514,7 +510,8 @@
     "resetToDefault": "Réinitialiser par défaut",
     "resetConfirmMessage": "Êtes-vous sûr de vouloir réinitialiser les sections de la page d'accueil ?",
     "sectionHidden": "Section masquée",
-    "sectionShown": "Section affichée"
+    "sectionShown": "Section affichée",
+    "replayTour": "Revoir la visite des fonctionnalités"
   },
   "player": {
     "loading": "Chargement...",
@@ -594,14 +591,12 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip",
-      "fullscreen": "Plein écran",
-      "exitFullscreen": "Quitter le plein écran"
+      "skip": "Skip"
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
-      "premiumTitle": "Bayit+ Feature",
+      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
+      "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "Paramètres de Doublage en Direct",
@@ -620,78 +615,21 @@
     "go_back": "Retour",
     "sleepTimer": {
       "title": "Minuterie de sommeil",
-      "setTimer": "Régler la minuterie",
-      "minutesFormat": "{{minutes}} min",
-      "remaining": "{{time}} restant",
-      "extend": "+{{minutes}} min",
-      "cancel": "Annuler la minuterie",
-      "off": "Éteint",
-      "timerSet": "Minuterie réglée pour {{minutes}} minutes",
-      "timerExtended": "Minuterie prolongée de {{minutes}} minutes",
-      "timerCancelled": "Minuterie de sommeil annulée"
+      "subtitle": "Pause automatique de la lecture après un délai défini",
+      "minutes": "{{count}} min",
+      "customPlaceholder": "Minutes personnalisées",
+      "set": "Définir la minuterie",
+      "remaining": "Sommeil dans {{time}}",
+      "extend": "+15 min",
+      "cancel": "Annuler la minuterie"
     },
-    "dialogue": {
-      "selectCharacter": "Choisir un personnage",
-      "cancel": "Annuler",
-      "placeholder": "Tapez une question...",
-      "send": "Envoyer",
-      "close": "Fermer",
-      "yourAvatar": "Votre avatar",
-      "sharedSession": "Session partagee",
-      "waitingForTurn": "En attente de votre tour..."
-    },
-    "pauseAsk": {
-      "title": "Poser une question",
-      "selectCharacter": "A qui voulez-vous demander ?",
-      "resumeMovie": "Reprendre le film",
-      "processing": "Traitement de votre question...",
-      "askAgain": "Poser une autre question",
-      "resume": "Reprendre",
-      "watchAgain": "Revoir",
-      "placeholder": "Posez votre question...",
-      "stages": {
-        "polishing": "Peaufinage de votre question...",
-        "thinking": "Reflexion sur votre question...",
-        "biff1": "Biff n'a pas trop aime votre question...",
-        "biff2": "Biff se regarde dans le miroir...",
-        "biff3": "Biff essaie d'epeler sa reponse...",
-        "biff4": "Biff vient de traiter quelqu'un d'abruti...",
-        "doc1": "Doc consulte le convecteur temporel...",
-        "doc2": "Nom de Zeus! Encore en calcul...",
-        "doc3": "Doc ajuste les 1,21 gigawatts...",
-        "doc4": "Doc verifie le continuum espace-temps...",
-        "marty1": "Marty accorde sa guitare d'abord...",
-        "marty2": "C'est lourd...",
-        "marty3": "Marty verifie s'il existe encore...",
-        "marty4": "Marty dit que personne ne le traite de poule mouillee...",
-        "george1": "George rassemble son courage pour repondre...",
-        "george2": "George ecrit sa reponse dans son carnet...",
-        "george3": "George dit que sa densite l'a amene ici...",
-        "george4": "George a enfin confiance en lui...",
-        "lorraine1": "Lorraine se coiffe d'abord...",
-        "lorraine2": "Lorraine pense a l'Enchantement Sous la Mer...",
-        "lorraine3": "Lorraine dit que c'etait ecrit...",
-        "lorraine4": "Lorraine se prepare pour le bal...",
-        "jennifer1": "Jennifer attend dans la voiture...",
-        "jennifer2": "Jennifer s'interroge sur l'avenir...",
-        "jennifer3": "Jennifer dit qu'elle peut gerer...",
-        "jennifer4": "Jennifer fait preuve de patience...",
-        "generic1": "{{name}} reflechit...",
-        "generic2": "{{name}} prepare une reponse...",
-        "generic3": "Presque pret...",
-        "generic4": "Encore un instant..."
-      },
-      "error": {
-        "generic": "Un probleme est survenu",
-        "anthropic": "Service IA indisponible",
-        "falAi": "Service video indisponible",
-        "elevenlabs": "Service vocal indisponible",
-        "credits": "Credits insuffisants"
-      }
-    },
-    "interaction": {
-      "previous": "Interaction precedente",
-      "next": "Interaction suivante"
+    "openSubs": {
+      "title": "Rechercher des sous-titres",
+      "searchPlaceholder": "Rechercher par titre...",
+      "search": "Rechercher",
+      "searchFailed": "Recherche échouée. Réessayez.",
+      "downloads": "{{count}} téléchargements",
+      "noResults": "Aucun sous-titre trouvé"
     }
   },
   "content": {
@@ -830,7 +768,10 @@
         "Regarder sur 2 appareils",
         "Qualité HD"
       ],
-      "notIncluded": ["Visionnage hors ligne", "Profils familiaux"]
+      "notIncluded": [
+        "Visionnage hors ligne",
+        "Profils familiaux"
+      ]
     },
     "family": {
       "name": "Famille",
@@ -2546,33 +2487,49 @@
     "unlockPremiumDescription": "Passez à la version supérieure pour profiter du contenu et des fonctionnalités exclusives"
   },
   "voiceOnboarding": {
-    "title": "Entraînement Vocal",
-    "stepProgress": "Étape {{step}} sur {{total}}",
     "welcome": {
-      "title": "Entraînement Vocal",
-      "description": "Entraînez votre profil vocal pour la reconnaissance vocale personnalisée et les commandes vocales."
+      "title": "Bienvenue au Contrôle Vocal",
+      "description": "Contrôlez Bayit+ avec votre voix pour une expérience mains libres"
     },
-    "recording": {
-      "micButton": "MIC",
-      "recButton": "ENR",
-      "tapToStart": "Appuyez pour commencer l'enregistrement",
-      "tapToStop": "Enregistrement... Appuyez pour arrêter",
-      "recordButton": "Enregistrer",
-      "stopButton": "Arrêter"
+    "features": {
+      "voiceCommands": "Commandes Vocales",
+      "voiceCommandsDesc": "Naviguez, recherchez et contrôlez la lecture avec la parole naturelle",
+      "tts": "Synthèse Vocale",
+      "ttsDesc": "Écoutez les réponses et descriptions de contenu à haute voix",
+      "wakeWord": "Mot d'Activation",
+      "wakeWordDesc": "Dites 'Bayit' pour activer le contrôle vocal à tout moment"
     },
-    "training": {
-      "title": "Entraînement en Cours",
-      "message": "Votre profil vocal est en cours d'entraînement. Cela peut prendre un instant."
+    "getStarted": "Commencer",
+    "permissions": {
+      "title": "Accès au Microphone",
+      "description": "Le contrôle vocal nécessite l'accès au microphone pour entendre vos commandes",
+      "privacy": "Vos données vocales sont traitées de manière sécurisée et ne sont jamais stockées"
     },
-    "completion": {
-      "title": "Profil Vocal Prêt !",
-      "message": "Votre profil vocal a été créé. Vous pouvez maintenant utiliser les commandes vocales et les fonctionnalités de parole personnalisées."
+    "permissionsGranted": "Accès au microphone accordé",
+    "permissionRequired": {
+      "title": "Permission Requise",
+      "message": "Veuillez activer l'accès au microphone dans les paramètres de votre appareil pour utiliser le contrôle vocal"
     },
-    "buttons": {
-      "back": "Retour",
-      "next": "Suivant",
-      "finish": "Terminer"
-    }
+    "grantPermissions": "Accorder les Permissions",
+    "testWakeWord": {
+      "title": "Tester le Mot d'Activation",
+      "description": "Dites 'Bayit' pour tester l'activation vocale",
+      "success": "Parfait ! L'activation vocale fonctionne"
+    },
+    "startTest": "Démarrer le Test",
+    "complete": {
+      "title": "Tout est Prêt !",
+      "description": "Le contrôle vocal est maintenant activé. Essayez ces commandes :",
+      "tryCommands": "Essayez Ces Commandes",
+      "examples": {
+        "search": "\"Rechercher Fauda\"",
+        "play": "\"Lire les actualités\"",
+        "navigate": "\"Aller à la TV en Direct\"",
+        "control": "\"Pause\" ou \"Augmenter le volume\""
+      },
+      "startUsing": "Commencer à Utiliser le Contrôle Vocal"
+    },
+    "skip": "Passer pour l'instant"
   },
   "portal": {
     "nav": {
@@ -2847,260 +2804,483 @@
     "stop": "Arrêter l'Enregistrement",
     "start": "Démarrer l'Enregistrement"
   },
-  "aiOnboarding": {
-    "title": "Configuration de l'Assistant IA",
-    "stepProgress": "Étape {{step}} sur {{total}}",
-    "welcome": {
-      "title": "Bienvenue dans l'Assistant IA",
-      "description": "Votre compagnon IA pour la recherche sémantique, l'assistance par chatbot et les recommandations intelligentes."
+  "discover": {
+    "subtitle": "Explorez 19 fonctionnalités propulsées par l'IA",
+    "description": "Bayit+ utilise l'intelligence artificielle pour améliorer votre expérience de visionnage, d'écoute et d'apprentissage. Découvrez ce qui est disponible sur votre plateforme.",
+    "featureCount": "{{count}} fonctionnalités",
+    "tryIt": "Essayer",
+    "startWalkthrough": "Commencer la visite",
+    "availableOn": "Disponible sur",
+    "prerequisites": "Prérequis",
+    "setup": "Configurer",
+    "error": {
+      "fetchFailed": "Échec du chargement des fonctionnalités Discover. Veuillez réessayer.",
+      "unknownFeature": "Fonctionnalité introuvable.",
+      "featureDisabled": "Cette fonctionnalité est actuellement désactivée."
     },
-    "permissions": {
-      "title": "Autorisations",
-      "description": "L'Assistant IA a besoin d'accéder à :\n\n• Votre historique de visionnage (pour des recommandations personnalisées)\n• Requêtes de recherche (pour améliorer les résultats)\n• Préférences (pour adapter les réponses)"
+    "availability": {
+      "ready": "Prêt",
+      "setupNeeded": "Configuration requise",
+      "premiumRequired": "Abonnement Premium requis",
+      "notAvailable": "Non disponible",
+      "platformOnly": "Autre plateforme"
     },
-    "personalization": {
-      "title": "Personnalisation",
-      "description": "L'IA apprendra de vos interactions pour fournir :\n\n• De meilleures recommandations de contenu\n• Des résultats de recherche plus précis\n• Des réponses contextuelles du chatbot"
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "tvos": "Apple TV",
+      "android": "Android"
     },
-    "completion": {
-      "title": "Tout est Prêt !",
-      "message": "Votre Assistant IA est prêt à vous aider à découvrir et profiter du contenu."
+    "category": {
+      "watching_movies": "Regarder des films",
+      "watching_live_tv": "Regarder la TV en direct",
+      "learn_hebrew": "Apprendre l'hébreu",
+      "search_discovery": "Recherche et découverte",
+      "chat_assistants": "Assistants de conversation"
     },
-    "buttons": {
-      "back": "Retour",
-      "next": "Suivant",
-      "finish": "Terminer"
-    }
-  },
-  "voiceAssistant": {
-    "fabLabel": "Assistant Vocal",
-    "modal": {
-      "title": "Assistant Vocal",
-      "setupRequired": "Configuration de l'Assistant Vocal Requise",
-      "setupMessage": "Complétez la configuration de l'Assistant IA pour utiliser les fonctionnalités vocales.",
-      "startSetup": "Démarrer la Configuration",
-      "cancel": "Annuler"
-    },
-    "state": {
-      "idle": "Appuyez pour parler",
-      "listening": "Écoute en cours...",
-      "processing": "Traitement en cours...",
-      "speaking": "En train de parler...",
-      "error": "Une erreur est survenue"
-    },
-    "a11y": {
-      "startListening": "Démarrer la saisie vocale",
-      "stopListening": "Arrêter l'écoute et traiter",
-      "processing": "Traitement de la saisie vocale",
-      "interrupt": "Arrêter de parler"
-    }
-  },
-  "aiChat": {
-    "title": "Chat IA",
-    "inputPlaceholder": "Demandez n'importe quoi à l'IA...",
-    "sendButton": "Envoyer",
-    "retryButton": "Réessayer"
-  },
-  "chess": {
-    "title": "Échecs",
-    "welcome": "Bienvenue aux Échecs",
-    "subtitle": "Jouez aux échecs avec vos amis et votre famille à travers le monde",
-    "createGame": "Créer une Nouvelle Partie",
-    "joinGame": "Rejoindre une Partie",
-    "gameCode": "Code de Partie",
-    "enterGameCode": "Entrer le Code de Partie",
-    "invalidGameCode": "Code de partie invalide. Doit contenir 6 caractères.",
-    "joinFailed": "Échec de la connexion à la partie",
-    "join": "Rejoindre",
-    "create": "Créer",
-    "chooseColor": "Choisissez Votre Couleur",
-    "white": "Blanc",
-    "black": "Noir",
-    "chatPlaceholder": "Tapez un message... (@bot pour des conseils)",
-    "botHint": "Taguez @bot dans votre message pour obtenir des conseils d'échecs de notre assistant IA",
-    "bot": "Assistant Échecs",
-    "mute": "Muet",
-    "unmute": "Activer le Son",
-    "speaking": "participants",
-    "resign": "Abandonner",
-    "offerDraw": "Proposer la Nulle",
-    "newGame": "Nouvelle Partie",
-    "checkmate": "Échec et Mat !",
-    "stalemate": "Pat",
-    "draw": "Nulle",
-    "resigned": "Partie Abandonnée",
-    "reconnecting": "Reconnexion...",
-    "moveHistory": "Historique des Coups",
-    "noMoves": "Aucun coup encore",
-    "showHints": "Afficher les Indices",
-    "yourTurn": "Votre Tour",
-    "opponentTurn": "Tour de l'Adversaire",
-    "waitingForOpponent": "En attente de l'adversaire...",
-    "gameOver": "Partie Terminée",
-    "sendingInvite": "Envoi de l'invitation à {{name}}...",
-    "inviteSent": "Invitation envoyée à {{name}} ! Code de partie : {{code}}",
-    "inviteFailed": "Utilisateur introuvable. Vérifiez le nom et réessayez.",
-    "inviteReceived": "{{name}} vous a invité à une partie d'échecs !",
-    "joinInvite": "Rejoindre la Partie",
-    "challenge": "Défier",
-    "challengeFriend": "Défier un ami",
-    "noFriendsYet": "Ajoutez des amis pour les défier",
-    "acceptInvite": "Accepter",
-    "declineInvite": "Refuser",
-    "playedAsWhite": "A joué les Blancs",
-    "playedAsBlack": "A joué les Noirs",
-    "gameMode": "Mode de Jeu",
-    "playVsFriend": "Jouer contre un Ami",
-    "playVsBot": "Jouer contre le Bot",
-    "difficulty": "Difficulté",
-    "easy": "Facile",
-    "medium": "Moyen",
-    "hard": "Difficile",
-    "chessBot": "Bot d'Échecs",
-    "disconnected": "Déconnecté",
-    "theirTurn": "Leur tour",
-    "copyCode": "Copier le Code",
-    "whiteTurn": "Tour des Blancs",
-    "blackTurn": "Tour des Noirs",
-    "you": "Vous",
-    "opponent": "Adversaire",
-    "acceptDraw": "Accepter la nulle",
-    "declineDraw": "Refuser la nulle",
-    "whiteCaptured": "Capturées par les Blancs",
-    "blackCaptured": "Capturées par les Noirs",
-    "online": "En ligne",
-    "offline": "Hors ligne",
-    "joinByGameCode": "Rejoindre avec un code de partie",
-    "timeout": "Temps ecoule",
-    "drawOffered": "Nulle proposee",
-    "chat": {
-      "title": "Chat",
-      "inputPlaceholder": "Tapez un message..."
-    },
-    "timeControl": "Cadence",
-    "unlimited": "Sans limite",
-    "bullet1": "1 min",
-    "blitz3": "3 min",
-    "blitz5": "5 min",
-    "rapid10": "10 min",
-    "classical30": "30 min",
-    "challengeViaWhatsApp": "Defier via WhatsApp",
-    "whatsAppMessage": "Je te defie aux echecs sur Bayit+! Code: {{code}} - Appuie pour jouer: {{link}}"
-  },
-  "byoc": {
-    "home": {
-      "title": "Apportez Votre Propre Contenu",
-      "subtitle": "Connectez vos sources de contenu preferees et ameliorez-les avec le doublage IA, les sous-titres et plus",
-      "connectButton": "Connectez Votre Contenu",
-      "aiFeatures": {
-        "dubbing": "Doublage IA",
-        "subtitles": "Sous-titres IA"
+    "feature": {
+      "pause_ask": {
+        "name": "Pause et Question",
+        "tagline": "Mettez en pause n'importe quelle scène et interrogez votre compagnon IA",
+        "description": "Pendant le visionnage, mettez le vidéo en pause et posez des questions sur la scène en cours. Votre personnage IA expliquera les références culturelles, traduira les dialogues ou discutera de l'intrigue."
+      },
+      "interactive_subtitles": {
+        "name": "Sous-titres interactifs",
+        "tagline": "Appuyez sur n'importe quel mot des sous-titres pour une traduction et un contexte instantanés",
+        "description": "Cliquez sur n'importe quel mot dans les sous-titres pour voir sa traduction, entendre sa prononciation et obtenir des exemples d'utilisation. Enrichissez votre vocabulaire en regardant vos émissions préférées."
+      },
+      "vocabulary": {
+        "name": "Constructeur de vocabulaire",
+        "tagline": "Apprenez de nouveaux mots à travers les émissions que vous regardez",
+        "description": "Collectez automatiquement de nouveaux mots hébreux dans les sous-titres. Révisez avec des fiches, suivez vos progrès et enrichissez votre vocabulaire grâce aux contenus que vous appréciez."
+      },
+      "vod_moments": {
+        "name": "Moments VOD",
+        "tagline": "Les meilleurs moments de vos contenus favoris sélectionnés par l'IA",
+        "description": "Obtenez des extraits et moments clés générés par l'IA à partir de films et d'émissions. Partagez des scènes mémorables et revisitez les meilleurs passages."
+      },
+      "cultural_context": {
+        "name": "Contexte culturel",
+        "tagline": "Comprenez le contexte culturel derrière chaque scène",
+        "description": "Recevez des annotations culturelles en temps réel expliquant les coutumes israéliennes, les fêtes, l'humour et les normes sociales qui apparaissent dans le contenu que vous regardez."
+      },
+      "bilingual_bridge": {
+        "name": "Pont bilingue",
+        "tagline": "Apprentissage hébreu-français en parallèle pendant le visionnage",
+        "description": "Affichez des sous-titres en deux langues avec du vocabulaire mis en évidence. Basculez entre l'hébreu et votre langue maternelle pour développer votre compréhension naturellement."
+      },
+      "ai_companion": {
+        "name": "Compagnon IA",
+        "tagline": "Votre guide IA personnel pour le contenu israélien",
+        "description": "Un personnage IA qui regarde avec vous, offrant des commentaires, répondant à vos questions et vous aidant à comprendre les nuances des médias israéliens."
+      },
+      "live_dubbing": {
+        "name": "Doublage en direct",
+        "tagline": "Doublage IA en temps réel des chaînes de TV israéliennes en direct",
+        "description": "Regardez la TV israélienne en direct avec un doublage en temps réel propulsé par l'IA dans votre langue préférée. Profitez des informations, des talk-shows et du divertissement sans barrière linguistique."
+      },
+      "live_subtitles": {
+        "name": "Sous-titres en direct",
+        "tagline": "Sous-titres IA en temps réel pour les diffusions en direct",
+        "description": "Obtenez des sous-titres générés par l'IA en temps réel pendant que vous regardez la TV israélienne en direct. Choisissez votre langue préférée pour une traduction instantanée du contenu en direct."
+      },
+      "live_trivia": {
+        "name": "Trivia en direct",
+        "tagline": "Jouez à des jeux de trivia basés sur ce qui est diffusé en direct",
+        "description": "L'IA détecte les sujets des diffusions en direct et génère des questions de trivia en temps réel. Rivalisez avec des amis et apprenez la culture israélienne en regardant la TV."
+      },
+      "catch_up": {
+        "name": "Rattrapage",
+        "tagline": "Résumés IA de ce que vous avez manqué à la TV en direct",
+        "description": "Vous avez manqué une partie d'une diffusion en direct ? Obtenez des résumés générés par l'IA qui vous remettent au courant, avec les moments clés mis en évidence pour une révision rapide."
+      },
+      "scene_search": {
+        "name": "Recherche de scènes",
+        "tagline": "Recherchez des scènes spécifiques dans tout le contenu",
+        "description": "Décrivez une scène dont vous vous souvenez et l'IA la retrouvera dans tout le contenu disponible. Recherchez par dialogue, éléments visuels ou descriptions de l'intrigue."
+      },
+      "phonetic_mirror": {
+        "name": "Miroir phonétique",
+        "tagline": "Pratiquez la prononciation hébraïque avec les retours de l'IA",
+        "description": "Enregistrez-vous en train de parler hébreu et recevez un retour instantané de l'IA sur votre prononciation. Comparez votre discours avec des locuteurs natifs et suivez vos progrès au fil du temps."
+      },
+      "talk_back": {
+        "name": "Répondre",
+        "tagline": "Ayez des conversations vocales en hébreu avec votre personnage IA",
+        "description": "Pratiquez l'hébreu conversationnel en discutant avec votre personnage IA. Recevez des retours en temps réel sur la grammaire, le vocabulaire et la prononciation dans un dialogue naturel."
+      },
+      "interactive_mission": {
+        "name": "Missions interactives",
+        "tagline": "Des défis d'apprentissage de l'hébreu amusants avec les conseils de l'IA",
+        "description": "Accomplissez des missions guidées par l'IA qui combinent le visionnage de contenu avec des exercices d'apprentissage de l'hébreu. Gagnez des récompenses et suivez votre parcours linguistique."
+      },
+      "glossary": {
+        "name": "Glossaire personnel",
+        "tagline": "Votre dictionnaire hébreu personnalisé construit à partir du contenu",
+        "description": "Tous les mots hébreux que vous avez rencontrés et enregistrés, organisés par catégorie, fréquence et niveau de maîtrise. Révisez et pratiquez à tout moment."
+      },
+      "llm_search": {
+        "name": "Recherche IA",
+        "tagline": "Trouvez du contenu avec des requêtes en langage naturel",
+        "description": "Recherchez dans toute la bibliothèque Bayit+ en langage naturel. Demandez des 'comédies israéliennes drôles sur la famille' ou des 'documentaires sur Tel Aviv' et obtenez des résultats sélectionnés par l'IA."
+      },
+      "proactive_voice": {
+        "name": "Voix proactive",
+        "tagline": "Assistant IA vocal qui anticipe vos besoins",
+        "description": "Un assistant IA qui écoute et propose de manière proactive des suggestions de contenu pertinentes, des traductions et des opportunités d'apprentissage en fonction de ce que vous regardez."
+      },
+      "chatbot": {
+        "name": "Bayit Chat",
+        "tagline": "Discutez avec l'IA de tout ce qui concerne le contenu israélien",
+        "description": "Posez des questions sur la culture israélienne, obtenez des recommandations de contenu, pratiquez l'hébreu ou discutez de ce que vous avez regardé. Votre compagnon IA est toujours disponible."
       }
     },
-    "yourChannels": "Vos Chaines",
-    "iptv": "IPTV",
-    "plex": "Plex",
-    "youtube": "YouTube",
-    "addIPTV": "Ajouter IPTV",
-    "addPlex": "Ajouter Plex",
-    "addYouTube": "Ajouter YouTube",
-    "playlistURL": "URL de la Liste",
-    "playlistName": "Nom de la Liste",
-    "noChannels": "Aucune chaîne trouvée",
-    "refreshing": "Actualisation...",
-    "sourceAdded": "Source Ajoutee",
-    "sourceRemoved": "Source supprimée",
-    "connectedSources": "Sources Connectees",
-    "aiAvailable": "IA Disponible",
-    "audioAIOnly": "Audio IA Uniquement",
-    "aiDubbing": "Doublage IA",
-    "aiSubtitles": "Sous-titres IA",
-    "connectContent": "Connecter le Contenu",
-    "connectContentDesc": "Ajoutez vos sources IPTV, Plex ou YouTube",
-    "removeSource": "Supprimer la Source",
-    "removeConfirm": "Etes-vous sur de vouloir supprimer cette source ?",
-    "channelCount": "%d chaines",
-    "fromPlex": "Depuis Plex",
-    "enterURL": "Entrez l'URL de la liste ou le fichier",
-    "validating": "Validation...",
-    "invalidURL": "Veuillez entrer une URL valide",
-    "fetchFailed": "Echec de recuperation de la liste",
-    "plexVisitLink": "Visitez plex.tv/link et entrez le code",
-    "plexEnterCode": "Entrez le code affiche ci-dessus",
-    "plexWaiting": "En attente de l'autorisation Plex...",
-    "plexRequestingPin": "Demande du PIN Plex...",
-    "plexSelectServer": "Selectionner le Serveur",
-    "plexSelectServerDesc": "Choisissez quel serveur Plex connecter",
-    "plexDiscovering": "Decouverte des serveurs...",
-    "plexNoServers": "Aucun serveur Plex trouve",
-    "plexLocal": "Local",
-    "plexRemote": "Distant",
-    "plexItemCount": "%d elements de Plex",
-    "plexConnectDesc": "Connectez votre Plex Media Server",
-    "youtubeVisitLink": "Visitez le lien ci-dessous et entrez le code",
-    "youtubeEnterCode": "Entrez le code affiche ci-dessus",
-    "youtubeWaiting": "En attente d'autorisation...",
-    "youtubeRequestingCode": "Demande du code de l'appareil...",
-    "youtubeConnected": "YouTube Connecte",
-    "youtubeVideoCount": "videos trouvees",
-    "youtubeOpenApp": "Ouvrir dans YouTube",
-    "youtubeAudioAINote": "Fonctions audio IA disponibles pour le contenu YouTube",
-    "fromYouTube": "Depuis YouTube",
-    "youtubeConnectDesc": "Connectez votre compte YouTube",
-    "bannerTitle": "Apportez Votre Propre Contenu",
-    "bannerSubtitle": "Connectez vos sources de streaming pour une experience amelioree par l'IA",
-    "bannerConnect": "Connecter",
-    "bannerDismiss": "Ignorer",
-    "itemsLoaded": "elements charges",
-    "enriching": "Enrichissement...",
-    "findingSubtitles": "Recherche de sous-titres...",
-    "subtitlesFound": "Sous-titres trouvés",
-    "noSubtitlesFound": "Aucun sous-titre trouvé",
-    "interactionMoments": "Moments Interactifs",
-    "interactionMomentsDescription": "L'IA detectera les moments cles pour les interactions avec les personnages",
-    "enrichmentFailed": "Échec de l'enrichissement",
-    "browsePlexLibrary": "Parcourir la Bibliotheque Plex",
-    "addXtream": "Xtream Codes",
-    "xtreamServer": "URL du Serveur",
-    "xtreamUsername": "Nom d'utilisateur",
-    "xtreamPassword": "Mot de passe",
-    "xtreamConnectDesc": "Connecter le fournisseur Xtream Codes",
-    "xtreamAuthFailed": "Echec de l'authentification",
-    "sourceName": "Nom de la Source",
-    "selectProvider": "Selectionner le Fournisseur",
-    "manualEntry": "Saisie Manuelle",
-    "onboarding.title": "Configuration du Contenu",
-    "onboarding.connectSource": "Connecter une Source",
-    "onboarding.connectDesc": "Ajoutez votre premiere source de contenu pour commencer",
-    "onboarding.sourceAdded": "Source Ajoutee",
-    "onboarding.analyzing": "Analyse du contenu...",
-    "onboarding.analyze": "Analyser le Contenu",
-    "onboarding.analysisComplete": "Analyse Terminee",
-    "onboarding.channelsIdentified": "Chaines identifiees",
-    "onboarding.vodMatched": "VOD associe",
-    "onboarding.duplicatesFound": "Doublons trouves",
-    "onboarding.streamsHealthy": "Flux en bonne sante",
-    "onboarding.languages": "Langues",
-    "onboarding.topCategories": "Categories Principales",
-    "onboarding.cleanupTitle": "Nettoyage du Contenu",
-    "onboarding.autoBestQuality": "Selection automatique de la meilleure qualite",
-    "onboarding.autoBestQualityDesc": "Choisir automatiquement le flux de la meilleure qualite pour chaque chaine",
-    "onboarding.applyCleanup": "Appliquer le Nettoyage",
-    "onboarding.personalizeTitle": "Personnaliser",
-    "onboarding.personalizeDesc": "Choisissez vos preferences pour l'ecran d'accueil",
-    "onboarding.languagePriority": "Priorite de Langue",
-    "onboarding.homeCategories": "Categories d'Accueil",
-    "onboarding.ready": "Pret",
-    "home.title": "Apportez Votre Propre Contenu",
-    "home.subtitle": "Connectez vos sources IPTV, Plex, YouTube ou Xtream",
-    "home.connectButton": "Connecter les Sources",
-    "home.aiFeatures.dubbing": "Doublage IA",
-    "home.aiFeatures.subtitles": "Sous-titres IA",
-    "tapToOpen": "Appuyez pour ouvrir",
-    "aiTrivia": "Trivia IA",
-    "ai.dubbing": "Doublage IA",
-    "ai.subtitles": "Sous-titres IA",
-    "ai.trivia": "Trivia IA",
-    "ai.audioOverlay": "Superposition Audio"
+    "prereq": {
+      "avatar": "Créez votre personnage IA",
+      "subscription": "Abonnement Premium requis",
+      "microphone": "Accès au microphone requis",
+      "contentType": "Sélectionnez vos préférences de contenu",
+      "preference": "Définissez vos préférences linguistiques",
+      "voiceClone": "Configurez votre clone vocal"
+    },
+    "walkthrough": {
+      "tryItNow": "Essayer maintenant",
+      "watchDemo": "Voir la demo",
+      "skip": "Passer",
+      "next": "Suivant",
+      "done": "Termine",
+      "complete": "Tutoriel termine",
+      "stepCounter": "{{current}} sur {{total}}",
+      "pause_ask": {
+        "step1": "Accedez a un film avec des moments interactifs",
+        "step2": "Mettez le film en pause pendant une scene",
+        "step3": "Appuyez sur le bouton Demander au personnage",
+        "step4": "Regardez le personnage vous repondre"
+      },
+      "interactive_subtitles": {
+        "step1": "Lancez un film avec des sous-titres",
+        "step2": "Appuyez sur le bouton Interactif dans la barre de controle",
+        "step3": "Selectionnez votre langue de sous-titres",
+        "step4": "Appuyez sur un mot dans les sous-titres pour en savoir plus"
+      },
+      "vocabulary": {
+        "step1": "Ouvrez un film avec les sous-titres interactifs actives",
+        "step2": "Appuyez sur un mot que vous voulez apprendre",
+        "step3": "Appuyez sur Enregistrer dans le vocabulaire",
+        "step4": "Consultez vos mots enregistres dans la section Vocabulaire"
+      },
+      "vod_moments": {
+        "step1": "Regardez un film avec des moments interactifs",
+        "step2": "Attendez qu'une invite interactive apparaisse",
+        "step3": "Decouvrez l'interaction generee par l'IA"
+      },
+      "cultural_context": {
+        "step1": "Lancez un film avec des dialogues en hebreu",
+        "step2": "Appuyez sur un sous-titre culturellement significatif",
+        "step3": "Lisez l'explication culturelle generee par l'IA"
+      },
+      "bilingual_bridge": {
+        "step1": "Ouvrez un film avec support bilingue",
+        "step2": "Selectionnez le mode sous-titres bilingue",
+        "step3": "Appuyez sur une phrase en surbrillance pour voir la traduction",
+        "step4": "Regardez les deux langues cote a cote"
+      },
+      "ai_companion": {
+        "step1": "Lancez n'importe quel film",
+        "step2": "Appuyez sur le bouton Compagnon IA",
+        "step3": "Tapez une question sur le film",
+        "step4": "Lisez la reponse contextuelle de l'IA"
+      },
+      "live_dubbing": {
+        "step1": "Accedez a une chaine TV en direct",
+        "step2": "Appuyez sur le bouton de doublage",
+        "step3": "Selectionnez votre langue preferee",
+        "step4": "Ecoutez le doublage IA en temps reel"
+      },
+      "live_subtitles": {
+        "step1": "Accedez a une chaine TV en direct",
+        "step2": "Appuyez sur le bouton des sous-titres",
+        "step3": "Selectionnez votre langue de sous-titres",
+        "step4": "Regardez les sous-titres en temps reel"
+      },
+      "live_trivia": {
+        "step1": "Accedez a une chaine TV en direct",
+        "step2": "Appuyez sur le bouton trivia",
+        "step3": "Repondez aux questions generees par l'IA"
+      },
+      "catch_up": {
+        "step1": "Accedez a une emission en direct",
+        "step2": "Selectionnez l'option de rattrapage",
+        "step3": "Appuyez pour generer un resume IA",
+        "step4": "Lisez le resume de ce que vous avez manque"
+      },
+      "scene_search": {
+        "step1": "Accedez a une emission enregistree",
+        "step2": "Tapez ce que vous cherchez",
+        "step3": "Appuyez sur la scene correspondante",
+        "step4": "Regardez la scene a partir de ce point"
+      },
+      "phonetic_mirror": {
+        "step1": "Ouvrez le Miroir Phonetique dans Zeh Ani",
+        "step2": "Lisez la phrase en hebreu affichee",
+        "step3": "Prononcez la phrase dans votre micro",
+        "step4": "Consultez les commentaires de prononciation de l'IA"
+      },
+      "talk_back": {
+        "step1": "Ouvrez Talk Back dans Zeh Ani",
+        "step2": "Ecoutez votre avatar parler hebreu",
+        "step3": "Repondez en hebreu avec votre micro",
+        "step4": "Consultez les commentaires de l'IA"
+      },
+      "interactive_mission": {
+        "step1": "Ouvrez les Missions Interactives",
+        "step2": "Selectionnez un niveau de mission",
+        "step3": "Suivez les exercices guides par l'IA",
+        "step4": "Completez la mission et gagnez des recompenses"
+      },
+      "glossary": {
+        "step1": "Ouvrez le Glossaire Hebreu",
+        "step2": "Recherchez un mot en hebreu",
+        "step3": "Ecoutez la prononciation"
+      },
+      "llm_search": {
+        "step1": "Ouvrez l'onglet Recherche",
+        "step2": "Tapez une requete en langage naturel",
+        "step3": "Parcourez les resultats selectionnes par l'IA"
+      },
+      "proactive_voice": {
+        "step1": "Ouvrez la fonction Suggestions Vocales",
+        "step2": "Appuyez et maintenez pour parler",
+        "step3": "Ecoutez les recommandations personnalisees"
+      },
+      "chatbot": {
+        "step1": "Ouvrez l'Assistant IA",
+        "step2": "Tapez votre question ou demande",
+        "step3": "Lisez la reponse de l'IA"
+      }
+    }
+  },
+  "byoc": {
+    "pageSubtitle": "Apportez votre propre contenu - ajoutez des sources IPTV et de streaming",
+    "addSource": "Ajouter une source",
+    "sync": "Synchroniser",
+    "remove": "Supprimer",
+    "channelCount": "{{count}} chaînes",
+    "empty": {
+      "title": "Aucune source ajoutée",
+      "subtitle": "Ajoutez vos sources IPTV, Xtream ou de streaming pour regarder votre propre contenu aux côtés de Bayit+"
+    },
+    "source": {
+      "iptv": "Source IPTV",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "Ajouter une source IPTV",
+      "subtitle": "Entrez une URL vers un fichier de playlist M3U ou M3U8",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "Valider",
+      "add": "Ajouter la source"
+    },
+    "addXtream": {
+      "title": "Connecter Xtream Codes",
+      "subtitle": "Entrez les identifiants de votre serveur Xtream Codes",
+      "serverUrl": "URL du serveur",
+      "username": "Nom d'utilisateur",
+      "password": "Mot de passe",
+      "connect": "Connecter"
+    },
+    "preview": {
+      "title": "Aperçu",
+      "channelCount": "{{count}} chaînes trouvées"
+    },
+    "providers": {
+      "title": "Fournisseurs populaires"
+    },
+    "wizard": {
+      "step1": "Ajouter une source",
+      "step2": "Traitement",
+      "step3": "Révision",
+      "selectSource": "Sélectionner le type de source"
+    },
+    "normalization": {
+      "title": "Traitement de votre contenu",
+      "total": "{{count}} chaînes au total",
+      "matched": "{{count}} correspondances",
+      "stage": {
+        "parsing": "Analyse de la playlist...",
+        "matching": "Correspondance des chaînes...",
+        "enriching": "Enrichissement des métadonnées...",
+        "finalizing": "Finalisation..."
+      }
+    },
+    "review": {
+      "title": "Réviser le contenu importé",
+      "subtitle": "{{matched}} correspondances, {{unmatched}} chaînes sans correspondance",
+      "matchedChannels": "Chaînes correspondantes",
+      "unmatchedChannels": "Chaînes sans correspondance",
+      "apply": "Appliquer et importer"
+    },
+    "error": {
+      "urlRequired": "Veuillez entrer une URL",
+      "noChannels": "Aucune chaîne trouvée dans cette playlist",
+      "invalidUrl": "Impossible de charger la playlist depuis cette URL",
+      "allFieldsRequired": "Tous les champs sont obligatoires",
+      "enrichFailed": "Échec de l'analyse de la source",
+      "syncFailed": "Échec de la synchronisation de la source",
+      "normalizationFailed": "Le traitement du contenu a échoué",
+      "normalizationPollFailed": "Connexion perdue pendant le traitement"
+    }
+  },
+  "voice": {
+    "panelTitle": "Assistant vocal",
+    "typeCommand": "Saisissez une commande...",
+    "controlExecuted": "Exécuté : {{action}}",
+    "timerSet": "Minuteur défini pour {{amount}} {{unit}}",
+    "chatPending": "Traitement de votre message...",
+    "suggestion": {
+      "watchLive": "Regarder la TV en direct",
+      "search": "Rechercher du contenu",
+      "listenRadio": "Écouter la radio"
+    },
+    "error": {
+      "micDenied": "Accès au microphone refusé",
+      "notSupported": "Les commandes vocales ne sont pas prises en charge dans ce navigateur",
+      "recognitionFailed": "Impossible de comprendre. Veuillez réessayer."
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur Bayit+",
+      "subtitle": "Votre portail alimenté par IA vers le contenu israélien, la culture et l'apprentissage des langues",
+      "getStarted": "Commencer"
+    },
+    "highlight": {
+      "dubbing": "Doublage IA en direct",
+      "subtitles": "Sous-titres interactifs",
+      "ai": "Compagnons IA",
+      "learning": "Apprentissage de l'hébreu"
+    },
+    "voice": {
+      "title": "Configuration vocale",
+      "subtitle": "Activez votre microphone pour les commandes vocales, la pratique de la prononciation en hébreu et la navigation mains libres",
+      "enable": "Activer le microphone",
+      "granted": "Microphone activé avec succès"
+    },
+    "tour": {
+      "done": "Terminé"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "Doublage IA en direct",
+        "description": "Regardez la télévision israélienne avec un doublage IA en temps réel dans votre langue préférée",
+        "hebrew": "Hébreu",
+        "english": "Anglais"
+      },
+      "subtitles": {
+        "title": "Sous-titres interactifs",
+        "description": "Appuyez sur n'importe quel mot dans les sous-titres pour une traduction et une prononciation instantanées",
+        "sample": "La famille s'est réunie pour le dîner de Shabbat",
+        "word": "Shabbat",
+        "translation": "Sabbat - jour de repos hebdomadaire"
+      },
+      "interaction": {
+        "title": "Interaction avec un personnage IA",
+        "description": "Mettez en pause n'importe quelle scène et demandez à votre compagnon IA le contexte culturel",
+        "userMsg": "Quelle fête célèbrent-ils ?",
+        "aiMsg": "Ils célèbrent Sukkot, la Fête des Tabernacles. La hutte temporaire que vous voyez s'appelle une soukka."
+      },
+      "trivia": {
+        "title": "Quiz en direct",
+        "description": "L'IA génère des questions de quiz à partir de ce qui est diffusé en direct. Participez et apprenez !",
+        "question": "Quelle est la langue officielle d'Israël ?",
+        "optionA": "Arabe",
+        "optionB": "Hébreu",
+        "optionC": "Anglais"
+      },
+      "catchup": {
+        "title": "Rattrapage intelligent",
+        "description": "Vous avez manqué une partie d'une diffusion en direct ? L'IA résume ce que vous avez manqué",
+        "missed": "Manqué",
+        "summary": "Résumé IA",
+        "live": "En direct"
+      },
+      "byoc": {
+        "title": "Apportez votre propre contenu",
+        "description": "Importez vos sources IPTV et regardez-les aux côtés du contenu Bayit+",
+        "step1": "Ajouter une source",
+        "step2": "Enrichissement IA",
+        "step3": "Regarder"
+      },
+      "zehAni": {
+        "title": "Créez votre personnage IA",
+        "description": "Générez un avatar IA personnalisé qui apprend avec vous",
+        "generated": "Avatar IA"
+      }
+    }
+  },
+  "dm": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "conversation": "Conversation",
+    "empty": {
+      "title": "Aucun message pour l'instant",
+      "subtitle": "Commencez une conversation avec un ami"
+    },
+    "input": {
+      "placeholder": "Écrivez un message...",
+      "send": "Envoyer"
+    },
+    "translate": "Traduire",
+    "react": "Réagir",
+    "read": "Lu",
+    "sent": "Envoyé",
+    "loadMore": "Charger les messages précédents",
+    "startConversation": "Envoyez un message pour démarrer la conversation",
+    "reaction": {
+      "like": "J'aime",
+      "love": "Adore",
+      "laugh": "Haha",
+      "surprise": "Wow",
+      "sad": "Triste"
+    },
+    "error": {
+      "fetchFailed": "Impossible de charger les messages",
+      "sendFailed": "Impossible d'envoyer le message"
+    }
+  },
+  "household": {
+    "empty": {
+      "title": "Aucun foyer pour l'instant",
+      "subtitle": "Créez un foyer pour gérer votre famille"
+    },
+    "create": {
+      "namePlaceholder": "Nom du foyer",
+      "button": "Créer un foyer"
+    },
+    "members": "Membres",
+    "role": {
+      "owner": "Propriétaire",
+      "guardian": "Tuteur",
+      "child": "Enfant"
+    },
+    "invite": {
+      "title": "Inviter des membres",
+      "emailPlaceholder": "Adresse e-mail",
+      "send": "Envoyer l'invitation",
+      "pending": "Invitations en attente"
+    },
+    "removeMember": "Retirer",
+    "error": {
+      "fetchFailed": "Échec du chargement du foyer",
+      "createFailed": "Échec de la création du foyer",
+      "updateFailed": "Échec de la mise à jour du foyer",
+      "deleteFailed": "Échec de la suppression du foyer",
+      "inviteFailed": "Échec de l'envoi de l'invitation",
+      "removeFailed": "Échec de la suppression du membre"
+    }
   }
 }

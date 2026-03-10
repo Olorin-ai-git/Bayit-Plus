@@ -487,18 +487,6 @@
     "minor": "軽微",
     "major": "重要"
   },
-  "auth": {
-    "loginRequired": "ログインが必要です",
-    "loginToWatch": "{{title}} を視聴するにはサインインしてください",
-    "login": "ログイン",
-    "signUp": "新規登録",
-    "biometricSignIn": "指紋でサインイン",
-    "biometricEnrollTitle": "生体認証サインインを有効にする",
-    "biometricEnrollMessage": "次回から指紋や顔を使って素早くサインインできます",
-    "biometricEnrollEnable": "有効にする",
-    "biometricEnrollSkip": "後で",
-    "signOut": "サインアウト"
-  },
   "demo": {
     "title": "デモモード",
     "description": "これはサンプルコンテンツを使用したデモバージョンです",
@@ -616,7 +604,21 @@
     "browse": "ブラウズ",
     "library": "ライブラリ",
     "myContent": "マイコンテンツ",
-    "explore": "探索"
+    "explore": "探索",
+    "glossary": "用語集",
+    "missions": "ミッション",
+    "audiobooks": "オーディオブック",
+    "playlist": "プレイリスト",
+    "zehAniHub": "Zeh Ani",
+    "support": "サポート",
+    "games": "ゲーム",
+    "friends": "フレンド",
+    "discoverHub": "AIを発見",
+    "listen": "聴く",
+    "byoc": "マイソース",
+    "household": "世帯",
+    "messages": "メッセージ",
+    "social": "ソーシャル"
   },
   "epg": {
     "title": "番組表",
@@ -687,11 +689,7 @@
     "myList": "マイリスト",
     "seeAll": "すべて見る",
     "nearYou": "近くのイスラエル人",
-    "betaExclusive": "ベータ限定",
-    "locationPermissionDescription": "近くのイスラエルのコンテンツやビジネスを見るには位置情報を有効にしてください",
-    "enableLocation": "位置情報を有効にする",
-    "locationPermissionDeniedDescription": "位置情報へのアクセスが拒否されました。設定を開いて有効にし、近くのイスラエルコンテンツを見てください。",
-    "openSettings": "設定を開く"
+    "betaExclusive": "ベータ限定"
   },
   "search": {
     "title": "検索",
@@ -761,6 +759,15 @@
     "startOver": "最初から視聴",
     "live": "ライブ"
   },
+  "listen": {
+    "title": "聴く",
+    "subtitle": "ラジオ、ポッドキャスト、オーディオブック",
+    "tab": {
+      "radio": "ラジオ",
+      "podcasts": "ポッドキャスト",
+      "audiobooks": "オーディオブック"
+    }
+  },
   "radio": {
     "title": "ラジオ",
     "subtitle": "ラジオ局",
@@ -814,7 +821,7 @@
     "releaseDate": "配信日",
     "host": "ホスト",
     "guests": "ゲスト",
-    "subscribe": "登録する",
+    "subscribe": "登録",
     "unsubscribe": "登録解除",
     "download": "ダウンロード",
     "removeDownload": "ダウンロードを削除",
@@ -842,13 +849,7 @@
     "queue": "キュー",
     "upNext": "次のコンテンツ",
     "continueListening": "続きを聴く",
-    "startFromBeginning": "最初から",
-    "playLatest": "再生"
-  },
-  "miniPlayer": {
-    "skipBackward": "15秒戻る",
-    "skipForward": "30秒進む",
-    "closePlayer": "プレーヤーを閉じる"
+    "startFromBeginning": "最初から"
   },
   "vod": {
     "title": "ビデオオンデマンド",
@@ -1059,7 +1060,8 @@
     "sendFeedback": "フィードバックを送信",
     "reportBug": "バグを報告",
     "helpCenter": "ヘルプセンター",
-    "contactSupport": "サポートに連絡"
+    "contactSupport": "サポートに連絡",
+    "replayTour": "機能ツアーをもう一度見る"
   },
   "player": {
     "play": "再生",
@@ -1178,14 +1180,12 @@
       "preview": "Preview",
       "selected": "Selected",
       "send": "Send",
-      "skip": "Skip",
-      "fullscreen": "Enter full screen",
-      "exitFullscreen": "Exit full screen"
+      "skip": "Skip"
     },
     "dubbing": {
       "notNow": "Not Now",
-      "premiumMessage": "Live dubbing requires a Plus or Beta 500 subscription",
-      "premiumTitle": "Bayit+ Feature",
+      "premiumMessage": "Live dubbing requires a Premium or Beta 500 subscription",
+      "premiumTitle": "Premium Feature",
       "upgrade": "Upgrade",
       "voiceTitle": "Dubbing Voice",
       "settings_title": "ライブ吹き替え設定",
@@ -1204,78 +1204,21 @@
     "go_back": "戻る",
     "sleepTimer": {
       "title": "スリープタイマー",
-      "setTimer": "タイマーを設定",
-      "minutesFormat": "{{minutes}}分",
-      "remaining": "残り{{time}}",
-      "extend": "+{{minutes}}分",
-      "cancel": "タイマーをキャンセル",
-      "off": "オフ",
-      "timerSet": "{{minutes}}分のスリープタイマーを設定しました",
-      "timerExtended": "タイマーを{{minutes}}分延長しました",
-      "timerCancelled": "スリープタイマーがキャンセルされました"
+      "subtitle": "設定した時間後に自動的に再生を一時停止",
+      "minutes": "{{count}}分",
+      "customPlaceholder": "カスタム分数",
+      "set": "タイマー設定",
+      "remaining": "{{time}}後にスリープ",
+      "extend": "+15分",
+      "cancel": "タイマーキャンセル"
     },
-    "dialogue": {
-      "selectCharacter": "キャラクターを選択",
-      "cancel": "キャンセル",
-      "placeholder": "質問を入力...",
-      "send": "送信",
-      "close": "閉じる",
-      "yourAvatar": "あなたのアバター",
-      "sharedSession": "共有セッション",
-      "waitingForTurn": "順番をお待ちください..."
-    },
-    "pauseAsk": {
-      "title": "キャラクターに質問",
-      "selectCharacter": "誰に質問しますか？",
-      "resumeMovie": "再生を再開",
-      "processing": "質問を処理中...",
-      "askAgain": "もう一度質問",
-      "resume": "再開",
-      "watchAgain": "もう一度見る",
-      "placeholder": "質問を入力してください...",
-      "stages": {
-        "polishing": "質問を磨いています...",
-        "thinking": "質問について考えています...",
-        "biff1": "ビフはあなたの質問が気に入らなかったようです...",
-        "biff2": "ビフは鏡の前でポーズをとっています...",
-        "biff3": "ビフは答えのスペルを確認中...",
-        "biff4": "ビフが誰かをマヌケ呼ばわりしました...",
-        "doc1": "ドクが次元転移装置を確認中...",
-        "doc2": "なんてこった! まだ計算中...",
-        "doc3": "ドクが1.21ジゴワットを調整中...",
-        "doc4": "ドクが時空連続体を確認中...",
-        "marty1": "マーティがまずギターを調弦中...",
-        "marty2": "これはヘビーだ...",
-        "marty3": "マーティが自分がまだ存在するか確認中...",
-        "marty4": "マーティは誰にもチキンと呼ばせないと言っています...",
-        "george1": "ジョージが答える勇気を出しています...",
-        "george2": "ジョージがノートに返事を書いています...",
-        "george3": "ジョージは自分の密度がここに導いたと言っています...",
-        "george4": "ジョージがついに自信を持ちました...",
-        "lorraine1": "ロレインがまず髪を直しています...",
-        "lorraine2": "ロレインが魅惑の深海パーティーを思い出しています...",
-        "lorraine3": "ロレインは運命だったと言っています...",
-        "lorraine4": "ロレインがダンスの準備をしています...",
-        "jennifer1": "ジェニファーが車で待っています...",
-        "jennifer2": "ジェニファーが未来について考えています...",
-        "jennifer3": "ジェニファーは大丈夫だと言っています...",
-        "jennifer4": "ジェニファーが辛抱強く待っています...",
-        "generic1": "{{name}}が考えています...",
-        "generic2": "{{name}}が返答を準備中...",
-        "generic3": "もう少しです...",
-        "generic4": "あと少しお待ちください..."
-      },
-      "error": {
-        "generic": "エラーが発生しました",
-        "anthropic": "AIサービスが利用できません",
-        "falAi": "動画生成サービスが利用できません",
-        "elevenlabs": "音声サービスが利用できません",
-        "credits": "クレジットが不足しています"
-      }
-    },
-    "interaction": {
-      "previous": "前のインタラクション",
-      "next": "次のインタラクション"
+    "openSubs": {
+      "title": "字幕を検索",
+      "searchPlaceholder": "タイトルで検索...",
+      "search": "検索",
+      "searchFailed": "検索に失敗しました。再試行してください。",
+      "downloads": "{{count}}件のダウンロード",
+      "noResults": "字幕が見つかりません"
     }
   },
   "content": {
@@ -1750,37 +1693,21 @@
     "notEnoughSpace": "空き容量が足りません"
   },
   "voice": {
-    "title": "音声",
-    "subtitle": "音声コントロール",
-    "listening": "聞いています...",
-    "speak": "話してください",
-    "tryAgain": "もう一度お試しください",
-    "didYouMean": "もしかして",
-    "noMatch": "一致するものが見つかりませんでした",
-    "commands": "音声コマンド",
-    "examples": "例",
-    "play": "「[タイトル]を再生」と言ってください",
-    "search": "「[キーワード]を検索」と言ってください",
-    "channel": "「チャンネル[番号]に変更」と言ってください",
-    "volume": "「音量を上げて」または「音量を下げて」と言ってください",
-    "pause": "「一時停止」と言ってください",
-    "resume": "「再開」と言ってください",
-    "mute": "「ミュート」と言ってください",
-    "unmute": "「ミュート解除」と言ってください",
-    "home": "「ホームに移動」と言ってください",
-    "settings": "「設定を開く」と言ってください",
-    "help": "「ヘルプ」と言ってください",
-    "cancel": "「キャンセル」と言ってください",
-    "voiceEnabled": "音声有効",
-    "voiceDisabled": "音声無効",
-    "enableVoice": "音声を有効にする",
-    "disableVoice": "音声を無効にする",
-    "microphoneAccess": "マイクアクセス",
-    "allowMicrophone": "マイクを許可してください",
-    "microphoneDenied": "マイクアクセスが拒否されました",
-    "microphoneError": "マイクエラー",
-    "wakeWord": "ウェイクワード",
-    "sayWakeWord": "「ねえBayit」と言ってください"
+    "panelTitle": "音声アシスタント",
+    "typeCommand": "コマンドを入力してください...",
+    "controlExecuted": "実行済み：{{action}}",
+    "timerSet": "{{amount}} {{unit}} のタイマーを設定しました",
+    "chatPending": "メッセージを処理中です...",
+    "suggestion": {
+      "watchLive": "ライブTVを見る",
+      "search": "コンテンツを検索",
+      "listenRadio": "ラジオを聴く"
+    },
+    "error": {
+      "micDenied": "マイクへのアクセスが拒否されました",
+      "notSupported": "このブラウザでは音声コマンドはサポートされていません",
+      "recognitionFailed": "理解できませんでした。もう一度お試しください。"
+    }
   },
   "plans": {
     "title": "プラン",
@@ -3264,33 +3191,49 @@
     "weekend": "週末"
   },
   "voiceOnboarding": {
-    "title": "音声トレーニング",
-    "stepProgress": "ステップ {{step}} / {{total}}",
     "welcome": {
-      "title": "音声トレーニング",
-      "description": "パーソナライズされた音声認識と音声コマンドのために音声プロファイルをトレーニングします。"
+      "title": "音声コントロールへようこそ",
+      "description": "音声でBayit+を操作してハンズフリー体験を"
     },
-    "recording": {
-      "micButton": "マイク",
-      "recButton": "録音",
-      "tapToStart": "タップして録音を開始",
-      "tapToStop": "録音中... タップして停止",
-      "recordButton": "録音",
-      "stopButton": "停止"
+    "features": {
+      "voiceCommands": "音声コマンド",
+      "voiceCommandsDesc": "自然な言葉でナビゲート、検索、再生をコントロール",
+      "tts": "テキスト読み上げ",
+      "ttsDesc": "応答とコンテンツの説明を音声で聞く",
+      "wakeWord": "ウェイクワード",
+      "wakeWordDesc": "'Bayit'と言っていつでも音声コントロールを起動"
     },
-    "training": {
-      "title": "トレーニング中",
-      "message": "音声プロファイルをトレーニング中です。しばらくお待ちください。"
+    "getStarted": "始める",
+    "permissions": {
+      "title": "マイクへのアクセス",
+      "description": "音声コントロールにはコマンドを聞くためのマイクアクセスが必要です",
+      "privacy": "音声データは安全に処理され、保存されることはありません"
     },
-    "completion": {
-      "title": "音声プロファイル準備完了！",
-      "message": "音声プロファイルが作成されました。音声コマンドとパーソナライズされた音声機能を使用できます。"
+    "permissionsGranted": "マイクアクセスが許可されました",
+    "permissionRequired": {
+      "title": "許可が必要です",
+      "message": "音声コントロールを使用するには、デバイス設定でマイクアクセスを有効にしてください"
     },
-    "buttons": {
-      "back": "戻る",
-      "next": "次へ",
-      "finish": "完了"
-    }
+    "grantPermissions": "許可を与える",
+    "testWakeWord": {
+      "title": "ウェイクワードをテスト",
+      "description": "'Bayit'と言って音声起動をテスト",
+      "success": "素晴らしい！音声起動が機能しています"
+    },
+    "startTest": "テスト開始",
+    "complete": {
+      "title": "準備完了！",
+      "description": "音声コントロールが有効になりました。これらのコマンドを試してください：",
+      "tryCommands": "これらのコマンドを試してください",
+      "examples": {
+        "search": "\"Faudaを検索\"",
+        "play": "\"ニュースを再生\"",
+        "navigate": "\"ライブTVに移動\"",
+        "control": "\"一時停止\" または \"音量を上げて\""
+      },
+      "startUsing": "音声コントロールを使い始める"
+    },
+    "skip": "今はスキップ"
   },
   "portal": {
     "nav": {
@@ -3565,260 +3508,466 @@
     "stop": "録音を停止",
     "start": "録音を開始"
   },
-  "aiOnboarding": {
-    "title": "AIアシスタントセットアップ",
-    "stepProgress": "ステップ {{step}} / {{total}}",
-    "welcome": {
-      "title": "AIアシスタントへようこそ",
-      "description": "セマンティック検索、チャットボット支援、インテリジェントな推奨事項のためのAIコンパニオン。"
+  "discover": {
+    "subtitle": "19のAI搭載機能を探索する",
+    "description": "Bayit+はAIを活用して視聴、聴取、学習体験を向上させます。お使いのプラットフォームで利用可能な機能をご覧ください。",
+    "featureCount": "{{count}}の機能",
+    "tryIt": "試してみる",
+    "startWalkthrough": "ウォークスルーを開始",
+    "availableOn": "対応プラットフォーム",
+    "prerequisites": "前提条件",
+    "setup": "設定する",
+    "error": {
+      "fetchFailed": "Discoverの機能を読み込めませんでした。もう一度お試しください。",
+      "unknownFeature": "機能が見つかりません。",
+      "featureDisabled": "この機能は現在無効になっています。"
     },
-    "permissions": {
-      "title": "権限",
-      "description": "AIアシスタントには以下へのアクセスが必要です：\n\n• 視聴履歴（パーソナライズされた推奨事項のため）\n• 検索クエリ（結果を改善するため）\n• 設定（応答をカスタマイズするため）"
+    "availability": {
+      "ready": "利用可能",
+      "setupNeeded": "設定が必要",
+      "premiumRequired": "プレミアム必須",
+      "notAvailable": "利用不可",
+      "platformOnly": "他のプラットフォーム"
     },
-    "personalization": {
-      "title": "パーソナライゼーション",
-      "description": "AIはあなたのインタラクションから学習し、以下を提供します：\n\n• より良いコンテンツ推奨\n• より正確な検索結果\n• 文脈に応じたチャットボット応答"
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "tvos": "Apple TV",
+      "android": "Android"
     },
-    "completion": {
-      "title": "準備完了！",
-      "message": "AIアシスタントがコンテンツの発見と楽しみをサポートする準備ができました。"
+    "category": {
+      "watching_movies": "映画を観る",
+      "watching_live_tv": "ライブTVを観る",
+      "learn_hebrew": "ヘブライ語を学ぶ",
+      "search_discovery": "検索と発見",
+      "chat_assistants": "チャットアシスタント"
     },
-    "buttons": {
-      "back": "戻る",
-      "next": "次へ",
-      "finish": "完了"
-    }
-  },
-  "voiceAssistant": {
-    "fabLabel": "音声アシスタント",
-    "modal": {
-      "title": "音声アシスタント",
-      "setupRequired": "音声アシスタントのセットアップが必要",
-      "setupMessage": "音声機能を使用するにはAIアシスタントのセットアップを完了してください。",
-      "startSetup": "セットアップを開始",
-      "cancel": "キャンセル"
-    },
-    "state": {
-      "idle": "タップして話す",
-      "listening": "聞き取り中...",
-      "processing": "処理中...",
-      "speaking": "再生中...",
-      "error": "エラーが発生しました"
-    },
-    "a11y": {
-      "startListening": "音声入力を開始",
-      "stopListening": "聞き取りを停止して処理",
-      "processing": "音声入力を処理中",
-      "interrupt": "再生を停止"
-    }
-  },
-  "aiChat": {
-    "title": "AIチャット",
-    "inputPlaceholder": "AIに何でも聞いてください...",
-    "sendButton": "送信",
-    "retryButton": "再試行"
-  },
-  "chess": {
-    "title": "チェス",
-    "welcome": "チェスへようこそ",
-    "subtitle": "世界中の友人や家族とチェスを楽しもう",
-    "createGame": "新しいゲームを作成",
-    "joinGame": "ゲームに参加",
-    "gameCode": "ゲームコード",
-    "enterGameCode": "ゲームコードを入力",
-    "invalidGameCode": "無効なゲームコード。6文字必要です。",
-    "joinFailed": "ゲームへの参加に失敗しました",
-    "join": "参加",
-    "create": "作成",
-    "chooseColor": "色を選択",
-    "white": "白",
-    "black": "黒",
-    "chatPlaceholder": "メッセージを入力...（@bot でアドバイス）",
-    "botHint": "メッセージに @bot をタグ付けして、AIアシスタントからチェスのアドバイスを受けましょう",
-    "bot": "チェスアシスタント",
-    "mute": "ミュート",
-    "unmute": "ミュート解除",
-    "speaking": "参加者",
-    "resign": "投了",
-    "offerDraw": "引き分け提案",
-    "newGame": "新しいゲーム",
-    "checkmate": "チェックメイト！",
-    "stalemate": "ステイルメイト",
-    "draw": "引き分け",
-    "resigned": "投了しました",
-    "reconnecting": "再接続中...",
-    "moveHistory": "手の履歴",
-    "noMoves": "まだ手がありません",
-    "showHints": "ガイドヒントを表示",
-    "yourTurn": "あなたのターン",
-    "opponentTurn": "相手のターン",
-    "waitingForOpponent": "対戦相手を待っています...",
-    "gameOver": "ゲームオーバー",
-    "sendingInvite": "{{name}} にゲーム招待を送信中...",
-    "inviteSent": "{{name}} にゲーム招待を送信しました！ゲームコード: {{code}}",
-    "inviteFailed": "ユーザーが見つかりません。名前を確認して再試行してください。",
-    "inviteReceived": "{{name}} がチェスの対局に招待しました！",
-    "joinInvite": "ゲームに参加",
-    "challenge": "挑戦",
-    "challengeFriend": "友達に挑戦",
-    "noFriendsYet": "友達を追加して挑戦しましょう",
-    "acceptInvite": "承諾",
-    "declineInvite": "辞退",
-    "playedAsWhite": "白で対局",
-    "playedAsBlack": "黒で対局",
-    "gameMode": "ゲームモード",
-    "playVsFriend": "友人と対戦",
-    "playVsBot": "ボットと対戦",
-    "difficulty": "難易度",
-    "easy": "簡単",
-    "medium": "普通",
-    "hard": "難しい",
-    "chessBot": "チェスボット",
-    "disconnected": "切断されました",
-    "theirTurn": "相手のターン",
-    "copyCode": "コードをコピー",
-    "whiteTurn": "白のターン",
-    "blackTurn": "黒のターン",
-    "you": "あなた",
-    "opponent": "相手",
-    "acceptDraw": "引き分け承諾",
-    "declineDraw": "引き分け拒否",
-    "whiteCaptured": "白の取った駒",
-    "blackCaptured": "黒の取った駒",
-    "online": "オンライン",
-    "offline": "オフライン",
-    "joinByGameCode": "ゲームコードで参加",
-    "timeout": "時間切れ",
-    "drawOffered": "引き分け提案",
-    "chat": {
-      "title": "チャット",
-      "inputPlaceholder": "メッセージを入力..."
-    },
-    "timeControl": "持ち時間",
-    "unlimited": "無制限",
-    "bullet1": "1分",
-    "blitz3": "3分",
-    "blitz5": "5分",
-    "rapid10": "10分",
-    "classical30": "30分",
-    "challengeViaWhatsApp": "WhatsAppで対戦を申し込む",
-    "whatsAppMessage": "Bayit+でチェスの対戦を申し込みます! コード: {{code}} - タップでプレイ: {{link}}"
-  },
-  "byoc": {
-    "home": {
-      "title": "自分のコンテンツを持ち込む",
-      "subtitle": "お気に入りのコンテンツソースを接続して、AI吹き替え、字幕などで強化しましょう",
-      "connectButton": "コンテンツを接続",
-      "aiFeatures": {
-        "dubbing": "AI吹き替え",
-        "subtitles": "AI字幕"
+    "feature": {
+      "pause_ask": {
+        "name": "一時停止して質問",
+        "tagline": "任意のシーンを一時停止してAIコンパニオンに質問する",
+        "description": "視聴中にビデオを一時停止して、現在のシーンについて質問できます。AIキャラクターが文化的な背景を説明し、セリフを翻訳し、ストーリーについて解説します。"
+      },
+      "interactive_subtitles": {
+        "name": "インタラクティブ字幕",
+        "tagline": "字幕の任意の単語をタップして即座に翻訳と文脈を取得",
+        "description": "字幕の任意の単語をクリックして翻訳を確認し、発音を聞き、使用例を取得できます。お気に入りの番組を観ながら語彙を増やしましょう。"
+      },
+      "vocabulary": {
+        "name": "語彙ビルダー",
+        "tagline": "観ている番組から新しい単語を学ぶ",
+        "description": "字幕から新しいヘブライ語単語を自動的に収集します。フラッシュカードで復習し、進捗を追跡し、楽しめるコンテンツを通じて語彙を増やしましょう。"
+      },
+      "vod_moments": {
+        "name": "VODモーメント",
+        "tagline": "お気に入りのコンテンツからAIが厳選したハイライト",
+        "description": "映画や番組からAIが生成したハイライトクリップと重要な瞬間を取得できます。印象的なシーンを共有し、最高のシーンを見直しましょう。"
+      },
+      "cultural_context": {
+        "name": "文化的背景",
+        "tagline": "すべてのシーンの背後にある文化的背景を理解する",
+        "description": "視聴しているコンテンツに登場するイスラエルの慣習、祝日、ユーモア、社会規範をリアルタイムで説明する文化的注釈を受け取れます。"
+      },
+      "bilingual_bridge": {
+        "name": "バイリンガルブリッジ",
+        "tagline": "視聴しながらヘブライ語と日本語を並行して学ぶ",
+        "description": "重要な語彙がハイライトされた二か国語字幕を表示します。ヘブライ語と母国語を切り替えて、自然に理解力を養いましょう。"
+      },
+      "ai_companion": {
+        "name": "AIコンパニオン",
+        "tagline": "イスラエルのコンテンツを案内するあなた専用のAIガイド",
+        "description": "一緒に視聴するAIキャラクターが解説を提供し、質問に答え、イスラエルのメディアの微妙なニュアンスを理解するのを助けます。"
+      },
+      "live_dubbing": {
+        "name": "ライブ吹き替え",
+        "tagline": "イスラエルのライブTVチャンネルのリアルタイムAI吹き替え",
+        "description": "お好みの言語でAI搭載のリアルタイム吹き替えを付けてイスラエルのライブTVを視聴できます。言語の壁なくニュース、トークショー、エンターテインメントを楽しめます。"
+      },
+      "live_subtitles": {
+        "name": "ライブ字幕",
+        "tagline": "ライブ放送向けのリアルタイムAI字幕",
+        "description": "イスラエルのライブTVを視聴しながらリアルタイムでAI生成の字幕を取得できます。ライブコンテンツの即時翻訳にお好みの言語を選択してください。"
+      },
+      "live_trivia": {
+        "name": "ライブトリビア",
+        "tagline": "放映中の内容に基づいてトリビアゲームをプレイ",
+        "description": "AIがライブ放送からトピックを検出してリアルタイムでトリビア問題を生成します。友達と競いながらTV視聴でイスラエル文化を学びましょう。"
+      },
+      "catch_up": {
+        "name": "キャッチアップ",
+        "tagline": "ライブTVで見逃した内容のAI要約",
+        "description": "ライブ放送の一部を見逃しましたか？何が起きたかを教えてくれるAI生成の要約を取得し、重要な瞬間がハイライトされているのですぐに確認できます。"
+      },
+      "scene_search": {
+        "name": "シーン検索",
+        "tagline": "すべてのコンテンツから特定のシーンを検索",
+        "description": "覚えているシーンを説明すると、AIがすべての利用可能なコンテンツから見つけ出します。セリフ、映像要素、またはあらすじで検索できます。"
+      },
+      "phonetic_mirror": {
+        "name": "フォネティックミラー",
+        "tagline": "AIフィードバックでヘブライ語の発音を練習",
+        "description": "ヘブライ語を話しながら自分を録音し、発音について即座のAIフィードバックを受け取りましょう。ネイティブスピーカーと比較し、時間の経過とともに改善を追跡します。"
+      },
+      "talk_back": {
+        "name": "トークバック",
+        "tagline": "AIキャラクターとヘブライ語で音声会話をする",
+        "description": "AIキャラクターと話してヘブライ語の会話を練習しましょう。自然な対話の中で文法、語彙、発音についてリアルタイムのフィードバックを受け取れます。"
+      },
+      "interactive_mission": {
+        "name": "インタラクティブミッション",
+        "tagline": "AIガイダンスで楽しいヘブライ語学習チャレンジ",
+        "description": "コンテンツ視聴とヘブライ語学習の演習を組み合わせたAIガイドのミッションを完了しましょう。報酬を獲得し、言語学習の旅を追跡できます。"
+      },
+      "glossary": {
+        "name": "パーソナルグロッサリー",
+        "tagline": "コンテンツから構築したあなた専用のヘブライ語辞書",
+        "description": "出会って保存したすべてのヘブライ語単語が、カテゴリー、頻度、習熟度別に整理されています。いつでも復習して練習できます。"
+      },
+      "llm_search": {
+        "name": "AI検索",
+        "tagline": "自然言語クエリでコンテンツを検索",
+        "description": "自然言語を使用してBayit+ライブラリ全体を検索できます。「家族についての面白いイスラエルのコメディ」や「テルアビブについてのドキュメンタリー」を尋ね、AIが厳選した結果を取得しましょう。"
+      },
+      "proactive_voice": {
+        "name": "プロアクティブボイス",
+        "tagline": "あなたのニーズを先読みする音声優先AIアシスタント",
+        "description": "視聴中の内容に基づいて、関連するコンテンツの提案、翻訳、学習機会を積極的に提供するAIアシスタントです。"
+      },
+      "chatbot": {
+        "name": "Bayitチャット",
+        "tagline": "イスラエルのコンテンツに関するあらゆることをAIとチャット",
+        "description": "イスラエル文化について質問し、コンテンツの推薦を受け、ヘブライ語を練習し、または視聴した内容について話し合いましょう。AIコンパニオンはいつでも利用できます。"
       }
     },
-    "yourChannels": "あなたのチャンネル",
-    "iptv": "IPTV",
-    "plex": "Plex",
-    "youtube": "YouTube",
-    "addIPTV": "IPTV追加",
-    "addPlex": "Plex追加",
-    "addYouTube": "YouTube追加",
-    "playlistURL": "プレイリストURL",
-    "playlistName": "プレイリスト名",
-    "noChannels": "プレイリストにチャンネルが見つかりません",
-    "refreshing": "更新中...",
-    "sourceAdded": "ソース追加済み",
-    "sourceRemoved": "ソースが削除されました",
-    "connectedSources": "接続済みソース",
-    "aiAvailable": "AI利用可能",
-    "audioAIOnly": "オーディオAIのみ",
-    "aiDubbing": "AI吹き替え",
-    "aiSubtitles": "AI字幕",
-    "connectContent": "コンテンツを接続",
-    "connectContentDesc": "IPTV、Plex、またはYouTubeのソースを追加",
-    "removeSource": "ソースを削除",
-    "removeConfirm": "このソースを削除してもよろしいですか?",
-    "channelCount": "%dチャンネル",
-    "fromPlex": "Plexから",
-    "enterURL": "プレイリストURLまたはファイルを入力",
-    "validating": "検証中...",
-    "invalidURL": "有効なURLを入力してください",
-    "fetchFailed": "プレイリストの取得に失敗",
-    "plexVisitLink": "plex.tv/linkにアクセスしてコードを入力",
-    "plexEnterCode": "上に表示されたコードを入力",
-    "plexWaiting": "Plexの承認を待っています...",
-    "plexRequestingPin": "Plex PINをリクエスト中...",
-    "plexSelectServer": "サーバーを選択",
-    "plexSelectServerDesc": "接続するPlexサーバーを選択",
-    "plexDiscovering": "サーバーを検出中...",
-    "plexNoServers": "Plexサーバーが見つかりません",
-    "plexLocal": "ローカル",
-    "plexRemote": "リモート",
-    "plexItemCount": "Plexから%dアイテム",
-    "plexConnectDesc": "Plex Media Serverを接続",
-    "youtubeVisitLink": "下のリンクにアクセスしてコードを入力",
-    "youtubeEnterCode": "上に表示されたコードを入力",
-    "youtubeWaiting": "承認を待っています...",
-    "youtubeRequestingCode": "デバイスコードをリクエスト中...",
-    "youtubeConnected": "YouTube接続済み",
-    "youtubeVideoCount": "件の動画が見つかりました",
-    "youtubeOpenApp": "YouTubeで開く",
-    "youtubeAudioAINote": "YouTubeコンテンツでオーディオAI機能が利用可能",
-    "fromYouTube": "YouTubeから",
-    "youtubeConnectDesc": "YouTubeアカウントを接続",
-    "bannerTitle": "自分のコンテンツを持ち込む",
-    "bannerSubtitle": "AI強化視聴のためにストリーミングソースを接続",
-    "bannerConnect": "接続",
-    "bannerDismiss": "閉じる",
-    "itemsLoaded": "アイテム読み込み済み",
-    "enriching": "充実中...",
-    "findingSubtitles": "字幕を検索中...",
-    "subtitlesFound": "字幕が見つかりました",
-    "noSubtitlesFound": "字幕が見つかりません",
-    "interactionMoments": "インタラクティブモーメント",
-    "interactionMomentsDescription": "AIがキャラクターとの対話のための重要な瞬間を検出します",
-    "enrichmentFailed": "充実に失敗しました",
-    "browsePlexLibrary": "Plexライブラリを閲覧",
-    "addXtream": "Xtream Codes",
-    "xtreamServer": "サーバーURL",
-    "xtreamUsername": "ユーザー名",
-    "xtreamPassword": "パスワード",
-    "xtreamConnectDesc": "Xtream Codesプロバイダーを接続",
-    "xtreamAuthFailed": "認証に失敗",
-    "sourceName": "ソース名",
-    "selectProvider": "プロバイダーを選択",
-    "manualEntry": "手動入力",
-    "onboarding.title": "コンテンツセットアップ",
-    "onboarding.connectSource": "ソースを接続",
-    "onboarding.connectDesc": "開始するには最初のコンテンツソースを追加",
-    "onboarding.sourceAdded": "ソース追加済み",
-    "onboarding.analyzing": "コンテンツを分析中...",
-    "onboarding.analyze": "コンテンツを分析",
-    "onboarding.analysisComplete": "分析完了",
-    "onboarding.channelsIdentified": "チャンネル特定済み",
-    "onboarding.vodMatched": "VODマッチ済み",
-    "onboarding.duplicatesFound": "重複が見つかりました",
-    "onboarding.streamsHealthy": "ストリーム正常",
-    "onboarding.languages": "言語",
-    "onboarding.topCategories": "トップカテゴリー",
-    "onboarding.cleanupTitle": "コンテンツクリーンアップ",
-    "onboarding.autoBestQuality": "最高品質を自動選択",
-    "onboarding.autoBestQualityDesc": "各チャンネルで最高品質のストリームを自動的に選択",
-    "onboarding.applyCleanup": "クリーンアップを適用",
-    "onboarding.personalizeTitle": "パーソナライズ",
-    "onboarding.personalizeDesc": "ホーム画面の設定を選択",
-    "onboarding.languagePriority": "言語の優先順位",
-    "onboarding.homeCategories": "ホームカテゴリー",
-    "onboarding.ready": "準備完了",
-    "home.title": "自分のコンテンツを持ち込む",
-    "home.subtitle": "IPTV、Plex、YouTube、またはXtreamのソースを接続",
-    "home.connectButton": "ソースを接続",
-    "home.aiFeatures.dubbing": "AI吹き替え",
-    "home.aiFeatures.subtitles": "AI字幕",
-    "tapToOpen": "タップして開く",
-    "aiTrivia": "AIトリビア",
-    "ai.dubbing": "AI吹き替え",
-    "ai.subtitles": "AI字幕",
-    "ai.trivia": "AIトリビア",
-    "ai.audioOverlay": "オーディオオーバーレイ"
+    "prereq": {
+      "avatar": "AIキャラクターを作成する",
+      "subscription": "プレミアムサブスクリプションが必要",
+      "microphone": "マイクへのアクセスが必要",
+      "contentType": "コンテンツの好みを選択する",
+      "preference": "言語の好みを設定する",
+      "voiceClone": "ボイスクローンを設定する"
+    },
+    "walkthrough": {
+      "tryItNow": "[ja] Try it now",
+      "watchDemo": "[ja] Watch demo",
+      "skip": "[ja] Skip",
+      "next": "[ja] Next",
+      "done": "[ja] Done",
+      "complete": "[ja] Walkthrough complete",
+      "stepCounter": "[ja] {{current}} of {{total}}",
+      "pause_ask": {
+        "step1": "[ja] Navigate to a movie with interactive moments",
+        "step2": "[ja] Pause the movie during a scene",
+        "step3": "[ja] Tap the Ask a Character button",
+        "step4": "[ja] Watch the character respond to you"
+      },
+      "interactive_subtitles": {
+        "step1": "[ja] Start playing a movie with subtitles",
+        "step2": "[ja] Tap the Interactive button in the control bar",
+        "step3": "[ja] Select your subtitle language",
+        "step4": "[ja] Tap any word in the subtitles to learn more"
+      },
+      "vocabulary": {
+        "step1": "[ja] Open a movie with interactive subtitles enabled",
+        "step2": "[ja] Tap a word you want to learn",
+        "step3": "[ja] Tap Save to Vocabulary",
+        "step4": "[ja] Review your saved words in the Vocabulary section"
+      },
+      "vod_moments": {
+        "step1": "[ja] Start watching a movie with interactive moments",
+        "step2": "[ja] Wait for an interactive prompt to appear",
+        "step3": "[ja] See the AI-generated interaction"
+      },
+      "cultural_context": {
+        "step1": "[ja] Play a movie with Hebrew dialogue",
+        "step2": "[ja] Tap on a subtitle with cultural significance",
+        "step3": "[ja] Read the AI-generated cultural explanation"
+      },
+      "bilingual_bridge": {
+        "step1": "[ja] Open a movie with bilingual support",
+        "step2": "[ja] Select the bilingual subtitle mode",
+        "step3": "[ja] Tap a highlighted phrase to see the translation",
+        "step4": "[ja] Watch both languages side by side"
+      },
+      "ai_companion": {
+        "step1": "[ja] Start watching any movie",
+        "step2": "[ja] Tap the AI Companion button",
+        "step3": "[ja] Type a question about the movie",
+        "step4": "[ja] Read the contextual AI response"
+      },
+      "live_dubbing": {
+        "step1": "[ja] Navigate to a live TV channel",
+        "step2": "[ja] Tap the dubbing button in the control bar",
+        "step3": "[ja] Select your preferred language",
+        "step4": "[ja] Listen to the real-time AI dubbing"
+      },
+      "live_subtitles": {
+        "step1": "[ja] Navigate to a live TV channel",
+        "step2": "[ja] Tap the subtitles button",
+        "step3": "[ja] Select your subtitle language",
+        "step4": "[ja] Watch the real-time subtitles appear"
+      },
+      "live_trivia": {
+        "step1": "[ja] Navigate to a live TV channel",
+        "step2": "[ja] Tap the trivia button",
+        "step3": "[ja] Answer the AI-generated questions"
+      },
+      "catch_up": {
+        "step1": "[ja] Navigate to a live broadcast",
+        "step2": "[ja] Select the catch-up option",
+        "step3": "[ja] Tap to generate an AI summary",
+        "step4": "[ja] Read the summary of what you missed"
+      },
+      "scene_search": {
+        "step1": "[ja] Navigate to a recorded broadcast",
+        "step2": "[ja] Type what you are looking for",
+        "step3": "[ja] Tap on the matching scene",
+        "step4": "[ja] Watch the scene from that point"
+      },
+      "phonetic_mirror": {
+        "step1": "[ja] Open the Phonetic Mirror in Zeh Ani",
+        "step2": "[ja] Read the Hebrew phrase shown",
+        "step3": "[ja] Speak the phrase into your microphone",
+        "step4": "[ja] Review the AI pronunciation feedback"
+      },
+      "talk_back": {
+        "step1": "[ja] Open Talk Back in Zeh Ani",
+        "step2": "[ja] Listen to your avatar speak Hebrew",
+        "step3": "[ja] Respond in Hebrew using your microphone",
+        "step4": "[ja] Review the AI feedback on your response"
+      },
+      "interactive_mission": {
+        "step1": "[ja] Open Interactive Missions",
+        "step2": "[ja] Select a mission level",
+        "step3": "[ja] Follow the AI-guided exercises",
+        "step4": "[ja] Complete the mission and earn rewards"
+      },
+      "glossary": {
+        "step1": "[ja] Open the Hebrew Glossary",
+        "step2": "[ja] Search for a Hebrew word",
+        "step3": "[ja] Listen to the pronunciation"
+      },
+      "llm_search": {
+        "step1": "[ja] Open the Search tab",
+        "step2": "[ja] Type a natural language query",
+        "step3": "[ja] Browse the AI-curated results"
+      },
+      "proactive_voice": {
+        "step1": "[ja] Open the Voice Suggestions feature",
+        "step2": "[ja] Tap and hold to speak",
+        "step3": "[ja] Hear the personalized recommendations"
+      },
+      "chatbot": {
+        "step1": "[ja] Open the AI Assistant",
+        "step2": "[ja] Type your question or request",
+        "step3": "[ja] Read the AI response"
+      }
+    }
+  },
+  "byoc": {
+    "pageSubtitle": "あなた自身のコンテンツを持ち込む - IPTVとストリーミングソースを追加",
+    "addSource": "ソースを追加",
+    "sync": "同期",
+    "remove": "削除",
+    "channelCount": "{{count}} チャンネル",
+    "empty": {
+      "title": "ソースが追加されていません",
+      "subtitle": "Bayit+とともに自分のコンテンツを視聴するために、IPTV、Xtream、またはストリーミングソースを追加してください"
+    },
+    "source": {
+      "iptv": "IPTVソース",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTVソースを追加",
+      "subtitle": "M3UまたはM3U8プレイリストファイルのURLを入力してください",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "検証",
+      "add": "ソースを追加"
+    },
+    "addXtream": {
+      "title": "Xtream Codesに接続",
+      "subtitle": "Xtream Codesサーバーの認証情報を入力してください",
+      "serverUrl": "サーバーURL",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "connect": "接続"
+    },
+    "preview": {
+      "title": "プレビュー",
+      "channelCount": "{{count}} チャンネルが見つかりました"
+    },
+    "providers": {
+      "title": "人気のプロバイダー"
+    },
+    "wizard": {
+      "step1": "ソースを追加",
+      "step2": "処理中",
+      "step3": "確認",
+      "selectSource": "ソースタイプを選択"
+    },
+    "normalization": {
+      "title": "コンテンツを処理しています",
+      "total": "合計 {{count}} チャンネル",
+      "matched": "{{count}} 件一致",
+      "stage": {
+        "parsing": "プレイリストを解析中...",
+        "matching": "チャンネルをマッチング中...",
+        "enriching": "メタデータを充実させています...",
+        "finalizing": "最終処理中..."
+      }
+    },
+    "review": {
+      "title": "インポートしたコンテンツを確認",
+      "subtitle": "{{matched}} 件一致、{{unmatched}} チャンネル不一致",
+      "matchedChannels": "一致したチャンネル",
+      "unmatchedChannels": "一致しなかったチャンネル",
+      "apply": "適用してインポート"
+    },
+    "error": {
+      "urlRequired": "URLを入力してください",
+      "noChannels": "このプレイリストにはチャンネルが見つかりませんでした",
+      "invalidUrl": "このURLからプレイリストを読み込めませんでした",
+      "allFieldsRequired": "すべてのフィールドが必要です",
+      "enrichFailed": "ソースの分析に失敗しました",
+      "syncFailed": "ソースの同期に失敗しました",
+      "normalizationFailed": "コンテンツの処理に失敗しました",
+      "normalizationPollFailed": "処理中に接続が失われました"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bayit+へようこそ",
+      "subtitle": "イスラエルのコンテンツ、文化、語学学習へのAI搭載ゲートウェイ",
+      "getStarted": "始める"
+    },
+    "highlight": {
+      "dubbing": "ライブAI吹き替え",
+      "subtitles": "インタラクティブ字幕",
+      "ai": "AIコンパニオン",
+      "learning": "ヘブライ語学習"
+    },
+    "voice": {
+      "title": "音声設定",
+      "subtitle": "音声コマンド、ヘブライ語発音練習、ハンズフリーナビゲーションのためにマイクを有効にしてください",
+      "enable": "マイクを有効にする",
+      "granted": "マイクが正常に有効になりました"
+    },
+    "tour": {
+      "done": "完了"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "ライブAI吹き替え",
+        "description": "お好みの言語でリアルタイムAI吹き替え付きでイスラエルのテレビを視聴",
+        "hebrew": "ヘブライ語",
+        "english": "英語"
+      },
+      "subtitles": {
+        "title": "インタラクティブ字幕",
+        "description": "字幕の任意の単語をタップして即座に翻訳と発音を確認",
+        "sample": "家族がShabbatの夕食に集まった",
+        "word": "Shabbat",
+        "translation": "シャバット - 週間の安息日"
+      },
+      "interaction": {
+        "title": "AIキャラクターとのインタラクション",
+        "description": "任意のシーンを一時停止して、文化的背景についてAIコンパニオンに質問",
+        "userMsg": "何の祝日を祝っているのですか？",
+        "aiMsg": "彼らはSukkot（仮庵の祭り）を祝っています。見えている仮の小屋はsukkahと呼ばれています。"
+      },
+      "trivia": {
+        "title": "ライブトリビア",
+        "description": "AIが放送中の内容からトリビア問題を生成します。競い合って学ぼう！",
+        "question": "イスラエルの公用語は何ですか？",
+        "optionA": "アラビア語",
+        "optionB": "ヘブライ語",
+        "optionC": "英語"
+      },
+      "catchup": {
+        "title": "スマートキャッチアップ",
+        "description": "ライブ放送の一部を見逃しましたか？AIが見逃した部分を要約します",
+        "missed": "見逃した",
+        "summary": "AI要約",
+        "live": "ライブ配信中"
+      },
+      "byoc": {
+        "title": "独自コンテンツを持ち込む",
+        "description": "IPTVソースをインポートしてBayit+コンテンツと一緒に視聴",
+        "step1": "ソースを追加",
+        "step2": "AI強化",
+        "step3": "視聴する"
+      },
+      "zehAni": {
+        "title": "AIキャラクターを作成",
+        "description": "あなたと一緒に学ぶパーソナライズされたAIアバターを生成",
+        "generated": "AIアバター"
+      }
+    }
+  },
+  "household": {
+    "empty": {
+      "title": "まだ世帯はありません",
+      "subtitle": "家族を管理するために世帯を作成してください"
+    },
+    "create": {
+      "namePlaceholder": "世帯名",
+      "button": "世帯を作成"
+    },
+    "members": "メンバー",
+    "role": {
+      "owner": "オーナー",
+      "guardian": "保護者",
+      "child": "子供"
+    },
+    "invite": {
+      "title": "メンバーを招待",
+      "emailPlaceholder": "メールアドレス",
+      "send": "招待を送信",
+      "pending": "保留中の招待"
+    },
+    "removeMember": "削除",
+    "error": {
+      "fetchFailed": "世帯の読み込みに失敗しました",
+      "createFailed": "世帯の作成に失敗しました",
+      "updateFailed": "世帯の更新に失敗しました",
+      "deleteFailed": "世帯の削除に失敗しました",
+      "inviteFailed": "招待の送信に失敗しました",
+      "removeFailed": "メンバーの削除に失敗しました"
+    }
+  },
+  "dm": {
+    "title": "メッセージ",
+    "conversations": "会話",
+    "conversation": "会話",
+    "empty": {
+      "title": "まだメッセージはありません",
+      "subtitle": "友達との会話を始めましょう"
+    },
+    "input": {
+      "placeholder": "メッセージを入力...",
+      "send": "送信"
+    },
+    "translate": "翻訳",
+    "react": "リアクション",
+    "read": "既読",
+    "sent": "送信済み",
+    "loadMore": "以前のメッセージを読み込む",
+    "startConversation": "メッセージを送って会話を始めましょう",
+    "reaction": {
+      "like": "いいね",
+      "love": "大好き",
+      "laugh": "笑",
+      "surprise": "驚き",
+      "sad": "悲しい"
+    },
+    "error": {
+      "fetchFailed": "メッセージの読み込みに失敗しました",
+      "sendFailed": "メッセージの送信に失敗しました"
+    }
   }
 }
