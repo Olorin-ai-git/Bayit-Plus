@@ -6265,11 +6265,7 @@
         "Ver en 1 dispositivo",
         "Calidad SD"
       ],
-      "notIncluded": [
-        "Canales en vivo",
-        "Asistente AI",
-        "Ver sin conexión"
-      ]
+      "notIncluded": ["Canales en vivo", "Asistente AI", "Ver sin conexión"]
     },
     "premium": {
       "name": "Plus",
@@ -10738,6 +10734,8 @@
     "findingSubtitles": "Buscando subtitulos...",
     "subtitlesFound": "Subtítulos encontrados",
     "noSubtitlesFound": "No se encontraron subtítulos",
+    "subtitlesReady": "Subtitulos listos",
+    "subtitlesAttached": "Subtitulos {{languages}} adjuntados",
     "interactionMoments": "Momentos Interactivos",
     "interactionMomentsDescription": "La IA detectara momentos clave para interacciones con personajes",
     "enrichmentFailed": "Enriquecimiento fallido",

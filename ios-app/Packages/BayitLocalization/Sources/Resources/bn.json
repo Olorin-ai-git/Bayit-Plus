@@ -6178,11 +6178,7 @@
         "১টি ডিভাইসে দেখুন",
         "SD মান"
       ],
-      "notIncluded": [
-        "লাইভ চ্যানেল",
-        "AI সহায়ক",
-        "অফলাইন দেখা"
-      ]
+      "notIncluded": ["লাইভ চ্যানেল", "AI সহায়ক", "অফলাইন দেখা"]
     },
     "premium": {
       "name": "প্লাস",
@@ -10625,6 +10621,8 @@
     "findingSubtitles": "সাবটাইটেল খোঁজা হচ্ছে...",
     "subtitlesFound": "সাবটাইটেল পাওয়া গেছে",
     "noSubtitlesFound": "কোনো সাবটাইটেল পাওয়া যায়নি",
+    "subtitlesReady": "সাবটাইটেল তৈরি",
+    "subtitlesAttached": "{{languages}} সাবটাইটেল যুক্ত",
     "interactionMoments": "ইন্টারেক্টিভ মুহূর্ত",
     "interactionMomentsDescription": "AI চরিত্রের মিথস্ক্রিয়ার জন্য মূল মুহূর্তগুলি শনাক্ত করবে",
     "enrichmentFailed": "সমৃদ্ধি ব্যর্থ হয়েছে",

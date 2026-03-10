@@ -1,5 +1,25 @@
 import Foundation
 
+/// Event emitted when subtitles are fetched for a BYOC content item during enrichment.
+public struct SubtitleFetchEvent: Identifiable, Sendable {
+    public let id: UUID
+    public let itemTitle: String
+    public let languages: [String]
+    public let timestamp: Date
+
+    public init(
+        id: UUID = UUID(),
+        itemTitle: String,
+        languages: [String],
+        timestamp: Date = Date()
+    ) {
+        self.id = id
+        self.itemTitle = itemTitle
+        self.languages = languages
+        self.timestamp = timestamp
+    }
+}
+
 /// Status of enrichment for a BYOC content item.
 public enum BYOCEnrichmentStatus: String, Codable, Sendable {
     case pending

@@ -6181,17 +6181,8 @@
   "plans": {
     "basic": {
       "name": "免费",
-      "features": [
-        "所有点播内容",
-        "广播与播客",
-        "1台设备观看",
-        "标清画质"
-      ],
-      "notIncluded": [
-        "直播频道",
-        "AI 助手",
-        "离线观看"
-      ]
+      "features": ["所有点播内容", "广播与播客", "1台设备观看", "标清画质"],
+      "notIncluded": ["直播频道", "AI 助手", "离线观看"]
     },
     "premium": {
       "name": "Plus",
@@ -10637,6 +10628,8 @@
     "findingSubtitles": "正在查找字幕...",
     "subtitlesFound": "找到字幕",
     "noSubtitlesFound": "未找到字幕",
+    "subtitlesReady": "字幕已就绪",
+    "subtitlesAttached": "{{languages}} 字幕已附加",
     "interactionMoments": "互动时刻",
     "interactionMomentsDescription": "AI将检测角色互动的关键时刻",
     "enrichmentFailed": "丰富失败",

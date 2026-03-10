@@ -6244,11 +6244,7 @@
         "צפייה על מכשיר אחד",
         "איכות SD"
       ],
-      "notIncluded": [
-        "ערוצי שידור חי",
-        "עוזר AI",
-        "צפייה אופליין"
-      ]
+      "notIncluded": ["ערוצי שידור חי", "עוזר AI", "צפייה אופליין"]
     },
     "premium": {
       "name": "פלוס",
@@ -10705,6 +10701,8 @@
     "findingSubtitles": "מחפש כתוביות...",
     "subtitlesFound": "כתוביות נמצאו",
     "noSubtitlesFound": "לא נמצאו כתוביות",
+    "subtitlesReady": "כתוביות מוכנות",
+    "subtitlesAttached": "כתוביות {{languages}} צורפו",
     "interactionMoments": "רגעים אינטראקטיביים",
     "interactionMomentsDescription": "AI יזהה רגעי מפתח לאינטראקציה עם דמויות",
     "enrichmentFailed": "העשרה נכשלה",

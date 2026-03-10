@@ -6044,11 +6044,7 @@
         "Watch on 1 device",
         "SD quality"
       ],
-      "notIncluded": [
-        "Live channels",
-        "AI Assistant",
-        "Offline viewing"
-      ]
+      "notIncluded": ["Live channels", "AI Assistant", "Offline viewing"]
     },
     "premium": {
       "name": "Plus",
@@ -9918,6 +9914,8 @@
     "findingSubtitles": "Finding subtitles...",
     "subtitlesFound": "Subtitles found",
     "noSubtitlesFound": "No subtitles found",
+    "subtitlesReady": "Subtitles ready",
+    "subtitlesAttached": "{{languages}} subtitles attached",
     "interactionMoments": "Interactive Moments",
     "interactionMomentsDescription": "AI will detect key moments for character interactions",
     "enrichmentFailed": "Enrichment failed",

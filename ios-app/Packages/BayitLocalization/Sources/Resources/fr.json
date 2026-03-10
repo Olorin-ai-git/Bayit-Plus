@@ -11516,6 +11516,8 @@
     "findingSubtitles": "Recherche de sous-titres...",
     "subtitlesFound": "Sous-titres trouvés",
     "noSubtitlesFound": "Aucun sous-titre trouvé",
+    "subtitlesReady": "Sous-titres prets",
+    "subtitlesAttached": "Sous-titres {{languages}} attaches",
     "interactionMoments": "Moments Interactifs",
     "interactionMomentsDescription": "L'IA detectera les moments cles pour les interactions avec les personnages",
     "enrichmentFailed": "Échec de l'enrichissement",

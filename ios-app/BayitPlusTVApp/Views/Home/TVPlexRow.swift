@@ -15,6 +15,7 @@
         @State private var showAll = false
 
         var body: some View {
+            subtitleBanners
             if !byocManager.plexItems.isEmpty {
                 TVContentSection(
                     title: localization.t("byoc.fromPlex"),
@@ -35,6 +36,21 @@
                         onDismiss: { showAll = false }
                     ) { item in
                         plexCard(item)
+                    }
+                }
+            }
+        }
+
+        // MARK: - Subtitle Banners
+
+        @ViewBuilder
+        private var subtitleBanners: some View {
+            if let queue = byocManager.enrichmentQueue,
+               let latest = queue.recentSubtitleFetches.last
+            {
+                TVSubtitleFetchBanner(event: latest) {
+                    withAnimation(.spring(response: 0.4)) {
+                        queue.dismissSubtitleEvent(latest)
                     }
                 }
             }

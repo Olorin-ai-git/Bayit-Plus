@@ -11567,6 +11567,8 @@
     "findingSubtitles": "字幕を検索中...",
     "subtitlesFound": "字幕が見つかりました",
     "noSubtitlesFound": "字幕が見つかりません",
+    "subtitlesReady": "字幕準備完了",
+    "subtitlesAttached": "{{languages}} 字幕が付加されました",
     "interactionMoments": "インタラクティブモーメント",
     "interactionMomentsDescription": "AIがキャラクターとの対話のための重要な瞬間を検出します",
     "enrichmentFailed": "充実に失敗しました",

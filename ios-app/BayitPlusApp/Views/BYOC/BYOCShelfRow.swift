@@ -11,11 +11,27 @@ struct BYOCShelfRow: View {
     @Environment(RepositoryProvider.self) private var repos
 
     var body: some View {
+        subtitleBanners
         if !byocManager.plexItems.isEmpty {
             plexSection
         }
         if !byocManager.youtubeItems.isEmpty {
             youtubeSection
+        }
+    }
+
+    // MARK: - Subtitle Banners
+
+    @ViewBuilder
+    private var subtitleBanners: some View {
+        if let queue = byocManager.enrichmentQueue,
+           let latest = queue.recentSubtitleFetches.last
+        {
+            SubtitleFetchBanner(event: latest) {
+                withAnimation(.spring(response: 0.4)) {
+                    queue.dismissSubtitleEvent(latest)
+                }
+            }
         }
     }
 

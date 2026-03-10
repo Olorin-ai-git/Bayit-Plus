@@ -6188,11 +6188,7 @@
         "1 डिवाइस पर देखें",
         "SD गुणवत्ता"
       ],
-      "notIncluded": [
-        "लाइव चैनल",
-        "AI सहायक",
-        "ऑफ़लाइन देखना"
-      ]
+      "notIncluded": ["लाइव चैनल", "AI सहायक", "ऑफ़लाइन देखना"]
     },
     "premium": {
       "name": "प्लस",
@@ -10646,6 +10642,8 @@
     "findingSubtitles": "उपशीर्षक खोज रहे हैं...",
     "subtitlesFound": "सबटाइटल मिले",
     "noSubtitlesFound": "कोई सबटाइटल नहीं मिला",
+    "subtitlesReady": "उपशीर्षक तैयार",
+    "subtitlesAttached": "{{languages}} उपशीर्षक जुड़े",
     "interactionMoments": "इंटरैक्टिव क्षण",
     "interactionMomentsDescription": "AI पात्र इंटरैक्शन के लिए प्रमुख क्षणों का पता लगाएगा",
     "enrichmentFailed": "समृद्धि विफल",

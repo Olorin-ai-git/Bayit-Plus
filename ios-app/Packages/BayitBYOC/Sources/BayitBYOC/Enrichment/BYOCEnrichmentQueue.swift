@@ -17,8 +17,19 @@ public final class BYOCEnrichmentQueue {
     /// Progress of the active batch job.
     public private(set) var batchProgress: (processed: Int, total: Int)?
 
+    /// Recent subtitle fetch events for banner display.
+    public private(set) var recentSubtitleFetches: [SubtitleFetchEvent] = []
+
+    /// Languages to request during enrichment.
+    public static let defaultSubtitleLanguages = ["he", "es", "en"]
+
     public init(service: BYOCEnrichmentService) {
         self.service = service
+    }
+
+    /// Remove a subtitle fetch event (after banner dismissal).
+    public func dismissSubtitleEvent(_ event: SubtitleFetchEvent) {
+        recentSubtitleFetches.removeAll { $0.id == event.id }
     }
 
     /// Enrich a single item on demand.
@@ -38,6 +49,10 @@ public final class BYOCEnrichmentQueue {
             BYOCEnrichmentCache.set(result, for: externalId)
             itemStates[externalId] = mapStatus(
                 result.enrichmentStatus
+            )
+            emitSubtitleEvent(
+                title: item.title,
+                languages: result.availableSubtitleLanguages
             )
             logger.info(
                 "Enrichment completed",
@@ -163,6 +178,11 @@ public final class BYOCEnrichmentQueue {
             itemStates[key] = mapStatus(
                 result.enrichmentStatus
             )
+            let title = matching?.title ?? result.contentId
+            emitSubtitleEvent(
+                title: title,
+                languages: result.availableSubtitleLanguages
+            )
         }
     }
 
@@ -184,7 +204,27 @@ public final class BYOCEnrichmentQueue {
             thumbnailUrl: item.thumbnailURL?.absoluteString,
             backdropUrl: item.backdropURL?.absoluteString,
             genre: item.genre,
-            streamUrl: item.streamURL?.absoluteString
+            streamUrl: item.streamURL?.absoluteString,
+            subtitleLanguagesRequested: Self.defaultSubtitleLanguages
+        )
+    }
+
+    private func emitSubtitleEvent(
+        title: String,
+        languages: [String]
+    ) {
+        guard !languages.isEmpty else { return }
+        let event = SubtitleFetchEvent(
+            itemTitle: title,
+            languages: languages
+        )
+        recentSubtitleFetches.append(event)
+        logger.info(
+            "Subtitles fetched",
+            context: [
+                "title": title,
+                "languages": languages.joined(separator: ","),
+            ]
         )
     }
 

@@ -162,6 +162,7 @@
 		13D8E236498F11A778467AEB /* WidgetPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F38F55CCBD6788BBA16107 /* WidgetPlayerViewModel.swift */; };
 		1452156B7E1D6C3EC4D5681E /* TVCreatePartySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9884FC4889B46566F0E9F /* TVCreatePartySheet.swift */; };
 		147AB5936D93169E396A73C5 /* TVBYOCMovieCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6EA7E15BE09E250827669F4 /* TVBYOCMovieCard.swift */; };
+		C1YFB3HOWYVXJL5X6I0UI97Y /* TVSubtitleFetchBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = K1S96X2A4BHDA5QAW847DI63 /* TVSubtitleFetchBanner.swift */; };
 		1490B5BE7E0937A75CBE2DA7 /* CatchUpPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C5A538F971FFC6A49D8CB9 /* CatchUpPreferencesService.swift */; };
 		14AF4AD35C9496083D65E606 /* EPGView+DateHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F37EE6BB8BBFB6A37FC747 /* EPGView+DateHelpers.swift */; };
 		14E875D65828FBE6B44112FB /* LLMSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A2B642020C13C1D5829E49 /* LLMSearchRepository.swift */; };
@@ -406,6 +407,7 @@
 		334D9C32D682362859916AE8 /* TVContentPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27CFA4678859FC8B89DF2E31 /* TVContentPickerView.swift */; };
 		338F2A126151BC4AE8CC8CDF /* DevicePairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5DE17AC4C360256DA6B00AB /* DevicePairingView.swift */; };
 		33985E5146D40B06D6E82322 /* BYOCMovieCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D939C0FEED1E09CF500CE71 /* BYOCMovieCard.swift */; };
+		OUG5SNIHN6O6UOTRSLEC5ND5 /* SubtitleFetchBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = OJ06FE7BJ9OA3NM8HUYIODSN /* SubtitleFetchBanner.swift */; };
 		33EFDE17D57007E6BF8E2CF7 /* TVSubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903DEE108E3956487D436F91 /* TVSubscriptionView.swift */; };
 		34428515DE40E97BE63AC3FD /* NowPlayingMediumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E572F7C0EF724998ECE297F0 /* NowPlayingMediumView.swift */; };
 		3450CF06D47D1B65F46E45F4 /* CreateWidgetPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C490F00740C5497514D1C8C0 /* CreateWidgetPreview.swift */; };
@@ -2676,6 +2678,7 @@
 		8D5FC235F9054C6C6F4142B3 /* LocalizationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationUITests.swift; sourceTree = "<group>"; };
 		8D7DB439C2822136BF820475 /* BYOCShelfRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCShelfRow.swift; sourceTree = "<group>"; };
 		8D939C0FEED1E09CF500CE71 /* BYOCMovieCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCMovieCard.swift; sourceTree = "<group>"; };
+		OJ06FE7BJ9OA3NM8HUYIODSN /* SubtitleFetchBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleFetchBanner.swift; sourceTree = "<group>"; };
 		8DB448C65C7A72BEAC305614 /* ChessInviteBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessInviteBannerView.swift; sourceTree = "<group>"; };
 		8DE09375E7C656F66CFC4847 /* MissionProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionProgressCard.swift; sourceTree = "<group>"; };
 		8DFC7992D0C7E78330E386EF /* TVPlayerView+TransportControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TVPlayerView+TransportControls.swift"; sourceTree = "<group>"; };
@@ -2911,6 +2914,7 @@
 		B66ADC3046A61489926C56DB /* TVSeriesDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSeriesDetailView.swift; sourceTree = "<group>"; };
 		B6A76A1B5828FD7E3028553D /* TVAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAppIntents.swift; sourceTree = "<group>"; };
 		B6EA7E15BE09E250827669F4 /* TVBYOCMovieCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVBYOCMovieCard.swift; sourceTree = "<group>"; };
+		K1S96X2A4BHDA5QAW847DI63 /* TVSubtitleFetchBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSubtitleFetchBanner.swift; sourceTree = "<group>"; };
 		B6FD584F5CC01DCC4FC82B7A /* TVZmanimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVZmanimView.swift; sourceTree = "<group>"; };
 		B7339ED640F6BFDD40DFC985 /* BYOCPersonalizationStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BYOCPersonalizationStep.swift; sourceTree = "<group>"; };
 		B740536702B0A367B464D015 /* FeatureValidationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureValidationService.swift; sourceTree = "<group>"; };
@@ -3937,6 +3941,7 @@
 				645B792776D9FBAB6B53CFF4 /* BYOCDetailInfo.swift */,
 				20B31630BC85C635280DD8C9 /* BYOCDetailView.swift */,
 				8D939C0FEED1E09CF500CE71 /* BYOCMovieCard.swift */,
+				OJ06FE7BJ9OA3NM8HUYIODSN /* SubtitleFetchBanner.swift */,
 				88E5A245B0F405D3E1C9E233 /* BYOCOnboardingWizardView.swift */,
 				B7339ED640F6BFDD40DFC985 /* BYOCPersonalizationStep.swift */,
 				2AEC9B9E1916471552A9A604 /* BYOCPlexAuthSheet.swift */,
@@ -5580,6 +5585,7 @@
 				DA02DDBA4E348568597D95AC /* TVBYOCDetailView.swift */,
 				B8A12D770AFB30C3E8C40EEC /* TVBYOCDetailView+Sections.swift */,
 				B6EA7E15BE09E250827669F4 /* TVBYOCMovieCard.swift */,
+				K1S96X2A4BHDA5QAW847DI63 /* TVSubtitleFetchBanner.swift */,
 				D49DADCFB8E477FC18A773DE /* TVBYOCOnboardingWizardView.swift */,
 				CE15FC1E01C205FCE2529D5E /* TVBYOCSourceCard.swift */,
 				0F20FB59181CE12AE6EEF5BC /* TVBYOCSourceListView.swift */,
@@ -6715,6 +6721,7 @@
 				EE6845670473405D8A00E00B /* TVBYOCDetailView+Sections.swift in Sources */,
 				721C249269AC925D3BDAE280 /* TVBYOCDetailView.swift in Sources */,
 				147AB5936D93169E396A73C5 /* TVBYOCMovieCard.swift in Sources */,
+				C1YFB3HOWYVXJL5X6I0UI97Y /* TVSubtitleFetchBanner.swift in Sources */,
 				69767401ACAD128962A861C0 /* TVBYOCOnboardingWizardView.swift in Sources */,
 				7FA4EF3277B448B1210B650A /* TVBYOCSourceCard.swift in Sources */,
 				734161590A942E966866D31C /* TVBYOCSourceListView+Rows.swift in Sources */,
@@ -7328,6 +7335,7 @@
 				9FDAB363D282D0C6B522DEEA /* BYOCDetailInfo.swift in Sources */,
 				DF17E5E701B77041DC28DE42 /* BYOCDetailView.swift in Sources */,
 				33985E5146D40B06D6E82322 /* BYOCMovieCard.swift in Sources */,
+				OUG5SNIHN6O6UOTRSLEC5ND5 /* SubtitleFetchBanner.swift in Sources */,
 				01BE5090709BCAD5D3AC5739 /* BYOCOnboardingWizardView.swift in Sources */,
 				2C2C0D77651730A3B0846649 /* BYOCPersonalizationStep.swift in Sources */,
 				8CEDEE589F88815DC5689C85 /* BYOCPlexAuthSheet.swift in Sources */,
@@ -8131,7 +8139,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -8139,7 +8147,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlusTV;
 				SDKROOT = appletvos;
@@ -8154,7 +8162,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -8162,7 +8170,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlusTV;
 				SDKROOT = appletvos;
@@ -8266,7 +8274,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -8274,7 +8282,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlus;
 				SDKROOT = iphoneos;
@@ -8367,7 +8375,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -8375,7 +8383,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
 				PRODUCT_NAME = BayitPlus;
 				SDKROOT = iphoneos;
