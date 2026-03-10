@@ -51,6 +51,7 @@
                     }
                     .accessibilityLabel("Catch up")
                     .walkthroughTarget(id: "discover_catch_up_step2")
+                    .walkthroughTarget(id: "discover_catch_up_step3")
                     .featureTooltip(
                         featureKey: "catchup",
                         titleKey: "tooltip.catchup.title",
@@ -77,6 +78,7 @@
                 }
                 .accessibilityLabel("Scene search")
                 .walkthroughTarget(id: "discover_scene_search_step2")
+                .walkthroughTarget(id: "discover_scene_search_step3")
 
                 Button {
                     withAnimation(.spring(duration: 0.3)) {

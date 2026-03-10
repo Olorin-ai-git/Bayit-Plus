@@ -171,6 +171,15 @@ struct TVPlayerView: View {
     private var playerContentLayer: some View {
         TVVideoPlayerRepresentable(player: mediaPlayer.avPlayer)
             .ignoresSafeArea()
+            .walkthroughTarget(id: "discover_interactive_subtitles_step4")
+            .walkthroughTarget(id: "discover_vocabulary_step4")
+            .walkthroughTarget(id: "discover_bilingual_bridge_step4")
+            .walkthroughTarget(id: "discover_live_dubbing_step4")
+            .walkthroughTarget(id: "discover_live_subtitles_step4")
+            .walkthroughTarget(id: "discover_live_trivia_step3")
+            .walkthroughTarget(id: "discover_catch_up_step4")
+            .walkthroughTarget(id: "discover_scene_search_step4")
+            .walkthroughTarget(id: "discover_pause_ask_step4")
 
         triviaOverlay.allowsHitTesting(false)
         subtitleOverlay.allowsHitTesting(

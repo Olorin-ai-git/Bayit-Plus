@@ -11,16 +11,16 @@ struct OnboardingFlowView: View {
         ZStack {
             DesignTokens.Background.primary.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                if viewModel.currentStep != .launch {
-                    topBar
-                }
-
+            ZStack(alignment: .top) {
                 stepContent
                     .transition(.asymmetric(
                         insertion: .move(edge: .trailing).combined(with: .opacity),
                         removal: .move(edge: .leading).combined(with: .opacity)
                     ))
+
+                if viewModel.currentStep != .launch {
+                    topBar
+                }
             }
         }
         .animation(.easeInOut(duration: 0.4), value: viewModel.currentStepIndex)

@@ -33,11 +33,11 @@ private struct WalkthroughOverlayModifier: ViewModifier {
            let stateMachine = manager.stateMachine,
            stateMachine.isActive, isReady
         {
-            let steps = buildSteps(stateMachine: stateMachine)
+            let steps = buildVisibleSteps(stateMachine: stateMachine)
             if !steps.isEmpty {
                 CoachMarkOverlay(
                     steps: steps,
-                    currentStepIndex: stateMachine.currentStepIndex,
+                    currentStepIndex: stateMachine.displayStepIndex,
                     onNext: { stateMachine.advance() },
                     onSkip: { manager.end() },
                     onDone: {
@@ -49,15 +49,17 @@ private struct WalkthroughOverlayModifier: ViewModifier {
         }
     }
 
-    private func buildSteps(stateMachine: WalkthroughStateMachine) -> [CoachMarkOverlayStep] {
-        stateMachine.feature.walkthroughSteps.map { step in
-            let frame = targetFrames[step.targetAccessibilityId] ?? centeredFallbackFrame
-            return CoachMarkOverlayStep(
-                instructionText: localize(step.instructionKey),
-                targetFrame: frame,
-                targetCornerRadius: DesignTokens.Radius.md
-            )
-        }
+    private func buildVisibleSteps(stateMachine: WalkthroughStateMachine) -> [CoachMarkOverlayStep] {
+        stateMachine.feature.walkthroughSteps
+            .filter { $0.expectedAction != .navigate }
+            .map { step in
+                let frame = targetFrames[step.targetAccessibilityId] ?? centeredFallbackFrame
+                return CoachMarkOverlayStep(
+                    instructionText: localize(step.instructionKey),
+                    targetFrame: frame,
+                    targetCornerRadius: DesignTokens.Radius.md
+                )
+            }
     }
 
     private var centeredFallbackFrame: CGRect {

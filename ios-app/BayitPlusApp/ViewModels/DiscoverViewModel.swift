@@ -15,6 +15,7 @@ final class DiscoverViewModel {
     private(set) var availabilityStates: [String: FeatureAvailabilityState] = [:]
     var expandedFeatureId: String?
     var activeWalkthrough: WalkthroughStateMachine?
+    var pendingDemoVideoURL: URL?
 
     var categories: [DiscoverCategory] {
         DiscoverCategory.allCases.sorted { $0.sortOrder < $1.sortOrder }
@@ -81,6 +82,28 @@ final class DiscoverViewModel {
             .first(where: { $0.featureId == featureId })?.demoThumbnailUrl
         else { return nil }
         return URL(string: urlString)
+    }
+
+    /// Resolved deep link URL for "Try it now". Player features use
+    /// walkthroughContentId from remote config; standalone features
+    /// use their static deepLinkRoute.
+    func tryItURL(for feature: DiscoverFeature) -> URL? {
+        let featureConfig = remoteConfig?.features
+            .first(where: { $0.featureId == feature.id })
+
+        // Player features need a demo content ID from remote config
+        if let contentId = featureConfig?.walkthroughContentId,
+           feature.deepLinkRoute?.hasPrefix("bayitplus://play") == true
+        {
+            return URL(string: "bayitplus://play/\(contentId)?walkthrough=\(feature.id)")
+        }
+
+        // Standalone features use their static deep link route
+        if let route = feature.deepLinkRoute {
+            return URL(string: route)
+        }
+
+        return nil
     }
 
     func startWalkthrough(for feature: DiscoverFeature) {

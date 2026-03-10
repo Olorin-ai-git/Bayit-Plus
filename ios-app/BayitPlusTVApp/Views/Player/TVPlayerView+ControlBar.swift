@@ -61,10 +61,14 @@ extension TVPlayerView {
             onLanguageTap: { state.showAILanguagePicker = true }
         )
         .walkthroughTarget(id: "discover_live_subtitles_step2")
+        .walkthroughTarget(id: "discover_live_subtitles_step3")
         .walkthroughTarget(id: "discover_live_dubbing_step2")
+        .walkthroughTarget(id: "discover_live_dubbing_step3")
         .walkthroughTarget(id: "discover_live_trivia_step2")
         .walkthroughTarget(id: "discover_catch_up_step2")
+        .walkthroughTarget(id: "discover_catch_up_step3")
         .walkthroughTarget(id: "discover_scene_search_step2")
+        .walkthroughTarget(id: "discover_scene_search_step3")
         .onPreferenceChange(ControlBarFocusKey.self) { handleDockFocus($0) }
     }
 
@@ -104,9 +108,13 @@ extension TVPlayerView {
             splitLanguages: state.splitLanguages
         )
         .walkthroughTarget(id: "discover_pause_ask_step2")
+        .walkthroughTarget(id: "discover_pause_ask_step3")
         .walkthroughTarget(id: "discover_interactive_subtitles_step2")
+        .walkthroughTarget(id: "discover_interactive_subtitles_step3")
         .walkthroughTarget(id: "discover_vocabulary_step2")
+        .walkthroughTarget(id: "discover_vocabulary_step3")
         .walkthroughTarget(id: "discover_bilingual_bridge_step2")
+        .walkthroughTarget(id: "discover_bilingual_bridge_step3")
         .walkthroughTarget(id: "discover_vod_moments_step2")
         .onPreferenceChange(ControlBarFocusKey.self) { handleDockFocus($0) }
     }

@@ -74,9 +74,17 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// Tabs hidden from the bottom navigation bar.
+    public var isHiddenFromTabBar: Bool {
+        switch self {
+        case .downloads: return true
+        default: return false
+        }
+    }
+
     /// Tabs visible for the given owner mode.
     public static func visibleTabs(ownerMode: Bool) -> [AppTab] {
-        allCases.filter { ownerMode || !$0.requiresOwnerMode }
+        allCases.filter { !$0.isHiddenFromTabBar && (ownerMode || !$0.requiresOwnerMode) }
     }
 
     public var selectedIconName: String {

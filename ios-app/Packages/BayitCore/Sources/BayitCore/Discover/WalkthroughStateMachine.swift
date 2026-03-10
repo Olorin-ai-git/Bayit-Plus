@@ -4,6 +4,7 @@ import Observation
 @Observable
 public final class WalkthroughStateMachine {
     public let feature: DiscoverFeature
+    public let firstVisibleIndex: Int
     public private(set) var currentStepIndex: Int
     public private(set) var isActive: Bool
     public private(set) var isComplete: Bool
@@ -16,12 +17,17 @@ public final class WalkthroughStateMachine {
     }
 
     public var progress: Double {
-        guard !feature.walkthroughSteps.isEmpty else { return 1.0 }
-        return Double(currentStepIndex) / Double(feature.walkthroughSteps.count)
+        let visible = totalSteps
+        guard visible > 0 else { return 1.0 }
+        return Double(currentStepIndex - firstVisibleIndex) / Double(visible)
     }
 
     public var totalSteps: Int {
-        feature.walkthroughSteps.count
+        feature.walkthroughSteps.count - firstVisibleIndex
+    }
+
+    public var displayStepIndex: Int {
+        currentStepIndex - firstVisibleIndex
     }
 
     public var isLastStep: Bool {
@@ -30,9 +36,16 @@ public final class WalkthroughStateMachine {
 
     public init(feature: DiscoverFeature) {
         self.feature = feature
-        currentStepIndex = 0
-        isActive = true
-        isComplete = false
+        var start = 0
+        while start < feature.walkthroughSteps.count,
+              feature.walkthroughSteps[start].expectedAction == .navigate
+        {
+            start += 1
+        }
+        firstVisibleIndex = start
+        currentStepIndex = start
+        isActive = start < feature.walkthroughSteps.count
+        isComplete = start >= feature.walkthroughSteps.count
     }
 
     public func advance() {

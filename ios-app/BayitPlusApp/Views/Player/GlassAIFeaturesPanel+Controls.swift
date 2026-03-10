@@ -15,7 +15,9 @@
                 onTap: onSubtitlesTap
             )
             .walkthroughTarget(id: "discover_live_subtitles_step2")
+            .walkthroughTarget(id: "discover_live_subtitles_step3")
             .walkthroughTarget(id: "discover_interactive_subtitles_step2")
+            .walkthroughTarget(id: "discover_interactive_subtitles_step3")
         }
 
         var splitSubtitlesButton: some View {
@@ -27,6 +29,7 @@
                 onTap: onSplitSubtitlesTap
             )
             .walkthroughTarget(id: "discover_bilingual_bridge_step2")
+            .walkthroughTarget(id: "discover_bilingual_bridge_step3")
         }
 
         var splitSubtitleControlState: GlassLiveControlButton.ControlState {
@@ -46,6 +49,7 @@
                 onTap: onDubbingTap
             )
             .walkthroughTarget(id: "discover_live_dubbing_step2")
+            .walkthroughTarget(id: "discover_live_dubbing_step3")
             .featureTooltip(
                 featureKey: "live_dubbing",
                 titleKey: "tooltip.dubbing.title",

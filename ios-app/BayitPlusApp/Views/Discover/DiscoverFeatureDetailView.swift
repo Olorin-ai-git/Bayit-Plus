@@ -7,6 +7,7 @@ struct DiscoverFeatureDetailView: View {
     let feature: DiscoverFeature
     @Bindable var viewModel: DiscoverViewModel
     @Environment(LocalizationManager.self) private var localization
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.dismiss) private var dismiss
 
     private var availability: FeatureAvailabilityState {
@@ -83,7 +84,9 @@ struct DiscoverFeatureDetailView: View {
             {
                 Button {
                     dismiss()
-                    UIApplication.shared.open(url)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        coordinator.handleDeepLink(url)
+                    }
                 } label: {
                     Text(localization.t(prereq.labelKey))
                         .font(DesignTokens.Typography.callout)
@@ -119,7 +122,9 @@ struct DiscoverFeatureDetailView: View {
                 Button(action: {
                     viewModel.startWalkthroughSession(for: feature)
                     dismiss()
-                    UIApplication.shared.open(url)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        coordinator.handleDeepLink(url)
+                    }
                 }) {
                     Text(localization.t("discover.action.tryIt"))
                         .font(DesignTokens.Typography.headline)

@@ -16,7 +16,7 @@ extension DiscoverFeatureCatalog {
                 FeaturePrerequisite(id: "phonetic_mirror_microphone", type: .microphone, labelKey: "discover.prereq.microphone_required"),
                 FeaturePrerequisite(id: "phonetic_mirror_avatar", type: .avatar, labelKey: "discover.prereq.avatar_required", fixRoute: "bayitplus://settings/avatar"),
             ],
-            walkthroughSteps: makeSteps(featureId: "phonetic_mirror", actions: [.navigate, .tap, .observe, .tap]),
+            walkthroughSteps: makeSteps(featureId: "phonetic_mirror", actions: [.observe, .tap, .observe, .tap]),
             deepLinkRoute: "bayitplus://zeh-ani"
         ),
         DiscoverFeature(
@@ -31,7 +31,7 @@ extension DiscoverFeatureCatalog {
                 FeaturePrerequisite(id: "talk_back_microphone", type: .microphone, labelKey: "discover.prereq.microphone_required"),
                 FeaturePrerequisite(id: "talk_back_avatar", type: .avatar, labelKey: "discover.prereq.avatar_required", fixRoute: "bayitplus://settings/avatar"),
             ],
-            walkthroughSteps: makeSteps(featureId: "talk_back", actions: [.navigate, .tap, .observe, .tap]),
+            walkthroughSteps: makeSteps(featureId: "talk_back", actions: [.observe, .tap, .observe, .tap]),
             deepLinkRoute: "bayitplus://zeh-ani"
         ),
         DiscoverFeature(
@@ -47,7 +47,7 @@ extension DiscoverFeatureCatalog {
                 FeaturePrerequisite(id: "interactive_mission_avatar", type: .avatar, labelKey: "discover.prereq.avatar_required", fixRoute: "bayitplus://settings/avatar"),
                 FeaturePrerequisite(id: "interactive_mission_preference", type: .preference, labelKey: "discover.prereq.preference_required", fixRoute: "bayitplus://settings/consent"),
             ],
-            walkthroughSteps: makeSteps(featureId: "interactive_mission", actions: [.navigate, .select, .tap, .observe]),
+            walkthroughSteps: makeSteps(featureId: "interactive_mission", actions: [.observe, .select, .tap, .observe]),
             deepLinkRoute: "bayitplus://missions"
         ),
         DiscoverFeature(
@@ -59,7 +59,7 @@ extension DiscoverFeatureCatalog {
             iconName: "character.book.closed",
             platforms: bothPlatforms,
             prerequisites: [],
-            walkthroughSteps: makeSteps(featureId: "glossary", actions: [.navigate, .type, .observe]),
+            walkthroughSteps: makeSteps(featureId: "glossary", actions: [.observe, .type, .observe]),
             deepLinkRoute: "bayitplus://glossary"
         ),
     ]
@@ -78,7 +78,7 @@ extension DiscoverFeatureCatalog {
             iconName: "sparkle.magnifyingglass",
             platforms: bothPlatforms,
             prerequisites: [],
-            walkthroughSteps: makeSteps(featureId: "llm_search", actions: [.navigate, .type, .observe]),
+            walkthroughSteps: makeSteps(featureId: "llm_search", actions: [.observe, .type, .observe]),
             deepLinkRoute: "bayitplus://search"
         ),
         DiscoverFeature(
@@ -92,7 +92,7 @@ extension DiscoverFeatureCatalog {
             prerequisites: [
                 FeaturePrerequisite(id: "proactive_voice_preference", type: .preference, labelKey: "discover.prereq.preference_required", fixRoute: "bayitplus://settings/voice"),
             ],
-            walkthroughSteps: makeSteps(featureId: "proactive_voice", actions: [.navigate, .tap, .observe])
+            walkthroughSteps: []
         ),
     ]
 }
@@ -110,7 +110,7 @@ extension DiscoverFeatureCatalog {
             iconName: "bubble.left.and.bubble.right.fill",
             platforms: bothPlatforms,
             prerequisites: [],
-            walkthroughSteps: makeSteps(featureId: "chatbot", actions: [.navigate, .type, .observe]),
+            walkthroughSteps: makeSteps(featureId: "chatbot", actions: [.observe, .type, .observe]),
             deepLinkRoute: "bayitplus://chatbot"
         ),
     ]

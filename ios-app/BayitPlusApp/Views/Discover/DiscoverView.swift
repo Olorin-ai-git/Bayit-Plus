@@ -1,3 +1,4 @@
+import AVKit
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
@@ -26,6 +27,18 @@ struct DiscoverView: View {
         }
         .accessibilityIdentifier("discover_main")
         .background(DesignTokens.Background.primary)
+        .fullScreenCover(
+            isPresented: Binding(
+                get: { viewModel?.pendingDemoVideoURL != nil },
+                set: { if !$0 { viewModel?.pendingDemoVideoURL = nil } }
+            )
+        ) {
+            if let url = viewModel?.pendingDemoVideoURL {
+                DemoVideoPlayerView(url: url) {
+                    viewModel?.pendingDemoVideoURL = nil
+                }
+            }
+        }
         .task {
             if viewModel == nil {
                 let vm = DiscoverViewModel(
