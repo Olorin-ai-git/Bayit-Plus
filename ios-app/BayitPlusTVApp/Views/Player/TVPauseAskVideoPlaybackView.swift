@@ -33,14 +33,16 @@
                 }
 
                 if let response = lastResponse {
-                    Text(phase == .userSpeaking
+                    let spokenText = phase == .userSpeaking
                         ? response.userPolishedText
-                        : response.characterResponseText)
+                        : response.characterResponseText
+                    Text(spokenText)
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                         .padding(.top, TVDesignTokens.Spacing.md)
+                        .accessibilityLabel(spokenText)
                 }
                 Spacer()
             }
@@ -55,7 +57,9 @@
             }
             .frame(width: circleSize, height: circleSize)
             .clipShape(Circle())
-            .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
+            .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 3))
+            .accessibilityLabel("Your avatar speaking")
+            .accessibilityAddTraits(phase == .userSpeaking ? .updatesFrequently : [])
         }
 
         private var characterCircle: some View {
@@ -69,7 +73,9 @@
             }
             .frame(width: circleSize, height: circleSize)
             .clipShape(Circle())
-            .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 3))
+            .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 3))
+            .accessibilityLabel("Character responding")
+            .accessibilityAddTraits(phase == .characterSpeaking ? .updatesFrequently : [])
         }
 
         private func stillImage(url: String) -> some View {
@@ -78,7 +84,7 @@
                 case let .success(image):
                     image.resizable().scaledToFill()
                 default:
-                    Color.black
+                    DesignTokens.Colors.Background.primary
                 }
             }
         }

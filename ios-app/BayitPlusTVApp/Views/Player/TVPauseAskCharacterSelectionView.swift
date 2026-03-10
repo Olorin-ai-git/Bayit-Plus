@@ -61,6 +61,8 @@
             }
             .buttonStyle(.plain)
             .focused($focusedIndex, equals: index)
+            .accessibilityLabel(character.name)
+            .accessibilityHint("Select \(character.name) to ask a question")
         }
 
         // MARK: - Dismiss Item
@@ -71,6 +73,7 @@
             }
             .buttonStyle(.plain)
             .focused($focusedIndex, equals: characters.count)
+            .accessibilityLabel(localization.t("player.pauseAsk.resumeMovie"))
         }
     }
 
@@ -88,7 +91,7 @@
                     case let .success(image):
                         image.resizable().scaledToFill()
                     default:
-                        Color(white: 0.15)
+                        DesignTokens.Glass.bg
                     }
                 }
                 .frame(width: circleSize, height: circleSize)

@@ -38,6 +38,9 @@
                     .foregroundStyle(DesignTokens.Text.primary)
                     .tint(DesignTokens.Primary.default)
                     .disabled(isSending)
+                    .accessibilityLabel(
+                        localization.t("player.dialogue.typeQuestion")
+                    )
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
                     .background(DesignTokens.Glass.bgStrong)
