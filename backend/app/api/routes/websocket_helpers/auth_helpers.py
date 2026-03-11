@@ -46,7 +46,7 @@ async def check_authentication_message(
     try:
         auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=timeout)
 
-        if auth_message.get("type") != "authenticate" or not auth_message.get("token"):
+        if auth_message.get("type") not in ("authenticate", "auth") or not auth_message.get("token"):
             try:
                 await websocket.send_json(
                     {
