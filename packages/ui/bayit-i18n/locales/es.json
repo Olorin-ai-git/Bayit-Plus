@@ -251,7 +251,8 @@
       "deleteConfirmTitle": "Confirmar eliminación",
       "deleteEpisodeMessage": "¿Estás seguro de que deseas eliminar este episodio?",
       "edit": "Editar",
-      "featured": "Destacado"
+      "featured": "Destacado",
+      "tryAgain": "Intentar de Nuevo"
     },
     "stats": {
       "totalUsers": "Total de Usuarios",
@@ -3217,7 +3218,11 @@
       "bookmarks": "{{count}} marcadores",
       "chapters": "Capitulos ({{count}})",
       "chapter": "Capitulo"
-    }
+    },
+    "continueListening": "Seguir escuchando",
+    "browseByAuthor": "Explorar por autor",
+    "durationMin": "{{count}} min",
+    "authorCount": "{{count}} audiolibros"
   },
   "breadcrumbs": {
     "series": "Serie",
@@ -3227,7 +3232,8 @@
     "station": "Estación",
     "podcast": "Podcast",
     "playlist": "Lista de reproduccion",
-    "downloads": "Descargas"
+    "downloads": "Descargas",
+    "watchlist": "Mi Lista"
   },
   "chapters": {
     "title": "Capítulos",
@@ -3254,11 +3260,15 @@
       "conflict": "Conflicto",
       "cliffhanger": "Suspenso",
       "main": "Principal"
-    }
+    },
+    "chapterLabel": "Capitulo {{number}}",
+    "chapter_number": "Capítulo {{number}}"
   },
   "chat": {
     "title": "Asistente Bayit+",
-    "greeting": "Hola! Soy el asistente inteligente de Bayit+. ¿Cómo puedo ayudarte hoy? Haz clic en el micrófono y habla, o escribe un mensaje."
+    "greeting": "Hola! Soy el asistente inteligente de Bayit+. ¿Cómo puedo ayudarte hoy? Haz clic en el micrófono y habla, o escribe un mensaje.",
+    "loading": "Cargando mensajes...",
+    "typing": "Escribiendo..."
   },
   "chatbot": {
     "title": "Asistente Bayit+",
@@ -3301,7 +3311,15 @@
     "listening": "Escuchando...",
     "transcribing": "Transcribiendo...",
     "thinking": "Pensando...",
-    "typePlaceholder": "Escribe tu pregunta..."
+    "typePlaceholder": "Escribe tu pregunta...",
+    "fabLabel": "Asistente de voz",
+    "modal": {
+      "cancel": "Cancelar",
+      "setupMessage": "Configura el reconocimiento de voz para usar el asistente.",
+      "setupRequired": "Configuracion requerida",
+      "startSetup": "Iniciar configuracion",
+      "title": "Asistente de voz"
+    }
   },
   "chess": {
     "title": "Ajedrez",
@@ -3387,7 +3405,21 @@
       "appStore": "Descargar en App Store",
       "googlePlay": "Obtener en Google Play",
       "footer": "Bayit+ - Streaming judío premium"
-    }
+    },
+    "drawOffered": "Empate ofrecido",
+    "code": "Código: {{code}}",
+    "challengeFriend": "Desafiar a un Amigo",
+    "noFriendsYet": "Agrega amigos para desafiarlos",
+    "acceptInvite": "Aceptar",
+    "declineInvite": "Rechazar",
+    "whiteCaptured": "Blancas capturaron",
+    "blackCaptured": "Negras capturaron",
+    "online": "En linea",
+    "offline": "Desconectado",
+    "joinByGameCode": "Unirse por codigo de juego",
+    "challengeViaWhatsApp": "Retar por WhatsApp",
+    "whatsAppMessage": "Te reto a jugar ajedrez en Bayit+! Codigo: {{code}} - Toca para jugar: {{link}}",
+    "turn": "Turno"
   },
   "children": {
     "title": "Niños",
@@ -3787,7 +3819,35 @@
     "closeModal": "Cerrar ventana",
     "dismissHint": "Descartar sugerencia",
     "sending": "Enviando...",
-    "create": "Crear"
+    "create": "Crear",
+    "untitled": "Sin titulo",
+    "percent": "%",
+    "change": "Cambiar",
+    "confidence": "Confianza",
+    "generate": "Generar",
+    "high": "Alto",
+    "learnMore": "Más información",
+    "low": "Bajo",
+    "maybeLater": "Quizás más tarde",
+    "medium": "Medio",
+    "or": "o",
+    "playlist": "Lista de reproducción",
+    "preview": "Vista previa",
+    "saveChanges": "Guardar cambios",
+    "today": "Hoy",
+    "unavailable": "No disponible",
+    "guest": "Invitado",
+    "anonymous": "Anonimo",
+    "content": "Contenido",
+    "email_placeholder": "Ingresa tu correo electrónico",
+    "password_placeholder": "Ingresa tu contraseña",
+    "new_password": "Nueva Contraseña",
+    "confirm_password": "Confirmar Contraseña",
+    "confirm_password_placeholder": "Vuelve a ingresar tu contraseña",
+    "queued": "En cola",
+    "on": "Activado",
+    "off": "Desactivado",
+    "pause": "Pausar"
   },
   "badges": {
     "aiEnhanced": "Mejorado con IA",
@@ -3806,7 +3866,9 @@
     "noContext": "No hay contexto disponible para el episodio",
     "noQuiz": "No hay preguntas de prueba disponibles para este episodio",
     "checkAnswer": "Verificar Respuesta",
-    "concepts": "Conceptos Clave"
+    "concepts": "Conceptos Clave",
+    "quizLabel": "Cuestionario rápido",
+    "vocabularyLabel": "Vocabulario"
   },
   "channels": {
     "kanEducational": "Kan Educativo",
@@ -3932,7 +3994,24 @@
     "clickToRestore": "Clic para restaurar",
     "minimizedWidgets": "Widgets minimizados",
     "closeDock": "Cerrar barra",
-    "customContent": "Contenido personalizado"
+    "customContent": "Contenido personalizado",
+    "audiobook": "Audiolibro",
+    "liveTVStream": "Transmisión de TV en vivo",
+    "noContent": "Sin contenido disponible",
+    "podcastEpisode": "Episodio de podcast",
+    "radioStation": "Estación de radio",
+    "webContent": "Contenido web",
+    "browseContent": "Explorar contenido",
+    "content": "Contenido",
+    "contentId": "ID de contenido",
+    "create": "Crear",
+    "createFirstWidget": "Crea tu primer widget personal",
+    "enterTitle": "Ingrese título del widget",
+    "loading": "Cargando widgets...",
+    "noContentFound": "No se encontró contenido",
+    "selectContent": "Seleccionar contenido",
+    "ynetBreakingNews": "Noticias de última hora de Ynet",
+    "iframeUrl": "URL de iFrame"
   },
   "liveCategories": {
     "educational": "Educativo"
@@ -4103,7 +4182,13 @@
       "episodes": "{{count}} episodios"
     },
     "toggleFavorite": "Alternar favorito",
-    "togglePlaylist": "Alternar lista"
+    "togglePlaylist": "Alternar lista",
+    "related": "Relacionado",
+    "untitled": "Sin titulo",
+    "filters": {
+      "movies": "Películas",
+      "series": "Series"
+    }
   },
   "cultureCities": {
     "connectionTo": "Conexion con {{city}}",
@@ -4175,7 +4260,16 @@
     "indian": {
       "name": "Indio",
       "description": "Contenido para la comunidad india"
-    }
+    },
+    "jerusalem": {
+      "name": "Jerusalen",
+      "description": "Descubre la ciudad santa"
+    },
+    "telAviv": {
+      "name": "Tel Aviv",
+      "description": "La ciudad que nunca duerme"
+    },
+    "loading": "Cargando cultura..."
   },
   "demo": {
     "banner": "MODO DEMOSTRACIÓN",
@@ -4225,7 +4319,12 @@
     "downloaded": "Descargado",
     "offlineMessage": "No tienes conexion. Las descargas no estan disponibles.",
     "deleteConfirm": "Estas seguro de que deseas eliminar esta descarga?",
-    "storageUsed": "Almacenamiento utilizado"
+    "storageUsed": "Almacenamiento utilizado",
+    "delete": "Eliminar",
+    "downloadAll": "Descargar todo",
+    "play": "Reproducir sin conexion",
+    "size": "{{size}} MB",
+    "active": "Descargas activas"
   },
   "dubbing": {
     "title": "Doblaje en Directo",
@@ -4386,7 +4485,20 @@
     "premiumRequired": "Se requiere suscripción premium",
     "selectInputLanguage": "Seleccionar idioma de entrada",
     "upgradeForDubbing": "Actualice a Plus para acceder al doblaje en vivo",
-    "maybeLater": "Quizás después"
+    "maybeLater": "Quizás después",
+    "short": "Doblaje",
+    "mixer": "Mezclador de audio",
+    "original": "Original",
+    "dubbed": "Doblado",
+    "balance": "{{original}}% Original / {{dubbed}}% Doblado",
+    "adjustHint": "Desliza a la izquierda o derecha para ajustar el balance de audio",
+    "settings_title": "Ajustes de doblaje",
+    "target_language": "Idioma destino",
+    "voiceSelector": {
+      "selected": "Seleccionado",
+      "subtitle": "Elige una voz para el doblaje",
+      "title": "Seleccion de voz"
+    }
   },
   "empty": {
     "noContent": "No hay contenido disponible",
@@ -4486,7 +4598,9 @@
       "active": "Grabando",
       "completed": "Grabado",
       "series": "Grabacion de serie"
-    }
+    },
+    "empty": "No hay programas disponibles",
+    "noSchedule": "No hay programación disponible"
   },
   "errors": {
     "networkError": "Error de Red",
@@ -4561,7 +4675,9 @@
       "loadFailed": "Error al cargar video",
       "noStreamUrl": "URL de transmisión no disponible",
       "notReady": "Video no está listo",
-      "sessionCreateFailed": "Error al crear sesión de reproducción después de varios intentos"
+      "sessionCreateFailed": "Error al crear sesión de reproducción después de varios intentos",
+      "connectionLost": "Conexion perdida. Se reanudara cuando se conecte.",
+      "connectionRestored": "Conexion restaurada."
     },
     "podcast": {
       "playbackError": "Error de reproducción de audio",
@@ -4605,7 +4721,11 @@
     "noAuthToken": "No hay token de autenticación disponible",
     "noDownloadUrl": "No hay URL de descarga disponible para este contenido",
     "purchaseVerificationFailed": "Error en la verificación de compra",
-    "invalidUrl": "URL no válida"
+    "invalidUrl": "URL no válida",
+    "no_audio_url": "URL de audio no disponible",
+    "connection_failed": "Conexión Fallida",
+    "quota_exceeded": "Cuota Excedida",
+    "server_error": "Error del Servidor"
   },
   "status": {
     "pleaseLogin": "Inicia sesión para usar Bayit+ Companion",
@@ -4619,7 +4739,9 @@
     "items": "elementos",
     "empty": "Sin favoritos aún",
     "emptyHint": "Añade elementos a tus favoritos",
-    "loading": "Cargando favoritos..."
+    "loading": "Cargando favoritos...",
+    "remove": "Eliminar de favoritos",
+    "add": "Agregar a favoritos"
   },
   "flows": {
     "title": "Flujos",
@@ -4770,7 +4892,8 @@
     },
     "tv": {
       "useCompanion": "Para personalización completa, usa la app Bayit+ en tu teléfono o visita bayit.plus en tu computadora."
-    }
+    },
+    "empty": "No hay flujos disponibles"
   },
   "footer": {
     "brandDescription": "Tu hogar en EE.UU. Transmisiones de TV, VOD, radio y podcasts en hebreo.",
@@ -4798,7 +4921,8 @@
       "terms": "Términos de Servicio",
       "privacy": "Política de Privacidad",
       "cookies": "Política de Cookies",
-      "licenses": "Licencias"
+      "licenses": "Licencias",
+      "watchlist": "Mi Lista"
     },
     "newsletter": {
       "title": "Mantente Conectado",
@@ -4879,7 +5003,11 @@
     "searchToAdd": "Busca usuarios para agregar amigos",
     "loadingFriends": "Cargando amigos...",
     "searchResults": "Resultados de búsqueda ({{count}})",
-    "pending": "Pendiente"
+    "pending": "Pendiente",
+    "empty": "Sin amigos aún",
+    "emptyHint": "Buscar amigos para conectar",
+    "loading": "Cargando amigos...",
+    "list": "Amigos ({{count}})"
   },
   "googleLogin": {
     "cancelledError": "Inicio de sesión con Google cancelado",
@@ -4961,13 +5089,17 @@
         "title": "Perfiles Familiares",
         "description": "Crea perfiles personalizados para cada miembro de la familia con controles parentales."
       }
-    }
+    },
+    "contactDescription": "Contacta con nuestro equipo de soporte.",
+    "needMoreHelp": "¿Necesitas más ayuda?",
+    "noFAQ": "No hay preguntas frecuentes"
   },
   "hero": {
     "watch": "Ver",
     "watchNow": "Ver Ahora",
     "moreInfo": "Más Información",
-    "addToList": "Agregar a Lista"
+    "addToList": "Agregar a Lista",
+    "newBadge": "NUEVO"
   },
   "home": {
     "continueWatching": "Continuar Viendo",
@@ -5027,7 +5159,31 @@
     "locationPermissionDescription": "Activa la ubicación para ver contenido israelí y negocios cerca de ti",
     "enableLocation": "Activar ubicación",
     "locationPermissionDeniedDescription": "El acceso a la ubicación fue denegado. Abre Configuración para habilitarlo y ver contenido israelí cerca de ti.",
-    "openSettings": "Abrir Configuración"
+    "openSettings": "Abrir Configuración",
+    "radio": "Radio",
+    "israelisInCity": "Israelies en tu ciudad",
+    "israeliBusinesses": "Negocios israelies cerca de ti",
+    "whatsHot": "Lo popular en Israel",
+    "collection": "Coleccion",
+    "discoverCollection": "Descubre esta increible coleccion",
+    "nearMe": "Cerca de mi",
+    "israeliMovies": "Películas Israelíes",
+    "israeliSeries": "Series israelies",
+    "movies": "Peliculas",
+    "music": "Musica",
+    "documentary": "Documental",
+    "series": "Series",
+    "jerusalem": "Jerusalén",
+    "telAviv": "Tel Aviv",
+    "recommended": "Recomendado para ti",
+    "newReleases": "Nuevos lanzamientos",
+    "audioPicks": "Selecciones de audio",
+    "trendingRecommendations": "Recomendaciones en tendencia",
+    "topNumber": "#{{position}}",
+    "minutesRemaining": "{{minutes}}m restantes",
+    "nowPlaying": "Ahora",
+    "israeli-movies": "Películas Israelíes",
+    "israeli-series": "Series Israelíes"
   },
   "jerusalem": {
     "title": "Conexión con Jerusalén",
@@ -5078,7 +5234,11 @@
       "parashaStudy": "Parashá",
       "shabbatRecipes": "Recetas",
       "prayers": "Oraciones",
-      "parashat": "Parashat {{name}}"
+      "parashat": "Parashat {{name}}",
+      "candlesIn": "Velas en {{minutes}} minutos",
+      "songs": "Canciones",
+      "parasha": "Parashá",
+      "recipes": "Recetas"
     },
     "calendar": {
       "dafYomi": "Daf Yomi",
@@ -5131,7 +5291,8 @@
       "kids": "Niños",
       "documentary": "Documental"
     },
-    "loadingChannels": "Cargando canales..."
+    "loadingChannels": "Cargando canales...",
+    "channel": "Canal"
   },
   "forgotPasswordPage": {
     "title": "Olvidaste tu contrasena",
@@ -5282,13 +5443,25 @@
     "more": "Más",
     "playlist": "Lista de Reproduccion",
     "byoc": "Tu Contenido",
-    "zehAniHub": "Zeh Ani"
+    "zehAniHub": "Zeh Ani",
+    "zehAni": "Zeh Ani",
+    "listen": "Escuchar",
+    "youngsters": "Jovenes",
+    "watchlist": "Mi Lista",
+    "glossary": "Glosario",
+    "missions": "Misiones",
+    "discoverHub": "Descubrir IA",
+    "household": "Hogar",
+    "messages": "Mensajes",
+    "myContent": "Mi contenido",
+    "social": "Social"
   },
   "onboarding": {
     "welcome": {
       "title": "Bienvenido a Bayit+",
       "subtitle": "TV israelí, en tu idioma",
-      "continue": "Continuar"
+      "continue": "Continuar",
+      "getStarted": "Comenzar"
     },
     "aiLanguage": {
       "title": "Mira en {{language}}",
@@ -5325,13 +5498,119 @@
       "enableVoice": "Activar control por voz",
       "wakeWord": "Detección de palabra de activación",
       "continue": "Continuar",
-      "later": "Configurar después"
+      "later": "Configurar después",
+      "orType": "O escribe tu nombre",
+      "enable": "Activar micrófono",
+      "granted": "Micrófono activado correctamente"
     },
     "launch": {
       "title": "Todo listo",
       "hint": "Desliza hacia arriba para ver canales, di 'Hey Bayit' en cualquier momento"
     },
-    "skip": "Omitir"
+    "skip": "Omitir",
+    "complete": {
+      "title": "Todo listo!",
+      "subtitle": "Tu experiencia personalizada esta lista. Disfruta de Bayit+!",
+      "language": "Idioma",
+      "name": "Nombre",
+      "startWatching": "Comenzar a ver",
+      "saving": "Guardando..."
+    },
+    "language": {
+      "title": "Elige tus idiomas",
+      "subtitle": "Seleccione su idioma principal y los idiomas de contenido que disfruta",
+      "primary": "Idioma principal",
+      "content": "Idiomas de contenido"
+    },
+    "interests": {
+      "title": "¿Qué te encanta?",
+      "subtitle": "Elige al menos 3 categorías de contenido para personalizar tu experiencia",
+      "selected": "%d de %d seleccionados",
+      "live_tv": "TV en vivo",
+      "movies": "Películas",
+      "series": "Series",
+      "kids": "Niños",
+      "music": "Música",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "audiobooks": "Audiolibros",
+      "news": "Noticias",
+      "sports": "Deportes"
+    },
+    "culture": {
+      "title": "Tu vibra cultural",
+      "subtitle": "Ayúdenos a personalizar el contenido según su trasfondo cultural",
+      "israeli": "Israelí",
+      "american": "Americano",
+      "european": "Europeo",
+      "mixed": "Mezcla global"
+    },
+    "byoc": {
+      "title": "Trae tu propio contenido",
+      "subtitle": "Conecta tus fuentes de medios existentes y disfrútalas con las funciones de IA de Bayit+",
+      "iptvDesc": "TV en vivo de cualquier proveedor IPTV",
+      "plexDesc": "Su biblioteca Plex con subtítulos de IA",
+      "youtubeDesc": "YouTube con herramientas de hebreo",
+      "connectNow": "Conectar una fuente",
+      "skipForNow": "Omitir por ahora"
+    },
+    "highlight": {
+      "dubbing": "Doblaje IA en vivo",
+      "subtitles": "Subtítulos interactivos",
+      "ai": "Compañeros IA",
+      "learning": "Aprendizaje del hebreo"
+    },
+    "tour": {
+      "done": "Listo"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "Doblaje IA en vivo",
+        "description": "Ve televisión israelí con doblaje IA en tiempo real en tu idioma preferido",
+        "hebrew": "Hebreo",
+        "english": "Inglés"
+      },
+      "subtitles": {
+        "title": "Subtítulos interactivos",
+        "description": "Toca cualquier palabra en los subtítulos para traducción y pronunciación instantáneas",
+        "sample": "La familia se reunió para la cena de Shabbat",
+        "word": "Shabat",
+        "translation": "Shabat - día semanal de descanso"
+      },
+      "interaction": {
+        "title": "Interacción con personaje IA",
+        "description": "Pausa cualquier escena y pregunta a tu compañero IA sobre el contexto cultural",
+        "userMsg": "¿Qué festividad están celebrando?",
+        "aiMsg": "Están celebrando Sukkot, la Fiesta de los Tabernáculos. La cabaña temporal que ves se llama sucá."
+      },
+      "trivia": {
+        "title": "Trivia en vivo",
+        "description": "La IA genera preguntas de trivia de lo que se emite en vivo. ¡Compite y aprende!",
+        "question": "¿Cuál es el idioma oficial de Israel?",
+        "optionA": "Árabe",
+        "optionB": "Hebreo",
+        "optionC": "Inglés"
+      },
+      "catchup": {
+        "title": "Puesta al día inteligente",
+        "description": "¿Perdiste parte de una transmisión en vivo? La IA resume lo que te perdiste",
+        "missed": "Perdido",
+        "summary": "Resumen IA",
+        "live": "En vivo"
+      },
+      "byoc": {
+        "title": "Trae tu propio contenido",
+        "description": "Importa tus fuentes IPTV y míralas junto al contenido de Bayit+",
+        "step1": "Agregar fuente",
+        "step2": "Enriquecimiento IA",
+        "step3": "Ver"
+      },
+      "zehAni": {
+        "title": "Crea tu personaje IA",
+        "description": "Genera un avatar IA personalizado que aprende contigo",
+        "generated": "Avatar IA"
+      }
+    }
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -5480,13 +5759,25 @@
       "categories": {
         "ai": "Funciones de IA",
         "platform": "Plataforma",
-        "support": "Soporte"
+        "support": "Soporte",
+        "content": "Acceso al contenido",
+        "quality": "Calidad y rendimiento",
+        "devices": "Dispositivos y transmisión",
+        "features": "Funciones Plus"
       },
       "features": {
         "aiFeatures": "Funciones de IA (19 en total)",
         "widgets": "Widgets",
         "familyProfiles": "Perfiles Familiares",
-        "customerSupport": "Soporte al Cliente"
+        "customerSupport": "Soporte al Cliente",
+        "browseContent": "Explorar biblioteca de contenido",
+        "vodAccess": "Películas y series bajo demanda",
+        "liveChannels": "Canales de TV en vivo",
+        "radioPodcasts": "Radio y podcasts",
+        "videoQuality": "Calidad de video",
+        "simultaneousDevices": "Dispositivos simultáneos",
+        "aiAssistant": "Asistente inteligente AI",
+        "offlineDownloads": "Descargar para ver sin conexión"
       },
       "values": {
         "fiftyCredits": "50 creditos (unico)",
@@ -5494,6 +5785,42 @@
         "emailSupport": "Correo",
         "prioritySupport": "Prioritario"
       }
+    },
+    "non_registered": {
+      "name": "Solo navegar",
+      "description": "Explora nuestra biblioteca de contenido"
+    },
+    "registered_free": {
+      "name": "Cuenta gratuita",
+      "description": "Crea una cuenta para funciones gratuitas"
+    },
+    "basic": {
+      "name": "Gratis",
+      "features": [
+        "Todo el contenido VOD",
+        "Radio y Podcasts",
+        "Ver en 1 dispositivo",
+        "Calidad SD"
+      ],
+      "notIncluded": [
+        "Canales en vivo",
+        "Asistente AI",
+        "Ver sin conexión"
+      ]
+    },
+    "premium": {
+      "name": "Plus",
+      "features": [
+        "Todo el contenido VOD",
+        "Canales en vivo",
+        "Radio y Podcasts",
+        "Asistente AI inteligente",
+        "Ver en 4 dispositivos",
+        "Calidad 4K",
+        "5 perfiles familiares",
+        "Descargar sin conexión"
+      ],
+      "notIncluded": []
     }
   },
   "player": {
@@ -5591,7 +5918,10 @@
       "noSource": "No hay transmisión disponible",
       "streamFailed": "Error al cargar la transmisión",
       "unknown": "Error de reproducción desconocido",
-      "unsupportedFormat": "Formato de audio no compatible"
+      "unsupportedFormat": "Formato de audio no compatible",
+      "streamLimitMessage": "Has alcanzado el maximo de {{maxStreams}} transmisiones simultaneas. Por favor detiene otra transmision o mejora tu plan.",
+      "streamLimitTitle": "Limite de transmisiones",
+      "upgradePlan": "Mejorar plan"
     },
     "exitFullscreen": "Salir de pantalla completa",
     "liveLanguageMagic": "Magia de idiomas en vivo",
@@ -5620,7 +5950,14 @@
       "transcribing": "Transcribiendo...",
       "thinking": "Pensando...",
       "voiceConsentRequired": "Se requiere consentimiento de voz para la interaccion de voz",
-      "micPermissionDenied": "Permiso de microfono denegado"
+      "micPermissionDenied": "Permiso de microfono denegado",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "placeholder": "Escribe tu mensaje...",
+      "send": "Enviar",
+      "sharedSession": "Sesion compartida",
+      "waitingForTurn": "Esperando tu turno...",
+      "yourAvatar": "Tu avatar"
     },
     "pauseAsk": {
       "title": "Pregunta a un personaje",
@@ -5638,7 +5975,43 @@
         "falAi": "Servicio de video no disponible",
         "elevenlabs": "Servicio de voz no disponible",
         "credits": "Creditos insuficientes"
-      }
+      },
+      "noCharacters": "Los personajes aún no están disponibles para esta película",
+      "stages": {
+        "polishing": "Puliendo tu pregunta...",
+        "thinking": "Pensando en tu pregunta...",
+        "biff1": "A Biff no le gusto mucho tu pregunta...",
+        "biff2": "Biff esta flexionando frente al espejo...",
+        "biff3": "Biff esta intentando deletrear su respuesta...",
+        "biff4": "Biff acaba de llamar a alguien cabeza hueca...",
+        "doc1": "Doc esta consultando el condensador de flujo...",
+        "doc2": "Santo cielo! Aun calculando...",
+        "doc3": "Doc esta ajustando 1.21 gigavatios...",
+        "doc4": "Doc esta verificando el continuo espacio-tiempo...",
+        "marty1": "Marty esta afinando su guitarra primero...",
+        "marty2": "Esto es pesado...",
+        "marty3": "Marty esta verificando si aun existe...",
+        "marty4": "Marty dice que nadie lo llama gallina...",
+        "george1": "George esta reuniendo valor para responder...",
+        "george2": "George esta escribiendo su respuesta en su cuaderno...",
+        "george3": "George dice que su densidad lo trajo aqui...",
+        "george4": "George finalmente tiene confianza...",
+        "lorraine1": "Lorraine se esta arreglando el pelo primero...",
+        "lorraine2": "Lorraine esta pensando en el Encanto Bajo el Mar...",
+        "lorraine3": "Lorraine dice que estaba destinado a ser...",
+        "lorraine4": "Lorraine se esta preparando para el baile...",
+        "jennifer1": "Jennifer esta esperando en el auto...",
+        "jennifer2": "Jennifer se pregunta sobre el futuro...",
+        "jennifer3": "Jennifer dice que puede manejarlo...",
+        "jennifer4": "Jennifer esta siendo paciente...",
+        "generic1": "{{name}} esta pensando...",
+        "generic2": "{{name}} esta elaborando una respuesta...",
+        "generic3": "Casi listo...",
+        "generic4": "Solo un momento mas..."
+      },
+      "askAgain": "Preguntar de nuevo",
+      "placeholder": "Pregunta sobre esta escena...",
+      "resume": "Reanudar"
     },
     "multiCharacter": {
       "selectCharacter": "Seleccionar personaje para dirigirse",
@@ -5665,14 +6038,126 @@
       "off": "Apagado",
       "timerSet": "Temporizador configurado para {{minutes}} minutos",
       "timerExtended": "Temporizador extendido {{minutes}} minutos",
-      "timerCancelled": "Temporizador de sueño cancelado"
+      "timerCancelled": "Temporizador de sueño cancelado",
+      "subtitle": "Pausar la reproduccion automaticamente despues de un tiempo establecido",
+      "minutes": "{{count}} min",
+      "customPlaceholder": "Minutos personalizados",
+      "set": "Establecer temporizador"
     },
     "invalidEpisodeUrl": "URL de episodio invalida",
     "dubbing": {
       "premiumTitle": "Funcion Plus",
       "premiumMessage": "El doblaje en vivo requiere una suscripcion Plus",
       "upgrade": "Mejorar a Plus",
-      "notNow": "Ahora No"
+      "notNow": "Ahora No",
+      "label": "Doblaje",
+      "feature": {
+        "realtime": "Doblaje en tiempo real en varios idiomas",
+        "voices": "Selección de voz profesional",
+        "lowLatency": "Transmisión de audio de baja latencia",
+        "highQuality": "Audio de alta calidad"
+      },
+      "voiceTitle": "Voz de doblaje",
+      "settings_title": "Configuración de Doblaje en Vivo",
+      "target_language": "Idioma de Destino"
+    },
+    "dismiss": "Cerrar",
+    "dismissPlayer": "Cerrar Reproductor",
+    "interactive": {
+      "tapToTranslate": "Toca una palabra para traducir",
+      "translating": "Traduciendo...",
+      "addToGlossary": "Agregar al glosario",
+      "close": "Cerrar",
+      "toggle": "Subtitulos interactivos"
+    },
+    "audio": "Audio",
+    "audioTrack": "Pista de audio",
+    "catchUp": "Ponerse al dia",
+    "interaction": {
+      "next": "Siguiente interaccion",
+      "previous": "Interaccion anterior"
+    },
+    "loadingEpisode": "Cargando episodio...",
+    "loadingStream": "Cargando transmisión...",
+    "preparingStream": "Preparando transmision...",
+    "scenes": "Escenas",
+    "startOver": "Empezar de nuevo",
+    "streamLoadFailed": "Fallido to load stream",
+    "videoQuality": "Calidad de vídeo",
+    "trivia": "Trivia",
+    "currentLanguage": "Idioma actual",
+    "premiumRequired": "Funcion Plus",
+    "upgradeToPremiumDubbing": "Actualiza a Plus para doblaje IA ilimitado",
+    "upgradeToPremium": "Actualizar a Plus",
+    "ai": {
+      "dub": "Doblar",
+      "dubbing": "Doblaje",
+      "featuresTitle": "Funciones de IA",
+      "languagePrimary": "Primario",
+      "languageSecondary": "Secundario (Opcional)",
+      "languageTitle": "Idioma de IA",
+      "liveTranslate": "Traduccion en vivo",
+      "selectLanguage": "Seleccionar idioma",
+      "split": "Dividir",
+      "togglePanel": "Mostrar/ocultar panel de IA",
+      "translate": "Traducir",
+      "trivia": "Trivia",
+      "triviaToggle": "Trivia"
+    },
+    "catchup": {
+      "description": "Te perdiste el inicio? Obtene un resumen impulsado por IA de lo que paso hasta ahora.",
+      "generateSummary": "Generar resumen",
+      "summaryTitle": "Resumen",
+      "title": "Ponerse al dia",
+      "keyPoints": "Puntos clave",
+      "transcript": "Transcripcion"
+    },
+    "companion": {
+      "noContext": "No hay contexto cultural disponible para este contenido todavia.",
+      "quizComplete": "Cuestionario completado",
+      "quizRetry": "Reintentar",
+      "quizStart": "Iniciar cuestionario",
+      "quizTitle": "Listo para probar tus conocimientos?",
+      "quizTryAgain": "Intentar de nuevo",
+      "tabContext": "Contexto",
+      "tabQuiz": "Cuestionario",
+      "tabVocabulary": "Vocabulario",
+      "tapWords": "Toca las palabras en los subtitulos para agregarlas aqui",
+      "title": "Compan~ero IA"
+    },
+    "controls": {
+      "audioTrack": "Pista de audio",
+      "continueWatching": "Seguir viendo",
+      "dismiss": "Cerrar",
+      "goBack": "Volver",
+      "navigateBack": "Navegar atras",
+      "on": "Activado",
+      "pause": "Pausar",
+      "play": "Reproducir",
+      "preview": "Vista previa",
+      "selected": "Seleccionado",
+      "send": "Enviar",
+      "skip": "Omitir",
+      "close": "Cerrar",
+      "exitFullscreen": "Salir de pantalla completa",
+      "fullscreen": "Pantalla completa",
+      "restart": "Reiniciar",
+      "skipBackward": "Retroceder",
+      "skipForward": "Avanzar",
+      "volume": "Volumen"
+    },
+    "audio_description": "Descripción de Audio",
+    "scene_search": "Búsqueda de Escena",
+    "search_placeholder": "Buscar una escena...",
+    "language_ratio": "Proporción de Aprendizaje de Idioma",
+    "go_back": "Volver",
+    "openSubs": {
+      "title": "Buscar subtitulos",
+      "searchPlaceholder": "Buscar por titulo...",
+      "search": "Buscar",
+      "searchFailed": "Busqueda fallida. Intentalo de nuevo.",
+      "downloads": "{{count}} descargas",
+      "noResults": "No se encontraron subtitulos"
     }
   },
   "podcast": {
@@ -5695,10 +6180,38 @@
         "short": "ES",
         "full": "Español"
       }
-    }
+    },
+    "podcastDetailsShort": "Podcast"
   },
   "listen": {
-    "title": "Escuchar"
+    "title": "Escuchar",
+    "featured": "Audio destacado",
+    "continueListening": "Seguir escuchando",
+    "radioStations": "Estaciones de Radio",
+    "discoverPodcasts": "Descubrir podcasts",
+    "discoverAudiobooks": "Descubrir audiolibros",
+    "categories": "Categorías",
+    "nowPlaying": "REPRODUCIENDO",
+    "browseAll": "Explorar todo",
+    "browseAudiobooks": "Explorar audiolibros",
+    "browsePodcasts": "Explorar podcasts",
+    "noFeatured": "No hay audio destacado disponible",
+    "noContinueListening": "No hay audio en progreso",
+    "sortBy": "Ordenar por",
+    "sortRecent": "Búsquedas recientes",
+    "sortPopular": "Búsquedas populares",
+    "sortDuration": "Duración",
+    "filterGenre": "Género",
+    "filterLanguage": "Idioma",
+    "episodeCount": "{{count}} episodios",
+    "latestEpisode": "Ultimo: {{date}}",
+    "loading": "Cargando contenido de audio...",
+    "subtitle": "Radio, Podcasts y Audiolibros",
+    "tab": {
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "audiobooks": "Audiolibros"
+    }
   },
   "podcasts": {
     "title": "Pódcasts",
@@ -5795,7 +6308,17 @@
     "subscribe": "Suscribirse",
     "unsubscribe": "Cancelar suscripcion",
     "removeFailed": "Error al eliminar el pódcast",
-    "episode": "Episodio"
+    "episode": "Episodio",
+    "addedSuccess": "Podcast agregado exitosamente",
+    "allPodcasts": "Todos los podcasts",
+    "notFound": "Podcast no encontrado",
+    "removePodcast": "Eliminar podcast",
+    "rssUrl": "URL RSS del podcast",
+    "rssUrlHint": "Ingrese la URL del feed RSS de su podcast",
+    "episodeShort": "Ep. {{number}}",
+    "author": "Autor",
+    "category": "Categoría",
+    "episodeCount": "Episodios"
   },
   "miniPlayer": {
     "skipBackward": "Retroceder 15 segundos",
@@ -6088,7 +6611,79 @@
     "unlockPremiumDescription": "Actualiza para disfrutar de contenido y funciones exclusivas",
     "unknown": "Jugador desconocido",
     "myDownloads": "Mis Descargas",
-    "offlineContent": "Contenido Sin Conexión"
+    "offlineContent": "Contenido Sin Conexión",
+    "zehAni": "Zeh Ani",
+    "plusPrice": "$7.99/mes",
+    "betaCredits": "Créditos Beta",
+    "creditsRemaining": "créditos restantes",
+    "streak": "Racha de días",
+    "watched": "Visto",
+    "recordings": "Grabaciones",
+    "rewards": "Recompensas",
+    "household": "Hogar",
+    "displayName": "Nombre de usuario",
+    "phoneNumber": "Numero de telefono",
+    "mfa": "Autenticacion multifactor",
+    "verified": "Verificado",
+    "notVerified": "No verificado",
+    "beta500Description": "Acceso a funciones de IA y contenido experimental",
+    "beta500Member": "Miembro Beta 500",
+    "credits": "Créditos",
+    "emailAddress": "Dirección de correo",
+    "linkSignInMethods": "Vincule varios métodos de inicio de sesión para un acceso más fácil",
+    "loading": "Cargando perfil...",
+    "loadingHistory": "Cargando historial...",
+    "noData": "Sin datos de perfil",
+    "noViewingHistory": "Sin historial de visualización",
+    "noViewingHistoryDescription": "Empiece a ver contenido para ver su historial aquí",
+    "primarySignIn": "Método de inicio de sesión principal",
+    "signOut": "Cerrar sesión",
+    "signOutConfirmation": "Deberá iniciar sesión de nuevo",
+    "playlists": "Listas",
+    "dayStreak": "Racha diaria",
+    "yourStatistics": "Tus estadisticas",
+    "quickActions": "Acciones rapidas",
+    "myFavorites": "Mis favoritos",
+    "viewFavoriteContent": "Ver tu contenido favorito",
+    "myRecordings": "Mis grabaciones",
+    "manageDvrRecordings": "Gestionar grabaciones DVR",
+    "myPlaylists": "Mis listas",
+    "organizeContent": "Organiza tu contenido",
+    "viewingHistory": "Historial de Visualización",
+    "seeWhatYouWatched": "Mira lo que has visto",
+    "whosWatching": "Quien esta viendo?",
+    "loadingProfiles": "Cargando perfiles...",
+    "addProfile": "Agregar perfil",
+    "addProfileSubtitle": "Crea un nuevo perfil para tu hogar",
+    "chooseAvatar": "Elegir avatar",
+    "switchProfile": "Cambiar perfil",
+    "switchProfileDesc": "Cambiar a un perfil diferente",
+    "messages": "Mensajes",
+    "preferences": "Preferencias",
+    "preferencesDesc": "Contenido, idioma, ajustes de calidad",
+    "accountSecurityDesc": "Contrasena, 2FA, cuentas vinculadas",
+    "verifyEmail": "Verificar email",
+    "verifyEmailDesc": "Confirma tu direccion de email",
+    "verifyPhone": "Verificar telefono",
+    "verifyPhoneDesc": "Confirma tu numero de telefono",
+    "accountManagement": "Gestion de cuenta",
+    "householdProfiles": "Perfiles del hogar",
+    "householdProfilesDesc": "Gestionar perfiles familiares",
+    "aboutDesc": "Version de la app, terminos, privacidad",
+    "advanced": "Avanzado",
+    "friendsDesc": "Conecta con otros espectadores",
+    "messagesDesc": "Mensajes directos",
+    "settingsDesc": "Ajustes y preferencias de la app",
+    "widgets": "Widgets",
+    "widgetsDesc": "Gestionar tus widgets",
+    "socialSettings": "Social y ajustes",
+    "myContent": "Mi Contenido",
+    "social": "Social",
+    "accountSettings": "Cuenta y Ajustes",
+    "info": "Información",
+    "premiumPrice": "$6.99/mes",
+    "familyPrice": "$12.99/mes",
+    "watchlist": "Mi Lista"
   },
   "profiles": {
     "addProfile": "Añadir perfil",
@@ -6106,7 +6701,11 @@
     "kidsProfile": "Perfil infantil",
     "kidsProfileDescription": "Restringe el contenido a selecciones aptas para niños",
     "kids": "Ninos",
-    "addIcon": "+"
+    "addIcon": "+",
+    "displayName": "Nombre de pantalla",
+    "edit": "Editar perfil",
+    "kidsProfileHint": "Restringe el contenido a selecciones aptas para niños",
+    "preferences": "Preferencias"
   },
   "radio": {
     "title": "Radio",
@@ -6192,7 +6791,10 @@
     "sortDate": "Fecha",
     "sortSize": "Tamaño",
     "sortDuration": "Duración",
-    "sortTitle": "Título"
+    "sortTitle": "Título",
+    "delete": "Eliminar",
+    "empty": "Sin grabaciones aún",
+    "stop": "Detener grabación"
   },
   "register": {
     "title": "Crear Cuenta",
@@ -6250,7 +6852,14 @@
     "noContentNow": "No hay contenido disponible ahora",
     "typeLive": "En Vivo",
     "typeRadio": "Radio",
-    "typeVideo": "Vídeo"
+    "typeVideo": "Vídeo",
+    "aiBrief": "Resumen diario AI",
+    "days": "días",
+    "goodMorning": "Buenos días",
+    "loadBrief": "Cargar resumen diario",
+    "streak": "Racha",
+    "subtitle": "Tu experiencia matutina personalizada",
+    "todayContent": "Contenido de hoy"
   },
   "search": {
     "title": "Buscar",
@@ -6298,7 +6907,11 @@
       "kidsOnly": "Solo contenido infantil",
       "excludeKids": "Excluir contenido infantil",
       "allContent": "Todo el contenido",
-      "actors": "Actores"
+      "actors": "Actores",
+      "movies": "Peliculas",
+      "series": "Series",
+      "collections": "Colecciones",
+      "audiobooks": "Audiolibros"
     },
     "suggestions": {
       "trendingTitle": "Búsquedas Populares",
@@ -6396,6 +7009,33 @@
     "llm": {
       "title": "Busqueda IA",
       "placeholder": "Describe lo que quieres ver..."
+    },
+    "clearFilters": "Borrar filtros",
+    "clear": "Borrar",
+    "clearRecent": "Borrar búsquedas recientes",
+    "query": "Consulta de búsqueda",
+    "search": "Búsqueda",
+    "sort": {
+      "title": "Ordenar por",
+      "relevance": "Relevancia",
+      "newest": "Más reciente",
+      "oldest": "Más antiguo",
+      "titleAsc": "Título A-Z",
+      "titleDesc": "Título Z-A",
+      "popularity": "Más popular"
+    },
+    "filter": {
+      "title": "Filtro",
+      "reset": "Restablecer",
+      "language": "Idioma",
+      "accessibility": "Accesibilidad",
+      "subtitles": "Subtitulos",
+      "dubbing": "Doblaje",
+      "yearRange": "Rango de anos",
+      "yearFrom": "De year",
+      "yearTo": "Hasta el ano",
+      "duration": "Duracion",
+      "apply": "Aplicar filtros"
     }
   },
   "settings": {
@@ -6442,7 +7082,13 @@
       "quality4k": "4K",
       "quality1080p": "1080p",
       "quality720p": "720p",
-      "quality480p": "480p"
+      "quality480p": "480p",
+      "autoplaySection": "Reproduccion automatica",
+      "countdown": "Cuenta regresiva antes del siguiente episodio",
+      "controls": "Controles",
+      "speed": "Reproduccion Speed",
+      "liveTV": "TV en vivo",
+      "bufferSize": "Tamano del bufer"
     },
     "quality": "Calidad",
     "subtitles": "Subtítulos",
@@ -6495,7 +7141,18 @@
     "accessibility": {
       "small": "Pequeño",
       "medium": "Mediano",
-      "large": "Grande"
+      "large": "Grande",
+      "audioVisual": "Audio y visual",
+      "boldText": "Texto en negrita",
+      "closedCaptions": "Subtitulos",
+      "colorBlind": "Modo daltonico",
+      "description": "Personaliza tu experiencia de visualizacion",
+      "display": "Pantalla",
+      "highContrast": "Alto contraste",
+      "largeText": "Texto grande",
+      "largeTextDesc": "Aumentar el tamano del texto",
+      "reduceMotion": "Reducir movimiento",
+      "title": "Accesibilidad"
     },
     "signOut": "Cerrar Sesion",
     "security": {
@@ -6591,7 +7248,12 @@
       "volumeNormalization": "Normalizacion de Volumen",
       "preferDubbed": "Preferir Audio Doblado",
       "dubbingLanguage": "Idioma de Doblaje",
-      "monoAudio": "Audio Mono"
+      "monoAudio": "Audio Mono",
+      "description": "Configurar preferencias de audio",
+      "dubbing": "Doblaje",
+      "processing": "Procesamiento",
+      "quality": "Calidad de audio",
+      "volumeNormDesc": "Normalizar volumen entre contenidos"
     },
     "notificationSettings": {
       "title": "Notificaciones",
@@ -6726,7 +7388,106 @@
       "phone": "Numero de Telefono",
       "deleteAccount": "Eliminar Cuenta",
       "deleteAccountDesc": "Esta accion es permanente y no se puede deshacer"
-    }
+    },
+    "chooseLanguage": "Elige tu idioma",
+    "languageDescription": "Selecciona tu idioma preferido para la interfaz de la aplicación",
+    "showWidgetsDock": "Barra de widgets",
+    "showVoiceControlFAB": "Botón de control de voz",
+    "showFeatureTips": "Mostrar consejos",
+    "interactiveMoments": "Momentos interactivos",
+    "interactiveMomentsRequiresAvatar": "Los Momentos Interactivos requieren un avatar de Creatify. Crea uno en Configuracion de Avatar primero.",
+    "interactiveMomentsNoAvatar": "El modo interactivo no esta disponible porque no se encontro un avatar. La pelicula se reproducira sin momentos interactivos.",
+    "account": "Cuenta",
+    "appUpdates": "Actualizaciones de la app",
+    "appUpdatesDescription": "Recibe notificaciones sobre nuevas funciones",
+    "billing": "Facturación",
+    "chessActivity": "Actividad de ajedrez",
+    "chessActivityDescription": "Notificaciones sobre tus partidas de ajedrez",
+    "devicePairing": "Emparejamiento de dispositivos",
+    "directMessages": "Mensajes directos",
+    "directMessagesDescription": "Recibe notificaciones de mensajes",
+    "friendActivity": "Actividad de amigos",
+    "friendActivityDescription": "Actualizaciones cuando amigos se unen",
+    "helpCenter": "Centro de ayuda",
+    "household": "Hogar",
+    "liveEvents": "Eventos en vivo",
+    "liveEventsDescription": "Alertas de transmisiones en vivo próximas",
+    "newContent": "Contenido nuevo",
+    "newContentDescription": "Notificaciones sobre nuevo contenido",
+    "notificationDescription": "Elige qué notificaciones quieres recibir",
+    "notificationFooter": "Puedes cambiar estos ajustes en cualquier momento.",
+    "notificationPreferences": "Preferencias de notificaciones",
+    "passkeys": "Claves de acceso",
+    "preferences": "Preferencias",
+    "recommendations": "Recomendaciones",
+    "recommendationsDescription": "Sugerencias personalizadas según tu historial",
+    "support": "Soporte",
+    "version": "Versión",
+    "watchPartyInvitations": "Invitaciones a Watch Party",
+    "watchPartyInvitationsDescription": "Notificaciones cuando amigos te invitan a ver juntos",
+    "dangerZone": "Zona de peligro",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountConfirmTitle": "¿Eliminar cuenta?",
+    "deleteAccountConfirmMessage": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+    "deleteAccountConfirm": "Eliminar cuenta",
+    "typeDeleteConfirm": "Escribe DELETE para confirmar",
+    "setPassword": "Establecer contrasena",
+    "setPasswordDesc": "Agrega una contrasena a tu cuenta",
+    "linkAccount": "Vincular otra cuenta",
+    "linkAccountDesc": "Conectar Google, Apple o Facebook",
+    "addPhone": "Agregar numero de telefono",
+    "addPhoneDesc": "Agrega un numero de telefono para recuperar la cuenta",
+    "exportData": "Exportar mis datos",
+    "exportDataDesc": "Solicitar una copia de todos tus datos",
+    "deleteAccountDesc": "Eliminar permanentemente tu cuenta y datos",
+    "connected": "Conectado",
+    "notConnected": "No Conectado",
+    "help": {
+      "contactSupport": "Contactar soporte",
+      "loading": "Cargando ayuda...",
+      "noFaqs": "No hay preguntas frecuentes",
+      "subtitle": "Encuentra respuestas y obten soporte",
+      "title": "Ayuda y soporte",
+      "replayOnboarding": "Repetir introducción",
+      "replayTour": "Repetir Tour de Funciones"
+    },
+    "autoplayDescription": "Reproducir automaticamente el siguiente episodio al terminar",
+    "autoplayNextEpisode": "Reproducir Siguiente Episodio",
+    "contentRating": "Clasificacion de Contenido",
+    "contentRatingDescription": "El contenido por encima de esta clasificacion se filtrara de las recomendaciones",
+    "contentRestrictions": "Restricciones de Contenido",
+    "languageSubtitles": "Idioma y Subtitulos",
+    "linkAppleAccount": "Vincular cuenta Apple",
+    "linkGoogleAccount": "Vincular cuenta Google",
+    "notificationsDescription": "Recibir actualizaciones sobre nuevo contenido y funciones",
+    "qualityAuto": "Automatica (Recomendada)",
+    "qualityHigh": "Alta",
+    "qualityLow": "Baja",
+    "qualityMedium": "Media",
+    "ratingAdultsOnly": "Solo Adultos",
+    "ratingAllAges": "Todas las Edades",
+    "ratingMature": "Maduro (R)",
+    "ratingPG": "Guia Parental (PG)",
+    "ratingPG13": "PG-13",
+    "rtl": "RTL",
+    "sensitivity": "Sensibilidad",
+    "subtitleLanguage": "Idioma de Subtitulos",
+    "unlinkConfirmation": "¿Desvincular tu cuenta de {{provider}}?",
+    "videoQuality": "Calidad de Video",
+    "wakeWord": "Hey Bayit",
+    "wakeWordDescription": "Activa el control por voz diciendo la palabra de activación.",
+    "mediaSection": "Medios",
+    "privacyData": "Privacidad & Data",
+    "general": "General",
+    "children": "Ninos",
+    "loading": "Cargando configuracion...",
+    "not_connected": "No conectado",
+    "privacySecurity": "Privacidad & Security",
+    "privacySection": "Privacidad y Legal",
+    "notificationsDisabled": "Notificaciones desactivadas",
+    "notificationsEnableMessage": "Habilita las notificaciones para recibir actualizaciones sobre nuevo contenido, eventos en vivo y más.",
+    "notificationsGoToSettings": "Para recibir notificaciones, habilítalas en Configuración.",
+    "replayTour": "Repetir el tour de características"
   },
   "familyControls": {
     "title": "Controles familiares",
@@ -6830,7 +7591,8 @@
       "redirectingToHousehold": "Redirigiendo a tu hogar...",
       "goToHousehold": "Ir al hogar",
       "success": "¡Éxito!",
-      "error": "Error"
+      "error": "Error",
+      "invitationSent": "Invitación enviada correctamente."
     },
     "profile": {
       "title": "Controles de perfil",
@@ -6841,7 +7603,22 @@
       "hierarchy": "Jerarquía de controles",
       "source": "Fuente de controles"
     },
-    "settingsSaved": "Configuración guardada"
+    "settingsSaved": "Configuración guardada",
+    "ageLimits": "Límites de edad",
+    "allowedHours": "Horas de visualización permitidas",
+    "contentRating": "Clasificación de contenido",
+    "createPinDescription": "Crea un PIN para proteger la configuración",
+    "enterPinDescription": "Ingresa tu PIN familiar",
+    "from": "Desde",
+    "kidsMaxAge": "Edad máxima niños",
+    "ratingG": "G - Público general",
+    "ratingNC17": "NC-17 - Solo adultos",
+    "ratingPG": "PG - Guía parental",
+    "ratingPG13": "PG-13 - Guía parental estricta",
+    "ratingR": "R - Restringido",
+    "saveSettings": "Guardar configuración",
+    "to": "Hasta",
+    "youngstersMaxAge": "Edad máxima jóvenes"
   },
   "stats": {
     "statistics": "Estadísticas",
@@ -6896,7 +7673,38 @@
       "categories": {
         "ai": "Funciones de IA",
         "platform": "Plataforma",
-        "support": "Soporte"
+        "support": "Soporte",
+        "content": "Acceso al Contenido",
+        "quality": "Calidad y Rendimiento",
+        "devices": "Dispositivos y Streaming",
+        "features": "Características"
+      },
+      "scrollHint": "← Desplázate para ver todos los planes →"
+    },
+    "startTrial": "Comenzar Prueba Gratis",
+    "noCharge": "Tu tarjeta de crédito no será cobrada durante el período de prueba",
+    "premiumShowcase": {
+      "title": "Experimenta la Inteligencia Plus",
+      "subtitle": "Funciones impulsadas por IA que se adaptan a tu forma de ver",
+      "videoTitle": "Ver Widgets en Acción",
+      "videoDescription": "Mira nuestra introducción de 2 minutos a los widgets flotantes",
+      "widgetTitle": "Demo Interactiva en Vivo",
+      "widgetDescription": "Arrastra, redimensiona y multitarea con Kan11",
+      "aiAssistant": {
+        "title": "Asistente Inteligente AI",
+        "description": "Recomendaciones personalizadas impulsadas por aprendizaje automático"
+      },
+      "floatingWidgets": {
+        "title": "Widgets Flotantes",
+        "description": "Mira múltiples canales mientras navegas por el contenido"
+      },
+      "a11y": {
+        "playVideo": "Reproducir vídeo de introducción a widgets",
+        "playVideoHint": "Abre demostración en vídeo a pantalla completa"
+      },
+      "badges": {
+        "aiPowered": "IMPULSADO POR IA",
+        "interactiveDemo": "DEMO INTERACTIVA"
       }
     }
   },
@@ -7031,7 +7839,50 @@
     "cuesCount": "({{count}} subtitulos)",
     "failedReason": "- {{language}}: {{reason}}",
     "generateForContent": "Generar subtitulos {{mode}} para este contenido",
-    "generateMode": "Generar {{mode}}"
+    "generateMode": "Generar {{mode}}",
+    "translate": "Traducir",
+    "split": "Dividir",
+    "failed": "Fallidos: {{count}}",
+    "fromOpenSubs": "De OpenSubtitles.com",
+    "hebrewDisplayMode": "Modo de visualización en hebreo",
+    "hebrewModeHint": "Elige cómo mostrar subtítulos en hebreo. Nikud añade marcas vocales para facilitar la lectura, mientras que Shoresh muestra raíces para aprender el idioma.",
+    "imported": "Se importaron {{count}} pistas de subtítulos",
+    "modes": "Modos de subtítulos",
+    "noAdditionalFound": "No se encontraron subtítulos adicionales",
+    "quotaExceeded": {
+      "message": "Ha excedido la cuota de descarga de subtítulos",
+      "title": "Cuota excedida"
+    },
+    "rateLimitExceeded": "Límite de velocidad excedido. Inténtelo de nuevo más tarde.",
+    "sampleText": "Texto de subtítulo de muestra",
+    "searchingOpenSubs": "Buscando en OpenSubtitles...",
+    "selectTwoLanguagesDescription": "Elige dos idiomas para subtítulos en pantalla dividida",
+    "skipped": "Omitido: {{count}} (ya existe)",
+    "splitDisplayDescription": "Mostrar dos idiomas uno al lado del otro",
+    "title": "Subtítulos",
+    "quotaExceededLabel": "Cuota excedida",
+    "splitScreenLabel": "Pantalla Dividida",
+    "cueCount": "({{count}} señales)",
+    "trackUnavailable": "{{language}}: {{reason}}",
+    "aiModesAvailable": "Modos de IA disponibles",
+    "aiModesTitle": "Modos de subtitulos IA",
+    "fetchSubtitles": "Obtener subtitulos",
+    "mode": {
+      "engrew": "Engrew",
+      "heblish": "Heblish",
+      "shoresh": "Shoresh",
+      "standard": "Estandar"
+    },
+    "opensubtitles": "OpenSubtitles",
+    "searchExternal": "Buscar subtitulos externos",
+    "settingsTitle": "Configuracion de subtitulos",
+    "showBackground": "Mostrar fondo",
+    "singleMode": "Modo unico",
+    "splitMode": "Modo dividido",
+    "primary_language": "Idioma Principal",
+    "secondary_language": "Idioma Secundario",
+    "layout_mode": "Modo de diseño",
+    "interactive_title": "Subtítulos Interactivos"
   },
   "support": {
     "title": "Centro de Soporte",
@@ -7151,7 +8002,16 @@
     "wizard": {
       "role": "Tu Guía"
     },
-    "fieldsRequired": "El asunto y el mensaje son obligatorios"
+    "fieldsRequired": "El asunto y el mensaje son obligatorios",
+    "email": "Soporte por email",
+    "message": "Mensaje",
+    "newTicket": "Nuevo ticket",
+    "noFAQ": "No hay preguntas frecuentes",
+    "noTickets": "Sin tickets aún",
+    "subject": "Asunto",
+    "submit": "Enviar",
+    "ticketCreated": "Ticket creado con éxito",
+    "website": "Sitio web"
   },
   "telAviv": {
     "title": "Conexión con Tel Aviv",
@@ -7210,7 +8070,11 @@
       "languageHint": "Selecciona 1-3 idiomas para mostrar en cada dato",
       "language": "idioma",
       "selectLanguage": "Seleccionar este idioma",
-      "deselectLanguage": "Deseleccionar este idioma"
+      "deselectLanguage": "Deseleccionar este idioma",
+      "autoPlay": "Trivia automática",
+      "resetConfirm": "Esto restablecerá todas las configuraciones de trivia a sus valores predeterminados.",
+      "enableDescription": "Mostrar preguntas de trivia mientras ves contenido.",
+      "enableTrivia": "Activar trivia"
     },
     "categories": {
       "cast": "Elenco",
@@ -7237,7 +8101,31 @@
     "loading": "Cargando trivia...",
     "selectContent": "Selecciona contenido para iniciar un quiz",
     "correct": "Correcto!",
-    "notQuite": "No del todo!"
+    "notQuite": "No del todo!",
+    "aiTrivia": "Trivia IA",
+    "more": "Mas",
+    "autoShowDescription": "Mostrar trivia automáticamente durante la reproducción",
+    "badgesEarned": "Insignias ganadas",
+    "leaderboard": "Tabla de líderes",
+    "selectLanguagesHint": "Seleccione hasta 3 idiomas para hechos de trivia",
+    "title": "Trivia",
+    "topPlayers": "Mejores jugadores",
+    "quiz": {
+      "title": "Cuestionario de Trivia"
+    },
+    "question": "Pregunta",
+    "results": {
+      "title": "Cuestionario Completado!",
+      "playAgain": "Jugar de Nuevo",
+      "shekelsEarned": "{{amount}} Shekels Ganados"
+    },
+    "explanation": "Explicacion",
+    "submit": "Enviar",
+    "tryAgain": "Intentar de nuevo",
+    "playerCount": "{{count}} jugadores",
+    "dayStreak": "racha de {{count}} días",
+    "tellMeMore": "Cuentame mas",
+    "follow_up": "Seguimiento"
   },
   "splash": {
     "bayit": "Bayit",
@@ -7250,7 +8138,8 @@
     "title": "Búsqueda de Escena",
     "placeholder": "Buscar un tema o escena...",
     "noScenesFound": "No se encontraron escenas",
-    "searchFailed": "La búsqueda falló"
+    "searchFailed": "La búsqueda falló",
+    "noResults": "No se encontraron escenas"
   },
   "streamLimit": {
     "title": "Limite de transmisiones",
@@ -7294,7 +8183,33 @@
     "error": "Algo salió mal",
     "tryAgain": "Intentar de Nuevo",
     "securityNote": "Tus credenciales se envían de forma segura y nunca se almacenan en el TV.",
-    "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV."
+    "footer": "¿Tienes problemas? Asegúrate de haber escaneado un código QR nuevo desde tu TV.",
+    "completeOnPhone": "Completa el inicio de sesión en tu teléfono",
+    "deviceCodeInstruction": "Inicia sesión en tu teléfono o computadora",
+    "phoneConnected": "Teléfono conectado",
+    "qrExpired": "Código QR expirado",
+    "qrSubtitle": "Usa la cámara de tu teléfono",
+    "qrTitle": "Escanear para iniciar sesión",
+    "scanWithPhone": "Escanea con tu teléfono para iniciar sesión",
+    "signedIn": "Inicio de sesión exitoso",
+    "signingIn": "Iniciando sesión...",
+    "waitingForActivation": "Esperando activación...",
+    "title": "Inicio de sesión en TV",
+    "header": "Inicia sesión en tu TV",
+    "subtitle": "Autoriza este dispositivo para acceder a tu cuenta Bayit+",
+    "connected": "Conectado a la TV",
+    "signInToTV": "Iniciar sesión en TV",
+    "pleaseSignIn": "Por favor, inicia sesión para continuar",
+    "signInButton": "Iniciar sesión",
+    "authenticating": "Autenticando...",
+    "almostThere": "Casi listo...",
+    "tvSignedIn": "Tu TV se ha conectado exitosamente",
+    "expired": "Sesión expirada",
+    "expiredMessage": "Este código QR ha expirado. Por favor, genera uno nuevo en tu TV.",
+    "fastestWayToSignIn": "La forma más rápida de iniciar sesión",
+    "scanToContinue": "Escanear para continuar",
+    "allMethodsSupported": "Todos los métodos de inicio de sesión admitidos",
+    "generateNewCode": "Generar nuevo código"
   },
   "video": {
     "watchTrailer": "Ver Tráiler",
@@ -7356,7 +8271,12 @@
       "filmography": "Filmografia",
       "bornIn": "Nacido/a en",
       "featuredActors": "Actores Destacados"
-    }
+    },
+    "allGenres": "Todos los generos",
+    "trending": "Tendencia ahora",
+    "aiCollections": "Colecciones IA",
+    "hebrewDub": "HEB",
+    "aiBadge": "IA"
   },
   "voice": {
     "listening": "Escuchando...",
@@ -7383,7 +8303,58 @@
     },
     "wizardResponse": "Respuesta del asistente",
     "dismissResponse": "Cerrar respuesta de voz",
-    "dismissResponseHint": "Toca para ocultar la respuesta del asistente"
+    "dismissResponseHint": "Toca para ocultar la respuesta del asistente",
+    "appleTVLimitation": "Limitación de Apple TV",
+    "appleTVLimitationDescription": "La detección de palabra de activación requiere acceso continuo al micrófono, que no está disponible en Apple TV. Use el control remoto Siri o los controles en pantalla.",
+    "chooseLanguage": "Elegir idioma",
+    "chooseLanguageDesc": "Seleccione su idioma preferido para comandos de voz.",
+    "closeAssistant": "Cerrar asistente de voz",
+    "controlPlayback": "Controla la reproducción con tu voz",
+    "heyBayit": "Hey Bayit",
+    "high": "Alto",
+    "low": "Bajo",
+    "multipleLanguages": "Varios idiomas",
+    "notAvailableOnAppleTV": "No disponible en Apple TV",
+    "permissionsDesc": "Las funciones de voz necesitan acceso a su micrófono y reconocimiento de voz.",
+    "permissionsRequired": "Permisos requeridos",
+    "realtimeDubbing": "Doblaje en tiempo real",
+    "searchWithVoice": "Buscar con voz",
+    "selectVoice": "Seleccionar voz",
+    "sensitivity": "Sensibilidad",
+    "tapToClose": "Toque fuera o deslice hacia abajo para cerrar",
+    "thinking": "Pensando...",
+    "title": "Asistente de voz",
+    "voiceAssistant": "Asistente de voz",
+    "voiceControl": "Control por voz",
+    "voiceControlDesc": "Controla tu experiencia con la voz. Busca, navega y reproduce contenido sin usar las manos.",
+    "voicesAvailable": "voces disponibles",
+    "wakeWordDescription": "Activa el control por voz diciendo la palabra de activación.",
+    "calibration": {
+      "levelLabel": "Nivel"
+    },
+    "diagnostics": {
+      "micPermission": "Permiso de microfono",
+      "speechRecognition": "Reconocimiento de voz",
+      "currentState": "Estado actual",
+      "transcript": "Transcripcion",
+      "title": "Diagnosticos de voz",
+      "audioSession": "Sesion de audio",
+      "runDiagnostics": "Ejecutar diagnosticos",
+      "copyReport": "Copiar informe"
+    },
+    "stopListening": "Dejar de escuchar",
+    "startListening": "Comenzar a escuchar",
+    "searchPrompt": "Que estas buscando?",
+    "panelTitle": "Asistente de voz",
+    "typeCommand": "Escribe un comando...",
+    "controlExecuted": "Ejecutado: {{action}}",
+    "timerSet": "Temporizador configurado para {{amount}} {{unit}}",
+    "chatPending": "Procesando tu mensaje...",
+    "suggestion": {
+      "watchLive": "Ver TV en vivo",
+      "search": "Buscar contenido",
+      "listenRadio": "Escuchar la radio"
+    }
   },
   "voiceMode": {
     "voiceOnly": "Solo Voz",
@@ -7436,7 +8407,22 @@
       },
       "startUsing": "Comenzar a Usar Control por Voz"
     },
-    "skip": "Omitir por ahora"
+    "skip": "Omitir por ahora",
+    "chooseLanguage": "Elegir idioma",
+    "chooseLanguageDescription": "Seleccione su idioma preferido para funciones de IA.",
+    "featuresDescription": "Haz preguntas, obtén recomendaciones y explora contenido con IA.",
+    "buttons": {
+      "back": "Atras"
+    },
+    "completion": {
+      "message": "Las funciones de voz estan listas.",
+      "title": "Configuracion de voz completada"
+    },
+    "title": "Configuracion de voz",
+    "training": {
+      "message": "Lee las frases en voz alta para entrenar el reconocimiento.",
+      "title": "Entrenamiento de voz"
+    }
   },
   "watch": {
     "notFound": "Contenido no encontrado",
@@ -7551,7 +8537,18 @@
       "speaking": "Hablando",
       "muted": "Silenciado",
       "ready": "Listo"
-    }
+    },
+    "chooseMethod": "Ver juntos",
+    "chooseMethodDescription": "Elige como ver con otros",
+    "cancel": "Cancelar",
+    "createOrJoin": "Crear o unirse",
+    "createParty": "Create Watch Party",
+    "loading": "Loading Watch Parties...",
+    "maxGuests": "Max guests",
+    "myParties": "MY PARTIES",
+    "noParties": "No active watch parties",
+    "subtitle": "Ver juntos con amigos",
+    "type": "Type"
   },
   "playlist": {
     "title": "Mi Lista",
@@ -7622,7 +8619,10 @@
     },
     "loading": "Cargando contenido...",
     "news": "Noticias",
-    "trending": "Tendencias"
+    "trending": "Tendencias",
+    "content": {
+      "allContent": "Todo el contenido"
+    }
   },
   "catchup": {
     "overlay": {
@@ -7653,7 +8653,9 @@
       "close": "Cerrar",
       "cached": "En caché",
       "remaining": "Restante",
-      "window": "Ventana"
+      "window": "Ventana",
+      "loading": "Cargando resumen...",
+      "noContent": "No hay resumen disponible"
     },
     "error": {
       "failed": "No se pudo generar el resumen",
@@ -7728,8 +8730,31 @@
       "upgrade": "Mejorar",
       "upgradeAction": "Acción de mejora",
       "warningCritical": "Advertencia crítica",
-      "warningLow": "Advertencia de saldo bajo"
-    }
+      "warningLow": "Advertencia de saldo bajo",
+      "insufficient": {
+        "title": "Créditos insuficientes",
+        "message": "No tienes suficientes creditos para esta funcion"
+      }
+    },
+    "beta500": "Beta 500",
+    "creditsExplanation": "Los créditos se usan para funciones de IA como búsqueda, recomendaciones y doblaje.",
+    "criticalMessage": "Tus créditos están casi agotados. Actualiza para continuar.",
+    "criticalTitle": "Créditos críticos",
+    "current": "Actual",
+    "deficit": "Déficit",
+    "insufficientTitle": "Créditos insuficientes",
+    "lowMessage": "Te quedan pocos créditos. Considera actualizar tu plan.",
+    "lowTitle": "Créditos bajos",
+    "remaining": "restantes",
+    "required": "Requerido",
+    "upgrade": "Actualizar",
+    "upgradeMessage": "Actualiza a Plus para créditos ilimitados.",
+    "upgradeTitle": "Actualizar a Plus",
+    "usage": "Uso",
+    "creditsLabel": "Créditos",
+    "getPlusTitle": "Obtener Bayit+ Plus",
+    "getPlusMessage": "Créditos AI ilimitados desde",
+    "getPlusButton": "Obtener Plus"
   },
   "cancelled": {
     "description": "Tu pago ha sido cancelado.",
@@ -8055,7 +9080,8 @@
     "signInWithEmail": "Iniciar sesion con Email",
     "signingIn": "Iniciando sesion...",
     "email": "Correo",
-    "password": "Contrasena"
+    "password": "Contrasena",
+    "signOut": "Cerrar sesion"
   },
   "email": {
     "greeting": "Hola",
@@ -8434,7 +9460,8 @@
     "liveChat": "Chat en vivo",
     "chatPlaceholder": "Di algo...",
     "chatRequiresConnection": "El chat requiere una conexión activa",
-    "connectionFailed": "No se puede conectar al chat"
+    "connectionFailed": "No se puede conectar al chat",
+    "sendMessage": "Enviar un mensaje..."
   },
   "avatar": {
     "dialogue": {
@@ -8651,7 +9678,50 @@
       "listeningLabel": "Olorin está escuchando",
       "processingLabel": "Olorin está procesando",
       "focusHint": "Pulse seleccionar para interactuar con el mago"
-    }
+    },
+    "selfie": {
+      "title": "Grabar Video Selfie",
+      "instructions": "Mira a la camara y gira la cabeza lentamente a la izquierda y a la derecha. Esto nos ayuda a crear tu avatar 3D.",
+      "recording": "Grabando...",
+      "maxDuration": "Maximo 10 segundos",
+      "uploadFromLibrary": "Subir de la Biblioteca",
+      "dropHint": "O arrastra y suelta un archivo de video aqui"
+    },
+    "processing": {
+      "uploading": "Subiendo Video",
+      "uploadingDesc": "Tu video selfie se esta subiendo y tu avatar 3D se generara en breve.",
+      "retryUpload": "Reintentar"
+    },
+    "settings": {
+      "title": "Configuracion de Avatar",
+      "meshStatus": "Estado del Modelo 3D",
+      "reRecord": "Volver a grabar video selfie",
+      "delete": "Eliminar Avatar",
+      "deleting": "Eliminando...",
+      "deleteConfirmTitle": "Eliminar Avatar?",
+      "deleteConfirm": "Eliminar",
+      "deleteConfirmDesc": "Esto eliminara permanentemente el avatar y todos los datos asociados. Esta accion no se puede deshacer.",
+      "statusReady": "Listo",
+      "statusGenerating": "Generando...",
+      "statusRigging": "Agregando animaciones...",
+      "statusPending": "Pendiente",
+      "statusFailed": "Fallido",
+      "statusUnknown": "Desconocido"
+    },
+    "askPlaceholder": "Pregúntame lo que sea...",
+    "choose": "Elegir avatar",
+    "dynamic": "Dinámico",
+    "gradient": "Gradiente",
+    "mode": "Modo avatar",
+    "photo": "Foto",
+    "photoUploadSoon": "Subida de fotos disponible pronto",
+    "preferences": "Preferencias de avatar",
+    "save": "Guardar avatar",
+    "subtle": "Sutil",
+    "type": "Tipo de avatar",
+    "useIosOrWeb": "Use la aplicación iOS o web para subir un avatar personalizado",
+    "tapToSpeak": "Toca para hablar",
+    "title": "Avatar"
   },
   "quiz": {
     "title": "Hora del Cuestionario",
@@ -8678,7 +9748,8 @@
     "timeBonus": "Bonificacion por Tiempo",
     "streakBonus": "Bonificacion por Racha",
     "newBadge": "Nueva Insignia",
-    "totalScore": "Puntuacion Total"
+    "totalScore": "Puntuacion Total",
+    "complete": "Cuestionario completado"
   },
   "rewards": {
     "title": "Mis Recompensas",
@@ -8713,7 +9784,9 @@
       "streak_3": "En Llamas",
       "streak_7": "Guerrero de la Semana",
       "streak_30": "Maestro Mensual"
-    }
+    },
+    "streak": "Racha",
+    "loading": "Cargando recompensas..."
   },
   "household": {
     "title": "Gestión del hogar",
@@ -8760,7 +9833,24 @@
     "loadingHousehold": "Cargando hogar...",
     "loading": "Cargando hogar...",
     "memberCountDisplay": "{{current}} / {{max}} Miembros",
-    "myHousehold": "Mi Hogar"
+    "myHousehold": "Mi Hogar",
+    "invitationSent": "Invitacion enviada con exito!",
+    "addButton": "Agregar",
+    "addMember": "Agregar miembro",
+    "membersTitle": "Miembros",
+    "unknown": "Desconocido",
+    "userIdPlaceholder": "Ingresa email o ID",
+    "createTitle": "Crear hogar",
+    "empty": {
+      "title": "Sin hogar aún",
+      "subtitle": "Crea un hogar para gestionar tu familia"
+    },
+    "invite": {
+      "title": "Invitar miembros",
+      "emailPlaceholder": "Correo electrónico",
+      "send": "Enviar invitación",
+      "pending": "Invitaciones pendientes"
+    }
   },
   "profileControls": {
     "title": "Controles familiares del perfil",
@@ -8972,7 +10062,17 @@
       "unmute": "Activar sonido",
       "close": "Cerrar",
       "subtitles": "Subtítulos",
-      "playbackSpeed": "Velocidad de reproducción"
+      "playbackSpeed": "Velocidad de reproducción",
+      "qualitySettings": "Ajustes de calidad",
+      "dismiss": "Cerrar",
+      "dismissPlayer": "Cerrar reproductor",
+      "loadingMedia": "Cargando media",
+      "speedNormal": "Normal",
+      "recordingError": "Error de grabacion",
+      "startRecording": "Iniciar grabacion",
+      "stopRecording": "Detener grabacion",
+      "premiumRequired": "Se requiere suscripcion Plus",
+      "recordingLiveOnly": "La grabacion solo esta disponible para canales en vivo"
     },
     "aiSearch": {
       "title": "Busqueda IA",
@@ -8989,7 +10089,10 @@
       "filterRadio": "Radio",
       "filterPodcasts": "Pódcasts",
       "enrollRequired": "Se requiere inscripcion en Beta 500",
-      "enrollDescription": "Unete al programa Beta 500 para acceder a la busqueda con IA"
+      "enrollDescription": "Unete al programa Beta 500 para acceder a la busqueda con IA",
+      "hint": "Intente preguntar sobre temas, actores o géneros",
+      "placeholder": "Pregunta lo que sea sobre nuestro contenido...",
+      "trySuggestion": "Intente preguntar:"
     },
     "aiRecommendations": {
       "title": "Recomendaciones IA",
@@ -9020,7 +10123,8 @@
       "noContent": "No hay contenido disponible",
       "seeAll": "Ver todo",
       "retry": "Reintentar",
-      "back": "Volver"
+      "back": "Volver",
+      "tryAgain": "Intentar de Nuevo"
     },
     "auth": {
       "welcomeBack": "Bienvenido de Nuevo",
@@ -9060,7 +10164,26 @@
     },
     "tapToClaim": "TOCA PARA RECLAMAR",
     "shekels": "Shekels",
-    "loading": "Cargando misiones..."
+    "loading": "Cargando misiones...",
+    "claim": "Reclamar",
+    "shekelsAvailable": "Shekels disponibles",
+    "shop": {
+      "title": "Tienda de Cupones",
+      "loading": "Cargando Cupones...",
+      "redeem": "Canjear",
+      "redeemed": "Canjeado Exitosamente",
+      "redemptionCode": "Codigo de Canje",
+      "insufficientFunds": "No hay suficientes Shekels"
+    },
+    "wallet": {
+      "title": "Billetera de Shekels",
+      "loading": "Cargando Billetera...",
+      "totalEarned": "Total Ganado",
+      "totalSpent": "Total Gastado",
+      "recentTransactions": "Transacciones Recientes",
+      "noTransactions": "Sin transacciones aun"
+    },
+    "dayStreak": "racha de {{count}} días"
   },
   "shekels": {
     "title": "Shekels",
@@ -9087,7 +10210,10 @@
       "monthly": "Mensual",
       "allTime": "Historico"
     },
-    "empty": "Sin entradas aun"
+    "empty": "Sin entradas aun",
+    "loading": "Cargando tabla de clasificación...",
+    "myRank": "Mi rango",
+    "you": "YOU"
   },
   "talkBack": {
     "title": "Habla de Vuelta",
@@ -9118,7 +10244,12 @@
     "dashboard": {
       "title": "Panel de Habla de Vuelta",
       "engagement": "Participacion",
-      "progress": "Progreso"
+      "progress": "Progreso",
+      "accuracy": "Precisión",
+      "attempts": "Intentos",
+      "hebrewRate": "Tasa de hebreo",
+      "recentAttempts": "Intentos recientes",
+      "shekels": "Shekels ganados"
     }
   },
   "bilingual": {
@@ -9142,7 +10273,8 @@
       "known": "Palabras Conocidas",
       "learning": "Aprendiendo",
       "mastered": "Dominadas"
-    }
+    },
+    "words": "palabras"
   },
   "starStory": {
     "title": "Estrella en la Historia",
@@ -9191,7 +10323,36 @@
     "characters": "Personajes",
     "loading": "Cargando historias...",
     "noEpisodes": "Sin episodios aun",
-    "createEpisodesHint": "Crea episodios en tu dispositivo movil para verlos aqui"
+    "createEpisodesHint": "Crea episodios en tu dispositivo movil para verlos aqui",
+    "createAvatar": "Crear avatar",
+    "consentTitle": "Consentimiento parental",
+    "consentBody": "Necesitamos tu permiso para crear un avatar personalizado para tu hijo. El avatar se usara en cuentos interactivos de aprendizaje de hebreo.",
+    "childNameLabel": "Nombre del nino",
+    "familyPinLabel": "PIN familiar",
+    "consentCheckbox": "Doy mi consentimiento para crear un avatar personalizado para mi hijo",
+    "selectPhoto": "Elegir una foto",
+    "photoHint": "Una foto clara de frente funciona mejor",
+    "chooseStyle": "Elegir un estilo",
+    "generateAvatar": "Crear avatar",
+    "createEpisode": "Crear un episodio",
+    "createEpisodeSubtitle": "Elige un tema y genera un cuento personalizado",
+    "selectTheme": "Seleccionar un tema",
+    "vocabulary": "Vocabulario",
+    "vocabularyHint": "Las palabras se integraran naturalmente en el cuento",
+    "creditCost": "1 credito",
+    "creditInfo": "Cada episodio usa 1 credito de Beta 500",
+    "generate": "Generar episodio",
+    "generatingEpisode": "Generando tu episodio...",
+    "generationFailed": "La generacion fallo",
+    "generationEstimate": "Esto generalmente toma unos minutos",
+    "theme": {
+      "adventure": "Aventura",
+      "friendship": "Amistad",
+      "nature": "Naturaleza",
+      "holiday": "Festividad",
+      "family": "Familia",
+      "school": "Escuela"
+    }
   },
   "glossary": {
     "title": "Glosario",
@@ -9205,7 +10366,8 @@
       "example": "Ejemplo",
       "funFact": "Dato Curioso",
       "transliteration": "Transliteracion"
-    }
+    },
+    "funFact": "Dato curioso"
   },
   "culturalContext": {
     "title": "Contexto Cultural",
@@ -9228,7 +10390,8 @@
       "usage": "Uso Comun",
       "funFact": "Dato Curioso"
     },
-    "funFact": "Dato curioso"
+    "funFact": "Dato curioso",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "Mision Interactiva",
@@ -9361,7 +10524,26 @@
       "medium": "Medio",
       "hard": "Dificil",
       "fromVocabulary": "De tu vocabulario"
-    }
+    },
+    "errors": {
+      "audioSession": "Error al configurar la sesión de audio",
+      "recording": "Error al iniciar la grabación",
+      "noPhrase": "Ninguna frase seleccionada",
+      "audioEngine": "El motor de audio no se pudo iniciar",
+      "speechUnavailable": "Reconocimiento de voz no disponible"
+    },
+    "issues": {
+      "stressWrong": "Colocación del acento",
+      "vowelSwap": "Sustitución de vocales",
+      "consonantSwap": "Confusión de consonantes",
+      "missingSound": "Sonido faltante",
+      "extraSound": "Sonido extra"
+    },
+    "loading": "Cargando frases...",
+    "analyzing": "Analizando pronunciación...",
+    "pressToSpeak": "Presione para hablar",
+    "stopRecording": "Detener grabación",
+    "listenCorrect": "Escuche la pronunciación correcta"
   },
   "voiceDecision": {
     "title": "Desafio de voz",
@@ -9377,7 +10559,10 @@
     "pronunciationScore": "Pronunciacion: {{score}}%",
     "attempt": "Intento {{current}} de {{max}}",
     "listenHint": "Escuchar pronunciacion correcta",
-    "holdToSpeak": "Mantener presionado para hablar"
+    "holdToSpeak": "Mantener presionado para hablar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "matched": "Coincidencia"
   },
   "gamification": {
     "title": "Mi progreso",
@@ -9420,7 +10605,17 @@
       "title": "Panel de misiones",
       "recentActivity": "Actividad reciente",
       "progress": "Progreso"
-    }
+    },
+    "awesome": "Increible!",
+    "activity": "Actividad",
+    "claim": "Reclamar",
+    "maxLevel": "Nivel máximo",
+    "mirrorSessions": "Sesiones espejo",
+    "missionsCompleted": "Misiones completadas",
+    "noPerksYet": "Aún no se han desbloqueado beneficios",
+    "talkBackAttempts": "Intentos de TalkBack",
+    "totalXP": "XP total",
+    "unlockedPerks": "Beneficios desbloqueados"
   },
   "grandparentBridge": {
     "title": "Puente de abuelos",
@@ -9472,6 +10667,9 @@
       "transferring": "Aplicando estilo al avatar",
       "validating": "Validando consistencia",
       "complete": "Transferencia de estilo completa"
+    },
+    "errors": {
+      "unavailable": "Coincidencia de estilo no disponible"
     }
   },
   "zehAni": {
@@ -9482,7 +10680,12 @@
       "charactersSection": "Personajes",
       "questionsSection": "Preguntas",
       "empty": "No hay peliculas interactivas disponibles aun",
-      "characterCount": "{{count}} personajes"
+      "characterCount": "{{count}} personajes",
+      "selectCharacter": "Selecciona un personaje para interactuar",
+      "quotaLabel": "Interacciones restantes",
+      "generationTitle": "Generando interaccion...",
+      "selectedCount": "{{count}} seleccionados",
+      "confirmButton": "Confirmar"
     },
     "dialogue": {
       "specificQuestions": "Preguntas del personaje",
@@ -9507,7 +10710,10 @@
       "feedback": "Comentarios",
       "feedbackDesc": "Mensajes de familia y amigos",
       "chess": "Ajedrez",
-      "chessDesc": "Juega al ajedrez con familia y amigos"
+      "chessDesc": "Juega al ajedrez con familia y amigos",
+      "title": "Yo en la historia",
+      "consent": "Se requiere consentimiento",
+      "consentDesc": "Habilita funciones biometricas para personalizar tu experiencia"
     },
     "contacts": {
       "title": "Contactos",
@@ -9516,7 +10722,13 @@
       "noContacts": "Aun no hay contactos",
       "noMatchingContacts": "No hay contactos coincidentes",
       "reelsShared": "{{count}} reels compartidos",
-      "remove": "Eliminar"
+      "remove": "Eliminar",
+      "add": "Agregar contacto",
+      "empty": "Aun no hay contactos",
+      "delete": "Eliminar contacto",
+      "name": "Nombre para mostrar",
+      "phone": "Numero de telefono",
+      "pin": "PIN"
     },
     "feedback": {
       "title": "Comentarios",
@@ -9526,7 +10738,11 @@
       "submit": "Enviar Comentarios",
       "thankYou": "Gracias por tus comentarios!",
       "appreciateInput": "Valoramos tu opinion y la usaremos para mejorar.",
-      "sendMore": "Enviar Mas Comentarios"
+      "sendMore": "Enviar Mas Comentarios",
+      "empty": "Aun no hay comentarios",
+      "from": "De",
+      "voiceMessage": "Mensaje de voz",
+      "textMessage": "Mensaje de texto"
     },
     "consent": {
       "title": "Consentimiento Biometrico",
@@ -9536,7 +10752,23 @@
       "active": "Activo",
       "notGranted": "No otorgado",
       "grant": "Otorgar",
-      "granted": "Otorgado"
+      "granted": "Otorgado",
+      "biometric": {
+        "explanation": "Bayit+ utiliza datos biometricos para funciones personalizadas de avatar y voz.",
+        "privacy": "Tus datos biometricos estan encriptados y nunca se comparten con terceros.",
+        "pinLabel": "PIN",
+        "pinPlaceholder": "Ingresa tu PIN",
+        "consentTypes": "Consiento lo siguiente",
+        "meshGeneration": "Generacion de malla 3D",
+        "voiceV2V": "Practica de voz a voz",
+        "latentFeatures": "Personalizacion de funciones IA",
+        "currentStatus": "Estado de consentimiento actual",
+        "submit": "Otorgar consentimiento",
+        "title": "Consentimiento biometrico",
+        "familyControlsRequired": "Se requieren controles familiares",
+        "familyControlsExplain": "Un padre o tutor debe aprobar las funciones biometricas para este perfil.",
+        "goToFamilyControls": "Ir a controles familiares"
+      }
     },
     "highlights": {
       "title": "Destacados",
@@ -9545,9 +10777,187 @@
       "generateReel": "Generar Nuevo Reel",
       "noHighlights": "Aun no hay destacados",
       "momentsCount": "{{count}} momentos",
-      "sendToFamily": "Enviar a Familia"
+      "sendToFamily": "Enviar a Familia",
+      "generate": "Generar carrete de momentos destacados",
+      "empty": "Aun no hay momentos destacados",
+      "share": "Compartir",
+      "generating": "Generando momentos destacados..."
     },
-    "title": "Zeh Ani"
+    "title": "Zeh Ani",
+    "arCapture": {
+      "processing": "Procesando..."
+    },
+    "preview": {
+      "title": "Vista previa 3D",
+      "loading": "Cargando tu avatar...",
+      "error": "No se pudo cargar la vista previa 3D"
+    },
+    "magicMirror": {
+      "vocabOfDay": "Palabra del dia",
+      "noAvatar": "Sin avatar",
+      "noAvatarDesc": "Crea tu avatar 3D para desbloquear Espejo Magico",
+      "createAvatar": "Crear avatar",
+      "noCreditsTitle": "Sin creditos",
+      "noCreditsDesc": "Necesitas creditos Beta para usar Espejo Magico",
+      "playGreeting": "Reproducir saludo",
+      "refresh": "Actualizar",
+      "meshUnavailable": "Malla 3D no disponible"
+    },
+    "mesh": {
+      "title": "Generar malla 3D",
+      "viewPreview": "Ver vista previa",
+      "statusIdle": "Listo",
+      "statusGenerating": "Generando...",
+      "statusReady": "Completado",
+      "statusFailed": "Fallido",
+      "meshViewer": "Visor de malla 3D",
+      "meshViewerDescription": "El visor de malla 3D requiere integración con WebView o GLSurfaceView",
+      "skinTone": "Tono de piel",
+      "hairStyle": "Peinado",
+      "accessories": "Accesorios",
+      "saveChanges": "Guardar cambios"
+    },
+    "movieCharacters": {
+      "title": "Personajes",
+      "empty": "No hay personajes disponibles"
+    },
+    "trigger": {
+      "prompt": "Di la frase",
+      "dismiss": "Descartar",
+      "success": "Excelente!",
+      "continue": "Continuar",
+      "incorrect": "No del todo",
+      "correct": "Respuesta correcta",
+      "tryAgain": "Intentar de nuevo",
+      "skip": "Omitir",
+      "errors": {
+        "microphoneFailed": "Error de acceso al microfono"
+      }
+    },
+    "v2v": {
+      "transforming": "Transformando voz...",
+      "latency": "Latencia",
+      "retry": "Reintentar",
+      "nextPhrase": "Siguiente frase",
+      "beforeAfter": "Antes / After",
+      "before": "Antes",
+      "after": "Despues",
+      "improvement": "Mejora",
+      "title": "Práctica de voz",
+      "stop": "Detener",
+      "record": "Grabar",
+      "mic": "MIC",
+      "viewProgress": "Ver progreso",
+      "analyzingPronunciation": "Analizando pronunciación...",
+      "pronunciationFeedback": "Retroalimentación de pronunciación",
+      "similarity": "Similitud: {{score}}%",
+      "yourProgress": "Tu progreso",
+      "transforms": "Transformaciones: {{count}}",
+      "continuePracticing": "Seguir practicando"
+    },
+    "avatar3d": {
+      "title": "Avatar 3D",
+      "errorTitle": "Error de avatar",
+      "glbMeshViewer": "Visor de malla GLB",
+      "controls": "Controles",
+      "animate": "Animar",
+      "vertices": "Vértices",
+      "bones": "Huesos",
+      "blendShapes": "Formas de mezcla",
+      "hasGlb": "Tiene GLB",
+      "status": "Estado: {{value}}"
+    },
+    "dashboard": {
+      "title": "Zeh Ani",
+      "biometricConsent": "Consentimiento biométrico",
+      "activeConsents": "{{count}} consentimientos activos",
+      "magicMirror": "Espejo mágico",
+      "magicMirrorDescription": "Saludos diarios e identificación facial",
+      "v2vPractice": "Práctica V2V",
+      "v2vPracticeDescription": "Pronunciación de voz a voz",
+      "avatar3d": "Avatar 3D",
+      "avatar3dDescription": "Tu malla de avatar personalizada",
+      "movieInteractions": "Interacciones con películas",
+      "movieInteractionsDescription": "Explora y habla con personajes de películas",
+      "contacts": "Contactos",
+      "contactsDescription": "Compartir contactos por WhatsApp",
+      "feedback": "Comentarios",
+      "feedbackDescription": "Comparte tu experiencia",
+      "consent": "Consentimiento",
+      "consentDescription": "Gestión del consentimiento biométrico",
+      "chess": "Ajedrez",
+      "chessDescription": "Juega ajedrez con amigos y familia"
+    },
+    "mirror": {
+      "title": "Espejo mágico",
+      "avatarContentDescription": "Avatar",
+      "wordOfTheDay": "Palabra del día",
+      "playLipsync": "Reproducir sincronización labial",
+      "noAvatarYet": "Aún no hay avatar",
+      "noAvatarDescription": "Crea un avatar 3D para verte en la historia",
+      "createAvatar": "Crear avatar"
+    },
+    "mode": {
+      "title": "Modo avatar",
+      "enableAvatarMode": "Habilitar modo avatar",
+      "enableDescription": "Muestra tu avatar reaccionando al contenido",
+      "avatarPreview": "Vista previa del avatar",
+      "avatarPreviewContentDescription": "Vista previa del avatar",
+      "noAvatarConfigured": "No se configuró un avatar",
+      "reactionStyle": "Estilo de reacción"
+    },
+    "wardrobe": {
+      "title": "Guardarropa",
+      "equippedContentDescription": "Equipado"
+    },
+    "settings": {
+      "title": "Configuración del avatar",
+      "privacy": "Privacidad",
+      "privateAvatarMode": "Modo avatar privado",
+      "privateAvatarDescription": "Oculta tu avatar de otros usuarios",
+      "appearance": "Apariencia",
+      "enableAnimations": "Habilitar animaciones",
+      "animationsDescription": "Animar movimientos y expresiones del avatar",
+      "availableOutfits": "Atuendos disponibles"
+    },
+    "selfie": {
+      "title": "Selfie de video",
+      "camera": "Cámara",
+      "cameraPreview": "Vista previa de cámara",
+      "startRecording": "Iniciar grabación",
+      "stopRecording": "Detener grabación",
+      "rec": "REC",
+      "enterPin": "Ingresa tu PIN para crear un avatar",
+      "pinLabel": "PIN",
+      "retake": "Volver a tomar",
+      "creatingAvatar": "Creando tu avatar...",
+      "avatarCreated": "Avatar creado exitosamente",
+      "avatarPreviewContentDescription": "Vista previa del avatar",
+      "createAnother": "Crear otro"
+    },
+    "characters": {
+      "title": "Personajes",
+      "noCharactersFound": "No se encontraron personajes para esta película",
+      "characterCount": "{{count}} personajes"
+    },
+    "interactions": {
+      "title": "Interacciones con películas",
+      "noInteractableMovies": "No hay películas interactivas disponibles"
+    },
+    "feedbackInbox": {
+      "title": "Bandeja de comentarios",
+      "refreshContentDescription": "Actualizar",
+      "noFeedbackYet": "Aún no hay comentarios",
+      "feedbackAppearHere": "Los comentarios de tus contactos aparecerán aquí",
+      "playVoiceMessage": "Reproducir mensaje de voz"
+    },
+    "addContact": {
+      "title": "Agregar contacto",
+      "nameLabel": "Nombre",
+      "phoneLabel": "Teléfono",
+      "relationship": "Relación",
+      "language": "Idioma"
+    }
   },
   "security": {
     "mfa": {
@@ -9584,7 +10994,15 @@
       "empty": "No hay dispositivos vinculados.\nVincula tu primer dispositivo!",
       "lastActiveNa": "Ultima actividad: N/D",
       "remove": "Eliminar"
-    }
+    },
+    "changePassword": "Cambiar contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "current": "Actual",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "noDevices": "Sin dispositivos encontrados",
+    "unknownDevice": "Dispositivo desconocido",
+    "updatePassword": "Actualizar contraseña"
   },
   "social": {
     "watchParty": {
@@ -9620,14 +11038,49 @@
   "culture": {
     "glossary": {
       "title": "Glosario",
-      "searchPlaceholder": "Buscar terminos..."
+      "searchPlaceholder": "Buscar terminos...",
+      "termDetail": "Detalle del término",
+      "definition": "Definición",
+      "pronunciation": "Pronunciación",
+      "examples": "Ejemplos"
     },
     "shabbat": {
       "shabbatShalom": "Shabbat Shalom",
       "modeActivated": "El modo Shabbat ha sido activado",
       "shavuaTov": "Shavua Tov",
       "modeDeactivated": "El modo Shabbat ha sido desactivado",
-      "channelName": "Modo Shabbat"
+      "channelName": "Modo Shabbat",
+      "title": "Modo Shabat",
+      "enableShabbatMode": "Habilitar modo Shabat",
+      "shabbatTimes": "Horarios de Shabat",
+      "timesDescription": "Los horarios de encendido de velas y Havdalá se mostrarán aquí",
+      "aboutTitle": "Acerca del modo Shabat",
+      "aboutDescription": "Cuando está habilitado, el modo Shabat pausará las notificaciones, reducirá el brillo de la pantalla y habilitará una interfaz simplificada durante las horas de Shabat."
+    },
+    "title": "Cultura israelí",
+    "description": "Jerusalén, Tel Aviv y herencia israelí",
+    "judaism": {
+      "holidaysAndTorah": "Festividades y Torá",
+      "parashaOfTheWeek": "Parashá de la semana",
+      "parashaDescription": "Lectura semanal de la Torá y comentario"
+    },
+    "morning": {
+      "title": "Ritual matutino",
+      "description": "Comienza tu día con intención y gratitud",
+      "dailyInspiration": "Inspiración diaria",
+      "dailyInspirationDescription": "Contenido seleccionado para tu rutina matutina",
+      "modehAni": "Modé Aní",
+      "modehAniDescription": "Oración de gratitud matutina",
+      "netilatYadayim": "Netilat Yadayim",
+      "netilatYadayimDescription": "Lavado ritual de manos",
+      "shacharit": "Shajarit",
+      "shacharitDescription": "Servicio de oración matutina"
+    },
+    "jerusalem": {
+      "title": "Jerusalén"
+    },
+    "telaviv": {
+      "title": "Tel Aviv"
     }
   },
   "byoc": {
@@ -9654,7 +11107,187 @@
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
     },
-    "plexLinkUrl": "plex.tv/link"
+    "plexLinkUrl": "plex.tv/link",
+    "yourChannels": "Tus Canales",
+    "iptv": "IPTV",
+    "youtube": "YouTube",
+    "addIPTV": "Agregar IPTV",
+    "addPlex": "Agregar Plex",
+    "addYouTube": "Agregar YouTube",
+    "playlistURL": "URL de Lista",
+    "playlistName": "Nombre de Lista",
+    "noChannels": "No se encontraron canales",
+    "refreshing": "Actualizando...",
+    "sourceAdded": "Fuente Agregada",
+    "sourceRemoved": "Fuente eliminada",
+    "connectedSources": "Fuentes Conectadas",
+    "aiAvailable": "IA Disponible",
+    "audioAIOnly": "Solo Audio IA",
+    "aiDubbing": "Doblaje IA",
+    "aiSubtitles": "Subtitulos IA",
+    "connectContent": "Conectar Contenido",
+    "connectContentDesc": "Agrega tus fuentes de IPTV, Plex o YouTube",
+    "removeSource": "Eliminar Fuente",
+    "removeConfirm": "Estas seguro de que deseas eliminar esta fuente?",
+    "channelCount": "%d canales",
+    "fromPlex": "Desde Plex",
+    "enterURL": "Ingresa URL de lista o archivo",
+    "validating": "Validando...",
+    "invalidURL": "Por favor ingresa una URL valida",
+    "fetchFailed": "Error al obtener la lista",
+    "plexVisitLink": "Visita plex.tv/link e ingresa el codigo",
+    "plexEnterCode": "Ingresa el codigo mostrado arriba",
+    "plexWaiting": "Esperando autorizacion de Plex...",
+    "plexRequestingPin": "Solicitando PIN de Plex...",
+    "plexSelectServer": "Seleccionar Servidor",
+    "plexSelectServerDesc": "Elige que servidor Plex conectar",
+    "plexDiscovering": "Descubriendo servidores...",
+    "plexNoServers": "No se encontraron servidores Plex",
+    "plexLocal": "Local",
+    "plexRemote": "Remoto",
+    "plexItemCount": "%d elementos de Plex",
+    "plexConnectDesc": "Conecta tu Plex Media Server",
+    "youtubeVisitLink": "Visita el enlace de abajo e ingresa el codigo",
+    "youtubeEnterCode": "Ingresa el codigo mostrado arriba",
+    "youtubeWaiting": "Esperando autorizacion...",
+    "youtubeRequestingCode": "Solicitando codigo de dispositivo...",
+    "youtubeConnected": "YouTube Conectado",
+    "youtubeVideoCount": "videos encontrados",
+    "youtubeOpenApp": "Abrir en YouTube",
+    "youtubeAudioAINote": "Funciones de audio IA disponibles para contenido de YouTube",
+    "fromYouTube": "Desde YouTube",
+    "youtubeConnectDesc": "Conecta tu cuenta de YouTube",
+    "bannerTitle": "Trae Tu Propio Contenido",
+    "bannerSubtitle": "Conecta tus fuentes de streaming para una experiencia mejorada con IA",
+    "bannerConnect": "Conectar",
+    "bannerDismiss": "Descartar",
+    "itemsLoaded": "elementos cargados",
+    "enriching": "Enriqueciendo...",
+    "findingSubtitles": "Buscando subtitulos...",
+    "subtitlesFound": "Subtítulos encontrados",
+    "noSubtitlesFound": "No se encontraron subtítulos",
+    "subtitlesReady": "Subtitulos listos",
+    "subtitlesAttached": "Subtitulos {{languages}} adjuntados",
+    "interactionMoments": "Momentos Interactivos",
+    "interactionMomentsDescription": "La IA detectara momentos clave para interacciones con personajes",
+    "enrichmentFailed": "Enriquecimiento fallido",
+    "browsePlexLibrary": "Explorar Biblioteca de Plex",
+    "addXtream": "Xtream Codes",
+    "xtreamServer": "URL del Servidor",
+    "xtreamUsername": "Usuario",
+    "xtreamPassword": "Contrasena",
+    "xtreamConnectDesc": "Conectar proveedor de Xtream Codes",
+    "xtreamAuthFailed": "Error de autenticacion",
+    "sourceName": "Nombre de Fuente",
+    "selectProvider": "Seleccionar Proveedor",
+    "manualEntry": "Entrada Manual",
+    "onboarding.title": "Configuracion de Contenido",
+    "onboarding.connectSource": "Conectar una Fuente",
+    "onboarding.connectDesc": "Agrega tu primera fuente de contenido para comenzar",
+    "onboarding.sourceAdded": "Fuente Agregada",
+    "onboarding.analyzing": "Analizando contenido...",
+    "onboarding.analyze": "Analizar Contenido",
+    "onboarding.analysisComplete": "Analisis Completo",
+    "onboarding.channelsIdentified": "Canales identificados",
+    "onboarding.vodMatched": "VOD coincidente",
+    "onboarding.duplicatesFound": "Duplicados encontrados",
+    "onboarding.streamsHealthy": "Transmisiones saludables",
+    "onboarding.languages": "Idiomas",
+    "onboarding.topCategories": "Categorias Principales",
+    "onboarding.cleanupTitle": "Limpieza de Contenido",
+    "onboarding.autoBestQuality": "Seleccionar mejor calidad automaticamente",
+    "onboarding.autoBestQualityDesc": "Elegir automaticamente la transmision de mayor calidad para cada canal",
+    "onboarding.applyCleanup": "Aplicar Limpieza",
+    "onboarding.personalizeTitle": "Personalizar",
+    "onboarding.personalizeDesc": "Elige tus preferencias para la pantalla de inicio",
+    "onboarding.languagePriority": "Prioridad de Idioma",
+    "onboarding.homeCategories": "Categorias de Inicio",
+    "onboarding.ready": "Listo",
+    "home.title": "Trae Tu Propio Contenido",
+    "home.subtitle": "Conecta tus fuentes de IPTV, Plex, YouTube o Xtream",
+    "home.connectButton": "Conectar Fuentes",
+    "home.aiFeatures.dubbing": "Doblaje IA",
+    "home.aiFeatures.subtitles": "Subtitulos IA",
+    "tapToOpen": "Toca para abrir",
+    "aiTrivia": "Trivia IA",
+    "ai.dubbing": "Doblaje IA",
+    "ai.subtitles": "Subtitulos IA",
+    "ai.trivia": "Trivia IA",
+    "ai.audioOverlay": "Superposicion de Audio",
+    "feedCount": "{{count}} fuentes",
+    "home": {
+      "title": "Trae tu propio contenido",
+      "subtitle": "Conecta tus fuentes IPTV, Plex o YouTube y disfruta de las funciones de IA de Bayit+ en tu propio contenido",
+      "connectButton": "Conectar fuentes",
+      "aiFeatures": {
+        "dubbing": "Doblaje IA disponible",
+        "subtitles": "Subtitulos en vivo disponibles"
+      }
+    },
+    "pageSubtitle": "Trae tu propio contenido - añade fuentes IPTV y de streaming",
+    "addSource": "Agregar fuente",
+    "sync": "Sincronizar",
+    "remove": "Eliminar",
+    "empty": {
+      "title": "No se han añadido fuentes",
+      "subtitle": "Añade tus fuentes IPTV, Xtream o de streaming para ver tu propio contenido junto a Bayit+"
+    },
+    "source": {
+      "iptv": "Fuente IPTV",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "Agregar fuente IPTV",
+      "subtitle": "Introduce una URL a un archivo de lista de reproducción M3U o M3U8",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "Validar",
+      "add": "Agregar fuente"
+    },
+    "preview": {
+      "title": "Vista previa",
+      "channelCount": "{{count}} canales encontrados"
+    },
+    "providers": {
+      "title": "Proveedores populares"
+    },
+    "wizard": {
+      "step1": "Agregar fuente",
+      "step2": "Procesando",
+      "step3": "Revisión",
+      "selectSource": "Seleccionar tipo de fuente"
+    },
+    "normalization": {
+      "title": "Procesando tu contenido",
+      "total": "{{count}} canales en total",
+      "matched": "{{count}} coincidencias",
+      "stage": {
+        "parsing": "Analizando lista de reproducción...",
+        "matching": "Buscando coincidencias de canales...",
+        "enriching": "Enriqueciendo metadatos...",
+        "finalizing": "Finalizando..."
+      }
+    },
+    "review": {
+      "title": "Revisar contenido importado",
+      "subtitle": "{{matched}} coincidencias, {{unmatched}} canales sin coincidencia",
+      "matchedChannels": "Canales coincidentes",
+      "unmatchedChannels": "Canales sin coincidencia",
+      "apply": "Aplicar e importar"
+    },
+    "error": {
+      "urlRequired": "Por favor, introduce una URL",
+      "noChannels": "No se encontraron canales en esta lista de reproducción",
+      "invalidUrl": "No se pudo cargar la lista de reproducción desde esta URL",
+      "allFieldsRequired": "Todos los campos son obligatorios",
+      "enrichFailed": "Error al analizar la fuente",
+      "syncFailed": "Error al sincronizar la fuente",
+      "normalizationFailed": "El procesamiento del contenido falló",
+      "normalizationPollFailed": "Se perdió la conexión durante el procesamiento"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, abrir perfil",
@@ -9856,6 +11489,843 @@
     "title": "Suscripcion",
     "choosePlan": "Seleccionar Plan",
     "subscribe": "Seleccionar Plan",
-    "loadingPlans": "Cargando planes..."
-  }
+    "loadingPlans": "Cargando planes...",
+    "cancel": "Cancelar suscripción",
+    "current": "Actual",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "tvSubscribeMessage": "Suscríbete en bayit.tv o desde tu dispositivo móvil",
+    "externalPaymentTitle": "Continuar al sitio web",
+    "externalPaymentMessage": "Serás redirigido a nuestro sitio web para completar tu suscripción. Tu suscripción se gestionará a través de tu cuenta Bayit+.",
+    "continueToWebsite": "Continuar al sitio web",
+    "loading": "Cargando Planes...",
+    "noPlans": "No hay planes de suscripcion disponibles",
+    "premiumContent": "Contenido Plus",
+    "recommended": "Recomendado",
+    "restorePurchase": "Restaurar Compra",
+    "upgradeRequired": "Actualiza tu suscripcion para acceder a este contenido",
+    "monthlyPlan": "Plan Mensual",
+    "yearlyPlan": "Plan Anual",
+    "subscribeError": "No se pudo iniciar la suscripcion. Intentalo de nuevo mas tarde.",
+    "activePlus": "Plus Activo",
+    "manageInSettings": "Administra tu suscripcion en los Ajustes del dispositivo",
+    "restorePurchases": "Restaurar Compras",
+    "subscribePlus": "Suscribirse a Plus",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/mes",
+    "perYear": "/ano",
+    "feature": {
+      "unlimitedAI": "19 Funciones IA - Ilimitadas",
+      "unlimitedWidgets": "Widgets Ilimitados",
+      "unlimitedProfiles": "Perfiles Familiares Ilimitados",
+      "prioritySupport": "Soporte Prioritario",
+      "freeAI": "50 Creditos IA (unico)",
+      "oneWidget": "1 Widget",
+      "oneProfile": "1 Perfil Familiar"
+    }
+  },
+  "billing": {
+    "currentPlan": "Plan actual",
+    "noSubscription": "Sin suscripción activa",
+    "noTransactions": "Sin transacciones aún",
+    "payment": "Pago",
+    "period": "Período de facturación",
+    "plan": "Plan",
+    "renewsOn": "Se renueva el",
+    "status": "Estado",
+    "transactions": "Historial de transacciones"
+  },
+  "biometric": {
+    "authenticate": "Autenticar",
+    "authenticated": "Autenticado",
+    "enableDescription": "Usa autenticación biométrica para acceder rápidamente.",
+    "reason": "Verifica tu identidad",
+    "unavailable": "Autenticación biométrica no disponible",
+    "unavailableDescription": "Tu dispositivo no admite autenticación biométrica."
+  },
+  "dm": {
+    "messagePlaceholder": "Escribe un mensaje...",
+    "noConversations": "Sin conversaciones aún",
+    "searchConversations": "Buscar conversaciones",
+    "searchPlaceholder": "Buscar mensajes...",
+    "translate": "Traducir",
+    "translateMessage": "Traducir mensaje",
+    "typing": "escribiendo...",
+    "title": "Mensajes",
+    "conversations": "Conversaciones",
+    "conversation": "Conversación",
+    "empty": {
+      "title": "Sin mensajes aún",
+      "subtitle": "Inicia una conversación con un amigo"
+    },
+    "input": {
+      "placeholder": "Escribe un mensaje...",
+      "send": "Enviar"
+    },
+    "react": "Reaccionar",
+    "read": "Leído",
+    "sent": "Enviado",
+    "loadMore": "Cargar mensajes anteriores",
+    "startConversation": "Envía un mensaje para iniciar la conversación",
+    "reaction": {
+      "like": "Me gusta",
+      "love": "Me encanta",
+      "laugh": "Jaja",
+      "surprise": "Vaya",
+      "sad": "Triste"
+    },
+    "error": {
+      "fetchFailed": "Error al cargar los mensajes",
+      "sendFailed": "Error al enviar el mensaje"
+    }
+  },
+  "gate": {
+    "contentLocked": "Contenido bloqueado",
+    "recommended": "Recomendado",
+    "startTrial": "Suscribirse a Plus",
+    "subscribe": "Suscribirse a Plus",
+    "trialSubtitle": "Desbloquea funciones de IA ilimitadas y mas",
+    "trialTitle": "Actualizar a Plus",
+    "upgradeRequired": "Se requiere actualización para este contenido"
+  },
+  "pairing": {
+    "codePlaceholder": "Ingresa código de emparejamiento",
+    "enterCode": "Ingresar código",
+    "expiresAt": "Expira el",
+    "noDevices": "Sin dispositivos emparejados",
+    "pairedDevices": "Dispositivos emparejados",
+    "regenerate": "Regenerar",
+    "scanCode": "Escanea este código en tu otro dispositivo",
+    "unknownDevice": "Dispositivo desconocido",
+    "verify": "Verificar",
+    "title": "Emparejamiento de dispositivo",
+    "tvDescription": "Vincula tu iPhone o iPad a este Apple TV.",
+    "tvPairFromMobile": "Emparejar desde el móvil",
+    "tvExplanation": "El emparejamiento de dispositivos se gestiona desde tu dispositivo móvil. Abre Bayit+ en tu iPhone o iPad para emparejar este Apple TV.",
+    "tvPairPrompt": "Empareja desde tu iPhone o iPad"
+  },
+  "passkeys": {
+    "addPasskey": "Agregar clave de acceso",
+    "description": "Las claves de acceso proporcionan autenticación segura sin contraseña.",
+    "deviceNamePlaceholder": "Nombre del dispositivo",
+    "noPasskeys": "Sin claves de acceso registradas",
+    "register": "Registrar",
+    "registered": "Claves de acceso registradas",
+    "title": "Claves de acceso",
+    "unknownDevice": "Dispositivo desconocido",
+    "tvLimitation": "Limitación de Apple TV",
+    "tvLimitationDescription": "El registro de claves de acceso requiere autenticación biométrica (Face ID o Touch ID), que no está disponible en Apple TV. Administra tus claves de acceso desde tu iPhone o iPad.",
+    "tvNotAvailable": "No disponible en Apple TV"
+  },
+  "audio": {
+    "spatialEnabled": "Audio espacial",
+    "backgroundPlayback": "Reproduccion en segundo plano",
+    "sessionCategory": "Reproduccion"
+  },
+  "mfa": {
+    "title": "Autenticacion multifactor",
+    "description": "Agrega una capa adicional de seguridad para proteger tu cuenta",
+    "active": "MFA activo",
+    "disable": "Desactivar MFA",
+    "authenticatorApp": "App de autenticacion",
+    "authenticatorDescription": "Usa una app como Google Authenticator o Authy",
+    "sms": "Verificacion por SMS",
+    "smsDescription": "Recibe un codigo por mensaje de texto",
+    "scanQRCode": "Escanea este codigo QR con tu app de autenticacion",
+    "manualEntry": "O ingresa este codigo manualmente:",
+    "smsCodeSent": "Se ha enviado un codigo de verificacion a tu telefono",
+    "enterCode": "Ingresa el codigo de 6 digitos",
+    "verify": "Verificar",
+    "phoneVerificationRequired": "Verificación telefónica requerida",
+    "verifyPhoneToEnableMFA": "Debe verificar su número de teléfono antes de habilitar la autenticación multifactor.",
+    "addPhoneToEnableMFA": "Debe agregar y verificar un número de teléfono antes de habilitar la autenticación multifactor.",
+    "verifyPhone": "Verificar número de teléfono"
+  },
+  "verification": {
+    "title": "Verificacion",
+    "phoneTitle": "Verificar número de teléfono",
+    "phoneDescription": "Ingrese su número de teléfono para recibir un código de verificación",
+    "enterCode": "Ingrese el código de verificación enviado a su teléfono",
+    "phonePlaceholder": "+1 555-123-4567",
+    "phoneHint": "Ingrese su número de teléfono con código de país",
+    "sendCode": "Enviar código de verificación",
+    "codePlaceholder": "000000",
+    "codeSentTo": "Código enviado a",
+    "verify": "Verificar",
+    "resendIn": "Reenviar en",
+    "resendCode": "Reenviar código",
+    "changeNumber": "Cambiar número de teléfono"
+  },
+  "shabbat": {
+    "activate": "Activar",
+    "active": "Activo",
+    "autoMode": "Modo automático",
+    "autoModeDescription": "Activar automáticamente el modo Shabat según horarios",
+    "candleLighting": "Encendido de velas",
+    "dailyTimes": "Horarios diarios",
+    "deactivate": "Desactivar",
+    "havdalah": "Havdalá",
+    "inactive": "Inactivo",
+    "manualToggle": "Alternar manualmente",
+    "recommendedContent": "Contenido recomendado",
+    "settings": "Configuración",
+    "shalom": "Shabat Shalom",
+    "parashat": "Parashat {{name}}"
+  },
+  "ai": {
+    "languageDescription": "Seleccione el idioma de destino para traducción en vivo, doblaje y trivia",
+    "languageTitle": "Idioma de IA"
+  },
+  "bilingualBridge": {
+    "languageRatio": "Proporción de idioma",
+    "wordsLearned": "palabras aprendidas"
+  },
+  "coupons": {
+    "noneAvailable": "No hay cupones disponibles",
+    "redeem": "Canjear",
+    "redeemed": "Canjeado"
+  },
+  "enterPiP": "Entrar en imagen en imagen",
+  "exitPiP": "Salir de imagen en imagen",
+  "languages": {
+    "english": "Inglés",
+    "french": "Francés",
+    "hebrew": "Hebreo",
+    "russian": "Ruso",
+    "spanish": "Español"
+  },
+  "messages": {
+    "loading": "Cargando conversaciones...",
+    "noConversations": "Sin conversaciones",
+    "searchConversations": "Buscar conversaciones",
+    "startChatHint": "Empieza a chatear con amigos desde la aplicación móvil"
+  },
+  "mission": {
+    "complete": "Misión completada!",
+    "complete_error": "Error al completar la misión",
+    "continue": "Continuar",
+    "final_score": "Puntuación final",
+    "listening": "Escuchando...",
+    "load_error": "Error al cargar la misión",
+    "loading": "Cargando misión...",
+    "speak_challenge": "Diga la frase de desafío",
+    "submit_error": "Error al enviar",
+    "tap_to_speak": "Toque para hablar"
+  },
+  "snaps": {
+    "characters": "Personajes",
+    "download": "Descargar",
+    "download_error": "Error al descargar snap",
+    "empty_subtitle": "Crea tu primera foto familiar",
+    "empty_title": "Sin snaps aún",
+    "generate": "Generar",
+    "generate_first": "Genera tu primer snap",
+    "load_error": "Error al cargar snaps",
+    "loading": "Cargando snaps...",
+    "retry": "Reintentar",
+    "share": "Compartir",
+    "subtitle": "Fotos familiares impulsadas por IA",
+    "title": "Snaps familiares"
+  },
+  "vocabulary": {
+    "title": "Vocabulario",
+    "wordCount": "{{count}} palabras",
+    "empty": "Aun no hay palabras guardadas",
+    "emptyHint": "Toca palabras en los subtitulos para guardarlas",
+    "newWords": "Palabras nuevas",
+    "reviewedWords": "Palabras revisadas",
+    "close": "Cerrar"
+  },
+  "wallet": {
+    "earned": "Ganados",
+    "noTransactions": "Sin transacciones aún",
+    "recentTransactions": "Transacciones recientes",
+    "shekelsAvailable": "Shekels disponibles",
+    "shekelsBalance": "Saldo de Shekels",
+    "spent": "Gastado"
+  },
+  "wardrobe": {
+    "balance": "Saldo",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "confirm_purchase": "Confirmar compra",
+    "equip": "Equipar",
+    "equip_error": "Error al equipar el artículo",
+    "insufficient_balance": "Saldo insuficiente",
+    "load_error": "Error al cargar el armario",
+    "loading": "Cargando guardarropa...",
+    "owned": "Propio",
+    "purchase": "Compra",
+    "purchase_error": "Error al comprar el artículo",
+    "subtitle": "Personaliza tu avatar",
+    "title": "Vestuario",
+    "unequip": "Desequipar",
+    "unequip_error": "Error al desequipar el artículo",
+    "equipped": "Equipado",
+    "empty": "No hay trajes disponibles aun",
+    "price": "{{amount}} shekels",
+    "rarity": {
+      "common": "Comun",
+      "uncommon": "Poco comun",
+      "rare": "Raro",
+      "epic": "Epico",
+      "legendary": "Legendario"
+    }
+  },
+  "zine": {
+    "archive": "Archivo",
+    "emptyPages": "No hay páginas para mostrar",
+    "failedToLoad": "Error al cargar la página {{page}}",
+    "loadingPage": "Cargando página...",
+    "noCurrentZine": "No hay revista disponible actualmente",
+    "noPagesAvailable": "No hay páginas disponibles",
+    "noPagesDescription": "Esta revista no tiene páginas para mostrar.",
+    "pageIndicator": "Página {{current}} de {{total}}",
+    "pageCount": "{{count}} páginas"
+  },
+  "forgot_password": {
+    "title": "Restablecer Contraseña",
+    "subtitle": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+    "submit": "Enviar Enlace de Restablecimiento",
+    "success_title": "Revisa Tu Correo",
+    "success_message": "Te hemos enviado un enlace para restablecer la contraseña. Por favor, revisa tu bandeja de entrada.",
+    "back_to_login": "Volver al Inicio de Sesión"
+  },
+  "reset_password": {
+    "title": "Crear Nueva Contraseña",
+    "subtitle": "Elige una contraseña segura para tu cuenta",
+    "submit": "Restablecer Contraseña",
+    "requirements": "La contraseña debe tener:",
+    "requirement_length": "Al menos 8 caracteres",
+    "requirement_uppercase": "Una letra mayúscula",
+    "requirement_lowercase": "Una letra minúscula",
+    "requirement_number": "Un número",
+    "requirement_match": "Las contraseñas coinciden",
+    "success_title": "¡Contraseña Restablecida!",
+    "success_message": "Tu contraseña se ha restablecido exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
+    "back_to_login": "Volver al Inicio de Sesión"
+  },
+  "voiceFallback": {
+    "title": "Voz no disponible",
+    "subtitle": "Escribe tu mensaje en su lugar",
+    "micUnavailable": "Microfono no disponible",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "suggestions": "Sugerencias"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "Configuracion de busqueda por voz",
+      "language": "Idioma de reconocimiento",
+      "sensitivity": "Sensibilidad"
+    },
+    "listening": "Escuchando...",
+    "noResults": "Sin resultados",
+    "tapToSpeak": "Toca para hablar",
+    "title": "Busqueda por voz"
+  },
+  "cvplus": {
+    "upload": {
+      "title": "Subir CV",
+      "subtitle": "PDF, DOCX o TXT"
+    },
+    "analysis": {
+      "atsScore": "Puntuación ATS",
+      "completeness": "Completitud",
+      "skills": "Habilidades",
+      "recommendations": "Recomendaciones",
+      "missingSections": "Secciones faltantes"
+    },
+    "profile": {
+      "createProfile": "Crear perfil público",
+      "shareLink": "Compartir enlace",
+      "qrCode": "Código QR",
+      "download": "Descargar"
+    },
+    "auth": {
+      "signIn": "Iniciar sesión",
+      "createAccount": "Crear cuenta",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "fullName": "Nombre completo",
+      "confirmPassword": "Confirmar contraseña"
+    },
+    "account": {
+      "title": "Cuenta",
+      "signOut": "Cerrar sesión",
+      "appLanguage": "Idioma de la app",
+      "quota": "Cuota de uso"
+    },
+    "cv": {
+      "uploadTitle": "Sube tu CV",
+      "generate": "Generar CV",
+      "myCV": "Mis CVs",
+      "analysis": "Análisis",
+      "customize": "Personalizar",
+      "preview": "Vista previa"
+    },
+    "dashboard": {
+      "title": "Panel",
+      "recentActivity": "Actividad reciente",
+      "totalViews": "Vistas totales",
+      "downloads": "Descargas",
+      "uniqueVisitors": "Visitantes únicos"
+    },
+    "contactRequests": {
+      "title": "Solicitudes de contacto",
+      "noRequests": "No hay solicitudes de contacto aún"
+    }
+  },
+  "sharePlay": {
+    "watchTogether": "Ver juntos",
+    "inviteDescription": "Elige como ver con amigos",
+    "viaFaceTime": "SharePlay por FaceTime",
+    "faceTimeDescription": "Ver juntos con amigos en FaceTime",
+    "bayitParty": "Fiesta Bayit+",
+    "bayitPartyDescription": "Invita amigos a una fiesta Bayit+",
+    "watching": "viendo",
+    "synced": "Todo sincronizado",
+    "syncing": "Sincronizando...",
+    "end": "Terminar SharePlay",
+    "title": "SharePlay"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "Doblaje AI en vivo",
+      "description": "Escucha canales israelies doblados a tu idioma en tiempo real con voces de AI."
+    },
+    "pauseAndAsk": {
+      "title": "Pausa y pregunta a un personaje",
+      "description": "Pausa cualquier escena y conversa con los personajes usando tu avatar."
+    },
+    "zehAni": {
+      "title": "Espejo Magico",
+      "description": "Crea un avatar 3D personalizado desde un selfie y usalo en todas las funciones interactivas."
+    },
+    "catchup": {
+      "title": "Ponerse al dia",
+      "description": "Te perdiste el inicio? Obtene un resumen generado por AI de lo que paso hasta ahora."
+    }
+  },
+  "discover": {
+    "title": "Descubrir",
+    "subtitle": "Explora todas las funciones impulsadas por AI disponibles en Bayit+",
+    "category": {
+      "watching_movies": "Mientras ves peliculas",
+      "watching_live_tv": "Mientras ves TV en vivo",
+      "learn_hebrew": "Aprende hebreo",
+      "search_discovery": "Busqueda y descubrimiento",
+      "chat_assistants": "Chat y asistentes"
+    },
+    "feature": {
+      "pause_ask": {
+        "name": "Pausar y preguntar",
+        "tagline": "Pausa cualquier pelicula y chatea con los personajes",
+        "description": "Pausa una pelicula y ten una conversacion real con cualquier personaje. Responden con su propia voz y personalidad, contestando preguntas sobre la trama, sus motivaciones o cualquier otra cosa que quieras saber."
+      },
+      "interactive_subtitles": {
+        "name": "Subtitulos interactivos",
+        "tagline": "Toca cualquier palabra del subtitulo para aprender su significado",
+        "description": "Convierte los subtitulos en una herramienta de aprendizaje. Toca cualquier palabra para ver su definicion, escuchar la pronunciacion y guardarla en tu lista de vocabulario. Funciona con subtitulos en hebreo, ingles y bilingues."
+      },
+      "vocabulary": {
+        "name": "Constructor de vocabulario",
+        "tagline": "Crea tu banco de palabras personal desde peliculas",
+        "description": "Recopila palabras de subtitulos interactivos en una lista de vocabulario personal. Repasa tarjetas, sigue tu progreso y ve las palabras en contexto de las peliculas donde las aprendiste."
+      },
+      "vod_moments": {
+        "name": "Momentos interactivos",
+        "tagline": "Reacciona a escenas clave con interacciones impulsadas por AI",
+        "description": "En momentos clave de una pelicula aparecen indicaciones interactivas que te permiten interactuar con la historia. Haz preguntas, obtiene contexto cultural o profundiza en escenas fundamentales."
+      },
+      "cultural_context": {
+        "name": "Contexto cultural",
+        "tagline": "Comprende el significado cultural detras de cada escena",
+        "description": "Obtiene explicaciones culturales generadas por AI para escenas, dialogos y referencias que podrian ser desconocidas. Comprende el humor israeli, las costumbres religiosas, las referencias historicas y mas."
+      },
+      "bilingual_bridge": {
+        "name": "Puente bilingue",
+        "tagline": "Aprende hebreo naturalmente a traves del dialogo de peliculas",
+        "description": "Ve subtitulos en hebreo e ingles uno al lado del otro. El AI destaca frases clave y te ayuda a entender el dialogo en hebreo en el contexto natural de una conversacion de pelicula."
+      },
+      "ai_companion": {
+        "name": "Companero AI",
+        "tagline": "Tu companero inteligente para ver peliculas",
+        "description": "Un asistente de AI que mira junto contigo. Pregunta sobre la trama, los personajes o los detalles de produccion en cualquier momento. Entiende el contexto de lo que estas viendo y da respuestas relevantes."
+      },
+      "live_dubbing": {
+        "name": "Doblaje en vivo",
+        "tagline": "Mira cualquier canal doblado a tu idioma",
+        "description": "Doblaje de AI en tiempo real de canales de TV israelies en vivo al ingles, espanol, frances y mas. Escucha el contenido en tu idioma preferido mientras ves transmisiones en vivo."
+      },
+      "live_subtitles": {
+        "name": "Subtitulos en vivo",
+        "tagline": "Subtitulos en tiempo real para TV en vivo",
+        "description": "Subtitulos generados por AI aparecen en tiempo real mientras ves TV en vivo. Elige tu idioma preferido y sigue cualquier transmision en hebreo."
+      },
+      "live_trivia": {
+        "name": "Trivia en vivo",
+        "tagline": "Juega juegos de trivia sobre lo que estas viendo",
+        "description": "El AI detecta el tema de la transmision en vivo y genera preguntas de trivia en tiempo real. Compite con otros espectadores y pon a prueba tu conocimiento de la cultura, noticias y entretenimiento israeli."
+      },
+      "catch_up": {
+        "name": "Ponerse al dia",
+        "tagline": "Obtiene un resumen de AI de lo que te perdiste",
+        "description": "Te uniste tarde a una transmision en vivo? El AI genera un resumen rapido de todo lo que paso antes de que te conectaras, para que puedas sumarte sin perder contexto."
+      },
+      "scene_search": {
+        "name": "Busqueda de escenas",
+        "tagline": "Encuentra cualquier momento en una transmision grabada",
+        "description": "Busca en contenido de TV en vivo grabado describiendo lo que buscas. El AI encuentra el momento exacto y te lleva directamente a el."
+      },
+      "phonetic_mirror": {
+        "name": "Espejo fonetico",
+        "tagline": "Practica la pronunciacion del hebreo con retroalimentacion de AI",
+        "description": "Lee una frase en hebreo y dila en voz alta. El AI analiza tu pronunciacion, te muestra donde mejorar y demuestra los sonidos correctos usando tu avatar como guia visual."
+      },
+      "talk_back": {
+        "name": "Responde",
+        "tagline": "Practica conversacion en hebreo con tu avatar",
+        "description": "Ten una conversacion en hebreo con tu avatar de AI. Te habla en hebreo, tu respondes y te da retroalimentacion sobre tu pronunciacion, gramatica y uso de vocabulario."
+      },
+      "interactive_mission": {
+        "name": "Mision interactiva",
+        "tagline": "Completa misiones de aprendizaje de hebreo con guia de AI",
+        "description": "Embarcate en misiones guiadas de aprendizaje de hebreo. Tu avatar te guia a traves de ejercicios interactivos que combinan hablar, escuchar y leer en escenarios divertidos y gamificados."
+      },
+      "glossary": {
+        "name": "Glosario de hebreo",
+        "tagline": "Navega y busca en la base de datos de vocabulario hebreo",
+        "description": "Accede a un glosario completo hebreo-ingles. Busca palabras, escucha pronunciaciones, ve ejemplos de uso del contenido de Bayit+ y guarda palabras en tu lista de vocabulario personal."
+      },
+      "llm_search": {
+        "name": "Busqueda AI",
+        "tagline": "Busca contenido usando lenguaje natural",
+        "description": "Describe lo que quieres ver con tus propias palabras. El AI entiende tu intencion y encuentra peliculas, programas y canales coincidentes de todo el catalogo de Bayit+."
+      },
+      "proactive_voice": {
+        "name": "Sugerencias por voz",
+        "tagline": "Recibe sugerencias de contenido personalizadas por voz",
+        "description": "Activa el modo de voz y dile a Bayit+ que te apetece. El AI considera tu historial de visualizacion, preferencias y la hora actual para sugerirte el contenido perfecto."
+      },
+      "chatbot": {
+        "name": "Asistente AI",
+        "tagline": "Pregunta cualquier cosa sobre Bayit+ y contenido israeli",
+        "description": "Chatea con el asistente de AI de Bayit+ sobre cualquier tema. Obtiene ayuda para navegar la app, aprende sobre cultura israeli, encuentra recomendaciones de contenido o haz preguntas sobre tu cuenta y funciones."
+      }
+    },
+    "badge": {
+      "ready": "Listo",
+      "setupNeeded": "Configuracion necesaria",
+      "premium": "Premium",
+      "notAvailable": "No disponible",
+      "platformOnly": "Solo iOS"
+    },
+    "walkthrough": {
+      "tryItNow": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion",
+      "skip": "Omitir",
+      "next": "Siguiente",
+      "done": "Listo",
+      "complete": "Tutorial completado",
+      "stepCounter": "{{current}} de {{total}}",
+      "skipAccessibility": "Saltar tutorial",
+      "nextAccessibility": "Siguiente paso",
+      "doneAccessibility": "Finalizar tutorial",
+      "stepAccessibility": "Paso {{current}} de {{total}}",
+      "pause_ask": {
+        "step1": "Navega a una pelicula con momentos interactivos",
+        "step2": "Pausa la pelicula durante una escena",
+        "step3": "Toca el boton Preguntar a un personaje",
+        "step4": "Mira al personaje responderte"
+      },
+      "interactive_subtitles": {
+        "step1": "Comienza a ver una pelicula con subtitulos",
+        "step2": "Toca el boton Interactivo en la barra de control",
+        "step3": "Selecciona tu idioma de subtitulos",
+        "step4": "Toca cualquier palabra en los subtitulos para aprender mas"
+      },
+      "vocabulary": {
+        "step1": "Abre una pelicula con subtitulos interactivos activados",
+        "step2": "Toca una palabra que quieras aprender",
+        "step3": "Toca Guardar en vocabulario",
+        "step4": "Revisa tus palabras guardadas en la seccion de Vocabulario"
+      },
+      "vod_moments": {
+        "step1": "Comienza a ver una pelicula con momentos interactivos",
+        "step2": "Espera a que aparezca una indicacion interactiva",
+        "step3": "Ve la interaccion generada por AI"
+      },
+      "cultural_context": {
+        "step1": "Reproduce una pelicula con dialogo en hebreo",
+        "step2": "Toca un subtitulo con significado cultural",
+        "step3": "Lee la explicacion cultural generada por AI"
+      },
+      "bilingual_bridge": {
+        "step1": "Abre una pelicula con soporte bilingue",
+        "step2": "Selecciona el modo de subtitulos bilingue",
+        "step3": "Toca una frase resaltada para ver la traduccion",
+        "step4": "Ve ambos idiomas uno al lado del otro"
+      },
+      "ai_companion": {
+        "step1": "Comienza a ver cualquier pelicula",
+        "step2": "Toca el boton del Companero AI",
+        "step3": "Escribe una pregunta sobre la pelicula",
+        "step4": "Lee la respuesta contextual del AI"
+      },
+      "live_dubbing": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de doblaje en la barra de control",
+        "step3": "Selecciona tu idioma preferido",
+        "step4": "Escucha el doblaje de AI en tiempo real"
+      },
+      "live_subtitles": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de subtitulos",
+        "step3": "Selecciona tu idioma de subtitulos",
+        "step4": "Ve los subtitulos en tiempo real aparecer"
+      },
+      "live_trivia": {
+        "step1": "Navega a un canal de TV en vivo",
+        "step2": "Toca el boton de trivia",
+        "step3": "Responde las preguntas generadas por AI"
+      },
+      "catch_up": {
+        "step1": "Navega a una transmision en vivo",
+        "step2": "Selecciona la opcion de ponerse al dia",
+        "step3": "Toca para generar un resumen de AI",
+        "step4": "Lee el resumen de lo que te perdiste"
+      },
+      "scene_search": {
+        "step1": "Navega a una transmision grabada",
+        "step2": "Escribe lo que estas buscando",
+        "step3": "Toca la escena coincidente",
+        "step4": "Ve la escena desde ese punto"
+      },
+      "phonetic_mirror": {
+        "step1": "Abre el Espejo fonetico en Zeh Ani",
+        "step2": "Lee la frase en hebreo mostrada",
+        "step3": "Di la frase en tu microfono",
+        "step4": "Revisa la retroalimentacion de AI sobre tu pronunciacion"
+      },
+      "talk_back": {
+        "step1": "Abre Responde en Zeh Ani",
+        "step2": "Escucha a tu avatar hablar hebreo",
+        "step3": "Responde en hebreo usando tu microfono",
+        "step4": "Revisa la retroalimentacion de AI sobre tu respuesta"
+      },
+      "interactive_mission": {
+        "step1": "Abre Misiones interactivas",
+        "step2": "Selecciona un nivel de mision",
+        "step3": "Sigue los ejercicios guiados por AI",
+        "step4": "Completa la mision y gana recompensas"
+      },
+      "glossary": {
+        "step1": "Abre el Glosario de hebreo",
+        "step2": "Busca una palabra en hebreo",
+        "step3": "Escucha la pronunciacion"
+      },
+      "llm_search": {
+        "step1": "Abre la pestana de Busqueda",
+        "step2": "Escribe una consulta en lenguaje natural",
+        "step3": "Explora los resultados curados por AI"
+      },
+      "proactive_voice": {
+        "step1": "Abre la funcion de Sugerencias por voz",
+        "step2": "Mantiene presionado para hablar",
+        "step3": "Escucha las recomendaciones personalizadas"
+      },
+      "chatbot": {
+        "step1": "Abre el Asistente AI",
+        "step2": "Escribe tu pregunta o solicitud",
+        "step3": "Lee la respuesta del AI"
+      },
+      "avatarNeeded": "Necesitas un avatar para probar esta funcion. ¿Crear uno ahora?",
+      "createAvatar": "Crear Avatar",
+      "skipAvatar": "Omitir por ahora",
+      "scanQR": "Escanear QR para subir foto",
+      "aiAvatar": "Generar Avatar con AI"
+    },
+    "prereq": {
+      "avatar_required": "Crea tu avatar primero",
+      "subscription_required": "Se requiere suscripcion premium",
+      "microphone_required": "Se necesita acceso al microfono",
+      "contentType_required": "Se requiere contenido especifico",
+      "preference_required": "Habilita esta funcion en configuracion",
+      "voiceClone_required": "Se necesita configurar el clon de voz",
+      "avatar": "Crea tu personaje de IA",
+      "subscription": "Se requiere suscripción Premium",
+      "microphone": "Se necesita acceso al micrófono",
+      "contentType": "Selecciona tus preferencias de contenido",
+      "preference": "Configura tus preferencias de idioma",
+      "voiceClone": "Configura tu clon de voz"
+    },
+    "empty": {
+      "title": "No hay funciones disponibles",
+      "subtitle": "Vuelve mas tarde para nuevas funciones de AI"
+    },
+    "loading": "Cargando funciones...",
+    "prerequisites": {
+      "title": "Requisitos previos"
+    },
+    "action": {
+      "tryIt": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion"
+    },
+    "detail": {
+      "prerequisites": "Requisitos previos",
+      "tryIt": "Pruebalo ahora",
+      "watchDemo": "Ver demostracion",
+      "back": "Volver"
+    },
+    "a11y": {
+      "ready": "La funcion esta lista para usar",
+      "setupNeeded": "Se necesita configuracion antes de usar esta funcion",
+      "premium": "Se requiere suscripcion premium",
+      "notAvailable": "La funcion no esta disponible",
+      "platformOnly": "Solo disponible en iOS"
+    },
+    "characterGen": {
+      "stages": {
+        "analyzing": "Analizando la pelicula...",
+        "extracting": "Buscando los personajes principales...",
+        "voices": "Aprendiendo las voces de los personajes...",
+        "frames": "Capturando la apariencia de los personajes...",
+        "almost": "Casi listo..."
+      }
+    },
+    "description": "Bayit+ utiliza IA para mejorar tu experiencia de visualización, escucha y aprendizaje. Descubre lo que está disponible en tu plataforma.",
+    "featureCount": "{{count}} funciones",
+    "tryIt": "Probar",
+    "startWalkthrough": "Iniciar recorrido",
+    "availableOn": "Disponible en",
+    "setup": "Configurar",
+    "error": {
+      "fetchFailed": "Error al cargar las funciones de Discover. Por favor, inténtalo de nuevo.",
+      "unknownFeature": "Función no encontrada.",
+      "featureDisabled": "Esta función está actualmente desactivada."
+    },
+    "availability": {
+      "ready": "Listo",
+      "setupNeeded": "Configuración necesaria",
+      "premiumRequired": "Se requiere Premium",
+      "notAvailable": "No disponible",
+      "platformOnly": "Otra plataforma"
+    },
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "android": "Android",
+      "tvos": "Apple TV"
+    }
+  },
+  "watchlist": {
+    "filters": {
+      "all": "Todos",
+      "continue": "Continuar viendo",
+      "movies": "Películas",
+      "series": "Series",
+      "kids": "Niños",
+      "judaism": "Judaísmo",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
+    },
+    "title": "Mi lista",
+    "items": "elementos",
+    "watched": "visto",
+    "empty": "Tu lista está vacía",
+    "emptyHint": "Comienza a ver y los elementos aparecerán aquí"
+  },
+  "recording": {
+    "stop": "Detener Grabación",
+    "start": "Iniciar Grabación"
+  },
+  "aiChat": {
+    "retryButton": "Reintentar",
+    "sendButton": "Enviar",
+    "title": "Chat IA",
+    "voiceButton": "Voz"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "Atras"
+    },
+    "completion": {
+      "message": "Todo listo! Comienza a explorar las funciones de IA.",
+      "title": "Configuracion completada"
+    },
+    "permissions": {
+      "description": "Otorga permisos para habilitar funciones de IA como voz y camara.",
+      "title": "Permisos"
+    },
+    "personalization": {
+      "description": "Cuentanos tus preferencias para personalizar tu experiencia de IA.",
+      "title": "Personalizacion"
+    },
+    "title": "Configuracion de IA",
+    "welcome": {
+      "description": "Bayit+ usa IA para mejorar tu experiencia con doblaje, subtitulos y mas.",
+      "title": "Bienvenido a Bayit+ IA"
+    }
+  },
+  "auth_device_authorized": "Dispositivo autorizado",
+  "auth_device_code_expired": "Codigo expirado",
+  "auth_device_get_new_code": "Obtener nuevo codigo",
+  "auth_device_manual_login": "Iniciar sesion manualmente",
+  "auth_device_visit_uri": "Visita la URL mostrada en tu TV",
+  "go_back": "Volver",
+  "retry": "Reintentar",
+  "search_hint": "Buscar canales, peliculas, series...",
+  "search_no_results": "No se encontraron resultados",
+  "search_prompt": "Que estas buscando?",
+  "subscription_required": "Suscripcion requerida",
+  "subscription_upsell_tv": "Actualiza para ver en TV",
+  "talkback": {
+    "title": "Comentarios"
+  },
+  "voiceCommand": {
+    "executing": "Ejecutando...",
+    "listening": "Escuchando...",
+    "noMatch": "Sin coincidencia",
+    "recognized": "Reconocido"
+  },
+  "voiceSettings": {
+    "language": "Idioma",
+    "speechRate": "Velocidad de habla",
+    "title": "Ajustes de voz",
+    "ttsProvider": "Proveedor TTS",
+    "voiceMode": "Modo de voz",
+    "voiceSelection": "Seleccion de voz",
+    "wakeWord": "Palabra de activacion"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "Atras"
+    },
+    "calibration": {
+      "description": "Habla normalmente para calibrar el microfono.",
+      "listening": "Escuchando...",
+      "micButton": "Iniciar grabacion",
+      "resultTitle": "Resultado de calibracion",
+      "stopButton": "Detener grabacion",
+      "tapToStart": "Toca para iniciar calibracion",
+      "title": "Calibracion de microfono"
+    },
+    "complete": {
+      "message": "La configuracion del asistente de voz esta completa.",
+      "title": "Configuracion completada"
+    },
+    "language": {
+      "description": "Selecciona tu idioma preferido para comandos de voz.",
+      "title": "Idioma de voz"
+    },
+    "permission": {
+      "description": "Se necesita acceso al microfono para funciones de voz.",
+      "granted": "Permiso otorgado",
+      "requestButton": "Otorgar permiso",
+      "title": "Permiso de microfono"
+    },
+    "title": "Asistente de configuracion de voz"
+  },
+  "watch_now": "Ver ahora"
 }

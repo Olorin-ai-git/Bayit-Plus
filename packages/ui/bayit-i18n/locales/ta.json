@@ -251,7 +251,8 @@
       "deleteConfirmTitle": "நீக்குதல் உறுதிப்படுத்தல்",
       "deleteEpisodeMessage": "இந்த அத்தியாயத்தை நிச்சயமாக நீக்க வேண்டுமா?",
       "edit": "திருத்து",
-      "featured": "சிறப்பு"
+      "featured": "சிறப்பு",
+      "tryAgain": "மீண்டும் முயற்சிக்கவும்"
     },
     "stats": {
       "totalUsers": "மொத்த பயனர்கள்",
@@ -3217,7 +3218,11 @@
       "bookmarks": "{{count}} புத்தகக்குறிகள்",
       "chapters": "அத்தியாயங்கள் ({{count}})",
       "chapter": "அத்தியாயம்"
-    }
+    },
+    "continueListening": "கேட்கவும் தொடரவும்",
+    "browseByAuthor": "ஆசிரியர் மூலம் உலாவுக",
+    "durationMin": "{{count}} நிமிடம்",
+    "authorCount": "{{count}} ஆடியோபுக்"
   },
   "breadcrumbs": {
     "series": "தொடர்",
@@ -3227,7 +3232,8 @@
     "station": "நிலையம்",
     "podcast": "பாட்காஸ்ட்",
     "playlist": "பிளேலிஸ்ட்",
-    "downloads": "பதிவிறக்கங்கள்"
+    "downloads": "பதிவிறக்கங்கள்",
+    "watchlist": "[ta] Watchlist"
   },
   "chapters": {
     "title": "அத்தியாயங்கள்",
@@ -3254,11 +3260,15 @@
       "conflict": "மோதல்",
       "cliffhanger": "சஸ்பென்ஸ்",
       "main": "முதன்மை"
-    }
+    },
+    "chapterLabel": "அத்தியாயம் {{number}}",
+    "chapter_number": "அத்தியாயம் {{number}}"
   },
   "chat": {
     "title": "Bayit+ உதவியாளர்",
-    "greeting": "வணக்கம்! நான் Bayit+ ஸ்மார்ட் உதவியாளர். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்? மைக்ரோஃபோனை கிளிக் செய்து பேசுங்கள், அல்லது செய்தியைத் தட்டச்சு செய்யுங்கள்."
+    "greeting": "வணக்கம்! நான் Bayit+ ஸ்மார்ட் உதவியாளர். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்? மைக்ரோஃபோனை கிளிக் செய்து பேசுங்கள், அல்லது செய்தியைத் தட்டச்சு செய்யுங்கள்.",
+    "loading": "செய்திகள் ஏற்றுகிறது...",
+    "typing": "தட்டச்சு செய்கிறது..."
   },
   "chatbot": {
     "title": "Bayit+ உதவியாளர்",
@@ -3301,7 +3311,15 @@
     "listening": "கேட்கிறது...",
     "transcribing": "படியெடுக்கிறது...",
     "thinking": "யோசிக்கிறது...",
-    "typePlaceholder": "உங்கள் கேள்வியை தட்டச்சு செய்யவும்..."
+    "typePlaceholder": "உங்கள் கேள்வியை தட்டச்சு செய்யவும்...",
+    "fabLabel": "[ta] Voice Assistant",
+    "modal": {
+      "cancel": "[ta] Cancel",
+      "setupMessage": "[ta] Set up voice recognition to use the voice assistant.",
+      "setupRequired": "[ta] Setup Required",
+      "startSetup": "[ta] Start Setup",
+      "title": "[ta] Voice Assistant"
+    }
   },
   "chess": {
     "title": "சதுரங்கம்",
@@ -3387,7 +3405,21 @@
       "appStore": "App Store இல் பதிவிறக்கம்",
       "googlePlay": "Google Play இல் பெறுங்கள்",
       "footer": "Bayit+ - பிரீமியம் யூத ஸ்ட்ரீமிங்"
-    }
+    },
+    "drawOffered": "சமநிலை வழங்கப்பட்டது",
+    "code": "குறியீடு: {{code}}",
+    "challengeFriend": "நண்பரை சவால் விடுங்கள்",
+    "noFriendsYet": "சவால் விட நண்பர்களைச் சேருங்கள்",
+    "acceptInvite": "ஏற்கவும்",
+    "declineInvite": "நிராகரிக்கவும்",
+    "whiteCaptured": "வெள்ளை பிடித்தது",
+    "blackCaptured": "கருப்பு பிடித்தது",
+    "online": "ஆன்லைன்",
+    "offline": "ஆஃப்லைன்",
+    "joinByGameCode": "குறியீடு மூலம் சேரவும்",
+    "challengeViaWhatsApp": "WhatsApp வழியாக சவால் விடுங்கள்",
+    "whatsAppMessage": "Bayit+-ல் சதுரங்கத்தில் உங்களுக்கு சவால் விடுகிறேன்! குறியீடு: {{code}} - விளையாட தட்டவும்: {{link}}",
+    "turn": "முறை"
   },
   "children": {
     "title": "குழந்தைகள்",
@@ -3787,7 +3819,35 @@
     "closeModal": "சாளரத்தை மூடு",
     "dismissHint": "குறிப்பை நிராகரி",
     "sending": "அனுப்புகிறது...",
-    "create": "உருவாக்கு"
+    "create": "உருவாக்கு",
+    "untitled": "தலைப்பில்லா",
+    "percent": "%",
+    "change": "மாற்று",
+    "confidence": "நம்பிக்கை",
+    "generate": "உருவாக்கு",
+    "high": "உயர்",
+    "learnMore": "மேலும் அறிய",
+    "low": "குறைவு",
+    "maybeLater": "பிறகு பார்க்கலாம்",
+    "medium": "நடுத்தரம்",
+    "or": "அல்லது",
+    "playlist": "பிளேலிஸ்ட்",
+    "preview": "முன்னோட்டம்",
+    "saveChanges": "மாற்றங்களை சேமி",
+    "today": "இன்று",
+    "unavailable": "கிடைக்கவில்லை",
+    "guest": "விருந்தினர்",
+    "anonymous": "அநாமதேய",
+    "content": "உள்ளடக்கம்",
+    "email_placeholder": "உங்கள் மின்னஞ்சலை உள்ளிடவும்",
+    "password_placeholder": "உங்கள் கடவுச்சொல்லை உள்ளிடவும்",
+    "new_password": "புதிய கடவுச்சொல்",
+    "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
+    "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்",
+    "queued": "வரிசையில்",
+    "on": "இயக்கம்",
+    "off": "நிறுத்தம்",
+    "pause": "[ta] Pause"
   },
   "badges": {
     "aiEnhanced": "AI மேம்படுத்தப்பட்ட",
@@ -3806,7 +3866,9 @@
     "noContext": "எபிசோட் சூழல் கிடைக்கவில்லை",
     "noQuiz": "இந்த எபிசோடுக்கு வினாடி வினா கேள்விகள் கிடைக்கவில்லை",
     "checkAnswer": "பதிலைச் சரிபார்",
-    "concepts": "முக்கிய கருத்துக்கள்"
+    "concepts": "முக்கிய கருத்துக்கள்",
+    "quizLabel": "விரைவு குவிஸ்",
+    "vocabularyLabel": "சொல்வளம்"
   },
   "channels": {
     "kanEducational": "Kan கல்வி",
@@ -3932,7 +3994,24 @@
     "clickToRestore": "மீட்டமைக்க கிளிக் செய்யவும்",
     "minimizedWidgets": "சிறிதாக்கப்பட்ட விட்ஜெட்கள்",
     "closeDock": "டாக்கை மூடு",
-    "customContent": "தனிப்பயன் உள்ளடக்கம்"
+    "customContent": "தனிப்பயன் உள்ளடக்கம்",
+    "audiobook": "ஆடியோ புத்தகம்",
+    "liveTVStream": "நேரலை டிவி ஸ்ட்ரீம்",
+    "noContent": "உள்ளடக்கம் கிடைக்கவில்லை",
+    "podcastEpisode": "பாட்காஸ்ட் எபிசோட்",
+    "radioStation": "வானொலி நிலையம்",
+    "webContent": "இணைய உள்ளடக்கம்",
+    "browseContent": "உள்ளடக்கத்தை உலாவு",
+    "content": "உள்ளடக்கம்",
+    "contentId": "உள்ளடக்க ID",
+    "create": "உருவாக்கு",
+    "createFirstWidget": "உங்கள் முதல் தனிப்பட்ட விட்ஜெட்டை உருவாக்குங்கள்",
+    "enterTitle": "விட்ஜெட் தலைப்பு உள்ளிடவும்",
+    "loading": "விட்ஜெட்கள் ஏற்றுகிறது...",
+    "noContentFound": "உள்ளடக்கம் இல்லை",
+    "selectContent": "உள்ளடக்கத்தைத் தேர்ந்தெடு",
+    "ynetBreakingNews": "Ynet முக்கிய செய்திகள்",
+    "iframeUrl": "iFrame URL"
   },
   "liveCategories": {
     "educational": "கல்வி"
@@ -4103,7 +4182,13 @@
       "episodes": "{{count}} அத்தியாயங்கள்"
     },
     "toggleFavorite": "விருப்பத்தை மாற்று",
-    "togglePlaylist": "பிளேலிஸ்ட்டை மாற்று"
+    "togglePlaylist": "பிளேலிஸ்ட்டை மாற்று",
+    "related": "தொடர்புடைய",
+    "untitled": "தலைப்பிடாத",
+    "filters": {
+      "movies": "[ta] Movies",
+      "series": "[ta] Series"
+    }
   },
   "cultureCities": {
     "connectionTo": "{{city}} இணைப்பு",
@@ -4175,7 +4260,16 @@
     "indian": {
       "name": "இந்திய",
       "description": "இந்திய சமூக உள்ளடக்கம்"
-    }
+    },
+    "jerusalem": {
+      "name": "ஜெருசலேம்",
+      "description": "புனித நகரத்தைக் கண்டறியுங்கள்"
+    },
+    "telAviv": {
+      "name": "தெல் அவீவ்",
+      "description": "தூங்காத நகரம்"
+    },
+    "loading": "கலாச்சாரம் ஏற்றுகிறது..."
   },
   "demo": {
     "banner": "டெமோ பயன்முறை",
@@ -4225,7 +4319,12 @@
     "downloaded": "பதிவிறக்கம் செய்யப்பட்டது",
     "offlineMessage": "நீங்கள் ஆஃப்லைனில் உள்ளீர்கள். பதிவிறக்கங்கள் கிடைக்கவில்லை.",
     "deleteConfirm": "இந்த பதிவிறக்கத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா?",
-    "storageUsed": "பயன்படுத்தப்பட்ட சேமிப்பு"
+    "storageUsed": "பயன்படுத்தப்பட்ட சேமிப்பு",
+    "delete": "நீக்கு",
+    "downloadAll": "அனைத்தையும் பதிவிறக்கு",
+    "play": "ஆஃப்லைனில் இயக்கு",
+    "size": "{{size}} MB",
+    "active": "செயலில் உள்ள பதிவிறக்கங்கள்"
   },
   "dubbing": {
     "title": "நேரடி டப்பிங்",
@@ -4386,7 +4485,20 @@
     "premiumRequired": "பிரீமியம் சந்தா தேவை",
     "selectInputLanguage": "உள்ளீட்டு மொழியைத் தேர்வுசெய்",
     "upgradeForDubbing": "நேரடி டப்பிங் அணுக Plus க்கு மேம்படுத்தவும்",
-    "maybeLater": "பின்னர்"
+    "maybeLater": "பின்னர்",
+    "short": "டப்பிங்",
+    "mixer": "[ta] Audio Mixer",
+    "original": "மூலம்",
+    "dubbed": "தமிழாக்கம்",
+    "balance": "{{original}}% மூலம் / {{dubbed}}% தமிழாக்கம்",
+    "adjustHint": "ஆடியோ சமநிலையை சரிசெய்ய இடது அல்லது வலது ஒத்தி உருட்டவும்",
+    "settings_title": "[ta] Dubbing Settings",
+    "target_language": "[ta] Target Language",
+    "voiceSelector": {
+      "selected": "[ta] Selected",
+      "subtitle": "[ta] Choose a voice for dubbing",
+      "title": "[ta] Voice Selection"
+    }
   },
   "empty": {
     "noContent": "[ta] No content available",
@@ -4486,7 +4598,9 @@
       "active": "பதிவு செய்கிறது",
       "completed": "பதிவு செய்யப்பட்டது",
       "series": "தொடர் பதிவு"
-    }
+    },
+    "empty": "நிகழ்ச்சிகள் கிடைக்கவில்லை",
+    "noSchedule": "அட்டவணை கிடைக்கவில்லை"
   },
   "errors": {
     "networkError": "நெட்வொர்க் பிழை",
@@ -4561,7 +4675,9 @@
       "loadFailed": "வீடியோவை ஏற்ற இயலவில்லை",
       "noStreamUrl": "ஸ்ட்ரீம் URL கிடைக்கவில்லை",
       "notReady": "வீடியோ தயாராக இல்லை",
-      "sessionCreateFailed": "பல முயற்சிகளுக்குப் பிறகு பிளேபேக் அமர்வை உருவாக்க இயலவில்லை"
+      "sessionCreateFailed": "பல முயற்சிகளுக்குப் பிறகு பிளேபேக் அமர்வை உருவாக்க இயலவில்லை",
+      "connectionLost": "இணைப்பு துண்டிக்கப்பட்டது. இணைக்கப்பட்டால் தொடரும்.",
+      "connectionRestored": "இணைப்பு மீட்டெடுக்கப்பட்டது."
     },
     "podcast": {
       "playbackError": "ஆடியோ பிளேபேக் பிழை",
@@ -4605,7 +4721,11 @@
     "noAuthToken": "அங்கீகார டோக்கன் கிடைக்கவில்லை",
     "noDownloadUrl": "இந்த உள்ளடக்கத்திற்கு பதிவிறக்க URL கிடைக்கவில்லை",
     "purchaseVerificationFailed": "கொள்முதல் சரிபார்ப்பு தோல்வி",
-    "invalidUrl": "தவறான URL"
+    "invalidUrl": "தவறான URL",
+    "no_audio_url": "ஆடியோ URL கிடைக்கவில்லை",
+    "connection_failed": "இணைப்பு தோல்வி",
+    "quota_exceeded": "ஒதுக்கீடு மீறப்பட்டது",
+    "server_error": "சேவையக பிழை"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companion பயன்படுத்த உள்நுழையவும்",
@@ -4619,7 +4739,9 @@
     "items": "உருப்படிகள்",
     "empty": "பிடித்தவை இல்லை",
     "emptyHint": "உங்கள் பிடித்தவைகளில் உருப்படிகளைச் சேர்க்கவும்",
-    "loading": "பிடித்தவை ஏற்றப்படுகின்றன..."
+    "loading": "பிடித்தவை ஏற்றப்படுகின்றன...",
+    "remove": "பிடித்தவையிலிருந்து அகற்று",
+    "add": "பிடித்தவைகளில் சேர்"
   },
   "flows": {
     "title": "ஃப்ளோக்கள்",
@@ -4770,7 +4892,8 @@
     },
     "tv": {
       "useCompanion": "முழு தனிப்பயனாக்கத்திற்கு, உங்கள் தொலைபேசியில் Bayit+ ஆப்பைப் பயன்படுத்தவும் அல்லது உங்கள் கணினியில் bayit.plus-ஐப் பார்வையிடவும்."
-    }
+    },
+    "empty": "ஓட்டங்கள் கிடைக்கவில்லை"
   },
   "footer": {
     "brandDescription": "USA இல் உங்கள் வீடு. ஹீப்ரூவில் TV ஒளிபரப்புகள், VOD, வானொலி மற்றும் பாட்காஸ்ட்கள்.",
@@ -4798,7 +4921,8 @@
       "terms": "சேவை விதிமுறைகள்",
       "privacy": "தனியுரிமைக் கொள்கை",
       "cookies": "குக்கி கொள்கை",
-      "licenses": "உரிமங்கள்"
+      "licenses": "உரிமங்கள்",
+      "watchlist": "[ta] Watchlist"
     },
     "newsletter": {
       "title": "புதுப்பித்த நிலையில் இருங்கள்",
@@ -4879,7 +5003,11 @@
     "searchToAdd": "நண்பர்களைச் சேர்க்க பயனர்களைத் தேடுங்கள்",
     "loadingFriends": "நண்பர்கள் ஏற்றப்படுகின்றனர்...",
     "searchResults": "தேடல் முடிவுகள் ({{count}})",
-    "pending": "நிலுவையில்"
+    "pending": "நிலுவையில்",
+    "empty": "இன்னும் நண்பர்கள் இல்லை",
+    "emptyHint": "இணைய நண்பர்களைத் தேடு",
+    "loading": "நண்பர்கள் ஏற்றுகிறது...",
+    "list": "நண்பர்கள் ({{count}})"
   },
   "googleLogin": {
     "cancelledError": "Google உள்நுழைவு ரத்து செய்யப்பட்டது",
@@ -4961,13 +5089,17 @@
         "title": "குடும்ப சுயவிவரங்கள்",
         "description": "தனிப்பயனாக்கப்பட்ட பரிந்துரைகளுடன் ஒவ்வொரு குடும்ப உறுப்பினருக்கும் சுயவிவரங்களை உருவாக்குங்கள்"
       }
-    }
+    },
+    "contactDescription": "எங்கள் ஆதரவுக் குழுவைத் தொடர்பு கொள்ளுங்கள்.",
+    "needMoreHelp": "மேலும் உதவி தேவையா?",
+    "noFAQ": "FAQ கிடைக்கவில்லை"
   },
   "hero": {
     "watch": "பார்",
     "watchNow": "இப்போது பாருங்கள்",
     "moreInfo": "மேலும் தகவல்",
-    "addToList": "பட்டியலில் சேர்"
+    "addToList": "பட்டியலில் சேர்",
+    "newBadge": "புதிது"
   },
   "home": {
     "continueWatching": "தொடர்ந்து பாருங்கள்",
@@ -5027,7 +5159,31 @@
     "locationPermissionDescription": "உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கம் மற்றும் வணிகங்களைக் காண இருப்பிடத்தை இயக்கவும்",
     "enableLocation": "இருப்பிடத்தை இயக்கு",
     "locationPermissionDeniedDescription": "இருப்பிட அணுகல் மறுக்கப்பட்டது. அதை இயக்க மற்றும் உங்களுக்கு அருகிலுள்ள இஸ்ரேலிய உள்ளடக்கத்தைக் காண அமைப்புகளைத் திறக்கவும்.",
-    "openSettings": "அமைப்புகளைத் திற"
+    "openSettings": "அமைப்புகளைத் திற",
+    "radio": "வானொலி",
+    "israelisInCity": "உங்கள் நகரத்தில் இஸ்ரேலியர்கள்",
+    "israeliBusinesses": "உங்களுக்கு அருகில் இஸ்ரேலிய வணிகங்கள்",
+    "whatsHot": "இஸ்ரேலில் என்ன பிரபலமாக இருக்கிறது",
+    "collection": "தொகுப்பு",
+    "discoverCollection": "இந்த அற்புதமான தொகுப்பை கண்டறியுங்கள்",
+    "nearMe": "என் அருகில்",
+    "israeliMovies": "இஸ்ரேலி திரைப்படங்கள்",
+    "israeliSeries": "இஸ்ரேலிய தொடர்கள்",
+    "movies": "திரைப்படங்கள்",
+    "music": "இசை",
+    "documentary": "ஆவணப்படம்",
+    "series": "தொடர்",
+    "jerusalem": "ஜெருசலேம்",
+    "telAviv": "டெல் அவீவ்",
+    "recommended": "உங்களுக்கு பரிந்துரைக்கப்பட்டது",
+    "newReleases": "புதிய வெளியீடுகள்",
+    "audioPicks": "ஆடியோ தேர்வுகள்",
+    "trendingRecommendations": "திரெண்டிங் பரிந்துரைகள்",
+    "topNumber": "#{{position}}",
+    "minutesRemaining": "{{minutes}} நிமிடங்கள் மீதம்",
+    "nowPlaying": "இப்போது இயங்குகிறது",
+    "israeli-movies": "[ta] Israeli Movies",
+    "israeli-series": "[ta] Israeli Series"
   },
   "jerusalem": {
     "title": "ஜெருசலேம் இணைப்பு",
@@ -5078,7 +5234,11 @@
       "parashaStudy": "பராஷா",
       "shabbatRecipes": "சமையல் குறிப்புகள்",
       "prayers": "பிரார்த்தனைகள்",
-      "parashat": "பராஷத் {{name}}"
+      "parashat": "பராஷத் {{name}}",
+      "candlesIn": "{{minutes}} நிமிடங்களில் மெழுகுவர்த்திகள்",
+      "songs": "பாடல்கள்",
+      "parasha": "பராஷா",
+      "recipes": "சமையல் குறிப்புகள்"
     },
     "calendar": {
       "dafYomi": "தப் யோமி",
@@ -5131,7 +5291,8 @@
       "kids": "குழந்தைகள்",
       "documentary": "ஆவணப்படம்"
     },
-    "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன..."
+    "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன...",
+    "channel": "சேனல்"
   },
   "forgotPasswordPage": {
     "title": "கடவுச்சொல் மறந்துவிட்டதா",
@@ -5282,13 +5443,25 @@
     "more": "மேலும்",
     "playlist": "பிளேலிஸ்ட்",
     "byoc": "உங்கள் உள்ளடக்கம்",
-    "zehAniHub": "ஜே அனீ"
+    "zehAniHub": "ஜே அனீ",
+    "zehAni": "Zeh Ani",
+    "listen": "கேள்",
+    "youngsters": "இளைஞர்கள்",
+    "watchlist": "கண்காணிப்பு பட்டியல்",
+    "glossary": "சொற்களஞ்சியம்",
+    "missions": "பணிகள்",
+    "discoverHub": "AI கண்டறி",
+    "household": "குடும்பம்",
+    "messages": "செய்திகள்",
+    "myContent": "என் உள்ளடக்கம்",
+    "social": "சமூகம்"
   },
   "onboarding": {
     "welcome": {
       "title": "Bayit+-க்கு வரவேற்கிறோம்",
       "subtitle": "இஸ்ரேலிய தொலைக்காட்சி, உங்கள் மொழியில்",
-      "continue": "தொடரவும்"
+      "continue": "தொடரவும்",
+      "getStarted": "தொடங்குங்கள்"
     },
     "aiLanguage": {
       "title": "{{language}}-இல் பாருங்கள்",
@@ -5325,13 +5498,119 @@
       "enableVoice": "குரல் கட்டுப்பாட்டை இயக்கு",
       "wakeWord": "விழிப்புச் சொல் கண்டறிதல்",
       "continue": "தொடரவும்",
-      "later": "பின்னர் அமைக்கவும்"
+      "later": "பின்னர் அமைக்கவும்",
+      "orType": "அல்லது உங்கள் பெயரை தட்டச்சு செய்யவும்",
+      "enable": "மைக்ரோஃபோனை இயக்கு",
+      "granted": "மைக்ரோஃபோன் வெற்றிகரமாக இயக்கப்பட்டது"
     },
     "launch": {
       "title": "எல்லாம் தயார்",
       "hint": "சேனல்களுக்கு மேலே ஸ்வைப் செய்யுங்கள், எப்போதும் 'Hey Bayit' என்று சொல்லுங்கள்"
     },
-    "skip": "தவிர்"
+    "skip": "தவிர்",
+    "complete": {
+      "title": "எல்லாம் தயார்!",
+      "subtitle": "உங்கள் தனிப்பயன் அனுபவம் தயாராக உள்ளது. Bayit+ ஐ அனுபவியுங்கள்!",
+      "language": "மொழி",
+      "name": "பெயர்",
+      "startWatching": "பார்க்க தொடங்கு",
+      "saving": "சேமிக்கிறது..."
+    },
+    "language": {
+      "title": "உங்கள் மொழிகளைத் தேர்ந்தெடுங்கள்",
+      "subtitle": "உங்கள் முதன்மை மொழியையும் நீங்கள் விரும்பும் உள்ளடக்க மொழிகளையும் தேர்ந்தெடுக்கவும்",
+      "primary": "முதன்மை மொழி",
+      "content": "உள்ளடக்க மொழிகள்"
+    },
+    "interests": {
+      "title": "நீங்கள் என்ன விரும்புகிறீர்கள்?",
+      "subtitle": "உங்கள் அனுபவத்தை தனிப்பயனாக்க குறைந்தது 3 உள்ளடக்க வகைகளைத் தேர்ந்தெடுங்கள்",
+      "selected": "%d இல் %d தேர்ந்தெடுக்கப்பட்டது",
+      "live_tv": "நேரலை டிவி",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்",
+      "kids": "குழந்தைகள்",
+      "music": "இசை",
+      "radio": "வானொலி",
+      "podcasts": "பாட்காஸ்ட்கள்",
+      "audiobooks": "ஆடியோபுத்தகங்கள்",
+      "news": "செய்திகள்",
+      "sports": "விளையாட்டு"
+    },
+    "culture": {
+      "title": "உங்கள் கலாச்சார உணர்வு",
+      "subtitle": "உங்கள் கலாச்சார பின்னணிக்கு ஏற்ற உள்ளடக்கத்தை வழங்க எங்களுக்கு உதவுங்கள்",
+      "israeli": "இஸ்ரேலி",
+      "american": "அமெரிக்கன்",
+      "european": "ஐரோப்பிய",
+      "mixed": "உலகளாவிய கலவை"
+    },
+    "byoc": {
+      "title": "உங்கள் சொந்த உள்ளடக்கத்தைக் கொண்டு வாருங்கள்",
+      "subtitle": "உங்கள் ஏற்கனவே உள்ள மீடியா மூலங்களை இணைத்து Bayit+ AI அம்சங்களுடன் அனுபவியுங்கள்",
+      "iptvDesc": "எந்த IPTV வழங்குநரிடமிருந்தும் நேரலை டிவி",
+      "plexDesc": "AI வசனங்களுடன் உங்கள் Plex நூலகம்",
+      "youtubeDesc": "எபிரேய கருவிகளுடன் YouTube",
+      "connectNow": "ஒரு மூலத்தை இணை",
+      "skipForNow": "இப்போதைக்கு தவிர்"
+    },
+    "highlight": {
+      "dubbing": "நேரடி AI டப்பிங்",
+      "subtitles": "ஊடாடும் வசனங்கள்",
+      "ai": "AI தோழர்கள்",
+      "learning": "ஹீப்ரு கற்றல்"
+    },
+    "tour": {
+      "done": "முடிந்தது"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "நேரடி AI டப்பிங்",
+        "description": "உங்கள் விருப்பமான மொழியில் நிகழ்நேர AI டப்பிங்குடன் இஸ்ரேலிய தொலைக்காட்சி பாருங்கள்",
+        "hebrew": "ஹீப்ரு",
+        "english": "ஆங்கிலம்"
+      },
+      "subtitles": {
+        "title": "ஊடாடும் வசனங்கள்",
+        "description": "உடனடி மொழிபெயர்ப்பு மற்றும் உச்சரிப்புக்காக வசனங்களில் எந்த வார்த்தையையும் தட்டவும்",
+        "sample": "குடும்பம் Shabbat இரவு உணவுக்காக கூடியது",
+        "word": "ஷப்பாத்",
+        "translation": "சபத் - வாராந்திர ஓய்வு நாள்"
+      },
+      "interaction": {
+        "title": "AI கதாபாத்திர தொடர்பு",
+        "description": "எந்த காட்சியையும் இடைநிறுத்தி கலாச்சார சூழல் பற்றி உங்கள் AI தோழரிடம் கேளுங்கள்",
+        "userMsg": "அவர்கள் என்ன திருவிழா கொண்டாடுகிறார்கள்?",
+        "aiMsg": "அவர்கள் Sukkot, கூடாரத் திருவிழா கொண்டாடுகிறார்கள். நீங்கள் பார்க்கும் தற்காலிக குடிசை sukkah என்று அழைக்கப்படுகிறது."
+      },
+      "trivia": {
+        "title": "நேரடி ட்ரிவியா",
+        "description": "AI நேரலையில் ஒளிபரப்பாகும் உள்ளடக்கத்திலிருந்து ட்ரிவியா கேள்விகள் உருவாக்குகிறது. போட்டியிடுங்கள் மற்றும் கற்றுக்கொள்ளுங்கள்!",
+        "question": "இஸ்ரேலின் அதிகாரப்பூர்வ மொழி என்ன?",
+        "optionA": "அரபிக்",
+        "optionB": "ஹீப்ரு",
+        "optionC": "ஆங்கிலம்"
+      },
+      "catchup": {
+        "title": "ஸ்மார்ட் கேட்ச் அப்",
+        "description": "நேரலை ஒளிபரப்பின் ஒரு பகுதியை தவறவிட்டீர்களா? AI தவறவிட்டதை சுருக்கமாக கூறுகிறது",
+        "missed": "தவறவிட்டது",
+        "summary": "AI சுருக்கம்",
+        "live": "இப்போது நேரலை"
+      },
+      "byoc": {
+        "title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+        "description": "உங்கள் IPTV மூலங்களை இறக்குமதி செய்து Bayit+ உள்ளடக்கத்துடன் பாருங்கள்",
+        "step1": "மூலத்தை சேர்க்கவும்",
+        "step2": "AI செறிவூட்டல்",
+        "step3": "பாருங்கள்"
+      },
+      "zehAni": {
+        "title": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+        "description": "உங்களுடன் கற்கும் தனிப்பயனாக்கப்பட்ட AI அவதாரை உருவாக்குங்கள்",
+        "generated": "AI அவதார்"
+      }
+    }
   },
   "notFound": {
     "title": "பக்கம் கிடைக்கவில்லை",
@@ -5480,13 +5759,25 @@
       "categories": {
         "ai": "AI சேவைகள்",
         "platform": "பளத்தளம்",
-        "support": "ஆதரவு"
+        "support": "ஆதரவு",
+        "content": "உள்ளடக்க அணுகல்",
+        "quality": "தரம் மற்றும் செயல்திறன்",
+        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
+        "features": "பிளஸ் அம்சங்கள்"
       },
       "features": {
         "aiFeatures": "AI சேவைகள் (மொத்தம் 19)",
         "widgets": "விட்ஜெட்",
         "familyProfiles": "குடும்ப ப்ரோபைல்",
-        "customerSupport": "வாடிக்கையாளர் ஆதரவு"
+        "customerSupport": "வாடிக்கையாளர் ஆதரவு",
+        "browseContent": "உள்ளடக்க நூலகத்தை உலாவவும்",
+        "vodAccess": "தேவைக்கேற்ற திரைப்படங்கள் மற்றும் தொடர்கள்",
+        "liveChannels": "நேரடி டிவி சேனல்கள்",
+        "radioPodcasts": "வானொலி மற்றும் பாட்காஸ்ட்கள்",
+        "videoQuality": "வீடியோ தரம்",
+        "simultaneousDevices": "ஒரே நேரத்தில் சாதனங்கள்",
+        "aiAssistant": "AI ஸ்மார்ட் உதவியாளர்",
+        "offlineDownloads": "ஆஃப்லைனுக்கு பதிவிறக்கவும்"
       },
       "values": {
         "fiftyCredits": "50 க்ரெடிட் (ஒரு முறை)",
@@ -5494,6 +5785,42 @@
         "emailSupport": "மின்னஞ்சல்",
         "prioritySupport": "முன்னுரிமை"
       }
+    },
+    "non_registered": {
+      "name": "உலாவல் மட்டும்",
+      "description": "எங்கள் உள்ளடக்க நூலகத்தை ஆராயுங்கள்"
+    },
+    "registered_free": {
+      "name": "இலவச கணக்கு",
+      "description": "இலவச அம்சங்களுக்காக கணக்கை உருவாக்கவும்"
+    },
+    "basic": {
+      "name": "இலவசம்",
+      "features": [
+        "அனைத்து VOD உள்ளடக்கம்",
+        "வானொலி & பாட்காஸ்ட்கள்",
+        "1 சாதனத்தில் பார்",
+        "SD தரம்"
+      ],
+      "notIncluded": [
+        "நேரலை சேனல்கள்",
+        "AI உதவியாளர்",
+        "ஆஃப்லைன் பார்வை"
+      ]
+    },
+    "premium": {
+      "name": "பிளஸ்",
+      "features": [
+        "அனைத்து VOD உள்ளடக்கம்",
+        "நேரலை சேனல்கள்",
+        "வானொலி & பாட்காஸ்ட்கள்",
+        "ஸ்மார்ட் AI உதவியாளர்",
+        "4 சாதனங்களில் பார்",
+        "4K தரம்",
+        "5 குடும்ப சுயவிவரங்கள்",
+        "ஆஃப்லைன் பதிவிறக்கம்"
+      ],
+      "notIncluded": []
     }
   },
   "player": {
@@ -5591,7 +5918,10 @@
       "noSource": "ஸ்ட்ரீம் கிடைக்கவில்லை",
       "streamFailed": "ஸ்ட்ரீம் ஏற்றுவதில் தோல்வி",
       "unknown": "அறியாத ஒலிபரப்பு பிழை",
-      "unsupportedFormat": "ஒலி வடிவம் ஆதரிக்கப்படவில்லை"
+      "unsupportedFormat": "ஒலி வடிவம் ஆதரிக்கப்படவில்லை",
+      "streamLimitMessage": "{{maxStreams}} ஒரே நேர ஸ்ட்ரீம்களின் அதிகபட்ச எண்ணிக்கையை அடைந்துவிட்டீர்கள். மற்றொரு ஸ்ட்ரீமை நிறுத்தவும் அல்லது உங்கள் திட்டத்தை மேம்படுத்தவும்.",
+      "streamLimitTitle": "ஸ்ட்ரீம் வரம்பை அடைந்தது",
+      "upgradePlan": "திட்டத்தை மேம்படுத்து"
     },
     "exitFullscreen": "முழுத்திரையிலிருந்து வெளியேறு",
     "liveLanguageMagic": "நேரடி மொழி மாயம்",
@@ -5617,7 +5947,14 @@
       "transcribing": "எழுத்தாக்கம் செய்கிறது...",
       "thinking": "யோசிக்கிறது...",
       "voiceConsentRequired": "குரல் தொடர்புக்கு குரல் ஒப்புதல் தேவை",
-      "micPermissionDenied": "ஒலிவாங்கி அனுமதி மறுக்கப்பட்டது"
+      "micPermissionDenied": "ஒலிவாங்கி அனுமதி மறுக்கப்பட்டது",
+      "cancel": "[ta] Cancel",
+      "close": "[ta] Close",
+      "placeholder": "[ta] Type your message...",
+      "send": "[ta] Send",
+      "sharedSession": "[ta] Shared Session",
+      "waitingForTurn": "[ta] Waiting for your turn...",
+      "yourAvatar": "[ta] Your Avatar"
     },
     "pauseAsk": {
       "title": "கதாபாத்திரத்திடம் கேளுங்கள்",
@@ -5635,7 +5972,43 @@
         "falAi": "வீடியோ சேவை கிடைக்கவில்லை",
         "elevenlabs": "குரல் சேவை கிடைக்கவில்லை",
         "credits": "போதுமான கிரெடிட்கள் இல்லை"
-      }
+      },
+      "noCharacters": "இந்த திரைப்படத்தின் கதாபாத்திரங்கள் இன்னும் கிடைக்கவில்லை",
+      "stages": {
+        "polishing": "உங்கள் கேள்வியை மெருகேற்றுகிறது...",
+        "thinking": "உங்கள் கேள்வி பற்றி யோசிக்கிறது...",
+        "biff1": "பிஃப்புக்கு உங்கள் கேள்வி பிடிக்கவில்லை...",
+        "biff2": "பிஃப் கண்ணாடியில் தன்னைப் பார்க்கிறான்...",
+        "biff3": "பிஃப் பதிலை எழுத முயற்சிக்கிறான்...",
+        "biff4": "பிஃப் யாரையோ முட்டாள் என்று கூறிவிட்டான்...",
+        "doc1": "டாக் ஃப்ளக்ஸ் கெப்பாசிட்டரை ஆலோசிக்கிறார்...",
+        "doc2": "கிரேட் ஸ்காட்! இன்னும் கணக்கிடுகிறது...",
+        "doc3": "டாக் 1.21 ஜிகாவாட்களை சரிசெய்கிறார்...",
+        "doc4": "டாக் விண்வெளி-நேரத் தொடர்ச்சியை சரிபார்க்கிறார்...",
+        "marty1": "மார்ட்டி முதலில் கிட்டார் டியூன் செய்கிறான்...",
+        "marty2": "இது கனமானது...",
+        "marty3": "மார்ட்டி தான் இன்னும் இருக்கிறானா என்று பார்க்கிறான்...",
+        "marty4": "மார்ட்டி சொல்கிறான் யாரும் தன்னை கோழை என்று கூப்பிடக்கூடாது...",
+        "george1": "ஜார்ஜ் பதிலளிக்க தைரியம் சேகரிக்கிறான்...",
+        "george2": "ஜார்ஜ் நோட்டுப்புத்தகத்தில் பதிலை எழுதுகிறான்...",
+        "george3": "ஜார்ஜ் தன் அடர்த்தி தன்னை இங்கு கொண்டு வந்தது என்கிறான்...",
+        "george4": "ஜார்ஜுக்கு இறுதியாக நம்பிக்கை வந்தது...",
+        "lorraine1": "லோரேன் முதலில் தலைமுடியை சரிசெய்கிறாள்...",
+        "lorraine2": "லோரேன் கடலுக்கு அடியில் மந்திரத்தை நினைக்கிறாள்...",
+        "lorraine3": "லோரேன் இது விதி என்கிறாள்...",
+        "lorraine4": "லோரேன் நடனத்திற்கு தயாராகிறாள்...",
+        "jennifer1": "ஜெனிஃபர் காரில் காத்திருக்கிறாள்...",
+        "jennifer2": "ஜெனிஃபர் எதிர்காலத்தைப் பற்றி யோசிக்கிறாள்...",
+        "jennifer3": "ஜெனிஃபர் சமாளிக்க முடியும் என்கிறாள்...",
+        "jennifer4": "ஜெனிஃபர் பொறுமையாக இருக்கிறாள்...",
+        "generic1": "{{name}} யோசிக்கிறது...",
+        "generic2": "{{name}} பதிலை உருவாக்குகிறது...",
+        "generic3": "கிட்டத்தட்ட முடிந்தது...",
+        "generic4": "இன்னும் சிறிது நேரம்..."
+      },
+      "askAgain": "[ta] Ask Again",
+      "placeholder": "[ta] Ask about this scene...",
+      "resume": "[ta] Resume"
     },
     "multiCharacter": {
       "selectCharacter": "உரையாட கதாபாத்திரத்தை தேர்வுசெய்",
@@ -5662,18 +6035,130 @@
       "off": "ஆப்",
       "timerSet": "{{minutes}} நிமிடங்களுக்கு தூக்க டைமர் அமைக்கப்பட்டது",
       "timerExtended": "டைமர் {{minutes}} நிமிடங்கள் நீட்டிக்கப்பட்டது",
-      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது"
+      "timerCancelled": "தூக்க டைமர் ரத்து செய்யப்பட்டது",
+      "subtitle": "நிர்ணயிக்கப்பட்ட நேரத்திற்குப் பிறகு இயக்கத்தை தானாக நிறுத்து",
+      "minutes": "{{count}} நிமி",
+      "customPlaceholder": "தனிப்பயன் நிமிடங்கள்",
+      "set": "நேரமானி அமை"
     },
     "invalidEpisodeUrl": "தவறான எபிசோட் URL",
     "dubbing": {
       "premiumTitle": "Plus சேவை",
       "premiumMessage": "நேரடி டப்பிங்கிற்கு Plus சந்தா தேவை",
       "upgrade": "Plus-க்கு மேம்படுத்துங்கள்",
-      "notNow": "இப்போது வேண்டாம்"
+      "notNow": "இப்போது வேண்டாம்",
+      "label": "டப்பிங்",
+      "feature": {
+        "realtime": "பல மொழிகளில் நிகழ்நேர டப்பிங்",
+        "voices": "தொழில்முறை குரல் தேர்வு",
+        "lowLatency": "குறைந்த-தாமத ஒலி ஸ்ட்ரீமிங்",
+        "highQuality": "உயர்-தர ஒலி"
+      },
+      "voiceTitle": "டப்பிங் குரல்",
+      "settings_title": "நேரடி டப்பிங் அமைப்புகள்",
+      "target_language": "இலக்கு மொழி"
     },
+    "dismiss": "மூடு",
+    "dismissPlayer": "பிளேயரை மூடு",
     "nextEpisode": "அடுத்த அத்தியாயம்",
     "playingIn": "{{seconds}} வினாடிகளில் இயக்கப்படுகிறது...",
-    "playNow": "இப்போது இயக்கவும்"
+    "playNow": "இப்போது இயக்கவும்",
+    "interactive": {
+      "tapToTranslate": "மொழிபெயர்க்க ஒரு சொல்லைத் தட்டவும்",
+      "translating": "மொழிபெயர்க்கிறது...",
+      "addToGlossary": "சொற்களஞ்சியத்தில் சேர்",
+      "close": "மூடு",
+      "toggle": "ஊடாடும் வசனங்கள்"
+    },
+    "audio": "ஆடியோ",
+    "audioTrack": "ஆடியோ டிராக்",
+    "catchUp": "பின்தொடர்",
+    "interaction": {
+      "next": "அடுத்த தொடர்பு",
+      "previous": "முந்தைய தொடர்பு"
+    },
+    "loadingEpisode": "அத்தியாயம் ஏற்றுகிறது...",
+    "loadingStream": "ஸ்ட்ரீம் ஏற்றுகிறது...",
+    "preparingStream": "ஸ்ட்ரீம் தயாராகிறது...",
+    "scenes": "காட்சிகள்",
+    "startOver": "மீண்டும் தொடங்கு",
+    "streamLoadFailed": "தோல்வி to load stream",
+    "videoQuality": "வீடியோ தரம்",
+    "trivia": "டிரிவியா",
+    "currentLanguage": "தற்போதைய மொழி",
+    "premiumRequired": "Plus அம்சம்",
+    "upgradeToPremiumDubbing": "வரம்பற்ற AI டப்பிங்கிற்கு Plus-க்கு மேம்படுத்தவும்",
+    "upgradeToPremium": "Plus-க்கு மேம்படுத்து",
+    "ai": {
+      "dub": "Dub",
+      "dubbing": "டப்பிங்",
+      "featuresTitle": "AI அம்சங்கள்",
+      "languagePrimary": "முதன்மை",
+      "languageSecondary": "இரண்டாம்நிலை (விரும்பினால்)",
+      "languageTitle": "AI மொழி",
+      "liveTranslate": "நேரடி மொழிபெயர்ப்பு",
+      "selectLanguage": "மொழியைத் தேர்ந்தெடு",
+      "split": "பிரி",
+      "togglePanel": "AI பேனலை நிலைமாற்று",
+      "translate": "மொழிபெயர்",
+      "trivia": "அறிவுத்திறன்",
+      "triviaToggle": "[ta] Trivia"
+    },
+    "catchup": {
+      "description": "தொடக்கத்தை தவறவிட்டீர்களா? இதுவரை என்ன நடந்தது என்பதன் AI சுருக்கத்தைப் பெறுங்கள்.",
+      "generateSummary": "சுருக்கத்தை உருவாக்கு",
+      "summaryTitle": "சுருக்கம்",
+      "title": "பின்தொடர்",
+      "keyPoints": "[ta] Key Points",
+      "transcript": "[ta] Transcript"
+    },
+    "companion": {
+      "noContext": "இந்த உள்ளடக்கத்திற்கு இன்னும் கலாச்சார சூழல் கிடைக்கவில்லை.",
+      "quizComplete": "வினாடி வினா முடிந்தது",
+      "quizRetry": "மீண்டும் முயற்சி",
+      "quizStart": "வினாடி வினா தொடங்கு",
+      "quizTitle": "உங்கள் அறிவை சோதிக்க தயாரா?",
+      "quizTryAgain": "மீண்டும் முயற்சி",
+      "tabContext": "சூழல்",
+      "tabQuiz": "வினாடி வினா",
+      "tabVocabulary": "சொற்களஞ்சியம்",
+      "tapWords": "இங்கே சேர்க்க வசனங்களில் உள்ள சொற்களைத் தட்டவும்",
+      "title": "AI துணை"
+    },
+    "controls": {
+      "audioTrack": "ஆடியோ ட்ராக்",
+      "continueWatching": "தொடர்ந்து பார்",
+      "dismiss": "நிராகரி",
+      "goBack": "திரும்பிச் செல்",
+      "navigateBack": "பின்செல்",
+      "on": "ON",
+      "pause": "இடைநிறுத்து",
+      "play": "இயக்கு",
+      "preview": "முன்னோட்டம்",
+      "selected": "தேர்ந்தெடுக்கப்பட்டது",
+      "send": "அனுப்பு",
+      "skip": "தவிர்",
+      "close": "[ta] Close",
+      "exitFullscreen": "[ta] Exit Fullscreen",
+      "fullscreen": "[ta] Fullscreen",
+      "restart": "[ta] Restart",
+      "skipBackward": "[ta] Skip Backward",
+      "skipForward": "[ta] Skip Forward",
+      "volume": "[ta] Volume"
+    },
+    "audio_description": "ஆடியோ விளக்கம்",
+    "scene_search": "காட்சி தேடல்",
+    "search_placeholder": "காட்சியைத் தேடு...",
+    "language_ratio": "மொழி கற்றல் விகிதம்",
+    "go_back": "திரும்பு",
+    "openSubs": {
+      "title": "வசனங்களை தேடு",
+      "searchPlaceholder": "தலைப்பு மூலம் தேடு...",
+      "search": "தேடு",
+      "searchFailed": "தேடல் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "downloads": "{{count}} பதிவிறக்கங்கள்",
+      "noResults": "வசனங்கள் எதுவும் இல்லை"
+    }
   },
   "podcast": {
     "selectLanguage": "மொழியைத் தேர்ந்தெடு",
@@ -5695,10 +6180,38 @@
         "short": "ES",
         "full": "ஸ்பானிஷ்"
       }
-    }
+    },
+    "podcastDetailsShort": "போட்காஸ்ட்"
   },
   "listen": {
-    "title": "கேளுங்கள்"
+    "title": "கேளுங்கள்",
+    "featured": "சிறப்பு ஆடியோ",
+    "continueListening": "கேட்கவும் தொடரவும்",
+    "radioStations": "வானொலி நிலையங்கள்",
+    "discoverPodcasts": "பாட்காஸ்ட்கள் கண்டறி",
+    "discoverAudiobooks": "ஆடியோ நூல்கள் கண்டறி",
+    "categories": "வகைகள்",
+    "nowPlaying": "இப்போது இயங்குகிறது",
+    "browseAll": "எல்லாம் உலாவு",
+    "browseAudiobooks": "ஆடியோ நூல்கள் உலாவு",
+    "browsePodcasts": "பாட்காஸ்ட்கள் உலாவு",
+    "noFeatured": "சிறப்பு ஆடியோ இல்லை",
+    "noContinueListening": "ஆடியோ இயங்கவில்லை",
+    "sortBy": "வரிசைப்படுத்து",
+    "sortRecent": "[ta] Recent",
+    "sortPopular": "[ta] Popular",
+    "sortDuration": "கால அளவு",
+    "filterGenre": "வகை",
+    "filterLanguage": "மொழி",
+    "episodeCount": "{{count}} எபிசோடுகள்",
+    "latestEpisode": "சமீபத்தியது: {{date}}",
+    "loading": "ஆடியோ உள்ளடக்கம் ஏற்றப்படுகின்றது...",
+    "subtitle": "வானொலி, பாட்காஸ்ட் மற்றும் ஆடியோ புத்தகங்கள்",
+    "tab": {
+      "radio": "வானொலி",
+      "podcasts": "பாட்காஸ்ட்",
+      "audiobooks": "ஆடியோ புத்தகங்கள்"
+    }
   },
   "podcasts": {
     "title": "Podcast கள்",
@@ -5795,7 +6308,17 @@
     "subscribe": "சந்தா செய்",
     "unsubscribe": "சந்தா நீக்கு",
     "removeFailed": "பாட்காஸ்ட்டை நீக்க இயலவில்லை",
-    "episode": "எபிசோடு"
+    "episode": "எபிசோடு",
+    "addedSuccess": "பாட்காஸ்ட் வெற்றிகரமாக சேர்க்கப்பட்டது",
+    "allPodcasts": "அனைத்து பாட்காஸ்ட்கள்",
+    "notFound": "பாட்காஸ்ட் கிடைக்கவில்லை",
+    "removePodcast": "பாட்காஸ்ட்டை அகற்று",
+    "rssUrl": "பாட்காஸ்ட் RSS URL",
+    "rssUrlHint": "உங்கள் பாட்காஸ்ட்டின் RSS ஊட்ட URL உள்ளிடவும்",
+    "episodeShort": "எபி. {{number}}",
+    "author": "ஆசிரியர்",
+    "category": "வகை",
+    "episodeCount": "அத்தியாயங்கள்"
   },
   "miniPlayer": {
     "skipBackward": "15 வினாடி பின்னால்",
@@ -6088,7 +6611,79 @@
     "unlockPremiumDescription": "பிரத்யேக உள்ளடக்கம் மற்றும் அம்சங்களை அனுபவிக்க மேம்படுத்தவும்",
     "unknown": "அறியாத வீரர்",
     "myDownloads": "என் பதிவிறக்கங்கள்",
-    "offlineContent": "ஆஃப்லைன் உள்ளடக்கம்"
+    "offlineContent": "ஆஃப்லைன் உள்ளடக்கம்",
+    "zehAni": "Zeh Ani",
+    "plusPrice": "$7.99/மாதம்",
+    "betaCredits": "பீட்டா கிரெடிட்கள்",
+    "creditsRemaining": "கிரெடிட்கள் மீதம்",
+    "streak": "நாள் தொடர்",
+    "watched": "பார்த்தது",
+    "recordings": "பதிவுகள்",
+    "rewards": "வெகுமதிகள்",
+    "household": "குடும்பம்",
+    "displayName": "காட்சி பெயர்",
+    "phoneNumber": "தொலைபேசி எண்",
+    "mfa": "பல காரணி அங்கீகாரம்",
+    "verified": "சரிபார்க்கப்பட்டது",
+    "notVerified": "சரிபார்க்கப்படவில்லை",
+    "beta500Description": "AI அம்சங்கள் மற்றும் சோதனை உள்ளடக்கத்திற்கான அணுகல்",
+    "beta500Member": "Beta 500 உறுப்பினர்",
+    "credits": "கிரெடிட்கள்",
+    "emailAddress": "மின்னஞ்சல் முகவரி",
+    "linkSignInMethods": "எளிதான அணுகலுக்கு பல உள்நுழைவு முறைகளை இணைக்கவும்",
+    "loading": "சுயவிவரம் ஏற்றுகிறது...",
+    "loadingHistory": "வரலாறு ஏற்றுகிறது...",
+    "noData": "சுயவிவர தரவு இல்லை",
+    "noViewingHistory": "பார்வை வரலாறு இல்லை",
+    "noViewingHistoryDescription": "உங்கள் வரலாற்றை இங்கே பார்க்க உள்ளடக்கத்தைப் பார்க்கத் தொடங்குங்கள்",
+    "primarySignIn": "முதன்மை உள்நுழைவு முறை",
+    "signOut": "வெளியேறு",
+    "signOutConfirmation": "நீங்கள் மீண்டும் உள்நுழைய வேண்டும்",
+    "playlists": "பிளேலிஸ்ட்கள்",
+    "dayStreak": "தொடர் நாட்கள்",
+    "yourStatistics": "உங்கள் புள்ளிவிவரங்கள்",
+    "quickActions": "விரைவு செயல்கள்",
+    "myFavorites": "என் பிடித்தவை",
+    "viewFavoriteContent": "உங்கள் பிடித்த உள்ளடக்கத்தைப் பாருங்கள்",
+    "myRecordings": "என் பதிவுகள்",
+    "manageDvrRecordings": "DVR பதிவுகள் நிர்வகிக்கவும்",
+    "myPlaylists": "என் பிளேலிஸ்ட்கள்",
+    "organizeContent": "உங்கள் உள்ளடக்கத்தை ஒழுங்கமைக்கவும்",
+    "viewingHistory": "பார்வை வரலாறு",
+    "seeWhatYouWatched": "நீங்கள் பார்த்ததைப் பாருங்கள்",
+    "whosWatching": "யார் பார்க்கிறார்கள்?",
+    "loadingProfiles": "சுயவிவரங்களை ஏற்றுகிறது...",
+    "addProfile": "சுயவிவரம் சேர்",
+    "addProfileSubtitle": "உங்கள் குடும்பத்திற்கு புதிய சுயவிவரத்தை உருவாக்கவும்",
+    "chooseAvatar": "அவதாரத்தைத் தேர்ந்தெடுக்கவும்",
+    "switchProfile": "சுயவிவரத்தை மாற்று",
+    "switchProfileDesc": "வேறு சுயவிவரத்திற்கு மாறவும்",
+    "messages": "செய்திகள்",
+    "preferences": "விருப்பங்கள்",
+    "preferencesDesc": "உள்ளடக்கம், மொழி, தர அமைப்புகள்",
+    "accountSecurityDesc": "கடவுச்சொல், 2FA, இணைக்கப்பட்ட கணக்குகள்",
+    "verifyEmail": "மின்னஞ்சலை சரிபார்",
+    "verifyEmailDesc": "உங்கள் மின்னஞ்சல் முகவரியை உறுதிப்படுத்தவும்",
+    "verifyPhone": "தொலைபேசியை சரிபார்",
+    "verifyPhoneDesc": "உங்கள் தொலைபேசி எண்ணை உறுதிப்படுத்தவும்",
+    "accountManagement": "கணக்கு நிர்வாகம்",
+    "householdProfiles": "குடும்ப சுயவிவரங்கள்",
+    "householdProfilesDesc": "குடும்ப சுயவிவரங்கள் நிர்வகிக்கவும்",
+    "aboutDesc": "ஆப் பதிப்பு, விதிமுறைகள், தனியுரிமை",
+    "advanced": "மேம்பட்ட",
+    "friendsDesc": "மற்ற பார்வையாளர்களுடன் இணையுங்கள்",
+    "messagesDesc": "நேரடி செய்திகள்",
+    "settingsDesc": "ஆப் அமைப்புகள் மற்றும் விருப்பங்கள்",
+    "widgets": "விட்ஜெட்",
+    "widgetsDesc": "உங்கள் விட்ஜெட்களை நிர்வகிக்கவும்",
+    "socialSettings": "சமூக மற்றும் அமைப்புகள்",
+    "myContent": "எனது உள்ளடக்கம்",
+    "social": "சமூக",
+    "accountSettings": "கணக்கு மற்றும் அமைப்புகள்",
+    "info": "தகவல்",
+    "premiumPrice": "[ta] $6.99/month",
+    "familyPrice": "[ta] $12.99/month",
+    "watchlist": "[ta] Watchlist"
   },
   "profiles": {
     "addProfile": "சுயவிவரத்தைச் சேர்",
@@ -6106,7 +6701,11 @@
     "kidsProfile": "குழந்தைகள் சுயவிவரம்",
     "kidsProfileDescription": "குழந்தைகளுக்கு ஏற்ற உள்ளடக்கத்திற்கு கட்டுப்படுத்துகிறது",
     "kids": "குழந்தைகள்",
-    "addIcon": "+"
+    "addIcon": "+",
+    "displayName": "காட்சி பெயர்",
+    "edit": "சுயவிவரம் திருத்தம்",
+    "kidsProfileHint": "குழந்தைகளுக்கு ஏற்ற தேர்வுகளுக்கு உள்ளடக்கத்தை கட்டுப்படுத்துகிறது",
+    "preferences": "விருப்பங்கள்"
   },
   "radio": {
     "title": "வானொலி",
@@ -6192,7 +6791,10 @@
     "sortDate": "தேதி",
     "sortSize": "அளவு",
     "sortDuration": "காலம்",
-    "sortTitle": "தலைப்பு"
+    "sortTitle": "தலைப்பு",
+    "delete": "நீக்கு",
+    "empty": "இன்னும் பதிவுகள் இல்லை",
+    "stop": "பதிவை நிறுத்து"
   },
   "register": {
     "title": "கணக்கை உருவாக்கு",
@@ -6250,7 +6852,14 @@
     "noContentNow": "இப்போது உள்ளடக்கம் இல்லை",
     "typeLive": "நேரலை",
     "typeRadio": "வானொலி",
-    "typeVideo": "வீடியோ"
+    "typeVideo": "வீடியோ",
+    "aiBrief": "AI தினசரி சுருக்கம்",
+    "days": "நாட்கள்",
+    "goodMorning": "காலை வணக்கம்",
+    "loadBrief": "தினசரி சுருக்கத்தை ஏற்று",
+    "streak": "தொடர்",
+    "subtitle": "உங்கள் தனிப்பயனாக்கப்பட்ட காலை அனுபவம்",
+    "todayContent": "இன்றைய உள்ளடக்கம்"
   },
   "search": {
     "title": "தேடு",
@@ -6298,7 +6907,11 @@
       "kidsOnly": "குழந்தைகள் உள்ளடக்கம் மட்டும்",
       "excludeKids": "குழந்தைகள் உள்ளடக்கத்தை விலக்கு",
       "allContent": "அனைத்து உள்ளடக்கமும்",
-      "actors": "நடிகர்கள்"
+      "actors": "நடிகர்கள்",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்கள்",
+      "collections": "தொகுப்புகள்",
+      "audiobooks": "ஒலிப்புத்தகங்கள்"
     },
     "suggestions": {
       "trendingTitle": "பிரபலமான தேடல்கள்",
@@ -6396,6 +7009,33 @@
     "llm": {
       "title": "AI தேடல்",
       "placeholder": "நீங்கள் என்ன பார்க்க விரும்புகிறீர்கள் என்று விவரிக்கவும்..."
+    },
+    "clearFilters": "வடிகட்டிகளை அழி",
+    "clear": "அழி",
+    "clearRecent": "சமீபத்திய தேடல்களை அழி",
+    "query": "தேடல் வினவல்",
+    "search": "தேடல்",
+    "sort": {
+      "title": "வரிசைப்படுத்து",
+      "relevance": "பொருத்தம்",
+      "newest": "புதியது",
+      "oldest": "பழையது",
+      "titleAsc": "தலைப்பு A-Z",
+      "titleDesc": "தலைப்பு Z-A",
+      "popularity": "மிகவும் பிரபலமானது"
+    },
+    "filter": {
+      "title": "வடிகட்டி",
+      "reset": "மீட்டமை",
+      "language": "மொழி",
+      "accessibility": "அணுகல்தன்மை",
+      "subtitles": "வசன வரிகள்",
+      "dubbing": "டப்பிங்",
+      "yearRange": "ஆண்டு வரம்பு",
+      "yearFrom": "இருந்து year",
+      "yearTo": "ஆண்டு வரை",
+      "duration": "கால அளவு",
+      "apply": "வடிகட்டிகளை பயன்படுத்து"
     }
   },
   "settings": {
@@ -6442,7 +7082,13 @@
       "quality4k": "4K",
       "quality1080p": "1080p",
       "quality720p": "720p",
-      "quality480p": "480p"
+      "quality480p": "480p",
+      "autoplaySection": "தானியங்கி இயக்கம்",
+      "countdown": "அடுத்த அத்தியாயத்திற்கு முன் கவுண்ட்டவுன்",
+      "controls": "கட்டுப்பாடுகள்",
+      "speed": "இயக்கம் Speed",
+      "liveTV": "நேரலை டிவி",
+      "bufferSize": "இடையக அளவு"
     },
     "quality": "தரம்",
     "subtitles": "வசனங்கள்",
@@ -6495,7 +7141,18 @@
     "accessibility": {
       "small": "சிறியது",
       "medium": "நடுத்தரம்",
-      "large": "பெரியது"
+      "large": "பெரியது",
+      "audioVisual": "ஒலி மற்றும் காட்சி",
+      "boldText": "தடித்த எழுத்து",
+      "closedCaptions": "மூடிய வசனங்கள்",
+      "colorBlind": "நிற குருட்டு பயன்முறை",
+      "description": "உங்கள் பார்வை அனுபவத்தைத் தனிப்பயனாக்கவும்",
+      "display": "காட்சி",
+      "highContrast": "உயர் மாறுபாடு",
+      "largeText": "பெரிய எழுத்து",
+      "largeTextDesc": "பயன்பாடு முழுவதும் எழுத்து அளவை அதிகரிக்கவும்",
+      "reduceMotion": "இயக்கத்தைக் குறை",
+      "title": "அணுகல்தன்மை"
     },
     "signOut": "வெளியேறு",
     "security": {
@@ -6591,7 +7248,12 @@
       "volumeNormalization": "ஒலி அளவு சீரமைப்பு",
       "preferDubbed": "டப் செய்யப்பட்ட ஆடியோவை விரும்பு",
       "dubbingLanguage": "டப்பிங் மொழி",
-      "monoAudio": "மோனோ ஆடியோ"
+      "monoAudio": "மோனோ ஆடியோ",
+      "description": "ஒலி விருப்பங்களை அமைக்கவும்",
+      "dubbing": "டப்பிங்",
+      "processing": "செயலாக்கம்",
+      "quality": "ஒலி தரம்",
+      "volumeNormDesc": "உள்ளடக்கங்கள் முழுவதும் ஒலி அளவை சீராக்கவும்"
     },
     "notificationSettings": {
       "title": "அறிவிப்புகள்",
@@ -6726,7 +7388,106 @@
       "phone": "தொலைபேசி எண்",
       "deleteAccount": "கணக்கை நீக்கு",
       "deleteAccountDesc": "இந்த செயல் நிரந்தரமானது மற்றும் மீண்டும் செய்ய இயலாது"
-    }
+    },
+    "chooseLanguage": "உங்கள் மொழியைத் தேர்ந்தெடுங்கள்",
+    "languageDescription": "பயன்பாட்டு இடைமுகத்திற்கு உங்கள் விருப்ப மொழியைத் தேர்ந்தெடுக்கவும்",
+    "showWidgetsDock": "விட்ஜெட் டாக்",
+    "showVoiceControlFAB": "குரல் கட்டுப்பாட்டு பொத்தான்",
+    "showFeatureTips": "அம்ச குறிப்புகளைக் காட்டு",
+    "interactiveMoments": "ஊடாடும் தருணங்கள்",
+    "interactiveMomentsRequiresAvatar": "இன்டராக்டிவ் மோமென்ட்ஸ் Creatify அவதார் தேவை. அவதார் அமைப்புகளில் முதலில் ஒன்றை உருவாக்கவும்.",
+    "interactiveMomentsNoAvatar": "அவதார் கண்டறியப்படாததால் இன்டராக்டிவ் மோட் கிடைக்காது. படம் இன்டராக்டிவ் மோமென்ட்ஸ் இல்லாமல் இயங்கும்.",
+    "account": "கணக்கு",
+    "appUpdates": "பயன்பாட்டு புதுப்பிப்புகள்",
+    "appUpdatesDescription": "புதிய அம்சங்கள் பற்றி அறிவிப்புகள் பெறுங்கள்",
+    "billing": "பில்லிங்",
+    "chessActivity": "சதுரங்க செயல்பாடு",
+    "chessActivityDescription": "சதுரங்க விளையாட்டு அறிவிப்புகள்",
+    "devicePairing": "சாதன இணைப்பு",
+    "directMessages": "நேரடி செய்திகள்",
+    "directMessagesDescription": "செய்தி வரும்போது அறிவிப்பு",
+    "friendActivity": "நண்பர் செயல்பாடு",
+    "friendActivityDescription": "நண்பர்கள் இணையும்போது புதுப்பிப்புகள்",
+    "helpCenter": "உதவி மையம்",
+    "household": "குடும்பம்",
+    "liveEvents": "நேரலை நிகழ்வுகள்",
+    "liveEventsDescription": "வரவிருக்கும் நேரலை ஒளிபரப்பு எச்சரிக்கைகள்",
+    "newContent": "புதிய உள்ளடக்கம்",
+    "newContentDescription": "புதிய உள்ளடக்கம் சேர்க்கப்படும்போது அறிவிப்பு",
+    "notificationDescription": "எந்த அறிவிப்புகளைப் பெற விரும்புகிறீர்கள்",
+    "notificationFooter": "இந்த அமைப்புகளை எப்போது வேண்டுமானாலும் மாற்றலாம்.",
+    "notificationPreferences": "அறிவிப்பு விருப்பங்கள்",
+    "passkeys": "பாஸ்கீகள்",
+    "preferences": "விருப்பங்கள்",
+    "recommendations": "பரிந்துரைகள்",
+    "recommendationsDescription": "உங்கள் பார்வையின் அடிப்படையில் பரிந்துரைகள்",
+    "support": "ஆதரவு",
+    "version": "பதிப்பு",
+    "watchPartyInvitations": "வாட்ச் பார்ட்டி அழைப்புகள்",
+    "watchPartyInvitationsDescription": "நண்பர்கள் பார்க்க அழைக்கும்போது அறிவிப்புகள்",
+    "dangerZone": "ஆபத்து மண்டலம்",
+    "deleteAccount": "கணக்கை நீக்கு",
+    "deleteAccountConfirmTitle": "கணக்கை நீக்கவா?",
+    "deleteAccountConfirmMessage": "இது உங்கள் கணக்கையும் அனைத்து தொடர்புடைய தரவையும் நிரந்தரமாக நீக்கும். இந்த செயலை செயல்தவிர்க்க முடியாது.",
+    "deleteAccountConfirm": "கணக்கை நீக்கு",
+    "typeDeleteConfirm": "உறுதிப்படுத்த DELETE தட்டச்சு செய்யவும்",
+    "setPassword": "கடவுச்சொல் அமை",
+    "setPasswordDesc": "உங்கள் கணக்கில் கடவுச்சொல்லை சேர்க்கவும்",
+    "linkAccount": "மற்றொரு கணக்கை இணைக்கவும்",
+    "linkAccountDesc": "Google, Apple அல்லது Facebook இணைக்கவும்",
+    "addPhone": "தொலைபேசி எண்ணை சேர்க்கவும்",
+    "addPhoneDesc": "கணக்கு மீட்புக்கு தொலைபேசி எண்ணை சேர்க்கவும்",
+    "exportData": "என் தரவை எடு",
+    "exportDataDesc": "உங்கள் எல்லா தரவின் நகலை கோருங்கள்",
+    "deleteAccountDesc": "உங்கள் கணக்கையும் தரவையும் நிரந்தரமாக நீக்கவும்",
+    "connected": "இணைக்கப்பட்டது",
+    "notConnected": "இணைக்கப்படவில்லை",
+    "help": {
+      "contactSupport": "ஆதரவைத் தொடர்பு கொள்ளவும்",
+      "loading": "உதவியை ஏற்றுகிறது...",
+      "noFaqs": "அடிக்கடி கேட்கப்படும் கேள்விகள் இல்லை",
+      "subtitle": "பதில்களைக் கண்டறிந்து ஆதரவைப் பெறுங்கள்",
+      "title": "உதவி மற்றும் ஆதரவு",
+      "replayOnboarding": "அறிமுகப்படுத்தலை மீண்டும் பார்க்க",
+      "replayTour": "அம்ச சுற்றுப்பயணத்தை மீண்டும் இயக்கு"
+    },
+    "autoplayDescription": "முடிந்ததும் அடுத்த தொடர் தானியங்கி இயக்கும்",
+    "autoplayNextEpisode": "அடுத்த தொடர் தானியங்கி இயக்கு",
+    "contentRating": "உள்ளடக்க மதிப்பீடு",
+    "contentRatingDescription": "இந்த மதிப்பீட்டிற்கு மேல் உள்ளடக்கம் பரிந்துரைகளிலிருந்து வடிகட்டப்படும்",
+    "contentRestrictions": "உள்ளடக்க கட்டுப்பாடுகள்",
+    "languageSubtitles": "மொழி மற்றும் உள்தலைல்",
+    "linkAppleAccount": "Apple கணக்கை இணைக்கவும்",
+    "linkGoogleAccount": "Google கணக்கை இணைக்கவும்",
+    "notificationsDescription": "புதிய உள்ளடக்கம் மற்றும் அம்சங்கள் பற்றிய புதுப்பித்தல்கள் பெறுங்கள்",
+    "qualityAuto": "தானியங்கி (பரிந்துரைக்கப்பட்டது)",
+    "qualityHigh": "உயர்",
+    "qualityLow": "குறைவு",
+    "qualityMedium": "நடு",
+    "ratingAdultsOnly": "பெரியவர்கள் மட்டும்",
+    "ratingAllAges": "அனைத்து வயது",
+    "ratingMature": "முதிர்ந்த (R)",
+    "ratingPG": "பெற்றோர் வழிகாட்டல் (PG)",
+    "ratingPG13": "PG-13",
+    "rtl": "RTL",
+    "sensitivity": "உணர்திறன்",
+    "subtitleLanguage": "உள்தலைல் மொழி",
+    "unlinkConfirmation": "உங்கள் {{provider}} கணக்கை துண்டிக்கவா?",
+    "videoQuality": "வீடியோ தரம்",
+    "wakeWord": "Hey Bayit",
+    "wakeWordDescription": "விழிப்பு வார்த்தையைச் சொல்லி குரல் கட்டுப்பாட்டை செயல்படுத்தவும்.",
+    "mediaSection": "ஊடகம்",
+    "privacyData": "தனியுரிமை & Data",
+    "general": "பொது",
+    "children": "குழந்தைகள்",
+    "loading": "அமைப்புகளை ஏற்றுகிறது...",
+    "not_connected": "இணைக்கப்படவில்லை",
+    "privacySecurity": "தனியுரிமை & Security",
+    "privacySection": "தனியுரிமை மற்றும் சட்டம்",
+    "notificationsDisabled": "அறிவிப்புகள் முடக்கப்பட்டன",
+    "notificationsEnableMessage": "புதிய உள்ளடக்கம், நேரடி நிகழ்வுகள் மற்றும் பலவற்றைப் பற்றிய புதுப்பிப்புகளைப் பெற அறிவிப்புகளை இயக்கவும்.",
+    "notificationsGoToSettings": "அறிவிப்புகளைப் பெற, அமைப்புகளில் அவற்றை இயக்கவும்.",
+    "replayTour": "அம்சச் சுற்றுப் பயணத்தை மீண்டும் பார்க்கவும்"
   },
   "familyControls": {
     "title": "குடும்பக் கட்டுப்பாடுகள்",
@@ -6830,7 +7591,8 @@
       "redirectingToHousehold": "உங்கள் குடும்பத்திற்கு திருப்பிவிடுகிறது...",
       "goToHousehold": "குடும்பத்திற்குச் செல்",
       "success": "வெற்றி!",
-      "error": "பிழை"
+      "error": "பிழை",
+      "invitationSent": "அழைப்பு வெற்றிகரமாக அனுப்பப்பட்டது!"
     },
     "profile": {
       "title": "சுயவிவர கட்டுப்பாடுகள்",
@@ -6841,7 +7603,22 @@
       "hierarchy": "கட்டுப்பாட்டு படிநிலை",
       "source": "கட்டுப்பாடு ஆதாரம்"
     },
-    "settingsSaved": "அமைப்புகள் சேமிக்கப்பட்டன"
+    "settingsSaved": "அமைப்புகள் சேமிக்கப்பட்டன",
+    "ageLimits": "வயது வரம்புகள்",
+    "allowedHours": "அனுமதிக்கப்பட்ட நேரம்",
+    "contentRating": "உள்ளடக்க மதிப்பீடு",
+    "createPinDescription": "குடும்ப அமைப்புகளைப் பாதுகாக்க PIN உருவாக்கவும்",
+    "enterPinDescription": "அமைப்புகளை அணுக PIN உள்ளிடவும்",
+    "from": "இருந்து",
+    "kidsMaxAge": "குழந்தை அதிகபட்ச வயது",
+    "ratingG": "G - பொது பார்வையாளர்கள்",
+    "ratingNC17": "NC-17 - பெரியவர்களுக்கு மட்டும்",
+    "ratingPG": "PG - பெற்றோர் வழிகாட்டுதல்",
+    "ratingPG13": "PG-13 - பெற்றோர் எச்சரிக்கை",
+    "ratingR": "R - கட்டுப்படுத்தப்பட்டது",
+    "saveSettings": "அமைப்புகளைச் சேமி",
+    "to": "வரை",
+    "youngstersMaxAge": "இளம்பருவ அதிகபட்ச வயது"
   },
   "stats": {
     "statistics": "புள்ளிவிவரங்கள்",
@@ -6896,7 +7673,38 @@
       "categories": {
         "ai": "AI சேவைகள்",
         "platform": "பளத்தளம்",
-        "support": "ஆதரவு"
+        "support": "ஆதரவு",
+        "content": "உள்ளடக்க அணுகல்",
+        "quality": "தரம் மற்றும் செயல்திறன்",
+        "devices": "சாதனங்கள் மற்றும் ஸ்ட்ரீமிங்",
+        "features": "அம்சங்கள்"
+      },
+      "scrollHint": "← அனைத்து திட்டங்களையும் பார்க்க உருட்டவும் →"
+    },
+    "startTrial": "இலவச சோதனையைத் தொடங்கு",
+    "noCharge": "சோதனை காலத்தில் உங்கள் கிரெடிட் கார்டு கட்டணம் விதிக்கப்படாது",
+    "premiumShowcase": {
+      "title": "பிளஸ் நுண்ணறிவை அனுபவிக்கவும்",
+      "subtitle": "நீங்கள் பார்க்கும் விதத்திற்கு ஏற்ப AI-இயக்கப்படும் அம்சங்கள்",
+      "videoTitle": "செயலில் விட்ஜெட்களைப் பார்க்கவும்",
+      "videoDescription": "மிதக்கும் விட்ஜெட்களுக்கான எங்கள் 2-நிமிட அறிமுகத்தைப் பார்க்கவும்",
+      "widgetTitle": "இன்டராக்டிவ் லைவ் டெமோ",
+      "widgetDescription": "Kan11 உடன் இழுக்கவும், அளவை மாற்றவும், பல்பணிகள் செய்யவும்",
+      "aiAssistant": {
+        "title": "AI ஸ்மார்ட் உதவியாளர்",
+        "description": "இயந்திர கற்றல் மூலம் இயக்கப்படும் தனிப்பயனாக்கப்பட்ட பரிந்துரைகள்"
+      },
+      "floatingWidgets": {
+        "title": "மிதக்கும் விட்ஜெட்கள்",
+        "description": "உள்ளடக்கத்தை உலாவும் போது பல சேனல்களைப் பார்க்கவும்"
+      },
+      "a11y": {
+        "playVideo": "விட்ஜெட்கள் அறிமுக வீடியோவை இயக்கவும்",
+        "playVideoHint": "முழு திரை வீடியோ ஆர்ப்பாட்டத்தைத் திறக்கிறது"
+      },
+      "badges": {
+        "aiPowered": "AI மூலம் இயக்கப்படுகிறது",
+        "interactiveDemo": "இன்டராக்டிவ் டெமோ"
       }
     }
   },
@@ -7031,7 +7839,50 @@
     "cuesCount": "({{count}} குறிப்புகள்)",
     "failedReason": "- {{language}}: {{reason}}",
     "generateForContent": "இந்த உள்ளடக்கத்திற்கு {{mode}} வசனங்களை உருவாக்கு",
-    "generateMode": "{{mode}} உருவாக்கு"
+    "generateMode": "{{mode}} உருவாக்கு",
+    "translate": "மொழிபெயர்",
+    "split": "பிரி",
+    "failed": "தோல்வி: {{count}}",
+    "fromOpenSubs": "OpenSubtitles.com இலிருந்து",
+    "hebrewDisplayMode": "எபிரேய காட்சி பயன்முறை",
+    "hebrewModeHint": "எபிரேய வசனங்கள் எவ்வாறு காட்டப்பட வேண்டும் என்பதைத் தேர்ந்தெடுங்கள். Nikud உயிர் எழுத்து குறிகள் சேர்க்கும், Shoresh மொழி கற்றலுக்கான வேர் சொற்களைக் காட்டும்.",
+    "imported": "{{count}} வசன தடங்கள் இறக்குமதி செய்யப்பட்டன",
+    "modes": "வசன பயன்முறைகள்",
+    "noAdditionalFound": "கூடுதல் வசனங்கள் இல்லை",
+    "quotaExceeded": {
+      "message": "வசன பதிவிறக்க ஒதுக்கீட்டை மீறிவிட்டீர்கள்",
+      "title": "ஒதுக்கீடு மீறப்பட்டது"
+    },
+    "rateLimitExceeded": "வீத வரம்பு மீறப்பட்டது. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+    "sampleText": "மாதிரி வசன உரை",
+    "searchingOpenSubs": "OpenSubtitles இல் தேடுகிறது...",
+    "selectTwoLanguagesDescription": "பிரிக்கப்பட்ட திரை வசனங்களுக்கு இரண்டு மொழிகளைத் தேர்ந்தெடுங்கள்",
+    "skipped": "தவிர்க்கப்பட்டது: {{count}} (ஏற்கனவே உள்ளது)",
+    "splitDisplayDescription": "இரண்டு மொழிகளை அருகருகே காட்டு",
+    "title": "வசனங்கள்",
+    "quotaExceededLabel": "ஒதுக்கீடு மீறப்பட்டது",
+    "splitScreenLabel": "பிரிக்கப்பட்ட திரை",
+    "cueCount": "({{count}} குறிப்புகள்)",
+    "trackUnavailable": "{{language}}: {{reason}}",
+    "aiModesAvailable": "கிடைக்கும் AI முறைகள்",
+    "aiModesTitle": "AI வசன முறைகள்",
+    "fetchSubtitles": "வசனங்களைப் பெறு",
+    "mode": {
+      "engrew": "எங்ரூ",
+      "heblish": "ஹெப்லிஷ்",
+      "shoresh": "ஷோரேஷ்",
+      "standard": "நிலையான"
+    },
+    "opensubtitles": "OpenSubtitles",
+    "searchExternal": "வெளிப்புற வசனங்களைத் தேடு",
+    "settingsTitle": "வசன அமைப்புகள்",
+    "showBackground": "பின்னணியைக் காட்டு",
+    "singleMode": "ஒற்றை பயன்முறை",
+    "splitMode": "பிரிப்பு பயன்முறை",
+    "primary_language": "முதன்மை மொழி",
+    "secondary_language": "இரண்டாம் நிலை மொழி",
+    "layout_mode": "தளவமைப்பு பயன்முறை",
+    "interactive_title": "ஊடாடும் துணைப்பாடல்கள்"
   },
   "support": {
     "title": "ஆதரவு மையம்",
@@ -7151,7 +8002,16 @@
     "wizard": {
       "role": "உங்கள் வழிகாட்டி"
     },
-    "fieldsRequired": "தலைப்பும் செய்தியும் தேவை"
+    "fieldsRequired": "தலைப்பும் செய்தியும் தேவை",
+    "email": "மின்னஞ்சல் ஆதரவு",
+    "message": "செய்தி",
+    "newTicket": "புதிய டிக்கெட்",
+    "noFAQ": "FAQ கிடைக்கவில்லை",
+    "noTickets": "டிக்கெட்கள் இல்லை",
+    "subject": "பொருள்",
+    "submit": "சமர்ப்பி",
+    "ticketCreated": "டிக்கெட் வெற்றிகரமாக உருவாக்கப்பட்டது",
+    "website": "இணையதளம்"
   },
   "telAviv": {
     "title": "டெல் அவிவ் இணைப்பு",
@@ -7210,7 +8070,11 @@
       "languageHint": "ஒவ்வொரு உண்மைக்கும் 1-3 மொழிகளைத் தேர்ந்தெடுக்கவும்",
       "language": "மொழி",
       "selectLanguage": "இந்த மொழியைத் தேர்ந்தெடுக்கவும்",
-      "deselectLanguage": "இந்த மொழியை நீக்கவும்"
+      "deselectLanguage": "இந்த மொழியை நீக்கவும்",
+      "autoPlay": "தானியங்கி ட்ரிவியா",
+      "resetConfirm": "இது அனைத்து ட்ரிவியா அமைப்புகளையும் இயல்புநிலை மதிப்புகளுக்கு மீட்டமைக்கும்.",
+      "enableDescription": "[ta] Show trivia questions while watching content.",
+      "enableTrivia": "[ta] Enable Trivia"
     },
     "categories": {
       "cast": "நடிகர்கள்",
@@ -7237,7 +8101,31 @@
     "loading": "டிரிவியா ஏற்றுகிறது...",
     "selectContent": "டிரிவியா வினாடி வினா தொடங்க உள்ளடக்கத்தைத் தேர்ந்தெடுக்கவும்",
     "correct": "சரி!",
-    "notQuite": "சரியல்ல!"
+    "notQuite": "சரியல்ல!",
+    "aiTrivia": "AI டிரிவியா",
+    "more": "மேலும்",
+    "autoShowDescription": "இயக்கத்தின் போது ட்ரிவியாவை தானாகக் காட்டும்",
+    "badgesEarned": "பெறப்பட்ட பேட்ஜ்கள்",
+    "leaderboard": "தரவரிசை",
+    "selectLanguagesHint": "ட்ரிவியா உண்மைகளுக்கு 3 மொழிகள் வரை தேர்ந்தெடுக்கவும்",
+    "title": "ட்ரிவியா",
+    "topPlayers": "சிறந்த வீரர்கள்",
+    "quiz": {
+      "title": "ட்ரிவியா வினாடி வினா"
+    },
+    "question": "கேள்வி",
+    "results": {
+      "title": "வினாடி வினா முடிந்தது!",
+      "playAgain": "மீண்டும் விளையாடு",
+      "shekelsEarned": "{{amount}} ஷெக்கல்கள் சம்பாதித்தீர்கள்"
+    },
+    "explanation": "விளக்கம்",
+    "submit": "சமர்ப்பி",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "playerCount": "{{count}} வீரர்கள்",
+    "dayStreak": "{{count}} நாள் தொடர்",
+    "tellMeMore": "மேலும் சொல்லுங்கள்",
+    "follow_up": "தொடர்ந்து"
   },
   "splash": {
     "bayit": "Bayit",
@@ -7250,7 +8138,8 @@
     "title": "காட்சி தேடல்",
     "placeholder": "ஒரு தலைப்பு அல்லது காட்சியைத் தேடு...",
     "noScenesFound": "காட்சிகள் எதுவும் கிடைக்கவில்லை",
-    "searchFailed": "[ta] Search failed"
+    "searchFailed": "[ta] Search failed",
+    "noResults": "காட்சிகள் கிடைக்கவில்லை"
   },
   "streamLimit": {
     "title": "ஸ்ட்ரீம் வரம்பை அடைந்தது",
@@ -7294,7 +8183,33 @@
     "error": "ஏதோ தவறு நடந்தது",
     "tryAgain": "மீண்டும் முயற்சிக்கவும்",
     "securityNote": "உங்கள் சான்றுகள் பாதுகாப்பாக அனுப்பப்படுகின்றன, TV-யில் ஒருபோதும் சேமிக்கப்படாது.",
-    "footer": "சிக்கல் உள்ளதா? உங்கள் TV-யில் இருந்து புதிய QR குறியீட்டை ஸ்கேன் செய்ததை உறுதிப்படுத்தவும்."
+    "footer": "சிக்கல் உள்ளதா? உங்கள் TV-யில் இருந்து புதிய QR குறியீட்டை ஸ்கேன் செய்ததை உறுதிப்படுத்தவும்.",
+    "completeOnPhone": "உங்கள் தொலைபேசியில் உள்நுழைவை முடிக்கவும்",
+    "deviceCodeInstruction": "உங்கள் தொலைபேசி அல்லது கணினியில் உள்நுழையவும்",
+    "phoneConnected": "தொலைபேசி இணைக்கப்பட்டது",
+    "qrExpired": "QR குறியீடு காலாவதியானது",
+    "qrSubtitle": "உங்கள் தொலைபேசி கேமராவை பயன்படுத்தவும்",
+    "qrTitle": "உள்நுழைய ஸ்கேன் செய்யவும்",
+    "scanWithPhone": "உள்நுழைய தொலைபேசியால் ஸ்கேன் செய்யவும்",
+    "signedIn": "உள்நுழைவு வெற்றிகரமாக",
+    "signingIn": "உள்நுழைகிறது...",
+    "waitingForActivation": "செயல்படுத்தலுக்காக காத்திருக்கிறது...",
+    "title": "TV உள்நுழைவு",
+    "header": "உங்கள் TVயில் உள்நுழையவும்",
+    "subtitle": "உங்கள் Bayit+ கணக்கை அணுக இந்த சாதனத்தை அங்கீகரிக்கவும்",
+    "connected": "TVயுடன் இணைக்கப்பட்டது",
+    "signInToTV": "TVயில் உள்நுழையவும்",
+    "pleaseSignIn": "தொடர உள்நுழையவும்",
+    "signInButton": "உள்நுழைவு",
+    "authenticating": "அங்கீகரிக்கிறது...",
+    "almostThere": "கிட்டத்தட்ட முடிந்தது...",
+    "tvSignedIn": "உங்கள் TV வெற்றிகரமாக உள்நுழைக்கப்பட்டது",
+    "expired": "அமர்வு காலாவதியானது",
+    "expiredMessage": "இந்த QR குறியீடு காலாவதியானது. உங்கள் TVயில் புதிய குறியீடு உருவாக்கவும்.",
+    "fastestWayToSignIn": "உள்நுழைவதற்கான விரைவான வழி",
+    "scanToContinue": "தொடர ஸ்கேன் செய்யவும்",
+    "allMethodsSupported": "அனைத்து உள்நுழைவு முறைகளும் ஆதரிக்கப்படுகின்றன",
+    "generateNewCode": "புதிய குறியீட்டை உருவாக்கு"
   },
   "video": {
     "watchTrailer": "டிரெய்லர் பார்",
@@ -7356,7 +8271,12 @@
       "filmography": "பட வரிசை",
       "bornIn": "பிறப்பிடம்",
       "featuredActors": "சிறப்பு நடிகர்கள்"
-    }
+    },
+    "allGenres": "எல்லா வகைகள்",
+    "trending": "பிரபலமானவை",
+    "aiCollections": "AI தொகுப்புகள்",
+    "hebrewDub": "HEB",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "கேட்கிறது...",
@@ -7383,7 +8303,58 @@
     },
     "wizardResponse": "உதவியாளர் பதில்",
     "dismissResponse": "குரல் பதிலை மூடு",
-    "dismissResponseHint": "உதவியாளரின் பதிலை மறைக்க தட்டவும்"
+    "dismissResponseHint": "உதவியாளரின் பதிலை மறைக்க தட்டவும்",
+    "appleTVLimitation": "Apple TV வரம்பு",
+    "appleTVLimitationDescription": "விழிப்பு வார்த்தை கண்டறிதலுக்கு தொடர்ச்சியான மைக்ரோஃபோன் அணுகல் தேவை, இது Apple TV இல் கிடைக்காது. அதற்கு பதிலாக Siri Remote அல்லது திரை கட்டுப்பாடுகளைப் பயன்படுத்தவும்.",
+    "chooseLanguage": "மொழியைத் தேர்ந்தெடு",
+    "chooseLanguageDesc": "குரல் கட்டளைகளுக்கான உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்.",
+    "closeAssistant": "குரல் உதவியாளரை மூடு",
+    "controlPlayback": "உங்கள் குரலால் இயக்கத்தைக் கட்டுப்படுத்துங்கள்",
+    "heyBayit": "Hey Bayit",
+    "high": "உயர்",
+    "low": "குறைவு",
+    "multipleLanguages": "பல மொழிகள்",
+    "notAvailableOnAppleTV": "Apple TV-ல் கிடைக்கவில்லை",
+    "permissionsDesc": "குரல் அம்சங்களுக்கு உங்கள் மைக்ரோஃபோன் மற்றும் பேச்சு அங்கீகாரத்திற்கான அணுகல் தேவை.",
+    "permissionsRequired": "அனுமதிகள் தேவை",
+    "realtimeDubbing": "நிகழ்நேர டப்பிங்",
+    "searchWithVoice": "குரலால் தேடு",
+    "selectVoice": "குரல் தேர்வு",
+    "sensitivity": "உணர்திறன்",
+    "tapToClose": "மூடுவதற்கு வெளியே தட்டவும் அல்லது கீழே ஸ்வைப் செய்யவும்",
+    "thinking": "யோசிக்கிறது...",
+    "title": "குரல் உதவியாளர்",
+    "voiceAssistant": "குரல் உதவியாளர்",
+    "voiceControl": "குரல் கட்டுப்பாடு",
+    "voiceControlDesc": "உங்கள் குரலால் அனுபவத்தைக் கட்டுப்படுத்துங்கள். கைகள் இல்லாமல் தேடுங்கள், வழிநடத்துங்கள் மற்றும் உள்ளடக்கத்தை இயக்குங்கள்.",
+    "voicesAvailable": "கிடைக்கும் குரல்கள்",
+    "wakeWordDescription": "விழிப்பு வார்த்தையைச் சொல்லி குரல் கட்டுப்பாட்டை செயல்படுத்தவும்.",
+    "calibration": {
+      "levelLabel": "நிலை"
+    },
+    "diagnostics": {
+      "micPermission": "ஒலிவாங்கி அனுமதி",
+      "speechRecognition": "பேச்சு அங்கீகாரம்",
+      "currentState": "தற்போதைய நிலை",
+      "transcript": "படியெடுப்பு",
+      "title": "குரல் கண்டறிதல்",
+      "audioSession": "ஆடியோ அமர்வு",
+      "runDiagnostics": "கண்டறிதலை இயக்கு",
+      "copyReport": "அறிக்கையை நகலெடு"
+    },
+    "stopListening": "கேட்பதை நிறுத்து",
+    "startListening": "கேட்கத் தொடங்கு",
+    "searchPrompt": "நீங்கள் என்ன தேடுகிறீர்கள்?",
+    "panelTitle": "குரல் உதவியாளர்",
+    "typeCommand": "ஒரு கட்டளையை தட்டச்சு செய்யுங்கள்...",
+    "controlExecuted": "செயல்படுத்தப்பட்டது: {{action}}",
+    "timerSet": "{{amount}} {{unit}} க்கு டைமர் அமைக்கப்பட்டது",
+    "chatPending": "உங்கள் செய்தி செயலாக்கப்படுகிறது...",
+    "suggestion": {
+      "watchLive": "நேரடி தொலைக்காட்சி பாருங்கள்",
+      "search": "உள்ளடக்கத்தை தேடுங்கள்",
+      "listenRadio": "வானொலி கேளுங்கள்"
+    }
   },
   "voiceMode": {
     "voiceOnly": "குரல் மட்டும்",
@@ -7436,7 +8407,22 @@
       },
       "startUsing": "குரல் கட்டுப்பாட்டைப் பயன்படுத்தத் தொடங்குங்கள்"
     },
-    "skip": "இப்போது தவிர்"
+    "skip": "இப்போது தவிர்",
+    "chooseLanguage": "மொழியைத் தேர்ந்தெடு",
+    "chooseLanguageDescription": "AI அம்சங்களுக்கான உங்கள் விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்.",
+    "featuresDescription": "கேள்விகள் கேளுங்கள், பரிந்துரைகள் பெறுங்கள், AI மூலம் ஆராயுங்கள்.",
+    "buttons": {
+      "back": "[ta] Back"
+    },
+    "completion": {
+      "message": "[ta] Voice features are ready to use.",
+      "title": "[ta] Voice Setup Complete"
+    },
+    "title": "[ta] Voice Setup",
+    "training": {
+      "message": "[ta] Read the phrases aloud to train voice recognition.",
+      "title": "[ta] Voice Training"
+    }
   },
   "watch": {
     "notFound": "உள்ளடக்கம் இல்லை",
@@ -7551,7 +8537,18 @@
       "speaking": "[ta] Speaking",
       "muted": "ஒலியடக்கம்",
       "ready": "தயார்"
-    }
+    },
+    "chooseMethod": "ஒன்றாகப் பாருங்கள்",
+    "chooseMethodDescription": "மற்றவர்களுடன் பார்க்கும் வழியைத் தேர்ந்தெடுக்கவும்",
+    "cancel": "ரத்துசெய்",
+    "createOrJoin": "உருவாக்கு அல்லது இணை",
+    "createParty": "Create Watch Party",
+    "loading": "Loading Watch Parties...",
+    "maxGuests": "Max guests",
+    "myParties": "MY PARTIES",
+    "noParties": "No active watch parties",
+    "subtitle": "நண்பர்களுடன் ஒன்றாகப் பாருங்கள்",
+    "type": "Type"
   },
   "playlist": {
     "title": "எனது பட்டியல்",
@@ -7622,7 +8619,10 @@
     },
     "loading": "உள்ளடக்கம் ஏற்றப்படுகிறது...",
     "news": "செய்திகள்",
-    "trending": "டிரெண்டிங்"
+    "trending": "டிரெண்டிங்",
+    "content": {
+      "allContent": "அனைத்து உள்ளடக்கம்"
+    }
   },
   "catchup": {
     "overlay": {
@@ -7653,7 +8653,9 @@
       "close": "மூடு",
       "cached": "தற்காலிகமாக சேமிக்கப்பட்டது",
       "remaining": "மீதம்",
-      "window": "சாளரம்"
+      "window": "சாளரம்",
+      "loading": "சுருக்கத்தை ஏற்றுகிறது...",
+      "noContent": "சுருக்கம் இல்லை"
     },
     "error": {
       "failed": "சுருக்கத்தை உருவாக்க முடியவில்லை",
@@ -7728,8 +8730,31 @@
       "upgrade": "திட்டத்தை மேம்படுத்தவும்",
       "upgradeAction": "மேலும் வரவுகள் பெற மேம்படுத்தவும்",
       "warningCritical": "🚨 முக்கியம்: வரவுகள் கிட்டத்தட்ட தீர்ந்துவிட்டன",
-      "warningLow": "⚠️ எச்சரிக்கை: கடன் இருப்பு குறைவாக உள்ளது"
-    }
+      "warningLow": "⚠️ எச்சரிக்கை: கடன் இருப்பு குறைவாக உள்ளது",
+      "insufficient": {
+        "title": "போதுமான கிரெடிட்கள் இல்லை",
+        "message": "இந்த சேவைக்கு உங்களிடம் போதுமான கிரெடிட்டுகள் இல்லை"
+      }
+    },
+    "beta500": "பீட்டா 500",
+    "creditsExplanation": "AI அம்சங்களுக்கு கிரெடிட்கள் பயன்படுத்தப்படுகின்றன.",
+    "criticalMessage": "உங்கள் கிரெடிட்கள் கிட்டத்தட்ட தீர்ந்துவிட்டன.",
+    "criticalTitle": "கிரெடிட்கள் முக்கியம்",
+    "current": "தற்போதைய",
+    "deficit": "பற்றாக்குறை",
+    "insufficientTitle": "போதுமான கிரெடிட்கள் இல்லை",
+    "lowMessage": "உங்கள் கிரெடிட்கள் குறைவாக உள்ளன.",
+    "lowTitle": "குறைந்த கிரெடிட்கள்",
+    "remaining": "மீதமுள்ள",
+    "required": "தேவையான",
+    "upgrade": "மேம்படுத்து",
+    "upgradeMessage": "வரம்பற்ற AI கிரெடிட்களுக்கு பிரீமியத்திற்கு மேம்படுத்தவும்.",
+    "upgradeTitle": "பிரீமியத்திற்கு மேம்படுத்து",
+    "usage": "பயன்பாடு",
+    "creditsLabel": "கிரெடிட்கள்",
+    "getPlusTitle": "Bayit+ Plus பெறுங்கள்",
+    "getPlusMessage": "அன்லிமிட்டெட் AI கிரெடிட்கள், தொடக்கம்",
+    "getPlusButton": "Plus பெறுங்கள்"
   },
   "cancelled": {
     "description": "உங்கள் கட்டணம் ரத்து செய்யப்பட்டது.",
@@ -8055,7 +9080,8 @@
     "signInWithEmail": "மின்னஞ்சலுடன் உள்நுழை",
     "signingIn": "உள்நுழைகிறது...",
     "email": "மின்னஞ்சல்",
-    "password": "கடவுச்சொல்"
+    "password": "கடவுச்சொல்",
+    "signOut": "[ta] Sign Out"
   },
   "email": {
     "greeting": "வணக்கம்",
@@ -8434,7 +9460,8 @@
     "liveChat": "நேரலை அரட்டை",
     "chatPlaceholder": "ஏதாவது சொல்லுங்கள்...",
     "chatRequiresConnection": "அரட்டைக்கு செயலில் உள்ள இணைப்பு தேவை",
-    "connectionFailed": "அரட்டையுடன் இணைக்க முடியவில்லை"
+    "connectionFailed": "அரட்டையுடன் இணைக்க முடியவில்லை",
+    "sendMessage": "செய்தி அனுப்புங்கள்..."
   },
   "avatar": {
     "dialogue": {
@@ -8651,7 +9678,50 @@
       "listeningLabel": "ஒலோரின் கேட்கிறார்",
       "processingLabel": "ஒலோரின் செயலாக்குகிறார்",
       "focusHint": "மந்திரவாதியுடன் தொடர்பு கொள்ள தேர்ந்தெடு அழுத்தவும்"
-    }
+    },
+    "selfie": {
+      "title": "வீடியோ செல்ஃபி பதிவு செய்",
+      "instructions": "கேமராவைப் பாருங்கள், மெதுவாக உங்கள் தலையை இடது மற்றும் வலது புறமாகத் திருப்புங்கள். இது உங்கள் 3D அவதாரத்தை உருவாக்க உதவுகிறது.",
+      "recording": "பதிவு செய்கிறது...",
+      "maxDuration": "அதிகபட்சம் 10 வினாடிகள்",
+      "uploadFromLibrary": "நூலகத்திலிருந்து பதிவேற்று",
+      "dropHint": "அல்லது இங்கே ஒரு வீடியோ கோப்பை இழுத்து விடுங்கள்"
+    },
+    "processing": {
+      "uploading": "வீடியோ பதிவேற்றம்",
+      "uploadingDesc": "உங்கள் வீடியோ செல்ஃபி பதிவேற்றப்பட்டு உங்கள் 3D அவதார் விரைவில் உருவாக்கப்படும்.",
+      "retryUpload": "மீண்டும் முயற்சி"
+    },
+    "settings": {
+      "title": "அவதார் அமைப்புகள்",
+      "meshStatus": "3D மாடல் நிலை",
+      "reRecord": "வீடியோ செல்ஃபியை மீண்டும் பதிவு செய்",
+      "delete": "அவதாரத்தை நீக்கு",
+      "deleting": "நீக்குகிறது...",
+      "deleteConfirmTitle": "அவதாரத்தை நீக்கவா?",
+      "deleteConfirm": "நீக்கு",
+      "deleteConfirmDesc": "இது அவதார் மற்றும் அனைத்து தொடர்புடைய தரவையும் நிரந்தரமாக நீக்கிவிடும். இந்த செயலை மீட்டெடுக்க முடியாது.",
+      "statusReady": "தயார்",
+      "statusGenerating": "உருவாக்குகிறது...",
+      "statusRigging": "அனிமேஷன் சேர்க்கிறது...",
+      "statusPending": "நிலுவையில்",
+      "statusFailed": "தோல்வி",
+      "statusUnknown": "தெரியவில்லை"
+    },
+    "askPlaceholder": "எதையும் கேளுங்கள்...",
+    "choose": "அவதாரைத் தேர்ந்தெடு",
+    "dynamic": "இயக்கவியல்",
+    "gradient": "சாய்வு",
+    "mode": "அவதார் முறை",
+    "photo": "புகைப்படம்",
+    "photoUploadSoon": "புகைப்பட பதிவேற்றம் விரைவில்",
+    "preferences": "அவதார் விருப்பங்கள்",
+    "save": "அவதாரத்தைச் சேமி",
+    "subtle": "நுட்பமான",
+    "type": "அவதார் வகை",
+    "useIosOrWeb": "தனிப்பயன் அவதாரத்தைப் பதிவேற்ற iOS அல்லது வலை பயன்பாட்டைப் பயன்படுத்தவும்",
+    "tapToSpeak": "[ta] Tap to speak",
+    "title": "[ta] Avatar"
   },
   "quiz": {
     "title": "வினாடி வினா நேரம்",
@@ -8678,7 +9748,8 @@
     "timeBonus": "நேர போனஸ்",
     "streakBonus": "தொடர் போனஸ்",
     "newBadge": "புதிய பேட்ஜ்",
-    "totalScore": "மொத்த மதிப்பெண்"
+    "totalScore": "மொத்த மதிப்பெண்",
+    "complete": "குவிஸ் முடிந்தது"
   },
   "rewards": {
     "title": "எனது வெகுமதிகள்",
@@ -8713,7 +9784,9 @@
       "streak_3": "சூடாக",
       "streak_7": "வார வீரர்",
       "streak_30": "மாத மாஸ்டர்"
-    }
+    },
+    "streak": "தொடர்",
+    "loading": "வெகுமதிகள் ஏற்றுகிறது..."
   },
   "household": {
     "title": "வீட்டு நிர்வாகம்",
@@ -8760,7 +9833,24 @@
     "loadingHousehold": "வீட்டை ஏற்றுகிறது...",
     "loading": "வீட்டை ஏற்றுகிறது...",
     "memberCountDisplay": "{{current}} / {{max}} உறுப்பினர்கள்",
-    "myHousehold": "எனது வீடு"
+    "myHousehold": "எனது வீடு",
+    "invitationSent": "அழைப்பு வெற்றிகரமாக அனுப்பப்பட்டது!",
+    "addButton": "சேர்",
+    "addMember": "உறுப்பினரைச் சேர்",
+    "membersTitle": "உறுப்பினர்கள்",
+    "unknown": "அறியாத",
+    "userIdPlaceholder": "பயனர் மின்னஞ்சல் அல்லது ID உள்ளிடவும்",
+    "createTitle": "குடும்பத்தை உருவாக்கு",
+    "empty": {
+      "title": "இன்னும் ஒரு குடும்பம் இல்லை",
+      "subtitle": "உங்கள் குடும்பத்தை நிர்வகிக்க ஒரு குடும்பத்தை உருவாக்குங்கள்"
+    },
+    "invite": {
+      "title": "உறுப்பினரை அழைக்குங்கள்",
+      "emailPlaceholder": "மின்னஞ்சல் முகவரி",
+      "send": "அழைப்பை அனுப்பு",
+      "pending": "நிலுவிலுள்ள அழைப்புகள்"
+    }
   },
   "profileControls": {
     "title": "சுயவிவர குடும்ப கட்டுப்பாடுகள்",
@@ -8972,7 +10062,17 @@
       "unmute": "[ta] Unmute",
       "close": "மூடு",
       "subtitles": "வசனங்கள்",
-      "playbackSpeed": "இயக்க வேகம்"
+      "playbackSpeed": "இயக்க வேகம்",
+      "qualitySettings": "தரம் அமைப்புகள்",
+      "dismiss": "மூடு",
+      "dismissPlayer": "ப்ளேயரை மூடு",
+      "loadingMedia": "மீடியா ஏற்றப்படுகிறது",
+      "speedNormal": "சாதாரண",
+      "recordingError": "[ta] Recording Error",
+      "startRecording": "பதிவு தொடங்கு",
+      "stopRecording": "[ta] Stop recording",
+      "premiumRequired": "பிரீமியம் சந்தா தேவை",
+      "recordingLiveOnly": "பதிவு நேரடி சேனல்களுக்கு மட்டுமே கிடைக்கும்"
     },
     "aiSearch": {
       "title": "AI தேடல்",
@@ -8989,7 +10089,10 @@
       "filterRadio": "வானொலி",
       "filterPodcasts": "பாட்காஸ்ட்",
       "enrollRequired": "Beta 500 பதிவு தேவை",
-      "enrollDescription": "AI-இயங்கும் தேடலை அணுக Beta 500 திட்டத்தில் சேரவும்"
+      "enrollDescription": "AI-இயங்கும் தேடலை அணுக Beta 500 திட்டத்தில் சேரவும்",
+      "hint": "தலைப்புகள், நடிகர்கள் அல்லது வகைகளைப் பற்றி கேட்க முயற்சிக்கவும்",
+      "placeholder": "எங்கள் உள்ளடக்கம் பற்றி கேளுங்கள்...",
+      "trySuggestion": "கேட்க முயற்சிக்கவும்:"
     },
     "aiRecommendations": {
       "title": "AI பரிந்துரைகள்",
@@ -9020,7 +10123,8 @@
       "noContent": "[ta] No content available",
       "seeAll": "அனைத்தையும் காண்",
       "retry": "மீண்டும் முயற்சிக்கவும்",
-      "back": "பின்"
+      "back": "பின்",
+      "tryAgain": "மீண்டும் முயற்சிக்கவும்"
     },
     "auth": {
       "welcomeBack": "மீண்டும் வரவேற்கிறோம்",
@@ -9060,7 +10164,26 @@
     },
     "tapToClaim": "கோர தட்டவும்",
     "shekels": "ஷெக்கல்கள்",
-    "loading": "பணிகளை ஏற்றுகிறது..."
+    "loading": "பணிகளை ஏற்றுகிறது...",
+    "claim": "கோரு",
+    "shekelsAvailable": "கிடைக்கும் ஷெக்கல்ஸ்",
+    "shop": {
+      "title": "கூப்பன் கடை",
+      "loading": "கூப்பன்கள் ஏற்றப்படுகின்றன...",
+      "redeem": "பெறுக",
+      "redeemed": "வெற்றிகரமாக பெறப்பட்டது",
+      "redemptionCode": "பெறும் குறியீடு",
+      "insufficientFunds": "போதுமான ஷெக்கல்கள் இல்லை"
+    },
+    "wallet": {
+      "title": "ஷெக்கல் வாலட்",
+      "loading": "வாலட் ஏற்றப்படுகிறது...",
+      "totalEarned": "மொத்த சம்பாதிப்பு",
+      "totalSpent": "மொத்த செலவு",
+      "recentTransactions": "சமீபத்திய பரிவர்த்தனைகள்",
+      "noTransactions": "இதுவரை பரிவர்த்தனைகள் இல்லை"
+    },
+    "dayStreak": "{{count}} நாள் தொடர்"
   },
   "shekels": {
     "title": "ஷெக்கல்கள்",
@@ -9087,7 +10210,10 @@
       "monthly": "மாதாந்திர",
       "allTime": "எல்லா காலமும்"
     },
-    "empty": "இதுவரை பதிவுகள் இல்லை"
+    "empty": "இதுவரை பதிவுகள் இல்லை",
+    "loading": "லீடர்போர்டு ஏற்றுகிறது...",
+    "myRank": "என் தரவரிசை",
+    "you": "YOU"
   },
   "talkBack": {
     "title": "பதில் பேசுங்கள்",
@@ -9118,7 +10244,12 @@
     "dashboard": {
       "title": "பதில் பேசுங்கள் டாஷ்போர்டு",
       "engagement": "ஈடுபாடு",
-      "progress": "முன்னேற்றம்"
+      "progress": "முன்னேற்றம்",
+      "accuracy": "துல்லியம்",
+      "attempts": "முயற்சிகள்",
+      "hebrewRate": "எபிரேய விகிதம்",
+      "recentAttempts": "சமீபத்திய முயற்சிகள்",
+      "shekels": "பெற்ற ஷெக்கல்ஸ்"
     }
   },
   "bilingual": {
@@ -9142,7 +10273,8 @@
       "known": "தெரிந்த சொற்கள்",
       "learning": "கற்றுக்கொண்டிருக்கிறது",
       "mastered": "தேர்ச்சி பெற்றது"
-    }
+    },
+    "words": "வார்த்தைகள்"
   },
   "starStory": {
     "title": "கதையில் நட்சத்திரம்",
@@ -9191,7 +10323,36 @@
     "characters": "கதாபாத்திரங்கள்",
     "loading": "கதைகளை ஏற்றுகிறது...",
     "noEpisodes": "இன்னும் எபிசோட்கள் இல்லை",
-    "createEpisodesHint": "இங்கே பார்க்க உங்கள் மொபைல் சாதனத்தில் எபிசோட்களை உருவாக்கவும்"
+    "createEpisodesHint": "இங்கே பார்க்க உங்கள் மொபைல் சாதனத்தில் எபிசோட்களை உருவாக்கவும்",
+    "createAvatar": "அவதாரம் உருவாக்கு",
+    "consentTitle": "பெற்றோர் ஒப்புதல்",
+    "consentBody": "உங்கள் குழந்தைக்கு தனிப்பயனாக்கப்பட்ட அவதாரம் உருவாக்க உங்கள் அனுமதி தேவை. அவதாரம் ஊடாடும் எபிரேய கற்றல் கதைகளில் பயன்படுத்தப்படும்.",
+    "childNameLabel": "குழந்தையின் முதல் பெயர்",
+    "familyPinLabel": "குடும்ப PIN",
+    "consentCheckbox": "எனது குழந்தைக்கு தனிப்பயனாக்கப்பட்ட அவதாரம் உருவாக்க நான் ஒப்புக்கொள்கிறேன்",
+    "selectPhoto": "புகைப்படம் தேர்ந்தெடுக்கவும்",
+    "photoHint": "தெளிவான முன்புற புகைப்படம் சிறந்தது",
+    "chooseStyle": "ஒரு பாணியை தேர்ந்தெடுக்கவும்",
+    "generateAvatar": "அவதாரம் உருவாக்கு",
+    "createEpisode": "ஒரு அத்தியாயம் உருவாக்கு",
+    "createEpisodeSubtitle": "ஒரு கருப்பொருளைத் தேர்ந்தெடுத்து தனிப்பயனாக்கப்பட்ட கதையை உருவாக்கவும்",
+    "selectTheme": "ஒரு கருப்பொருளைத் தேர்ந்தெடுக்கவும்",
+    "vocabulary": "சொல்வளம்",
+    "vocabularyHint": "சொற்கள் கதையில் இயல்பாக பின்னப்படும்",
+    "creditCost": "1 கிரெடிட்",
+    "creditInfo": "ஒவ்வொரு அத்தியாயமும் 1 Beta 500 கிரெடிட் பயன்படுத்தும்",
+    "generate": "அத்தியாயம் உருவாக்கு",
+    "generatingEpisode": "உங்கள் அத்தியாயம் உருவாக்கப்படுகிறது...",
+    "generationFailed": "உருவாக்கம் தோல்வியடைந்தது",
+    "generationEstimate": "இது பொதுவாக சில நிமிடங்கள் எடுக்கும்",
+    "theme": {
+      "adventure": "சாகசம்",
+      "friendship": "நட்பு",
+      "nature": "இயற்கை",
+      "holiday": "விடுமுறை",
+      "family": "குடும்பம்",
+      "school": "பள்ளி"
+    }
   },
   "glossary": {
     "title": "சொற்களஞ்சியம்",
@@ -9205,7 +10366,8 @@
       "example": "உதாரணம்",
       "funFact": "சுவாரஸ்யமான உண்மை",
       "transliteration": "ஒலிபெயர்ப்பு"
-    }
+    },
+    "funFact": "சுவாரஸ்ய உண்மை"
   },
   "culturalContext": {
     "title": "கலாச்சார சூழல்",
@@ -9228,7 +10390,8 @@
       "usage": "பொதுவான பயன்பாடு",
       "funFact": "சுவாரஸ்யமான உண்மை"
     },
-    "funFact": "சுவாரசிய தகவல்"
+    "funFact": "சுவாரசிய தகவல்",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "ஊடாடும் பணி",
@@ -9361,7 +10524,26 @@
       "medium": "நடுத்தரம்",
       "hard": "கடினம்",
       "fromVocabulary": "உங்கள் சொல்வளத்திலிருந்து"
-    }
+    },
+    "errors": {
+      "audioSession": "ஒலி அமர்வு உள்ளமைக்க முடியவில்லை",
+      "recording": "பதிவு தொடங்க முடியவில்லை",
+      "noPhrase": "சொற்றொடர் தேர்ந்தெடுக்கப்படவில்லை",
+      "audioEngine": "ஆடியோ இயந்திரம் தொடங்க தோல்வி",
+      "speechUnavailable": "பேச்சு அங்கீகாரம் கிடைக்கவில்லை"
+    },
+    "issues": {
+      "stressWrong": "அழுத்த இடம்",
+      "vowelSwap": "உயிரெழுத்து மாற்று",
+      "consonantSwap": "மெய் எழுத்து குழப்பம்",
+      "missingSound": "காணாமல் போன ஒலி",
+      "extraSound": "கூடுதல் ஒலி"
+    },
+    "loading": "சொற்றொடர்கள் ஏற்றுகிறது...",
+    "analyzing": "உச்சரிப்பை பகுப்பாய்வு செய்கிறது...",
+    "pressToSpeak": "பேச அழுத்தவும்",
+    "stopRecording": "பதிவை நிறுத்து",
+    "listenCorrect": "சரியான உச்சரிப்பைக் கேளுங்கள்"
   },
   "voiceDecision": {
     "title": "குரல் சவால்",
@@ -9377,7 +10559,10 @@
     "pronunciationScore": "உச்சரிப்பு: {{score}}%",
     "attempt": "முயற்சி {{current}} / {{max}}",
     "listenHint": "சரியான உச்சரிப்பைக் கேளுங்கள்",
-    "holdToSpeak": "பேச அழுத்திப் பிடிக்கவும்"
+    "holdToSpeak": "பேச அழுத்திப் பிடிக்கவும்",
+    "cancel": "[ta] Cancel",
+    "confirm": "[ta] Confirm",
+    "matched": "[ta] Matched"
   },
   "gamification": {
     "title": "என் முன்னேற்றம்",
@@ -9420,7 +10605,17 @@
       "title": "பணி டாஷ்போர்ட்",
       "recentActivity": "சமீபத்திய செயல்பாடு",
       "progress": "முன்னேற்றம்"
-    }
+    },
+    "awesome": "அருமை!",
+    "activity": "செயல்பாடு",
+    "claim": "கோரு",
+    "maxLevel": "அதிகபட்ச நிலை",
+    "mirrorSessions": "மிரர் அமர்வுகள்",
+    "missionsCompleted": "நிறைவு செய்த பணிகள்",
+    "noPerksYet": "இன்னும் சலுகைகள் திறக்கப்படவில்லை",
+    "talkBackAttempts": "TalkBack முயற்சிகள்",
+    "totalXP": "மொத்த XP",
+    "unlockedPerks": "திறக்கப்பட்ட சலுகைகள்"
   },
   "grandparentBridge": {
     "title": "தாத்தா பாட்டி பாலம்",
@@ -9472,6 +10667,9 @@
       "transferring": "அவதாருக்கு பாணி பயன்படுத்துகிறது",
       "validating": "நிலைத்தன்மை சரிபார்ப்பு",
       "complete": "பாணி மாற்றம் நிறைவு"
+    },
+    "errors": {
+      "unavailable": "நடை பொருத்தம் கிடைக்கவில்லை"
     }
   },
   "zehAni": {
@@ -9482,7 +10680,12 @@
       "charactersSection": "கதாபாத்திரங்கள்",
       "questionsSection": "கேள்விகள்",
       "empty": "இன்னும் இடையொழிப்பு திரைப்படங்கள் இல்லை",
-      "characterCount": "{{count}} கதாபாத்திரங்கள்"
+      "characterCount": "{{count}} கதாபாத்திரங்கள்",
+      "selectCharacter": "தொடர்பு கொள்ள ஒரு கதாபாத்திரத்தை தேர்ந்தெடுக்கவும்",
+      "quotaLabel": "மீதமுள்ள தொடர்புகள்",
+      "generationTitle": "தொடர்பு உருவாக்கப்படுகிறது...",
+      "selectedCount": "{{count}} தேர்ந்தெடுக்கப்பட்டது",
+      "confirmButton": "உறுதிப்படுத்து"
     },
     "dialogue": {
       "specificQuestions": "கதாபாத்திர கேள்விகள்",
@@ -9507,7 +10710,10 @@
       "feedback": "கருத்து",
       "feedbackDesc": "குடும்பம் மற்றும் நண்பர்களிடமிருந்து செய்திகள்",
       "chess": "சதுரங்கம்",
-      "chessDesc": "குடும்பம் மற்றும் நண்பர்களுடன் சதுரங்கம் விளையாடுங்கள்"
+      "chessDesc": "குடும்பம் மற்றும் நண்பர்களுடன் சதுரங்கம் விளையாடுங்கள்",
+      "title": "கதையில் நான்",
+      "consent": "ஒப்புதல் தேவை",
+      "consentDesc": "உங்கள் அனுபவத்தை தனிப்பயனாக்க உயிரியல் அளவீட்டு அம்சங்களை இயக்கவும்"
     },
     "contacts": {
       "title": "தொடர்புகள்",
@@ -9516,7 +10722,13 @@
       "noContacts": "இன்னும் தொடர்புகள் இல்லை",
       "noMatchingContacts": "பொருந்தும் தொடர்புகள் இல்லை",
       "reelsShared": "{{count}} ரீல்கள் பகிரப்பட்டன",
-      "remove": "நீக்கு"
+      "remove": "நீக்கு",
+      "add": "தொடர்பை சேர்",
+      "empty": "இன்னும் தொடர்புகள் இல்லை",
+      "delete": "தொடர்பை நீக்கு",
+      "name": "காட்சி பெயர்",
+      "phone": "தொலைபேசி எண்",
+      "pin": "பின்"
     },
     "feedback": {
       "title": "கருத்து",
@@ -9526,7 +10738,11 @@
       "submit": "கருத்தை சமர்ப்பிக்கவும்",
       "thankYou": "உங்கள் கருத்துக்கு நன்றி!",
       "appreciateInput": "உங்கள் பங்களிப்பை நாங்கள் மதிக்கிறோம், மேம்படுத்த பயன்படுத்துவோம்.",
-      "sendMore": "மேலும் கருத்து அனுப்பு"
+      "sendMore": "மேலும் கருத்து அனுப்பு",
+      "empty": "இன்னும் கருத்துகள் இல்லை",
+      "from": "இருந்து",
+      "voiceMessage": "குரல் செய்தி",
+      "textMessage": "குறுஞ்செய்தி"
     },
     "consent": {
       "title": "பயோமெட்ரிக் ஒப்புதல்",
@@ -9536,7 +10752,23 @@
       "active": "செயலில்",
       "notGranted": "வழங்கப்படவில்லை",
       "grant": "வழங்கு",
-      "granted": "வழங்கப்பட்டது"
+      "granted": "வழங்கப்பட்டது",
+      "biometric": {
+        "explanation": "Bayit+ தனிப்பயனாக்கப்பட்ட அவதார மற்றும் குரல் அம்சங்களுக்கு உயிரியல் அளவீட்டு தரவைப் பயன்படுத்துகிறது.",
+        "privacy": "உங்கள் உயிரியல் அளவீட்டு தரவு குறியாக்கம் செய்யப்பட்டது மற்றும் மூன்றாம் தரப்பினருடன் ஒருபோதும் பகிரப்படாது.",
+        "pinLabel": "பின்",
+        "pinPlaceholder": "உங்கள் பின்னை உள்ளிடவும்",
+        "consentTypes": "பின்வருவனவற்றுக்கு ஒப்புக்கொள்கிறேன்",
+        "meshGeneration": "3D மெஷ் உருவாக்கம்",
+        "voiceV2V": "குரல்-க்கு-குரல் பயிற்சி",
+        "latentFeatures": "AI அம்ச தனிப்பயனாக்கம்",
+        "currentStatus": "தற்போதைய ஒப்புதல் நிலை",
+        "submit": "ஒப்புதல் வழங்கு",
+        "title": "உயிரியல் அளவீட்டு ஒப்புதல்",
+        "familyControlsRequired": "குடும்ப கட்டுப்பாடுகள் தேவை",
+        "familyControlsExplain": "இந்த சுயவிவரத்திற்கான உயிரியல் அளவீட்டு அம்சங்களை பெற்றோர் அல்லது பாதுகாவலர் அனுமதிக்க வேண்டும்.",
+        "goToFamilyControls": "குடும்ப கட்டுப்பாடுகளுக்கு செல்"
+      }
     },
     "highlights": {
       "title": "சிறப்பம்சங்கள்",
@@ -9545,9 +10777,187 @@
       "generateReel": "புதிய ரீல் உருவாக்கு",
       "noHighlights": "இன்னும் சிறப்பம்சங்கள் இல்லை",
       "momentsCount": "{{count}} தருணங்கள்",
-      "sendToFamily": "குடும்பத்திற்கு அனுப்பு"
+      "sendToFamily": "குடும்பத்திற்கு அனுப்பு",
+      "generate": "சிறப்பம்ச தொகுப்பை உருவாக்கு",
+      "empty": "இன்னும் சிறப்பம்சங்கள் இல்லை",
+      "share": "பகிர்",
+      "generating": "சிறப்பம்சங்களை உருவாக்குகிறது..."
     },
-    "title": "ஜே அனி"
+    "title": "ஜே அனி",
+    "arCapture": {
+      "processing": "செயலாக்குகிறது..."
+    },
+    "preview": {
+      "title": "3D முன்னோட்டம்",
+      "loading": "உங்கள் அவதாரத்தை ஏற்றுகிறது...",
+      "error": "3D முன்னோட்டத்தை ஏற்ற முடியவில்லை"
+    },
+    "magicMirror": {
+      "vocabOfDay": "இன்றைய வார்த்தை",
+      "noAvatar": "அவதாரம் இல்லை",
+      "noAvatarDesc": "மேஜிக் மிரர் திறக்க உங்கள் 3D அவதாரத்தை உருவாக்கவும்",
+      "createAvatar": "அவதாரத்தை உருவாக்கு",
+      "noCreditsTitle": "கிரெடிட்கள் தீர்ந்தன",
+      "noCreditsDesc": "மேஜிக் மிரர் பயன்படுத்த உங்களுக்கு Beta கிரெடிட்கள் தேவை",
+      "playGreeting": "வாழ்த்தை இயக்கு",
+      "refresh": "புதுப்பி",
+      "meshUnavailable": "3D மெஷ் கிடைக்கவில்லை"
+    },
+    "mesh": {
+      "title": "3D மெஷ் உருவாக்கு",
+      "viewPreview": "முன்னோட்டத்தைக் காண்",
+      "statusIdle": "தயார்",
+      "statusGenerating": "உருவாக்குகிறது...",
+      "statusReady": "முடிந்தது",
+      "statusFailed": "தோல்வி",
+      "meshViewer": "3D மெஷ் காட்சியாளர்",
+      "meshViewerDescription": "3D மெஷ் காட்சியாளருக்கு WebView அல்லது GLSurfaceView ஒருங்கிணைப்பு தேவை",
+      "skinTone": "சருமத் தொனி",
+      "hairStyle": "சிகை அலங்காரம்",
+      "accessories": "துணைக்கருவிகள்",
+      "saveChanges": "மாற்றங்களைச் சேமி"
+    },
+    "movieCharacters": {
+      "title": "கதாபாத்திரங்கள்",
+      "empty": "கதாபாத்திரங்கள் இல்லை"
+    },
+    "trigger": {
+      "prompt": "சொற்றொடரைச் சொல்லுங்கள்",
+      "dismiss": "நிராகரி",
+      "success": "அருமை!",
+      "continue": "தொடரவும்",
+      "incorrect": "சரியில்லை",
+      "correct": "சரியான பதில்",
+      "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+      "skip": "தவிர்",
+      "errors": {
+        "microphoneFailed": "ஒலிவாங்கி அணுகல் தோல்வி"
+      }
+    },
+    "v2v": {
+      "transforming": "குரல் மாற்றம் செய்கிறது...",
+      "latency": "தாமதம்",
+      "retry": "மீண்டும் முயற்சி",
+      "nextPhrase": "அடுத்த சொற்றொடர்",
+      "beforeAfter": "முன் / After",
+      "before": "முன்",
+      "after": "பிறகு",
+      "improvement": "மேம்பாடு",
+      "title": "குரல் பயிற்சி",
+      "stop": "நிறுத்து",
+      "record": "பதிவு செய்",
+      "mic": "MIC",
+      "viewProgress": "முன்னேற்றத்தைக் காண்",
+      "analyzingPronunciation": "உச்சரிப்பை பகுப்பாய்வு செய்கிறது...",
+      "pronunciationFeedback": "உச்சரிப்பு கருத்து",
+      "similarity": "ஒற்றுமை: {{score}}%",
+      "yourProgress": "உங்கள் முன்னேற்றம்",
+      "transforms": "மாற்றங்கள்: {{count}}",
+      "continuePracticing": "பயிற்சியைத் தொடரவும்"
+    },
+    "avatar3d": {
+      "title": "3D அவதாரம்",
+      "errorTitle": "அவதார பிழை",
+      "glbMeshViewer": "GLB மெஷ் காட்சியாளர்",
+      "controls": "கட்டுப்பாடுகள்",
+      "animate": "அசைவூட்டு",
+      "vertices": "முனைகள்",
+      "bones": "எலும்புகள்",
+      "blendShapes": "கலவை வடிவங்கள்",
+      "hasGlb": "GLB உள்ளது",
+      "status": "நிலை: {{value}}"
+    },
+    "dashboard": {
+      "title": "ஜே அனி",
+      "biometricConsent": "பயோமெட்ரிக் ஒப்புதல்",
+      "activeConsents": "{{count}} செயலில் உள்ள ஒப்புதல்கள்",
+      "magicMirror": "மாயக் கண்ணாடி",
+      "magicMirrorDescription": "தினசரி வாழ்த்துகள் மற்றும் முக அடையாளம்",
+      "v2vPractice": "V2V பயிற்சி",
+      "v2vPracticeDescription": "குரல்-க்கு-குரல் உச்சரிப்பு",
+      "avatar3d": "3D அவதாரம்",
+      "avatar3dDescription": "உங்கள் தனிப்பயனாக்கப்பட்ட அவதார மெஷ்",
+      "movieInteractions": "திரைப்பட ஊடாடுதல்கள்",
+      "movieInteractionsDescription": "திரைப்பட கதாபாத்திரங்களை உலாவி அவர்களுடன் பேசுங்கள்",
+      "contacts": "தொடர்புகள்",
+      "contactsDescription": "WhatsApp தொடர்புகளை பகிர்தல்",
+      "feedback": "கருத்து",
+      "feedbackDescription": "உங்கள் அனுபவத்தைப் பகிரவும்",
+      "consent": "ஒப்புதல்",
+      "consentDescription": "பயோமெட்ரிக் ஒப்புதல் மேலாண்மை",
+      "chess": "செஸ்",
+      "chessDescription": "நண்பர்கள் மற்றும் குடும்பத்தினருடன் செஸ் விளையாடுங்கள்"
+    },
+    "mirror": {
+      "title": "மாயக் கண்ணாடி",
+      "avatarContentDescription": "அவதாரம்",
+      "wordOfTheDay": "இன்றைய சொல்",
+      "playLipsync": "உதடு ஒத்திசைவை இயக்கு",
+      "noAvatarYet": "இன்னும் அவதாரம் இல்லை",
+      "noAvatarDescription": "கதையில் உங்களைப் பார்க்க 3D அவதாரம் உருவாக்குங்கள்",
+      "createAvatar": "அவதாரம் உருவாக்கு"
+    },
+    "mode": {
+      "title": "அவதார பயன்முறை",
+      "enableAvatarMode": "அவதார பயன்முறையை இயக்கு",
+      "enableDescription": "உள்ளடக்கத்திற்கு எதிர்வினையாற்றும் உங்கள் அவதாரத்தைக் காட்டு",
+      "avatarPreview": "அவதார முன்னோட்டம்",
+      "avatarPreviewContentDescription": "அவதார முன்னோட்டம்",
+      "noAvatarConfigured": "அவதாரம் கட்டமைக்கப்படவில்லை",
+      "reactionStyle": "எதிர்வினை நடை"
+    },
+    "wardrobe": {
+      "title": "ஆடை அலமாரி",
+      "equippedContentDescription": "அணிந்துள்ளது"
+    },
+    "settings": {
+      "title": "அவதார அமைப்புகள்",
+      "privacy": "தனியுரிமை",
+      "privateAvatarMode": "தனிப்பட்ட அவதார பயன்முறை",
+      "privateAvatarDescription": "உங்கள் அவதாரத்தை மற்ற பயனர்களிடமிருந்து மறை",
+      "appearance": "தோற்றம்",
+      "enableAnimations": "அசைவூட்டங்களை இயக்கு",
+      "animationsDescription": "அவதார இயக்கங்கள் மற்றும் வெளிப்பாடுகளை அசைவூட்டு",
+      "availableOutfits": "கிடைக்கும் ஆடைகள்"
+    },
+    "selfie": {
+      "title": "வீடியோ செல்ஃபி",
+      "camera": "கேமரா",
+      "cameraPreview": "கேமரா முன்னோட்டம்",
+      "startRecording": "பதிவைத் தொடங்கு",
+      "stopRecording": "பதிவை நிறுத்து",
+      "rec": "REC",
+      "enterPin": "அவதாரம் உருவாக்க உங்கள் PIN ஐ உள்ளிடவும்",
+      "pinLabel": "PIN",
+      "retake": "மீண்டும் எடு",
+      "creatingAvatar": "உங்கள் அவதாரம் உருவாக்கப்படுகிறது...",
+      "avatarCreated": "அவதாரம் வெற்றிகரமாக உருவாக்கப்பட்டது",
+      "avatarPreviewContentDescription": "அவதார முன்னோட்டம்",
+      "createAnother": "மற்றொன்றை உருவாக்கு"
+    },
+    "characters": {
+      "title": "கதாபாத்திரங்கள்",
+      "noCharactersFound": "இந்த திரைப்படத்திற்கு கதாபாத்திரங்கள் எதுவும் கிடைக்கவில்லை",
+      "characterCount": "{{count}} கதாபாத்திரங்கள்"
+    },
+    "interactions": {
+      "title": "திரைப்பட ஊடாடுதல்கள்",
+      "noInteractableMovies": "ஊடாடக்கூடிய திரைப்படங்கள் எதுவும் கிடைக்கவில்லை"
+    },
+    "feedbackInbox": {
+      "title": "கருத்து இன்பாக்ஸ்",
+      "refreshContentDescription": "புதுப்பி",
+      "noFeedbackYet": "இன்னும் கருத்து இல்லை",
+      "feedbackAppearHere": "உங்கள் தொடர்புகளின் கருத்துகள் இங்கே தோன்றும்",
+      "playVoiceMessage": "குரல் செய்தியை இயக்கு"
+    },
+    "addContact": {
+      "title": "தொடர்பு சேர்",
+      "nameLabel": "பெயர்",
+      "phoneLabel": "தொலைபேசி",
+      "relationship": "உறவு",
+      "language": "மொழி"
+    }
   },
   "security": {
     "mfa": {
@@ -9584,7 +10994,15 @@
       "empty": "சாதனங்கள் எதுவும் இணைக்கப்படவில்லை.\nஉங்கள் முதல் சாதனத்தை இணைக்கவும்!",
       "lastActiveNa": "கடைசி செயலில்: கிடைக்கவில்லை",
       "remove": "நீக்கு"
-    }
+    },
+    "changePassword": "கடவுச்சொல்லை மாற்று",
+    "confirmPassword": "புதிய கடவுச்சொல்லை உறுதிப்படுத்து",
+    "current": "தற்போதைய",
+    "currentPassword": "தற்போதைய கடவுச்சொல்",
+    "newPassword": "புதிய கடவுச்சொல்",
+    "noDevices": "சாதனங்கள் காணப்படவில்லை",
+    "unknownDevice": "அறியாத சாதனம்",
+    "updatePassword": "கடவுச்சொல்லைப் புதுப்பி"
   },
   "social": {
     "watchParty": {
@@ -9620,14 +11038,49 @@
   "culture": {
     "glossary": {
       "title": "சொல்லகராதி",
-      "searchPlaceholder": "சொற்களைத் தேடு..."
+      "searchPlaceholder": "சொற்களைத் தேடு...",
+      "termDetail": "சொல் விவரம்",
+      "definition": "வரையறை",
+      "pronunciation": "உச்சரிப்பு",
+      "examples": "எடுத்துக்காட்டுகள்"
     },
     "shabbat": {
       "shabbatShalom": "ஷப்பாத் ஷாலோம்",
       "modeActivated": "ஷப்பாத் பயன்முறை இயக்கப்பட்டது",
       "shavuaTov": "ஷாவுவா டோவ்",
       "modeDeactivated": "ஷப்பாத் பயன்முறை முடக்கப்பட்டது",
-      "channelName": "ஷப்பாத் பயன்முறை"
+      "channelName": "ஷப்பாத் பயன்முறை",
+      "title": "ஷப்பாத் பயன்முறை",
+      "enableShabbatMode": "ஷப்பாத் பயன்முறையை இயக்கு",
+      "shabbatTimes": "ஷப்பாத் நேரங்கள்",
+      "timesDescription": "மெழுகுவர்த்தி ஏற்றும் நேரம் மற்றும் ஹவ்தலா நேரங்கள் இங்கே காட்டப்படும்",
+      "aboutTitle": "ஷப்பாத் பயன்முறை பற்றி",
+      "aboutDescription": "இயக்கப்பட்டால், ஷப்பாத் பயன்முறை ஷப்பாத் நேரங்களில் அறிவிப்புகளை இடைநிறுத்தும், திரை பிரகாசத்தைக் குறைக்கும் மற்றும் எளிமையான இடைமுகத்தை இயக்கும்."
+    },
+    "title": "இஸ்ரேலிய கலாச்சாரம்",
+    "description": "ஜெருசலேம், தெல் அவீவ் மற்றும் இஸ்ரேலிய பாரம்பரியம்",
+    "judaism": {
+      "holidaysAndTorah": "விடுமுறைகள் & தோரா",
+      "parashaOfTheWeek": "வாரத்தின் பராஷா",
+      "parashaDescription": "வாராந்திர தோரா வாசிப்பு மற்றும் விளக்கம்"
+    },
+    "morning": {
+      "title": "காலை சடங்கு",
+      "description": "நோக்கம் மற்றும் நன்றியுடன் உங்கள் நாளைத் தொடங்குங்கள்",
+      "dailyInspiration": "தினசரி உத்வேகம்",
+      "dailyInspirationDescription": "உங்கள் காலை நடைமுறைக்கான தொகுக்கப்பட்ட உள்ளடக்கம்",
+      "modehAni": "மோதே அனி",
+      "modehAniDescription": "காலை நன்றி பிரார்த்தனை",
+      "netilatYadayim": "நெதிலாத் யாதயிம்",
+      "netilatYadayimDescription": "சடங்கு கை கழுவுதல்",
+      "shacharit": "ஷச்சரித்",
+      "shacharitDescription": "காலை பிரார்த்தனை சேவை"
+    },
+    "jerusalem": {
+      "title": "ஜெருசலேம்"
+    },
+    "telaviv": {
+      "title": "தெல் அவீவ்"
     }
   },
   "byoc": {
@@ -9654,7 +11107,187 @@
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
     },
-    "plexLinkUrl": "plex.tv/link"
+    "plexLinkUrl": "plex.tv/link",
+    "yourChannels": "உங்கள் சேனல்கள்",
+    "iptv": "IPTV",
+    "youtube": "YouTube",
+    "addIPTV": "IPTV சேர்க்கவும்",
+    "addPlex": "Plex சேர்க்கவும்",
+    "addYouTube": "YouTube சேர்க்கவும்",
+    "playlistURL": "பிளேலிஸ்ட் URL",
+    "playlistName": "பிளேலிஸ்ட் பெயர்",
+    "noChannels": "சானல்கள் கண்டறியவில்லை",
+    "refreshing": "புதுப்பிக்கிறது...",
+    "sourceAdded": "மூலம் சேர்க்கப்பட்டது",
+    "sourceRemoved": "மூலம் நீக்கப்பட்டது",
+    "connectedSources": "இணைக்கப்பட்ட மூலங்கள்",
+    "aiAvailable": "AI கிடைக்கிறது",
+    "audioAIOnly": "ஆடியோ AI மட்டும்",
+    "aiDubbing": "AI டப்பிங்",
+    "aiSubtitles": "AI வசனங்கள்",
+    "connectContent": "உள்ளடக்கத்தை இணைக்கவும்",
+    "connectContentDesc": "உங்கள் IPTV, Plex அல்லது YouTube மூலங்களை சேர்க்கவும்",
+    "removeSource": "மூலத்தை நீக்கு",
+    "removeConfirm": "இந்த மூலத்தை நீக்க விரும்புகிறீர்களா?",
+    "channelCount": "%d சேனல்கள்",
+    "fromPlex": "Plex-இலிருந்து",
+    "enterURL": "பிளேலிஸ்ட் URL அல்லது கோப்பை உள்ளிடவும்",
+    "validating": "சரிபார்க்கிறது...",
+    "invalidURL": "சரியான URL-ஐ உள்ளிடவும்",
+    "fetchFailed": "பிளேலிஸ்ட்டை பெற இயலவில்லை",
+    "plexVisitLink": "plex.tv/link-ஐ பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
+    "plexEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
+    "plexWaiting": "Plex அங்கீகாரத்திற்காக காத்திருக்கிறது...",
+    "plexRequestingPin": "Plex PIN கோருகிறது...",
+    "plexSelectServer": "சேவையகத்தைத் தேர்ந்தெடுக்கவும்",
+    "plexSelectServerDesc": "எந்த Plex சேவையகத்தை இணைக்க வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்",
+    "plexDiscovering": "சேவையகங்களைக் கண்டறிகிறது...",
+    "plexNoServers": "Plex சேவையகங்கள் எதுவும் கிடைக்கவில்லை",
+    "plexLocal": "உள்ளூர்",
+    "plexRemote": "தொலைநிலை",
+    "plexItemCount": "Plex-இலிருந்து %d உருப்படிகள்",
+    "plexConnectDesc": "உங்கள் Plex Media Server-ஐ இணைக்கவும்",
+    "youtubeVisitLink": "கீழே உள்ள இணைப்பைப் பார்வையிட்டு குறியீட்டை உள்ளிடவும்",
+    "youtubeEnterCode": "மேலே காட்டப்பட்ட குறியீட்டை உள்ளிடவும்",
+    "youtubeWaiting": "அங்கீகாரத்திற்காக காத்திருக்கிறது...",
+    "youtubeRequestingCode": "சாதன குறியீடு கோருகிறது...",
+    "youtubeConnected": "YouTube இணைக்கப்பட்டது",
+    "youtubeVideoCount": "வீடியோக்கள் கண்டறியப்பட்டன",
+    "youtubeOpenApp": "YouTube-இல் திறக்கவும்",
+    "youtubeAudioAINote": "YouTube உள்ளடக்கத்திற்கு ஆடியோ AI அம்சங்கள் கிடைக்கும்",
+    "fromYouTube": "YouTube-இலிருந்து",
+    "youtubeConnectDesc": "உங்கள் YouTube கணக்கை இணைக்கவும்",
+    "bannerTitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+    "bannerSubtitle": "AI-மேம்படுத்தப்பட்ட பார்வைக்கு உங்கள் ஸ்ட்ரீமிங் மூலங்களை இணைக்கவும்",
+    "bannerConnect": "இணைக்க",
+    "bannerDismiss": "நிராகரி",
+    "itemsLoaded": "உருப்படிகள் ஏற்றப்பட்டன",
+    "enriching": "செறிவூட்டுகிறது...",
+    "findingSubtitles": "வசனங்களைத் தேடுகிறது...",
+    "subtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்பட்டன",
+    "noSubtitlesFound": "வசனங்கள் கண்டுபிடிக்கப்படவில்லை",
+    "subtitlesReady": "தலைப்புகள் தயார்",
+    "subtitlesAttached": "{{languages}} தலைப்புகள் சேர்க்கப்பட்டன",
+    "interactionMoments": "ஊடாடும் தருணங்கள்",
+    "interactionMomentsDescription": "கதாபாத்திர தொடர்புகளுக்கான முக்கிய தருணங்களை AI கண்டறியும்",
+    "enrichmentFailed": "செறிவூட்டல் தோல்வியடைந்தது",
+    "browsePlexLibrary": "Plex நூலகத்தை உலாவுக",
+    "addXtream": "Xtream Codes",
+    "xtreamServer": "சேவையக URL",
+    "xtreamUsername": "பயனர்பெயர்",
+    "xtreamPassword": "கடவுச்சொல்",
+    "xtreamConnectDesc": "Xtream Codes வழங்குநரை இணைக்கவும்",
+    "xtreamAuthFailed": "அங்கீகாரம் தோல்வியடைந்தது",
+    "sourceName": "மூலத்தின் பெயர்",
+    "selectProvider": "வழங்குநரைத் தேர்ந்தெடுக்கவும்",
+    "manualEntry": "கைமுறை உள்ளீடு",
+    "onboarding.title": "உள்ளடக்க அமைப்பு",
+    "onboarding.connectSource": "ஒரு மூலத்தை இணைக்கவும்",
+    "onboarding.connectDesc": "தொடங்குவதற்கு உங்கள் முதல் உள்ளடக்க மூலத்தை சேர்க்கவும்",
+    "onboarding.sourceAdded": "மூலம் சேர்க்கப்பட்டது",
+    "onboarding.analyzing": "உள்ளடக்கத்தை பகுப்பாய்வு செய்கிறது...",
+    "onboarding.analyze": "உள்ளடக்கத்தை பகுப்பாய்வு செய்",
+    "onboarding.analysisComplete": "பகுப்பாய்வு முடிந்தது",
+    "onboarding.channelsIdentified": "சேனல்கள் அடையாளம் காணப்பட்டன",
+    "onboarding.vodMatched": "VOD பொருத்தப்பட்டது",
+    "onboarding.duplicatesFound": "நகல்கள் கண்டறியப்பட்டன",
+    "onboarding.streamsHealthy": "ஸ்ட்ரீம்கள் ஆரோக்கியமானவை",
+    "onboarding.languages": "மொழிகள்",
+    "onboarding.topCategories": "முக்கிய வகைகள்",
+    "onboarding.cleanupTitle": "உள்ளடக்க சுத்தம்",
+    "onboarding.autoBestQuality": "சிறந்த தரத்தை தானாக தேர்ந்தெடு",
+    "onboarding.autoBestQualityDesc": "ஒவ்வொரு சேனலுக்கும் மிக உயர்ந்த தரமான ஸ்ட்ரீமை தானாகத் தேர்ந்தெடுக்கவும்",
+    "onboarding.applyCleanup": "சுத்தம் பயன்படுத்து",
+    "onboarding.personalizeTitle": "தனிப்பயனாக்கு",
+    "onboarding.personalizeDesc": "முகப்புத் திரைக்கான உங்கள் விருப்பங்களைத் தேர்ந்தெடுக்கவும்",
+    "onboarding.languagePriority": "மொழி முன்னுரிமை",
+    "onboarding.homeCategories": "முகப்பு வகைகள்",
+    "onboarding.ready": "தயார்",
+    "home.title": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள்",
+    "home.subtitle": "உங்கள் IPTV, Plex, YouTube அல்லது Xtream மூலங்களை இணைக்கவும்",
+    "home.connectButton": "மூலங்களை இணைக்கவும்",
+    "home.aiFeatures.dubbing": "AI டப்பிங்",
+    "home.aiFeatures.subtitles": "AI வசனங்கள்",
+    "tapToOpen": "திறக்க தட்டவும்",
+    "aiTrivia": "AI ட்ரிவியா",
+    "ai.dubbing": "AI டப்பிங்",
+    "ai.subtitles": "AI வசனங்கள்",
+    "ai.trivia": "AI ட்ரிவியா",
+    "ai.audioOverlay": "ஆடியோ மேலடுக்கு",
+    "feedCount": "{{count}} ஊட்டங்கள்",
+    "home": {
+      "title": "[ta] Bring Your Own Content",
+      "subtitle": "[ta] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "[ta] Connect Sources",
+      "aiFeatures": {
+        "dubbing": "[ta] AI Dubbing available",
+        "subtitles": "[ta] Live Subtitles available"
+      }
+    },
+    "pageSubtitle": "உங்கள் சொந்த உள்ளடக்கத்தை கொண்டு வாருங்கள் - IPTV மற்றும் ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்",
+    "addSource": "மூலத்தை சேர்க்கவும்",
+    "sync": "ஒத்திசைவு",
+    "remove": "அகற்று",
+    "empty": {
+      "title": "எந்த மூலமும் சேர்க்கப்படவில்லை",
+      "subtitle": "Bayit+ உடன் உங்கள் சொந்த உள்ளடக்கத்தை பார்க்க உங்கள் IPTV, Xtream அல்லது ஸ்ட்ரீமிங் மூலங்களை சேர்க்கவும்"
+    },
+    "source": {
+      "iptv": "IPTV மூலம்",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTV மூலத்தை சேர்க்கவும்",
+      "subtitle": "M3U அல்லது M3U8 பிளேலிஸ்ட் கோப்பிற்கான URL ஐ உள்ளிடவும்",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "சரிபார்க்கவும்",
+      "add": "மூலத்தை சேர்க்கவும்"
+    },
+    "preview": {
+      "title": "முன்னோட்டம்",
+      "channelCount": "{{count}} சேனல்கள் கண்டுபிடிக்கப்பட்டன"
+    },
+    "providers": {
+      "title": "பிரபலமான வழங்குநர்கள்"
+    },
+    "wizard": {
+      "step1": "மூலத்தை சேர்க்கவும்",
+      "step2": "செயலாக்கம்",
+      "step3": "மதிப்பாய்வு",
+      "selectSource": "மூல வகையை தேர்ந்தெடுக்கவும்"
+    },
+    "normalization": {
+      "title": "உங்கள் உள்ளடக்கம் செயலாக்கப்படுகிறது",
+      "total": "மொத்தம் {{count}} சேனல்கள்",
+      "matched": "{{count}} பொருந்தின",
+      "stage": {
+        "parsing": "பிளேலிஸ்ட் பகுப்பாய்வு செய்யப்படுகிறது...",
+        "matching": "சேனல்கள் பொருத்தப்படுகின்றன...",
+        "enriching": "மெட்டாடேட்டா செறிவூட்டப்படுகிறது...",
+        "finalizing": "இறுதிப்படுத்தப்படுகிறது..."
+      }
+    },
+    "review": {
+      "title": "இறக்குமதி செய்யப்பட்ட உள்ளடக்கத்தை மதிப்பாய்வு செய்யவும்",
+      "subtitle": "{{matched}} பொருந்தின, {{unmatched}} சேனல்கள் பொருந்தவில்லை",
+      "matchedChannels": "பொருந்திய சேனல்கள்",
+      "unmatchedChannels": "பொருந்தாத சேனல்கள்",
+      "apply": "பயன்படுத்து மற்றும் இறக்குமதி செய்"
+    },
+    "error": {
+      "urlRequired": "தயவுசெய்து URL ஐ உள்ளிடவும்",
+      "noChannels": "இந்த பிளேலிஸ்டில் சேனல்கள் எதுவும் கண்டுபிடிக்கப்படவில்லை",
+      "invalidUrl": "இந்த URL இலிருந்து பிளேலிஸ்டை ஏற்ற முடியவில்லை",
+      "allFieldsRequired": "அனைத்து புலங்களும் தேவை",
+      "enrichFailed": "மூலத்தை பகுப்பாய்வு செய்ய முடியவில்லை",
+      "syncFailed": "மூலத்தை ஒத்திசைக்க முடியவில்லை",
+      "normalizationFailed": "உள்ளடக்க செயலாக்கம் தோல்வியடைந்தது",
+      "normalizationPollFailed": "செயலாக்கத்தின் போது இணைப்பு துண்டிக்கப்பட்டது"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, சுயவிவரத்தைத் திற",
@@ -9856,6 +11489,843 @@
     "title": "சந்தா",
     "choosePlan": "திட்டத்தை தேர்வு செய்யுங்கள்",
     "subscribe": "திட்டத்தை தேர்வு செய்யுங்கள்",
-    "loadingPlans": "திட்டங்களை ஏற்றுகிறது..."
-  }
+    "loadingPlans": "திட்டங்களை ஏற்றுகிறது...",
+    "cancel": "சந்தாவை ரத்து செய்",
+    "current": "தற்போதைய",
+    "monthly": "மாதாந்திர",
+    "yearly": "ஆண்டு",
+    "tvSubscribeMessage": "bayit.tv இல் அல்லது உங்கள் மொபைல் சாதனத்திலிருந்து சந்தா செலுத்தவும்",
+    "externalPaymentTitle": "இணையதளத்தில் தொடரவும்",
+    "externalPaymentMessage": "உங்கள் சந்தாவை முடிக்க நீங்கள் எங்கள் இணையதளத்திற்கு திருப்பி விடப்படுவீர்கள். உங்கள் சந்தா உங்கள் Bayit+ கணக்கு மூலம் நிர்வகிக்கப்படும்.",
+    "continueToWebsite": "இணையதளத்தில் தொடரவும்",
+    "loading": "திட்டங்கள் ஏற்றப்படுகின்றன...",
+    "noPlans": "சந்தா திட்டங்கள் எதுவும் இல்லை",
+    "premiumContent": "Plus உள்ளடக்கம்",
+    "recommended": "பரிந்துரைக்கப்பட்டது",
+    "restorePurchase": "கொள்முதலை மீட்டெடுக்கவும்",
+    "upgradeRequired": "இந்த உள்ளடக்கத்தை அணுக உங்கள் சந்தாவை மேம்படுத்தவும்",
+    "monthlyPlan": "மாதாந்திர திட்டம்",
+    "yearlyPlan": "ஆண்டு திட்டம்",
+    "subscribeError": "சந்தாவைத் தொடங்க முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+    "activePlus": "Plus செயலில்",
+    "manageInSettings": "சாதன அமைப்புகளில் உங்கள் சந்தாவை நிர்வகிக்கவும்",
+    "restorePurchases": "வாங்கியவற்றை மீட்டெடுக்கவும்",
+    "subscribePlus": "Plus-ல் சந்தா செலுத்தவும்",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/மாதம்",
+    "perYear": "/வருடம்",
+    "feature": {
+      "unlimitedAI": "19 AI அம்சங்கள் - வரம்பற்ற",
+      "unlimitedWidgets": "வரம்பற்ற விட்ஜெட்கள்",
+      "unlimitedProfiles": "வரம்பற்ற குடும்ப சுயவிவரங்கள்",
+      "prioritySupport": "முன்னுரிமை ஆதரவு",
+      "freeAI": "50 AI கிரெடிட்கள் (ஒரு முறை)",
+      "oneWidget": "1 விட்ஜெட்",
+      "oneProfile": "1 குடும்ப சுயவிவரம்"
+    }
+  },
+  "billing": {
+    "currentPlan": "தற்போதைய திட்டம்",
+    "noSubscription": "செயலில் சந்தா இல்லை",
+    "noTransactions": "இன்னும் பரிவர்த்தனைகள் இல்லை",
+    "payment": "பணம் செலுத்துதல்",
+    "period": "பில்லிங் காலம்",
+    "plan": "திட்டம்",
+    "renewsOn": "புதுப்பிக்கப்படும் தேதி",
+    "status": "நிலை",
+    "transactions": "பரிவர்த்தனை வரலாறு"
+  },
+  "biometric": {
+    "authenticate": "அங்கீகரி",
+    "authenticated": "அங்கீகரிக்கப்பட்டது",
+    "enableDescription": "விரைவான அணுகலுக்கு பயோமெட்ரிக் அங்கீகாரத்தைப் பயன்படுத்தவும்.",
+    "reason": "உங்கள் அடையாளத்தை சரிபார்க்கவும்",
+    "unavailable": "பயோமெட்ரிக் அங்கீகாரம் கிடைக்கவில்லை",
+    "unavailableDescription": "உங்கள் சாதனம் ஆதரிக்கவில்லை."
+  },
+  "dm": {
+    "messagePlaceholder": "செய்தி தட்டச்சு...",
+    "noConversations": "உரையாடல்கள் இல்லை",
+    "searchConversations": "உரையாடல்களைத் தேடுங்கள்",
+    "searchPlaceholder": "செய்திகளைத் தேடுங்கள்...",
+    "translate": "மொழிபெயர்",
+    "translateMessage": "செய்தியை மொழிபெயர்",
+    "typing": "தட்டச்சு செய்கிறார்...",
+    "title": "செய்திகள்",
+    "conversations": "உரையாடல்கள்",
+    "conversation": "உரையாடல்",
+    "empty": {
+      "title": "இன்னும் செய்திகள் இல்லை",
+      "subtitle": "ஒரு நண்பருடன் உரையாடலை தொடங்குங்கள்"
+    },
+    "input": {
+      "placeholder": "ஒரு செய்தி தட்டச்சு செய்யுங்கள்...",
+      "send": "அனுப்பு"
+    },
+    "react": "எதிர்வினை",
+    "read": "படிக்கப்பட்டது",
+    "sent": "அனுப்பப்பட்டது",
+    "loadMore": "முந்தைய செய்திகளை ஏற்று",
+    "startConversation": "உரையாடலை தொடங்க ஒரு செய்தி அனுப்புங்கள்",
+    "reaction": {
+      "like": "விரும்பு",
+      "love": "காதல்",
+      "laugh": "ஹாஹா",
+      "surprise": "வாவ்",
+      "sad": "சோகம்"
+    },
+    "error": {
+      "fetchFailed": "செய்திகளை ஏற்றுவதில் தோல்வி",
+      "sendFailed": "செய்தி அனுப்புவதில் தோல்வி"
+    }
+  },
+  "gate": {
+    "contentLocked": "உள்ளடக்கம் பூட்டப்பட்டது",
+    "recommended": "பரிந்துரைக்கப்பட்டது",
+    "startTrial": "Plus-க்கு சந்தா செலுத்து",
+    "subscribe": "Plus-க்கு சந்தா செலுத்து",
+    "trialSubtitle": "வரம்பற்ற AI அம்சங்களை திறக்கவும்",
+    "trialTitle": "Plus-க்கு மேம்படுத்து",
+    "upgradeRequired": "இந்த உள்ளடக்கத்திற்கு மேம்படுத்தல் தேவை"
+  },
+  "pairing": {
+    "codePlaceholder": "இணைப்புக் குறியீடு உள்ளிடவும்",
+    "enterCode": "குறியீடு உள்ளிடவும்",
+    "expiresAt": "காலாவதியாகும்",
+    "noDevices": "இணைக்கப்பட்ட சாதனங்கள் இல்லை",
+    "pairedDevices": "இணைக்கப்பட்ட சாதனங்கள்",
+    "regenerate": "மீண்டும் உருவாக்கு",
+    "scanCode": "உங்கள் மற்ற சாதனத்தில் இந்தக் குறியீட்டை ஸ்கேன் செய்யுங்கள்",
+    "unknownDevice": "அறியாத சாதனம்",
+    "verify": "சரிபார்",
+    "title": "சாதன இணைப்பு",
+    "tvDescription": "உங்கள் iPhone அல்லது iPad ஐ இந்த Apple TV உடன் இணைக்கவும்.",
+    "tvPairFromMobile": "மொபைலில் இருந்து இணைக்கவும்",
+    "tvExplanation": "சாதன இணைப்பு உங்கள் மொபைல் சாதனத்திலிருந்து நிர்வகிக்கப்படுகிறது. இந்த Apple TV ஐ இணைக்க உங்கள் iPhone அல்லது iPad இல் Bayit+ ஐ திறக்கவும்.",
+    "tvPairPrompt": "உங்கள் iPhone அல்லது iPad இல் இருந்து இணைக்கவும்"
+  },
+  "passkeys": {
+    "addPasskey": "பாஸ்கீ சேர்",
+    "description": "பாஸ்கீகள் பாதுகாப்பான கடவுச்சொல் இல்லா அங்கீகாரத்தை வழங்குகின்றன.",
+    "deviceNamePlaceholder": "சாதன பெயர்",
+    "noPasskeys": "பாஸ்கீகள் பதிவு செய்யப்படவில்லை",
+    "register": "பதிவு செய்",
+    "registered": "பதிவு செய்யப்பட்ட பாஸ்கீகள்",
+    "title": "பாஸ்கீகள்",
+    "unknownDevice": "அறியாத சாதனம்",
+    "tvLimitation": "Apple TV வரம்பு",
+    "tvLimitationDescription": "பாஸ்கீ பதிவுக்கு பயோமெட்ரிக் அங்கீகாரம் (Face ID அல்லது Touch ID) தேவை, இது Apple TV இல் கிடைக்காது. உங்கள் iPhone அல்லது iPad இல் இருந்து உங்கள் பாஸ்கீகளை நிர்வகிக்கவும்.",
+    "tvNotAvailable": "Apple TV இல் கிடைக்காது"
+  },
+  "audio": {
+    "spatialEnabled": "இடஞ்சார் ஒலி",
+    "backgroundPlayback": "பின்னணி இயக்கம்",
+    "sessionCategory": "இயக்கம்"
+  },
+  "mfa": {
+    "title": "பல காரணி அங்கீகாரம்",
+    "description": "உங்கள் கணக்கைப் பாதுகாக்க கூடுதல் பாதுகாப்பு அடுக்கைச் சேர்க்கவும்",
+    "active": "MFA செயலில்",
+    "disable": "MFA ஐ முடக்கு",
+    "authenticatorApp": "அங்கீகரிப்பு ஆப்",
+    "authenticatorDescription": "Google Authenticator அல்லது Authy போன்ற ஆப்பைப் பயன்படுத்தவும்",
+    "sms": "SMS சரிபார்ப்பு",
+    "smsDescription": "குறுஞ்செய்தி மூலம் குறியீட்டைப் பெறுங்கள்",
+    "scanQRCode": "உங்கள் அங்கீகரிப்பு ஆப்பில் இந்த QR குறியீட்டை ஸ்கேன் செய்யவும்",
+    "manualEntry": "அல்லது இந்தக் குறியீட்டை கைமுறையாக உள்ளிடவும்:",
+    "smsCodeSent": "உங்கள் தொலைபேசிக்கு சரிபார்ப்புக் குறியீடு அனுப்பப்பட்டது",
+    "enterCode": "6 இலக்கக் குறியீட்டை உள்ளிடவும்",
+    "verify": "சரிபார்",
+    "phoneVerificationRequired": "தொலைபேசி சரிபார்ப்பு தேவை",
+    "verifyPhoneToEnableMFA": "பல காரணி அங்கீகாரத்தை இயக்குவதற்கு முன் உங்கள் தொலைபேசி எண்ணைச் சரிபார்க்க வேண்டும்.",
+    "addPhoneToEnableMFA": "பல காரணி அங்கீகாரத்தை இயக்குவதற்கு முன் தொலைபேசி எண்ணைச் சேர்த்து சரிபார்க்க வேண்டும்.",
+    "verifyPhone": "தொலைபேசி எண்ணைச் சரிபார்"
+  },
+  "verification": {
+    "title": "சரிபார்ப்பு",
+    "phoneTitle": "தொலைபேசி எண்ணைச் சரிபார்",
+    "phoneDescription": "சரிபார்ப்பு குறியீடு பெற உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்",
+    "enterCode": "உங்கள் தொலைபேசிக்கு அனுப்பப்பட்ட சரிபார்ப்பு குறியீடை உள்ளிடவும்",
+    "phonePlaceholder": "+1 555-123-4567",
+    "phoneHint": "நாட்டின் குறியீட்டுடன் உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்",
+    "sendCode": "சரிபார்ப்பு குறியீடு அனுப்பு",
+    "codePlaceholder": "000000",
+    "codeSentTo": "குறியீடு அனுப்பப்பட்டது",
+    "verify": "சரிபார்",
+    "resendIn": "மீண்டும் அனுப்பு",
+    "resendCode": "குறியீட்டை மீண்டும் அனுப்பு",
+    "changeNumber": "தொலைபேசி எண்ணை மாற்று"
+  },
+  "shabbat": {
+    "activate": "செயல்படுத்து",
+    "active": "செயலில்",
+    "autoMode": "தானியங்கி முறை",
+    "autoModeDescription": "மெழுகுவர்த்தி நேரத்தின் அடிப்படையில் தானியங்கி",
+    "candleLighting": "மெழுகுவர்த்தி ஏற்றுதல்",
+    "dailyTimes": "தினசரி நேரங்கள்",
+    "deactivate": "செயலிழக்கச் செய்",
+    "havdalah": "ஹவ்தலா",
+    "inactive": "செயலற்றது",
+    "manualToggle": "கைமுறை மாற்றம்",
+    "recommendedContent": "பரிந்துரைக்கப்பட்ட உள்ளடக்கம்",
+    "settings": "அமைப்புகள்",
+    "shalom": "ஷப்பத் ஷலோம்",
+    "parashat": "பராஷத் {{name}}"
+  },
+  "ai": {
+    "languageDescription": "நேரடி மொழிபெயர்ப்பு, டப்பிங் மற்றும் ட்ரிவியாவிற்கான இலக்கு மொழியைத் தேர்ந்தெடுக்கவும்",
+    "languageTitle": "AI மொழி"
+  },
+  "bilingualBridge": {
+    "languageRatio": "மொழி விகிதம்",
+    "wordsLearned": "கற்ற வார்த்தைகள்"
+  },
+  "coupons": {
+    "noneAvailable": "கூப்பன்கள் கிடைக்கவில்லை",
+    "redeem": "பெறு",
+    "redeemed": "பெறப்பட்டது"
+  },
+  "enterPiP": "பிக்சர் இன் பிக்சர் நுழை",
+  "exitPiP": "பிக்சர் இன் பிக்சர் வெளியேறு",
+  "languages": {
+    "english": "ஆங்கிலம்",
+    "french": "பிரெஞ்சு",
+    "hebrew": "எபிரேயம்",
+    "russian": "ரஷியன்",
+    "spanish": "ஸ்பானிஷ்"
+  },
+  "messages": {
+    "loading": "உரையாடல்கள் ஏற்றுகிறது...",
+    "noConversations": "உரையாடல்கள் இல்லை",
+    "searchConversations": "உரையாடல்களைத் தேடு",
+    "startChatHint": "மொபைல் ஆப்பிலிருந்து நண்பர்களுடன் அரட்டை தொடங்குங்கள்"
+  },
+  "mission": {
+    "complete": "பணி நிறைவு!",
+    "complete_error": "பணி நிறைவு செய்ய முடியவில்லை",
+    "continue": "தொடர்",
+    "final_score": "இறுதி மதிப்பெண்",
+    "listening": "கேட்கிறது...",
+    "load_error": "பணி ஏற்ற முடியவில்லை",
+    "loading": "பணி ஏற்றுகிறது...",
+    "speak_challenge": "சவால் சொற்றொடரைப் பேசுங்கள்",
+    "submit_error": "சமர்ப்பிக்க முடியவில்லை",
+    "tap_to_speak": "பேச தட்டவும்"
+  },
+  "snaps": {
+    "characters": "பாத்திரங்கள்",
+    "download": "பதிவிறக்கம்",
+    "download_error": "ஸ்னாப் பதிவிறக்க முடியவில்லை",
+    "empty_subtitle": "உங்கள் முதல் குடும்ப ஸ்னாப்பை உருவாக்குங்கள்",
+    "empty_title": "இன்னும் ஸ்னாப்கள் இல்லை",
+    "generate": "உருவாக்கு",
+    "generate_first": "உங்கள் முதல் ஸ்னாப்பை உருவாக்குங்கள்",
+    "load_error": "ஸ்னாப்கள் ஏற்ற முடியவில்லை",
+    "loading": "ஸ்னாப்கள் ஏற்றுகிறது...",
+    "retry": "மீண்டும் முயற்சி",
+    "share": "பகிர்",
+    "subtitle": "AI இயக்கும் குடும்ப புகைப்படங்கள்",
+    "title": "குடும்ப ஸ்னாப்கள்"
+  },
+  "vocabulary": {
+    "title": "சொற்களஞ்சியம்",
+    "wordCount": "{{count}} சொற்கள்",
+    "empty": "இன்னும் சொற்கள் சேமிக்கப்படவில்லை",
+    "emptyHint": "சொற்களைச் சேமிக்க வசனங்களில் தட்டவும்",
+    "newWords": "புதிய சொற்கள்",
+    "reviewedWords": "மதிப்பாய்வு செய்யப்பட்ட சொற்கள்",
+    "close": "மூடு"
+  },
+  "wallet": {
+    "earned": "பெறப்பட்டது",
+    "noTransactions": "இன்னும் பரிவர்த்தனைகள் இல்லை",
+    "recentTransactions": "சமீபத்திய பரிவர்த்தனைகள்",
+    "shekelsAvailable": "கிடைக்கும் ஷெக்கல்ஸ்",
+    "shekelsBalance": "ஷெக்கல்ஸ் இருப்பு",
+    "spent": "செலவிடப்பட்டது"
+  },
+  "wardrobe": {
+    "balance": "இருப்பு",
+    "cancel": "ரத்து செய்",
+    "confirm": "உறுதிப்படுத்து",
+    "confirm_purchase": "கொள்முதலை உறுதிப்படுத்து",
+    "equip": "அணிவிக்க",
+    "equip_error": "பொருள் அணிவிக்க முடியவில்லை",
+    "insufficient_balance": "போதுமான இருப்பு இல்லை",
+    "load_error": "ஆடை அறை ஏற்ற முடியவில்லை",
+    "loading": "ஆடை அறை ஏற்றுகிறது...",
+    "owned": "சொந்தமான",
+    "purchase": "கொள்முதல்",
+    "purchase_error": "பொருள் வாங்க முடியவில்லை",
+    "subtitle": "உங்கள் அவதாரைத் தனிப்பயனாக்குங்கள்",
+    "title": "ஆடை அலமாரி",
+    "unequip": "அகற்று",
+    "unequip_error": "பொருள் அகற்ற முடியவில்லை",
+    "equipped": "அணிவிக்கப்பட்டது",
+    "empty": "இன்னும் ஆடைகள் கிடைக்கவில்லை",
+    "price": "{{amount}} ஷெக்கல்",
+    "rarity": {
+      "common": "சாதாரணம்",
+      "uncommon": "அசாதாரணம்",
+      "rare": "அரிதானது",
+      "epic": "மகத்தானது",
+      "legendary": "புராணம்"
+    }
+  },
+  "zine": {
+    "archive": "காப்பகம்",
+    "emptyPages": "காட்ட பக்கங்கள் இல்லை",
+    "failedToLoad": "பக்கம் {{page}} ஏற்ற முடியவில்லை",
+    "loadingPage": "பக்கம் ஏற்றுகிறது...",
+    "noCurrentZine": "தற்போது ஜீன் கிடைக்கவில்லை",
+    "noPagesAvailable": "பக்கங்கள் கிடைக்கவில்லை",
+    "noPagesDescription": "இந்த ஜீனில் காட்ட பக்கங்கள் இல்லை.",
+    "pageIndicator": "பக்கம் {{current}} / {{total}}",
+    "pageCount": "{{count}} பக்கங்கள்"
+  },
+  "forgot_password": {
+    "title": "கடவுச்சொல்லை மீட்டமை",
+    "subtitle": "உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும், கடவுச்சொல்லை மீட்டமைக்க ஒரு இணைப்பை அனுப்புவோம்",
+    "submit": "மீட்டமைப்பு இணைப்பை அனுப்பு",
+    "success_title": "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்",
+    "success_message": "கடவுச்சொல் மீட்டமைப்பு இணைப்பை அனுப்பியுள்ளோம். உங்கள் இன்பாக்ஸைச் சரிபார்க்கவும்.",
+    "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
+  },
+  "reset_password": {
+    "title": "புதிய கடவுச்சொல்லை உருவாக்கு",
+    "subtitle": "உங்கள் கணக்கிற்கு வலுவான கடவுச்சொல்லைத் தேர்ந்தெடுக்கவும்",
+    "submit": "கடவுச்சொல்லை மீட்டமை",
+    "requirements": "கடவுச்சொல்லில் இருக்க வேண்டும்:",
+    "requirement_length": "குறைந்தது 8 எழுத்துக்கள்",
+    "requirement_uppercase": "ஒரு பெரிய எழுத்து",
+    "requirement_lowercase": "ஒரு சிறிய எழுத்து",
+    "requirement_number": "ஒரு எண்",
+    "requirement_match": "கடவுச்சொற்கள் பொருந்துகின்றன",
+    "success_title": "கடவுச்சொல் மீட்டமைக்கப்பட்டது!",
+    "success_message": "உங்கள் கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது. இப்போது உங்கள் புதிய கடவுச்சொல்லுடன் உள்நுழையலாம்.",
+    "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
+  },
+  "voiceFallback": {
+    "title": "குரல் கிடைக்கவில்லை",
+    "subtitle": "அதற்கு பதிலாக உங்கள் செய்தியை தட்டச்சு செய்யுங்கள்",
+    "micUnavailable": "ஒலிவாங்கி கிடைக்கவில்லை",
+    "inputPlaceholder": "செய்தியை தட்டச்சு செய்யுங்கள்...",
+    "send": "அனுப்பு",
+    "suggestions": "பரிந்துரைகள்"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "குரல் தேடல் அமைப்புகள்",
+      "language": "அங்கீகார மொழி",
+      "sensitivity": "உணர்திறன்"
+    },
+    "listening": "[ta] Listening...",
+    "noResults": "[ta] No results found",
+    "tapToSpeak": "[ta] Tap to speak",
+    "title": "[ta] Voice Search"
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CV பதிவேற்றவும்",
+      "subtitle": "PDF, DOCX அல்லது TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS மதிப்பெண்",
+      "completeness": "முழுமை",
+      "skills": "திறன்கள்",
+      "recommendations": "பரிந்துரைகள்",
+      "missingSections": "இல்லாத பகுதிகள்"
+    },
+    "profile": {
+      "createProfile": "பொது சுயவிவரம் உருவாக்கு",
+      "shareLink": "இணைப்பு பகிர்",
+      "qrCode": "QR குறியீடு",
+      "download": "பதிவிறக்கு"
+    },
+    "auth": {
+      "signIn": "உள்நுழை",
+      "createAccount": "கணக்கு உருவாக்கு",
+      "email": "மின்னஞ்சல்",
+      "password": "கடவுச்சொல்",
+      "fullName": "முழு பெயர்",
+      "confirmPassword": "கடவுச்சொல் உறுதிசெய்"
+    },
+    "account": {
+      "title": "கணக்கு",
+      "signOut": "வெளியேறு",
+      "appLanguage": "ஆப் மொழி",
+      "quota": "பயன்பாட்டு ஒதுக்கீடு"
+    },
+    "cv": {
+      "uploadTitle": "உங்கள் CV பதிவேற்றவும்",
+      "generate": "CV உருவாக்கு",
+      "myCV": "என் CVகள்",
+      "analysis": "பகுப்பாய்வு",
+      "customize": "தனிப்பயனாக்கு",
+      "preview": "முன்னோட்டம்"
+    },
+    "dashboard": {
+      "title": "டாஷ்போர்டு",
+      "recentActivity": "சமீபத்திய செயல்பாடு",
+      "totalViews": "மொத்த பார்வைகள்",
+      "downloads": "பதிவிறக்கங்கள்",
+      "uniqueVisitors": "தனிப்பட்ட பார்வையாளர்கள்"
+    },
+    "contactRequests": {
+      "title": "தொடர்பு கோரிக்கைகள்",
+      "noRequests": "இன்னும் தொடர்பு கோரிக்கைகள் இல்லை"
+    }
+  },
+  "sharePlay": {
+    "watchTogether": "ஒன்றாகப் பாருங்கள்",
+    "inviteDescription": "நண்பர்களுடன் பார்க்கும் விதத்தைத் தேர்ந்தெடுக்கவும்",
+    "viaFaceTime": "FaceTime வழியாக SharePlay",
+    "faceTimeDescription": "FaceTime-ல் நண்பர்களுடன் பாருங்கள்",
+    "bayitParty": "Bayit+ விருந்து",
+    "bayitPartyDescription": "நண்பர்களை Bayit+ விருந்துக்கு அழைக்கவும்",
+    "watching": "பார்க்கிறார்கள்",
+    "synced": "அனைத்தும் ஒத்திசைக்கப்பட்டது",
+    "syncing": "ஒத்திசைக்கிறது...",
+    "end": "SharePlay-ஐ முடி",
+    "title": "SharePlay"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "நேரலை AI டப்பிங்",
+      "description": "AI குரல்களைப் பயன்படுத்தி இஸ்ரேலிய சேனல்களை உங்கள் மொழியில் நிகழ்நேரத்தில் டப் செய்து கேளுங்கள்."
+    },
+    "pauseAndAsk": {
+      "title": "இடைநிறுத்தி ஒரு கதாபாத்திரத்திடம் கேளுங்கள்",
+      "description": "எந்த காட்சியையும் இடைநிறுத்தி உங்கள் அவதாரத்தைப் பயன்படுத்தி கதாபாத்திரங்களுடன் உரையாடுங்கள்."
+    },
+    "zehAni": {
+      "title": "மாயக் கண்ணாடி",
+      "description": "செல்ஃபியிலிருந்து தனிப்பயனாக்கப்பட்ட 3D அவதாரை உருவாக்கி ஊடாடும் அம்சங்களில் பயன்படுத்துங்கள்."
+    },
+    "catchup": {
+      "title": "பின்தொடர்",
+      "description": "தொடக்கத்தை தவறவிட்டீர்களா? இதுவரை என்ன நடந்தது என்பதன் AI-உருவாக்கிய சுருக்கத்தைப் பெறுங்கள்."
+    }
+  },
+  "discover": {
+    "title": "கண்டுபிடி",
+    "subtitle": "Bayit+ இல் கிடைக்கும் அனைத்து AI-இயக்கப்படும் அம்சங்களையும் ஆராயுங்கள்",
+    "category": {
+      "watching_movies": "திரைப்படங்கள் பார்க்கும்போது",
+      "watching_live_tv": "நேரடி டிவி பார்க்கும்போது",
+      "learn_hebrew": "எபிரேயம் கற்றுக்கொள்ளுங்கள்",
+      "search_discovery": "தேடல் மற்றும் கண்டுபிடிப்பு",
+      "chat_assistants": "அரட்டை மற்றும் உதவியாளர்கள்"
+    },
+    "feature": {
+      "pause_ask": {
+        "name": "நிறுத்தி கேளுங்கள்",
+        "tagline": "எந்த திரைப்படத்தையும் நிறுத்தி கதாபாத்திரங்களுடன் பேசுங்கள்",
+        "description": "திரைப்படத்தை நிறுத்தி எந்த கதாபாத்திரத்துடனும் உண்மையான உரையாடலை நடத்துங்கள். அவர்கள் தங்கள் சொந்த குரல் மற்றும் ஆளுமையில் பதிலளிப்பார்கள், கதை, அவர்களின் உந்துதல்கள் அல்லது நீங்கள் அறிய விரும்பும் வேறு எதையும் பற்றிய கேள்விகளுக்கு பதிலளிப்பார்கள்."
+      },
+      "interactive_subtitles": {
+        "name": "ஊடாடும் வசன வரிகள்",
+        "tagline": "எந்த வசன வரி வார்த்தையையும் தட்டி அர்த்தம் அறியுங்கள்",
+        "description": "வசன வரிகளை கற்றல் கருவியாக மாற்றுங்கள். எந்த வார்த்தையையும் தட்டி வரையறையைப் பாருங்கள், உச்சரிப்பைக் கேளுங்கள், உங்கள் சொல்வளப் பட்டியலில் சேமியுங்கள். எபிரேய, ஆங்கில மற்றும் இருமொழி வசன வரிகளுடன் வேலை செய்யும்."
+      },
+      "vocabulary": {
+        "name": "சொல்வளம் கட்டமைப்பான்",
+        "tagline": "திரைப்படங்களிலிருந்து உங்கள் தனிப்பட்ட சொல் வங்கியை உருவாக்குங்கள்",
+        "description": "ஊடாடும் வசன வரிகளிலிருந்து சொற்களை தனிப்பட்ட சொல்வளப் பட்டியலில் சேகரியுங்கள். அட்டைகளை மதிப்பாய்வு செய்யுங்கள், உங்கள் முன்னேற்றத்தைக் கண்காணியுங்கள், நீங்கள் கற்றுக்கொண்ட திரைப்படங்களின் சூழலில் சொற்களைப் பாருங்கள்."
+      },
+      "vod_moments": {
+        "name": "ஊடாடும் தருணங்கள்",
+        "tagline": "AI-இயக்கப்படும் ஊடாடல்களுடன் முக்கிய காட்சிகளுக்கு பதிலளியுங்கள்",
+        "description": "திரைப்படத்தின் முக்கிய தருணங்களில் ஊடாடும் அறிவுறுத்தல்கள் தோன்றி கதையுடன் ஈடுபட அனுமதிக்கின்றன. கேள்விகள் கேளுங்கள், கலாச்சார சூழலைப் பெறுங்கள் அல்லது முக்கிய காட்சிகளை ஆழமாக ஆராயுங்கள்."
+      },
+      "cultural_context": {
+        "name": "கலாச்சார சூழல்",
+        "tagline": "ஒவ்வொரு காட்சிக்கும் பின்னால் உள்ள கலாச்சார பொருளைப் புரிந்துகொள்ளுங்கள்",
+        "description": "அறிமுகமில்லாத காட்சிகள், உரையாடல்கள் மற்றும் குறிப்புகளுக்கு AI-உருவாக்கிய கலாச்சார விளக்கங்களைப் பெறுங்கள். இஸ்ரேலிய நகைச்சுவை, மத பழக்கவழக்கங்கள், வரலாற்று குறிப்புகள் மற்றும் பலவற்றைப் புரிந்துகொள்ளுங்கள்."
+      },
+      "bilingual_bridge": {
+        "name": "இருமொழி பாலம்",
+        "tagline": "திரைப்பட உரையாடல் மூலம் இயல்பாக எபிரேயம் கற்றுக்கொள்ளுங்கள்",
+        "description": "எபிரேய மற்றும் ஆங்கில வசன வரிகளை அருகருகே பாருங்கள். AI முக்கிய சொற்றொடர்களை முன்னிலைப்படுத்தி, திரைப்பட உரையாடலின் இயல்பான சூழலில் எபிரேய உரையாடலைப் புரிந்துகொள்ள உதவுகிறது."
+      },
+      "ai_companion": {
+        "name": "AI துணை",
+        "tagline": "உங்கள் புத்திசாலி திரைப்படம் பார்க்கும் பங்காளி",
+        "description": "உங்களுடன் சேர்ந்து பார்க்கும் AI உதவியாளர். எந்த நேரத்திலும் கதை, கதாபாத்திரங்கள் அல்லது தயாரிப்பு விவரங்களைப் பற்றி கேளுங்கள். நீங்கள் பார்ப்பதின் சூழலைப் புரிந்துகொண்டு பொருத்தமான பதில்களை அளிக்கிறது."
+      },
+      "live_dubbing": {
+        "name": "நேரடி டப்பிங்",
+        "tagline": "எந்த சேனலையும் உங்கள் மொழியில் டப் செய்து பாருங்கள்",
+        "description": "நேரடி இஸ்ரேலிய டிவி சேனல்களை ஆங்கிலம், ஸ்பானிஷ், பிரெஞ்சு மற்றும் பிற மொழிகளில் நிகழ்நேர AI டப்பிங். நேரடி ஒளிபரப்புகளைப் பார்க்கும்போது உங்கள் விருப்ப மொழியில் உள்ளடக்கத்தைக் கேளுங்கள்."
+      },
+      "live_subtitles": {
+        "name": "நேரடி வசன வரிகள்",
+        "tagline": "நேரடி டிவிக்கு நிகழ்நேர வசன வரிகள்",
+        "description": "நேரடி டிவி பார்க்கும்போது AI-உருவாக்கிய வசன வரிகள் நிகழ்நேரத்தில் தோன்றும். உங்கள் விருப்ப மொழியைத் தேர்ந்தெடுத்து எந்த எபிரேய ஒளிபரப்பையும் பின்தொடருங்கள்."
+      },
+      "live_trivia": {
+        "name": "நேரடி ட்ரிவியா",
+        "tagline": "நீங்கள் பார்ப்பதைப் பற்றி ட்ரிவியா விளையாட்டுகள் விளையாடுங்கள்",
+        "description": "AI நேரடி ஒளிபரப்பின் தலைப்பைக் கண்டறிந்து நிகழ்நேரத்தில் ட்ரிவியா கேள்விகளை உருவாக்குகிறது. மற்ற பார்வையாளர்களுடன் போட்டியிட்டு இஸ்ரேலிய கலாச்சாரம், செய்திகள் மற்றும் பொழுதுபோக்கு பற்றிய உங்கள் அறிவைச் சோதியுங்கள்."
+      },
+      "catch_up": {
+        "name": "பிடித்துக்கொள்ளுங்கள்",
+        "tagline": "நீங்கள் தவறவிட்டதன் AI சுருக்கத்தைப் பெறுங்கள்",
+        "description": "நேரடி ஒளிபரப்பில் தாமதமாக சேர்ந்தீர்களா? நீங்கள் இணைவதற்கு முன் நடந்த அனைத்தையும் AI விரைவாக சுருக்கி உருவாக்குகிறது, எனவே சூழலை இழக்காமல் நேரடியாக உள்ளே குதிக்கலாம்."
+      },
+      "scene_search": {
+        "name": "காட்சி தேடல்",
+        "tagline": "பதிவு செய்யப்பட்ட ஒளிபரப்பில் எந்த தருணத்தையும் கண்டுபிடியுங்கள்",
+        "description": "நீங்கள் தேடுவதை விவரித்து பதிவு செய்யப்பட்ட நேரடி டிவி உள்ளடக்கத்தில் தேடுங்கள். AI சரியான தருணத்தைக் கண்டுபிடித்து உங்களை நேரடியாக அங்கே அழைத்துச் செல்கிறது."
+      },
+      "phonetic_mirror": {
+        "name": "ஒலிப்பு கண்ணாடி",
+        "tagline": "AI பின்னூட்டத்துடன் எபிரேய உச்சரிப்பைப் பயிற்சி செய்யுங்கள்",
+        "description": "ஒரு எபிரேய சொற்றொடரைப் படித்து சத்தமாகப் பேசுங்கள். AI உங்கள் உச்சரிப்பை பகுப்பாய்வு செய்து, எங்கே மேம்படுத்த வேண்டும் என்பதைக் காட்டி, உங்கள் அவதாரை காட்சி வழிகாட்டியாகப் பயன்படுத்தி சரியான ஒலிகளை நிரூபிக்கிறது."
+      },
+      "talk_back": {
+        "name": "திருப்பிப் பேசு",
+        "tagline": "உங்கள் அவதாருடன் எபிரேய உரையாடலைப் பயிற்சி செய்யுங்கள்",
+        "description": "உங்கள் AI அவதாருடன் எபிரேயத்தில் உரையாடுங்கள். அது உங்களிடம் எபிரேயத்தில் பேசும், நீங்கள் பதிலளிப்பீர்கள், அது உங்கள் உச்சரிப்பு, இலக்கணம் மற்றும் சொல்வளப் பயன்பாடு பற்றி பின்னூட்டம் அளிக்கும்."
+      },
+      "interactive_mission": {
+        "name": "ஊடாடும் பணி",
+        "tagline": "AI வழிகாட்டுதலுடன் எபிரேய கற்றல் பணிகளை நிறைவு செய்யுங்கள்",
+        "description": "வழிகாட்டப்பட்ட எபிரேய கற்றல் பணிகளைத் தொடங்குங்கள். உங்கள் அவதார் பேசுதல், கேட்டல் மற்றும் படித்தல் பயிற்சிகளை இணைத்து வேடிக்கையான, விளையாட்டு நிலைக்களன்களில் ஊடாடும் பயிற்சிகள் மூலம் உங்களை வழிநடத்துகிறது."
+      },
+      "glossary": {
+        "name": "எபிரேய சொல்லகராதி",
+        "tagline": "எபிரேய சொல்வள தரவுத்தளத்தை உலாவி தேடுங்கள்",
+        "description": "விரிவான எபிரேய-ஆங்கில சொல்லகராதியை அணுகுங்கள். சொற்களைத் தேடுங்கள், உச்சரிப்புகளைக் கேளுங்கள், Bayit+ உள்ளடக்கத்திலிருந்து பயன்பாட்டு எடுத்துக்காட்டுகளைப் பாருங்கள், சொற்களை உங்கள் தனிப்பட்ட சொல்வளப் பட்டியலில் சேமியுங்கள்."
+      },
+      "llm_search": {
+        "name": "AI தேடல்",
+        "tagline": "இயல்பான மொழியைப் பயன்படுத்தி உள்ளடக்கத்தைத் தேடுங்கள்",
+        "description": "நீங்கள் என்ன பார்க்க விரும்புகிறீர்கள் என்பதை உங்கள் சொந்த வார்த்தைகளில் விவரியுங்கள். AI உங்கள் நோக்கத்தைப் புரிந்துகொண்டு முழு Bayit+ பட்டியலிலிருந்து பொருந்தும் திரைப்படங்கள், நிகழ்ச்சிகள் மற்றும் சேனல்களைக் கண்டுபிடிக்கிறது."
+      },
+      "proactive_voice": {
+        "name": "குரல் பரிந்துரைகள்",
+        "tagline": "குரல் மூலம் தனிப்பயனாக்கப்பட்ட உள்ளடக்க பரிந்துரைகளைப் பெறுங்கள்",
+        "description": "குரல் பயன்முறையை செயல்படுத்தி Bayit+ க்கு உங்கள் மனநிலையைச் சொல்லுங்கள். AI உங்கள் பார்வை வரலாறு, விருப்பத்தேர்வுகள் மற்றும் தற்போதைய நேரத்தை கருத்தில் கொண்டு சரியான உள்ளடக்கத்தை பரிந்துரைக்கிறது."
+      },
+      "chatbot": {
+        "name": "AI உதவியாளர்",
+        "tagline": "Bayit+ மற்றும் இஸ்ரேலிய உள்ளடக்கம் பற்றி எதையும் கேளுங்கள்",
+        "description": "Bayit+ AI உதவியாளருடன் எந்த தலைப்பிலும் அரட்டையடியுங்கள். செயலியை வழிநடத்த உதவி பெறுங்கள், இஸ்ரேலிய கலாச்சாரத்தைப் பற்றி அறியுங்கள், உள்ளடக்க பரிந்துரைகளைக் கண்டறியுங்கள் அல்லது உங்கள் கணக்கு மற்றும் அம்சங்கள் பற்றி கேள்விகள் கேளுங்கள்."
+      }
+    },
+    "badge": {
+      "ready": "தயார்",
+      "setupNeeded": "அமைப்பு தேவை",
+      "premium": "பிரீமியம்",
+      "notAvailable": "கிடைக்கவில்லை",
+      "platformOnly": "iOS மட்டும்"
+    },
+    "walkthrough": {
+      "tryItNow": "இப்போது முயற்சியுங்கள்",
+      "watchDemo": "டெமோ பாருங்கள்",
+      "skip": "தவிர்",
+      "next": "அடுத்தது",
+      "done": "முடிந்தது",
+      "complete": "வழிகாட்டல் முடிந்தது",
+      "stepCounter": "{{total}}-இல் {{current}}",
+      "skipAccessibility": "பயிற்சியை தவிர்",
+      "nextAccessibility": "அடுத்த படி",
+      "doneAccessibility": "பயிற்சியை முடி",
+      "stepAccessibility": "{{total}}-இல் படி {{current}}",
+      "pause_ask": {
+        "step1": "ஊடாடும் தருணங்கள் உள்ள திரைப்படத்திற்குச் செல்லுங்கள்",
+        "step2": "ஒரு காட்சியின் போது திரைப்படத்தை நிறுத்துங்கள்",
+        "step3": "கதாபாத்திரத்திடம் கேள் பொத்தானைத் தட்டுங்கள்",
+        "step4": "கதாபாத்திரம் உங்களுக்கு பதிலளிப்பதைப் பாருங்கள்"
+      },
+      "interactive_subtitles": {
+        "step1": "வசன வரிகளுடன் திரைப்படம் பார்க்கத் தொடங்குங்கள்",
+        "step2": "கட்டுப்பாட்டுப் பட்டியில் ஊடாடும் பொத்தானைத் தட்டுங்கள்",
+        "step3": "உங்கள் வசன வரி மொழியைத் தேர்ந்தெடுங்கள்",
+        "step4": "மேலும் அறிய வசன வரிகளில் எந்த வார்த்தையையும் தட்டுங்கள்"
+      },
+      "vocabulary": {
+        "step1": "ஊடாடும் வசன வரிகள் இயக்கப்பட்ட திரைப்படத்தைத் திறங்கள்",
+        "step2": "நீங்கள் கற்றுக்கொள்ள விரும்பும் வார்த்தையைத் தட்டுங்கள்",
+        "step3": "சொல்வளத்தில் சேமி என்பதைத் தட்டுங்கள்",
+        "step4": "சொல்வள பிரிவில் சேமித்த வார்த்தைகளை மதிப்பாய்வு செய்யுங்கள்"
+      },
+      "vod_moments": {
+        "step1": "ஊடாடும் தருணங்கள் உள்ள திரைப்படம் பார்க்கத் தொடங்குங்கள்",
+        "step2": "ஊடாடும் அறிவுறுத்தல் தோன்றும் வரை காத்திருங்கள்",
+        "step3": "AI-உருவாக்கிய ஊடாடலைப் பாருங்கள்"
+      },
+      "cultural_context": {
+        "step1": "எபிரேய உரையாடல் உள்ள திரைப்படத்தை இயக்குங்கள்",
+        "step2": "கலாச்சார முக்கியத்துவம் உள்ள வசன வரியைத் தட்டுங்கள்",
+        "step3": "AI-உருவாக்கிய கலாச்சார விளக்கத்தைப் படியுங்கள்"
+      },
+      "bilingual_bridge": {
+        "step1": "இருமொழி ஆதரவு உள்ள திரைப்படத்தைத் திறங்கள்",
+        "step2": "இருமொழி வசன வரி பயன்முறையைத் தேர்ந்தெடுங்கள்",
+        "step3": "மொழிபெயர்ப்பைக் காண முன்னிலைப்படுத்தப்பட்ட சொற்றொடரைத் தட்டுங்கள்",
+        "step4": "இரு மொழிகளையும் அருகருகே பாருங்கள்"
+      },
+      "ai_companion": {
+        "step1": "எந்த திரைப்படமும் பார்க்கத் தொடங்குங்கள்",
+        "step2": "AI துணை பொத்தானைத் தட்டுங்கள்",
+        "step3": "திரைப்படம் பற்றி கேள்வி தட்டச்சு செய்யுங்கள்",
+        "step4": "சூழல் சார்ந்த AI பதிலைப் படியுங்கள்"
+      },
+      "live_dubbing": {
+        "step1": "நேரடி டிவி சேனலுக்குச் செல்லுங்கள்",
+        "step2": "கட்டுப்பாட்டுப் பட்டியில் டப்பிங் பொத்தானைத் தட்டுங்கள்",
+        "step3": "உங்கள் விருப்ப மொழியைத் தேர்ந்தெடுங்கள்",
+        "step4": "நிகழ்நேர AI டப்பிங் கேளுங்கள்"
+      },
+      "live_subtitles": {
+        "step1": "நேரடி டிவி சேனலுக்குச் செல்லுங்கள்",
+        "step2": "வசன வரி பொத்தானைத் தட்டுங்கள்",
+        "step3": "உங்கள் வசன வரி மொழியைத் தேர்ந்தெடுங்கள்",
+        "step4": "நிகழ்நேர வசன வரிகள் தோன்றுவதைப் பாருங்கள்"
+      },
+      "live_trivia": {
+        "step1": "நேரடி டிவி சேனலுக்குச் செல்லுங்கள்",
+        "step2": "ட்ரிவியா பொத்தானைத் தட்டுங்கள்",
+        "step3": "AI-உருவாக்கிய கேள்விகளுக்கு பதிலளியுங்கள்"
+      },
+      "catch_up": {
+        "step1": "நேரடி ஒளிபரப்புக்குச் செல்லுங்கள்",
+        "step2": "பிடித்துக்கொள் விருப்பத்தைத் தேர்ந்தெடுங்கள்",
+        "step3": "AI சுருக்கத்தை உருவாக்கத் தட்டுங்கள்",
+        "step4": "நீங்கள் தவறவிட்டதன் சுருக்கத்தைப் படியுங்கள்"
+      },
+      "scene_search": {
+        "step1": "பதிவு செய்யப்பட்ட ஒளிபரப்புக்குச் செல்லுங்கள்",
+        "step2": "நீங்கள் தேடுவதை தட்டச்சு செய்யுங்கள்",
+        "step3": "பொருந்தும் காட்சியைத் தட்டுங்கள்",
+        "step4": "அந்த இடத்திலிருந்து காட்சியைப் பாருங்கள்"
+      },
+      "phonetic_mirror": {
+        "step1": "Zeh Ani இல் ஒலிப்பு கண்ணாடியைத் திறங்கள்",
+        "step2": "காட்டப்பட்ட எபிரேய சொற்றொடரைப் படியுங்கள்",
+        "step3": "உங்கள் மைக்ரோஃபோனில் சொற்றொடரைப் பேசுங்கள்",
+        "step4": "AI உச்சரிப்பு பின்னூட்டத்தை மதிப்பாய்வு செய்யுங்கள்"
+      },
+      "talk_back": {
+        "step1": "Zeh Ani இல் திருப்பிப் பேசு திறங்கள்",
+        "step2": "உங்கள் அவதார் எபிரேயத்தில் பேசுவதைக் கேளுங்கள்",
+        "step3": "மைக்ரோஃபோனைப் பயன்படுத்தி எபிரேயத்தில் பதிலளியுங்கள்",
+        "step4": "உங்கள் பதிலுக்கான AI பின்னூட்டத்தை மதிப்பாய்வு செய்யுங்கள்"
+      },
+      "interactive_mission": {
+        "step1": "ஊடாடும் பணிகளைத் திறங்கள்",
+        "step2": "பணி நிலையைத் தேர்ந்தெடுங்கள்",
+        "step3": "AI-வழிகாட்டிய பயிற்சிகளைப் பின்பற்றுங்கள்",
+        "step4": "பணியை நிறைவு செய்து வெகுமதிகளைப் பெறுங்கள்"
+      },
+      "glossary": {
+        "step1": "எபிரேய சொல்லகராதியைத் திறங்கள்",
+        "step2": "ஒரு எபிரேய வார்த்தையைத் தேடுங்கள்",
+        "step3": "உச்சரிப்பைக் கேளுங்கள்"
+      },
+      "llm_search": {
+        "step1": "தேடல் தாவலைத் திறங்கள்",
+        "step2": "இயல்பான மொழி வினவலை தட்டச்சு செய்யுங்கள்",
+        "step3": "AI-தொகுத்த முடிவுகளை உலாவுங்கள்"
+      },
+      "proactive_voice": {
+        "step1": "குரல் பரிந்துரைகள் அம்சத்தைத் திறங்கள்",
+        "step2": "பேச அழுத்திப் பிடியுங்கள்",
+        "step3": "தனிப்பயனாக்கப்பட்ட பரிந்துரைகளைக் கேளுங்கள்"
+      },
+      "chatbot": {
+        "step1": "AI உதவியாளரைத் திறங்கள்",
+        "step2": "உங்கள் கேள்வி அல்லது கோரிக்கையை தட்டச்சு செய்யுங்கள்",
+        "step3": "AI பதிலைப் படியுங்கள்"
+      },
+      "avatarNeeded": "இந்த அம்சத்தை முயற்சிக்க உங்களுக்கு ஒரு அவதார் தேவை. இப்போது உருவாக்கவா?",
+      "createAvatar": "அவதார் உருவாக்கு",
+      "skipAvatar": "இப்போதைக்கு தவிர்",
+      "scanQR": "புகைப்படம் பதிவேற்ற QR ஸ்கேன் செய்",
+      "aiAvatar": "AI அவதார் உருவாக்கு"
+    },
+    "prereq": {
+      "avatar_required": "முதலில் உங்கள் அவதாரை உருவாக்குங்கள்",
+      "subscription_required": "பிரீமியம் சந்தா தேவை",
+      "microphone_required": "மைக்ரோஃபோன் அணுகல் தேவை",
+      "contentType_required": "குறிப்பிட்ட உள்ளடக்கம் தேவை",
+      "preference_required": "அமைப்புகளில் இந்த அம்சத்தை இயக்குங்கள்",
+      "voiceClone_required": "குரல் குளோன் அமைப்பு தேவை",
+      "avatar": "உங்கள் AI கதாபாத்திரத்தை உருவாக்குங்கள்",
+      "subscription": "பிரீமியம் சந்தா தேவை",
+      "microphone": "மைக்ரோஃபோன் அணுகல் தேவை",
+      "contentType": "உங்கள் உள்ளடக்க விருப்பங்களை தேர்ந்தெடுங்கள்",
+      "preference": "உங்கள் மொழி விருப்பங்களை அமைக்கவும்",
+      "voiceClone": "உங்கள் குரல் நகலை அமைக்கவும்"
+    },
+    "empty": {
+      "title": "அம்சங்கள் எதுவும் கிடைக்கவில்லை",
+      "subtitle": "புதிய AI அம்சங்களுக்கு பின்னர் வாருங்கள்"
+    },
+    "loading": "அம்சங்கள் ஏற்றப்படுகின்றன...",
+    "prerequisites": {
+      "title": "முன்நிபந்தனைகள்"
+    },
+    "action": {
+      "tryIt": "இப்போது முயற்சியுங்கள்",
+      "watchDemo": "டெமோ பாருங்கள்"
+    },
+    "detail": {
+      "prerequisites": "முன்நிபந்தனைகள்",
+      "tryIt": "இப்போது முயற்சியுங்கள்",
+      "watchDemo": "டெமோ பாருங்கள்",
+      "back": "பின்செல்"
+    },
+    "a11y": {
+      "ready": "அம்சம் பயன்படுத்தத் தயாராக உள்ளது",
+      "setupNeeded": "இந்த அம்சத்தைப் பயன்படுத்துவதற்கு முன் அமைப்பு தேவை",
+      "premium": "பிரீமியம் சந்தா தேவை",
+      "notAvailable": "அம்சம் கிடைக்கவில்லை",
+      "platformOnly": "iOS இல் மட்டுமே கிடைக்கும்"
+    },
+    "characterGen": {
+      "stages": {
+        "analyzing": "திரைப்படம் பகுப்பாய்வு செய்யப்படுகிறது...",
+        "extracting": "முக்கிய கதாபாத்திரங்கள் கண்டுபிடிக்கப்படுகின்றன...",
+        "voices": "கதாபாத்திர குரல்கள் கற்றுக்கொள்ளப்படுகின்றன...",
+        "frames": "கதாபாத்திர தோற்றங்கள் பதிவு செய்யப்படுகின்றன...",
+        "almost": "கிட்டத்தட்ட தயார்..."
+      }
+    },
+    "description": "Bayit+ உங்கள் பார்வை, கேட்கும் மற்றும் கற்றல் அனுபவத்தை மேம்படுத்த AI பயன்படுத்துகிறது. உங்கள் தளத்தில் என்ன கிடைக்கிறது என்பதைக் கண்டறியுங்கள்.",
+    "featureCount": "{{count}} அம்சங்கள்",
+    "tryIt": "முயற்சி செய்க",
+    "startWalkthrough": "வழிகாட்டுதலைத் தொடங்கு",
+    "availableOn": "இதில் கிடைக்கும்",
+    "setup": "அமைக்கவும்",
+    "error": {
+      "fetchFailed": "Discover அம்சங்களை ஏற்றுவதில் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+      "unknownFeature": "அம்சம் கண்டறியப்படவில்லை.",
+      "featureDisabled": "இந்த அம்சம் தற்போது முடக்கப்பட்டுள்ளது."
+    },
+    "availability": {
+      "ready": "தயார்",
+      "setupNeeded": "அமைப்பு தேவை",
+      "premiumRequired": "பிரீமியம் தேவை",
+      "notAvailable": "கிடைக்கவில்லை",
+      "platformOnly": "மற்ற தளம்"
+    },
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "android": "Android",
+      "tvos": "Apple TV"
+    }
+  },
+  "watchlist": {
+    "filters": {
+      "all": "அனைத்தும்",
+      "continue": "[ta] Continue Watching",
+      "movies": "திரைப்படங்கள்",
+      "series": "தொடர்கள்",
+      "kids": "குழந்தைகள்",
+      "judaism": "[ta] Judaism",
+      "podcasts": "[ta] Podcasts",
+      "radio": "[ta] Radio"
+    },
+    "title": "கண்காணிப்பு பட்டியல்",
+    "items": "உருப்படிகள்",
+    "watched": "[ta] watched",
+    "empty": "உங்கள் கண்காணிப்பு பட்டியல் காலியாக உள்ளது",
+    "emptyHint": "[ta] Start watching and items will appear here"
+  },
+  "recording": {
+    "stop": "பதிவை நிறுத்து",
+    "start": "பதிவைத் தொடங்கு"
+  },
+  "aiChat": {
+    "retryButton": "[ta] Retry",
+    "sendButton": "[ta] Send",
+    "title": "[ta] AI Chat",
+    "voiceButton": "[ta] Voice"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "[ta] Back"
+    },
+    "completion": {
+      "message": "[ta] You're all set! Start exploring AI features.",
+      "title": "[ta] Setup Complete"
+    },
+    "permissions": {
+      "description": "[ta] Grant permissions to enable AI features like voice and camera.",
+      "title": "[ta] Permissions"
+    },
+    "personalization": {
+      "description": "[ta] Tell us your preferences to personalize your AI experience.",
+      "title": "[ta] Personalization"
+    },
+    "title": "[ta] AI Setup",
+    "welcome": {
+      "description": "[ta] Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
+      "title": "[ta] Welcome to Bayit+ AI"
+    }
+  },
+  "auth_device_authorized": "[ta] Device authorized",
+  "auth_device_code_expired": "[ta] Code expired",
+  "auth_device_get_new_code": "[ta] Get new code",
+  "auth_device_manual_login": "[ta] Sign in manually",
+  "auth_device_visit_uri": "[ta] Visit the URL shown on your TV",
+  "go_back": "[ta] Go Back",
+  "retry": "[ta] Retry",
+  "search_hint": "[ta] Search channels, movies, shows...",
+  "search_no_results": "[ta] No results found",
+  "search_prompt": "[ta] What are you looking for?",
+  "subscription_required": "[ta] Subscription Required",
+  "subscription_upsell_tv": "[ta] Upgrade to watch on TV",
+  "talkback": {
+    "title": "[ta] Talkback"
+  },
+  "voiceCommand": {
+    "executing": "[ta] Executing...",
+    "listening": "[ta] Listening...",
+    "noMatch": "[ta] No match found",
+    "recognized": "[ta] Recognized"
+  },
+  "voiceSettings": {
+    "language": "[ta] Language",
+    "speechRate": "[ta] Speech Rate",
+    "title": "[ta] Voice Settings",
+    "ttsProvider": "[ta] TTS Provider",
+    "voiceMode": "[ta] Voice Mode",
+    "voiceSelection": "[ta] Voice Selection",
+    "wakeWord": "[ta] Wake Word"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "[ta] Back"
+    },
+    "calibration": {
+      "description": "[ta] Speak normally to calibrate the microphone.",
+      "listening": "[ta] Listening...",
+      "micButton": "[ta] Start Recording",
+      "resultTitle": "[ta] Calibration Result",
+      "stopButton": "[ta] Stop Recording",
+      "tapToStart": "[ta] Tap to start calibration",
+      "title": "[ta] Microphone Calibration"
+    },
+    "complete": {
+      "message": "[ta] Voice wizard setup is complete. You can now use voice features.",
+      "title": "[ta] Setup Complete"
+    },
+    "language": {
+      "description": "[ta] Select your preferred language for voice commands.",
+      "title": "[ta] Voice Language"
+    },
+    "permission": {
+      "description": "[ta] Microphone access is needed for voice features.",
+      "granted": "[ta] Permission Granted",
+      "requestButton": "[ta] Grant Permission",
+      "title": "[ta] Microphone Permission"
+    },
+    "title": "[ta] Voice Wizard"
+  },
+  "watch_now": "[ta] Watch Now"
 }

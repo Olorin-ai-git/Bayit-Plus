@@ -251,7 +251,8 @@
       "deleteConfirmTitle": "हटाने की पुष्टि",
       "deleteEpisodeMessage": "क्या आप वाकई इस एपिसोड को हटाना चाहते हैं?",
       "edit": "संपादित करें",
-      "featured": "विशेष"
+      "featured": "विशेष",
+      "tryAgain": "पुनः प्रयास करें"
     },
     "stats": {
       "totalUsers": "कुल उपयोगकर्ता",
@@ -3217,7 +3218,11 @@
       "bookmarks": "{{count}} बुकमार्क",
       "chapters": "अध्याय ({{count}})",
       "chapter": "अध्याय"
-    }
+    },
+    "continueListening": "सुनना जारी रखें",
+    "browseByAuthor": "लेखक के अनुसार ब्राउज़ करें",
+    "durationMin": "{{count}} मिनट",
+    "authorCount": "{{count}} ऑडियोबुक"
   },
   "breadcrumbs": {
     "series": "सीरीज़",
@@ -3227,7 +3232,8 @@
     "station": "स्टेशन",
     "podcast": "पॉडकास्ट",
     "playlist": "प्लेलिस्ट",
-    "downloads": "डाउनलोड"
+    "downloads": "डाउनलोड",
+    "watchlist": "[hi] Watchlist"
   },
   "chapters": {
     "title": "अध्याय",
@@ -3254,11 +3260,15 @@
       "conflict": "संघर्ष",
       "cliffhanger": "रहस्यमय अंत",
       "main": "मुख्य"
-    }
+    },
+    "chapterLabel": "अध्याय {{number}}",
+    "chapter_number": "अध्याय {{number}}"
   },
   "chat": {
     "title": "Bayit+ सहायक",
-    "greeting": "नमस्ते! मैं Bayit+ स्मार्ट सहायक हूं। आज मैं आपकी कैसे मदद कर सकता हूं? माइक्रोफोन पर क्लिक करें और बोलें, या संदेश टाइप करें।"
+    "greeting": "नमस्ते! मैं Bayit+ स्मार्ट सहायक हूं। आज मैं आपकी कैसे मदद कर सकता हूं? माइक्रोफोन पर क्लिक करें और बोलें, या संदेश टाइप करें।",
+    "loading": "संदेश लोड हो रहे हैं...",
+    "typing": "टाइप कर रहा है..."
   },
   "chatbot": {
     "title": "Bayit+ सहायक",
@@ -3301,7 +3311,15 @@
     "listening": "सुन रहा है...",
     "transcribing": "लिप्यंतरण हो रहा है...",
     "thinking": "सोच रहा है...",
-    "typePlaceholder": "अपना प्रश्न लिखें..."
+    "typePlaceholder": "अपना प्रश्न लिखें...",
+    "fabLabel": "[hi] Voice Assistant",
+    "modal": {
+      "cancel": "[hi] Cancel",
+      "setupMessage": "[hi] Set up voice recognition to use the voice assistant.",
+      "setupRequired": "[hi] Setup Required",
+      "startSetup": "[hi] Start Setup",
+      "title": "[hi] Voice Assistant"
+    }
   },
   "chess": {
     "title": "शतरंज",
@@ -3387,7 +3405,21 @@
       "appStore": "App Store से डाउनलोड करें",
       "googlePlay": "Google Play से प्राप्त करें",
       "footer": "Bayit+ - प्रीमियम यहूदी स्ट्रीमिंग"
-    }
+    },
+    "drawOffered": "ड्रॉ प्रस्तावित",
+    "code": "कोड: {{code}}",
+    "challengeFriend": "दोस्त को चुनौती दें",
+    "noFriendsYet": "चुनौती देने के लिए दोस्त जोड़ें",
+    "acceptInvite": "स्वीकार",
+    "declineInvite": "अस्वीकार",
+    "whiteCaptured": "सफ़ेद ने पकड़ा",
+    "blackCaptured": "काले ने पकड़ा",
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन",
+    "joinByGameCode": "कोड से जुड़ें",
+    "challengeViaWhatsApp": "WhatsApp से चुनौती दें",
+    "whatsAppMessage": "मैं आपको Bayit+ पर शतरंज की चुनौती देता हूँ! कोड: {{code}} - खेलने के लिए टैप करें: {{link}}",
+    "turn": "बारी"
   },
   "children": {
     "title": "बच्चे",
@@ -3787,7 +3819,35 @@
     "closeModal": "विंडो बंद करें",
     "dismissHint": "संकेत खारिज करें",
     "sending": "भेज रहा है...",
-    "create": "बनाएं"
+    "create": "बनाएं",
+    "untitled": "शीर्षकहीन",
+    "percent": "%",
+    "change": "बदलें",
+    "confidence": "आत्मविश्वास",
+    "generate": "जनरेट करें",
+    "high": "उच्च",
+    "learnMore": "और जानें",
+    "low": "कम",
+    "maybeLater": "शायद बाद में",
+    "medium": "मध्यम",
+    "or": "या",
+    "playlist": "प्लेलिस्ट",
+    "preview": "पूर्वावलोकन",
+    "saveChanges": "परिवर्तन सहेजें",
+    "today": "आज",
+    "unavailable": "अनुपलब्ध",
+    "guest": "अतिथि",
+    "anonymous": "अनाम",
+    "content": "सामग्री",
+    "email_placeholder": "अपना ईमेल दर्ज करें",
+    "password_placeholder": "अपना पासवर्ड दर्ज करें",
+    "new_password": "नया पासवर्ड",
+    "confirm_password": "पासवर्ड की पुष्टि करें",
+    "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें",
+    "queued": "कतार में",
+    "on": "चालू",
+    "off": "बंद",
+    "pause": "[hi] Pause"
   },
   "badges": {
     "aiEnhanced": "AI संवर्धित",
@@ -3806,7 +3866,9 @@
     "noContext": "कोई एपिसोड संदर्भ उपलब्ध नहीं",
     "noQuiz": "इस एपिसोड के लिए कोई क्विज़ प्रश्न उपलब्ध नहीं",
     "checkAnswer": "उत्तर जांचें",
-    "concepts": "मुख्य अवधारणाएं"
+    "concepts": "मुख्य अवधारणाएं",
+    "quizLabel": "त्वरित क्विज",
+    "vocabularyLabel": "शब्दावली"
   },
   "channels": {
     "kanEducational": "Kan शैक्षिक",
@@ -3932,7 +3994,24 @@
     "clickToRestore": "पुनर्स्थापित करने के लिए क्लिक करें",
     "minimizedWidgets": "न्यूनतम विजेट",
     "closeDock": "डॉक बंद करें",
-    "customContent": "कस्टम सामग्री"
+    "customContent": "कस्टम सामग्री",
+    "audiobook": "ऑडियोबुक",
+    "liveTVStream": "लाइव टीवी स्ट्रीम",
+    "noContent": "कोई सामग्री उपलब्ध नहीं",
+    "podcastEpisode": "पॉडकास्ट एपिसोड",
+    "radioStation": "रेडियो स्टेशन",
+    "webContent": "वेब सामग्री",
+    "browseContent": "सामग्री ब्राउज़ करें",
+    "content": "सामग्री",
+    "contentId": "सामग्री ID",
+    "create": "बनाएँ",
+    "createFirstWidget": "अपना पहला व्यक्तिगत विजेट बनाएँ",
+    "enterTitle": "विजेट शीर्षक दर्ज करें",
+    "loading": "विजेट लोड हो रहे हैं...",
+    "noContentFound": "कोई सामग्री नहीं मिली",
+    "selectContent": "सामग्री चुनें",
+    "ynetBreakingNews": "Ynet ब्रेकिंग न्यूज़",
+    "iframeUrl": "iFrame URL"
   },
   "liveCategories": {
     "educational": "शैक्षिक"
@@ -4103,7 +4182,13 @@
       "episodes": "{{count}} एपिसोड"
     },
     "toggleFavorite": "पसंदीदा टॉगल करें",
-    "togglePlaylist": "प्लेलिस्ट टॉगल करें"
+    "togglePlaylist": "प्लेलिस्ट टॉगल करें",
+    "related": "संबंधित",
+    "untitled": "शीर्षकहीन",
+    "filters": {
+      "movies": "[hi] Movies",
+      "series": "[hi] Series"
+    }
   },
   "cultureCities": {
     "connectionTo": "{{city}} कनेक्शन",
@@ -4175,7 +4260,16 @@
     "indian": {
       "name": "भारतीय",
       "description": "भारतीय समुदाय सामग्री"
-    }
+    },
+    "jerusalem": {
+      "name": "जेरूसलम",
+      "description": "पवित्र शहर की खोज करें"
+    },
+    "telAviv": {
+      "name": "तेल अवीव",
+      "description": "वह शहर जो कभी नहीं सोता"
+    },
+    "loading": "संस्कृति लोड हो रही है..."
   },
   "demo": {
     "banner": "डेमो मोड",
@@ -4225,7 +4319,12 @@
     "downloaded": "डाउनलोड किया",
     "offlineMessage": "आप ऑफ़लाइन हैं। डाउनलोड उपलब्ध नहीं हैं।",
     "deleteConfirm": "क्या आप वाकई इस डाउनलोड को हटाना चाहते हैं?",
-    "storageUsed": "उपयोग किया गया स्टोरेज"
+    "storageUsed": "उपयोग किया गया स्टोरेज",
+    "delete": "हटाएं",
+    "downloadAll": "सभी डाउनलोड करें",
+    "play": "ऑफ़लाइन चलाएं",
+    "size": "{{size}} MB",
+    "active": "सक्रिय डाउनलोड"
   },
   "dubbing": {
     "title": "लाइव डबिंग",
@@ -4386,7 +4485,20 @@
     "premiumRequired": "प्रीमियम सदस्यता आवश्यक",
     "selectInputLanguage": "इनपुट भाषा चुनें",
     "upgradeForDubbing": "लाइव डबिंग एक्सेस करने के लिए Plus में अपग्रेड करें",
-    "maybeLater": "शायद बाद में"
+    "maybeLater": "शायद बाद में",
+    "short": "डबिंग",
+    "mixer": "[hi] Audio Mixer",
+    "original": "मूल",
+    "dubbed": "डब्ड",
+    "balance": "{{original}}% मूल / {{dubbed}}% डब्ड",
+    "adjustHint": "ऑडियो बैलेंस समायोजित करने के लिए बाएं या दाएं स्वाइप करें",
+    "settings_title": "[hi] Dubbing Settings",
+    "target_language": "[hi] Target Language",
+    "voiceSelector": {
+      "selected": "[hi] Selected",
+      "subtitle": "[hi] Choose a voice for dubbing",
+      "title": "[hi] Voice Selection"
+    }
   },
   "empty": {
     "noContent": "[hi] No content available",
@@ -4486,7 +4598,9 @@
       "active": "रिकॉर्डिंग",
       "completed": "रिकॉर्ड किया गया",
       "series": "श्रृंखला रिकॉर्डिंग"
-    }
+    },
+    "empty": "कोई कार्यक्रम नहीं",
+    "noSchedule": "कोई शेड्यूल उपलब्ध नहीं"
   },
   "errors": {
     "networkError": "नेटवर्क त्रुटि",
@@ -4561,7 +4675,9 @@
       "loadFailed": "वीडियो लोड करने में विफल",
       "noStreamUrl": "कोई स्ट्रीम URL उपलब्ध नहीं",
       "notReady": "वीडियो तैयार नहीं",
-      "sessionCreateFailed": "कई प्रयासों के बाद प्लेबैक सत्र बनाने में विफल"
+      "sessionCreateFailed": "कई प्रयासों के बाद प्लेबैक सत्र बनाने में विफल",
+      "connectionLost": "कनेक्शन टूट गया। कनेक्ट होने पर फिर से शुरू होगा।",
+      "connectionRestored": "कनेक्शन बहाल हो गया।"
     },
     "podcast": {
       "playbackError": "ऑडियो प्लेबैक त्रुटि",
@@ -4605,7 +4721,11 @@
     "noAuthToken": "कोई प्रमाणीकरण टोकन उपलब्ध नहीं",
     "noDownloadUrl": "इस सामग्री के लिए कोई डाउनलोड URL उपलब्ध नहीं",
     "purchaseVerificationFailed": "खरीदारी सत्यापन विफल",
-    "invalidUrl": "अमान्य URL"
+    "invalidUrl": "अमान्य URL",
+    "no_audio_url": "ऑडियो URL उपलब्ध नहीं",
+    "connection_failed": "कनेक्शन विफल",
+    "quota_exceeded": "कोटा पार हो गया",
+    "server_error": "सर्वर त्रुटि"
   },
   "status": {
     "pleaseLogin": "Bayit+ Companion का उपयोग करने के लिए कृपया लॉग इन करें",
@@ -4619,7 +4739,9 @@
     "items": "आइटम",
     "empty": "अभी तक कोई पसंदीदा नहीं",
     "emptyHint": "अपने पसंदीदा में आइटम जोड़ें",
-    "loading": "पसंदीदा लोड हो रहे हैं..."
+    "loading": "पसंदीदा लोड हो रहे हैं...",
+    "remove": "पसंदीदा से हटाएं",
+    "add": "पसंदीदा में जोड़ें"
   },
   "flows": {
     "title": "फ्लो",
@@ -4770,7 +4892,8 @@
     },
     "tv": {
       "useCompanion": "पूर्ण अनुकूलन के लिए, अपने फोन पर Bayit+ ऐप का उपयोग करें या अपने कंप्यूटर पर bayit.plus पर जाएं।"
-    }
+    },
+    "empty": "कोई प्रवाह नहीं"
   },
   "footer": {
     "brandDescription": "USA में आपका घर। हिब्रू में TV प्रसारण, VOD, रेडियो और पॉडकास्ट।",
@@ -4798,7 +4921,8 @@
       "terms": "सेवा की शर्तें",
       "privacy": "गोपनीयता नीति",
       "cookies": "कुकी नीति",
-      "licenses": "लाइसेंस"
+      "licenses": "लाइसेंस",
+      "watchlist": "[hi] Watchlist"
     },
     "newsletter": {
       "title": "अपडेट रहें",
@@ -4879,7 +5003,11 @@
     "searchToAdd": "मित्र जोड़ने के लिए उपयोगकर्ता खोजें",
     "loadingFriends": "मित्र लोड हो रहे हैं...",
     "searchResults": "खोज परिणाम ({{count}})",
-    "pending": "लंबित"
+    "pending": "लंबित",
+    "empty": "अभी कोई मित्र नहीं",
+    "emptyHint": "जुड़ने के लिए दोस्त खोजें",
+    "loading": "मित्र लोड हो रहे हैं...",
+    "list": "मित्र ({{count}})"
   },
   "googleLogin": {
     "cancelledError": "Google साइन-इन रद्द कर दिया गया",
@@ -4961,13 +5089,17 @@
         "title": "फैमिली प्रोफाइल",
         "description": "व्यक्तिगत सिफारिशों के साथ प्रत्येक परिवार के सदस्य के लिए प्रोफाइल बनाएं"
       }
-    }
+    },
+    "contactDescription": "हमारी सहायता टीम से संपर्क करें।",
+    "needMoreHelp": "और मदद चाहिए?",
+    "noFAQ": "कोई FAQ नहीं"
   },
   "hero": {
     "watch": "देखें",
     "watchNow": "अभी देखें",
     "moreInfo": "अधिक जानकारी",
-    "addToList": "सूची में जोड़ें"
+    "addToList": "सूची में जोड़ें",
+    "newBadge": "नया"
   },
   "home": {
     "continueWatching": "देखना जारी रखें",
@@ -5027,7 +5159,31 @@
     "locationPermissionDescription": "इज़राइली सामग्री और आपके नज़दीक व्यवसायों को देखने के लिए स्थान सक्षम करें",
     "enableLocation": "स्थान सक्षम करें",
     "locationPermissionDeniedDescription": "स्थान पहुंच अस्वीकृत कर दी गई। इसे सक्षम करने और अपने पास इज़राइली सामग्री देखने के लिए सेटिंग खोलें।",
-    "openSettings": "सेटिंग खोलें"
+    "openSettings": "सेटिंग खोलें",
+    "radio": "रेडियो",
+    "israelisInCity": "आपके शहर में इज़राइली",
+    "israeliBusinesses": "आपके पास इज़राइली व्यवसाय",
+    "whatsHot": "इज़राइल में क्या चल रहा है",
+    "collection": "संग्रह",
+    "discoverCollection": "इस अद्भुत संग्रह की खोज करें",
+    "nearMe": "मेरे पास",
+    "israeliMovies": "इज़राइली फ़िल्में",
+    "israeliSeries": "इज़राइली सीरीज़",
+    "movies": "फ़िल्में",
+    "music": "संगीत",
+    "documentary": "वृत्तचित्र",
+    "series": "श्रृंखला",
+    "jerusalem": "येरूशलम",
+    "telAviv": "तेल अवीव",
+    "recommended": "आपके लिए अनुशंसित",
+    "newReleases": "नई रिलीज़",
+    "audioPicks": "ऑडियो चयन",
+    "trendingRecommendations": "ट्रेंडिंग अनुशंसाएं",
+    "topNumber": "#{{position}}",
+    "minutesRemaining": "{{minutes}} मिनट शेष",
+    "nowPlaying": "अभी चल रहा है",
+    "israeli-movies": "इज़राइली फ़िल्में",
+    "israeli-series": "इज़राइली सीरीज़"
   },
   "jerusalem": {
     "title": "जेरूसलम कनेक्शन",
@@ -5078,7 +5234,11 @@
       "parashaStudy": "पराशा",
       "shabbatRecipes": "व्यंजन विधि",
       "prayers": "प्रार्थनाएं",
-      "parashat": "पराशत {{name}}"
+      "parashat": "पराशत {{name}}",
+      "candlesIn": "{{minutes}} मिनट में मोमबत्तियां",
+      "songs": "गाने",
+      "parasha": "पराशा",
+      "recipes": "व्यंजन"
     },
     "calendar": {
       "dafYomi": "दफ़ योमी",
@@ -5131,7 +5291,8 @@
       "kids": "बच्चे",
       "documentary": "डॉक्यूमेंट्री"
     },
-    "loadingChannels": "चैनल लोड हो रहे हैं..."
+    "loadingChannels": "चैनल लोड हो रहे हैं...",
+    "channel": "चैनल"
   },
   "forgotPasswordPage": {
     "title": "पासवर्ड भूल गए",
@@ -5282,13 +5443,25 @@
     "more": "और",
     "playlist": "प्लेलिस्ट",
     "byoc": "आपका कंटेंट",
-    "zehAniHub": "ज़ेह अनी"
+    "zehAniHub": "ज़ेह अनी",
+    "zehAni": "Zeh Ani",
+    "listen": "सुनें",
+    "youngsters": "युवा",
+    "watchlist": "वॉचलिस्ट",
+    "glossary": "शब्दकोश",
+    "missions": "मिशन",
+    "discoverHub": "AI खोजें",
+    "household": "परिवार",
+    "messages": "संदेश",
+    "myContent": "मेरी सामग्री",
+    "social": "सामाजिक"
   },
   "onboarding": {
     "welcome": {
       "title": "Bayit+ में आपका स्वागत है",
       "subtitle": "इज़राइली टीवी, आपकी भाषा में",
-      "continue": "जारी रखें"
+      "continue": "जारी रखें",
+      "getStarted": "शुरू करें"
     },
     "aiLanguage": {
       "title": "{{language}} में देखें",
@@ -5325,13 +5498,119 @@
       "enableVoice": "वॉइस कंट्रोल सक्रिय करें",
       "wakeWord": "वेक वर्ड डिटेक्शन",
       "continue": "जारी रखें",
-      "later": "बाद में सेट करें"
+      "later": "बाद में सेट करें",
+      "orType": "या अपना नाम टाइप करें",
+      "enable": "माइक्रोफ़ोन सक्षम करें",
+      "granted": "माइक्रोफ़ोन सफलतापूर्वक सक्षम हुआ"
     },
     "launch": {
       "title": "सब तैयार है",
       "hint": "चैनलों के लिए ऊपर स्वाइप करें, कभी भी 'Hey Bayit' कहें"
     },
-    "skip": "छोड़ें"
+    "skip": "छोड़ें",
+    "complete": {
+      "title": "सब तैयार है!",
+      "subtitle": "आपका व्यक्तिगत अनुभव तैयार है। Bayit+ का आनंद लें!",
+      "language": "भाषा",
+      "name": "नाम",
+      "startWatching": "देखना शुरू करें",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "language": {
+      "title": "अपनी भाषाएँ चुनें",
+      "subtitle": "अपनी प्राथमिक भाषा और पसंदीदा सामग्री भाषाएँ चुनें",
+      "primary": "प्राथमिक भाषा",
+      "content": "सामग्री भाषाएँ"
+    },
+    "interests": {
+      "title": "आपको क्या पसंद है?",
+      "subtitle": "अपने अनुभव को व्यक्तिगत बनाने के लिए कम से कम 3 सामग्री श्रेणियाँ चुनें",
+      "selected": "%d में से %d चयनित",
+      "live_tv": "लाइव टीवी",
+      "movies": "फ़िल्में",
+      "series": "श्रृंखला",
+      "kids": "बच्चे",
+      "music": "संगीत",
+      "radio": "रेडियो",
+      "podcasts": "पॉडकास्ट",
+      "audiobooks": "ऑडियोबुक",
+      "news": "समाचार",
+      "sports": "खेल"
+    },
+    "culture": {
+      "title": "आपकी सांस्कृतिक वाइब",
+      "subtitle": "अपनी सांस्कृतिक पृष्ठभूमि के अनुसार सामग्री तैयार करने में हमारी सहायता करें",
+      "israeli": "इज़राइली",
+      "american": "अमेरिकी",
+      "european": "यूरोपीय",
+      "mixed": "वैश्विक मिक्स"
+    },
+    "byoc": {
+      "title": "अपनी सामग्री लाएँ",
+      "subtitle": "अपने मौजूदा मीडिया स्रोतों को कनेक्ट करें और Bayit+ AI सुविधाओं का आनंद लें",
+      "iptvDesc": "किसी भी IPTV प्रदाता से लाइव टीवी",
+      "plexDesc": "AI उपशीर्षक के साथ आपकी Plex लाइब्रेरी",
+      "youtubeDesc": "हिब्रू टूल के साथ YouTube",
+      "connectNow": "स्रोत जोड़ें",
+      "skipForNow": "अभी के लिए छोड़ें"
+    },
+    "highlight": {
+      "dubbing": "लाइव AI डबिंग",
+      "subtitles": "इंटरैक्टिव सबटाइटल",
+      "ai": "AI साथी",
+      "learning": "हिब्रू सीखना"
+    },
+    "tour": {
+      "done": "हो गया"
+    },
+    "demo": {
+      "dubbing": {
+        "title": "लाइव AI डबिंग",
+        "description": "अपनी पसंदीदा भाषा में रियल-टाइम AI डबिंग के साथ इज़राइली टीवी देखें",
+        "hebrew": "हिब्रू",
+        "english": "अंग्रेजी"
+      },
+      "subtitles": {
+        "title": "इंटरैक्टिव सबटाइटल",
+        "description": "तत्काल अनुवाद और उच्चारण के लिए सबटाइटल में किसी भी शब्द पर टैप करें",
+        "sample": "परिवार Shabbat रात्रिभोज के लिए एकत्र हुआ",
+        "word": "शबत",
+        "translation": "शब्बत - साप्ताहिक विश्राम का दिन"
+      },
+      "interaction": {
+        "title": "AI पात्र इंटरैक्शन",
+        "description": "किसी भी दृश्य को रोकें और सांस्कृतिक संदर्भ के बारे में अपने AI साथी से पूछें",
+        "userMsg": "वे कौन सा त्योहार मना रहे हैं?",
+        "aiMsg": "वे Sukkot मना रहे हैं, जो झोपड़ियों का पर्व है। आप जो अस्थायी झोपड़ी देख रहे हैं उसे sukkah कहते हैं।"
+      },
+      "trivia": {
+        "title": "लाइव ट्रिविया",
+        "description": "AI लाइव प्रसारण से ट्रिविया प्रश्न बनाता है। प्रतिस्पर्धा करें और सीखें!",
+        "question": "इज़राइल की आधिकारिक भाषा क्या है?",
+        "optionA": "अरबी",
+        "optionB": "हिब्रू",
+        "optionC": "अंग्रेजी"
+      },
+      "catchup": {
+        "title": "स्मार्ट कैच अप",
+        "description": "लाइव प्रसारण का हिस्सा छूट गया? AI आपके छूटे हुए हिस्से का सारांश देता है",
+        "missed": "छूटा हुआ",
+        "summary": "AI सारांश",
+        "live": "अभी लाइव"
+      },
+      "byoc": {
+        "title": "अपना खुद का कंटेंट लाएं",
+        "description": "अपने IPTV स्रोत आयात करें और उन्हें Bayit+ सामग्री के साथ देखें",
+        "step1": "स्रोत जोड़ें",
+        "step2": "AI संवर्धन",
+        "step3": "देखें"
+      },
+      "zehAni": {
+        "title": "अपना AI पात्र बनाएं",
+        "description": "एक व्यक्तिगत AI अवतार बनाएं जो आपके साथ सीखे",
+        "generated": "AI अवतार"
+      }
+    }
   },
   "notFound": {
     "title": "पेज नहीं मिला",
@@ -5480,13 +5759,25 @@
       "categories": {
         "ai": "AI सुविधाएं",
         "platform": "प्लेटफॉर्म",
-        "support": "समर्थन"
+        "support": "समर्थन",
+        "content": "सामग्री पहुंच",
+        "quality": "गुणवत्ता और प्रदर्शन",
+        "devices": "उपकरण और स्ट्रीमिंग",
+        "features": "प्लस सुविधाएं"
       },
       "features": {
         "aiFeatures": "AI सुविधाएं (कुल 19)",
         "widgets": "विजेट",
         "familyProfiles": "फैमिली प्रोफाइल",
-        "customerSupport": "ग्राहक समर्थन"
+        "customerSupport": "ग्राहक समर्थन",
+        "browseContent": "सामग्री लाइब्रेरी ब्राउज़ करें",
+        "vodAccess": "ऑन-डिमांड फिल्में और सीरीज़",
+        "liveChannels": "लाइव टीवी चैनल",
+        "radioPodcasts": "रेडियो और पॉडकास्ट",
+        "videoQuality": "वीडियो गुणवत्ता",
+        "simultaneousDevices": "समवर्ती उपकरण",
+        "aiAssistant": "AI स्मार्ट असिस्टेंट",
+        "offlineDownloads": "ऑफ़लाइन डाउनलोड करें"
       },
       "values": {
         "fiftyCredits": "50 क्रेडिट (एक बार)",
@@ -5494,6 +5785,42 @@
         "emailSupport": "ईमेल",
         "prioritySupport": "प्राथमिकता"
       }
+    },
+    "non_registered": {
+      "name": "केवल ब्राउज़ करें",
+      "description": "हमारी सामग्री लाइब्रेरी का अन्वेषण करें"
+    },
+    "registered_free": {
+      "name": "निःशुल्क खाता",
+      "description": "निःशुल्क सुविधाओं के लिए खाता बनाएं"
+    },
+    "basic": {
+      "name": "मुफ़्त",
+      "features": [
+        "सभी VOD सामग्री",
+        "रेडियो और पॉडकास्ट",
+        "1 डिवाइस पर देखें",
+        "SD गुणवत्ता"
+      ],
+      "notIncluded": [
+        "लाइव चैनल",
+        "AI सहायक",
+        "ऑफ़लाइन देखना"
+      ]
+    },
+    "premium": {
+      "name": "प्लस",
+      "features": [
+        "सभी VOD सामग्री",
+        "लाइव चैनल",
+        "रेडियो और पॉडकास्ट",
+        "स्मार्ट AI सहायक",
+        "4 डिवाइस पर देखें",
+        "4K गुणवत्ता",
+        "5 फैमिली प्रोफाइल",
+        "ऑफ़लाइन डाउनलोड"
+      ],
+      "notIncluded": []
     }
   },
   "player": {
@@ -5591,7 +5918,10 @@
       "noSource": "कोई स्ट्रीम उपलब्ध नहीं",
       "streamFailed": "स्ट्रीम लोड होने में विफल",
       "unknown": "अज्ञात प्लेबैक त्रुटि",
-      "unsupportedFormat": "ऑडियो प्रारूप समर्थित नहीं है"
+      "unsupportedFormat": "ऑडियो प्रारूप समर्थित नहीं है",
+      "streamLimitMessage": "आपने {{maxStreams}} समवर्ती स्ट्रीम की अधिकतम सीमा पूरी कर ली है। कृपया कोई अन्य स्ट्रीम बंद करें या अपना प्लान अपग्रेड करें।",
+      "streamLimitTitle": "स्ट्रीम सीमा पूरी हुई",
+      "upgradePlan": "प्लान अपग्रेड करें"
     },
     "exitFullscreen": "फ़ुलस्क्रीन से बाहर",
     "liveLanguageMagic": "लाइव भाषा जादू",
@@ -5617,7 +5947,14 @@
       "transcribing": "प्रतिलेखन हो रहा है...",
       "thinking": "सोच रहे हैं...",
       "voiceConsentRequired": "ध्वनि इंटरैक्शन के लिए ध्वनि सहमति आवश्यक है",
-      "micPermissionDenied": "माइक्रोफ़ोन अनुमति अस्वीकृत"
+      "micPermissionDenied": "माइक्रोफ़ोन अनुमति अस्वीकृत",
+      "cancel": "[hi] Cancel",
+      "close": "[hi] Close",
+      "placeholder": "[hi] Type your message...",
+      "send": "[hi] Send",
+      "sharedSession": "[hi] Shared Session",
+      "waitingForTurn": "[hi] Waiting for your turn...",
+      "yourAvatar": "[hi] Your Avatar"
     },
     "pauseAsk": {
       "title": "किसी पात्र से पूछें",
@@ -5635,7 +5972,43 @@
         "falAi": "वीडियो सेवा उपलब्ध नहीं है",
         "elevenlabs": "आवाज़ सेवा उपलब्ध नहीं है",
         "credits": "अपर्याप्त क्रेडिट"
-      }
+      },
+      "noCharacters": "इस फिल्म के पात्र अभी उपलब्ध नहीं हैं",
+      "stages": {
+        "polishing": "आपका सवाल तैयार हो रहा है...",
+        "thinking": "आपके सवाल पर विचार हो रहा है...",
+        "biff1": "बिफ को आपका सवाल पसंद नहीं आया...",
+        "biff2": "बिफ आईने में मसल्स दिखा रहा है...",
+        "biff3": "बिफ अपना जवाब लिखने की कोशिश कर रहा है...",
+        "biff4": "बिफ ने किसी को बेवकूफ कह दिया...",
+        "doc1": "डॉक फ्लक्स कैपेसिटर से सलाह ले रहा है...",
+        "doc2": "ग्रेट स्कॉट! अभी भी गणना हो रही है...",
+        "doc3": "डॉक 1.21 गीगावॉट एडजस्ट कर रहा है...",
+        "doc4": "डॉक स्पेस-टाइम कंटीन्यूम चेक कर रहा है...",
+        "marty1": "मार्टी पहले गिटार ट्यून कर रहा है...",
+        "marty2": "यह भारी है...",
+        "marty3": "मार्टी देख रहा है कि वो अभी भी मौजूद है या नहीं...",
+        "marty4": "मार्टी कहता है कोई उसे कायर नहीं कह सकता...",
+        "george1": "जॉर्ज जवाब देने की हिम्मत जुटा रहा है...",
+        "george2": "जॉर्ज अपनी नोटबुक में जवाब लिख रहा है...",
+        "george3": "जॉर्ज कहता है उसका घनत्व उसे यहां लाया...",
+        "george4": "जॉर्ज को आखिरकार आत्मविश्वास मिल गया...",
+        "lorraine1": "लोरेन पहले बाल ठीक कर रही है...",
+        "lorraine2": "लोरेन समुद्र के नीचे के जादू के बारे में सोच रही है...",
+        "lorraine3": "लोरेन कहती है यह होना ही था...",
+        "lorraine4": "लोरेन डांस की तैयारी कर रही है...",
+        "jennifer1": "जेनिफर कार में इंतजार कर रही है...",
+        "jennifer2": "जेनिफर भविष्य के बारे में सोच रही है...",
+        "jennifer3": "जेनिफर कहती है वो संभाल सकती है...",
+        "jennifer4": "जेनिफर धैर्य रख रही है...",
+        "generic1": "{{name}} सोच रहा है...",
+        "generic2": "{{name}} जवाब तैयार कर रहा है...",
+        "generic3": "लगभग हो गया...",
+        "generic4": "बस एक पल और..."
+      },
+      "askAgain": "[hi] Ask Again",
+      "placeholder": "[hi] Ask about this scene...",
+      "resume": "[hi] Resume"
     },
     "multiCharacter": {
       "selectCharacter": "संबोधित करने के लिए पात्र चुनें",
@@ -5662,18 +6035,130 @@
       "off": "बंद",
       "timerSet": "{{minutes}} मिनट के लिए स्लीप टाइमर सेट",
       "timerExtended": "टाइमर {{minutes}} मिनट बढ़ाया गया",
-      "timerCancelled": "स्लीप टाइमर रद्द किया गया"
+      "timerCancelled": "स्लीप टाइमर रद्द किया गया",
+      "subtitle": "निर्धारित समय के बाद प्लेबैक स्वचालित रूप से रोकें",
+      "minutes": "{{count}} मिनट",
+      "customPlaceholder": "कस्टम मिनट",
+      "set": "टाइमर सेट करें"
     },
     "invalidEpisodeUrl": "अमान्य एपिसोड URL",
     "dubbing": {
       "premiumTitle": "Plus सुविधा",
       "premiumMessage": "लाइव डबिंग के लिए Plus सदस्यता आवश्यक है",
       "upgrade": "Plus में अपग्रेड करें",
-      "notNow": "अभी नहीं"
+      "notNow": "अभी नहीं",
+      "label": "डबिंग",
+      "feature": {
+        "realtime": "कई भाषाओं में रियल-टाइम डबिंग",
+        "voices": "पेशेवर आवाज चयन",
+        "lowLatency": "कम-विलंबता ऑडियो स्ट्रीमिंग",
+        "highQuality": "उच्च-गुणवत्ता ऑडियो"
+      },
+      "voiceTitle": "डबिंग वॉइस",
+      "settings_title": "लाइव डबिंग सेटिंग्स",
+      "target_language": "लक्ष्य भाषा"
     },
+    "dismiss": "बंद करें",
+    "dismissPlayer": "प्लेयर बंद करें",
     "nextEpisode": "अगला एपिसोड",
     "playingIn": "{{seconds}} सेकंड में चल रहा है...",
-    "playNow": "अभी चलाएं"
+    "playNow": "अभी चलाएं",
+    "interactive": {
+      "tapToTranslate": "अनुवाद के लिए शब्द पर टैप करें",
+      "translating": "अनुवाद हो रहा है...",
+      "addToGlossary": "शब्दकोश में जोड़ें",
+      "close": "बंद करें",
+      "toggle": "इंटरएक्टिव सबटाइटल"
+    },
+    "audio": "ऑडियो",
+    "audioTrack": "ऑडियो ट्रैक",
+    "catchUp": "कैच अप",
+    "interaction": {
+      "next": "अगला इंटरैक्शन",
+      "previous": "पिछला इंटरैक्शन"
+    },
+    "loadingEpisode": "एपिसोड लोड हो रहा है...",
+    "loadingStream": "स्ट्रीम लोड हो रही है...",
+    "preparingStream": "स्ट्रीम तैयार हो रही है...",
+    "scenes": "दृश्य",
+    "startOver": "फिर से शुरू करें",
+    "streamLoadFailed": "विफल to load stream",
+    "videoQuality": "वीडियो गुणवत्ता",
+    "trivia": "ट्रिविया",
+    "currentLanguage": "वर्तमान भाषा",
+    "premiumRequired": "Plus सुविधा",
+    "upgradeToPremiumDubbing": "असीमित AI डबिंग के लिए Plus में अपग्रेड करें",
+    "upgradeToPremium": "Plus में अपग्रेड करें",
+    "ai": {
+      "dub": "Dub",
+      "dubbing": "डबिंग",
+      "featuresTitle": "AI सुविधाएँ",
+      "languagePrimary": "प्राथमिक",
+      "languageSecondary": "द्वितीयक (वैकल्पिक)",
+      "languageTitle": "AI भाषा",
+      "liveTranslate": "लाइव अनुवाद",
+      "selectLanguage": "भाषा चुनें",
+      "split": "विभाजित करें",
+      "togglePanel": "AI पैनल टॉगल करें",
+      "translate": "अनुवाद करें",
+      "trivia": "ट्रिविया",
+      "triviaToggle": "[hi] Trivia"
+    },
+    "catchup": {
+      "description": "शुरुआत चूक गए? अब तक की कहानी का AI-जनित सारांश प्राप्त करें।",
+      "generateSummary": "सारांश उत्पन्न करें",
+      "summaryTitle": "सारांश",
+      "title": "कैच अप",
+      "keyPoints": "[hi] Key Points",
+      "transcript": "[hi] Transcript"
+    },
+    "companion": {
+      "noContext": "इस सामग्री के लिए अभी कोई सांस्कृतिक संदर्भ उपलब्ध नहीं है।",
+      "quizComplete": "प्रश्नोत्तरी पूर्ण",
+      "quizRetry": "पुनः प्रयास करें",
+      "quizStart": "प्रश्नोत्तरी शुरू करें",
+      "quizTitle": "अपने ज्ञान का परीक्षण करने के लिए तैयार हैं?",
+      "quizTryAgain": "पुनः प्रयास करें",
+      "tabContext": "संदर्भ",
+      "tabQuiz": "प्रश्नोत्तरी",
+      "tabVocabulary": "शब्दावली",
+      "tapWords": "यहाँ जोड़ने के लिए उपशीर्षक में शब्दों पर टैप करें",
+      "title": "AI साथी"
+    },
+    "controls": {
+      "audioTrack": "ऑडियो ट्रैक",
+      "continueWatching": "देखना जारी रखें",
+      "dismiss": "खारिज करें",
+      "goBack": "वापस जाएं",
+      "navigateBack": "वापस नेविगेट करें",
+      "on": "ON",
+      "pause": "रोकें",
+      "play": "चलाएं",
+      "preview": "पूर्वावलोकन",
+      "selected": "चयनित",
+      "send": "भेजें",
+      "skip": "छोड़ें",
+      "close": "[hi] Close",
+      "exitFullscreen": "[hi] Exit Fullscreen",
+      "fullscreen": "[hi] Fullscreen",
+      "restart": "[hi] Restart",
+      "skipBackward": "[hi] Skip Backward",
+      "skipForward": "[hi] Skip Forward",
+      "volume": "[hi] Volume"
+    },
+    "audio_description": "ऑडियो विवरण",
+    "scene_search": "दृश्य खोज",
+    "search_placeholder": "दृश्य खोजें...",
+    "language_ratio": "भाषा सीखने का अनुपात",
+    "go_back": "वापस जाएं",
+    "openSubs": {
+      "title": "सबटाइटल खोजें",
+      "searchPlaceholder": "शीर्षक से खोजें...",
+      "search": "खोजें",
+      "searchFailed": "खोज विफल। पुनः प्रयास करें।",
+      "downloads": "{{count}} डाउनलोड",
+      "noResults": "कोई सबटाइटल नहीं मिला"
+    }
   },
   "podcast": {
     "selectLanguage": "भाषा चुनें",
@@ -5695,10 +6180,38 @@
         "short": "ES",
         "full": "स्पेनिश"
       }
-    }
+    },
+    "podcastDetailsShort": "पॉडकास्ट"
   },
   "listen": {
-    "title": "सुनें"
+    "title": "सुनें",
+    "featured": "विशेष ऑडियो",
+    "continueListening": "सुनना जारी रखें",
+    "radioStations": "रेडियो स्टेशन",
+    "discoverPodcasts": "पॉडकास्ट खोजें",
+    "discoverAudiobooks": "ऑडियोबुक्स खोजें",
+    "categories": "श्रेणियां",
+    "nowPlaying": "अभी चल रहा है",
+    "browseAll": "सभी देखें",
+    "browseAudiobooks": "ऑडियोबुक्स देखें",
+    "browsePodcasts": "पॉडकास्ट देखें",
+    "noFeatured": "कोई विशेष ऑडियो उपलब्ध नहीं",
+    "noContinueListening": "कोई ऑडियो नहीं चल रहा",
+    "sortBy": "क्रमबद्ध करें",
+    "sortRecent": "[hi] Recent",
+    "sortPopular": "[hi] Popular",
+    "sortDuration": "अवधि",
+    "filterGenre": "शैली",
+    "filterLanguage": "भाषा",
+    "episodeCount": "{{count}} एपिसोड",
+    "latestEpisode": "नवीनतम: {{date}}",
+    "loading": "ऑडियो सामग्री लोड हो रही है...",
+    "subtitle": "रेडियो, पॉडकास्ट और ऑडियोबुक",
+    "tab": {
+      "radio": "रेडियो",
+      "podcasts": "पॉडकास्ट",
+      "audiobooks": "ऑडियोबुक"
+    }
   },
   "podcasts": {
     "title": "Podcast",
@@ -5795,7 +6308,17 @@
     "subscribe": "सदस्यता लें",
     "unsubscribe": "सदस्यता रद्द करें",
     "removeFailed": "पॉडकास्ट हटाने में विफल",
-    "episode": "एपिसोड"
+    "episode": "एपिसोड",
+    "addedSuccess": "पॉडकास्ट सफलतापूर्वक जोड़ा गया",
+    "allPodcasts": "सभी पॉडकास्ट",
+    "notFound": "पॉडकास्ट नहीं मिला",
+    "removePodcast": "पॉडकास्ट हटाएं",
+    "rssUrl": "पॉडकास्ट RSS URL",
+    "rssUrlHint": "अपने पॉडकास्ट का RSS फ़ीड URL दर्ज करें",
+    "episodeShort": "एप. {{number}}",
+    "author": "लेखक",
+    "category": "श्रेणी",
+    "episodeCount": "एपिसोड"
   },
   "miniPlayer": {
     "skipBackward": "15 सेकंड पीछे",
@@ -6088,7 +6611,79 @@
     "unlockPremiumDescription": "विशेष सामग्री और सुविधाओं का आनंद लेने के लिए अपग्रेड करें",
     "unknown": "अज्ञात खिलाड़ी",
     "myDownloads": "मेरे डाउनलोड",
-    "offlineContent": "ऑफ़लाइन सामग्री"
+    "offlineContent": "ऑफ़लाइन सामग्री",
+    "zehAni": "Zeh Ani",
+    "plusPrice": "$7.99/महीना",
+    "betaCredits": "बीटा क्रेडिट",
+    "creditsRemaining": "क्रेडिट शेष",
+    "streak": "दिन की लकीर",
+    "watched": "देखा गया",
+    "recordings": "रिकॉर्डिंग",
+    "rewards": "पुरस्कार",
+    "household": "परिवार",
+    "displayName": "प्रदर्शन नाम",
+    "phoneNumber": "फोन नंबर",
+    "mfa": "बहु-कारक प्रमाणीकरण",
+    "verified": "सत्यापित",
+    "notVerified": "सत्यापित नहीं",
+    "beta500Description": "AI सुविधाओं और प्रयोगात्मक सामग्री तक पहुँच",
+    "beta500Member": "Beta 500 सदस्य",
+    "credits": "क्रेडिट",
+    "emailAddress": "ईमेल पता",
+    "linkSignInMethods": "आसान पहुँच के लिए कई साइन-इन विधियाँ लिंक करें",
+    "loading": "प्रोफ़ाइल लोड हो रहा है...",
+    "loadingHistory": "इतिहास लोड हो रहा है...",
+    "noData": "कोई प्रोफ़ाइल डेटा नहीं",
+    "noViewingHistory": "कोई देखने का इतिहास नहीं",
+    "noViewingHistoryDescription": "यहाँ अपना इतिहास देखने के लिए सामग्री देखना शुरू करें",
+    "primarySignIn": "प्राथमिक साइन-इन विधि",
+    "signOut": "साइन आउट",
+    "signOutConfirmation": "आपको फिर से साइन इन करना होगा",
+    "playlists": "प्लेलिस्ट",
+    "dayStreak": "दिन की श्रृंखला",
+    "yourStatistics": "आपके आँकड़े",
+    "quickActions": "त्वरित कार्रवाई",
+    "myFavorites": "मेरे पसंदीदा",
+    "viewFavoriteContent": "अपनी पसंदीदा सामग्री देखें",
+    "myRecordings": "मेरी रिकॉर्डिंग",
+    "manageDvrRecordings": "DVR रिकॉर्डिंग प्रबंधित करें",
+    "myPlaylists": "मेरी प्लेलिस्ट",
+    "organizeContent": "अपनी सामग्री व्यवस्थित करें",
+    "viewingHistory": "देखने का इतिहास",
+    "seeWhatYouWatched": "देखें आपने क्या देखा",
+    "whosWatching": "कौन देख रहा है?",
+    "loadingProfiles": "प्रोफ़ाइल लोड हो रहे हैं...",
+    "addProfile": "प्रोफ़ाइल जोड़ें",
+    "addProfileSubtitle": "अपने घर के लिए नया प्रोफ़ाइल बनाएँ",
+    "chooseAvatar": "अवतार चुनें",
+    "switchProfile": "प्रोफ़ाइल बदलें",
+    "switchProfileDesc": "अलग प्रोफ़ाइल पर स्विच करें",
+    "messages": "संदेश",
+    "preferences": "प्राथमिकताएँ",
+    "preferencesDesc": "सामग्री, भाषा, गुणवत्ता सेटिंग",
+    "accountSecurityDesc": "पासवर्ड, 2FA, लिंक किए गए खाते",
+    "verifyEmail": "ईमेल सत्यापित करें",
+    "verifyEmailDesc": "अपने ईमेल पते की पुष्टि करें",
+    "verifyPhone": "फ़ोन सत्यापित करें",
+    "verifyPhoneDesc": "अपने फ़ोन नंबर की पुष्टि करें",
+    "accountManagement": "खाता प्रबंधन",
+    "householdProfiles": "परिवार प्रोफ़ाइल",
+    "householdProfilesDesc": "परिवार प्रोफ़ाइल प्रबंधित करें",
+    "aboutDesc": "ऐप संस्करण, शर्तें, गोपनीयता",
+    "advanced": "उन्नत",
+    "friendsDesc": "अन्य दर्शकों से जुड़ें",
+    "messagesDesc": "सीधे संदेश",
+    "settingsDesc": "ऐप सेटिंग्स और प्राथमिकताएँ",
+    "widgets": "विजेट",
+    "widgetsDesc": "अपने विजेट प्रबंधित करें",
+    "socialSettings": "सामाजिक और सेटिंग्स",
+    "myContent": "मेरी सामग्री",
+    "social": "सामाजिक",
+    "accountSettings": "खाता और सेटिंग्स",
+    "info": "जानकारी",
+    "premiumPrice": "[hi] $6.99/month",
+    "familyPrice": "[hi] $12.99/month",
+    "watchlist": "[hi] Watchlist"
   },
   "profiles": {
     "addProfile": "प्रोफ़ाइल जोड़ें",
@@ -6106,7 +6701,11 @@
     "kidsProfile": "किड्स प्रोफ़ाइल",
     "kidsProfileDescription": "सामग्री को बच्चों के लिए उपयुक्त चयन तक सीमित रखता है",
     "kids": "बच्चे",
-    "addIcon": "+"
+    "addIcon": "+",
+    "displayName": "प्रदर्शन नाम",
+    "edit": "प्रोफ़ाइल संपादित करें",
+    "kidsProfileHint": "सामग्री को बच्चों के अनुकूल चयन तक सीमित करता है",
+    "preferences": "प्राथमिकताएँ"
   },
   "radio": {
     "title": "रेडियो",
@@ -6192,7 +6791,10 @@
     "sortDate": "तारीख",
     "sortSize": "आकार",
     "sortDuration": "अवधि",
-    "sortTitle": "शीर्षक"
+    "sortTitle": "शीर्षक",
+    "delete": "हटाएं",
+    "empty": "अभी कोई रिकॉर्डिंग नहीं",
+    "stop": "रिकॉर्डिंग रोकें"
   },
   "register": {
     "title": "खाता बनाएं",
@@ -6250,7 +6852,14 @@
     "noContentNow": "अभी कोई सामग्री उपलब्ध नहीं",
     "typeLive": "लाइव",
     "typeRadio": "रेडियो",
-    "typeVideo": "वीडियो"
+    "typeVideo": "वीडियो",
+    "aiBrief": "AI दैनिक सारांश",
+    "days": "दिन",
+    "goodMorning": "सुप्रभात",
+    "loadBrief": "दैनिक सारांश लोड करें",
+    "streak": "लकीर",
+    "subtitle": "आपका व्यक्तिगत सुबह का अनुभव",
+    "todayContent": "आज की सामग्री"
   },
   "search": {
     "title": "खोजें",
@@ -6298,7 +6907,11 @@
       "kidsOnly": "केवल बच्चों की सामग्री",
       "excludeKids": "बच्चों की सामग्री को बाहर करें",
       "allContent": "सभी सामग्री",
-      "actors": "कलाकार"
+      "actors": "कलाकार",
+      "movies": "फ़िल्में",
+      "series": "सीरीज़",
+      "collections": "संग्रह",
+      "audiobooks": "ऑडियोबुक"
     },
     "suggestions": {
       "trendingTitle": "ट्रेंडिंग खोजें",
@@ -6396,6 +7009,33 @@
     "llm": {
       "title": "AI खोज",
       "placeholder": "बताएं आप क्या देखना चाहते हैं..."
+    },
+    "clearFilters": "फ़िल्टर साफ़ करें",
+    "clear": "साफ़ करें",
+    "clearRecent": "हाल की खोजें साफ़ करें",
+    "query": "खोज क्वेरी",
+    "search": "खोज",
+    "sort": {
+      "title": "क्रमबद्ध करें",
+      "relevance": "प्रासंगिकता",
+      "newest": "नवीनतम",
+      "oldest": "सबसे पुराना",
+      "titleAsc": "शीर्षक A-Z",
+      "titleDesc": "शीर्षक Z-A",
+      "popularity": "सबसे लोकप्रिय"
+    },
+    "filter": {
+      "title": "फ़िल्टर",
+      "reset": "रीसेट",
+      "language": "भाषा",
+      "accessibility": "सुलभता",
+      "subtitles": "उपशीर्षक",
+      "dubbing": "डबिंग",
+      "yearRange": "वर्ष सीमा",
+      "yearFrom": "से year",
+      "yearTo": "वर्ष तक",
+      "duration": "अवधि",
+      "apply": "फ़िल्टर लागू करें"
     }
   },
   "settings": {
@@ -6442,7 +7082,13 @@
       "quality4k": "4K",
       "quality1080p": "1080p",
       "quality720p": "720p",
-      "quality480p": "480p"
+      "quality480p": "480p",
+      "autoplaySection": "ऑटोप्ले",
+      "countdown": "अगले एपिसोड से पहले उलटी गिनती",
+      "controls": "नियंत्रण",
+      "speed": "प्लेबैक Speed",
+      "liveTV": "लाइव टीवी",
+      "bufferSize": "बफ़र आकार"
     },
     "quality": "गुणवत्ता",
     "subtitles": "सबटाइटल",
@@ -6495,7 +7141,18 @@
     "accessibility": {
       "small": "छोटा",
       "medium": "मध्यम",
-      "large": "बड़ा"
+      "large": "बड़ा",
+      "audioVisual": "ऑडियो और विज़ुअल",
+      "boldText": "बोल्ड टेक्स्ट",
+      "closedCaptions": "क्लोज़्ड कैप्शन",
+      "colorBlind": "कलर ब्लाइंड मोड",
+      "description": "अपने देखने के अनुभव को अनुकूलित करें",
+      "display": "डिस्प्ले",
+      "highContrast": "हाई कॉन्ट्रास्ट",
+      "largeText": "बड़ा टेक्स्ट",
+      "largeTextDesc": "ऐप में टेक्स्ट का आकार बढ़ाएँ",
+      "reduceMotion": "मोशन कम करें",
+      "title": "एक्सेसिबिलिटी"
     },
     "signOut": "साइन आउट",
     "security": {
@@ -6591,7 +7248,12 @@
       "volumeNormalization": "वॉल्यूम सामान्यीकरण",
       "preferDubbed": "डब किया हुआ ऑडियो पसंद करें",
       "dubbingLanguage": "डबिंग भाषा",
-      "monoAudio": "मोनो ऑडियो"
+      "monoAudio": "मोनो ऑडियो",
+      "description": "ऑडियो प्राथमिकताएँ कॉन्फ़िगर करें",
+      "dubbing": "डबिंग",
+      "processing": "प्रोसेसिंग",
+      "quality": "ऑडियो गुणवत्ता",
+      "volumeNormDesc": "सामग्री में वॉल्यूम सामान्य करें"
     },
     "notificationSettings": {
       "title": "सूचनाएं",
@@ -6726,7 +7388,106 @@
       "phone": "फोन नंबर",
       "deleteAccount": "खाता हटाएं",
       "deleteAccountDesc": "यह कार्रवाई स्थायी है और पूर्ववत नहीं की जा सकती"
-    }
+    },
+    "chooseLanguage": "अपनी भाषा चुनें",
+    "languageDescription": "ऐप इंटरफ़ेस के लिए अपनी पसंदीदा भाषा चुनें",
+    "showWidgetsDock": "विजेट डॉक",
+    "showVoiceControlFAB": "वॉयस कंट्रोल बटन",
+    "showFeatureTips": "फीचर टिप्स दिखाएं",
+    "interactiveMoments": "इंटरैक्टिव क्षण",
+    "interactiveMomentsRequiresAvatar": "इंटरैक्टिव मोमेंट्स के लिए Creatify अवतार आवश्यक है। पहले अवतार सेटिंग्स में एक बनाएं।",
+    "interactiveMomentsNoAvatar": "इंटरैक्टिव मोड उपलब्ध नहीं है क्योंकि कोई अवतार नहीं मिला। फिल्म इंटरैक्टिव मोमेंट्स के बिना चलेगी।",
+    "account": "खाता",
+    "appUpdates": "ऐप अपडेट",
+    "appUpdatesDescription": "नई सुविधाओं की सूचना प्राप्त करें",
+    "billing": "बिलिंग",
+    "chessActivity": "शतरंज गतिविधि",
+    "chessActivityDescription": "शतरंज खेलों की सूचनाएं",
+    "devicePairing": "डिवाइस पेयरिंग",
+    "directMessages": "सीधे संदेश",
+    "directMessagesDescription": "संदेश प्राप्त होने पर सूचना",
+    "friendActivity": "मित्र गतिविधि",
+    "friendActivityDescription": "जब मित्र शामिल हों तो अपडेट",
+    "helpCenter": "सहायता केंद्र",
+    "household": "परिवार",
+    "liveEvents": "लाइव इवेंट",
+    "liveEventsDescription": "आगामी लाइव प्रसारण के अलर्ट",
+    "newContent": "नई सामग्री",
+    "newContentDescription": "नई फ़िल्में या शो जोड़े जाने पर सूचना",
+    "notificationDescription": "चुनें कौन सी सूचनाएं प्राप्त करें",
+    "notificationFooter": "आप इन सेटिंग्स को कभी भी बदल सकते हैं।",
+    "notificationPreferences": "अधिसूचना प्राथमिकताएं",
+    "passkeys": "पासकी",
+    "preferences": "प्राथमिकताएं",
+    "recommendations": "अनुशंसाएं",
+    "recommendationsDescription": "आपकी देखने की आदतों पर आधारित सुझाव",
+    "support": "सहायता",
+    "version": "संस्करण",
+    "watchPartyInvitations": "वॉच पार्टी आमंत्रण",
+    "watchPartyInvitationsDescription": "जब मित्र साथ देखने के लिए आमंत्रित करें",
+    "dangerZone": "खतरा क्षेत्र",
+    "deleteAccount": "खाता हटाएँ",
+    "deleteAccountConfirmTitle": "खाता हटाएँ?",
+    "deleteAccountConfirmMessage": "यह आपके खाते और सभी संबंधित डेटा को स्थायी रूप से हटा देगा। यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "deleteAccountConfirm": "खाता हटाएँ",
+    "typeDeleteConfirm": "पुष्टि के लिए DELETE टाइप करें",
+    "setPassword": "पासवर्ड सेट करें",
+    "setPasswordDesc": "अपने खाते में पासवर्ड जोड़ें",
+    "linkAccount": "दूसरा खाता जोड़ें",
+    "linkAccountDesc": "Google, Apple या Facebook कनेक्ट करें",
+    "addPhone": "फ़ोन नंबर जोड़ें",
+    "addPhoneDesc": "खाता पुनर्प्राप्ति के लिए फ़ोन नंबर जोड़ें",
+    "exportData": "मेरा डेटा निर्यात करें",
+    "exportDataDesc": "अपने सभी डेटा की प्रति का अनुरोध करें",
+    "deleteAccountDesc": "अपना खाता और डेटा स्थायी रूप से हटाएं",
+    "connected": "कनेक्टेड",
+    "notConnected": "कनेक्ट नहीं है",
+    "help": {
+      "contactSupport": "सहायता से संपर्क करें",
+      "loading": "सहायता लोड हो रही है...",
+      "noFaqs": "कोई FAQ उपलब्ध नहीं",
+      "subtitle": "उत्तर खोजें और सहायता प्राप्त करें",
+      "title": "सहायता और समर्थन",
+      "replayOnboarding": "ऑनबोर्डिंग दोबारा देखें",
+      "replayTour": "फीचर टूर दोबारा चलाएं"
+    },
+    "autoplayDescription": "समाप्त होने पर अगला एपिसोड स्वचालित चलाएं",
+    "autoplayNextEpisode": "अगला एपिसोड ऑटोप्ले",
+    "contentRating": "सामग्री रेटिंग",
+    "contentRatingDescription": "इस रेटिंग से ऊपर की सामग्री सिफारिशों से फ़िल्टर होगी",
+    "contentRestrictions": "सामग्री प्रतिबंध",
+    "languageSubtitles": "भाषा और उपशीर्षक",
+    "linkAppleAccount": "Apple खाता लिंक करें",
+    "linkGoogleAccount": "Google खाता लिंक करें",
+    "notificationsDescription": "नई सामग्री और सुविधाओं के बारे में अपडेट प्राप्त करें",
+    "qualityAuto": "ऑटो (अनुशंसित)",
+    "qualityHigh": "उच्च",
+    "qualityLow": "निम्न",
+    "qualityMedium": "मध्यम",
+    "ratingAdultsOnly": "केवल वयस्क",
+    "ratingAllAges": "सभी उम्र",
+    "ratingMature": "परिपक्व (R)",
+    "ratingPG": "अभिभावक मार्गदर्शन (PG)",
+    "ratingPG13": "PG-13",
+    "rtl": "RTL",
+    "sensitivity": "संवेदनशीलता",
+    "subtitleLanguage": "उपशीर्षक भाषा",
+    "unlinkConfirmation": "अपने {{provider}} खाते को अनलिंक करें?",
+    "videoQuality": "वीडियो गुणवत्ता",
+    "wakeWord": "Hey Bayit",
+    "wakeWordDescription": "वेक वर्ड बोलकर वॉइस कंट्रोल सक्रिय करें।",
+    "mediaSection": "मीडिया",
+    "privacyData": "गोपनीयता & Data",
+    "general": "सामान्य",
+    "children": "बच्चे",
+    "loading": "सेटिंग्स लोड हो रही हैं...",
+    "not_connected": "कनेक्ट नहीं है",
+    "privacySecurity": "गोपनीयता & Security",
+    "privacySection": "गोपनीयता और कानूनी",
+    "notificationsDisabled": "सूचनाएं अक्षम",
+    "notificationsEnableMessage": "नई सामग्री, लाइव इवेंट और अधिक के बारे में अपडेट प्राप्त करने के लिए सूचनाएं सक्षम करें।",
+    "notificationsGoToSettings": "सूचनाएं प्राप्त करने के लिए, कृपया उन्हें सेटिंग्स में सक्षम करें।",
+    "replayTour": "फीचर टूर दोबारा देखें"
   },
   "familyControls": {
     "title": "पारिवारिक नियंत्रण",
@@ -6830,7 +7591,8 @@
       "redirectingToHousehold": "आपके घर पर पुनर्निर्देशित कर रहा है...",
       "goToHousehold": "घर पर जाएं",
       "success": "सफलता!",
-      "error": "त्रुटि"
+      "error": "त्रुटि",
+      "invitationSent": "आमंत्रण सफलतापूर्वक भेजा गया!"
     },
     "profile": {
       "title": "प्रोफ़ाइल नियंत्रण",
@@ -6841,7 +7603,22 @@
       "hierarchy": "नियंत्रण पदानुक्रम",
       "source": "नियंत्रण स्रोत"
     },
-    "settingsSaved": "सेटिंग्स सहेजी गईं"
+    "settingsSaved": "सेटिंग्स सहेजी गईं",
+    "ageLimits": "आयु सीमा",
+    "allowedHours": "अनुमत देखने के घंटे",
+    "contentRating": "सामग्री रेटिंग",
+    "createPinDescription": "पारिवारिक सेटिंग्स के लिए PIN बनाएं",
+    "enterPinDescription": "सेटिंग्स के लिए पारिवारिक PIN दर्ज करें",
+    "from": "से",
+    "kidsMaxAge": "बच्चों की अधिकतम आयु",
+    "ratingG": "G - सामान्य दर्शक",
+    "ratingNC17": "NC-17 - केवल वयस्क",
+    "ratingPG": "PG - अभिभावक मार्गदर्शन",
+    "ratingPG13": "PG-13 - अभिभावक सावधानी",
+    "ratingR": "R - प्रतिबंधित",
+    "saveSettings": "सेटिंग्स सहेजें",
+    "to": "तक",
+    "youngstersMaxAge": "किशोर अधिकतम आयु"
   },
   "stats": {
     "statistics": "आंकड़े",
@@ -6896,7 +7673,38 @@
       "categories": {
         "ai": "AI सुविधाएं",
         "platform": "प्लेटफॉर्म",
-        "support": "समर्थन"
+        "support": "समर्थन",
+        "content": "सामग्री एक्सेस",
+        "quality": "गुणवत्ता और प्रदर्शन",
+        "devices": "डिवाइस और स्ट्रीमिंग",
+        "features": "विशेषताएं"
+      },
+      "scrollHint": "← सभी योजनाओं को देखने के लिए स्क्रॉल करें →"
+    },
+    "startTrial": "मुफ्त ट्रायल शुरू करें",
+    "noCharge": "ट्रायल अवधि के दौरान आपके क्रेडिट कार्ड से शुल्क नहीं लिया जाएगा",
+    "premiumShowcase": {
+      "title": "प्लस इंटेलिजेंस का अनुभव करें",
+      "subtitle": "एआई-संचालित सुविधाएँ जो आपके देखने के तरीके के अनुकूल होती हैं",
+      "videoTitle": "विजेट्स को क्रिया में देखें",
+      "videoDescription": "फ्लोटिंग विजेट्स के लिए हमारा 2-मिनट का परिचय देखें",
+      "widgetTitle": "इंटरैक्टिव लाइव डेमो",
+      "widgetDescription": "Kan11 के साथ ड्रैग करें, आकार बदलें और मल्टीटास्क करें",
+      "aiAssistant": {
+        "title": "एआई स्मार्ट असिस्टेंट",
+        "description": "मशीन लर्निंग द्वारा संचालित व्यक्तिगत सिफारिशें"
+      },
+      "floatingWidgets": {
+        "title": "फ्लोटिंग विजेट्स",
+        "description": "सामग्री ब्राउज़ करते समय कई चैनल देखें"
+      },
+      "a11y": {
+        "playVideo": "विजेट्स परिचय वीडियो चलाएं",
+        "playVideoHint": "पूर्ण स्क्रीन वीडियो प्रदर्शन खोलता है"
+      },
+      "badges": {
+        "aiPowered": "AI द्वारा संचालित",
+        "interactiveDemo": "इंटरैक्टिव डेमो"
       }
     }
   },
@@ -7031,7 +7839,50 @@
     "cuesCount": "({{count}} संकेत)",
     "failedReason": "- {{language}}: {{reason}}",
     "generateForContent": "इस सामग्री के लिए {{mode}} उपशीर्षक उत्पन्न करें",
-    "generateMode": "{{mode}} उत्पन्न करें"
+    "generateMode": "{{mode}} उत्पन्न करें",
+    "translate": "अनुवाद",
+    "split": "विभाजन",
+    "failed": "विफल: {{count}}",
+    "fromOpenSubs": "OpenSubtitles.com से",
+    "hebrewDisplayMode": "हिब्रू प्रदर्शन मोड",
+    "hebrewModeHint": "चुनें कि हिब्रू उपशीर्षक कैसे प्रदर्शित हों। Nikud स्वर चिह्न जोड़ता है, Shoresh भाषा सीखने के लिए मूल शब्द दिखाता है।",
+    "imported": "{{count}} उपशीर्षक ट्रैक आयात किए गए",
+    "modes": "उपशीर्षक मोड",
+    "noAdditionalFound": "कोई अतिरिक्त उपशीर्षक नहीं मिला",
+    "quotaExceeded": {
+      "message": "आपने उपशीर्षक डाउनलोड कोटा पार कर लिया है",
+      "title": "कोटा पार हो गया"
+    },
+    "rateLimitExceeded": "दर सीमा पार हो गई। कृपया बाद में पुनः प्रयास करें।",
+    "sampleText": "नमूना उपशीर्षक पाठ",
+    "searchingOpenSubs": "OpenSubtitles पर खोज रहा है...",
+    "selectTwoLanguagesDescription": "स्प्लिट स्क्रीन उपशीर्षक के लिए दो भाषाएँ चुनें",
+    "skipped": "छोड़ा गया: {{count}} (पहले से मौजूद)",
+    "splitDisplayDescription": "दो भाषाएँ साथ-साथ दिखाएं",
+    "title": "उपशीर्षक",
+    "quotaExceededLabel": "कोटा पार हो गया",
+    "splitScreenLabel": "विभाजित स्क्रीन",
+    "cueCount": "({{count}} संकेत)",
+    "trackUnavailable": "{{language}}: {{reason}}",
+    "aiModesAvailable": "उपलब्ध AI मोड",
+    "aiModesTitle": "AI उपशीर्षक मोड",
+    "fetchSubtitles": "उपशीर्षक प्राप्त करें",
+    "mode": {
+      "engrew": "एनग्रू",
+      "heblish": "हेब्लिश",
+      "shoresh": "शोरेश",
+      "standard": "मानक"
+    },
+    "opensubtitles": "OpenSubtitles",
+    "searchExternal": "बाहरी उपशीर्षक खोजें",
+    "settingsTitle": "उपशीर्षक सेटिंग्स",
+    "showBackground": "पृष्ठभूमि दिखाएं",
+    "singleMode": "एकल मोड",
+    "splitMode": "स्प्लिट मोड",
+    "primary_language": "प्राथमिक भाषा",
+    "secondary_language": "द्वितीयक भाषा",
+    "layout_mode": "लेआउट मोड",
+    "interactive_title": "इंटरैक्टिव उपशीर्षक"
   },
   "support": {
     "title": "सहायता केंद्र",
@@ -7151,7 +8002,16 @@
     "wizard": {
       "role": "आपका गाइड"
     },
-    "fieldsRequired": "विषय और संदेश आवश्यक हैं"
+    "fieldsRequired": "विषय और संदेश आवश्यक हैं",
+    "email": "ईमेल सहायता",
+    "message": "संदेश",
+    "newTicket": "नया टिकट",
+    "noFAQ": "कोई FAQ नहीं",
+    "noTickets": "कोई टिकट नहीं",
+    "subject": "विषय",
+    "submit": "जमा करें",
+    "ticketCreated": "टिकट सफलतापूर्वक बनाया गया",
+    "website": "वेबसाइट"
   },
   "telAviv": {
     "title": "तेल अवीव कनेक्शन",
@@ -7210,7 +8070,11 @@
       "languageHint": "प्रत्येक तथ्य के लिए 1-3 भाषाएं चुनें",
       "language": "भाषा",
       "selectLanguage": "इस भाषा को चुनें",
-      "deselectLanguage": "इस भाषा को अचयनित करें"
+      "deselectLanguage": "इस भाषा को अचयनित करें",
+      "autoPlay": "स्वचालित ट्रिविया",
+      "resetConfirm": "यह सभी ट्रिविया सेटिंग्स को उनके डिफ़ॉल्ट मानों पर रीसेट करेगा।",
+      "enableDescription": "[hi] Show trivia questions while watching content.",
+      "enableTrivia": "[hi] Enable Trivia"
     },
     "categories": {
       "cast": "कास्ट",
@@ -7237,7 +8101,31 @@
     "loading": "ट्रिविया लोड हो रहा है...",
     "selectContent": "ट्रिविया क्विज़ शुरू करने के लिए सामग्री चुनें",
     "correct": "सही!",
-    "notQuite": "बिल्कुल नहीं!"
+    "notQuite": "बिल्कुल नहीं!",
+    "aiTrivia": "AI ट्रिविया",
+    "more": "और",
+    "autoShowDescription": "प्लेबैक के दौरान स्वचालित रूप से ट्रिविया दिखाएँ",
+    "badgesEarned": "अर्जित बैज",
+    "leaderboard": "लीडरबोर्ड",
+    "selectLanguagesHint": "ट्रिविया तथ्यों के लिए अधिकतम 3 भाषाएँ चुनें",
+    "title": "ट्रिविया",
+    "topPlayers": "शीर्ष खिलाड़ी",
+    "quiz": {
+      "title": "ट्रिविया क्विज़"
+    },
+    "question": "प्रश्न",
+    "results": {
+      "title": "क्विज़ पूरा!",
+      "playAgain": "फिर से खेलें",
+      "shekelsEarned": "{{amount}} शेकेल कमाए"
+    },
+    "explanation": "व्याख्या",
+    "submit": "जमा करें",
+    "tryAgain": "फिर से प्रयास करें",
+    "playerCount": "{{count}} खिलाड़ी",
+    "dayStreak": "{{count}} दिन की स्ट्रीक",
+    "tellMeMore": "मुझे और बताएं",
+    "follow_up": "अनुवर्ती"
   },
   "splash": {
     "bayit": "Bayit",
@@ -7250,7 +8138,8 @@
     "title": "दृश्य खोज",
     "placeholder": "विषय या दृश्य खोजें...",
     "noScenesFound": "कोई दृश्य नहीं मिला",
-    "searchFailed": "[hi] Search failed"
+    "searchFailed": "[hi] Search failed",
+    "noResults": "कोई दृश्य नहीं मिला"
   },
   "streamLimit": {
     "title": "स्ट्रीम सीमा पूरी हुई",
@@ -7294,7 +8183,33 @@
     "error": "कुछ गलत हुआ",
     "tryAgain": "पुनः प्रयास करें",
     "securityNote": "आपकी साख सुरक्षित रूप से भेजी जाती है और TV पर कभी संग्रहीत नहीं होती।",
-    "footer": "समस्या हो रही है? सुनिश्चित करें कि आपने अपने TV से एक नया QR कोड स्कैन किया है।"
+    "footer": "समस्या हो रही है? सुनिश्चित करें कि आपने अपने TV से एक नया QR कोड स्कैन किया है।",
+    "completeOnPhone": "अपने फ़ोन पर साइन-इन पूरा करें",
+    "deviceCodeInstruction": "अपने फ़ोन या कंप्यूटर पर साइन इन करें",
+    "phoneConnected": "फ़ोन कनेक्ट हो गया",
+    "qrExpired": "QR कोड समाप्त हो गया",
+    "qrSubtitle": "अपने फ़ोन के कैमरे का उपयोग करें",
+    "qrTitle": "साइन इन करने के लिए स्कैन करें",
+    "scanWithPhone": "साइन इन के लिए फ़ोन से स्कैन करें",
+    "signedIn": "साइन-इन सफल",
+    "signingIn": "साइन इन हो रहा है...",
+    "waitingForActivation": "सक्रियण की प्रतीक्षा...",
+    "title": "TV साइन इन",
+    "header": "अपने TV पर साइन इन करें",
+    "subtitle": "अपने Bayit+ खाते तक पहुंचने के लिए इस डिवाइस को अधिकृत करें",
+    "connected": "TV से कनेक्ट हो गया",
+    "signInToTV": "TV पर साइन इन करें",
+    "pleaseSignIn": "जारी रखने के लिए साइन इन करें",
+    "signInButton": "साइन इन",
+    "authenticating": "प्रमाणित हो रहा है...",
+    "almostThere": "लगभग हो गया...",
+    "tvSignedIn": "आपका TV सफलतापूर्वक साइन इन हो गया है",
+    "expired": "सत्र समाप्त",
+    "expiredMessage": "यह QR कोड समाप्त हो गया है। कृपया अपने TV पर नया कोड बनाएं।",
+    "fastestWayToSignIn": "साइन इन करने का सबसे तेज़ तरीका",
+    "scanToContinue": "जारी रखने के लिए स्कैन करें",
+    "allMethodsSupported": "सभी साइन-इन विधियाँ समर्थित",
+    "generateNewCode": "नया कोड जनरेट करें"
   },
   "video": {
     "watchTrailer": "ट्रेलर देखें",
@@ -7356,7 +8271,12 @@
       "filmography": "फिल्मोग्राफी",
       "bornIn": "जन्म स्थान",
       "featuredActors": "चुनिंदा कलाकार"
-    }
+    },
+    "allGenres": "सभी शैली",
+    "trending": "ट्रेंडिंग",
+    "aiCollections": "AI संग्रह",
+    "hebrewDub": "HEB",
+    "aiBadge": "AI"
   },
   "voice": {
     "listening": "सुन रहे हैं...",
@@ -7383,7 +8303,58 @@
     },
     "wizardResponse": "सहायक की प्रतिक्रिया",
     "dismissResponse": "ध्वनि प्रतिक्रिया बंद करें",
-    "dismissResponseHint": "सहायक की प्रतिक्रिया छिपाने के लिए टैप करें"
+    "dismissResponseHint": "सहायक की प्रतिक्रिया छिपाने के लिए टैप करें",
+    "appleTVLimitation": "Apple TV सीमा",
+    "appleTVLimitationDescription": "वेक वर्ड डिटेक्शन के लिए निरंतर माइक्रोफ़ोन एक्सेस आवश्यक है, जो Apple TV पर उपलब्ध नहीं है। इसके बजाय Siri Remote या ऑन-स्क्रीन नियंत्रण का उपयोग करें।",
+    "chooseLanguage": "भाषा चुनें",
+    "chooseLanguageDesc": "वॉइस कमांड के लिए अपनी पसंदीदा भाषा चुनें।",
+    "closeAssistant": "वॉइस असिस्टेंट बंद करें",
+    "controlPlayback": "अपनी आवाज़ से प्लेबैक नियंत्रित करें",
+    "heyBayit": "Hey Bayit",
+    "high": "उच्च",
+    "low": "कम",
+    "multipleLanguages": "कई भाषाएँ",
+    "notAvailableOnAppleTV": "Apple TV पर उपलब्ध नहीं",
+    "permissionsDesc": "वॉइस सुविधाओं को आपके माइक्रोफ़ोन और वाक् पहचान तक पहुंच की आवश्यकता है।",
+    "permissionsRequired": "अनुमतियाँ आवश्यक",
+    "realtimeDubbing": "रियल-टाइम डबिंग",
+    "searchWithVoice": "ध्वनि से खोजें",
+    "selectVoice": "आवाज़ चुनें",
+    "sensitivity": "संवेदनशीलता",
+    "tapToClose": "बंद करने के लिए बाहर टैप करें या नीचे स्वाइप करें",
+    "thinking": "सोच रहा है...",
+    "title": "ध्वनि सहायक",
+    "voiceAssistant": "ध्वनि सहायक",
+    "voiceControl": "ध्वनि नियंत्रण",
+    "voiceControlDesc": "अपनी आवाज़ से अनुभव नियंत्रित करें। हैंड्स-फ़्री खोजें, नेविगेट करें और सामग्री चलाएँ।",
+    "voicesAvailable": "उपलब्ध आवाज़ें",
+    "wakeWordDescription": "वेक वर्ड बोलकर वॉइस कंट्रोल सक्रिय करें।",
+    "calibration": {
+      "levelLabel": "स्तर"
+    },
+    "diagnostics": {
+      "micPermission": "माइक्रोफ़ोन अनुमति",
+      "speechRecognition": "वाक् पहचान",
+      "currentState": "वर्तमान स्थिति",
+      "transcript": "प्रतिलिपि",
+      "title": "वॉइस डायग्नोस्टिक्स",
+      "audioSession": "ऑडियो सत्र",
+      "runDiagnostics": "डायग्नोस्टिक्स चलाएं",
+      "copyReport": "रिपोर्ट कॉपी करें"
+    },
+    "stopListening": "सुनना बंद करें",
+    "startListening": "सुनना शुरू करें",
+    "searchPrompt": "आप क्या खोज रहे हैं?",
+    "panelTitle": "वॉयस असिस्टेंट",
+    "typeCommand": "कोई कमांड टाइप करें...",
+    "controlExecuted": "निष्पादित: {{action}}",
+    "timerSet": "{{amount}} {{unit}} के लिए टाइमर सेट किया गया",
+    "chatPending": "आपका संदेश प्रोसेस हो रहा है...",
+    "suggestion": {
+      "watchLive": "लाइव टीवी देखें",
+      "search": "कंटेंट खोजें",
+      "listenRadio": "रेडियो सुनें"
+    }
   },
   "voiceMode": {
     "voiceOnly": "केवल वॉइस",
@@ -7436,7 +8407,22 @@
       },
       "startUsing": "वॉइस कंट्रोल उपयोग करना शुरू करें"
     },
-    "skip": "अभी छोड़ें"
+    "skip": "अभी छोड़ें",
+    "chooseLanguage": "भाषा चुनें",
+    "chooseLanguageDescription": "AI सुविधाओं के लिए अपनी पसंदीदा भाषा चुनें।",
+    "featuresDescription": "प्रश्न पूछें, सुझाव प्राप्त करें और AI से खोजें।",
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "completion": {
+      "message": "[hi] Voice features are ready to use.",
+      "title": "[hi] Voice Setup Complete"
+    },
+    "title": "[hi] Voice Setup",
+    "training": {
+      "message": "[hi] Read the phrases aloud to train voice recognition.",
+      "title": "[hi] Voice Training"
+    }
   },
   "watch": {
     "notFound": "सामग्री नहीं मिली",
@@ -7551,7 +8537,18 @@
       "speaking": "[hi] Speaking",
       "muted": "म्यूट",
       "ready": "तैयार"
-    }
+    },
+    "chooseMethod": "साथ में देखें",
+    "chooseMethodDescription": "दूसरों के साथ देखने का तरीका चुनें",
+    "cancel": "रद्द करें",
+    "createOrJoin": "बनाएँ या जुड़ें",
+    "createParty": "Create Watch Party",
+    "loading": "Loading Watch Parties...",
+    "maxGuests": "Max guests",
+    "myParties": "MY PARTIES",
+    "noParties": "No active watch parties",
+    "subtitle": "दोस्तों के साथ एक साथ देखें",
+    "type": "Type"
   },
   "playlist": {
     "title": "मेरी सूची",
@@ -7622,7 +8619,10 @@
     },
     "loading": "सामग्री लोड हो रही है...",
     "news": "समाचार",
-    "trending": "ट्रेंडिंग"
+    "trending": "ट्रेंडिंग",
+    "content": {
+      "allContent": "सभी सामग्री"
+    }
   },
   "catchup": {
     "overlay": {
@@ -7653,7 +8653,9 @@
       "close": "बंद करें",
       "cached": "कैश्ड",
       "remaining": "शेष",
-      "window": "विंडो"
+      "window": "विंडो",
+      "loading": "सारांश लोड हो रहा है...",
+      "noContent": "कोई सारांश उपलब्ध नहीं"
     },
     "error": {
       "failed": "सारांश नहीं बनाया जा सका",
@@ -7728,8 +8730,31 @@
       "upgrade": "योजना अपग्रेड करें",
       "upgradeAction": "अधिक क्रेडिट प्राप्त करने के लिए अपग्रेड करें",
       "warningCritical": "🚨 गंभीर: क्रेडिट लगभग समाप्त",
-      "warningLow": "⚠️ चेतावनी: क्रेडिट बैलेंस कम"
-    }
+      "warningLow": "⚠️ चेतावनी: क्रेडिट बैलेंस कम",
+      "insufficient": {
+        "title": "अपर्याप्त क्रेडिट",
+        "message": "इस सुविधा के लिए आपके पास पर्याप्त क्रेडिट नहीं हैं"
+      }
+    },
+    "beta500": "बीटा 500",
+    "creditsExplanation": "क्रेडिट AI सुविधाओं के लिए उपयोग किए जाते हैं।",
+    "criticalMessage": "आपके क्रेडिट लगभग समाप्त हो गए हैं।",
+    "criticalTitle": "क्रेडिट गंभीर",
+    "current": "वर्तमान",
+    "deficit": "कमी",
+    "insufficientTitle": "अपर्याप्त क्रेडिट",
+    "lowMessage": "आपके क्रेडिट कम हो रहे हैं।",
+    "lowTitle": "कम क्रेडिट",
+    "remaining": "शेष",
+    "required": "आवश्यक",
+    "upgrade": "अपग्रेड",
+    "upgradeMessage": "असीमित AI क्रेडिट के लिए प्लस में अपग्रेड करें।",
+    "upgradeTitle": "प्लस में अपग्रेड",
+    "usage": "उपयोग",
+    "creditsLabel": "क्रेडिट",
+    "getPlusTitle": "Bayit+ Plus पाएं",
+    "getPlusMessage": "असीमित AI क्रेडिट, शुरू से",
+    "getPlusButton": "Plus पाएं"
   },
   "cancelled": {
     "description": "आपका भुगतान रद्द कर दिया गया है।",
@@ -8055,7 +9080,8 @@
     "signInWithEmail": "ईमेल से साइन इन करें",
     "signingIn": "साइन इन हो रहा है...",
     "email": "ईमेल",
-    "password": "पासवर्ड"
+    "password": "पासवर्ड",
+    "signOut": "[hi] Sign Out"
   },
   "email": {
     "greeting": "नमस्ते",
@@ -8434,7 +9460,8 @@
     "liveChat": "लाइव चैट",
     "chatPlaceholder": "कुछ कहिए...",
     "chatRequiresConnection": "चैट के लिए सक्रिय कनेक्शन आवश्यक है",
-    "connectionFailed": "चैट से कनेक्ट करने में असमर्थ"
+    "connectionFailed": "चैट से कनेक्ट करने में असमर्थ",
+    "sendMessage": "संदेश भेजें..."
   },
   "avatar": {
     "dialogue": {
@@ -8651,7 +9678,50 @@
       "listeningLabel": "ओलोरिन सुन रहा है",
       "processingLabel": "ओलोरिन प्रसंस्करण कर रहा है",
       "focusHint": "जादूगर से बात करने के लिए सेलेक्ट दबाएं"
-    }
+    },
+    "selfie": {
+      "title": "वीडियो सेल्फी रिकॉर्ड करें",
+      "instructions": "कैमरे को देखें और धीरे-धीरे अपना सिर बाएं और दाएं घुमाएं। इससे हमें आपका 3D अवतार बनाने में मदद मिलती है।",
+      "recording": "रिकॉर्डिंग...",
+      "maxDuration": "अधिकतम 10 सेकंड",
+      "uploadFromLibrary": "लाइब्रेरी से अपलोड करें",
+      "dropHint": "या यहां एक वीडियो फ़ाइल खींचें और छोड़ें"
+    },
+    "processing": {
+      "uploading": "वीडियो अपलोड हो रहा है",
+      "uploadingDesc": "आपकी वीडियो सेल्फी अपलोड हो रही है और आपका 3D अवतार जल्द ही बनाया जाएगा।",
+      "retryUpload": "पुनः प्रयास करें"
+    },
+    "settings": {
+      "title": "अवतार सेटिंग्स",
+      "meshStatus": "3D मॉडल स्थिति",
+      "reRecord": "वीडियो सेल्फी दोबारा रिकॉर्ड करें",
+      "delete": "अवतार हटाएं",
+      "deleting": "हटा रहा है...",
+      "deleteConfirmTitle": "अवतार हटाएं?",
+      "deleteConfirm": "हटाएं",
+      "deleteConfirmDesc": "यह अवतार और सभी संबंधित डेटा को स्थायी रूप से हटा देगा। यह क्रिया पूर्ववत नहीं की जा सकती।",
+      "statusReady": "तैयार",
+      "statusGenerating": "बना रहा है...",
+      "statusRigging": "एनिमेशन जोड़ रहा है...",
+      "statusPending": "लंबित",
+      "statusFailed": "विफल",
+      "statusUnknown": "अज्ञात"
+    },
+    "askPlaceholder": "मुझसे कुछ भी पूछें...",
+    "choose": "अवतार चुनें",
+    "dynamic": "गतिशील",
+    "gradient": "ग्रेडिएंट",
+    "mode": "अवतार मोड",
+    "photo": "फ़ोटो",
+    "photoUploadSoon": "फोटो अपलोड जल्द आ रहा है",
+    "preferences": "अवतार प्राथमिकताएँ",
+    "save": "अवतार सहेजें",
+    "subtle": "सूक्ष्म",
+    "type": "अवतार प्रकार",
+    "useIosOrWeb": "कस्टम अवतार अपलोड करने के लिए iOS या वेब ऐप का उपयोग करें",
+    "tapToSpeak": "[hi] Tap to speak",
+    "title": "[hi] Avatar"
   },
   "quiz": {
     "title": "क्विज़ का समय",
@@ -8678,7 +9748,8 @@
     "timeBonus": "समय बोनस",
     "streakBonus": "लगातार बोनस",
     "newBadge": "नया बैज",
-    "totalScore": "कुल अंक"
+    "totalScore": "कुल अंक",
+    "complete": "क्विज पूर्ण"
   },
   "rewards": {
     "title": "मेरे पुरस्कार",
@@ -8713,7 +9784,9 @@
       "streak_3": "तेज़ी से",
       "streak_7": "सप्ताह का योद्धा",
       "streak_30": "मासिक मास्टर"
-    }
+    },
+    "streak": "लकीर",
+    "loading": "पुरस्कार लोड हो रहे हैं..."
   },
   "household": {
     "title": "घरेलू प्रबंधन",
@@ -8760,7 +9833,24 @@
     "loadingHousehold": "घरेलू जानकारी लोड हो रही है...",
     "loading": "घरेलू जानकारी लोड हो रही है...",
     "memberCountDisplay": "{{current}} / {{max}} सदस्य",
-    "myHousehold": "मेरा घर"
+    "myHousehold": "मेरा घर",
+    "invitationSent": "आमंत्रण सफलतापूर्वक भेजा गया!",
+    "addButton": "जोड़ें",
+    "addMember": "सदस्य जोड़ें",
+    "membersTitle": "सदस्य",
+    "unknown": "अज्ञात",
+    "userIdPlaceholder": "उपयोगकर्ता ईमेल या ID दर्ज करें",
+    "createTitle": "परिवार बनाएं",
+    "empty": {
+      "title": "अभी तक कोई घरेलू नहीं",
+      "subtitle": "अपने परिवार को प्रबंधित करने के लिए घरेलू बनाएं"
+    },
+    "invite": {
+      "title": "सदस्यों को आमंत्रित करें",
+      "emailPlaceholder": "ईमेल पता",
+      "send": "आमंत्रण भेजें",
+      "pending": "लंबित आमंत्रण"
+    }
   },
   "profileControls": {
     "title": "प्रोफ़ाइल पारिवारिक नियंत्रण",
@@ -8972,7 +10062,17 @@
       "unmute": "[hi] Unmute",
       "close": "बंद करें",
       "subtitles": "उपशीर्षक",
-      "playbackSpeed": "प्लेबैक गति"
+      "playbackSpeed": "प्लेबैक गति",
+      "qualitySettings": "गुणवत्ता सेटिंग्स",
+      "dismiss": "खारिज करें",
+      "dismissPlayer": "नगन बंद करें",
+      "loadingMedia": "मीडिया लोड हो रहा है",
+      "speedNormal": "सामान्य",
+      "recordingError": "[hi] Recording Error",
+      "startRecording": "रिकॉर्डिंग शुरू करें",
+      "stopRecording": "[hi] Stop recording",
+      "premiumRequired": "प्रीमियम सदस्यता आवश्यक",
+      "recordingLiveOnly": "रिकॉर्डिंग केवल लाइव चैनल के लिए उपलब्ध है"
     },
     "aiSearch": {
       "title": "AI खोज",
@@ -8989,7 +10089,10 @@
       "filterRadio": "रेडियो",
       "filterPodcasts": "पॉडकास्ट",
       "enrollRequired": "Beta 500 नामांकन आवश्यक",
-      "enrollDescription": "AI-संचालित खोज तक पहुंचने के लिए Beta 500 प्रोग्राम में शामिल हों"
+      "enrollDescription": "AI-संचालित खोज तक पहुंचने के लिए Beta 500 प्रोग्राम में शामिल हों",
+      "hint": "विषयों, अभिनेताओं या शैलियों के बारे में पूछने का प्रयास करें",
+      "placeholder": "हमारी सामग्री के बारे में कुछ भी पूछें...",
+      "trySuggestion": "पूछने का प्रयास करें:"
     },
     "aiRecommendations": {
       "title": "AI अनुशंसाएं",
@@ -9020,7 +10123,8 @@
       "noContent": "[hi] No content available",
       "seeAll": "सभी देखें",
       "retry": "पुनः प्रयास करें",
-      "back": "वापस"
+      "back": "वापस",
+      "tryAgain": "पुनः प्रयास करें"
     },
     "auth": {
       "welcomeBack": "वापसी पर स्वागत है",
@@ -9060,7 +10164,26 @@
     },
     "tapToClaim": "क्लेम करने के लिए टैप करें",
     "shekels": "शेकेल",
-    "loading": "मिशन लोड हो रहे हैं..."
+    "loading": "मिशन लोड हो रहे हैं...",
+    "claim": "दावा करें",
+    "shekelsAvailable": "उपलब्ध शेकेल",
+    "shop": {
+      "title": "कूपन दुकान",
+      "loading": "कूपन लोड हो रहे हैं...",
+      "redeem": "भुनाएं",
+      "redeemed": "सफलतापूर्वक भुनाया गया",
+      "redemptionCode": "भुनाने का कोड",
+      "insufficientFunds": "पर्याप्त शेकेल नहीं हैं"
+    },
+    "wallet": {
+      "title": "शेकेल वॉलेट",
+      "loading": "वॉलेट लोड हो रहा है...",
+      "totalEarned": "कुल कमाया",
+      "totalSpent": "कुल खर्च",
+      "recentTransactions": "हालिया लेनदेन",
+      "noTransactions": "अभी तक कोई लेनदेन नहीं"
+    },
+    "dayStreak": "{{count}} दिन की स्ट्रीक"
   },
   "shekels": {
     "title": "शेकेल",
@@ -9087,7 +10210,10 @@
       "monthly": "मासिक",
       "allTime": "सर्वकालिक"
     },
-    "empty": "अभी तक कोई प्रविष्टि नहीं"
+    "empty": "अभी तक कोई प्रविष्टि नहीं",
+    "loading": "लीडरबोर्ड लोड हो रहा है...",
+    "myRank": "मेरी रैंक",
+    "you": "YOU"
   },
   "talkBack": {
     "title": "जवाब दें",
@@ -9118,7 +10244,12 @@
     "dashboard": {
       "title": "जवाब दें डैशबोर्ड",
       "engagement": "सहभागिता",
-      "progress": "प्रगति"
+      "progress": "प्रगति",
+      "accuracy": "सटीकता",
+      "attempts": "प्रयास",
+      "hebrewRate": "हिब्रू दर",
+      "recentAttempts": "हाल के प्रयास",
+      "shekels": "अर्जित शेकेल"
     }
   },
   "bilingual": {
@@ -9142,7 +10273,8 @@
       "known": "ज्ञात शब्द",
       "learning": "सीख रहे हैं",
       "mastered": "महारत हासिल"
-    }
+    },
+    "words": "शब्द"
   },
   "starStory": {
     "title": "कहानी में सितारा",
@@ -9191,7 +10323,36 @@
     "characters": "किरदार",
     "loading": "कहानियां लोड हो रही हैं...",
     "noEpisodes": "अभी तक कोई एपिसोड नहीं",
-    "createEpisodesHint": "यहाँ देखने के लिए अपने मोबाइल डिवाइस पर एपिसोड बनाएं"
+    "createEpisodesHint": "यहाँ देखने के लिए अपने मोबाइल डिवाइस पर एपिसोड बनाएं",
+    "createAvatar": "अवतार बनाएं",
+    "consentTitle": "माता-पिता की सहमति",
+    "consentBody": "आपके बच्चे के लिए एक व्यक्तिगत अवतार बनाने के लिए हमें आपकी अनुमति चाहिए। अवतार का उपयोग इंटरैक्टिव हिब्रू सीखने की कहानियों में किया जाएगा।",
+    "childNameLabel": "बच्चे का पहला नाम",
+    "familyPinLabel": "पारिवारिक PIN",
+    "consentCheckbox": "मैं अपने बच्चे के लिए एक व्यक्तिगत अवतार बनाने की सहमति देता/देती हूं",
+    "selectPhoto": "फोटो चुनें",
+    "photoHint": "एक स्पष्ट सामने की ओर की फोटो सबसे अच्छी काम करती है",
+    "chooseStyle": "शैली चुनें",
+    "generateAvatar": "अवतार बनाएं",
+    "createEpisode": "एक एपिसोड बनाएं",
+    "createEpisodeSubtitle": "एक विषय चुनें और एक व्यक्तिगत कहानी बनाएं",
+    "selectTheme": "विषय चुनें",
+    "vocabulary": "शब्दावली",
+    "vocabularyHint": "शब्दों को कहानी में स्वाभाविक रूप से बुना जाएगा",
+    "creditCost": "1 क्रेडिट",
+    "creditInfo": "प्रत्येक एपिसोड 1 Beta 500 क्रेडिट का उपयोग करता है",
+    "generate": "एपिसोड बनाएं",
+    "generatingEpisode": "आपका एपिसोड बनाया जा रहा है...",
+    "generationFailed": "निर्माण विफल रहा",
+    "generationEstimate": "इसमें आमतौर पर कुछ मिनट लगते हैं",
+    "theme": {
+      "adventure": "साहसिक",
+      "friendship": "दोस्ती",
+      "nature": "प्रकृति",
+      "holiday": "त्योहार",
+      "family": "परिवार",
+      "school": "स्कूल"
+    }
   },
   "glossary": {
     "title": "शब्दावली",
@@ -9205,7 +10366,8 @@
       "example": "उदाहरण",
       "funFact": "रोचक तथ्य",
       "transliteration": "लिप्यंतरण"
-    }
+    },
+    "funFact": "रोचक तथ्य"
   },
   "culturalContext": {
     "title": "सांस्कृतिक संदर्भ",
@@ -9228,7 +10390,8 @@
       "usage": "सामान्य उपयोग",
       "funFact": "रोचक तथ्य"
     },
-    "funFact": "रोचक तथ्य"
+    "funFact": "रोचक तथ्य",
+    "subcategory": "/ {{name}}"
   },
   "interactiveMission": {
     "title": "इंटरैक्टिव मिशन",
@@ -9361,7 +10524,26 @@
       "medium": "मध्यम",
       "hard": "कठिन",
       "fromVocabulary": "आपकी शब्दावली से"
-    }
+    },
+    "errors": {
+      "audioSession": "ऑडियो सत्र कॉन्फ़िगर करने में विफल",
+      "recording": "रिकॉर्डिंग शुरू करने में विफल",
+      "noPhrase": "कोई वाक्यांश चयनित नहीं",
+      "audioEngine": "ऑडियो इंजन शुरू करने में विफल",
+      "speechUnavailable": "वाक् पहचान अनुपलब्ध"
+    },
+    "issues": {
+      "stressWrong": "स्वराघात स्थिति",
+      "vowelSwap": "स्वर प्रतिस्थापन",
+      "consonantSwap": "व्यंजन मिश्रण",
+      "missingSound": "गायब ध्वनि",
+      "extraSound": "अतिरिक्त ध्वनि"
+    },
+    "loading": "वाक्यांश लोड हो रहे हैं...",
+    "analyzing": "उच्चारण का विश्लेषण...",
+    "pressToSpeak": "बोलने के लिए दबाएं",
+    "stopRecording": "रिकॉर्डिंग बंद करें",
+    "listenCorrect": "सही उच्चारण सुनें"
   },
   "voiceDecision": {
     "title": "आवाज चुनौती",
@@ -9377,7 +10559,10 @@
     "pronunciationScore": "उच्चारण: {{score}}%",
     "attempt": "प्रयास {{current}} / {{max}}",
     "listenHint": "सही उच्चारण सुनें",
-    "holdToSpeak": "बोलने के लिए दबाएं रखें"
+    "holdToSpeak": "बोलने के लिए दबाएं रखें",
+    "cancel": "[hi] Cancel",
+    "confirm": "[hi] Confirm",
+    "matched": "[hi] Matched"
   },
   "gamification": {
     "title": "मेरी प्रगति",
@@ -9420,7 +10605,17 @@
       "title": "मिशन डैशबोर्ड",
       "recentActivity": "हालिया गतिविधि",
       "progress": "प्रगति"
-    }
+    },
+    "awesome": "शानदार!",
+    "activity": "गतिविधि",
+    "claim": "दावा करें",
+    "maxLevel": "अधिकतम स्तर",
+    "mirrorSessions": "मिरर सत्र",
+    "missionsCompleted": "पूर्ण मिशन",
+    "noPerksYet": "अभी तक कोई पर्क अनलॉक नहीं हुआ",
+    "talkBackAttempts": "TalkBack प्रयास",
+    "totalXP": "कुल XP",
+    "unlockedPerks": "अनलॉक किए गए पर्क"
   },
   "grandparentBridge": {
     "title": "दादा-दादी का पुल",
@@ -9472,6 +10667,9 @@
       "transferring": "अवतार पर शैली लागू करना",
       "validating": "संगतता सत्यापन",
       "complete": "शैली स्थानांतरण पूरा"
+    },
+    "errors": {
+      "unavailable": "शैली मिलान अनुपलब्ध"
     }
   },
   "zehAni": {
@@ -9482,7 +10680,12 @@
       "charactersSection": "पात्र",
       "questionsSection": "सवाल",
       "empty": "अभी कोई इंटरैक्टिव फिल्म उपलब्ध नहीं",
-      "characterCount": "{{count}} पात्र"
+      "characterCount": "{{count}} पात्र",
+      "selectCharacter": "इंटरैक्ट करने के लिए एक पात्र चुनें",
+      "quotaLabel": "शेष इंटरैक्शन",
+      "generationTitle": "इंटरैक्शन बनाया जा रहा है...",
+      "selectedCount": "{{count}} चयनित",
+      "confirmButton": "पुष्टि करें"
     },
     "dialogue": {
       "specificQuestions": "पात्र के सवाल",
@@ -9507,7 +10710,10 @@
       "feedback": "प्रतिक्रिया",
       "feedbackDesc": "परिवार और दोस्तों के संदेश",
       "chess": "शतरंज",
-      "chessDesc": "परिवार और दोस्तों के साथ शतरंज खेलें"
+      "chessDesc": "परिवार और दोस्तों के साथ शतरंज खेलें",
+      "title": "कहानी में मैं",
+      "consent": "सहमति आवश्यक",
+      "consentDesc": "अपने अनुभव को वैयक्तिकृत करने के लिए बायोमेट्रिक सुविधाएं सक्षम करें"
     },
     "contacts": {
       "title": "संपर्क",
@@ -9516,7 +10722,13 @@
       "noContacts": "अभी तक कोई संपर्क नहीं",
       "noMatchingContacts": "कोई मिलान संपर्क नहीं",
       "reelsShared": "{{count}} रील साझा किए",
-      "remove": "हटाएं"
+      "remove": "हटाएं",
+      "add": "संपर्क जोड़ें",
+      "empty": "अभी तक कोई संपर्क नहीं",
+      "delete": "संपर्क हटाएं",
+      "name": "प्रदर्शन नाम",
+      "phone": "फ़ोन नंबर",
+      "pin": "पिन"
     },
     "feedback": {
       "title": "प्रतिक्रिया",
@@ -9526,7 +10738,11 @@
       "submit": "प्रतिक्रिया सबमिट करें",
       "thankYou": "आपकी प्रतिक्रिया के लिए धन्यवाद!",
       "appreciateInput": "हम आपके इनपुट की सराहना करते हैं और इसे सुधार के लिए उपयोग करेंगे।",
-      "sendMore": "और प्रतिक्रिया भेजें"
+      "sendMore": "और प्रतिक्रिया भेजें",
+      "empty": "अभी तक कोई प्रतिक्रिया नहीं",
+      "from": "से",
+      "voiceMessage": "वॉइस संदेश",
+      "textMessage": "टेक्स्ट संदेश"
     },
     "consent": {
       "title": "बायोमेट्रिक सहमति",
@@ -9536,7 +10752,23 @@
       "active": "सक्रिय",
       "notGranted": "प्रदान नहीं किया गया",
       "grant": "प्रदान करें",
-      "granted": "प्रदान किया गया"
+      "granted": "प्रदान किया गया",
+      "biometric": {
+        "explanation": "Bayit+ व्यक्तिगत अवतार और वॉइस सुविधाओं के लिए बायोमेट्रिक डेटा का उपयोग करता है।",
+        "privacy": "आपका बायोमेट्रिक डेटा एन्क्रिप्टेड है और तीसरे पक्ष के साथ कभी साझा नहीं किया जाता।",
+        "pinLabel": "पिन",
+        "pinPlaceholder": "अपना पिन दर्ज करें",
+        "consentTypes": "मैं निम्नलिखित के लिए सहमत हूं",
+        "meshGeneration": "3D मेश निर्माण",
+        "voiceV2V": "वॉइस-टू-वॉइस अभ्यास",
+        "latentFeatures": "AI सुविधा वैयक्तिकरण",
+        "currentStatus": "वर्तमान सहमति स्थिति",
+        "submit": "सहमति प्रदान करें",
+        "title": "बायोमेट्रिक सहमति",
+        "familyControlsRequired": "पारिवारिक नियंत्रण आवश्यक",
+        "familyControlsExplain": "इस प्रोफ़ाइल के लिए बायोमेट्रिक सुविधाओं को स्वीकृत करने के लिए माता-पिता या अभिभावक की आवश्यकता है।",
+        "goToFamilyControls": "पारिवारिक नियंत्रण पर जाएं"
+      }
     },
     "highlights": {
       "title": "मुख्य अंश",
@@ -9545,9 +10777,187 @@
       "generateReel": "नया रील बनाएं",
       "noHighlights": "अभी तक कोई मुख्य अंश नहीं",
       "momentsCount": "{{count}} पल",
-      "sendToFamily": "परिवार को भेजें"
+      "sendToFamily": "परिवार को भेजें",
+      "generate": "हाइलाइट रील बनाएं",
+      "empty": "अभी तक कोई हाइलाइट नहीं",
+      "share": "साझा करें",
+      "generating": "हाइलाइट बनाया जा रहा है..."
     },
-    "title": "ज़ेह अनी"
+    "title": "ज़ेह अनी",
+    "arCapture": {
+      "processing": "प्रोसेसिंग..."
+    },
+    "preview": {
+      "title": "3D पूर्वावलोकन",
+      "loading": "आपका अवतार लोड हो रहा है...",
+      "error": "3D पूर्वावलोकन लोड नहीं हो सका"
+    },
+    "magicMirror": {
+      "vocabOfDay": "आज का शब्द",
+      "noAvatar": "कोई अवतार नहीं",
+      "noAvatarDesc": "मैजिक मिरर अनलॉक करने के लिए अपना 3D अवतार बनाएं",
+      "createAvatar": "अवतार बनाएं",
+      "noCreditsTitle": "क्रेडिट समाप्त",
+      "noCreditsDesc": "मैजिक मिरर का उपयोग करने के लिए आपको Beta क्रेडिट चाहिए",
+      "playGreeting": "अभिवादन चलाएं",
+      "refresh": "रिफ्रेश",
+      "meshUnavailable": "3D मेश उपलब्ध नहीं"
+    },
+    "mesh": {
+      "title": "3D मेश बनाएं",
+      "viewPreview": "पूर्वावलोकन देखें",
+      "statusIdle": "तैयार",
+      "statusGenerating": "बनाया जा रहा है...",
+      "statusReady": "पूर्ण",
+      "statusFailed": "विफल",
+      "meshViewer": "3D मेश व्यूअर",
+      "meshViewerDescription": "3D मेश व्यूअर के लिए WebView या GLSurfaceView एकीकरण आवश्यक है",
+      "skinTone": "त्वचा का रंग",
+      "hairStyle": "बालों की शैली",
+      "accessories": "सहायक उपकरण",
+      "saveChanges": "परिवर्तन सहेजें"
+    },
+    "movieCharacters": {
+      "title": "पात्र",
+      "empty": "कोई पात्र उपलब्ध नहीं"
+    },
+    "trigger": {
+      "prompt": "वाक्यांश बोलें",
+      "dismiss": "खारिज करें",
+      "success": "उत्कृष्ट!",
+      "continue": "जारी रखें",
+      "incorrect": "बिल्कुल नहीं",
+      "correct": "सही उत्तर",
+      "tryAgain": "फिर से प्रयास करें",
+      "skip": "छोड़ें",
+      "errors": {
+        "microphoneFailed": "माइक्रोफ़ोन एक्सेस विफल"
+      }
+    },
+    "v2v": {
+      "transforming": "आवाज़ बदल रही है...",
+      "latency": "विलंबता",
+      "retry": "पुनः प्रयास करें",
+      "nextPhrase": "अगला वाक्यांश",
+      "beforeAfter": "पहले / After",
+      "before": "पहले",
+      "after": "बाद में",
+      "improvement": "सुधार",
+      "title": "वॉइस अभ्यास",
+      "stop": "रोकें",
+      "record": "रिकॉर्ड करें",
+      "mic": "MIC",
+      "viewProgress": "प्रगति देखें",
+      "analyzingPronunciation": "उच्चारण का विश्लेषण...",
+      "pronunciationFeedback": "उच्चारण प्रतिक्रिया",
+      "similarity": "समानता: {{score}}%",
+      "yourProgress": "आपकी प्रगति",
+      "transforms": "ट्रांसफॉर्म: {{count}}",
+      "continuePracticing": "अभ्यास जारी रखें"
+    },
+    "avatar3d": {
+      "title": "3D अवतार",
+      "errorTitle": "अवतार त्रुटि",
+      "glbMeshViewer": "GLB मेश व्यूअर",
+      "controls": "नियंत्रण",
+      "animate": "एनिमेट करें",
+      "vertices": "शीर्ष",
+      "bones": "हड्डियाँ",
+      "blendShapes": "ब्लेंड शेप्स",
+      "hasGlb": "GLB है",
+      "status": "स्थिति: {{value}}"
+    },
+    "dashboard": {
+      "title": "ज़ेह अनी",
+      "biometricConsent": "बायोमेट्रिक सहमति",
+      "activeConsents": "{{count}} सक्रिय सहमतियाँ",
+      "magicMirror": "जादुई दर्पण",
+      "magicMirrorDescription": "दैनिक अभिवादन और फेस आईडी",
+      "v2vPractice": "V2V अभ्यास",
+      "v2vPracticeDescription": "वॉइस-टू-वॉइस उच्चारण",
+      "avatar3d": "3D अवतार",
+      "avatar3dDescription": "आपका व्यक्तिगत अवतार मेश",
+      "movieInteractions": "फिल्म इंटरैक्शन",
+      "movieInteractionsDescription": "फिल्म के किरदारों को ब्राउज़ करें और उनसे बात करें",
+      "contacts": "संपर्क",
+      "contactsDescription": "WhatsApp संपर्क साझा करना",
+      "feedback": "प्रतिक्रिया",
+      "feedbackDescription": "अपना अनुभव साझा करें",
+      "consent": "सहमति",
+      "consentDescription": "बायोमेट्रिक सहमति प्रबंधन",
+      "chess": "शतरंज",
+      "chessDescription": "दोस्तों और परिवार के साथ शतरंज खेलें"
+    },
+    "mirror": {
+      "title": "जादुई दर्पण",
+      "avatarContentDescription": "अवतार",
+      "wordOfTheDay": "आज का शब्द",
+      "playLipsync": "लिप सिंक चलाएं",
+      "noAvatarYet": "अभी कोई अवतार नहीं",
+      "noAvatarDescription": "कहानी में खुद को देखने के लिए 3D अवतार बनाएं",
+      "createAvatar": "अवतार बनाएं"
+    },
+    "mode": {
+      "title": "अवतार मोड",
+      "enableAvatarMode": "अवतार मोड सक्षम करें",
+      "enableDescription": "सामग्री पर प्रतिक्रिया देते हुए अपना अवतार दिखाएं",
+      "avatarPreview": "अवतार पूर्वावलोकन",
+      "avatarPreviewContentDescription": "अवतार पूर्वावलोकन",
+      "noAvatarConfigured": "कोई अवतार कॉन्फ़िगर नहीं किया गया",
+      "reactionStyle": "प्रतिक्रिया शैली"
+    },
+    "wardrobe": {
+      "title": "वार्डरोब",
+      "equippedContentDescription": "सुसज्जित"
+    },
+    "settings": {
+      "title": "अवतार सेटिंग्स",
+      "privacy": "गोपनीयता",
+      "privateAvatarMode": "निजी अवतार मोड",
+      "privateAvatarDescription": "अपना अवतार अन्य उपयोगकर्ताओं से छिपाएं",
+      "appearance": "दिखावट",
+      "enableAnimations": "एनिमेशन सक्षम करें",
+      "animationsDescription": "अवतार की गतिविधियों और भावों को एनिमेट करें",
+      "availableOutfits": "उपलब्ध पोशाकें"
+    },
+    "selfie": {
+      "title": "वीडियो सेल्फी",
+      "camera": "कैमरा",
+      "cameraPreview": "कैमरा पूर्वावलोकन",
+      "startRecording": "रिकॉर्डिंग शुरू करें",
+      "stopRecording": "रिकॉर्डिंग बंद करें",
+      "rec": "REC",
+      "enterPin": "अवतार बनाने के लिए अपना PIN दर्ज करें",
+      "pinLabel": "PIN",
+      "retake": "दोबारा लें",
+      "creatingAvatar": "आपका अवतार बनाया जा रहा है...",
+      "avatarCreated": "अवतार सफलतापूर्वक बनाया गया",
+      "avatarPreviewContentDescription": "अवतार पूर्वावलोकन",
+      "createAnother": "एक और बनाएं"
+    },
+    "characters": {
+      "title": "किरदार",
+      "noCharactersFound": "इस फिल्म के लिए कोई किरदार नहीं मिला",
+      "characterCount": "{{count}} किरदार"
+    },
+    "interactions": {
+      "title": "फिल्म इंटरैक्शन",
+      "noInteractableMovies": "कोई इंटरैक्टिव फिल्म उपलब्ध नहीं"
+    },
+    "feedbackInbox": {
+      "title": "प्रतिक्रिया इनबॉक्स",
+      "refreshContentDescription": "रिफ्रेश करें",
+      "noFeedbackYet": "अभी कोई प्रतिक्रिया नहीं",
+      "feedbackAppearHere": "आपके संपर्कों की प्रतिक्रिया यहाँ दिखाई देगी",
+      "playVoiceMessage": "वॉइस मैसेज चलाएं"
+    },
+    "addContact": {
+      "title": "संपर्क जोड़ें",
+      "nameLabel": "नाम",
+      "phoneLabel": "फ़ोन",
+      "relationship": "संबंध",
+      "language": "भाषा"
+    }
   },
   "security": {
     "mfa": {
@@ -9584,7 +10994,15 @@
       "empty": "कोई डिवाइस पेयर नहीं है।\nअपना पहला डिवाइस पेयर करें!",
       "lastActiveNa": "अंतिम सक्रिय: उपलब्ध नहीं",
       "remove": "हटाएं"
-    }
+    },
+    "changePassword": "पासवर्ड बदलें",
+    "confirmPassword": "नया पासवर्ड पुष्टि करें",
+    "current": "वर्तमान",
+    "currentPassword": "वर्तमान पासवर्ड",
+    "newPassword": "नया पासवर्ड",
+    "noDevices": "कोई डिवाइस नहीं मिला",
+    "unknownDevice": "अज्ञात डिवाइस",
+    "updatePassword": "पासवर्ड अपडेट करें"
   },
   "social": {
     "watchParty": {
@@ -9620,14 +11038,49 @@
   "culture": {
     "glossary": {
       "title": "शब्दावली",
-      "searchPlaceholder": "शब्द खोजें..."
+      "searchPlaceholder": "शब्द खोजें...",
+      "termDetail": "शब्द विवरण",
+      "definition": "परिभाषा",
+      "pronunciation": "उच्चारण",
+      "examples": "उदाहरण"
     },
     "shabbat": {
       "shabbatShalom": "शब्बत शालोम",
       "modeActivated": "शब्बत मोड सक्रिय किया गया है",
       "shavuaTov": "शावुआ तोव",
       "modeDeactivated": "शब्बत मोड निष्क्रिय किया गया है",
-      "channelName": "शब्बत मोड"
+      "channelName": "शब्बत मोड",
+      "title": "शबत मोड",
+      "enableShabbatMode": "शबत मोड सक्षम करें",
+      "shabbatTimes": "शबत का समय",
+      "timesDescription": "मोमबत्ती जलाने और हवदलाह के समय यहाँ प्रदर्शित होंगे",
+      "aboutTitle": "शबत मोड के बारे में",
+      "aboutDescription": "सक्षम होने पर, शबत मोड शबत के घंटों के दौरान सूचनाओं को रोकेगा, स्क्रीन की चमक कम करेगा और एक सरलीकृत इंटरफ़ेस सक्षम करेगा।"
+    },
+    "title": "इज़राइली संस्कृति",
+    "description": "जेरूसलम, तेल अवीव और इज़राइली विरासत",
+    "judaism": {
+      "holidaysAndTorah": "त्योहार और तोराह",
+      "parashaOfTheWeek": "सप्ताह की पराशा",
+      "parashaDescription": "साप्ताहिक तोराह पाठ और टिप्पणी"
+    },
+    "morning": {
+      "title": "सुबह की रस्म",
+      "description": "संकल्प और कृतज्ञता के साथ अपने दिन की शुरुआत करें",
+      "dailyInspiration": "दैनिक प्रेरणा",
+      "dailyInspirationDescription": "आपकी सुबह की दिनचर्या के लिए क्यूरेटेड सामग्री",
+      "modehAni": "मोदे अनी",
+      "modehAniDescription": "सुबह की कृतज्ञता प्रार्थना",
+      "netilatYadayim": "नेतिलत यादयिम",
+      "netilatYadayimDescription": "अनुष्ठानिक हाथ धोना",
+      "shacharit": "शचरित",
+      "shacharitDescription": "सुबह की प्रार्थना सेवा"
+    },
+    "jerusalem": {
+      "title": "जेरूसलम"
+    },
+    "telaviv": {
+      "title": "तेल अवीव"
     }
   },
   "byoc": {
@@ -9654,7 +11107,187 @@
       "xtreamCodes": "Xtream Codes",
       "iptv": "IPTV"
     },
-    "plexLinkUrl": "plex.tv/link"
+    "plexLinkUrl": "plex.tv/link",
+    "yourChannels": "आपके चैनल",
+    "iptv": "IPTV",
+    "youtube": "YouTube",
+    "addIPTV": "IPTV जोड़ें",
+    "addPlex": "Plex जोड़ें",
+    "addYouTube": "YouTube जोड़ें",
+    "playlistURL": "प्लेलिस्ट URL",
+    "playlistName": "प्लेलिस्ट नाम",
+    "noChannels": "प्लेलिस्ट में कोई चैनल नहीं मिले",
+    "refreshing": "रिफ्रेश हो रहा है...",
+    "sourceAdded": "स्रोत जोड़ा गया",
+    "sourceRemoved": "स्रोत हटाया गया",
+    "connectedSources": "कनेक्टेड स्रोत",
+    "aiAvailable": "AI उपलब्ध",
+    "audioAIOnly": "केवल ऑडियो AI",
+    "aiDubbing": "AI डबिंग",
+    "aiSubtitles": "AI उपशीर्षक",
+    "connectContent": "सामग्री कनेक्ट करें",
+    "connectContentDesc": "अपने IPTV, Plex या YouTube स्रोत जोड़ें",
+    "removeSource": "स्रोत हटाएं",
+    "removeConfirm": "क्या आप वाकई इस स्रोत को हटाना चाहते हैं?",
+    "channelCount": "%d चैनल",
+    "fromPlex": "Plex से",
+    "enterURL": "प्लेलिस्ट URL या फ़ाइल दर्ज करें",
+    "validating": "मान्य कर रहे हैं...",
+    "invalidURL": "कृपया एक वैध URL दर्ज करें",
+    "fetchFailed": "प्लेलिस्ट प्राप्त करने में विफल",
+    "plexVisitLink": "plex.tv/link पर जाएं और कोड दर्ज करें",
+    "plexEnterCode": "ऊपर दिखाया गया कोड दर्ज करें",
+    "plexWaiting": "Plex प्राधिकरण की प्रतीक्षा...",
+    "plexRequestingPin": "Plex PIN का अनुरोध...",
+    "plexSelectServer": "सर्वर चुनें",
+    "plexSelectServerDesc": "कौन सा Plex सर्वर कनेक्ट करना है चुनें",
+    "plexDiscovering": "सर्वर खोज रहे हैं...",
+    "plexNoServers": "कोई Plex सर्वर नहीं मिला",
+    "plexLocal": "स्थानीय",
+    "plexRemote": "रिमोट",
+    "plexItemCount": "Plex से %d आइटम",
+    "plexConnectDesc": "अपना Plex Media Server कनेक्ट करें",
+    "youtubeVisitLink": "नीचे दिए गए लिंक पर जाएं और कोड दर्ज करें",
+    "youtubeEnterCode": "ऊपर दिखाया गया कोड दर्ज करें",
+    "youtubeWaiting": "प्राधिकरण की प्रतीक्षा...",
+    "youtubeRequestingCode": "डिवाइस कोड का अनुरोध...",
+    "youtubeConnected": "YouTube कनेक्टेड",
+    "youtubeVideoCount": "वीडियो मिले",
+    "youtubeOpenApp": "YouTube में खोलें",
+    "youtubeAudioAINote": "YouTube सामग्री के लिए ऑडियो AI सुविधाएं उपलब्ध",
+    "fromYouTube": "YouTube से",
+    "youtubeConnectDesc": "अपना YouTube खाता कनेक्ट करें",
+    "bannerTitle": "अपनी सामग्री लाएं",
+    "bannerSubtitle": "AI-संवर्धित देखने के लिए अपने स्ट्रीमिंग स्रोत कनेक्ट करें",
+    "bannerConnect": "कनेक्ट",
+    "bannerDismiss": "खारिज",
+    "itemsLoaded": "आइटम लोड हुए",
+    "enriching": "समृद्ध कर रहे हैं...",
+    "findingSubtitles": "उपशीर्षक खोज रहे हैं...",
+    "subtitlesFound": "सबटाइटल मिले",
+    "noSubtitlesFound": "कोई सबटाइटल नहीं मिला",
+    "subtitlesReady": "उपशीर्षक तैयार",
+    "subtitlesAttached": "{{languages}} उपशीर्षक जुड़े",
+    "interactionMoments": "इंटरैक्टिव क्षण",
+    "interactionMomentsDescription": "AI पात्र इंटरैक्शन के लिए प्रमुख क्षणों का पता लगाएगा",
+    "enrichmentFailed": "समृद्धि विफल",
+    "browsePlexLibrary": "Plex लाइब्रेरी ब्राउज़ करें",
+    "addXtream": "Xtream Codes",
+    "xtreamServer": "सर्वर URL",
+    "xtreamUsername": "उपयोगकर्ता नाम",
+    "xtreamPassword": "पासवर्ड",
+    "xtreamConnectDesc": "Xtream Codes प्रदाता कनेक्ट करें",
+    "xtreamAuthFailed": "प्रमाणीकरण विफल",
+    "sourceName": "स्रोत का नाम",
+    "selectProvider": "प्रदाता चुनें",
+    "manualEntry": "मैन्युअल प्रविष्टि",
+    "onboarding.title": "सामग्री सेटअप",
+    "onboarding.connectSource": "एक स्रोत कनेक्ट करें",
+    "onboarding.connectDesc": "शुरू करने के लिए अपना पहला सामग्री स्रोत जोड़ें",
+    "onboarding.sourceAdded": "स्रोत जोड़ा गया",
+    "onboarding.analyzing": "सामग्री का विश्लेषण...",
+    "onboarding.analyze": "सामग्री का विश्लेषण करें",
+    "onboarding.analysisComplete": "विश्लेषण पूर्ण",
+    "onboarding.channelsIdentified": "चैनल पहचाने गए",
+    "onboarding.vodMatched": "VOD मिलान",
+    "onboarding.duplicatesFound": "डुप्लिकेट पाए गए",
+    "onboarding.streamsHealthy": "स्ट्रीम स्वस्थ",
+    "onboarding.languages": "भाषाएं",
+    "onboarding.topCategories": "शीर्ष श्रेणियां",
+    "onboarding.cleanupTitle": "सामग्री क्लीनअप",
+    "onboarding.autoBestQuality": "स्वचालित रूप से सर्वश्रेष्ठ गुणवत्ता चुनें",
+    "onboarding.autoBestQualityDesc": "प्रत्येक चैनल के लिए स्वचालित रूप से उच्चतम गुणवत्ता स्ट्रीम चुनें",
+    "onboarding.applyCleanup": "क्लीनअप लागू करें",
+    "onboarding.personalizeTitle": "वैयक्तिकृत करें",
+    "onboarding.personalizeDesc": "होम स्क्रीन के लिए अपनी प्राथमिकताएं चुनें",
+    "onboarding.languagePriority": "भाषा प्राथमिकता",
+    "onboarding.homeCategories": "होम श्रेणियां",
+    "onboarding.ready": "तैयार",
+    "home.title": "अपनी सामग्री लाएं",
+    "home.subtitle": "अपने IPTV, Plex, YouTube या Xtream स्रोतों को कनेक्ट करें",
+    "home.connectButton": "स्रोत कनेक्ट करें",
+    "home.aiFeatures.dubbing": "AI डबिंग",
+    "home.aiFeatures.subtitles": "AI उपशीर्षक",
+    "tapToOpen": "खोलने के लिए टैप करें",
+    "aiTrivia": "AI ट्रिविया",
+    "ai.dubbing": "AI डबिंग",
+    "ai.subtitles": "AI उपशीर्षक",
+    "ai.trivia": "AI ट्रिविया",
+    "ai.audioOverlay": "ऑडियो ओवरले",
+    "feedCount": "{{count}} फ़ीड",
+    "home": {
+      "title": "[hi] Bring Your Own Content",
+      "subtitle": "[hi] Connect your IPTV, Plex, or YouTube sources and enjoy Bayit+ AI features on your own content",
+      "connectButton": "[hi] Connect Sources",
+      "aiFeatures": {
+        "dubbing": "[hi] AI Dubbing available",
+        "subtitles": "[hi] Live Subtitles available"
+      }
+    },
+    "pageSubtitle": "अपना खुद का कंटेंट लाएं - IPTV और स्ट्रीमिंग स्रोत जोड़ें",
+    "addSource": "स्रोत जोड़ें",
+    "sync": "सिंक करें",
+    "remove": "हटाएं",
+    "empty": {
+      "title": "कोई स्रोत नहीं जोड़ा गया",
+      "subtitle": "Bayit+ के साथ अपना कंटेंट देखने के लिए अपने IPTV, Xtream या स्ट्रीमिंग स्रोत जोड़ें"
+    },
+    "source": {
+      "iptv": "IPTV स्रोत",
+      "xtream": "Xtream Codes"
+    },
+    "sourceType": {
+      "iptv": "IPTV / M3U",
+      "xtream": "Xtream Codes"
+    },
+    "addIptv": {
+      "title": "IPTV स्रोत जोड़ें",
+      "subtitle": "M3U या M3U8 प्लेलिस्ट फ़ाइल का URL दर्ज करें",
+      "urlPlaceholder": "https://example.com/playlist.m3u",
+      "validate": "सत्यापित करें",
+      "add": "स्रोत जोड़ें"
+    },
+    "preview": {
+      "title": "पूर्वावलोकन",
+      "channelCount": "{{count}} चैनल मिले"
+    },
+    "providers": {
+      "title": "लोकप्रिय प्रदाता"
+    },
+    "wizard": {
+      "step1": "स्रोत जोड़ें",
+      "step2": "प्रसंस्करण",
+      "step3": "समीक्षा",
+      "selectSource": "स्रोत प्रकार चुनें"
+    },
+    "normalization": {
+      "title": "आपका कंटेंट प्रोसेस हो रहा है",
+      "total": "कुल {{count}} चैनल",
+      "matched": "{{count}} मिलान",
+      "stage": {
+        "parsing": "प्लेलिस्ट पार्स हो रही है...",
+        "matching": "चैनल मिलान हो रहा है...",
+        "enriching": "मेटाडेटा समृद्ध हो रहा है...",
+        "finalizing": "अंतिम रूप दिया जा रहा है..."
+      }
+    },
+    "review": {
+      "title": "आयातित कंटेंट की समीक्षा करें",
+      "subtitle": "{{matched}} मिलान, {{unmatched}} चैनल बेमेल",
+      "matchedChannels": "मिलान किए गए चैनल",
+      "unmatchedChannels": "बेमेल चैनल",
+      "apply": "लागू करें और आयात करें"
+    },
+    "error": {
+      "urlRequired": "कृपया URL दर्ज करें",
+      "noChannels": "इस प्लेलिस्ट में कोई चैनल नहीं मिला",
+      "invalidUrl": "इस URL से प्लेलिस्ट लोड नहीं हो सकी",
+      "allFieldsRequired": "सभी फ़ील्ड आवश्यक हैं",
+      "enrichFailed": "स्रोत का विश्लेषण विफल",
+      "syncFailed": "स्रोत सिंक विफल",
+      "normalizationFailed": "कंटेंट प्रोसेसिंग विफल",
+      "normalizationPollFailed": "प्रोसेसिंग के दौरान कनेक्शन खो गया"
+    }
   },
   "a11y": {
     "openProfile": "{{name}}, प्रोफ़ाइल खोलें",
@@ -9856,6 +11489,843 @@
     "title": "सदस्यता",
     "choosePlan": "प्लान चुनें",
     "subscribe": "प्लान चुनें",
-    "loadingPlans": "योजनाएं लोड हो रही हैं..."
-  }
+    "loadingPlans": "योजनाएं लोड हो रही हैं...",
+    "cancel": "सदस्यता रद्द करें",
+    "current": "वर्तमान",
+    "monthly": "मासिक",
+    "yearly": "वार्षिक",
+    "tvSubscribeMessage": "bayit.tv पर या अपने मोबाइल डिवाइस से सदस्यता लें",
+    "externalPaymentTitle": "वेबसाइट पर जारी रखें",
+    "externalPaymentMessage": "आपकी सदस्यता पूरी करने के लिए आपको हमारी वेबसाइट पर पुनर्निर्देशित किया जाएगा। आपकी सदस्यता आपके Bayit+ खाते के माध्यम से प्रबंधित की जाएगी।",
+    "continueToWebsite": "वेबसाइट पर जारी रखें",
+    "loading": "योजनाएं लोड हो रही हैं...",
+    "noPlans": "कोई सदस्यता योजना उपलब्ध नहीं है",
+    "premiumContent": "Plus सामग्री",
+    "recommended": "अनुशंसित",
+    "restorePurchase": "खरीदारी पुनर्स्थापित करें",
+    "upgradeRequired": "इस सामग्री तक पहुंचने के लिए अपनी सदस्यता अपग्रेड करें",
+    "monthlyPlan": "मासिक योजना",
+    "yearlyPlan": "वार्षिक योजना",
+    "subscribeError": "सदस्यता शुरू करने में असमर्थ। कृपया बाद में पुनः प्रयास करें।",
+    "activePlus": "Plus सक्रिय",
+    "manageInSettings": "डिवाइस सेटिंग्स में अपनी सदस्यता प्रबंधित करें",
+    "restorePurchases": "खरीदारी पुनर्स्थापित करें",
+    "subscribePlus": "Plus की सदस्यता लें",
+    "plusPlan": "Bayit+ Plus",
+    "perMonth": "/माह",
+    "perYear": "/वर्ष",
+    "feature": {
+      "unlimitedAI": "19 AI सुविधाएं - असीमित",
+      "unlimitedWidgets": "असीमित विजेट",
+      "unlimitedProfiles": "असीमित पारिवारिक प्रोफ़ाइल",
+      "prioritySupport": "प्राथमिकता सहायता",
+      "freeAI": "50 AI क्रेडिट (एक बार)",
+      "oneWidget": "1 विजेट",
+      "oneProfile": "1 पारिवारिक प्रोफ़ाइल"
+    }
+  },
+  "billing": {
+    "currentPlan": "वर्तमान योजना",
+    "noSubscription": "कोई सक्रिय सदस्यता नहीं",
+    "noTransactions": "अभी तक कोई लेनदेन नहीं",
+    "payment": "भुगतान",
+    "period": "बिलिंग अवधि",
+    "plan": "योजना",
+    "renewsOn": "नवीनीकरण तिथि",
+    "status": "स्थिति",
+    "transactions": "लेनदेन इतिहास"
+  },
+  "biometric": {
+    "authenticate": "प्रमाणित करें",
+    "authenticated": "प्रमाणित",
+    "enableDescription": "बायोमेट्रिक प्रमाणीकरण से तेज़ पहुँच।",
+    "reason": "अपनी पहचान सत्यापित करें",
+    "unavailable": "बायोमेट्रिक प्रमाणीकरण अनुपलब्ध",
+    "unavailableDescription": "आपका डिवाइस बायोमेट्रिक का समर्थन नहीं करता।"
+  },
+  "dm": {
+    "messagePlaceholder": "संदेश लिखें...",
+    "noConversations": "कोई बातचीत नहीं",
+    "searchConversations": "बातचीत खोजें",
+    "searchPlaceholder": "संदेश खोजें...",
+    "translate": "अनुवाद",
+    "translateMessage": "संदेश अनुवाद",
+    "typing": "टाइप कर रहा है...",
+    "title": "संदेश",
+    "conversations": "बातचीत",
+    "conversation": "बातचीत",
+    "empty": {
+      "title": "अभी तक कोई संदेश नहीं",
+      "subtitle": "किसी मित्र के साथ बातचीत शुरू करें"
+    },
+    "input": {
+      "placeholder": "संदेश लिखें...",
+      "send": "भेजें"
+    },
+    "react": "प्रतिक्रिया दें",
+    "read": "पढ़ा गया",
+    "sent": "भेजा गया",
+    "loadMore": "पुराने संदेश लोड करें",
+    "startConversation": "बातचीत शुरू करने के लिए संदेश भेजें",
+    "reaction": {
+      "like": "पसंद",
+      "love": "प्यार",
+      "laugh": "हाहा",
+      "surprise": "वाह",
+      "sad": "दुखद"
+    },
+    "error": {
+      "fetchFailed": "संदेश लोड करने में विफल",
+      "sendFailed": "संदेश भेजने में विफल"
+    }
+  },
+  "gate": {
+    "contentLocked": "सामग्री लॉक है",
+    "recommended": "अनुशंसित",
+    "startTrial": "Plus की सदस्यता लें",
+    "subscribe": "Plus की सदस्यता लें",
+    "trialSubtitle": "असीमित AI सुविधाएं और अधिक अनलॉक करें",
+    "trialTitle": "Plus में अपग्रेड करें",
+    "upgradeRequired": "इस सामग्री के लिए अपग्रेड आवश्यक"
+  },
+  "pairing": {
+    "codePlaceholder": "पेयरिंग कोड दर्ज करें",
+    "enterCode": "कोड दर्ज करें",
+    "expiresAt": "समाप्ति",
+    "noDevices": "कोई युग्मित डिवाइस नहीं",
+    "pairedDevices": "युग्मित डिवाइस",
+    "regenerate": "पुनः उत्पन्न",
+    "scanCode": "अपने अन्य डिवाइस पर यह कोड स्कैन करें",
+    "unknownDevice": "अज्ञात डिवाइस",
+    "verify": "सत्यापित",
+    "title": "डिवाइस पेयरिंग",
+    "tvDescription": "अपने iPhone या iPad को इस Apple TV से लिंक करें।",
+    "tvPairFromMobile": "मोबाइल से पेयर करें",
+    "tvExplanation": "डिवाइस पेयरिंग आपके मोबाइल डिवाइस से प्रबंधित होती है। इस Apple TV को पेयर करने के लिए अपने iPhone या iPad पर Bayit+ खोलें।",
+    "tvPairPrompt": "अपने iPhone या iPad से पेयर करें"
+  },
+  "passkeys": {
+    "addPasskey": "पासकी जोड़ें",
+    "description": "पासकी सुरक्षित, पासवर्ड-रहित प्रमाणीकरण प्रदान करती हैं।",
+    "deviceNamePlaceholder": "डिवाइस का नाम",
+    "noPasskeys": "कोई पासकी पंजीकृत नहीं",
+    "register": "पंजीकृत करें",
+    "registered": "पंजीकृत पासकी",
+    "title": "पासकी",
+    "unknownDevice": "अज्ञात डिवाइस",
+    "tvLimitation": "Apple TV सीमा",
+    "tvLimitationDescription": "पासकी पंजीकरण के लिए बायोमेट्रिक प्रमाणीकरण (Face ID या Touch ID) आवश्यक है, जो Apple TV पर उपलब्ध नहीं है। अपने iPhone या iPad से अपनी पासकी प्रबंधित करें।",
+    "tvNotAvailable": "Apple TV पर उपलब्ध नहीं"
+  },
+  "audio": {
+    "spatialEnabled": "स्पेशल ऑडियो",
+    "backgroundPlayback": "बैकग्राउंड प्लेबैक",
+    "sessionCategory": "प्लेबैक"
+  },
+  "mfa": {
+    "title": "बहु-कारक प्रमाणीकरण",
+    "description": "अपने खाते की सुरक्षा के लिए सुरक्षा की एक अतिरिक्त परत जोड़ें",
+    "active": "MFA सक्रिय",
+    "disable": "MFA अक्षम करें",
+    "authenticatorApp": "प्रमाणक ऐप",
+    "authenticatorDescription": "Google Authenticator या Authy जैसे ऐप का उपयोग करें",
+    "sms": "SMS सत्यापन",
+    "smsDescription": "टेक्स्ट संदेश द्वारा कोड प्राप्त करें",
+    "scanQRCode": "अपने प्रमाणक ऐप से इस QR कोड को स्कैन करें",
+    "manualEntry": "या यह कोड मैन्युअल रूप से दर्ज करें:",
+    "smsCodeSent": "आपके फोन पर एक सत्यापन कोड भेजा गया है",
+    "enterCode": "6 अंकों का कोड दर्ज करें",
+    "verify": "सत्यापित करें",
+    "phoneVerificationRequired": "फ़ोन सत्यापन आवश्यक",
+    "verifyPhoneToEnableMFA": "बहु-कारक प्रमाणीकरण सक्षम करने से पहले आपको अपना फ़ोन नंबर सत्यापित करना होगा।",
+    "addPhoneToEnableMFA": "बहु-कारक प्रमाणीकरण सक्षम करने से पहले आपको एक फ़ोन नंबर जोड़ना और सत्यापित करना होगा।",
+    "verifyPhone": "फ़ोन नंबर सत्यापित करें"
+  },
+  "verification": {
+    "title": "सत्यापन",
+    "phoneTitle": "फ़ोन नंबर सत्यापित करें",
+    "phoneDescription": "सत्यापन कोड प्राप्त करने के लिए अपना फ़ोन नंबर दर्ज करें",
+    "enterCode": "अपने फ़ोन पर भेजा गया सत्यापन कोड दर्ज करें",
+    "phonePlaceholder": "+1 555-123-4567",
+    "phoneHint": "देश कोड सहित अपना फ़ोन नंबर दर्ज करें",
+    "sendCode": "सत्यापन कोड भेजें",
+    "codePlaceholder": "000000",
+    "codeSentTo": "कोड भेजा गया",
+    "verify": "सत्यापित करें",
+    "resendIn": "पुनः भेजें",
+    "resendCode": "कोड पुनः भेजें",
+    "changeNumber": "फ़ोन नंबर बदलें"
+  },
+  "shabbat": {
+    "activate": "सक्रिय करें",
+    "active": "सक्रिय",
+    "autoMode": "ऑटो मोड",
+    "autoModeDescription": "नर प्रकाश समय के अनुसार स्वचालित शबत मोड",
+    "candleLighting": "मोमबत्ती प्रज्ज्वलन",
+    "dailyTimes": "दैनिक समय",
+    "deactivate": "निष्क्रिय करें",
+    "havdalah": "हवदलाह",
+    "inactive": "निष्क्रिय",
+    "manualToggle": "मैन्युअल टॉगल",
+    "recommendedContent": "अनुशंसित सामग्री",
+    "settings": "सेटिंग्स",
+    "shalom": "शब्बत शालोम",
+    "parashat": "पराशत {{name}}"
+  },
+  "ai": {
+    "languageDescription": "लाइव अनुवाद, डबिंग और ट्रिविया के लिए लक्ष्य भाषा चुनें",
+    "languageTitle": "AI भाषा"
+  },
+  "bilingualBridge": {
+    "languageRatio": "भाषा अनुपात",
+    "wordsLearned": "सीखे गए शब्द"
+  },
+  "coupons": {
+    "noneAvailable": "कोई कूपन उपलब्ध नहीं",
+    "redeem": "भुनाएँ",
+    "redeemed": "भुनाया गया"
+  },
+  "enterPiP": "पिक्चर इन पिक्चर में प्रवेश करें",
+  "exitPiP": "पिक्चर इन पिक्चर से बाहर निकलें",
+  "languages": {
+    "english": "अंग्रेज़ी",
+    "french": "फ़्रेंच",
+    "hebrew": "हिब्रू",
+    "russian": "रूसी",
+    "spanish": "स्पेनिश"
+  },
+  "messages": {
+    "loading": "वार्तालाप लोड हो रहे हैं...",
+    "noConversations": "कोई वार्तालाप नहीं",
+    "searchConversations": "बातचीत खोजें",
+    "startChatHint": "मोबाइल ऐप से दोस्तों के साथ चैट शुरू करें"
+  },
+  "mission": {
+    "complete": "मिशन पूरा!",
+    "complete_error": "मिशन पूरा करने में विफल",
+    "continue": "जारी रखें",
+    "final_score": "अंतिम स्कोर",
+    "listening": "सुन रहा है...",
+    "load_error": "मिशन लोड करने में विफल",
+    "loading": "मिशन लोड हो रहा है...",
+    "speak_challenge": "चुनौती वाक्यांश बोलें",
+    "submit_error": "सबमिट करने में विफल",
+    "tap_to_speak": "बोलने के लिए टैप करें"
+  },
+  "snaps": {
+    "characters": "पात्र",
+    "download": "डाउनलोड",
+    "download_error": "स्नैप डाउनलोड करने में विफल",
+    "empty_subtitle": "अपना पहला पारिवारिक स्नैप बनाएँ",
+    "empty_title": "अभी कोई स्नैप नहीं",
+    "generate": "जनरेट करें",
+    "generate_first": "अपना पहला स्नैप बनाएँ",
+    "load_error": "स्नैप लोड करने में विफल",
+    "loading": "स्नैप लोड हो रहे हैं...",
+    "retry": "पुनः प्रयास",
+    "share": "शेयर करें",
+    "subtitle": "AI-संचालित पारिवारिक फ़ोटो",
+    "title": "परिवार स्नैप"
+  },
+  "vocabulary": {
+    "title": "शब्दावली",
+    "wordCount": "{{count}} शब्द",
+    "empty": "अभी तक कोई शब्द सहेजा नहीं गया",
+    "emptyHint": "शब्दों को सहेजने के लिए सबटाइटल में टैप करें",
+    "newWords": "नए शब्द",
+    "reviewedWords": "समीक्षित शब्द",
+    "close": "बंद करें"
+  },
+  "wallet": {
+    "earned": "अर्जित",
+    "noTransactions": "अभी कोई लेनदेन नहीं",
+    "recentTransactions": "हाल के लेन-देन",
+    "shekelsAvailable": "उपलब्ध शेकेल",
+    "shekelsBalance": "शेकेल शेष",
+    "spent": "खर्च"
+  },
+  "wardrobe": {
+    "balance": "शेष",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "confirm_purchase": "खरीद की पुष्टि करें",
+    "equip": "सुसज्जित करें",
+    "equip_error": "आइटम सुसज्जित करने में विफल",
+    "insufficient_balance": "अपर्याप्त शेष",
+    "load_error": "वार्डरोब लोड करने में विफल",
+    "loading": "वार्डरोब लोड हो रहा है...",
+    "owned": "स्वामित्व",
+    "purchase": "खरीद",
+    "purchase_error": "आइटम खरीदने में विफल",
+    "subtitle": "अपना अवतार कस्टमाइज़ करें",
+    "title": "वार्डरोब",
+    "unequip": "अनइक्विप",
+    "unequip_error": "आइटम हटाने में विफल",
+    "equipped": "सुसज्जित",
+    "empty": "अभी कोई पोशाक उपलब्ध नहीं",
+    "price": "{{amount}} शेकेल",
+    "rarity": {
+      "common": "सामान्य",
+      "uncommon": "असामान्य",
+      "rare": "दुर्लभ",
+      "epic": "महाकाव्य",
+      "legendary": "पौराणिक"
+    }
+  },
+  "zine": {
+    "archive": "संग्रह",
+    "emptyPages": "प्रदर्शित करने के लिए कोई पेज नहीं",
+    "failedToLoad": "पृष्ठ {{page}} लोड करने में विफल",
+    "loadingPage": "पृष्ठ लोड हो रहा है...",
+    "noCurrentZine": "वर्तमान में कोई ज़ीन उपलब्ध नहीं",
+    "noPagesAvailable": "कोई पृष्ठ उपलब्ध नहीं",
+    "noPagesDescription": "इस ज़ीन में प्रदर्शित करने के लिए कोई पेज नहीं है।",
+    "pageIndicator": "पेज {{current}} / {{total}}",
+    "pageCount": "{{count}} पृष्ठ"
+  },
+  "forgot_password": {
+    "title": "पासवर्ड रीसेट करें",
+    "subtitle": "अपना ईमेल पता दर्ज करें और हम आपको पासवर्ड रीसेट करने के लिए एक लिंक भेजेंगे",
+    "submit": "रीसेट लिंक भेजें",
+    "success_title": "अपना ईमेल जांचें",
+    "success_message": "हमने आपको पासवर्ड रीसेट लिंक भेज दिया है। कृपया अपने इनबॉक्स की जांच करें।",
+    "back_to_login": "लॉगिन पर वापस जाएं"
+  },
+  "reset_password": {
+    "title": "नया पासवर्ड बनाएं",
+    "subtitle": "अपने खाते के लिए एक मजबूत पासवर्ड चुनें",
+    "submit": "पासवर्ड रीसेट करें",
+    "requirements": "पासवर्ड में होना चाहिए:",
+    "requirement_length": "कम से कम 8 वर्ण",
+    "requirement_uppercase": "एक बड़ा अक्षर",
+    "requirement_lowercase": "एक छोटा अक्षर",
+    "requirement_number": "एक संख्या",
+    "requirement_match": "पासवर्ड मेल खाते हैं",
+    "success_title": "पासवर्ड रीसेट हो गया!",
+    "success_message": "आपका पासवर्ड सफलतापूर्वक रीसेट कर दिया गया है। अब आप अपने नए पासवर्ड से साइन इन कर सकते हैं।",
+    "back_to_login": "लॉगिन पर वापस जाएं"
+  },
+  "voiceFallback": {
+    "title": "वॉइस उपलब्ध नहीं",
+    "subtitle": "इसके बजाय अपना संदेश टाइप करें",
+    "micUnavailable": "माइक्रोफ़ोन उपलब्ध नहीं",
+    "inputPlaceholder": "संदेश टाइप करें...",
+    "send": "भेजें",
+    "suggestions": "सुझाव"
+  },
+  "voiceSearch": {
+    "settings": {
+      "title": "वॉइस सर्च सेटिंग्स",
+      "language": "पहचान भाषा",
+      "sensitivity": "संवेदनशीलता"
+    },
+    "listening": "[hi] Listening...",
+    "noResults": "[hi] No results found",
+    "tapToSpeak": "[hi] Tap to speak",
+    "title": "[hi] Voice Search"
+  },
+  "cvplus": {
+    "upload": {
+      "title": "CV अपलोड करें",
+      "subtitle": "PDF, DOCX या TXT"
+    },
+    "analysis": {
+      "atsScore": "ATS स्कोर",
+      "completeness": "पूर्णता",
+      "skills": "कौशल",
+      "recommendations": "सिफारिशें",
+      "missingSections": "अनुपस्थित अनुभाग"
+    },
+    "profile": {
+      "createProfile": "सार्वजनिक प्रोफ़ाइल बनाएं",
+      "shareLink": "लिंक साझा करें",
+      "qrCode": "QR कोड",
+      "download": "डाउनलोड"
+    },
+    "auth": {
+      "signIn": "साइन इन",
+      "createAccount": "खाता बनाएं",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "fullName": "पूरा नाम",
+      "confirmPassword": "पासवर्ड की पुष्टि करें"
+    },
+    "account": {
+      "title": "खाता",
+      "signOut": "साइन आउट",
+      "appLanguage": "ऐप भाषा",
+      "quota": "उपयोग कोटा"
+    },
+    "cv": {
+      "uploadTitle": "अपना CV अपलोड करें",
+      "generate": "CV बनाएं",
+      "myCV": "मेरे CV",
+      "analysis": "विश्लेषण",
+      "customize": "अनुकूलित करें",
+      "preview": "पूर्वावलोकन"
+    },
+    "dashboard": {
+      "title": "डैशबोर्ड",
+      "recentActivity": "हालिया गतिविधि",
+      "totalViews": "कुल दृश्य",
+      "downloads": "डाउनलोड",
+      "uniqueVisitors": "अद्वितीय आगंतुक"
+    },
+    "contactRequests": {
+      "title": "संपर्क अनुरोध",
+      "noRequests": "अभी तक कोई संपर्क अनुरोध नहीं"
+    }
+  },
+  "sharePlay": {
+    "watchTogether": "साथ में देखें",
+    "inviteDescription": "दोस्तों के साथ देखने का तरीका चुनें",
+    "viaFaceTime": "FaceTime के ज़रिए SharePlay",
+    "faceTimeDescription": "FaceTime पर दोस्तों के साथ देखें",
+    "bayitParty": "Bayit+ पार्टी",
+    "bayitPartyDescription": "दोस्तों को Bayit+ वॉच पार्टी में आमंत्रित करें",
+    "watching": "देख रहे हैं",
+    "synced": "सभी सिंक हो गया",
+    "syncing": "सिंक हो रहा है...",
+    "end": "SharePlay समाप्त करें",
+    "title": "SharePlay"
+  },
+  "tooltip": {
+    "dubbing": {
+      "title": "लाइव AI डबिंग",
+      "description": "AI आवाज़ों का उपयोग करके रियल टाइम में इज़राइली चैनलों को अपनी भाषा में डब करके सुनें।"
+    },
+    "pauseAndAsk": {
+      "title": "रोकें और किसी चरित्र से पूछें",
+      "description": "किसी भी दृश्य को रोकें और अपने अवतार का उपयोग करके पात्रों से बात करें।"
+    },
+    "zehAni": {
+      "title": "जादुई दर्पण",
+      "description": "सेल्फी से एक व्यक्तिगत 3D अवतार बनाएँ और इंटरैक्टिव सुविधाओं में उपयोग करें।"
+    },
+    "catchup": {
+      "title": "कैच अप",
+      "description": "शुरुआत छूट गई? अब तक क्या हुआ इसका AI-जनित सारांश प्राप्त करें।"
+    }
+  },
+  "discover": {
+    "title": "खोजें",
+    "subtitle": "Bayit+ पर उपलब्ध सभी AI-संचालित सुविधाओं का अन्वेषण करें",
+    "category": {
+      "watching_movies": "फिल्में देखते समय",
+      "watching_live_tv": "लाइव टीवी देखते समय",
+      "learn_hebrew": "हिब्रू सीखें",
+      "search_discovery": "खोज और खोज",
+      "chat_assistants": "चैट और सहायक"
+    },
+    "feature": {
+      "pause_ask": {
+        "name": "रोकें और पूछें",
+        "tagline": "कोई भी फिल्म रोकें और पात्रों से बात करें",
+        "description": "फिल्म रोकें और किसी भी पात्र से सच्ची बातचीत करें। वे अपनी आवाज़ और व्यक्तित्व में जवाब देते हैं, कथानक, उनकी प्रेरणाओं या किसी भी अन्य बात के बारे में सवालों का जवाब देते हैं।"
+      },
+      "interactive_subtitles": {
+        "name": "इंटरैक्टिव सबटाइटल",
+        "tagline": "किसी भी सबटाइटल शब्द पर टैप करके अर्थ जानें",
+        "description": "सबटाइटल को सीखने के उपकरण में बदलें। किसी भी शब्द पर टैप करके परिभाषा देखें, उच्चारण सुनें और इसे अपनी शब्दावली सूची में सहेजें। हिब्रू, अंग्रेजी और द्विभाषी सबटाइटल के साथ काम करता है।"
+      },
+      "vocabulary": {
+        "name": "शब्दावली निर्माता",
+        "tagline": "फिल्मों से अपना व्यक्तिगत शब्द बैंक बनाएं",
+        "description": "इंटरैक्टिव सबटाइटल से शब्दों को व्यक्तिगत शब्दावली सूची में एकत्र करें। फ्लैशकार्ड की समीक्षा करें, अपनी प्रगति ट्रैक करें और जिन फिल्मों से आपने सीखा उनके संदर्भ में शब्द देखें।"
+      },
+      "vod_moments": {
+        "name": "इंटरैक्टिव क्षण",
+        "tagline": "AI-संचालित इंटरैक्शन के साथ प्रमुख दृश्यों पर प्रतिक्रिया दें",
+        "description": "फिल्म के प्रमुख क्षणों में इंटरैक्टिव प्रॉम्प्ट दिखाई देते हैं जो आपको कहानी से जुड़ने देते हैं। सवाल पूछें, सांस्कृतिक संदर्भ प्राप्त करें या महत्वपूर्ण दृश्यों में गहराई से जाएं।"
+      },
+      "cultural_context": {
+        "name": "सांस्कृतिक संदर्भ",
+        "tagline": "हर दृश्य के पीछे की सांस्कृतिक अर्थ समझें",
+        "description": "अपरिचित हो सकने वाले दृश्यों, संवादों और संदर्भों के लिए AI-जनित सांस्कृतिक व्याख्या प्राप्त करें। इज़राइली हास्य, धार्मिक रीति-रिवाज, ऐतिहासिक संदर्भ और बहुत कुछ समझें।"
+      },
+      "bilingual_bridge": {
+        "name": "द्विभाषी सेतु",
+        "tagline": "फिल्म संवाद के माध्यम से स्वाभाविक रूप से हिब्रू सीखें",
+        "description": "हिब्रू और अंग्रेजी सबटाइटल एक साथ देखें। AI प्रमुख वाक्यांशों को हाइलाइट करता है और फिल्म बातचीत के प्राकृतिक संदर्भ में हिब्रू संवाद समझने में आपकी मदद करता है।"
+      },
+      "ai_companion": {
+        "name": "AI साथी",
+        "tagline": "आपका बुद्धिमान फिल्म देखने का साथी",
+        "description": "एक AI सहायक जो आपके साथ देखता है। किसी भी समय कथानक, पात्रों या प्रोडक्शन विवरण के बारे में पूछें। यह समझता है कि आप क्या देख रहे हैं और प्रासंगिक उत्तर देता है।"
+      },
+      "live_dubbing": {
+        "name": "लाइव डबिंग",
+        "tagline": "किसी भी चैनल को अपनी भाषा में डब करके देखें",
+        "description": "लाइव इज़राइली टीवी चैनलों की वास्तविक समय AI डबिंग अंग्रेजी, स्पेनिश, फ्रेंच और अन्य भाषाओं में। लाइव प्रसारण देखते हुए अपनी पसंदीदा भाषा में सामग्री सुनें।"
+      },
+      "live_subtitles": {
+        "name": "लाइव सबटाइटल",
+        "tagline": "लाइव टीवी के लिए वास्तविक समय सबटाइटल",
+        "description": "AI-जनित सबटाइटल लाइव टीवी देखते समय वास्तविक समय में दिखाई देते हैं। अपनी पसंदीदा भाषा चुनें और किसी भी हिब्रू प्रसारण का अनुसरण करें।"
+      },
+      "live_trivia": {
+        "name": "लाइव ट्रिविया",
+        "tagline": "जो देख रहे हैं उसके बारे में ट्रिविया गेम खेलें",
+        "description": "AI लाइव प्रसारण के विषय का पता लगाता है और वास्तविक समय में ट्रिविया प्रश्न बनाता है। अन्य दर्शकों के साथ प्रतिस्पर्धा करें और इज़राइली संस्कृति, समाचार और मनोरंजन के अपने ज्ञान की परीक्षा लें।"
+      },
+      "catch_up": {
+        "name": "कैच अप",
+        "tagline": "जो चूक गए उसका AI सारांश प्राप्त करें",
+        "description": "लाइव प्रसारण में देरी से शामिल हुए? AI आपके जुड़ने से पहले जो कुछ हुआ उसका त्वरित सारांश बनाता है, ताकि आप संदर्भ खोए बिना सीधे शामिल हो सकें।"
+      },
+      "scene_search": {
+        "name": "दृश्य खोज",
+        "tagline": "रिकॉर्ड किए गए प्रसारण में कोई भी क्षण खोजें",
+        "description": "आप जो खोज रहे हैं उसका वर्णन करके रिकॉर्ड की गई लाइव टीवी सामग्री में खोजें। AI सटीक क्षण ढूंढता है और आपको सीधे वहां ले जाता है।"
+      },
+      "phonetic_mirror": {
+        "name": "ध्वन्यात्मक दर्पण",
+        "tagline": "AI फीडबैक के साथ हिब्रू उच्चारण का अभ्यास करें",
+        "description": "एक हिब्रू वाक्यांश पढ़ें और ज़ोर से बोलें। AI आपके उच्चारण का विश्लेषण करता है, आपको बताता है कहां सुधार करना है और आपके अवतार का उपयोग दृश्य मार्गदर्शक के रूप में करके सही ध्वनियां प्रदर्शित करता है।"
+      },
+      "talk_back": {
+        "name": "वापस बोलें",
+        "tagline": "अपने अवतार के साथ हिब्रू बातचीत का अभ्यास करें",
+        "description": "अपने AI अवतार के साथ हिब्रू में बातचीत करें। यह आपसे हिब्रू में बात करता है, आप जवाब देते हैं और यह आपके उच्चारण, व्याकरण और शब्दावली उपयोग पर फीडबैक देता है।"
+      },
+      "interactive_mission": {
+        "name": "इंटरैक्टिव मिशन",
+        "tagline": "AI मार्गदर्शन के साथ हिब्रू सीखने के मिशन पूरे करें",
+        "description": "मार्गदर्शित हिब्रू सीखने के मिशन शुरू करें। आपका अवतार आपको बोलने, सुनने और पढ़ने के अभ्यास को मिलाकर मजेदार, गेमिफाइड परिदृश्यों में इंटरैक्टिव अभ्यासों के माध्यम से ले जाता है।"
+      },
+      "glossary": {
+        "name": "हिब्रू शब्दावली",
+        "tagline": "हिब्रू शब्दावली डेटाबेस ब्राउज़ और खोजें",
+        "description": "एक व्यापक हिब्रू-अंग्रेजी शब्दावली तक पहुंचें। शब्द खोजें, उच्चारण सुनें, Bayit+ सामग्री से उपयोग के उदाहरण देखें और शब्दों को अपनी व्यक्तिगत शब्दावली सूची में सहेजें।"
+      },
+      "llm_search": {
+        "name": "AI खोज",
+        "tagline": "प्राकृतिक भाषा का उपयोग करके सामग्री खोजें",
+        "description": "अपने शब्दों में बताएं कि आप क्या देखना चाहते हैं। AI आपकी मंशा समझता है और पूरे Bayit+ कैटलॉग से मेल खाती फिल्में, शो और चैनल ढूंढता है।"
+      },
+      "proactive_voice": {
+        "name": "वॉइस सुझाव",
+        "tagline": "वॉइस द्वारा व्यक्तिगत सामग्री सुझाव प्राप्त करें",
+        "description": "वॉइस मोड सक्रिय करें और Bayit+ को बताएं कि आपका मन क्या कर रहा है। AI आपके देखने का इतिहास, प्राथमिकताएं और वर्तमान समय को ध्यान में रखकर सही सामग्री सुझाता है।"
+      },
+      "chatbot": {
+        "name": "AI सहायक",
+        "tagline": "Bayit+ और इज़राइली सामग्री के बारे में कुछ भी पूछें",
+        "description": "Bayit+ AI सहायक से किसी भी विषय पर बात करें। ऐप नेविगेशन में मदद पाएं, इज़राइली संस्कृति के बारे में जानें, सामग्री अनुशंसाएं खोजें या अपने खाते और सुविधाओं के बारे में सवाल पूछें।"
+      }
+    },
+    "badge": {
+      "ready": "तैयार",
+      "setupNeeded": "सेटअप आवश्यक",
+      "premium": "प्रीमियम",
+      "notAvailable": "उपलब्ध नहीं",
+      "platformOnly": "केवल iOS"
+    },
+    "walkthrough": {
+      "tryItNow": "अभी आज़माएं",
+      "watchDemo": "डेमो देखें",
+      "skip": "छोड़ें",
+      "next": "अगला",
+      "done": "हो गया",
+      "complete": "वॉकथ्रू पूरा हुआ",
+      "stepCounter": "{{total}} में से {{current}}",
+      "skipAccessibility": "ट्यूटोरियल छोड़ें",
+      "nextAccessibility": "अगला चरण",
+      "doneAccessibility": "ट्यूटोरियल समाप्त करें",
+      "stepAccessibility": "{{total}} में से चरण {{current}}",
+      "pause_ask": {
+        "step1": "इंटरैक्टिव क्षणों वाली फिल्म पर जाएं",
+        "step2": "किसी दृश्य के दौरान फिल्म रोकें",
+        "step3": "पात्र से पूछें बटन पर टैप करें",
+        "step4": "पात्र को आपको जवाब देते देखें"
+      },
+      "interactive_subtitles": {
+        "step1": "सबटाइटल के साथ फिल्म देखना शुरू करें",
+        "step2": "कंट्रोल बार में इंटरैक्टिव बटन पर टैप करें",
+        "step3": "अपनी सबटाइटल भाषा चुनें",
+        "step4": "अधिक जानने के लिए सबटाइटल में किसी भी शब्द पर टैप करें"
+      },
+      "vocabulary": {
+        "step1": "इंटरैक्टिव सबटाइटल सक्षम फिल्म खोलें",
+        "step2": "जो शब्द सीखना चाहते हैं उस पर टैप करें",
+        "step3": "शब्दावली में सहेजें पर टैप करें",
+        "step4": "शब्दावली अनुभाग में अपने सहेजे शब्दों की समीक्षा करें"
+      },
+      "vod_moments": {
+        "step1": "इंटरैक्टिव क्षणों वाली फिल्म देखना शुरू करें",
+        "step2": "इंटरैक्टिव प्रॉम्प्ट दिखने की प्रतीक्षा करें",
+        "step3": "AI-जनित इंटरैक्शन देखें"
+      },
+      "cultural_context": {
+        "step1": "हिब्रू संवाद वाली फिल्म चलाएं",
+        "step2": "सांस्कृतिक महत्व वाले सबटाइटल पर टैप करें",
+        "step3": "AI-जनित सांस्कृतिक व्याख्या पढ़ें"
+      },
+      "bilingual_bridge": {
+        "step1": "द्विभाषी सहायता वाली फिल्म खोलें",
+        "step2": "द्विभाषी सबटाइटल मोड चुनें",
+        "step3": "अनुवाद देखने के लिए हाइलाइट किए गए वाक्यांश पर टैप करें",
+        "step4": "दोनों भाषाएं साथ-साथ देखें"
+      },
+      "ai_companion": {
+        "step1": "कोई भी फिल्म देखना शुरू करें",
+        "step2": "AI साथी बटन पर टैप करें",
+        "step3": "फिल्म के बारे में सवाल टाइप करें",
+        "step4": "AI की संदर्भ-आधारित प्रतिक्रिया पढ़ें"
+      },
+      "live_dubbing": {
+        "step1": "लाइव टीवी चैनल पर जाएं",
+        "step2": "कंट्रोल बार में डबिंग बटन पर टैप करें",
+        "step3": "अपनी पसंदीदा भाषा चुनें",
+        "step4": "वास्तविक समय AI डबिंग सुनें"
+      },
+      "live_subtitles": {
+        "step1": "लाइव टीवी चैनल पर जाएं",
+        "step2": "सबटाइटल बटन पर टैप करें",
+        "step3": "अपनी सबटाइटल भाषा चुनें",
+        "step4": "वास्तविक समय सबटाइटल दिखते देखें"
+      },
+      "live_trivia": {
+        "step1": "लाइव टीवी चैनल पर जाएं",
+        "step2": "ट्रिविया बटन पर टैप करें",
+        "step3": "AI-जनित प्रश्नों के उत्तर दें"
+      },
+      "catch_up": {
+        "step1": "लाइव प्रसारण पर जाएं",
+        "step2": "कैच-अप विकल्प चुनें",
+        "step3": "AI सारांश बनाने के लिए टैप करें",
+        "step4": "जो चूक गए उसका सारांश पढ़ें"
+      },
+      "scene_search": {
+        "step1": "रिकॉर्ड किए गए प्रसारण पर जाएं",
+        "step2": "जो खोज रहे हैं वो टाइप करें",
+        "step3": "मेल खाते दृश्य पर टैप करें",
+        "step4": "उस बिंदु से दृश्य देखें"
+      },
+      "phonetic_mirror": {
+        "step1": "Zeh Ani में ध्वन्यात्मक दर्पण खोलें",
+        "step2": "दिखाया गया हिब्रू वाक्यांश पढ़ें",
+        "step3": "वाक्यांश अपने माइक्रोफोन में बोलें",
+        "step4": "AI उच्चारण फीडबैक की समीक्षा करें"
+      },
+      "talk_back": {
+        "step1": "Zeh Ani में वापस बोलें खोलें",
+        "step2": "अपने अवतार को हिब्रू बोलते सुनें",
+        "step3": "माइक्रोफोन का उपयोग करके हिब्रू में जवाब दें",
+        "step4": "अपनी प्रतिक्रिया पर AI फीडबैक की समीक्षा करें"
+      },
+      "interactive_mission": {
+        "step1": "इंटरैक्टिव मिशन खोलें",
+        "step2": "मिशन स्तर चुनें",
+        "step3": "AI-मार्गदर्शित अभ्यासों का पालन करें",
+        "step4": "मिशन पूरा करें और पुरस्कार अर्जित करें"
+      },
+      "glossary": {
+        "step1": "हिब्रू शब्दावली खोलें",
+        "step2": "हिब्रू शब्द खोजें",
+        "step3": "उच्चारण सुनें"
+      },
+      "llm_search": {
+        "step1": "खोज टैब खोलें",
+        "step2": "प्राकृतिक भाषा में क्वेरी टाइप करें",
+        "step3": "AI-क्यूरेटेड परिणाम ब्राउज़ करें"
+      },
+      "proactive_voice": {
+        "step1": "वॉइस सुझाव सुविधा खोलें",
+        "step2": "बोलने के लिए दबाकर रखें",
+        "step3": "व्यक्तिगत अनुशंसाएं सुनें"
+      },
+      "chatbot": {
+        "step1": "AI सहायक खोलें",
+        "step2": "अपना प्रश्न या अनुरोध टाइप करें",
+        "step3": "AI की प्रतिक्रिया पढ़ें"
+      },
+      "avatarNeeded": "इस सुविधा को आज़माने के लिए आपको एक अवतार की आवश्यकता होगी। अभी बनाएं?",
+      "createAvatar": "अवतार बनाएं",
+      "skipAvatar": "अभी छोड़ें",
+      "scanQR": "फोटो अपलोड करने के लिए QR स्कैन करें",
+      "aiAvatar": "AI अवतार बनाएं"
+    },
+    "prereq": {
+      "avatar_required": "पहले अपना अवतार बनाएं",
+      "subscription_required": "प्रीमियम सदस्यता आवश्यक",
+      "microphone_required": "माइक्रोफोन एक्सेस आवश्यक",
+      "contentType_required": "विशिष्ट सामग्री आवश्यक",
+      "preference_required": "सेटिंग्स में इस सुविधा को सक्षम करें",
+      "voiceClone_required": "वॉइस क्लोन सेटअप आवश्यक",
+      "avatar": "अपना AI पात्र बनाएं",
+      "subscription": "प्रीमियम सदस्यता आवश्यक",
+      "microphone": "माइक्रोफ़ोन एक्सेस आवश्यक",
+      "contentType": "अपनी सामग्री प्राथमिकताएं चुनें",
+      "preference": "अपनी भाषा प्राथमिकताएं सेट करें",
+      "voiceClone": "अपना वॉइस क्लोन सेट अप करें"
+    },
+    "empty": {
+      "title": "कोई सुविधा उपलब्ध नहीं",
+      "subtitle": "नई AI सुविधाओं के लिए बाद में वापस आएं"
+    },
+    "loading": "सुविधाएं लोड हो रही हैं...",
+    "prerequisites": {
+      "title": "पूर्वापेक्षाएं"
+    },
+    "action": {
+      "tryIt": "अभी आज़माएं",
+      "watchDemo": "डेमो देखें"
+    },
+    "detail": {
+      "prerequisites": "पूर्वापेक्षाएं",
+      "tryIt": "अभी आज़माएं",
+      "watchDemo": "डेमो देखें",
+      "back": "वापस"
+    },
+    "a11y": {
+      "ready": "सुविधा उपयोग के लिए तैयार है",
+      "setupNeeded": "इस सुविधा का उपयोग करने से पहले सेटअप आवश्यक है",
+      "premium": "प्रीमियम सदस्यता आवश्यक",
+      "notAvailable": "सुविधा उपलब्ध नहीं है",
+      "platformOnly": "केवल iOS पर उपलब्ध"
+    },
+    "characterGen": {
+      "stages": {
+        "analyzing": "फिल्म का विश्लेषण हो रहा है...",
+        "extracting": "मुख्य पात्र खोजे जा रहे हैं...",
+        "voices": "पात्रों की आवाज़ें सीखी जा रही हैं...",
+        "frames": "पात्रों का रूप कैप्चर हो रहा है...",
+        "almost": "लगभग तैयार..."
+      }
+    },
+    "description": "Bayit+ आपके देखने, सुनने और सीखने के अनुभव को बेहतर बनाने के लिए AI का उपयोग करता है। जानें कि आपके प्लेटफॉर्म पर क्या उपलब्ध है।",
+    "featureCount": "{{count}} सुविधाएं",
+    "tryIt": "आज़माएं",
+    "startWalkthrough": "वॉकथ्रू शुरू करें",
+    "availableOn": "उपलब्ध है",
+    "setup": "सेट अप करें",
+    "error": {
+      "fetchFailed": "Discover सुविधाएं लोड करने में विफल। कृपया पुनः प्रयास करें।",
+      "unknownFeature": "सुविधा नहीं मिली।",
+      "featureDisabled": "यह सुविधा अभी अक्षम है।"
+    },
+    "availability": {
+      "ready": "तैयार",
+      "setupNeeded": "सेटअप आवश्यक",
+      "premiumRequired": "प्रीमियम आवश्यक",
+      "notAvailable": "उपलब्ध नहीं",
+      "platformOnly": "अन्य प्लेटफॉर्म"
+    },
+    "platform": {
+      "web": "Web",
+      "ios": "iOS",
+      "android": "Android",
+      "tvos": "Apple TV"
+    }
+  },
+  "watchlist": {
+    "filters": {
+      "all": "सभी",
+      "continue": "देखना जारी रखें",
+      "movies": "फ़िल्में",
+      "series": "सीरीज़",
+      "kids": "बच्चे",
+      "judaism": "यहूदी धर्म",
+      "podcasts": "पॉडकास्ट",
+      "radio": "रेडियो"
+    },
+    "title": "वॉचलिस्ट",
+    "items": "आइटम",
+    "watched": "[hi] watched",
+    "empty": "आपकी वॉचलिस्ट खाली है",
+    "emptyHint": "देखना शुरू करें और आइटम यहां दिखाई देंगे"
+  },
+  "recording": {
+    "stop": "रिकॉर्डिंग रोकें",
+    "start": "रिकॉर्डिंग शुरू करें"
+  },
+  "aiChat": {
+    "retryButton": "[hi] Retry",
+    "sendButton": "[hi] Send",
+    "title": "[hi] AI Chat",
+    "voiceButton": "[hi] Voice"
+  },
+  "aiOnboarding": {
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "completion": {
+      "message": "[hi] You're all set! Start exploring AI features.",
+      "title": "[hi] Setup Complete"
+    },
+    "permissions": {
+      "description": "[hi] Grant permissions to enable AI features like voice and camera.",
+      "title": "[hi] Permissions"
+    },
+    "personalization": {
+      "description": "[hi] Tell us your preferences to personalize your AI experience.",
+      "title": "[hi] Personalization"
+    },
+    "title": "[hi] AI Setup",
+    "welcome": {
+      "description": "[hi] Bayit+ uses AI to enhance your viewing experience with dubbing, subtitles, and more.",
+      "title": "[hi] Welcome to Bayit+ AI"
+    }
+  },
+  "auth_device_authorized": "[hi] Device authorized",
+  "auth_device_code_expired": "[hi] Code expired",
+  "auth_device_get_new_code": "[hi] Get new code",
+  "auth_device_manual_login": "[hi] Sign in manually",
+  "auth_device_visit_uri": "[hi] Visit the URL shown on your TV",
+  "go_back": "[hi] Go Back",
+  "retry": "[hi] Retry",
+  "search_hint": "[hi] Search channels, movies, shows...",
+  "search_no_results": "[hi] No results found",
+  "search_prompt": "[hi] What are you looking for?",
+  "subscription_required": "[hi] Subscription Required",
+  "subscription_upsell_tv": "[hi] Upgrade to watch on TV",
+  "talkback": {
+    "title": "[hi] Talkback"
+  },
+  "voiceCommand": {
+    "executing": "[hi] Executing...",
+    "listening": "[hi] Listening...",
+    "noMatch": "[hi] No match found",
+    "recognized": "[hi] Recognized"
+  },
+  "voiceSettings": {
+    "language": "[hi] Language",
+    "speechRate": "[hi] Speech Rate",
+    "title": "[hi] Voice Settings",
+    "ttsProvider": "[hi] TTS Provider",
+    "voiceMode": "[hi] Voice Mode",
+    "voiceSelection": "[hi] Voice Selection",
+    "wakeWord": "[hi] Wake Word"
+  },
+  "voiceWizard": {
+    "buttons": {
+      "back": "[hi] Back"
+    },
+    "calibration": {
+      "description": "[hi] Speak normally to calibrate the microphone.",
+      "listening": "[hi] Listening...",
+      "micButton": "[hi] Start Recording",
+      "resultTitle": "[hi] Calibration Result",
+      "stopButton": "[hi] Stop Recording",
+      "tapToStart": "[hi] Tap to start calibration",
+      "title": "[hi] Microphone Calibration"
+    },
+    "complete": {
+      "message": "[hi] Voice wizard setup is complete. You can now use voice features.",
+      "title": "[hi] Setup Complete"
+    },
+    "language": {
+      "description": "[hi] Select your preferred language for voice commands.",
+      "title": "[hi] Voice Language"
+    },
+    "permission": {
+      "description": "[hi] Microphone access is needed for voice features.",
+      "granted": "[hi] Permission Granted",
+      "requestButton": "[hi] Grant Permission",
+      "title": "[hi] Microphone Permission"
+    },
+    "title": "[hi] Voice Wizard"
+  },
+  "watch_now": "[hi] Watch Now"
 }
